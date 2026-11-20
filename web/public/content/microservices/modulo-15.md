@@ -1422,7 +1422,7 @@ Módulo 11, Lección 3 de 6 · Fase 1 · 3 h · Laboratorio `examples/microservi
 
 #### 2. PRERREQUISITOS
 
-- Tema 1 de este módulo: clave, valor y topic.
+- ficha 1 de este módulo: clave, valor y topic.
 - Módulo 0.4: JSON; Módulo 2: DTOs y Jackson (para comparar con Avro).
 - Módulo 3: Contract Testing (la idea de «contrato» entre productor y consumidor).
 
@@ -2100,7 +2100,7 @@ Módulo 11, Lección 4 de 6 · Fase 1 · 2,5 h · Laboratorio `examples/microser
 
 #### 2. PRERREQUISITOS
 
-- Tema 1 de este módulo: offsets y por qué un consumidor procesa las particiones en orden.
+- ficha 1 de este módulo: offsets y por qué un consumidor procesa las particiones en orden.
 - Módulo 8: reintentos, *backoff* y la diferencia entre errores transitorios y permanentes.
 - Módulo 2: excepciones propias.
 
@@ -3175,7 +3175,7 @@ Módulo 11, Lección 6 de 6 · Fase 1 · 3 h · Laboratorio `examples/microservi
 #### 2. PRERREQUISITOS
 
 - Módulo 6: publicar/suscribir y la diferencia entre comunicación síncrona y asíncrona.
-- Temas 1 y 5 de este módulo: grupos de consumidores y colas de trabajo, para comparar.
+- fichas 1 y 5 de este módulo: grupos de consumidores y colas de trabajo, para comparar.
 - Módulo 1: lambdas (los manejadores de mensajes de NATS son lambdas).
 
 #### 3. OBJETIVO DE APRENDIZAJE

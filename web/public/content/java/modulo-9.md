@@ -99,7 +99,7 @@ mvn test
 
 Modifica `Tarifa.calcular` para que el límite sea `<` en vez de `<=` y ejecuta `mvn test` de nuevo; confirma cuál de los tres casos deja de pasar y por qué.
 
-### Tema 2: Mockito — aislar dependencias
+### Tema 2: Mockito — aislar dependencias · Intermedio · 40 min
 
 **¿Por qué es importante?** una prueba de servicio debe poder comprobar una regla de negocio sin arrancar una base de datos ni llamar una API real.
 
@@ -202,7 +202,7 @@ mvn test
 
 Modifica el stub para que `repo.buscar("RT-1")` devuelva `Optional.empty()` en vez de una ruta, corre `mvn test` y decide qué debería responder `servicio.buscar` ante ese caso.
 
-### Tema 3: Tests parametrizados y cobertura
+### Tema 3: Tests parametrizados y cobertura · Intermedio · 40 min
 
 **¿Por qué es importante?** una regla con límites debe comprobar entradas representativas; la cobertura ayuda a encontrar código aún no ejercitado, pero no demuestra que el test sea correcto.
 

@@ -1356,7 +1356,7 @@ Módulo 7, Lección 3 de 5 · Fase 1 · 2 h · Laboratorio `examples/microservic
 
 - Módulo 1, «Perfiles y configuración externalizada»: `application.yml`, `application-prod.yml`, precedencia.
 - Módulo 0.4: Git (el backend por defecto del Config Server es un repositorio Git) y variables de entorno.
-- Tema 1 de este módulo (nombres de aplicación: `spring.application.name`).
+- ficha 1 de este módulo (nombres de aplicación: `spring.application.name`).
 
 #### 3. OBJETIVO DE APRENDIZAJE
 

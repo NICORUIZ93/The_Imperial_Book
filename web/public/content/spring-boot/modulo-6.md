@@ -7,7 +7,7 @@ Este módulo compara pruebas de MVC, persistencia e integración. Cada tema debe
 
 ## Aprende construyendo
 
-### Tema 1: Probar un controller con `@WebMvcTest`
+### Tema 1: Probar un controller con `@WebMvcTest` · Intermedio · 30 min
 
 Reutiliza la API de tareas construida en M2 y la seguridad de M5. **¿Por qué es importante?** Un fallo del controller debe poder detectarse sin levantar PostgreSQL ni recorrer todas las capas. Este tema prueba la web sin llamar al repositorio y no crea otra aplicación ni otro servicio.
 
@@ -134,7 +134,7 @@ ServicioTareas servicio;
 
 **Aplicación y decisión:** Práctica para el proyecto integrador: añade una petición con prioridad inválida al slice y comprueba 400 antes de llamar al servicio. Este límite de alcance excluye PostgreSQL y JWT; no abras la seguridad real para hacer pasar un test de contrato.
 
-### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest`
+### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest` · Avanzado · 30 min
 
 **¿Por qué es importante?** El repositorio puede parecer correcto en H2 y fallar con el motor usado en producción. Este slice carga entidades y repositorios; Testcontainers añade una instancia desechable del PostgreSQL elegido.
 
@@ -293,7 +293,7 @@ Archivo concreto para esta comprobación: `src/test/java/com/example/demo/TareaR
 
 **Aplicación y decisión:** Práctica para el proyecto integrador: agrega una consulta por prioridad vacía y verifica el resultado en PostgreSQL. Conserva la aserción del producto JDBC; no sustituyas el motor por H2 para evitar la infraestructura requerida.
 
-### Tema 3: Integrar el flujo con `@SpringBootTest`
+### Tema 3: Integrar el flujo con `@SpringBootTest` · Avanzado · 30 min
 
 **¿Por qué es importante?** Un controller y un repositorio pueden pasar sus pruebas por separado y aun así fallar al conectarse. Una prueba de contexto completo comprueba un flujo crítico atravesando la aplicación configurada.
 
@@ -570,7 +570,7 @@ void sinTokenResponde401ConDesafioBearer() {
 
 **Proyecto integrador:** en RutaFlow, deja una sola prueba `RANDOM_PORT` para el flujo de crear envío y el resto en MockMvc. **Límite:** ninguna de las dos pruebas verifica TLS ni el proxy de producción; eso se comprueba en el despliegue (Módulo 19).
 
-### Tema 5: Contenedores Testcontainers reutilizados entre clases
+### Tema 5: Contenedores Testcontainers reutilizados entre clases · Avanzado · 35 min
 
 **Objetivo observable:** hacer que dos clases JUnit consulten el mismo PostgreSQL Testcontainers dentro de una ejecución de pruebas y comparar el ID real observado por cada una.
 

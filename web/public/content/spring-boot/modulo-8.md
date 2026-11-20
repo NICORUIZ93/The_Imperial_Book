@@ -11,7 +11,7 @@ Este módulo completa el mapa de integraciones de Spring identificado en las cap
 
 Este módulo demuestra el comportamiento dentro de una aplicación Spring. El módulo 10 desarrolla Kafka entre procesos; `@TransactionalEventListener` no sustituye al outbox y un evento local no es mensajería durable.
 
-### Tema 1: Scheduling y tareas periódicas
+### Tema 1: Scheduling y tareas periódicas · Intermedio · 35 min
 
 **Meta:** elegir entre fixed delay y cron, delegar una tarea a un servicio y probar su llamada sin esperar el reloj.
 
@@ -107,7 +107,7 @@ Sigue la llamada desde scheduler hasta servicio. Ejecuta desde `examples/spring-
 
 **Fuentes primarias:** [Spring Framework: scheduling y `@Scheduled`](https://docs.spring.io/spring-framework/reference/integration/scheduling.html); [Spring Boot: ejecución y scheduler](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html).
 
-### Tema 2: Eventos locales, eventos transaccionales y mensajería
+### Tema 2: Eventos locales, eventos transaccionales y mensajería · Intermedio · 40 min
 
 **Meta:** distinguir un aviso dentro del proceso, una acción posterior al commit y un mensaje que debe sobrevivir al reinicio.
 
@@ -217,7 +217,7 @@ jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)
 
 **Fuentes primarias:** [Spring Framework: eventos ligados a transacciones](https://docs.spring.io/spring-framework/reference/data-access/transaction/event.html); [Spring for Apache Kafka: transacciones](https://docs.spring.io/spring-kafka/reference/kafka/transactions.html).
 
-### Tema 3: Correo con Spring Mail y entrega recuperable
+### Tema 3: Correo con Spring Mail y entrega recuperable · Avanzado · 40 min
 
 **Meta:** preparar un correo, proteger la configuración SMTP y reintentar una notificación fallida sin retrasar el guardado del envío.
 
@@ -341,7 +341,7 @@ En `examples/spring-mail-rutaflow`, ejecuta las pruebas de transacción y reinte
 
 **Fuentes primarias:** [Spring Boot: envío de correo y timeouts SMTP](https://docs.spring.io/spring-boot/reference/io/email.html); [Spring Framework: `JavaMailSender`, `SimpleMailMessage` y MIME](https://docs.spring.io/spring-framework/reference/integration/email.html).
 
-### Tema 4: Caché con Spring Cache, Caffeine y Redis
+### Tema 4: Caché con Spring Cache, Caffeine y Redis · Avanzado · 45 min
 
 **Meta:** cachear consultas repetidas, invalidar una tarifa que cambió y elegir entre memoria local y un almacén compartido.
 
@@ -514,7 +514,7 @@ El ejemplo usa el serializador Java predeterminado, por eso `Tarifa` implementa 
 Consulta también [Spring Framework: `@CachePut`, proxies y carga sincronizada](https://docs.spring.io/spring-framework/reference/integration/cache/annotations.html) y [Spring Boot: métricas de caché](https://docs.spring.io/spring-boot/reference/actuator/metrics.html).
 **Hito del tema:** conserva (1) las seis pruebas locales correctas, (2) la predicción y el fallo al quitar la invalidación, (3) el ejercicio CENTRO con contador comprobado y (4) una decisión de proveedor con clave, TTL y respuesta ante indisponibilidad. Adjunta por separado el resultado Redis si lo ejecutaste; omitirlo no demuestra integración compartida. Sigue con M9 T1 para limitar el trabajo en segundo plano.
 
-### Tema 5: Integraciones empresariales, SOAP y fronteras de protocolo
+### Tema 5: Integraciones empresariales, SOAP y fronteras de protocolo · Avanzado · 30 min
 
 **¿Por qué es importante?** confundir un mensaje aceptado con un resultado correcto puede registrar entregas inexistentes; el adaptador debe reconocer contratos y fallos antes de tocar el dominio.
 
@@ -624,7 +624,7 @@ python3 -m unittest -v
 
 **Fuente primaria:** [W3C: SOAP 1.2, mensajes y Fault](https://www.w3.org/TR/soap12-part1/).
 
-### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo
+### Tema 6: Spring AI: ChatClient y herramientas con autorización fuera del modelo · Avanzado · 35 min
 
 **Meta:** ejecutar ChatClient con un modelo controlado, invocar un callback real y demostrar que dos sesiones no comparten permisos. **Prerrequisitos:** interfaces Java, JUnit, JSON y autorización por recurso de M18. Duración: 35–40 min.
 
@@ -796,7 +796,7 @@ class ChatToolsTest {
 
 **Fuentes primarias:** [ChatClient](https://docs.spring.io/spring-ai/reference/api/chatclient.html), [herramientas y ejecución](https://docs.spring.io/spring-ai/reference/api/tools.html), [compatibilidad Spring AI/Boot](https://docs.spring.io/spring-ai/reference/getting-started.html).
 
-### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar
+### Tema 7: RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar · Avanzado · 40 min
 
 **Meta:** filtrar documentos por empresa, excluir contexto sin evidencia y conservar referencias antes de generar una respuesta. **Prerrequisitos:** M8 T5, colecciones, metadatos y JUnit. Duración: 35–40 min.
 
@@ -936,7 +936,7 @@ class RagScopeTest {
 
 **Fuente primaria:** [Spring AI: RAG, QuestionAnswerAdvisor y filtros](https://docs.spring.io/spring-ai/reference/api/retrieval-augmented-generation.html).
 
-### Tema 8: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas
+### Tema 8: Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a publicar una herramienta de RutaFlow como servidor MCP con Spring AI, listarla desde un cliente y entregársela a un `ChatClient` sin copiar su código. **Prerrequisitos:** el Tema 6 de este módulo (ChatClient y herramientas con `@Tool`), REST con Spring MVC y JDK 25 o superior.

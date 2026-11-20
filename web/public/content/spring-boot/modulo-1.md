@@ -52,7 +52,7 @@ normal ni esperes archivos de Gradle dentro de `target/`.
 
 ## Aprende construyendo
 
-### Tema 1: Spring Initializr y starters
+### Tema 1: Spring Initializr y starters · Básico · 30 min
 
 Una aplicación de entregas necesita HTTP y probablemente más adelante validación y persistencia. Spring Initializr genera el esqueleto; los starters agrupan bibliotecas y la gestión de dependencias de Boot aporta versiones recomendadas. Necesitas Java básico, terminal y el Módulo 0.
 
@@ -186,7 +186,7 @@ flowchart LR
 
 **Fuentes primarias:** [Spring Initializr](https://docs.spring.io/initializr/docs/current/reference/html/), [gestión de dependencias en Spring Boot](https://docs.spring.io/spring-boot/reference/using/build-systems.html), [módulos web de Spring Boot](https://docs.spring.io/spring-boot/reference/web/index.html).
 
-### Tema 2: application.yml vs application.properties
+### Tema 2: application.yml vs application.properties · Básico · 30 min
 
 Spring Boot puede leer configuración de archivos YAML o `.properties`. Aprenderás a representar el mismo valor, detectar qué archivo gana si ambos existen y comprobar una sobrescritura desde la terminal.
 
@@ -322,7 +322,7 @@ flowchart TD
 
 **Fuente primaria:** [configuración externa y precedencia de propiedades en Spring Boot](https://docs.spring.io/spring-boot/reference/features/external-config.html).
 
-### Tema 3: Perfiles y estructura por capas
+### Tema 3: Perfiles y estructura por capas · Intermedio · 35 min
 
 Un mismo programa puede usar algunos valores distintos en desarrollo y producción. Un perfil selecciona una configuración; las capas separan quién atiende HTTP, quién aplica una regla y quién obtiene datos. Necesitas el proyecto de los temas anteriores.
 

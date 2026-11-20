@@ -482,7 +482,7 @@ Siguiente paso: el Tema 4 mide lo que todo esto cuesta cuando el sistema está b
 
 Al finalizar vas a medir latencia por percentiles y throughput de una API con un generador propio, y a convertir esas medidas en una decisión sobre un SLO y su presupuesto de error.
 
-**Conocimiento previo:** Docker, Node.js 20 o superior y los Temas 1-3 de este módulo.
+**Conocimiento previo:** Docker, Node.js 22 o superior y los Temas 1-3 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 

@@ -7,7 +7,7 @@ Anotar un método con `@Transactional`, publicar en Kafka y exponer Actuator no 
 
 Cada tema demuestra su garantía (o su ausencia) con un test real que la ejercita bajo condiciones adversas: self-invocation real detectada con `TransactionSynchronizationManager`, una carrera real de dos threads contra una restricción única de base de datos, un contrato verificado con `MockMvc` contra el JSON real de la API, y `TestObservationRegistry` (la utilidad oficial de test de Micrometer Observation) confirmando tags de baja cardinalidad reales.
 
-### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento
+### Tema 1: `@Transactional` funciona en una frontera, no como encantamiento · Avanzado · 35 min
 
 **Resultado del tema:** observarás en runtime cuándo la llamada cruza el proxy de Spring y cuándo no; luego moverás la operación a otro bean para que el límite transaccional sí se active.
 
@@ -142,7 +142,7 @@ Desde `examples/spring-boot-transaction-boundary-rutaflow`, ejecuta la comprobac
 ./mvnw -q test
 ```
 
-### Tema 2: Recuperación implica duplicación segura
+### Tema 2: Recuperación implica duplicación segura · Avanzado · 40 min
 
 **Resultado del tema:** probarás que dos solicitudes simultáneas con la misma clave generan una sola fila en PostgreSQL; luego distinguirás idempotencia HTTP de la deduplicación de eventos Kafka.
 
@@ -267,7 +267,7 @@ Dibuja ambas claves: HTTP `operation_key` para repetir una solicitud; Kafka `eve
 
 **Aplicación y decisión:** En el proyecto integrador, conserva operation_key para repetir HTTP y eventId para deduplicar consumo; son contratos de fronteras distintas. No declares exactamente una vez a partir de una tabla con clave única sin revisar el efecto externo.
 
-### Tema 3: Contratos ejecutables protegen despliegues independientes
+### Tema 3: Contratos ejecutables protegen despliegues independientes · Avanzado · 35 min
 
 **¿Por qué es importante?** El contrato es lo que el consumidor recibe por HTTP: status, headers y JSON; una discrepancia puede romper apps móviles que se actualizan después del backend. El laboratorio real vive en `examples/spring-boot-integrador-rutaflow/`; sus pruebas usan Spring, seguridad y PostgreSQL con Testcontainers. **Requisito:** Docker debe estar iniciado para ejecutar esa suite.
 
@@ -351,7 +351,7 @@ cd examples/spring-boot-integrador-rutaflow
 
 **Aplicación y decisión:** En el proyecto integrador, guarda status, Location y campos públicos como contrato del cliente. Límite: el test no certifica compatibilidad de todas las versiones móviles; cualquier cambio de significado exige revisión del consumidor.
 
-### Tema 4: Observabilidad sirve a un objetivo y a una decisión
+### Tema 4: Observabilidad sirve a un objetivo y a una decisión · Avanzado · 40 min
 
 **¿Por qué es importante?** Si una solicitud pasa por varios servicios, un error aislado no dice dónde se perdió ni cuánto afecta al usuario. El laboratorio `examples/spring-tracing-rutaflow/` enlaza una petición HTTP con dos servicios y Jaeger.
 
@@ -449,7 +449,7 @@ bash ./scripts/verify-trace.sh
 
 **Aplicación y decisión:** En el proyecto integrador, usa el trace ID para localizar la llamada lenta y relaciona esa señal con un objetivo de servicio. Límite: ver dos spans no acredita observabilidad completa ni protección de todos los datos registrados.
 
-### Tema 5: Saga con compensación real
+### Tema 5: Saga con compensación real · Avanzado · 35 min
 
 #### Subtema 5.1: Dibuja los pasos del pedido · 8 min
 
@@ -541,7 +541,7 @@ Para comprobar «Delimita la demo y planea la recuperación», consulta: `exampl
 
 **Fuentes:** [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La referencia describe tanto coordinación por orquestación como coreografía y destaca que las compensaciones se diseñan explícitamente; este laboratorio solo ejercita la variante orquestada local.
 
-### Tema 6: Event Sourcing con replay real
+### Tema 6: Event Sourcing con replay real · Avanzado · 35 min
 
 #### Subtema 6.1: Guarda hechos, no solo el estado final · 8 min
 
@@ -627,7 +627,7 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
 **Fuente:** [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html). La fuente describe almacenar los cambios como secuencia y reconstruir el estado desde el log; este laboratorio usa un stream local en memoria, sin persistencia.
 
-### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar
+### Tema 7: Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar · Experto · 35 min
 
 #### Subtema 7.1: Conserva el trabajo pendiente · 8 min
 

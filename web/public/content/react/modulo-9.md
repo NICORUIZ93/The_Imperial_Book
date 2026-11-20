@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: Medir antes de optimizar
+### Tema 1: Medir antes de optimizar · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a grabar con React DevTools Profiler una interacción real de `ListaEnvios` (escribir en el filtro) para identificar qué componente específico se re-renderiza innecesariamente, antes de optimizar nada. Prerrequisitos: Módulo 8 completo.
@@ -115,7 +115,7 @@ Corrige el Paso 5 identificando con el Profiler cuál es el componente que sí s
 #### Paso 7 · Cierre
 Entrega la grabación del Paso 4 señalando el componente real afectado, la optimización desperdiciada del Paso 5, y la corrección dirigida del Paso 6; explica por qué memoizar basándose en intuición en vez de en evidencia del Profiler puede hacer que el esfuerzo de optimización se invierta en el componente equivocado. Siguiente paso: estudia React.memo con criterio. Errores comunes: optimizar sin medir primero, confiar en percepción subjetiva de qué componente "parece lento", y asumir que el componente visualmente más grande es automáticamente el más costoso de renderizar. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/Profiler.
 
-### Tema 2: React.memo con criterio
+### Tema 2: React.memo con criterio · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a envolver `EncabezadoPanel` (identificado en el Tema 1 con el Profiler) en `React.memo`, confirmando que el render heredado innecesario desaparece. Prerrequisitos: Tema 1 de este módulo.
@@ -271,7 +271,7 @@ Corrige el Paso 5 restaurando `List`, y agrega a cada fila el estado del envío 
 Entrega la lista virtualizada del Paso 4, la medición del render completo sin virtualizar del Paso 5 y la variante del Paso 6; explica qué resuelve la virtualización (renderizado continuo de una lista ya cargada) y qué no resuelve (la descarga inicial del bundle, que se trata en el Tema 5). Siguiente paso: estudia useTransition para mantener la interfaz responsiva durante cálculos costosos. Errores comunes: virtualizar una lista pequeña que no lo necesita, usar un índice de array en vez de un id estable como key dentro de la lista virtualizada, y esperar que la virtualización reduzca el tamaño del bundle. Fuente oficial: https://github.com/bvaughn/react-window.
 **Implicación práctica:** La virtualización reduce drásticamente el costo de renderizar listas largas ya cargadas; no cambia lo que se descarga.
 
-### Tema 4: useTransition, useDeferredValue y Fiber
+### Tema 4: useTransition, useDeferredValue y Fiber · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a usar `useTransition` para que escribir en el filtro de zona de RutaFlow siga respondiendo instantáneamente, aunque filtrar 10,000 envíos sea un cálculo costoso en segundo plano. Prerrequisitos: Tema 3 de este módulo.
@@ -636,7 +636,7 @@ Compruébalo en Network: el chunk aparece al pasar el ratón (o al llegar con Ta
 
 ### Tema 6: El hook use: leer una promesa con Suspense y un contexto de forma condicional · Avanzado · 40 min
 
-**Prerrequisito:** tema «Suspense y React.lazy — carga diferida del lado del cliente» de este módulo.
+**Prerrequisito:** tema «Suspense y React.lazy — carga diferida del lado cliente» de este módulo.
 
 **Al finalizar podrás:** leer el resultado de una promesa con `use` dentro de un límite de `Suspense` y un límite de errores, y leer un contexto dentro de un `if`.
 

@@ -7,14 +7,14 @@ Dos reglas objetivas, medidas sobre el encabezado `### Tema N: título · Nivel 
   2. dificultad — el nivel declarado no puede bajar al avanzar el capítulo
      (Básico < Intermedio < Avanzado < Experto).
 
-Las reglas de prerrequisitos NO se auditan: los dos casos que parecían invertidos resultaron
-falsos positivos («Docker se enseña a fondo en el Módulo 11; aquí solo lo usas para levantar
-PostgreSQL» en node/5 y las referencias `Java M10 Tema 3` de java/19, que apuntan a otro
-capítulo). Un detector fiable de dependencias reales todavía no existe.
+Las citas de prerrequisitos las audita su propio script, `scripts/audit_topic_citations.py`: comprueba que
+cada `Tema N de este módulo` / `Módulo N, Tema M` exista, que nadie se cite a sí mismo como
+prerrequisito y que las frases de prerrequisito apunten hacia atrás. Aquí solo se juzga la
+cabecera, porque reordenar un capítulo no reescribe la prosa que lo atraviesa.
 
-El curso Node.js está reordenado. Los capítulos pendientes viven en
-`docs/topic-order-exceptions.json`; `--check` falla si un capítulo fuera de esa lista incumple
-una regla, y también si una entrada de la lista ya no incumple nada (deuda rancia).
+Los capítulos que incumplen una regla y se dejan así a propósito viven en
+`docs/topic-order-exceptions.json` (hoy vacía); `--check` falla si un capítulo fuera de esa lista
+incumple una regla, y también si una entrada de la lista ya no incumple nada (deuda rancia).
 
   python3 scripts/audit_topic_order.py            # informe
   python3 scripts/audit_topic_order.py --check    # puerta de validate.sh

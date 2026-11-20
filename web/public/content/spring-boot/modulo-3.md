@@ -11,7 +11,7 @@ Spring Data JPA no elimina JDBC: es una capa sobre acceso relacional. En este m�
 
 Usa JDBC cuando el SQL explícito simplifique el caso (por ejemplo, reportes y actualizaciones condicionales), no porque sea automáticamente más rápido. Mide la consulta representativa y conserva el mismo límite de transacción si combinas JDBC con JPA.
 
-### Tema 1: DataSource, JdbcTemplate y DAO
+### Tema 1: DataSource, JdbcTemplate y DAO · Intermedio · 35 min
 
 **Meta:** consultar y guardar un envío con Spring JDBC, convertir la fila en un objeto Java y proteger las entradas sin construir SQL con datos de la petición.
 
@@ -322,7 +322,7 @@ La condición `estado = :desde` convierte la actualización en una comparación-
 
 **Proyecto integrador:** mueve el reporte de envíos por estado de RutaFlow a `JdbcClient`. **Límite:** `JdbcClient` no genera el esquema ni lo migra; eso lo hace Flyway (Módulo 4).
 
-### Tema 3: `@Transactional`, rollback y límites de transacción
+### Tema 3: `@Transactional`, rollback y límites de transacción · Avanzado · 35 min
 
 **Meta:** mantener juntos el cobro y el cambio de estado, comprobar qué errores provocan rollback y delimitar qué trabajo pertenece a la transacción.
 

@@ -11,7 +11,7 @@ Construirás cotizaciones que combinan llamadas asíncronas con `CompletableFutu
 
 Compara ejecutar una llamada "asíncrona" que en realidad corre en el hilo que la invoca con una que realmente corre en otro hilo. No confundas "el código compila con `CompletableFuture`" con "el código efectivamente corre en paralelo".
 
-### Tema 1: @Async y ejecutores: trabajo en segundo plano con límites
+### Tema 1: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 35 min
 
 **¿Por qué es importante?** el trabajo en segundo plano necesita límites y resultados observables para no ocultar fallos ni agotar recursos.
 

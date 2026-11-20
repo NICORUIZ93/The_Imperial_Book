@@ -89,7 +89,9 @@ def mean_sentence_words(block: str) -> float:
 def measure() -> dict:
     index, quality = load(INDEX), load(QUALITY)["topics"]
     atlas = {t["id"]: t for t in load(ATLAS)["tracks"]}
-    master = {t["track"] for t in load(MASTER)["tracks"]}
+    master_rows = load(MASTER)["tracks"]
+    master = {t["track"] for t in master_rows}
+    master_real = {t["track"] for t in master_rows if str(t["module"]) in index.get(t["track"], {})}
     levels = {row["track"]: row for row in load(LEVELS_REPORT)["tracks"]}
     scope = load(SCOPE)["topics"]
     rows = []
@@ -113,7 +115,7 @@ def measure() -> dict:
         in_scope = sum(1 for e in scope if e["track"] == track and e.get("capture") != "pendiente")
         status = {
             "T1": not levels[track]["missingLevels"],
-            "T2": track in master,
+            "T2": track in master_real,
             "T3": bool(real["official"]) and not real["missing"],
             "T4": sum(1 for t in q if t["criteria"].get("visual")) == total,
             "T5": bool(blocks) and easy / len(blocks) >= EASY_SHARE,
@@ -128,6 +130,7 @@ def measure() -> dict:
             "detail": {
                 "missingLevels": levels[track]["missingLevels"],
                 "realTopics": real,
+                "masterGhost": track in master and track not in master_real,
                 "visual": sum(1 for t in q if t["criteria"].get("visual")),
                 "easy": easy, "measuredTopics": len(blocks),
                 "captureScope": in_scope,
@@ -151,7 +154,9 @@ def markdown(data: dict) -> str:
         d = row["detail"]
         cells = {
             "T1": "✅" if row["status"]["T1"] else "⬜ " + ", ".join(d["missingLevels"]),
-            "T2": "✅" if row["status"]["T2"] else ("➖" if "T2" in row["exempt"] else "⬜"),
+            "T2": "✅" if row["status"]["T2"] else (
+                "➖" if "T2" in row["exempt"] else (
+                    "⬜ registrado sin capítulo" if d["masterGhost"] else "⬜")),
             "T3": "✅" if row["status"]["T3"] else (f"⬜ {d['realTopics']['taught']}/{d['realTopics']['official']}" if d["realTopics"]["official"] else "⬜ sin atlas"),
             "T4": "✅" if row["status"]["T4"] else f"⬜ {d['visual']}/{row['topics']}",
             "T5": "✅" if row["status"]["T5"] else f"⬜ {d['easy']}/{d['measuredTopics']}",

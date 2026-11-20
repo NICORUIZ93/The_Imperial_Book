@@ -13,6 +13,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 14,
+      "masterModuleMissing": false,
       "visualTopics": 76,
       "projectTopics": 83
     },
@@ -28,6 +30,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 15,
+      "masterModuleMissing": false,
       "visualTopics": 75,
       "projectTopics": 78
     },
@@ -43,6 +47,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 33,
+      "masterModuleMissing": false,
       "visualTopics": 108,
       "projectTopics": 168
     },
@@ -58,6 +64,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": false,
+      "masterModuleRequested": null,
+      "masterModuleMissing": false,
       "visualTopics": 11,
       "projectTopics": 5
     },
@@ -73,6 +81,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 15,
+      "masterModuleMissing": false,
       "visualTopics": 132,
       "projectTopics": 139
     },
@@ -88,6 +98,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 15,
+      "masterModuleMissing": false,
       "visualTopics": 96,
       "projectTopics": 119
     },
@@ -103,6 +115,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": false,
+      "masterModuleRequested": null,
+      "masterModuleMissing": false,
       "visualTopics": 78,
       "projectTopics": 103
     },
@@ -118,6 +132,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 14,
+      "masterModuleMissing": false,
       "visualTopics": 48,
       "projectTopics": 69
     },
@@ -133,6 +149,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 15,
+      "masterModuleMissing": false,
       "visualTopics": 25,
       "projectTopics": 117
     },
@@ -148,6 +166,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 14,
+      "masterModuleMissing": false,
       "visualTopics": 62,
       "projectTopics": 92
     },
@@ -163,6 +183,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 13,
+      "masterModuleMissing": false,
       "visualTopics": 57,
       "projectTopics": 66
     },
@@ -183,6 +205,8 @@
         "Experto"
       ],
       "hasMasterModule": false,
+      "masterModuleRequested": null,
+      "masterModuleMissing": false,
       "visualTopics": 2,
       "projectTopics": 24
     },
@@ -197,7 +221,9 @@
         "Experto": 6
       },
       "missingLevels": [],
-      "hasMasterModule": true,
+      "hasMasterModule": false,
+      "masterModuleRequested": 14,
+      "masterModuleMissing": true,
       "visualTopics": 33,
       "projectTopics": 78
     },
@@ -213,6 +239,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 14,
+      "masterModuleMissing": false,
       "visualTopics": 43,
       "projectTopics": 64
     },
@@ -228,6 +256,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": false,
+      "masterModuleRequested": null,
+      "masterModuleMissing": false,
       "visualTopics": 26,
       "projectTopics": 29
     },
@@ -243,6 +273,8 @@
       },
       "missingLevels": [],
       "hasMasterModule": true,
+      "masterModuleRequested": 15,
+      "masterModuleMissing": false,
       "visualTopics": 51,
       "projectTopics": 121
     }

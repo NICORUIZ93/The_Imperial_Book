@@ -97,7 +97,7 @@ flowchart LR
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro de `mi-react`; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (configuradas en «Prepara las pruebas»). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: JSX es azúcar sintáctica sobre createElement
+### Tema 1: JSX es azúcar sintáctica sobre createElement · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear un componente React desde cero. Prerrequisitos: Node.js LTS, npm y un editor. Verifica node --version y npm --version.
@@ -223,7 +223,7 @@ Añade estados vacío/error, composición con Fragment y estilos accesibles; pru
 Guarda estructura, comandos, captura y log; como siguiente paso estudia estado. Errores comunes: key aleatoria, componente gigante, HTML inválido y estilos que dependen solo de color. Fuentes oficiales: https://react.dev/learn y https://vite.dev/guide/.
 **Implicación práctica:** Entender el modelo de renderizado evita bugs sutiles al crecer la interfaz.
 
-### Tema 2: Listas con key estable
+### Tema 2: Listas con key estable · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a renderizar una lista de envíos (`EnvioCard`) con `.map()`, usando el `id` de cada envío como `key` en vez de su posición en el array. Prerrequisitos: Tema 1 de este módulo.
@@ -355,7 +355,7 @@ Corrige el Paso 5 devolviendo `key={envio.id}`, y agrega a cada fila un botón "
 #### Paso 7 · Cierre
 Entrega la lista con key estable del Paso 4, el bug de identidad provocado en el Paso 5, y la prueba de reordenamiento del Paso 6; explica por qué el índice "funciona" en una lista que nunca cambia de orden ni de longitud, pero falla en cuanto eso deja de ser cierto. Siguiente paso: estudia composición con `children` y Fragments. Errores comunes: usar el índice como key en listas que se reordenan o filtran, generar una key aleatoria en cada render (`key={Math.random()}`), y repetir keys duplicadas dentro de la misma lista. Fuentes oficiales: https://react.dev/learn/rendering-lists y https://react.dev/learn/preserving-and-resetting-state.
 
-### Tema 3: Composición sobre herencia, y Fragments
+### Tema 3: Composición sobre herencia, y Fragments · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir un componente `Tarjeta` genérico que use `children`, y a envolver su contenido en un Fragment en vez de un `<div>` extra sin propósito. Prerrequisitos: Tema 2 de este módulo.
@@ -467,7 +467,7 @@ Corrige el Paso 5 restaurando el Fragment, y crea una segunda tarjeta (`Conducto
 Entrega `Tarjeta` con `children` del Paso 4, el error de compilación del Paso 5, y `ConductorCard` del Paso 6; explica por qué `Tarjeta` pudo reutilizarse para un contenido completamente distinto sin ninguna modificación, algo que una jerarquía de herencia rígida no ofrece con la misma facilidad. Siguiente paso: estudia renderizado condicional y estilos. Errores comunes: hacer que un componente "contenedor" conozca detalles específicos del contenido que envuelve, olvidar que un componente debe devolver un único elemento raíz, y usar un `<div>` extra en vez de un Fragment cuando no se necesita ningún elemento real. Fuentes oficiales: https://react.dev/learn/passing-props-to-a-component#passing-jsx-as-children y https://react.dev/reference/react/Fragment.
 **Implicación práctica:** Componer con `children` produce piezas de UI reutilizables e independientes entre sí; los Fragments evitan contenedores DOM innecesarios que la restricción de un único elemento raíz forzaría.
 
-### Tema 4: Renderizado condicional y estilos
+### Tema 4: Renderizado condicional y estilos · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mostrar un `Spinner` mientras `EnvioCard` carga, y a elegir entre `&&` y el operador ternario según si existe una sola alternativa o dos. Prerrequisitos: Tema 3 de este módulo.

@@ -11,7 +11,7 @@ Este módulo construye una capa JDBC pequeña y verificable. El objetivo es ente
 
 No confundas seguridad SQL con consistencia: parametrizar evita que el valor se interprete como SQL; la transacción y la clave única protegen invariantes de negocio y reintentos. Compara ambos niveles en pruebas separadas.
 
-### Tema 1: JDBC, PreparedStatement y DAO
+### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -180,7 +180,7 @@ Guarda la salida segura y el rechazo de la columna inyectada.
 
 Entrega el DAO, el `DataSource` de test y casos para hallado, ausente e input hostil como parte del proyecto integrador de RutaFlow, por ejemplo, para consultar reportes especializados; como siguiente paso agrupa varias escrituras relacionadas en una transacción. Errores comunes: concatenar valores directamente en el SQL en vez de usar `PreparedStatement`, permitir que el nombre de columna o el orden de una consulta provengan directamente de un parámetro del usuario sin una allowlist, y crear un DAO genérico que oculte consultas distintas detrás de operaciones vagas. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/PreparedStatement.html y https://jakarta.ee/specifications/persistence/.
 
-### Tema 2: Transacciones, ACID y aislamiento
+### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

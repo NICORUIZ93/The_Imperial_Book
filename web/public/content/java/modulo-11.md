@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Generaciones de memoria y recolectores
+### Tema 1: Generaciones de memoria y recolectores · Avanzado · 45 min
 
 **¿Por qué es importante?** saber si crece el heap o si el GC solo está limpiando objetos temporales ayuda a investigar pausas y memoria insuficiente.
 
@@ -101,7 +101,7 @@ java -cp out Memoria
 
 Modifica `src/Memoria.java` para crear el arreglo dentro de un bucle de 50 iteraciones sin retenerlo en ninguna variable externa, y compara la salida de `GC.heap_info` antes y después de que el GC recoja esos arreglos temporales.
 
-### Tema 2: Java Flight Recorder y JIT compilation
+### Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 50 min
 
 **¿Por qué es importante?** JFR registra actividad de la JVM con bajo esfuerzo; el JIT compila código caliente y vuelve engañosa una medición sin calentamiento.
 
@@ -200,7 +200,7 @@ jfr summary trabajo.jfr
 
 Modifica `src/Calentar.java` para medir el bucle con `System.nanoTime()` en la primera pasada y en la décima pasada por separado, y explica por qué la primera suele ser más lenta aunque el código no cambió.
 
-### Tema 3: Referencias especiales y heap dumps
+### Tema 3: Referencias especiales y heap dumps · Avanzado · 45 min
 
 **¿Por qué es importante?** retener objetos más tiempo del necesario puede agotar memoria; un heap dump ayuda a encontrar quién conserva referencias.
 
@@ -295,7 +295,7 @@ java -cp out ReferenciaDebil
 
 Modifica `src/Retencion.java` para que la lista `static final` use `SoftReference<byte[]>` en vez de guardar los arreglos directamente, repite `java -Xmx32m -cp out Retencion` y compara si sigue fallando con `OutOfMemoryError`.
 
-### Tema 4: Foreign Function & Memory API (Java 22)
+### Tema 4: Foreign Function & Memory API (Java 22) · Experto · 45 min
 
 **¿Por qué es importante?** FFM permite llamar funciones nativas y administrar memoria fuera del heap con tipos y ciclos de vida explícitos.
 

@@ -364,21 +364,21 @@
     {
       "track": "ios",
       "module": 12,
-      "topic": 4,
+      "topic": 3,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },
     {
       "track": "ios",
       "module": 14,
-      "topic": 8,
+      "topic": 2,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },
     {
       "track": "ios",
       "module": 10,
-      "topic": 5,
+      "topic": 4,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },
@@ -427,7 +427,7 @@
     {
       "track": "ios",
       "module": 13,
-      "topic": 8,
+      "topic": 5,
       "capture": "pendiente",
       "reason": "Necesita macOS con Xcode 16 o superior y un simulador o iPhone; el entorno de generación es Linux sin Xcode. Capturar la app o la salida de la consola de Xcode en la Mac del proyecto."
     },

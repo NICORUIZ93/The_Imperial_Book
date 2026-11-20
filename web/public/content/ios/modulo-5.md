@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: URLSession con async/await y Codable
+### Tema 1: URLSession con async/await y Codable · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a llamar a `POST /entregas` de RutaFlow desde Swift, decodificando la respuesta con `Codable`. Prerrequisitos: Módulo 4 de este track. No necesitas ningún servidor ni otro curso: en el Paso 4 registras un servidor simulado con `URLProtocol` que responde dentro de la propia app.
@@ -161,7 +161,7 @@ Corrige el Paso 5 restaurando la verificación de `statusCode`, y agrega un segu
 #### Paso 7 · Cierre
 Entrega la confirmación decodificada del Paso 4, el fallo de decodificar un error como éxito del Paso 5, y el `RespuestaError` agregado del Paso 6; explica por qué nunca hay que asumir éxito solo porque la petición no lanzó una excepción de red. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 
-### Tema 2: Errores tipados
+### Tema 2: Errores tipados · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a distinguir con un enum propio los tres fallos reales de `confirmarEntrega` (Tema 1): sin conexión, error del servidor y PIN inválido. Prerrequisitos: Tema 1 de este módulo.
@@ -234,7 +234,7 @@ Corregí el Paso 5 restaurando `ErrorEntrega`, y agregá un cuarto caso `decodif
 #### Paso 7 · Cierre
 Entregá el `switch` exhaustivo sobre `ErrorEntrega` del Paso 4, el error genérico indiferenciado del Paso 5, y el cuarto caso agregado del Paso 6; explicá por qué el compilador puede obligarte a manejar cada caso de un enum propio, pero no de un `NSError` genérico. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 
-### Tema 3: Reintentos y cancelación
+### Tema 3: Reintentos y cancelación · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reintentar `confirmarEntrega` con backoff solo ante fallos transitorios, nunca ante un PIN inválido, y a cancelar la tarea si el conductor cierra la pantalla. Prerrequisitos: Tema 2 de este módulo.

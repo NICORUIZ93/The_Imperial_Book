@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Clases, objetos, constructores y encapsulación
+### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Las clases agrupan datos y operaciones; la encapsulación permite impedir que una guía de entrega quede en un estado imposible.
@@ -189,7 +189,7 @@ Entrega el archivo, la salida válida y el fallo reproducido. Para una clase que
 
 **Proyecto integrador:** `Guia` es el primer modelo real del motor de asignación de entregas; los módulos siguientes construyen sobre esta clase protegida. **Práctica:** modifica `Guia.java` para agregar un campo `pesoKg` validado (rechaza valores menores o iguales a cero en el constructor) y repite la ejecución para comprobar que el rechazo funciona igual que con el número vacío.
 
-### Tema 2: Herencia y sobreescritura
+### Tema 2: Herencia y sobreescritura · Intermedio · 40 min
 
 **Duración estimada:** 40 min.
 **¿Por qué es importante?** La herencia expresa una relación entre tipos y el polimorfismo permite que una misma operación use el comportamiento del objeto concreto. También practicarás cómo el compilador verifica una sobreescritura y cómo una herramienta de auditoría puede leer metadatos de un método.
@@ -399,7 +399,7 @@ Entrega la salida, la excepción reproducida y una frase que explique qué compo
 
 **Transferencia al proyecto integrador:** sustituye distintos tipos de vehículo mediante un mismo ciclo de asignación y registra qué acción queda marcada para auditoría. **Límite:** hereda solo cuando la subclase es realmente un tipo más específico del padre (una bicicleta "es un" vehículo); si solo quieres reutilizar código sin esa relación "es-un", usa composición en vez de herencia. **Práctica:** modifica `Bicicleta` (o el vehículo del ejercicio) para agregar un tercer tipo `Dron` que sobrescriba `entregar` con su propio mensaje, y confirma el despacho polimórfico al recorrer la lista de vehículos.
 
-### Tema 3: Interfaces, clases abstractas y cuándo usar cada una
+### Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Una interfaz expresa qué operación ofrece un tipo; una clase abstracta permite compartir estado o código cuando las clases sí tienen una base común.
@@ -577,7 +577,7 @@ Entrega el archivo y la salida. Justifica por qué `Confirmable` es una interfaz
 
 **Transferencia al proyecto integrador:** define un contrato de asignación que admita una implementación real y una falsa para practicar sin heredar datos innecesarios. **Práctica:** modifica `ServicioEntrega` para agregar un segundo método abstracto `costoBase()` y crea una tercera implementación concreta que lo complete junto con `minutosEstimados()`.
 
-### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso
+### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** La sobrecarga ofrece varias formas de llamar a una operación; la sobreescritura cambia el comportamiento heredado. Los modificadores limitan quién puede usar cada parte del modelo.
@@ -748,7 +748,7 @@ Ordena los cuatro niveles de menor a mayor alcance y explica por qué leer estad
 
 **Transferencia al proyecto integrador:** conserva una interfaz pública pequeña para operar el motor y mantén privados los datos que solo el modelo debe cambiar.
 
-### Tema 5: record — modelos inmutables sin boilerplate
+### Tema 5: record — modelos inmutables sin boilerplate · Intermedio · 35 min
 
 **Prerrequisitos:** Temas 1 y 4 de este módulo (constructores, encapsulación y sobreescritura). Los records se usan desde el Módulo 2; las jerarquías `sealed` que los combinan están en el Módulo 7.
 

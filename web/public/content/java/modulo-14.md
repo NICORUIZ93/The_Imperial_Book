@@ -5,7 +5,7 @@ El proyecto anterior usa concurrencia y produce un artefacto reproducible. Para 
 
 ## Aprende construyendo
 
-### Tema 1: Compartir memoria requiere orden y visibilidad
+### Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45 min
 
 **¿Por qué es importante?** varios hilos pueden observar estado compartido en momentos distintos; `volatile` aporta visibilidad, pero no convierte operaciones compuestas en atómicas.
 
@@ -107,7 +107,7 @@ java -cp out Inventario
 
 Modifica `reservar()` para que la comprobación `disponibles > 0` quede fuera del bloque `synchronized` y solo el decremento esté protegido; lanza varios hilos y explica por qué `disponibles` puede terminar en negativo.
 
-### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo
+### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 50 min
 
 **¿Por qué es importante?** el resultado de una medición puede incluir calentamiento o trabajo que el compilador elimina; usa JMH para organizar las mediciones.
 
@@ -208,13 +208,13 @@ java -jar target/benchmarks.jar -wi 2 -i 3 -f 1
 
 **Conexión con el proyecto integrador:** antes de optimizar el procesamiento concurrente del proyecto integrador (módulo 13), mide con JMH si el cambio realmente mejora algo; un `System.nanoTime()` suelto alrededor del código del proyecto puede llevarte a "optimizar" algo que la JIT ya eliminaba.
 
-**Límite:** JMH mide una operación acotada con datos preparados; no reproduce la presión real de GC, red o contención de un servicio en producción — por eso el Tema 1 insiste en comparar bajo carga real con JFR, no solo con el número que imprime JMH.
+**Límite:** JMH mide una operación acotada con datos preparados; no reproduce la presión real de GC, red o contención de un servicio en producción — por eso el Módulo 11, Tema 2 insiste en comparar bajo carga real con JFR, no solo con el número que imprime JMH.
 
 #### Practica
 
 Modifica el benchmark para quitar `Blackhole.consume` y usa solo `System.out.println` fuera del método medido; ejecuta de nuevo y explica por qué el tiempo reportado puede caer a casi cero.
 
-### Tema 3: Deserializar es permitir construcción y comportamiento
+### Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min
 
 **¿Por qué es importante?** datos serializados pueden intentar construir tipos inesperados; limitar la entrada antes de aceptar objetos es más seguro que confiar en su origen.
 
@@ -310,7 +310,7 @@ mvn test
 
 Modifica el mapper para que acepte campos desconocidos (`FAIL_ON_UNKNOWN_PROPERTIES, false`) y envía un JSON con un campo extra; confirma que se acepta en silencio y decide si eso es aceptable para tu caso.
 
-### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida
+### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min
 
 **¿Por qué es importante?** el JDK, los módulos incluidos y el proceso de actualización forman parte de lo que se despliega.
 

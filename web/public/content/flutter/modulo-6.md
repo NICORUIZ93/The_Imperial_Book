@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: shared_preferences
+### Tema 1: shared_preferences · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a persistir el filtro de zona preferido del conductor con `shared_preferences`, confirmando por qué ese mecanismo no sería apropiado para guardar la lista completa de envíos. Prerrequisitos: Módulo 5 completo.
@@ -116,7 +116,7 @@ Corregí el Paso 5 quitando la lista de envíos de `shared_preferences` por comp
 Entregá la preferencia simple persistida del Paso 4, el mal uso de shared_preferences para datos estructurados del Paso 5, y la documentación del Paso 6; explicá por qué el modelo clave-valor de `shared_preferences` no está diseñado para consultas eficientes sobre datos en volumen. Siguiente paso: estudia sqflite y Hive para la lista de envíos. Errores comunes: guardar una lista grande de objetos estructurados en `shared_preferences`, no proveer un valor por defecto al leer una preferencia que puede no existir todavía, y usar `shared_preferences` para datos sensibles sin cifrado. Fuentes oficiales: https://pub.dev/packages/shared_preferences y https://docs.flutter.dev/cookbook/persistence/key-value.
 **Implicación práctica:** `shared_preferences` no es apropiado para guardar una lista grande de objetos estructurados, dado que su modelo clave-valor simple no está diseñado para consultas eficientes sobre datos en volumen.
 
-### Tema 2: sqflite vs Hive
+### Tema 2: sqflite vs Hive · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir entre `sqflite` y Hive para cachear la lista de envíos de RutaFlow, según si necesitás consultas relacionales o simplemente guardar objetos directos. Prerrequisitos: Tema 1 de este módulo.
@@ -244,7 +244,7 @@ Corregí el Paso 5 volviendo a `sqflite` para este caso específico, y document�
 Entregá la agregación SQL del Paso 4, el costo de la alternativa con Hive del Paso 5, y el caso documentado donde Hive sí es apropiado del Paso 6; explicá el criterio concreto que usarías para elegir entre ambos la próxima vez. Siguiente paso: estudia offline-first y Firebase. Errores comunes: elegir Hive para datos que necesitan queries relacionales complejas con joins o agregaciones, elegir `sqflite` para un caso simple de objetos sin relaciones, y no medir el costo real de cargar una colección completa en memoria antes de descartar una opción. Fuentes oficiales: https://pub.dev/packages/sqflite y https://pub.dev/packages/hive.
 **Implicación práctica:** Elegir entre Hive y `sqflite` depende de si la app necesita queries relacionales complejas (apropiado para `sqflite`) o simplemente persistir y recuperar objetos directos sin relaciones complejas (más simple con Hive).
 
-### Tema 3: Offline-first y Firebase
+### Tema 3: Offline-first y Firebase · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a hacer que `ListaEnvios` lea siempre de una caja de Hive local (nunca directamente de la API), con un proceso de sincronización separado que la actualiza en segundo plano. Prerrequisitos: Tema 2 de este módulo.
@@ -428,7 +428,7 @@ Entregá el patrón offline-first del Paso 4, la pantalla rota en modo avión pr
 
 ## Laboratorio de transferencia
 
-### Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación
+### Tema 4: Restauración de formularios con RestorationMixin y una prueba de recreación · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar conservarás un campo transitorio durante una restauración del framework y lo verificarás con una prueba de widget. **Prerrequisitos:** StatefulWidget, controladores y dispose. Flutter instalado y `flutter doctor` revisado. Ejemplo independiente desde una carpeta vacía.

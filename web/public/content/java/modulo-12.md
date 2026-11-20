@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Builder — configuración paso a paso y validación
+### Tema 1: Builder — configuración paso a paso y validación · Básico · 35 min
 
 **¿Por qué es importante?** cuando un objeto tiene varios datos opcionales, Builder evita constructores largos y deja visibles las opciones elegidas.
 
@@ -101,7 +101,7 @@ java -cp out Envio
 
 **Límite:** Builder agrega una clase y varios métodos propios; para un objeto de uno o dos campos sin combinaciones que validar, un constructor directo o un `record` es más simple y no necesita este patrón.
 
-### Tema 2: Factory Method y Strategy
+### Tema 2: Factory Method y Strategy · Intermedio · 40 min
 
 **¿Por qué es importante?** separar la creación de una regla intercambiable reduce condicionales repetidos en el servicio.
 
@@ -203,7 +203,7 @@ Modifica `Tarifas.crear` para que un tipo desconocido devuelva `null` en vez de 
 
 **Límite:** Factory Method centraliza la creación por nombre, pero si las implementaciones necesitan configuración distinta entre sí (no solo un `new`), conviene un registro de proveedores en vez de un `switch` que crece indefinidamente.
 
-### Tema 3: Abstract Factory y familias de productos compatibles
+### Tema 3: Abstract Factory y familias de productos compatibles · Intermedio · 35 min
 
 **¿Por qué es importante?** una fábrica abstracta crea un grupo de componentes que comparten proveedor o configuración.
 
@@ -305,7 +305,7 @@ java -cp out Notificaciones
 
 Modifica el cliente para pedir `crearMensaje()` a `FabricaLocal` pero `crearPlantilla()` a `FabricaCloud` manualmente, y confirma el tipo de incompatibilidad que la fábrica evita cuando se usa correctamente.
 
-### Tema 4: SOLID y cuándo NO aplicar un patrón
+### Tema 4: SOLID y cuándo NO aplicar un patrón · Intermedio · 40 min
 
 **¿Por qué es importante?** SOLID ayuda a señalar responsabilidades mezcladas y dependencias rígidas; no exige crear una clase por cada línea.
 
@@ -401,7 +401,7 @@ Modifica `ServicioEnvios` para que cree `new RepositorioArchivo()` internamente 
 
 **Límite:** SOLID son heurísticas para señalar acoplamiento rígido o responsabilidades mezcladas, no una regla que exija una interfaz por cada clase; una clase con un único motivo de cambio y sin necesidad de sustitución no necesita convertirse en abstracción.
 
-### Tema 5: Prototype: copiar un objeto sin compartir sus datos
+### Tema 5: Prototype: copiar un objeto sin compartir sus datos · Intermedio · 35 min
 
 **¿Por qué es importante?** una copia independiente permite partir de una configuración base y modificarla sin contaminar la original.
 
@@ -499,7 +499,7 @@ java -cp out Paquete
 
 **Límite:** el constructor de copia de este ejemplo es una copia superficial consciente (nueva lista, mismos `String` inmutables); si `Paquete` tuviera un campo mutable anidado (otro objeto con estado propio), copiar solo la referencia externa no bastaría — hay que decidir caso por caso qué se copia en profundidad.
 
-### Tema 6: Patrones estructurales para conectar piezas existentes
+### Tema 6: Patrones estructurales para conectar piezas existentes · Intermedio · 40 min
 
 **¿Por qué es importante?** adapter, decorator y facade ayudan a integrar sistemas sin mezclar sus contratos y detalles.
 

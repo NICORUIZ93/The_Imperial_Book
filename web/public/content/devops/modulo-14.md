@@ -391,7 +391,7 @@ metadata:
 spec:
   containers:
     - name: app
-      image: nginx:1.27
+      image: nginx:1.30
 ```
 
 **Ejecuta la evaluación** (desde una terminal con `opa` y `kubectl` instalados):

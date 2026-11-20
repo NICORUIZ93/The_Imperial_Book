@@ -5,7 +5,218 @@
 
 ## Aprende construyendo
 
-### Tema 1: Swift Testing y pruebas asíncronas
+### Tema 1: Animaciones y matchedGeometryEffect · Intermedio · 35 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a animar la transición de una `TarjetaEnvio` en `ListaEnvios` hacia `DetalleEnvio`, de forma que la tarjeta parezca expandirse en vez de cambiar de golpe. Prerrequisitos: Módulo 1 completo.
+#### Paso 2 · Contexto y caso real
+Hoy, tocar una `TarjetaEnvio` navega instantáneamente a `DetalleEnvio` sin ninguna continuidad visual; el usuario pierde de vista qué tarjeta tocó exactamente.
+#### Paso 3 · Teoría, modelo mental y analogía
+`matchedGeometryEffect` vincula dos vistas distintas (una en cada pantalla) con un mismo `id` dentro de un mismo `namespace`, y SwiftUI anima la transición de tamaño y posición entre ambas — como si fuera literalmente la misma vista moviéndose.
+
+**¿Por qué es importante?** Porque una transición animada que conserva continuidad visual comunica relación espacial de una forma que un corte instantáneo no puede.
+**Conceptos clave:** `Namespace` compartido, `id` idéntico entre ambos lados de la transición.
+
+**Diagrama: matchedGeometryEffect con id compartido**
+
+```mermaid
+flowchart LR
+    A["TarjetaEnvio\n.matchedGeometryEffect(id: envio.id)"] -.->|mismo id,\nmismo namespace| B["EncabezadoEnvio\n.matchedGeometryEffect(id: envio.id)"]
+    A --> C["SwiftUI anima tamaño/posición\nentre ambas vistas"]
+    B --> C
+```
+
+En tu propio proyecto RutaFlow, crea `TransicionEnvio.swift` con **File ▸ New ▸ File ▸ Swift File** dentro del target de la app; ahí viven la lista y el detalle que comparten el namespace. Límite de la decisión: `matchedGeometryEffect` no conviene para transiciones entre vistas sin relación visual real (dos pantallas completamente distintas) — ahí una transición estándar de `NavigationStack` es más clara; reservalo específicamente cuando dos vistas distintas representan visualmente el mismo elemento de datos, como esta tarjeta que se expande.
+
+#### Paso 4 · Demostración guiada
+```swift
+import SwiftUI
+
+struct EnvioResumen: Identifiable {
+    let id: Int
+    let guia: String
+    let direccion: String
+}
+
+struct TransicionEnvio: View {
+    @Namespace private var espacioAnimacion
+    @State private var seleccionado: EnvioResumen?
+    let envios = [EnvioResumen(id: 1, guia: "RF-4471", direccion: "Calle 10 #5-20")]
+
+    var body: some View {
+        if let envio = seleccionado {
+            // En el detalle: mismo id y mismo namespace que la tarjeta de la lista.
+            VStack(alignment: .leading) {
+                Text(envio.guia).font(.largeTitle)
+                Text(envio.direccion)
+            }
+            .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
+            .onTapGesture { withAnimation { seleccionado = nil } }
+        } else {
+            // En la lista: cada tarjeta declara su geometría con el id del envío.
+            VStack {
+                ForEach(envios) { envio in
+                    Text(envio.guia)
+                        .padding()
+                        .background(.blue.opacity(0.1), in: .rect(cornerRadius: 8))
+                        .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
+                        .onTapGesture { withAnimation { seleccionado = envio } }
+                }
+            }
+        }
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: al tocar la tarjeta de la lista, el detalle se anima expandiéndose suavemente desde la posición y tamaño exactos de la tarjeta original, en vez de un corte instantáneo entre pantallas.
+#### Paso 5 · Práctica guiada
+Pista: usá un `id` distinto en cada lado (`envio.id` en la lista pero `envio.guia` en el detalle) — ese es el fallo deliberado: SwiftUI no reconoce ninguna relación entre ambas vistas, y la transición vuelve a ser un corte instantáneo sin ninguna animación, sin ningún error visible que explique por qué.
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 usando el mismo `id` (`envio.id`) en ambos lados, y agregá una segunda `matchedGeometryEffect` para animar también el ícono de estado del envío entre ambas pantallas, con su propio `id` distinto al de la tarjeta completa.
+
+**Proyecto integrador:** en el proyecto vacío de este tema, crea `TransicionEnvioView.swift` con una lista de tres envíos, una selección `@State` y un detalle que use el mismo `Namespace` y `envio.id` para tarjeta e ícono. Añade un botón para volver y lee `accessibilityReduceMotion`: cuando esté activo, cambia de vista sin animación y sin efectos geométricos. Ejecuta la apertura y el regreso con movimiento normal y con Reducir movimiento; en ambos casos debe quedar claro qué envío está seleccionado y ningún control debe quedar bloqueado por la transición.
+
+#### Paso 7 · Cierre
+Entregá la transición animada del Paso 4, la transición rota por `id` inconsistente del Paso 5, y la segunda animación agregada del Paso 6; explicá por qué `matchedGeometryEffect` exige que el `id` sea idéntico en ambos lados y qué pasa silenciosamente (sin error) cuando no lo es. Siguiente paso: estudia cómo embeber vistas de UIKit dentro de SwiftUI. Errores comunes: usar un `namespace` distinto en cada pantalla, IDs inconsistentes entre los dos lados de la transición, y animar demasiados elementos simultáneamente sin medir el impacto en el frame rate. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:) y https://developer.apple.com/documentation/swiftui/animations.
+
+### Tema 2: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min
+
+**Prerrequisito:** tema «Animaciones y matchedGeometryEffect» de este módulo.
+
+**Al finalizar podrás:** implementar un deslizamiento para marcar una entrega con `DragGesture`, una pulsación larga para ver detalles y combinarlos sin que uno bloquee al otro.
+
+**¿Por qué es importante?** Los gestos hacen que las acciones frecuentes sean rápidas, pero mal hechos son invisibles o se disparan por accidente. Hay que saber cuándo un gesto termina, cómo animar el regreso y cómo ofrecer una alternativa accesible.
+
+#### Paso 1 · Objetivo y preparación
+
+Continúa `RutaFlowApp`. Crea `FilaEntrega.swift` en el grupo `RutaFlowApp`.
+
+#### Paso 2 · Contexto y caso real
+
+Los conductores de RutaFlow marcan decenas de entregas al día. Tocar la fila, abrir el detalle y pulsar un botón tomaba tres pasos. Con un deslizamiento hacia la derecha, se marca en uno, y VoiceOver ofrece la misma acción.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+
+**Conceptos clave:** `DragGesture`, `onChanged`, `onEnded`, `translation`, `LongPressGesture`, `simultaneously`, `highPriorityGesture`, acción de accesibilidad.
+
+Un gesto se adjunta con `.gesture(...)`. `DragGesture` informa la **traslación** mientras el dedo se mueve (`onChanged`) y al soltar (`onEnded`), donde decides si la acción se completa (por ejemplo, si se arrastró más de 120 puntos) o si la fila vuelve a su lugar con una animación.
+
+Para combinar gestos:
+
+| Combinación | Efecto |
+|---|---|
+| `.simultaneously(with:)` | los dos pueden reconocerse a la vez |
+| `.sequenced(before:)` | el segundo empieza cuando termina el primero |
+| `.highPriorityGesture(_:)` | el tuyo gana sobre los gestos de la vista hija |
+
+Todo gesto necesita una **alternativa accesible**: `.accessibilityAction(named:)` expone la acción a VoiceOver.
+
+**Analogía:** un gesto es una conversación: mientras mueves el dedo, la fila escucha; al soltar, decide si entendió la orden. La analogía falla en que dos gestos pueden «hablar» a la vez y hay que decidir cuál tiene la palabra.
+
+**Límite de uso:** no pongas acciones destructivas solo detrás de un gesto: pide confirmación o permite deshacer. En listas (`List`), usa `swipeActions`, que ya resuelve el comportamiento estándar de iOS.
+
+```mermaid
+stateDiagram-v2
+    [*] --> Reposo
+    Reposo --> Arrastrando: onChanged
+    Arrastrando --> Marcada: onEnded y desplazamiento > 120
+    Arrastrando --> Reposo: onEnded y desplazamiento <= 120 (animado)
+    Reposo --> Detalle: LongPress 0.5 s
+```
+
+#### Paso 4 · Demostración guiada desde cero
+
+Archivo `academia-ios/RutaFlowApp/RutaFlowApp/FilaEntrega.swift`:
+
+```swift
+import SwiftUI
+
+struct FilaEntrega: View {
+    let codigo: String
+    var alMarcar: () -> Void
+    @State private var desplazamiento: CGFloat = 0
+    @State private var mostrandoDetalle = false
+
+    var body: some View {
+        Text(codigo)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding()
+            .background(.background, in: .rect(cornerRadius: 12))
+            .offset(x: desplazamiento)
+            .gesture(
+                DragGesture(minimumDistance: 20)
+                    .onChanged { valor in desplazamiento = max(0, valor.translation.width) }
+                    .onEnded { valor in
+                        if valor.translation.width > 120 { alMarcar() }
+                        withAnimation(.spring) { desplazamiento = 0 } // vuelve a su lugar
+                    }
+                    .simultaneously(with: LongPressGesture(minimumDuration: 0.5)
+                        .onEnded { _ in mostrandoDetalle = true })
+            )
+            .accessibilityAction(named: "Marcar como entregada", alMarcar) // alternativa para VoiceOver
+            .sheet(isPresented: $mostrandoDetalle) { Text("Detalle de \(codigo)") }
+    }
+}
+
+#Preview {
+    FilaEntrega(codigo: "ENV-42") { print("ENV-42 entregada") }
+        .padding()
+}
+```
+
+Compila y abre la vista previa con ⌥⌘↵, o ejecuta la app con ⌘R:
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+
+**Explicación por bloques:** `desplazamiento` guarda cuánto se movió la fila. `DragGesture` con distancia mínima de 20 puntos evita que un toque se confunda con un arrastre. En `onChanged` la fila sigue al dedo solo hacia la derecha; en `onEnded` se marca la entrega si se arrastró más de 120 puntos y la fila vuelve con una animación de resorte. `simultaneously` permite que la pulsación larga funcione en la misma vista. `accessibilityAction` ofrece la acción en el rotor de VoiceOver.
+
+**Resultado esperado:**
+
+```text
+Arrastrar ENV-42 más de 120 puntos a la derecha imprime «ENV-42 entregada» en la consola y la fila vuelve a su lugar.
+Arrastrar menos de 120 puntos no marca nada.
+Mantener presionado medio segundo abre la hoja con «Detalle de ENV-42».
+```
+
+**Fallo deliberado:** quita `minimumDistance: 20` y pon la fila dentro de un `ScrollView` vertical. **Error esperado:** al intentar desplazar la lista, las filas se mueven de lado y el scroll se traba. **Diagnóstico:** el arrastre de la fila captura el movimiento antes que el scroll. Usa una distancia mínima y, en listas, prefiere `swipeActions`.
+
+#### Paso 5 · Práctica guiada
+
+1. **Reproducción:** prueba el arrastre en la vista previa y ajusta el umbral.
+2. **Variación:** agrega una vibración con `.sensoryFeedback(.success, trigger:)` al marcar.
+3. **Diagnóstico:** reproduce el fallo deliberado dentro de un `ScrollView`.
+4. **Integración:** activa VoiceOver en el simulador (Accessibility Inspector) y ejecuta la acción desde el rotor.
+5. **Diseño:** escribe qué gestos usarías en la app del conductor y cuál es la alternativa visible de cada uno.
+
+**Pista:** si un gesto «no responde», revisa si otro gesto de un padre o hijo lo está capturando.
+
+#### Paso 6 · Práctica independiente
+
+Cambia la fila por un `List` con `.swipeActions` («Entregada» y «Problema») y compara con tu gesto propio: qué ganas y qué pierdes.
+
+#### Paso 7 · Cierre
+
+- [ ] Explicas `onChanged` y `onEnded`.
+- [ ] El arrastre marca la entrega solo pasado el umbral.
+- [ ] Reprodujiste el conflicto con el scroll.
+- [ ] La acción está disponible para VoiceOver.
+
+Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** ocultar acciones solo en gestos, no animar el regreso y olvidar la distancia mínima dentro de listas. **Siguiente paso:** el tema «UIViewRepresentable» integra vistas de UIKit que tienen sus propios gestos.
+
+**Transferencia al proyecto integrador «RutaFlow»:** en la lista de entregas de RutaFlow, marca entregas con deslizamiento y abre el detalle con pulsación larga, con acciones de accesibilidad equivalentes.
+
+**Fuente oficial:** [Apple — Adding interactivity with gestures](https://developer.apple.com/documentation/swiftui/adding-interactivity-with-gestures) y [Apple — Composing SwiftUI gestures](https://developer.apple.com/documentation/swiftui/composing-swiftui-gestures).
+
+### Tema 3: Swift Testing y pruebas asíncronas · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a testear que cancelar la carga de `EnviosViewModel.cargar()` a mitad de camino detiene efectivamente la tarea, en vez de dejarla sobrescribir el estado más tarde. Prerrequisitos: Módulo 9 completo.
@@ -152,7 +363,7 @@ Corregí el Paso 5 agregando `guard !Task.isCancelled else { return }` antes de 
 #### Paso 7 · Cierre
 Entregá el test de cancelación del Paso 4, el fallo por falta de chequeo del Paso 5, y el test del camino sin cancelar del Paso 6; explicá por qué testear cancelación requiere provocarla explícitamente, no inferirla de que el test "pasó rápido". Siguiente paso: estudia ViewInspector para testear la vista misma, no solo el ViewModel. Errores comunes: no verificar `Task.isCancelled` antes de efectos secundarios, cancelar sin esperar `tarea.value` (dejando el assert corriendo antes de que la cancelación surta efecto), y asumir que cancelar una `Task` detiene instantáneamente código síncrono en ejecución. Fuentes oficiales: https://developer.apple.com/documentation/swift/task y https://developer.apple.com/documentation/testing.
 
-### Tema 2: ViewInspector con criterio
+### Tema 4: ViewInspector con criterio · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a usar ViewInspector para confirmar que `ListaEnvios` muestra "Sin envíos" cuando `vm.envios` está vacío, decidiendo cuándo ese test vale más que uno de XCUITest. Prerrequisitos: Módulo 9 completo.
@@ -265,7 +476,7 @@ Corregí el Paso 5 unificando el texto a una sola versión, y agregá un segundo
 #### Paso 7 · Cierre
 Entregá el test de estructura del Paso 4, el fallo detectado en el Paso 5, y el test del caso contrario del Paso 6; explicá cuándo ViewInspector vale el esfuerzo (lógica condicional dentro del `body`) frente a cuándo un test de ViewModel ya cubre lo importante sin necesidad de inspeccionar la vista. Siguiente paso: estudia Combine avanzado. Errores comunes: usar ViewInspector para probar lógica que en realidad vive en el ViewModel, acoplar tests a detalles de implementación interna que cambian seguido, y reemplazar todos los XCUITest por ViewInspector perdiendo cobertura end-to-end real. Fuentes oficiales: https://github.com/nalexn/ViewInspector y https://developer.apple.com/documentation/swiftui.
 
-### Tema 3: Combine avanzado
+### Tema 5: Combine avanzado · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a corregir una condición de carrera en la búsqueda de guías de RutaFlow (Módulo 7), donde una respuesta vieja puede sobrescribir una más nueva, usando `switchToLatest()`. Prerrequisitos: Módulo 7 completo.
@@ -344,88 +555,7 @@ Corregí el Paso 5 restaurando `.switchToLatest()`, y escribí (con un fake de `
 #### Paso 7 · Cierre
 Entregá la cadena con `switchToLatest()` del Paso 4, la condición de carrera provocada en el Paso 5, y el test del Paso 6; explicá la diferencia entre `.flatMap` (deja correr todos los Publishers internos en paralelo) y `.switchToLatest()` (cancela el anterior ante cada nuevo valor). Siguiente paso: estudia animaciones con matchedGeometryEffect. Errores comunes: usar `.flatMap` sin límite cuando en realidad se necesita cancelar resultados obsoletos, no testear explícitamente el caso de respuesta fuera de orden, y confundir `switchToLatest` con "la búsqueda más rápida gana" (en realidad cancela, no compite). Fuentes oficiales: https://developer.apple.com/documentation/combine/publisher/switchtolatest() y https://developer.apple.com/documentation/combine.
 
-### Tema 4: Animaciones y matchedGeometryEffect
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a animar la transición de una `TarjetaEnvio` en `ListaEnvios` hacia `DetalleEnvio`, de forma que la tarjeta parezca expandirse en vez de cambiar de golpe. Prerrequisitos: Módulo 1 completo.
-#### Paso 2 · Contexto y caso real
-Hoy, tocar una `TarjetaEnvio` navega instantáneamente a `DetalleEnvio` sin ninguna continuidad visual; el usuario pierde de vista qué tarjeta tocó exactamente.
-#### Paso 3 · Teoría, modelo mental y analogía
-`matchedGeometryEffect` vincula dos vistas distintas (una en cada pantalla) con un mismo `id` dentro de un mismo `namespace`, y SwiftUI anima la transición de tamaño y posición entre ambas — como si fuera literalmente la misma vista moviéndose.
-
-**¿Por qué es importante?** Porque una transición animada que conserva continuidad visual comunica relación espacial de una forma que un corte instantáneo no puede.
-**Conceptos clave:** `Namespace` compartido, `id` idéntico entre ambos lados de la transición.
-
-**Diagrama: matchedGeometryEffect con id compartido**
-
-```mermaid
-flowchart LR
-    A["TarjetaEnvio\n.matchedGeometryEffect(id: envio.id)"] -.->|mismo id,\nmismo namespace| B["EncabezadoEnvio\n.matchedGeometryEffect(id: envio.id)"]
-    A --> C["SwiftUI anima tamaño/posición\nentre ambas vistas"]
-    B --> C
-```
-
-En tu propio proyecto RutaFlow, crea `TransicionEnvio.swift` con **File ▸ New ▸ File ▸ Swift File** dentro del target de la app; ahí viven la lista y el detalle que comparten el namespace. Límite de la decisión: `matchedGeometryEffect` no conviene para transiciones entre vistas sin relación visual real (dos pantallas completamente distintas) — ahí una transición estándar de `NavigationStack` es más clara; reservalo específicamente cuando dos vistas distintas representan visualmente el mismo elemento de datos, como esta tarjeta que se expande.
-
-#### Paso 4 · Demostración guiada
-```swift
-import SwiftUI
-
-struct EnvioResumen: Identifiable {
-    let id: Int
-    let guia: String
-    let direccion: String
-}
-
-struct TransicionEnvio: View {
-    @Namespace private var espacioAnimacion
-    @State private var seleccionado: EnvioResumen?
-    let envios = [EnvioResumen(id: 1, guia: "RF-4471", direccion: "Calle 10 #5-20")]
-
-    var body: some View {
-        if let envio = seleccionado {
-            // En el detalle: mismo id y mismo namespace que la tarjeta de la lista.
-            VStack(alignment: .leading) {
-                Text(envio.guia).font(.largeTitle)
-                Text(envio.direccion)
-            }
-            .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
-            .onTapGesture { withAnimation { seleccionado = nil } }
-        } else {
-            // En la lista: cada tarjeta declara su geometría con el id del envío.
-            VStack {
-                ForEach(envios) { envio in
-                    Text(envio.guia)
-                        .padding()
-                        .background(.blue.opacity(0.1), in: .rect(cornerRadius: 8))
-                        .matchedGeometryEffect(id: envio.id, in: espacioAnimacion)
-                        .onTapGesture { withAnimation { seleccionado = envio } }
-                }
-            }
-        }
-    }
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: al tocar la tarjeta de la lista, el detalle se anima expandiéndose suavemente desde la posición y tamaño exactos de la tarjeta original, en vez de un corte instantáneo entre pantallas.
-#### Paso 5 · Práctica guiada
-Pista: usá un `id` distinto en cada lado (`envio.id` en la lista pero `envio.guia` en el detalle) — ese es el fallo deliberado: SwiftUI no reconoce ninguna relación entre ambas vistas, y la transición vuelve a ser un corte instantáneo sin ninguna animación, sin ningún error visible que explique por qué.
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 usando el mismo `id` (`envio.id`) en ambos lados, y agregá una segunda `matchedGeometryEffect` para animar también el ícono de estado del envío entre ambas pantallas, con su propio `id` distinto al de la tarjeta completa.
-
-**Proyecto integrador:** en el proyecto vacío de este tema, crea `TransicionEnvioView.swift` con una lista de tres envíos, una selección `@State` y un detalle que use el mismo `Namespace` y `envio.id` para tarjeta e ícono. Añade un botón para volver y lee `accessibilityReduceMotion`: cuando esté activo, cambia de vista sin animación y sin efectos geométricos. Ejecuta la apertura y el regreso con movimiento normal y con Reducir movimiento; en ambos casos debe quedar claro qué envío está seleccionado y ningún control debe quedar bloqueado por la transición.
-
-#### Paso 7 · Cierre
-Entregá la transición animada del Paso 4, la transición rota por `id` inconsistente del Paso 5, y la segunda animación agregada del Paso 6; explicá por qué `matchedGeometryEffect` exige que el `id` sea idéntico en ambos lados y qué pasa silenciosamente (sin error) cuando no lo es. Siguiente paso: estudia cómo embeber vistas de UIKit dentro de SwiftUI. Errores comunes: usar un `namespace` distinto en cada pantalla, IDs inconsistentes entre los dos lados de la transición, y animar demasiados elementos simultáneamente sin medir el impacto en el frame rate. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:) y https://developer.apple.com/documentation/swiftui/animations.
-
-### Tema 5: UIViewRepresentable
+### Tema 6: UIViewRepresentable · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a envolver un `MKMapView` (UIKit) dentro de SwiftUI con `UIViewRepresentable`, mostrando la ubicación de los envíos de una ruta de RutaFlow. Prerrequisitos: Módulo 10 completo.
@@ -495,7 +625,7 @@ Corregí el Paso 5 devolviendo la lógica de anotaciones a `updateUIView`, y agr
 #### Paso 7 · Cierre
 Entregá el `UIViewRepresentable` del Paso 4, el mapa congelado del Paso 5, y el `Coordinator` con delegate del Paso 6; explicá la diferencia entre qué código corre una sola vez (`makeUIView`) y qué código debe correr en cada actualización de estado (`updateUIView`). Siguiente paso: estudia `UIViewControllerRepresentable` para envolver controladores completos. Errores comunes: poner lógica dependiente del estado en `makeUIView` en vez de `updateUIView`, olvidar limpiar anotaciones viejas antes de agregar las nuevas, y no implementar un Coordinator cuando la vista de UIKit necesita un delegate. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/uiviewrepresentable y https://developer.apple.com/documentation/mapkit/mkmapview.
 
-### Tema 6: UIViewControllerRepresentable y Coordinator
+### Tema 7: UIViewControllerRepresentable y Coordinator · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a envolver `UIImagePickerController` (para fotografiar la prueba de entrega) con `UIViewControllerRepresentable`, usando un `Coordinator` para recibir la foto de vuelta en SwiftUI. Prerrequisitos: Tema 5 de este módulo.
@@ -562,10 +692,10 @@ Corregí el Paso 5 restaurando la asignación del delegate, y agregá el método
 #### Paso 7 · Cierre
 Entregá el picker funcional del Paso 4, el fallo silencioso por delegate faltante del Paso 5, y el manejo de cancelación del Paso 6; explicá por qué un `UIViewController` con delegate de UIKit necesita específicamente un `Coordinator` (una clase), y no alcanzaría con una closure como en integraciones más simples. Siguiente paso: cerrá el módulo integrando esta pantalla al flujo de confirmación de entrega del proyecto integrador. Errores comunes: olvidar asignar el delegate al Coordinator, no manejar el caso de cancelación del picker, y actualizar estado de SwiftUI directamente desde el Coordinator sin pasar por una `Binding` o callback explícito. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/uiviewcontrollerrepresentable y https://developer.apple.com/documentation/uikit/uiimagepickercontroller.
 
-### Tema 7: Core ML y Vision — inferencia en el dispositivo
+### Tema 8: Core ML y Vision — inferencia en el dispositivo · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a leer el texto de una etiqueta de envío fotografiada con la cámara del Tema 6, usando Vision para el reconocimiento de texto (OCR) que ya viene integrado en el sistema, sin enviar la imagen a ningún servidor. Prerrequisitos: Tema 6 de este módulo (ya tienes la `UIImage` de la foto). No necesitas descargar ningún modelo: `VNRecognizeTextRequest` usa un modelo de Vision incluido en iOS.
+Al finalizar vas a leer el texto de una etiqueta de envío fotografiada con la cámara del Tema 7, usando Vision para el reconocimiento de texto (OCR) que ya viene integrado en el sistema, sin enviar la imagen a ningún servidor. Prerrequisitos: Tema 7 de este módulo (ya tienes la `UIImage` de la foto). No necesitas descargar ningún modelo: `VNRecognizeTextRequest` usa un modelo de Vision incluido en iOS.
 
 #### Paso 2 · Contexto y caso real
 En RutaFlow, el conductor fotografía la etiqueta del paquete y la app debe extraer el número de guía para confirmarlo contra la entrega esperada. Enviar cada foto a un servidor de OCR gastaría datos del conductor, no funcionaría sin cobertura y expondría información del destinatario; hacer el reconocimiento en el propio teléfono resuelve los tres problemas a la vez.
@@ -582,7 +712,7 @@ La inferencia en el dispositivo ejecuta un modelo ya entrenado localmente: la fo
 
 ```mermaid
 flowchart LR
-    A["UIImage de la etiqueta\n(cámara, Tema 6)"] -->|cgImage| B["VNImageRequestHandler"]
+    A["UIImage de la etiqueta\n(cámara, Tema 7)"] -->|cgImage| B["VNImageRequestHandler"]
     B -->|perform| C["VNRecognizeTextRequest\n(modelo de Vision del sistema)"]
     C -->|mejor candidato por región| D["Líneas de texto + confianza"]
     D -->|validar patrón| E["Número de guía confirmado"]
@@ -617,7 +747,7 @@ enum OCREntrega {
 }
 ```
 
-**Ejecuta el ejemplo:** parte de otra carpeta vacía y crea el proyecto en Xcode con **File ▸ New ▸ Project ▸ App**, interfaz SwiftUI y nombre `RutaFlowApp`. Escribe el código en tu propio `OCREntrega.swift`, toma tú mismo una fotografía de una etiqueta para esta práctica y llama a `leerEtiqueta` desde una vista con esa imagen; no necesitas reutilizar la foto ni el proyecto del Tema 6. Confirma que compila con:
+**Ejecuta el ejemplo:** parte de otra carpeta vacía y crea el proyecto en Xcode con **File ▸ New ▸ Project ▸ App**, interfaz SwiftUI y nombre `RutaFlowApp`. Escribe el código en tu propio `OCREntrega.swift`, toma tú mismo una fotografía de una etiqueta para esta práctica y llama a `leerEtiqueta` desde una vista con esa imagen; no necesitas reutilizar la foto ni el proyecto del Tema 7. Confirma que compila con:
 
 ```bash
 xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
@@ -636,136 +766,6 @@ Corregí el Paso 5 volviendo a `.accurate`, y agregá un filtro que, de todas la
 
 #### Paso 7 · Cierre
 Entregá el OCR funcional del Paso 4, la degradación de precisión con `.fast` del Paso 5, y el filtro de número de guía del Paso 6; explicá por qué hacer la inferencia en el dispositivo protege los datos del destinatario y funciona sin conexión, y por qué aun así el resultado del OCR debe validarse antes de usarlo como identificador. Siguiente paso: cuando una tarea no tenga un modelo de sistema en Vision (por ejemplo, clasificar el estado del paquete con un modelo propio), entrená un `.mlmodel` con Create ML e intégralo con Core ML siguiendo el mismo patrón de inferencia local. Errores comunes: usar `.fast` para texto que es un identificador exacto, asumir que el OCR nunca se equivoca y usar su salida sin validar, y bloquear el hilo principal con `handler.perform` en imágenes grandes en vez de ejecutarlo fuera de la UI. Fuentes oficiales: https://developer.apple.com/documentation/vision/recognizing-text-in-images y https://developer.apple.com/documentation/coreml.
-
-### Tema 8: Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos · Intermedio · 40 min
-
-**Prerrequisito:** tema «Animaciones y matchedGeometryEffect» de este módulo.
-
-**Al finalizar podrás:** implementar un deslizamiento para marcar una entrega con `DragGesture`, una pulsación larga para ver detalles y combinarlos sin que uno bloquee al otro.
-
-**¿Por qué es importante?** Los gestos hacen que las acciones frecuentes sean rápidas, pero mal hechos son invisibles o se disparan por accidente. Hay que saber cuándo un gesto termina, cómo animar el regreso y cómo ofrecer una alternativa accesible.
-
-#### Paso 1 · Objetivo y preparación
-
-Continúa `RutaFlowApp`. Crea `FilaEntrega.swift` en el grupo `RutaFlowApp`.
-
-#### Paso 2 · Contexto y caso real
-
-Los conductores de RutaFlow marcan decenas de entregas al día. Tocar la fila, abrir el detalle y pulsar un botón tomaba tres pasos. Con un deslizamiento hacia la derecha, se marca en uno, y VoiceOver ofrece la misma acción.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-
-**Conceptos clave:** `DragGesture`, `onChanged`, `onEnded`, `translation`, `LongPressGesture`, `simultaneously`, `highPriorityGesture`, acción de accesibilidad.
-
-Un gesto se adjunta con `.gesture(...)`. `DragGesture` informa la **traslación** mientras el dedo se mueve (`onChanged`) y al soltar (`onEnded`), donde decides si la acción se completa (por ejemplo, si se arrastró más de 120 puntos) o si la fila vuelve a su lugar con una animación.
-
-Para combinar gestos:
-
-| Combinación | Efecto |
-|---|---|
-| `.simultaneously(with:)` | los dos pueden reconocerse a la vez |
-| `.sequenced(before:)` | el segundo empieza cuando termina el primero |
-| `.highPriorityGesture(_:)` | el tuyo gana sobre los gestos de la vista hija |
-
-Todo gesto necesita una **alternativa accesible**: `.accessibilityAction(named:)` expone la acción a VoiceOver.
-
-**Analogía:** un gesto es una conversación: mientras mueves el dedo, la fila escucha; al soltar, decide si entendió la orden. La analogía falla en que dos gestos pueden «hablar» a la vez y hay que decidir cuál tiene la palabra.
-
-**Límite de uso:** no pongas acciones destructivas solo detrás de un gesto: pide confirmación o permite deshacer. En listas (`List`), usa `swipeActions`, que ya resuelve el comportamiento estándar de iOS.
-
-```mermaid
-stateDiagram-v2
-    [*] --> Reposo
-    Reposo --> Arrastrando: onChanged
-    Arrastrando --> Marcada: onEnded y desplazamiento > 120
-    Arrastrando --> Reposo: onEnded y desplazamiento <= 120 (animado)
-    Reposo --> Detalle: LongPress 0.5 s
-```
-
-#### Paso 4 · Demostración guiada desde cero
-
-Archivo `academia-ios/RutaFlowApp/RutaFlowApp/FilaEntrega.swift`:
-
-```swift
-import SwiftUI
-
-struct FilaEntrega: View {
-    let codigo: String
-    var alMarcar: () -> Void
-    @State private var desplazamiento: CGFloat = 0
-    @State private var mostrandoDetalle = false
-
-    var body: some View {
-        Text(codigo)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding()
-            .background(.background, in: .rect(cornerRadius: 12))
-            .offset(x: desplazamiento)
-            .gesture(
-                DragGesture(minimumDistance: 20)
-                    .onChanged { valor in desplazamiento = max(0, valor.translation.width) }
-                    .onEnded { valor in
-                        if valor.translation.width > 120 { alMarcar() }
-                        withAnimation(.spring) { desplazamiento = 0 } // vuelve a su lugar
-                    }
-                    .simultaneously(with: LongPressGesture(minimumDuration: 0.5)
-                        .onEnded { _ in mostrandoDetalle = true })
-            )
-            .accessibilityAction(named: "Marcar como entregada", alMarcar) // alternativa para VoiceOver
-            .sheet(isPresented: $mostrandoDetalle) { Text("Detalle de \(codigo)") }
-    }
-}
-
-#Preview {
-    FilaEntrega(codigo: "ENV-42") { print("ENV-42 entregada") }
-        .padding()
-}
-```
-
-Compila y abre la vista previa con ⌥⌘↵, o ejecuta la app con ⌘R:
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-```
-
-**Explicación por bloques:** `desplazamiento` guarda cuánto se movió la fila. `DragGesture` con distancia mínima de 20 puntos evita que un toque se confunda con un arrastre. En `onChanged` la fila sigue al dedo solo hacia la derecha; en `onEnded` se marca la entrega si se arrastró más de 120 puntos y la fila vuelve con una animación de resorte. `simultaneously` permite que la pulsación larga funcione en la misma vista. `accessibilityAction` ofrece la acción en el rotor de VoiceOver.
-
-**Resultado esperado:**
-
-```text
-Arrastrar ENV-42 más de 120 puntos a la derecha imprime «ENV-42 entregada» en la consola y la fila vuelve a su lugar.
-Arrastrar menos de 120 puntos no marca nada.
-Mantener presionado medio segundo abre la hoja con «Detalle de ENV-42».
-```
-
-**Fallo deliberado:** quita `minimumDistance: 20` y pon la fila dentro de un `ScrollView` vertical. **Error esperado:** al intentar desplazar la lista, las filas se mueven de lado y el scroll se traba. **Diagnóstico:** el arrastre de la fila captura el movimiento antes que el scroll. Usa una distancia mínima y, en listas, prefiere `swipeActions`.
-
-#### Paso 5 · Práctica guiada
-
-1. **Reproducción:** prueba el arrastre en la vista previa y ajusta el umbral.
-2. **Variación:** agrega una vibración con `.sensoryFeedback(.success, trigger:)` al marcar.
-3. **Diagnóstico:** reproduce el fallo deliberado dentro de un `ScrollView`.
-4. **Integración:** activa VoiceOver en el simulador (Accessibility Inspector) y ejecuta la acción desde el rotor.
-5. **Diseño:** escribe qué gestos usarías en la app del conductor y cuál es la alternativa visible de cada uno.
-
-**Pista:** si un gesto «no responde», revisa si otro gesto de un padre o hijo lo está capturando.
-
-#### Paso 6 · Práctica independiente
-
-Cambia la fila por un `List` con `.swipeActions` («Entregada» y «Problema») y compara con tu gesto propio: qué ganas y qué pierdes.
-
-#### Paso 7 · Cierre
-
-- [ ] Explicas `onChanged` y `onEnded`.
-- [ ] El arrastre marca la entrega solo pasado el umbral.
-- [ ] Reprodujiste el conflicto con el scroll.
-- [ ] La acción está disponible para VoiceOver.
-
-Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** ocultar acciones solo en gestos, no animar el regreso y olvidar la distancia mínima dentro de listas. **Siguiente paso:** el tema «UIViewRepresentable» integra vistas de UIKit que tienen sus propios gestos.
-
-**Transferencia al proyecto integrador «RutaFlow»:** en la lista de entregas de RutaFlow, marca entregas con deslizamiento y abre el detalle con pulsación larga, con acciones de accesibilidad equivalentes.
-
-**Fuente oficial:** [Apple — Adding interactivity with gestures](https://developer.apple.com/documentation/swiftui/adding-interactivity-with-gestures) y [Apple — Composing SwiftUI gestures](https://developer.apple.com/documentation/swiftui/composing-swiftui-gestures).
 
 ### Tema 9: WidgetKit: un widget con las entregas pendientes del día · Avanzado · 45 min
 

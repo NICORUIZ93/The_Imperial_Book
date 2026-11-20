@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Checked vs unchecked exceptions
+### Tema 1: Checked vs unchecked exceptions · Básico · 30 min
 
 **Duración estimada:** 30 min. **Prerrequisitos:** M0 T1 (compilar y ejecutar), M2 T1 (listas y tamaño).
 
@@ -178,7 +178,7 @@ Clasifica `IOException` y `IllegalArgumentException` y explica qué capa puede r
 
 **Fuentes oficiales:** [Java exceptions](https://dev.java/learn/exceptions/), [clases de excepción](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/lang/Exception.html).
 
-### Tema 2: try-with-resources
+### Tema 2: try-with-resources · Intermedio · 40 min
 
 **Duración estimada:** 40 min. **Prerrequisitos:** M3 T1 (checked y propagación).
 
@@ -382,7 +382,7 @@ Quita temporalmente el `throw` del cuerpo y deja `System.out.println("trabajo co
 
 **Fuente oficial:** [Java try-with-resources](https://docs.oracle.com/javase/tutorial/essential/exceptions/tryResourceClose.html).
 
-### Tema 3: Excepciones personalizadas y no tragar excepciones
+### Tema 3: Excepciones personalizadas y no tragar excepciones · Avanzado · 40 min
 
 **Duración estimada:** 40 min. **Prerrequisitos:** M1 T1 (clases y constructores), M3 T1 (checked y unchecked).
 

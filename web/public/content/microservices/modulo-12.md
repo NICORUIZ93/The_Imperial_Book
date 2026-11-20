@@ -1200,7 +1200,7 @@ Módulo 8, Lección 2 de 4 · Fase 1 · 2,5 h · Laboratorio `examples/microserv
 #### 2. PRERREQUISITOS
 
 - Tema anterior (TimeLimiter y la diferencia entre cortar la espera y cancelar el trabajo).
-- Módulo 7, tema 5 (BFF que compone llamadas) y Módulo 0.4 (cabeceras HTTP, códigos 504).
+- Módulo 7, ficha del BFF (BFF que compone llamadas) y Módulo 0.4 (cabeceras HTTP, códigos 504).
 - Saber qué es un instante *epoch* en milisegundos (`System.currentTimeMillis()`).
 
 #### 3. OBJETIVO DE APRENDIZAJE
@@ -1887,7 +1887,7 @@ Módulo 8, Lección 3 de 4 · Fase 1 · 2 h · Laboratorio `examples/microservic
 
 #### 2. PRERREQUISITOS
 
-- Temas 1 y 2 de este módulo (circuit breaker, `fallbackMethod`, presupuesto y respuestas degradadas).
+- fichas 1 y 2 de este módulo (circuit breaker, `fallbackMethod`, presupuesto y respuestas degradadas).
 - Módulo 4: caché y datos obsoletos (TTL); Módulo 2: `@ExceptionHandler` y códigos HTTP.
 - Distinguir lectura de escritura (consultar stock frente a reservar stock).
 

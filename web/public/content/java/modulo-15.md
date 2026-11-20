@@ -4,7 +4,7 @@ Este capítulo endurece el proyecto multi-módulo que creaste en el [Módulo 8, 
 
 ## Aprende construyendo
 
-### Tema 1: Maven avanzado
+### Tema 1: Maven avanzado · Intermedio · 40 min
 
 **¿Por qué es importante?** el reactor y el control de versiones permiten fallar el build antes de que un módulo publique dependencias incompatibles.
 
@@ -92,11 +92,11 @@ mvn -pl app -am clean verify
 
 Modifica `ejemplo-maven-avanzado/pom.xml` para usar el rango `[99,)` en `requireJavaVersion` y ejecuta `mvn validate`; confirma que Enforcer rechaza el build antes de intentar compilar nada.
 
-### Tema 2: Gradle y builds reproducibles
+### Tema 2: Gradle y builds reproducibles · Avanzado · 45 min
 
 **¿Por qué es importante?** un mismo commit debe producir el mismo artefacto y usar dependencias verificables en una laptop y en CI.
 
-#### Subtema 2.1: Genera y usa el Gradle Wrapper · 10 min
+#### Subtema 5.1: Genera y usa el Gradle Wrapper · 10 min
 
 **1. Contexto**
 
@@ -118,7 +118,7 @@ El wrapper fija Gradle; la toolchain define el JDK usado para compilar. El JDK q
 
 Guarda salida del wrapper y resultado del build.
 
-#### Subtema 2.2: Repite el build y compara artefactos · 10 min
+#### Subtema 5.2: Repite el build y compara artefactos · 10 min
 
 **1. Contexto**
 
@@ -140,7 +140,7 @@ Reproducibilidad depende de entradas declaradas y pasos deterministas, no solo d
 
 Guarda hashes antes y después de quitar el dato variable.
 
-#### Subtema 2.3: Verifica dependencias descargadas · 10 min
+#### Subtema 5.3: Verifica dependencias descargadas · 10 min
 
 **1. Contexto**
 
@@ -181,11 +181,11 @@ gradle wrapper --gradle-version 9.1.0
 
 Modifica `build.gradle.kts` para incluir la hora actual (`System.currentTimeMillis()`) en el manifest del JAR, ejecuta `./gradlew clean build` dos veces y compara los hashes SHA-256 antes y después de revertir el cambio.
 
-### Tema 3: Proyectos multi-módulo sin ciclos
+### Tema 3: Proyectos multi-módulo sin ciclos · Intermedio · 40 min
 
 **¿Por qué es importante?** límites protegidos evitan que reglas de negocio dependan directamente de bases de datos y frameworks.
 
-#### Subtema 3.1: Escribe una regla de dependencias con ArchUnit · 10 min
+#### Subtema 2.1: Escribe una regla de dependencias con ArchUnit · 10 min
 
 **1. Contexto**
 
@@ -207,7 +207,7 @@ ArchUnit importa bytecode compilado y prueba reglas arquitectónicas con la mism
 
 Guarda el fallo y el test de arquitectura. Fuente: [ArchUnit](https://www.archunit.org/getting-started).
 
-#### Subtema 3.2: Detecta ciclos entre paquetes · 10 min
+#### Subtema 2.2: Detecta ciclos entre paquetes · 10 min
 
 **1. Contexto**
 
@@ -229,7 +229,7 @@ Un ciclo elimina un orden claro para compilar y cambiar módulos de forma indepe
 
 Guarda el grafo antes y después de romper el ciclo.
 
-#### Subtema 3.3: Comprueba el grafo del build · 10 min
+#### Subtema 2.3: Comprueba el grafo del build · 10 min
 
 **1. Contexto**
 
@@ -383,7 +383,7 @@ Ejecuta:
 
 Modifica el mock para que `notificacion.enviar(...)` también se llame una segunda vez dentro del caso de uso, y confirma con `verifyNoMoreInteractions` si tu prueba empieza a fallar aunque el comportamiento visible para el usuario no cambió.
 
-### Tema 5: Pruebas de integración reproducibles
+### Tema 5: Pruebas de integración reproducibles · Avanzado · 45 min
 
 **¿Por qué es importante?** la base real puede interpretar tipos, SQL y transacciones distinto a un mock.
 
@@ -408,7 +408,7 @@ tasks.register<Test>("integrationTest") {
 
 Fuentes: [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [Jupiter](https://java.testcontainers.org/test_framework_integration/junit_5/).
 
-#### Subtema 5.1: Levanta PostgreSQL al ejecutar el test · 10 min
+#### Subtema 6.1: Levanta PostgreSQL al ejecutar el test · 10 min
 
 **1. Contexto**
 
@@ -430,7 +430,7 @@ La prueba usa un servicio real en contenedor aislado, no un mock del driver.
 
 Guarda log de la versión de imagen y cierre del contenedor.
 
-#### Subtema 5.2: Prueba el SQL y la migración reales · 10 min
+#### Subtema 6.2: Prueba el SQL y la migración reales · 10 min
 
 **1. Contexto**
 
@@ -452,7 +452,7 @@ Una base real detecta diferencias de dialecto y tipos que no aparecen con una im
 
 Guarda el resultado antes y después de reparar el nombre de columna.
 
-#### Subtema 5.3: Repite la prueba sin compartir estado · 10 min
+#### Subtema 6.3: Repite la prueba sin compartir estado · 10 min
 
 **1. Contexto**
 
@@ -486,15 +486,15 @@ Ejecuta:
 
 #### Practica
 
-Modifica el nombre de la columna `monto` a `montoo` en la consulta JDBC del Subtema 5.2, ejecuta `./gradlew integrationTest` y confirma que PostgreSQL real reporta la columna inexistente con un mensaje distinto al que daría un mock.
+Modifica el nombre de la columna `monto` a `montoo` en la consulta JDBC del Subtema 6.2, ejecuta `./gradlew integrationTest` y confirma que PostgreSQL real reporta la columna inexistente con un mensaje distinto al que daría un mock.
 
-### Tema 6: SLF4J, Logback, MDC y logging estructurado
+### Tema 6: SLF4J, Logback, MDC y logging estructurado · Intermedio · 40 min
 
 **¿Por qué es importante?** logs correlacionados ayudan a seguir una solicitud sin registrar secretos ni mezclar operaciones en hilos reutilizados.
 
 **Preparación:** añade `implementation("org.slf4j:slf4j-api:2.0.18")` y `runtimeOnly("ch.qos.logback:logback-classic:1.6.6")`. El ejemplo emite pares key-value con `%kvp`; no necesita un encoder JSON adicional. La versión de Logback contiene correcciones de seguridad recientes; revisa sus [notas oficiales](https://github.com/qos-ch/logback/releases).
 
-#### Subtema 6.1: Emite campos estructurados · 10 min
+#### Subtema 4.1: Emite campos estructurados · 10 min
 
 **1. Contexto**
 
@@ -516,7 +516,7 @@ SLF4J es la fachada; Logback produce los eventos y define su formato.
 
 Guarda una línea JSON de ejemplo sin secretos.
 
-#### Subtema 6.2: Correlaciona solicitudes con MDC · 10 min
+#### Subtema 4.2: Correlaciona solicitudes con MDC · 10 min
 
 **1. Contexto**
 
@@ -538,7 +538,7 @@ MDC normalmente asocia contexto al hilo. Para trabajo asíncrono hay que propaga
 
 Guarda dos eventos y confirma que no comparten el ID.
 
-#### Subtema 6.3: Evita registrar el mismo error en todas las capas · 10 min
+#### Subtema 4.3: Evita registrar el mismo error en todas las capas · 10 min
 
 **1. Contexto**
 

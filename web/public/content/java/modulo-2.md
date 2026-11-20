@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: List, Set, Map y sus implementaciones
+### Tema 1: List, Set, Map y sus implementaciones · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Una colección organiza datos según cómo los vas a consultar: por posición, sin duplicados o mediante una clave.
@@ -580,7 +580,7 @@ System.out.println("get tras mutar = " + mapa.______(clave));
 
 **Transferencia al proyecto integrador:** la caché de guías del proyecto integrador del Módulo 13 usará una clave inmutable; este tema es la justificación escrita de esa decisión.
 
-### Tema 4: Genéricos, wildcards y type erasure
+### Tema 4: Genéricos, wildcards y type erasure · Avanzado · 40 min
 
 **Duración estimada:** 40 min.
 **¿Por qué es importante?** Los genéricos hacen que el compilador detecte mezclas de tipos antes de ejecutar; los wildcards dejan aceptar familias de tipos sin perder esa seguridad.
@@ -773,7 +773,7 @@ Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y
 
 **Transferencia al proyecto integrador:** implementa un repositorio genérico que use tipos concretos seguros y consulta con wildcards cuando el consumidor solo necesite leer o agregar datos. **Práctica:** agrega un segundo tipo de parámetro a `Caja<T>` (por ejemplo una etiqueta `Caja<T, E>`) y confirma con `instanceof Caja<?, ?>` que ambos parámetros siguen borrados en tiempo de ejecución.
 
-### Tema 5: Comparable vs Comparator, e iteración
+### Tema 5: Comparable vs Comparator, e iteración · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** El orden natural sirve cuando una clase tiene un criterio principal; un Comparator permite cambiarlo para una vista concreta. La iteración permite procesar colecciones sin depender de su implementación.

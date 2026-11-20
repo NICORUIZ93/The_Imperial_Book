@@ -5,7 +5,84 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: React Hook Form y el problema del re-render por tecla
+### Tema 1: Eventos sintéticos · Básico · 35 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a manejar el envío del formulario de registro de envíos con `e.preventDefault()`, confirmando que ese método funciona igual sin importar el navegador. Prerrequisitos: Módulo 2 completo.
+
+#### Paso 2 · Contexto y caso real
+Sin llamar expresamente a `preventDefault()`, enviar el formulario de registro de envíos recarga la página completa (el comportamiento nativo por defecto de un `<form>`), perdiendo cualquier estado de React en el proceso.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+React envuelve los eventos nativos del DOM en un `SyntheticEvent` con una API consistente entre navegadores — un traductor universal que normaliza mensajes de distintos "idiomas nativos" en uno común.
+
+**Diagrama:**
+
+```mermaid
+graph LR
+    A["Evento nativo<br/>del navegador"] -->|Envuelto| B["SyntheticEvent"]
+    B -->|API consistente| C["preventDefault"]
+    B -->|API consistente| D["target.value"]
+    B -->|API consistente| E["currentTarget"]
+    
+    F["Sin preventDefault"] -->|Recarga| G["Estado perdido"]
+    H["Con preventDefault"] -->|Sincrónico| I["Estado preservado"]
+    
+    style B fill:#e3f2fd
+    style G fill:#ffebee
+    style I fill:#e8f5e9
+```
+
+* Cuándo: usar `preventDefault` siempre en formularios para evitar recarga del navegador; `SyntheticEvent` garantiza consistencia entre navegadores en vez de depender de APIs nativas inconsistentes.
+
+**¿Por qué es importante?** El envoltorio de eventos sintéticos garantiza una API de eventos consistente entre navegadores, y sin `preventDefault` el comportamiento nativo del navegador destruye todo el estado de React acumulado.
+
+#### Paso 4 · Demostración guiada desde cero
+```jsx
+import { useState } from 'react';
+
+export default function App() {
+  const [registrados, setRegistrados] = useState([]);
+
+  function manejarSubmit(e) {
+    e.preventDefault(); // evita la recarga completa de la página
+    const datos = new FormData(e.currentTarget);
+    setRegistrados(prev => [...prev, datos.get('guia')]);
+    e.currentTarget.reset();
+  }
+
+  return (
+    <>
+      <form onSubmit={manejarSubmit}>
+        <label>Guía <input name="guia" required /></label>
+        <button type="submit">Enviar</button>
+      </form>
+      <p>Registrados en esta sesión: {registrados.join(', ') || 'ninguno'}</p>
+    </>
+  );
+}
+```
+
+**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
+
+```bash
+npm run dev
+```
+
+Resultado esperado: al enviar el formulario, la página no se recarga (no aparece el parpadeo característico de una recarga completa), y el estado de React se conserva: la lista «Registrados en esta sesión» acumula cada guía enviada. Este ejemplo usa un formulario sin librerías a propósito: el `handleSubmit` de React Hook Form (Tema 1) ya llama a `preventDefault()` por ti.
+
+Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `RF-4471` en el campo «Guía», pulsa «Enviar» con `userEvent` y comprueba que aparece «Registrados en esta sesión: RF-4471». Después ejecuta `npm test` (cuando reemplaces `App.jsx` en el próximo tema, borra esta prueba o muévela junto al componente).
+
+#### Paso 5 · Práctica guiada
+Pista: quita `e.preventDefault()` del manejador — ese es el fallo deliberado: al tocar "Enviar", el navegador recarga la página completa con su comportamiento nativo (verás `?guia=...` en la barra de direcciones), perdiendo instantáneamente todo el estado de React: la lista de registrados vuelve a «ninguno».
+
+#### Paso 6 · Práctica independiente
+Corrige el Paso 5 restaurando `e.preventDefault()`, y agrega un campo de peso con un manejador `onKeyDown` en el campo de peso que llame a `e.preventDefault()` específicamente cuando se presione una tecla que no sea un dígito, evitando escribir letras en un campo numérico. En el proyecto integrador RutaFlow, evita la recarga del formulario de entrega con `preventDefault` y prueba el envío con teclado.
+
+#### Paso 7 · Cierre
+Entrega el manejador con `preventDefault` del Paso 4, la recarga de página provocada en el Paso 5, y el bloqueo de teclas no numéricas del Paso 6; explica por qué `e.preventDefault()` dentro de un `SyntheticEvent` de React funciona de forma idéntica sin importar el navegador. Siguiente paso: estudia routing con React Router. Errores comunes: olvidar `preventDefault` en el submit de un formulario, confundir `e.target` con `e.currentTarget` en un evento con burbujeo, y depender de comportamiento específico de un navegador en vez de la API sintética unificada. Fuentes oficiales: https://react.dev/learn/responding-to-events y https://react.dev/reference/react-dom/components/common#react-event-object.
+
+### Tema 2: React Hook Form y el problema del re-render por tecla · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir cuántas veces se re-renderiza un formulario de registro de envíos con `useState` por campo, y a migrarlo a React Hook Form para eliminar ese costo. Prerrequisitos: Módulo 2 completo.
@@ -108,10 +185,10 @@ Corrige el Paso 5 devolviendo `destinatario` a `register`, y agrega un campo nue
 #### Paso 7 · Cierre
 Entrega el formulario sin re-renders por tecla del Paso 4, el campo controlado mezclado del Paso 5, y el campo adicional del Paso 6; explica por qué mezclar un campo controlado dentro de un formulario de React Hook Form reintroduce exactamente el costo que React Hook Form existe para evitar. Siguiente paso: estudia cómo validar ese formulario con un schema de zod. Errores comunes: mezclar campos controlados y no controlados en el mismo formulario sin necesidad, no medir realmente el costo de render antes de migrar a React Hook Form, y olvidar `{...register(...)}` en algún input dejándolo sin conectar. Fuentes oficiales: https://react-hook-form.com/get-started y https://react.dev/learn/sharing-state-between-components.
 
-### Tema 2: Validación con zod y formularios multi-paso
+### Tema 3: Validación con zod y formularios multi-paso · Intermedio · 50 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a validar el formulario de registro de envíos con un schema de zod, y a dividirlo en dos pasos (datos del paquete, datos de entrega) sin perder información al retroceder. Prerrequisitos: Tema 1 de este módulo.
+Al finalizar vas a validar el formulario de registro de envíos con un schema de zod, y a dividirlo en dos pasos (datos del paquete, datos de entrega) sin perder información al retroceder. Prerrequisitos: Tema 2 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 El peso de un envío debe ser un número positivo y la dirección no puede estar vacía — validar esto manualmente campo por campo en el `onSubmit` sería repetitivo y difícil de mantener sincronizado con las reglas reales del backend.
@@ -233,83 +310,6 @@ Corrige el Paso 5 restaurando el spread, y convierte el resumen final en un terc
 
 #### Paso 7 · Cierre
 Entrega el schema con validación del Paso 4, la pérdida de datos provocada en el Paso 5, y el paso de confirmación del Paso 6; explica por qué `setDatos(prev => ({ ...prev, ...datosDelPaso }))` es necesario, dado que cada paso solo conoce sus propios campos, no los de los demás pasos. Siguiente paso: estudia cómo React normaliza los eventos del formulario. Errores comunes: sobrescribir el estado acumulado en vez de fusionarlo al avanzar de paso, duplicar reglas de validación entre el schema y código manual adicional, y no validar un paso antes de permitir avanzar al siguiente. Fuentes oficiales: https://zod.dev/ y https://react-hook-form.com/docs/useform.
-
-### Tema 3: Eventos sintéticos
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a manejar el envío del formulario de registro de envíos con `e.preventDefault()`, confirmando que ese método funciona igual sin importar el navegador. Prerrequisitos: Tema 2 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Sin llamar expresamente a `preventDefault()`, enviar el formulario de registro de envíos recarga la página completa (el comportamiento nativo por defecto de un `<form>`), perdiendo cualquier estado de React en el proceso.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-React envuelve los eventos nativos del DOM en un `SyntheticEvent` con una API consistente entre navegadores — un traductor universal que normaliza mensajes de distintos "idiomas nativos" en uno común.
-
-**Diagrama:**
-
-```mermaid
-graph LR
-    A["Evento nativo<br/>del navegador"] -->|Envuelto| B["SyntheticEvent"]
-    B -->|API consistente| C["preventDefault"]
-    B -->|API consistente| D["target.value"]
-    B -->|API consistente| E["currentTarget"]
-    
-    F["Sin preventDefault"] -->|Recarga| G["Estado perdido"]
-    H["Con preventDefault"] -->|Sincrónico| I["Estado preservado"]
-    
-    style B fill:#e3f2fd
-    style G fill:#ffebee
-    style I fill:#e8f5e9
-```
-
-* Cuándo: usar `preventDefault` siempre en formularios para evitar recarga del navegador; `SyntheticEvent` garantiza consistencia entre navegadores en vez de depender de APIs nativas inconsistentes.
-
-**¿Por qué es importante?** El envoltorio de eventos sintéticos garantiza una API de eventos consistente entre navegadores, y sin `preventDefault` el comportamiento nativo del navegador destruye todo el estado de React acumulado.
-
-#### Paso 4 · Demostración guiada desde cero
-```jsx
-import { useState } from 'react';
-
-export default function App() {
-  const [registrados, setRegistrados] = useState([]);
-
-  function manejarSubmit(e) {
-    e.preventDefault(); // evita la recarga completa de la página
-    const datos = new FormData(e.currentTarget);
-    setRegistrados(prev => [...prev, datos.get('guia')]);
-    e.currentTarget.reset();
-  }
-
-  return (
-    <>
-      <form onSubmit={manejarSubmit}>
-        <label>Guía <input name="guia" required /></label>
-        <button type="submit">Enviar</button>
-      </form>
-      <p>Registrados en esta sesión: {registrados.join(', ') || 'ninguno'}</p>
-    </>
-  );
-}
-```
-
-**Ejecuta el ejemplo** en tu proyecto `mi-react` (lo creaste y preparaste para pruebas al inicio del módulo 0): reemplaza todo el contenido de `src/App.jsx` por el bloque anterior y arráncalo:
-
-```bash
-npm run dev
-```
-
-Resultado esperado: al enviar el formulario, la página no se recarga (no aparece el parpadeo característico de una recarga completa), y el estado de React se conserva: la lista «Registrados en esta sesión» acumula cada guía enviada. Este ejemplo usa un formulario sin librerías a propósito: el `handleSubmit` de React Hook Form (Tema 1) ya llama a `preventDefault()` por ti.
-
-Escribe `src/App.test.jsx` con el patrón de `DeliveryCard.test.jsx`: escribe `RF-4471` en el campo «Guía», pulsa «Enviar» con `userEvent` y comprueba que aparece «Registrados en esta sesión: RF-4471». Después ejecuta `npm test` (cuando reemplaces `App.jsx` en el próximo tema, borra esta prueba o muévela junto al componente).
-
-#### Paso 5 · Práctica guiada
-Pista: quita `e.preventDefault()` del manejador — ese es el fallo deliberado: al tocar "Enviar", el navegador recarga la página completa con su comportamiento nativo (verás `?guia=...` en la barra de direcciones), perdiendo instantáneamente todo el estado de React: la lista de registrados vuelve a «ninguno».
-
-#### Paso 6 · Práctica independiente
-Corrige el Paso 5 restaurando `e.preventDefault()`, y agrega un campo de peso con un manejador `onKeyDown` en el campo de peso que llame a `e.preventDefault()` específicamente cuando se presione una tecla que no sea un dígito, evitando escribir letras en un campo numérico. En el proyecto integrador RutaFlow, evita la recarga del formulario de entrega con `preventDefault` y prueba el envío con teclado.
-
-#### Paso 7 · Cierre
-Entrega el manejador con `preventDefault` del Paso 4, la recarga de página provocada en el Paso 5, y el bloqueo de teclas no numéricas del Paso 6; explica por qué `e.preventDefault()` dentro de un `SyntheticEvent` de React funciona de forma idéntica sin importar el navegador. Siguiente paso: estudia routing con React Router. Errores comunes: olvidar `preventDefault` en el submit de un formulario, confundir `e.target` con `e.currentTarget` en un evento con burbujeo, y depender de comportamiento específico de un navegador en vez de la API sintética unificada. Fuentes oficiales: https://react.dev/learn/responding-to-events y https://react.dev/reference/react-dom/components/common#react-event-object.
 
 ### Tema 4: Formularios con Actions: useActionState y useOptimistic · Avanzado · 45 min
 
@@ -455,10 +455,10 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** llamar a la actuali
 
 | Paso | Acción | Código | Explicación |
 |---|---|---|---|
-| 1 | Construir un formulario de registro con React Hook Form | Ver Tema 1 | `register`, `handleSubmit`, `errors` |
-| 2 | Agregar validación con un schema de zod | Ver Tema 2 | `zodResolver(schema)` |
-| 3 | Implementar el formulario multi-paso | Ver Tema 2 | Conserva datos al avanzar y retroceder |
-| 4 | Manejar el evento de submit correctamente | Ver Tema 3 | `preventDefault` |
+| 1 | Construir un formulario de registro con React Hook Form | Ver Tema 2 | `register`, `handleSubmit`, `errors` |
+| 2 | Agregar validación con un schema de zod | Ver Tema 3 | `zodResolver(schema)` |
+| 3 | Implementar el formulario multi-paso | Ver Tema 3 | Conserva datos al avanzar y retroceder |
+| 4 | Manejar el evento de submit correctamente | Ver Tema 1 | `preventDefault` |
 
 **Verificación:** el laboratorio se considera exitoso si el formulario valida correctamente según el schema de zod, y si los datos de un paso anterior permanecen visibles al retroceder y volver a avanzar.
 

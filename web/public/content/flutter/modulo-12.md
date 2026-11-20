@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Arquitectura por features y Clean Architecture
+### Tema 1: Arquitectura por features y Clean Architecture · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a organizar el proyecto integrador de RutaFlow en `lib/features/envios/` y `lib/features/auth/`, con capas Domain/Data/Presentation dentro de cada feature. Prerrequisitos: módulos 0-11 completos.
@@ -81,7 +81,7 @@ Corregí el Paso 5 devolviendo esa llamada al repositorio correspondiente en `da
 #### Paso 7 · Cierre
 Entregá la estructura por feature del Paso 4, la violación de capas provocada en el Paso 5, y la revisión del Paso 6; explicá por qué integrar todo el track en un único proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: estudia cómo unir todos los módulos del track en el flujo completo. Errores comunes: organizar el proyecto por tipo de archivo en vez de por feature, permitir que `domain/` dependa de `data/` o `presentation/`, y que un widget acceda directamente a una librería de infraestructura sin pasar por el repositorio. Fuentes oficiales: https://docs.flutter.dev/app-architecture/guide y https://docs.flutter.dev/app-architecture/case-study.
 
-### Tema 2: Uniendo los módulos del track
+### Tema 2: Uniendo los módulos del track · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar `envioRepositoryProvider` (Riverpod), el estado explícito de `AsyncValue`, y la persistencia offline-first en una sola pantalla `ListaEnviosScreen` completa. Prerrequisitos: Tema 1 de este módulo.
@@ -214,7 +214,7 @@ Corregí el Paso 5 devolviendo `.when(...)` con un caso `error` explícito con u
 Entregá la pantalla integrando los tres módulos del Paso 4, la diferencia entre `.when` exhaustivo y `.maybeWhen` genérico del Paso 5, y el botón de reintentar del Paso 6; explicá por qué integrar varios módulos del track en una sola pantalla expone si realmente encajan como un sistema coherente. Siguiente paso: cierra el proyecto integrador reflexionando sobre el costo y beneficio de Flutter como ecosistema propio. Errores comunes: usar `.maybeWhen` con un `orElse` genérico que oculta diferencias reales entre estados, no ofrecer ninguna acción de recuperación en el estado de error, y mezclar lógica de negocio directamente dentro del `build()`. Fuentes oficiales: https://riverpod.dev/docs/case_studies/pull_to_refresh y https://docs.flutter.dev/app-architecture/design-patterns.
 **Implicación práctica:** Integrar cada módulo del track en un proyecto real demuestra que los conceptos estudiados por separado se combinan naturalmente en un sistema coherente.
 
-### Tema 3: Retrospectiva del proyecto integrador
+### Tema 3: Retrospectiva del proyecto integrador · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir una retrospectiva comparando una decisión de RutaFlow en Flutter (que renderiza con su propio motor gráfico —Impeller en iOS y Android—, no componentes nativos envueltos) contra la misma decisión en otro track de la Academia. Prerrequisitos: Temas 1-2 de este módulo.

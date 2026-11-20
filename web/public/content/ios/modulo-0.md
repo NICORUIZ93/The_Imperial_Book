@@ -56,7 +56,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Optionals y unwrapping seguro
+### Tema 1: Optionals y unwrapping seguro · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a desenvolver un `String?` de forma segura con `guard let`, evitando el crash de un force unwrap sobre un destinatario ausente. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.
@@ -155,7 +155,7 @@ Corregí el Paso 5 restaurando `guard let`, y agregá un tercer caso de prueba c
 Entregá la función con `guard let` del Paso 4, el crash por force unwrap del Paso 5, y el caso de nombre vacío del Paso 6; explicá por qué Swift convierte en error de compilación lo que en otros lenguajes sería un crash en producción. Siguiente paso: modelá identidad compartida frente a copia con struct y class. Errores comunes: usar force unwrap (`!`) por comodidad en vez de `guard let`/`if let`; confiar en `isEmpty` sin recortar espacios cuando el dato viene de un formulario de usuario real. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/the-basics/#Optionals y https://developer.apple.com/documentation/swift/optional.
 **Implicación práctica:** Modelar la ausencia de valor en el sistema de tipos convierte en error de compilación lo que en otros lenguajes es un crash en producción cuando un dato esperado no llegó.
 
-### Tema 2: struct vs class
+### Tema 2: struct vs class · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a demostrar con código real la diferencia entre copiar un `struct` (independiente) y compartir una instancia de `class` (misma referencia), usando un paquete y una sesión de conductor como ejemplo. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.
@@ -263,7 +263,7 @@ Corregí el Paso 5 decidiendo explícitamente si `original` debe ser mutable (`v
 Entregá la copia independiente y la referencia compartida del Paso 4, el error de mutación sobre `let` del Paso 5, y la decisión documentada del Paso 6; explicá por qué Swift elige `struct` como default para la mayoría de los modelos de dominio, reservando `class` para identidad compartida intencional. Siguiente paso: modelá contratos de comportamiento con protocolos y estados con enums. Errores comunes: usar `class` por defecto para modelos de datos simples; cambiar un tipo de `struct` a `class` para evitar un error de mutabilidad en vez de resolver la causa real. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/classesandstructures/ y https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes.
 **Implicación práctica:** Elegir struct o class según identidad compartida (y no por costumbre) evita que un cambio en un lugar inesperado del código afecte a datos que debían permanecer independientes.
 
-### Tema 3: Protocolos y enums con valores asociados
+### Tema 3: Protocolos y enums con valores asociados · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar el estado de una entrega como un enum con valores asociados, y vas a comprobar que el compilador exige manejar exhaustivamente cada caso en un `switch`. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.
@@ -350,7 +350,7 @@ Corregí el Paso 5 agregando el caso `entregada` al `switch` de forma consciente
 Entregá el enum exhaustivo del Paso 4, el error de exhaustividad al agregar `entregada` del Paso 5, y el segundo `switch` corregido del Paso 6; explicá por qué un `default` genérico en un `switch` sobre un enum propio oculta exactamente la protección que la exhaustividad del compilador existe para dar. Siguiente paso: reutilizá comportamiento con closures y genéricos. Errores comunes: agregar un `default` genérico a un switch sobre un enum propio, ocultando casos nuevos sin manejar; modelar un estado con múltiples banderas booleanas sueltas en vez de un enum con valores asociados. Fuentes oficiales: https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/ y https://developer.apple.com/documentation/swift/protocol.
 **Implicación práctica:** La exhaustividad del `switch` sobre un enum propio obliga a decidir conscientemente qué hacer con cada caso nuevo, en vez de que un `default` genérico lo oculte silenciosamente en producción.
 
-### Tema 4: Closures, colecciones y genéricos con propósito
+### Tema 4: Closures, colecciones y genéricos con propósito · Intermedio · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a filtrar coordenadas válidas de una lista de paradas con `compactMap`, y a indexar elementos por un identificador genérico sin perder el tipo concreto. Prerrequisitos: Swift 6.2 o posterior (Xcode 26 en macOS, o el toolchain de swift.org en Windows/Linux). Verifica `swift --version` y, en macOS, `xcodebuild -version`.

@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: useState y actualizaciones funcionales
+### Tema 1: useState y actualizaciones funcionales · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir un contador de "intentos de confirmación" en `FormularioConfirmacion` que se incremente correctamente cuando un mismo manejador lo actualiza dos veces. Prerrequisitos: Módulo 0 completo.
@@ -126,7 +126,7 @@ Corrige `confirmarDosVeces` usando la forma funcional (`setIntentos(i => i + 1)`
 Entrega el contador con el bug de los Pasos 4-5, y la corrección con forma funcional del Paso 6; explica por qué dos llamadas a `setIntentos(intentos + 1)` en el mismo manejador no se acumulan, mientras que dos llamadas a `setIntentos(i => i + 1)` sí lo hacen. Siguiente paso: estudia la diferencia entre render y commit. Errores comunes: depender del valor capturado cuando el nuevo estado depende del anterior, mutar un objeto de estado directamente en vez de crear uno nuevo, y leer el estado inmediatamente después de llamar al setter esperando el valor ya actualizado. Fuentes oficiales: https://react.dev/learn/state-a-components-memory y https://react.dev/learn/queueing-a-series-of-state-updates.
 **Implicación práctica:** Depender del valor de estado capturado en el closure, en vez de la forma funcional, pierde actualizaciones cuando el nuevo valor depende del valor anterior dentro del mismo manejador.
 
-### Tema 2: Render frente a commit
+### Tema 2: Render frente a commit · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a demostrar con un `console.log` dentro de `FormularioConfirmacion` que ejecutar la función del componente (render) no siempre produce un cambio visible en el DOM (commit). Prerrequisitos: Tema 1 de este módulo.
@@ -226,7 +226,7 @@ Corrige tu conclusión del Paso 5 agregando una segunda prueba: actualiza `pin` 
 Entrega la prueba del Paso 4 (render sin cambio visual), la aclaración del Paso 5, y la comparación del Paso 6; explica por qué "la función del componente se ejecutó" no es lo mismo que "algo cambió en pantalla", y por qué esa distinción importa para decidir dónde vive un efecto secundario. Siguiente paso: estudia batching de actualizaciones. Errores comunes: asumir que cada render produce un cambio visual, poner efectos secundarios directamente en el cuerpo del componente en vez de `useEffect`, y confundir la frecuencia de ejecución de un `console.log` con la frecuencia de cambios reales en el DOM. Fuentes oficiales: https://react.dev/learn/render-and-commit y https://react.dev/reference/react/useState.
 **Implicación práctica:** Entender que renderizar no equivale automáticamente a un cambio visual real explica por qué los efectos secundarios deben vivir dentro de `useEffect`, no directamente en el cuerpo del componente.
 
-### Tema 3: Batching de actualizaciones
+### Tema 3: Batching de actualizaciones · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a confirmar con un `console.log` que tres llamadas a `setState` dentro del mismo manejador de `FormularioConfirmacion` producen un único render, no tres. Prerrequisitos: Tema 2 de este módulo.
@@ -328,10 +328,10 @@ Corrige el Paso 5 quitando los `setTimeout` innecesarios, y agrega una cuarta ac
 #### Paso 7 · Cierre
 Entrega la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explica por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
 
-### Tema 4: Componentes controlados
+### Tema 4: Componentes controlados · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a convertir el campo de PIN de `FormularioConfirmacion` en un componente controlado, con `value` y `onChange` gobernados completamente por `useState`. Prerrequisitos: Tema 3 de este módulo.
+Al finalizar vas a convertir el campo de PIN de `FormularioConfirmacion` en un componente controlado, con `value` y `onChange` gobernados completamente por `useState`. Prerrequisitos: Tema 1 de este módulo.
 
 #### Paso 2 · Contexto y caso real
 Si el input de PIN no está controlado, React no tiene ninguna forma de validar o transformar lo que el conductor escribe en tiempo real (por ejemplo, rechazar letras y aceptar solo dígitos) antes de que llegue al envío del formulario.

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: ExecutorService y gestión de hilos
+### Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min
 
 **¿Por qué es importante?** Un pool limita cuántos trabajos simultáneos compiten por los recursos del motor. **Modelo mental:** una cantidad fija de operadores atiende una fila de tareas.
 
@@ -129,7 +129,7 @@ System.out.println(executor.isTerminated());
 
 Guarda el orden de envío, espera y cierre. Fuente oficial: [ExecutorService](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/ExecutorService.html).
 
-### Tema 2: CompletableFuture
+### Tema 2: CompletableFuture · Intermedio · 40 min
 
 **¿Por qué es importante?** CompletableFuture permite encadenar y combinar resultados sin anidar esperas manuales. **Modelo mental:** cada etapa entrega un sobre a la siguiente cuando llega su resultado.
 
@@ -244,7 +244,7 @@ System.out.println(respuesta.join());
 
 Conserva el mensaje mostrado y anota qué dato de diagnóstico guardarías. Fuente oficial: [CompletableFuture](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html).
 
-### Tema 3: Virtual threads
+### Tema 3: Virtual threads · Avanzado · 50 min
 
 **¿Por qué es importante?** Virtual threads hacen más simple manejar muchas tareas que pasan tiempo esperando E/S. **Modelo mental:** hay muchos turnos livianos compartiendo un conjunto de trabajadores de plataforma.
 
@@ -425,7 +425,7 @@ java -Djdk.virtualThreadScheduler.parallelism=2 -Djdk.virtualThreadScheduler.max
 
 Guarda las dos salidas (o la de JDK 25 con y sin `synchronized`) y escribe qué consejo sobre `synchronized` y virtual threads quedó obsoleto. Fuente oficial: [JEP 491: Synchronize Virtual Threads without Pinning](https://openjdk.org/jeps/491).
 
-### Tema 4: Condiciones de carrera y sincronización
+### Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min
 
 **¿Por qué es importante?** Una carrera puede aceptar dos retiros sobre el mismo saldo y romper una regla de negocio. **Modelo mental:** dos personas leen el mismo tablero antes de que ninguna escriba el cambio.
 
@@ -539,7 +539,7 @@ Compila y ejecuta `javac -d out src/ContadorSeguro.java` y `java -cp out Contado
 
 Explica por qué el contador admite una operación atómica y el retiro necesita proteger una regla completa. Fuente oficial: [concurrencia en Java](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/package-summary.html).
 
-### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25)
+### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) · Avanzado · 45 min
 
 **¿Por qué es importante?** Si varias tareas forman una sola respuesta, su ciclo de vida debe mantenerse junto: un fallo no debería dejar cotizaciones huérfanas trabajando en segundo plano.
 
@@ -658,7 +658,7 @@ Guarda el comando reproducible y la versión usada. Fuente oficial: [StructuredT
 
 **Proyecto integrador:** la cotización del motor de entregas usa exactamente este patrón: distancia y disponibilidad se calculan juntas y, si una falla, la otra se cancela en vez de seguir trabajando para una respuesta que ya no se va a usar. **Límite:** no conviene usar `StructuredTaskScope` solo para lanzar una única tarea en paralelo (un hilo normal o `CompletableFuture` basta); úsalo cuando varias subtareas deben vivir y morir juntas como una sola unidad de trabajo. **Práctica:** modifica `Cotizar.java` para agregar una tercera subtarea (`scope.fork(() -> "tarifa")`) y confirma que las tres se esperan juntas con `scope.join()`.
 
-### Tema 6: Scoped Values frente a ThreadLocal (Java 25)
+### Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 45 min
 
 **¿Por qué es importante?** El contexto de una solicitud debe acompañar su ejecución y dejar de estar disponible al terminar, para no mezclarse con la petición que reutilice el mismo hilo.
 
@@ -805,7 +805,7 @@ Elige una opción para un identificador de solicitud inmutable y explica tu deci
 
 ## Laboratorio de transferencia
 
-### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos
+### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min
 
 **¿Por qué es importante?** Una pantalla no debe esperar indefinidamente, y cancelar una espera no garantiza que el trabajo de fondo se haya detenido.
 

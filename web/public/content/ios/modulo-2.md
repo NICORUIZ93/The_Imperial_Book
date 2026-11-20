@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: @State y @Binding
+### Tema 1: @State y @Binding · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar `TarjetaEnvio` (Módulo 1) a un interruptor de estado "entregado/en ruta" que el padre posee y el hijo solo puede modificar, nunca copiar. Prerrequisitos: Módulo 1 completo.
@@ -96,7 +96,7 @@ Corregí el Paso 5 volviendo a `@Binding`, y agregá una tercera vista (`Resumen
 #### Paso 7 · Cierre
 Entregá el `@Binding` compartido funcionando del Paso 4, el estado divergente del Paso 5, y las tres vistas sincronizadas del Paso 6; explicá por qué "copiar el valor a otro `@State` para tenerlo a mano" crea exactamente el bug que acabás de provocar. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 
-### Tema 2: @Observable
+### Tema 2: @Observable · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear un `EnviosViewModel` con `@Observable` y a confirmar que solo las vistas que leen la propiedad que cambió se redibujan. Prerrequisitos: Tema 1 de este módulo.
@@ -185,7 +185,7 @@ Quitá el `Text(vm.conductorActivo)` innecesario del Paso 5, y agregá una segun
 #### Paso 7 · Cierre
 Entregá el redibujado granular confirmado del Paso 4, el redibujado de más provocado del Paso 5, y las dos vistas independientes del Paso 6; explicá por qué `@Observable` mejora sobre el viejo `ObservableObject`+`@Published`, que notificaba a cualquier observador del objeto completo. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 
-### Tema 3: @Environment y identidad vs valor
+### Tema 3: @Environment y identidad vs valor · Intermedio · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a inyectar un `ServicioAPI` de RutaFlow vía `@Environment`, llegando a una vista profunda sin pasarlo por cada inicializador intermedio. Prerrequisitos: Tema 2 de este módulo.

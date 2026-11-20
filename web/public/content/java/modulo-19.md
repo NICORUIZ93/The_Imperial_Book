@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Reflexión y anotaciones en tiempo de ejecución
+### Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás inspeccionar clases, campos y métodos con la API de reflexión, leer anotaciones propias en tiempo de ejecución y explicar cómo la usan Spring, Jackson y JUnit. **Prerrequisitos:** Java M1 Tema 1 (clases y encapsulación) y Java M10 Tema 3 (`opens`).
@@ -210,7 +210,7 @@ Guarda la salida válida, el caso que falló y una frase que explique por qué o
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque entender la reflexión quita la magia a los frameworks y te ayuda a diagnosticar errores como `InaccessibleObjectException` o anotaciones que "no hacen nada".
 
-### Tema 2: Expresiones regulares con Pattern y Matcher
+### Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás escribir expresiones regulares con clases de caracteres, cuantificadores, límites de palabra y grupos con nombre, y usarlas para buscar, validar y reemplazar. **Prerrequisito:** Java M0 Tema 5 (`String`).
@@ -395,7 +395,7 @@ Guarda una entrada aceptada, una rechazada y la razón por la que el patrón dis
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque las regex aparecen en validaciones, logs, rutas y búsquedas, y un patrón mal escrito es una vulnerabilidad de denegación de servicio.
 
-### Tema 3: Dinero exacto con BigDecimal
+### Tema 3: Dinero exacto con BigDecimal · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás explicar por qué `double` no sirve para dinero, operar con `BigDecimal` creado desde texto, fijar escala y modo de redondeo, y comparar valores correctamente. **Prerrequisitos:** Java M0 Tema 4 (tipos) y Java M2 Tema 1 (colecciones para los ejemplos de cuotas).
@@ -579,7 +579,7 @@ Anota el total esperado, el total obtenido y qué política de escala o residuo 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque los errores de redondeo en dinero son bugs reales, difíciles de detectar y con consecuencias legales.
 
-### Tema 4: Assertions y diseño por contrato
+### Tema 4: Assertions y diseño por contrato · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás distinguir precondiciones públicas (excepciones) de invariantes internas (`assert`), activar assertions con `-ea` y usarlas para detectar bugs propios. **Prerrequisito:** Java M3 Tema 1 (excepciones).
@@ -787,7 +787,7 @@ Guarda la salida con y sin `-ea` y apunta qué condición debe cumplirse siempre
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque separar validación de entrada y verificación interna hace el código más honesto y encuentra bugs cerca de su causa.
 
-### Tema 5: ServiceLoader: plugins sin acoplar implementaciones
+### Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás definir un servicio como interfaz, registrar implementaciones en `META-INF/services` y descubrirlas con `ServiceLoader` sin que el código principal las conozca. **Prerrequisitos:** Java M1 Tema 3 (interfaces) y Java M10 Tema 1 (módulos y classpath).
@@ -998,7 +998,201 @@ Guarda cuántos proveedores se descubrieron y qué archivos permitieron cargarlo
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque es el mecanismo estándar de extensión de Java y explica por qué un driver aparece o no aparece en tiempo de ejecución.
 
-### Tema 6: Proxies dinámicos: así funcionan @Transactional y los mocks
+### Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 40 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás formatear números, monedas y fechas según el `Locale`, ordenar texto en español con `Collator` y construir mensajes con plurales. **Prerrequisito:** Java M0 Tema 8 (`java.time`).
+
+#### Paso 2 · Contexto y caso real
+RutaFlow factura en Colombia y empieza a operar con clientes en Estados Unidos y Alemania. `1.234` significa mil doscientos treinta y cuatro en Bogotá y uno coma dos en Nueva York. Un listado de barrios ordenado con `compareTo` pone "Álamos" al final. Son errores reales que ven los usuarios.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Un `Locale` (`es-CO`, `en-US`) identifica idioma y región. `NumberFormat` y `DateTimeFormatter.ofLocalizedDate` aplican sus reglas de separadores, símbolo de moneda y nombres de meses. `String.compareTo` ordena por código Unicode, así que las tildes y la ñ quedan fuera de lugar; `Collator` ordena según las reglas del idioma. `MessageFormat` con `choice` resuelve plurales; en una aplicación real los textos van en archivos `ResourceBundle` por idioma.
+
+**Analogía:** el `Locale` es el traductor y el notario local: el contenido es el mismo, pero cada país lo escribe con sus propias convenciones.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    V[valor 1234567.891] --> L{Locale}
+    L --> CO["es-CO 1.234.567,891"]
+    L --> US["en-US 1,234,567.891"]
+    L --> DE["de-DE 1.234.567,891 €"]
+```
+
+**Fuente oficial:** [Internationalization (docs.oracle.com)](https://docs.oracle.com/javase/tutorial/i18n/), [Locale (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html).
+**Conceptos clave:** `Locale`, `NumberFormat`, `DateTimeFormatter`, CLDR, `Collator`, `MessageFormat`, `ResourceBundle`.
+**Cuándo no usarlo:** para datos que viajan entre sistemas (JSON, CSV, bases de datos) no uses formatos localizados: usa ISO 8601 y punto decimal. El `Locale` es solo para mostrar al usuario.
+
+**Transferencia al proyecto integrador «Motor de asignación de entregas»:** muestra el resumen de asignaciones en el idioma y la moneda del cliente sin cambiar los datos internos.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** usar `new Locale("es-CO")` (constructor obsoleto) en vez de `Locale.forLanguageTag("es-CO")`, lo que produce un `Locale` indefinido (`und`) y formatos genéricos sin más aviso que un `warning: [deprecation]`, y ordenar texto en español con `String.compareTo`/`Collections.sort` en vez de `Collator`, dejando "Álamos" y "Ñuñoa" fuera de su posición alfabética real.
+
+#### Paso 4 · Demostración guiada desde cero
+
+#### Subtema 6.1: Mostrar importes y fechas según Locale · 10 min
+**1. Contexto**
+
+La misma tarifa debe verse con separadores, moneda y fecha que entiende cada cliente.
+
+**2. Hazlo tú**
+
+En una carpeta vacía, crea `Formatos.java`, ejecútalo y compara los tres locales, la lista ordenada y los mensajes.
+
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir java-dia-a-dia && cd java-dia-a-dia
+```
+
+Crea `Formatos.java`:
+
+```java
+import java.text.*;
+import java.time.*;
+import java.time.format.*;
+import java.util.*;
+
+public class Formatos {
+    public static void main(String[] args) {
+        double monto = 1234567.891;
+        LocalDate fecha = LocalDate.of(2026, 10, 28);
+        for (Locale locale : List.of(Locale.forLanguageTag("es-CO"), Locale.forLanguageTag("en-US"), Locale.forLanguageTag("de-DE"))) {
+            NumberFormat numero = NumberFormat.getNumberInstance(locale);
+            NumberFormat moneda = NumberFormat.getCurrencyInstance(locale);
+            DateTimeFormatter larga = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale);
+            System.out.printf("%-6s número=%-15s moneda=%-18s fecha=%s%n",
+                locale.toLanguageTag(), numero.format(monto), moneda.format(monto), fecha.format(larga));
+        }
+
+        // Ordenar texto en español: compareTo ordena por código Unicode, Collator por reglas del idioma
+        List<String> barrios = new ArrayList<>(List.of("Usaquén", "Álamos", "Chapinero", "Ñuñoa", "Bosa", "Niza"));
+        List<String> porCodigo = new ArrayList<>(barrios);
+        Collections.sort(porCodigo);
+        barrios.sort(Collator.getInstance(Locale.forLanguageTag("es-CO")));
+        System.out.println("compareTo: " + porCodigo);
+        System.out.println("Collator:  " + barrios);
+
+        // Mensajes con plural y parámetros, como los de un ResourceBundle
+        MessageFormat mensaje = new MessageFormat(
+            "{0,choice,0#No hay entregas|1#Hay una entrega|1<Hay {0,number,integer} entregas} para {1}",
+            Locale.forLanguageTag("es-CO"));
+        for (int n : new int[]{0, 1, 1500}) System.out.println(mensaje.format(new Object[]{n, "Ana"}));
+    }
+}
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+java Formatos.java
+```
+
+**Resultado esperado:**
+
+```text
+es-CO  número=1.234.567,891   moneda=$ 1.234.567,89     fecha=28 de octubre de 2026
+en-US  número=1,234,567.891   moneda=$1,234,567.89      fecha=October 28, 2026
+de-DE  número=1.234.567,891   moneda=1.234.567,89 €     fecha=28. Oktober 2026
+compareTo: [Bosa, Chapinero, Niza, Usaquén, Álamos, Ñuñoa]
+Collator:  [Álamos, Bosa, Chapinero, Niza, Ñuñoa, Usaquén]
+No hay entregas para Ana
+Hay una entrega para Ana
+Hay 1.500 entregas para Ana
+```
+
+Los espacios del símbolo de moneda y algunos detalles pueden variar según la versión del JDK, porque los datos vienen de CLDR y se actualizan.
+
+**Fallo deliberado:** Cambia `Locale.forLanguageTag("es-CO")` de la lista por `new Locale("es-CO")`. El compilador avisa que el constructor está obsoleto (`warning: [deprecation]`) y la primera fila sale como `und número=1,234,567.891 moneda=¤ 1,234,567.89`: "es-CO" se tomó como un idioma inexistente y se usaron las reglas genéricas. Usa siempre `forLanguageTag` u `Locale.of`. **Diagnóstico:** un `Locale` mostrado como `und` indica que la cadena entera `es-CO` se interpretó como código de idioma, no como etiqueta de idioma-región.
+
+**3. Entiende**
+
+Los datos no cambian; el locale, la zona horaria y los recursos determinan cómo se presentan al usuario.
+
+**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
+
+**4. Cierra**
+
+Guarda una salida para cada locale probado y anota qué convención cambió.
+
+#### Paso 5 · Práctica guiada
+Formatea la hora de una entrega (`ZonedDateTime`) en Bogotá y en Berlín con el mismo `Instant`. **Pista:** crea un `Instant`, conviértelo con `atZone(ZoneId.of("America/Bogota"))` y con `Europe/Berlin`, y formatea cada uno con su `Locale`.
+
+#### Subtema 6.2: Mostrar el mismo instante en dos ciudades · 10 min
+**1. Contexto** una misma entrega llega a horas locales diferentes sin cambiar el instante guardado.
+
+**2. Hazlo tú** crea `java-dia-a-dia/HorasLocales.java`:
+
+```java
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
+
+public class HorasLocales {
+    public static void main(String[] args) {
+        Instant llegada = Instant.parse("2026-11-03T15:00:00Z");
+        var formato = DateTimeFormatter.ofPattern("d MMM uuuu HH:mm z", Locale.forLanguageTag("es-CO"));
+        System.out.println(llegada.atZone(ZoneId.of("America/Bogota")).format(formato));
+        System.out.println(llegada.atZone(ZoneId.of("Europe/Berlin")).format(formato));
+    }
+}
+```
+
+Ejecuta `cd java-dia-a-dia && java HorasLocales.java`.
+
+**Resultado esperado:** horas locales `10:00` y `16:00` para el mismo instante; Java puede mostrar `COT` y `GMT+01:00` según los datos de zona incluidos en el JDK.
+
+**Fallo deliberado:** agrega ocho horas a una cadena de texto para calcular Berlín. **Resultado del fallo:** el desfase deja de ser correcto al cambiar el horario de verano. **Diagnóstico:** convierte desde el mismo `Instant` con `ZoneId`; no sumes horas a mano.
+
+**3. Entiende** un instante es único; zona e idioma solo cambian cómo se muestra.
+
+**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
+
+**4. Cierra**
+
+Guarda una salida para cada locale probado y anota qué convención cambió.
+
+#### Paso 6 · Práctica independiente
+Mueve los mensajes a dos archivos `mensajes_es.properties` y `mensajes_en.properties` y cárgalos con `ResourceBundle.getBundle`.
+
+#### Subtema 6.3: Cargar mensajes en dos idiomas · 10 min
+**1. Contexto** las etiquetas de la aplicación deben cambiar de idioma sin duplicar la lógica Java.
+
+**2. Hazlo tú** crea `java-dia-a-dia/Mensajes.java`:
+
+```java
+import java.util.Locale;
+import java.util.ResourceBundle;
+
+public class Mensajes {
+    public static void main(String[] args) {
+        for (Locale locale : new Locale[]{Locale.forLanguageTag("es"), Locale.forLanguageTag("en")}) {
+            ResourceBundle textos = ResourceBundle.getBundle("mensajes", locale);
+            System.out.println(textos.getString("saludo"));
+        }
+    }
+}
+```
+
+Crea `java-dia-a-dia/mensajes_es.properties` con `saludo=Hola, Ana` y `java-dia-a-dia/mensajes_en.properties` con `saludo=Hello, Ana`. Ejecuta desde `java-dia-a-dia`: `java Mensajes.java`.
+
+**Resultado esperado:** `Hola, Ana` y `Hello, Ana`.
+
+**Fallo deliberado:** escribe `saludos` en el programa en vez de `saludo`. **Error esperado:** `MissingResourceException`. **Diagnóstico:** la clave solicitada debe existir en cada archivo de recursos.
+
+**3. Entiende** `ResourceBundle` escoge el archivo según el locale; conserva las claves iguales entre idiomas.
+
+**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
+
+**4. Cierra**
+
+Guarda una salida para cada locale probado y anota qué convención cambió.
+
+#### Paso 7 · Cierre y evidencia
+Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque cualquier producto que crece cruza fronteras, y los errores de formato de dinero o fecha generan cobros y entregas equivocados.
+
+### Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear un proxy dinámico con `java.lang.reflect.Proxy` que intercepte todas las llamadas de una interfaz, y explicar cómo los frameworks agregan transacciones, logs y mocks sin tocar tu código. **Prerrequisito:** Java M19 Tema 1 (reflexión y métodos).
@@ -1036,7 +1230,7 @@ Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track
 
 #### Paso 4 · Demostración guiada desde cero
 
-#### Subtema 6.1: Registrar las llamadas sin tocar el servicio · 10 min
+#### Subtema 7.1: Registrar las llamadas sin tocar el servicio · 10 min
 **1. Contexto**
 
 El equipo necesita registrar cotizaciones sin añadir lógica de logging a la implementación real de tarifas.
@@ -1139,7 +1333,7 @@ Registra el orden de interceptación y el resultado o error que observó el llam
 #### Paso 5 · Práctica guiada
 Agrega al proxy una caché: si `cotizar` se llama dos veces con los mismos argumentos, devuelve el resultado guardado. **Pista:** usa un `Map<List<Object>, Object>` con `List.of(argumentos)` como clave y aplica la caché solo cuando `metodo.getName()` sea `cotizar`.
 
-#### Subtema 6.2: Guardar el resultado de una llamada repetida · 10 min
+#### Subtema 7.2: Guardar el resultado de una llamada repetida · 10 min
 **1. Contexto** una pantalla puede pedir dos veces la misma cotización; el proxy puede reutilizarla mientras los datos no cambien.
 
 **2. Hazlo tú** crea `java-dia-a-dia/CacheProxy.java`:
@@ -1188,7 +1382,7 @@ Registra el orden de interceptación y el resultado o error que observó el llam
 #### Paso 6 · Práctica independiente
 Escribe una clase con un método que llame a otro método propio y explica por qué el segundo no pasa por el proxy (la auto-invocación de `@Transactional`).
 
-#### Subtema 6.3: Ver una llamada interna que salta el proxy · 10 min
+#### Subtema 7.3: Ver una llamada interna que salta el proxy · 10 min
 **1. Contexto** Spring aplica su interceptación cuando una llamada entra desde fuera del objeto proxy.
 
 **2. Hazlo tú** crea `java-dia-a-dia/AutoLlamada.java`:
@@ -1230,200 +1424,6 @@ Registra el orden de interceptación y el resultado o error que observó el llam
 
 #### Paso 7 · Cierre y evidencia
 Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque explica el comportamiento de frameworks que usas a diario y errores clásicos de entrevistas como la auto-invocación.
-
-### Tema 7: Internacionalización: números, monedas, fechas y orden de texto
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás formatear números, monedas y fechas según el `Locale`, ordenar texto en español con `Collator` y construir mensajes con plurales. **Prerrequisito:** Java M0 Tema 8 (`java.time`).
-
-#### Paso 2 · Contexto y caso real
-RutaFlow factura en Colombia y empieza a operar con clientes en Estados Unidos y Alemania. `1.234` significa mil doscientos treinta y cuatro en Bogotá y uno coma dos en Nueva York. Un listado de barrios ordenado con `compareTo` pone "Álamos" al final. Son errores reales que ven los usuarios.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Un `Locale` (`es-CO`, `en-US`) identifica idioma y región. `NumberFormat` y `DateTimeFormatter.ofLocalizedDate` aplican sus reglas de separadores, símbolo de moneda y nombres de meses. `String.compareTo` ordena por código Unicode, así que las tildes y la ñ quedan fuera de lugar; `Collator` ordena según las reglas del idioma. `MessageFormat` con `choice` resuelve plurales; en una aplicación real los textos van en archivos `ResourceBundle` por idioma.
-
-**Analogía:** el `Locale` es el traductor y el notario local: el contenido es el mismo, pero cada país lo escribe con sus propias convenciones.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    V[valor 1234567.891] --> L{Locale}
-    L --> CO["es-CO 1.234.567,891"]
-    L --> US["en-US 1,234,567.891"]
-    L --> DE["de-DE 1.234.567,891 €"]
-```
-
-**Fuente oficial:** [Internationalization (docs.oracle.com)](https://docs.oracle.com/javase/tutorial/i18n/), [Locale (docs.oracle.com)](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Locale.html).
-**Conceptos clave:** `Locale`, `NumberFormat`, `DateTimeFormatter`, CLDR, `Collator`, `MessageFormat`, `ResourceBundle`.
-**Cuándo no usarlo:** para datos que viajan entre sistemas (JSON, CSV, bases de datos) no uses formatos localizados: usa ISO 8601 y punto decimal. El `Locale` es solo para mostrar al usuario.
-
-**Transferencia al proyecto integrador «Motor de asignación de entregas»:** muestra el resumen de asignaciones en el idioma y la moneda del cliente sin cambiar los datos internos.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** usar `new Locale("es-CO")` (constructor obsoleto) en vez de `Locale.forLanguageTag("es-CO")`, lo que produce un `Locale` indefinido (`und`) y formatos genéricos sin más aviso que un `warning: [deprecation]`, y ordenar texto en español con `String.compareTo`/`Collections.sort` en vez de `Collator`, dejando "Álamos" y "Ñuñoa" fuera de su posición alfabética real.
-
-#### Paso 4 · Demostración guiada desde cero
-
-#### Subtema 7.1: Mostrar importes y fechas según Locale · 10 min
-**1. Contexto**
-
-La misma tarifa debe verse con separadores, moneda y fecha que entiende cada cliente.
-
-**2. Hazlo tú**
-
-En una carpeta vacía, crea `Formatos.java`, ejecútalo y compara los tres locales, la lista ordenada y los mensajes.
-
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir java-dia-a-dia && cd java-dia-a-dia
-```
-
-Crea `Formatos.java`:
-
-```java
-import java.text.*;
-import java.time.*;
-import java.time.format.*;
-import java.util.*;
-
-public class Formatos {
-    public static void main(String[] args) {
-        double monto = 1234567.891;
-        LocalDate fecha = LocalDate.of(2026, 10, 28);
-        for (Locale locale : List.of(Locale.forLanguageTag("es-CO"), Locale.forLanguageTag("en-US"), Locale.forLanguageTag("de-DE"))) {
-            NumberFormat numero = NumberFormat.getNumberInstance(locale);
-            NumberFormat moneda = NumberFormat.getCurrencyInstance(locale);
-            DateTimeFormatter larga = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG).withLocale(locale);
-            System.out.printf("%-6s número=%-15s moneda=%-18s fecha=%s%n",
-                locale.toLanguageTag(), numero.format(monto), moneda.format(monto), fecha.format(larga));
-        }
-
-        // Ordenar texto en español: compareTo ordena por código Unicode, Collator por reglas del idioma
-        List<String> barrios = new ArrayList<>(List.of("Usaquén", "Álamos", "Chapinero", "Ñuñoa", "Bosa", "Niza"));
-        List<String> porCodigo = new ArrayList<>(barrios);
-        Collections.sort(porCodigo);
-        barrios.sort(Collator.getInstance(Locale.forLanguageTag("es-CO")));
-        System.out.println("compareTo: " + porCodigo);
-        System.out.println("Collator:  " + barrios);
-
-        // Mensajes con plural y parámetros, como los de un ResourceBundle
-        MessageFormat mensaje = new MessageFormat(
-            "{0,choice,0#No hay entregas|1#Hay una entrega|1<Hay {0,number,integer} entregas} para {1}",
-            Locale.forLanguageTag("es-CO"));
-        for (int n : new int[]{0, 1, 1500}) System.out.println(mensaje.format(new Object[]{n, "Ana"}));
-    }
-}
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-java Formatos.java
-```
-
-**Resultado esperado:**
-
-```text
-es-CO  número=1.234.567,891   moneda=$ 1.234.567,89     fecha=28 de octubre de 2026
-en-US  número=1,234,567.891   moneda=$1,234,567.89      fecha=October 28, 2026
-de-DE  número=1.234.567,891   moneda=1.234.567,89 €     fecha=28. Oktober 2026
-compareTo: [Bosa, Chapinero, Niza, Usaquén, Álamos, Ñuñoa]
-Collator:  [Álamos, Bosa, Chapinero, Niza, Ñuñoa, Usaquén]
-No hay entregas para Ana
-Hay una entrega para Ana
-Hay 1.500 entregas para Ana
-```
-
-Los espacios del símbolo de moneda y algunos detalles pueden variar según la versión del JDK, porque los datos vienen de CLDR y se actualizan.
-
-**Fallo deliberado:** Cambia `Locale.forLanguageTag("es-CO")` de la lista por `new Locale("es-CO")`. El compilador avisa que el constructor está obsoleto (`warning: [deprecation]`) y la primera fila sale como `und número=1,234,567.891 moneda=¤ 1,234,567.89`: "es-CO" se tomó como un idioma inexistente y se usaron las reglas genéricas. Usa siempre `forLanguageTag` u `Locale.of`. **Diagnóstico:** un `Locale` mostrado como `und` indica que la cadena entera `es-CO` se interpretó como código de idioma, no como etiqueta de idioma-región.
-
-**3. Entiende**
-
-Los datos no cambian; el locale, la zona horaria y los recursos determinan cómo se presentan al usuario.
-
-**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
-
-**4. Cierra**
-
-Guarda una salida para cada locale probado y anota qué convención cambió.
-
-#### Paso 5 · Práctica guiada
-Formatea la hora de una entrega (`ZonedDateTime`) en Bogotá y en Berlín con el mismo `Instant`. **Pista:** crea un `Instant`, conviértelo con `atZone(ZoneId.of("America/Bogota"))` y con `Europe/Berlin`, y formatea cada uno con su `Locale`.
-
-#### Subtema 7.2: Mostrar el mismo instante en dos ciudades · 10 min
-**1. Contexto** una misma entrega llega a horas locales diferentes sin cambiar el instante guardado.
-
-**2. Hazlo tú** crea `java-dia-a-dia/HorasLocales.java`:
-
-```java
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.Locale;
-
-public class HorasLocales {
-    public static void main(String[] args) {
-        Instant llegada = Instant.parse("2026-11-03T15:00:00Z");
-        var formato = DateTimeFormatter.ofPattern("d MMM uuuu HH:mm z", Locale.forLanguageTag("es-CO"));
-        System.out.println(llegada.atZone(ZoneId.of("America/Bogota")).format(formato));
-        System.out.println(llegada.atZone(ZoneId.of("Europe/Berlin")).format(formato));
-    }
-}
-```
-
-Ejecuta `cd java-dia-a-dia && java HorasLocales.java`.
-
-**Resultado esperado:** horas locales `10:00` y `16:00` para el mismo instante; Java puede mostrar `COT` y `GMT+01:00` según los datos de zona incluidos en el JDK.
-
-**Fallo deliberado:** agrega ocho horas a una cadena de texto para calcular Berlín. **Resultado del fallo:** el desfase deja de ser correcto al cambiar el horario de verano. **Diagnóstico:** convierte desde el mismo `Instant` con `ZoneId`; no sumes horas a mano.
-
-**3. Entiende** un instante es único; zona e idioma solo cambian cómo se muestra.
-
-**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
-
-**4. Cierra**
-
-Guarda una salida para cada locale probado y anota qué convención cambió.
-
-#### Paso 6 · Práctica independiente
-Mueve los mensajes a dos archivos `mensajes_es.properties` y `mensajes_en.properties` y cárgalos con `ResourceBundle.getBundle`.
-
-#### Subtema 7.3: Cargar mensajes en dos idiomas · 10 min
-**1. Contexto** las etiquetas de la aplicación deben cambiar de idioma sin duplicar la lógica Java.
-
-**2. Hazlo tú** crea `java-dia-a-dia/Mensajes.java`:
-
-```java
-import java.util.Locale;
-import java.util.ResourceBundle;
-
-public class Mensajes {
-    public static void main(String[] args) {
-        for (Locale locale : new Locale[]{Locale.forLanguageTag("es"), Locale.forLanguageTag("en")}) {
-            ResourceBundle textos = ResourceBundle.getBundle("mensajes", locale);
-            System.out.println(textos.getString("saludo"));
-        }
-    }
-}
-```
-
-Crea `java-dia-a-dia/mensajes_es.properties` con `saludo=Hola, Ana` y `java-dia-a-dia/mensajes_en.properties` con `saludo=Hello, Ana`. Ejecuta desde `java-dia-a-dia`: `java Mensajes.java`.
-
-**Resultado esperado:** `Hola, Ana` y `Hello, Ana`.
-
-**Fallo deliberado:** escribe `saludos` en el programa en vez de `saludo`. **Error esperado:** `MissingResourceException`. **Diagnóstico:** la clave solicitada debe existir en cada archivo de recursos.
-
-**3. Entiende** `ResourceBundle` escoge el archivo según el locale; conserva las claves iguales entre idiomas.
-
-**Diagnóstico:** compara qué parte del resultado depende del idioma, de la región o de la zona horaria.
-
-**4. Cierra**
-
-Guarda una salida para cada locale probado y anota qué convención cambió.
-
-#### Paso 7 · Cierre y evidencia
-Entrega como evidencia la salida real del Paso 4 y la explicación del fallo deliberado. **¿Por qué es importante?** porque cualquier producto que crece cruza fronteras, y los errores de formato de dinero o fecha generan cobros y entregas equivocados.
 
 ### Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min
 

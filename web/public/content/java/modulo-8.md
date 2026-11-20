@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: pom.xml vs build.gradle.kts
+### Tema 1: pom.xml vs build.gradle.kts · Básico · 40 min
 
 **¿Por qué es importante?** el build describe cómo cualquier persona del equipo compila el mismo programa y obtiene sus dependencias.
 
@@ -127,7 +127,7 @@ java -cp target/classes Saludo
 
 Modifica `maven.compiler.release` a una versión de JDK que no tengas instalada y repite `mvn package`; confirma el mensaje de error antes de restaurar el valor original.
 
-### Tema 2: Ciclo de vida de build y scopes
+### Tema 2: Ciclo de vida de build y scopes · Intermedio · 40 min
 
 **¿Por qué es importante?** una dependencia de prueba no debe filtrarse al artefacto de producción.
 
@@ -226,7 +226,7 @@ jar tf target/rutas-1.0.jar
 
 Modifica el scope de JUnit de `test` a `compile` en `pom.xml`, corre `mvn package` y abre el JAR con `jar tf` para confirmar que ahora sí se filtró al artefacto de producción. Restaura el scope correcto después.
 
-### Tema 3: Proyectos multi-módulo
+### Tema 3: Proyectos multi-módulo · Intermedio · 40 min
 
 **¿Por qué es importante?** separar contratos y aplicación ayuda a detectar dependencias circulares antes de crecer el producto.
 
@@ -319,7 +319,7 @@ mvn -q -pl app -am package
 
 **Límite:** `-pl -am` solo construye lo que falta en el reactor actual; en CI, sin repositorio local ya poblado, hay que construir el árbol completo al menos una vez o declarar explícitamente qué módulos se cachean entre builds.
 
-### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas
+### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min
 
 **¿Por qué es importante?** elegir build requiere comparar resultados y mantenimiento, no solo la longitud de la configuración.
 

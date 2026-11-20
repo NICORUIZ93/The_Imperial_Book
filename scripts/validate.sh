@@ -29,6 +29,12 @@ python3 scripts/build_curriculum_catalog.py --check
 echo "== Orden pedagógico de los temas (numeración continua y nivel no decreciente)"
 python3 scripts/audit_topic_order.py --check
 
+echo "== Citas numéricas entre temas (existen, no se auto-citan, miran hacia atrás)"
+python3 scripts/audit_topic_citations.py --check
+
+echo "== Completitud de cada curso (capítulos registrados, etapas, capítulo Master, anclas)"
+python3 scripts/audit_course_completeness.py --check
+
 echo "== Laboratorios citados por las lecciones"
 python3 scripts/validate_lesson_labs.py
 
@@ -43,6 +49,11 @@ python3 scripts/build_zero_to_master_report.py --check
 python3 scripts/audit_track_master_prompt.py --check
 
 echo "== Specs"
-python3 scripts/validate_specs.py
+# Guarda contra recursión: hay criterios cuya verificación es este mismo script.
+if [ -n "${VALIDATE_SH_EN_CURSO:-}" ]; then
+  python3 scripts/validate_specs.py
+else
+  VALIDATE_SH_EN_CURSO=1 python3 scripts/validate_specs.py --run
+fi
 
 echo "validate.sh: ok"

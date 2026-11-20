@@ -5,7 +5,7 @@
 
 Cada tema se verifica con mecanismos reales y ejecutables sin depender de un daemon de Docker disponible en este entorno: el modo `layertools` embebido en el propio JAR de Spring Boot, la meta de Maven `spring-boot:process-aot` (que ejecuta de verdad el motor de AOT de Spring, sin necesitar un compilador nativo de GraalVM instalado), y los endpoints reales de Actuator agrupados por probes de Kubernetes. Continúa sobre `demo-cloud` (Módulo 16) o un proyecto nuevo.
 
-### Tema 1: Fat JAR vs capas de Docker
+### Tema 1: Fat JAR vs capas de Docker · Intermedio · 40 min
 
 Duración: 35–45 min. **Meta:** empaquetar RutaFlow en un JAR ejecutable, separar sus partes y construir una imagen con capas que puedan reutilizarse entre versiones. Sigue `examples/spring-boot-layered-jar-rutaflow/`; necesita Java 25 y Maven Wrapper. Para construir la imagen, usa Docker o Podman.
 
@@ -152,7 +152,7 @@ Entrega la respuesta antes y después del cambio, la lista de capas y la línea 
 
 Fuentes oficiales: [capas y empaquetado Maven de Spring Boot](https://docs.spring.io/spring-boot/maven-plugin/packaging.html) y [Dockerfiles para imágenes de contenedor](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html). Siguiente: Tema 2, imagen nativa con GraalVM.
 
-### Tema 2: GraalVM native image
+### Tema 2: GraalVM native image · Avanzado · 50 min
 
 Duración: 45–60 min. **Meta:** ejecutar una app con el AOT de Spring y aprender qué hace falta para convertirla en un binario nativo. Usa `examples/spring-boot-native-rutaflow/`, Java 25 y Maven Wrapper.
 
@@ -295,7 +295,7 @@ Entrega las dos respuestas, sus mediciones y una razón concreta para elegir JVM
 
 Fuentes oficiales: [AOT y perfil Maven `native`](https://docs.spring.io/spring-boot/maven-plugin/aot.html), [imágenes nativas de Spring Boot](https://docs.spring.io/spring-boot/reference/packaging/native-image/introducing-graalvm-native-images.html), [metadata y hints personalizados](https://docs.spring.io/spring-boot/reference/packaging/native-image/advanced-topics.html) y [prerrequisitos y build Native Image](https://www.graalvm.org/reference-manual/native-image/). Siguiente: Tema 3, health checks de Actuator para Kubernetes.
 
-### Tema 3: Health checks para Kubernetes
+### Tema 3: Health checks para Kubernetes · Avanzado · 40 min
 
 Duración: 40–50 min. **Meta:** configurar Spring Actuator para que Kubernetes pueda distinguir un contenedor que debe reiniciar de uno que solo debe dejar de recibir tráfico. Usa `examples/spring-boot-probes-rutaflow/`, Java 25 y Maven Wrapper. El laboratorio local prueba la app; para observar acciones del kubelet necesitas un clúster.
 

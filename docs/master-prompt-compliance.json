@@ -51,6 +51,7 @@
             "rollout"
           ]
         },
+        "masterGhost": false,
         "visual": 76,
         "easy": 81,
         "measuredTopics": 83,
@@ -99,6 +100,7 @@
             "migraciones"
           ]
         },
+        "masterGhost": false,
         "visual": 75,
         "easy": 54,
         "measuredTopics": 78,
@@ -168,6 +170,7 @@
             "deprecations"
           ]
         },
+        "masterGhost": false,
         "visual": 108,
         "easy": 140,
         "measuredTopics": 168,
@@ -196,6 +199,7 @@
           "missing": [],
           "note": "sin atlas oficial registrado"
         },
+        "masterGhost": false,
         "visual": 11,
         "easy": 88,
         "measuredTopics": 88,
@@ -258,6 +262,7 @@
             "restore"
           ]
         },
+        "masterGhost": false,
         "visual": 132,
         "easy": 138,
         "measuredTopics": 139,
@@ -319,6 +324,7 @@
             "stores"
           ]
         },
+        "masterGhost": false,
         "visual": 96,
         "easy": 103,
         "measuredTopics": 119,
@@ -349,6 +355,7 @@
           "missing": [],
           "note": "sin atlas oficial registrado"
         },
+        "masterGhost": false,
         "visual": 78,
         "easy": 105,
         "measuredTopics": 105,
@@ -402,6 +409,7 @@
             "crashes"
           ]
         },
+        "masterGhost": false,
         "visual": 48,
         "easy": 63,
         "measuredTopics": 69,
@@ -455,6 +463,7 @@
             "migración LTS"
           ]
         },
+        "masterGhost": false,
         "visual": 25,
         "easy": 120,
         "measuredTopics": 120,
@@ -503,6 +512,7 @@
             "supply chain"
           ]
         },
+        "masterGhost": false,
         "visual": 62,
         "easy": 91,
         "measuredTopics": 92,
@@ -545,6 +555,7 @@
             "ownership"
           ]
         },
+        "masterGhost": false,
         "visual": 57,
         "easy": 64,
         "measuredTopics": 66,
@@ -578,6 +589,7 @@
           "missing": [],
           "note": "sin atlas oficial registrado"
         },
+        "masterGhost": false,
         "visual": 2,
         "easy": 0,
         "measuredTopics": 0,
@@ -590,7 +602,7 @@
       "topics": 78,
       "status": {
         "T1": true,
-        "T2": true,
+        "T2": false,
         "T3": false,
         "T4": false,
         "T5": true,
@@ -631,6 +643,7 @@
             "observabilidad"
           ]
         },
+        "masterGhost": true,
         "visual": 33,
         "easy": 78,
         "measuredTopics": 78,
@@ -676,6 +689,7 @@
             "migración"
           ]
         },
+        "masterGhost": false,
         "visual": 43,
         "easy": 51,
         "measuredTopics": 64,
@@ -706,6 +720,7 @@
           "missing": [],
           "note": "sin atlas oficial registrado"
         },
+        "masterGhost": false,
         "visual": 26,
         "easy": 29,
         "measuredTopics": 29,
@@ -755,6 +770,7 @@
             "native images"
           ]
         },
+        "masterGhost": false,
         "visual": 51,
         "easy": 123,
         "measuredTopics": 123,

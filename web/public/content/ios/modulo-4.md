@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: async/await y Task
+### Tema 1: async/await y Task · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a cargar el detalle de un envío de RutaFlow con `async`/`await` dentro de `.task`, y a confirmar que se cancela sola si el conductor sale de la pantalla antes de que termine. Prerrequisitos: Módulo 3 completo.
@@ -79,7 +79,7 @@ Corregí el Paso 5 volviendo a `.task`, y agregá un timeout real con `Task.slee
 #### Paso 7 · Cierre
 Entregá la carga cancelable del Paso 4, la tarea huérfana del Paso 5, y el timeout agregado del Paso 6; explicá por qué `.task` resuelve un problema que `Task` suelto dentro de `onAppear` no resuelve. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 
-### Tema 2: Actors para estado mutable seguro
+### Tema 2: Actors para estado mutable seguro · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a proteger con un `actor` el contador de "entregas confirmadas hoy" de RutaFlow contra una condición de carrera real entre tareas concurrentes. Prerrequisitos: Tema 1 de este módulo.
@@ -147,7 +147,7 @@ Corregí el Paso 5 volviendo a `actor`, y agregá un método `reiniciar()` al ac
 #### Paso 7 · Cierre
 Entregá el contador correcto con `actor` del Paso 4, la condición de carrera real con `class` del Paso 5, y el método `reiniciar()` del Paso 6; explicá por qué el compilador rechaza acceder a `confirmadasHoy` sin `await` desde fuera del actor. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 
-### Tema 3: TaskGroup y MainActor
+### Tema 3: TaskGroup y MainActor · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a traer en paralelo los datos de envío y de conductor con `TaskGroup`, y a confirmar que `@MainActor` protege la actualización de la UI. Prerrequisitos: Tema 2 de este módulo.
@@ -257,7 +257,7 @@ Entregá las dos consultas paralelas del Paso 4, el crash potencial sin `@MainAc
 
 ## Laboratorio de transferencia
 
-### Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red
+### Tema 4: Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar cancelarás una tarea Swift y comprobarás que no publica un resultado obsoleto. **Prerrequisitos:** funciones async, Task y errores. macOS con Swift 6 o el toolchain de Xcode; comprueba `swift --version`. Ejemplo independiente desde carpeta vacía, sin necesitar una app previa.

@@ -7,7 +7,7 @@
 
 **Proyecto del módulo:** todos los temas trabajan en un proyecto Next.js 16 nuevo, `rutaflow-next`, creado en el Tema 1 sin carpeta `src` (el alias `@/` apunta a la raíz). Usa Node 24 LTS.
 
-### Tema 1: Next.js ISR, Metadata y Proxy (antes Middleware)
+### Tema 1: Next.js ISR, Metadata y Proxy (antes Middleware) · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar distinguirás una redirección temprana de una autorización y observarás regeneración de HTML público. **Prerrequisitos:** Módulo 10 (App Router y Server Components) y Módulo 13, Tema 3 (autorización en el servidor). Este ejemplo usa Next.js 16, runtime Node y la configuración tradicional de caché, sin `cacheComponents`; en Next.js 15 la convención equivalente es `middleware.ts` con función `middleware`.
@@ -136,7 +136,7 @@ Entrega las respuestas y explica la diferencia entre navegación, autorización 
 
 **Límites y decisión de uso:** Esta ficha estática demuestra regeneración del HTML. Al conectar datos reales debes definir caché e invalidación de esa fuente y mantener toda información privada fuera de esta ruta pública.
 
-### Tema 2: Optimización de imágenes y fuentes
+### Tema 2: Optimización de imágenes y fuentes · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `app/components/Photo.tsx` con `next/image` y dimensiones explícitas para la foto de evidencia de entrega, y vas a cargar una fuente con `next/font` en vez de un `<link>` bloqueante, midiendo el CLS antes y después. **Prerrequisitos:** Tema 1 de este módulo.
@@ -196,7 +196,7 @@ Restaura `next/image`, y además compara: quita temporalmente `next/font` en fav
 #### Paso 7 · Cierre
 Entrega la foto sin salto de layout del Paso 4, el CLS alto reproducido con `<img>` plano del Paso 5, y la comparación de FCP entre `next/font` y un `<link>` externo del Paso 6; explica por qué reservar espacio de antemano es lo que elimina el salto, no el formato del archivo de imagen. Como siguiente paso, estudia accesibilidad con React Aria para esa misma página. Errores comunes: usar `<img>` plano sin `width`/`height` donde `next/image` ya está disponible; cargar una fuente externa bloqueante cuando `next/font` puede autohospedarla. Fuente oficial: https://nextjs.org/docs/app/building-your-application/optimizing/images y https://nextjs.org/docs/app/building-your-application/optimizing/fonts.
 
-### Tema 3: Accesibilidad y React Aria
+### Tema 3: Accesibilidad y React Aria · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `app/components/Dialog.tsx` con `useDialog` de React Aria para confirmar "marcar como entregado", y vas a reproducir el fallo de un diálogo construido como un `<div>` plano que es invisible para un lector de pantalla. **Prerrequisitos:** Tema 2 de este módulo y Módulo 13, Tema 2 (foco y semántica).
@@ -261,7 +261,7 @@ Restaura los props de `useDialog`, agrega `useModal`/`FocusScope` para confirmar
 #### Paso 7 · Cierre
 Entrega el diálogo accesible del Paso 4, la pérdida de semántica confirmada en el árbol de accesibilidad del Paso 5, y el atrapado de foco más la prueba con `jest-axe` del Paso 6; explica por qué un componente puede verse idéntico y a la vez ser invisible para un lector de pantalla. Como siguiente paso, estudia i18n para que los textos de ese mismo diálogo sean traducibles. Errores comunes: confiar en que "se ve bien" es lo mismo que "es accesible"; reinventar el atrapado de foco a mano en vez de usar `useModal`/`FocusScope`. Fuente oficial: https://react-spectrum.adobe.com/react-aria/useDialog.html.
 
-### Tema 4: i18n, pluralización y RTL
+### Tema 4: i18n, pluralización y RTL · Experto · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar `next-intl` para `/[locale]/envios/[id]` con un mensaje pluralizado correctamente ("1 envío" vs. "3 envíos") y `dir="rtl"` para un locale árabe, y vas a reproducir el fallo de una clave de traducción faltante en un idioma. **Prerrequisitos:** Tema 3 de este módulo y Módulo 13, Tema 4 (locale y zona decididos en el servidor).

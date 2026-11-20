@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: go_router: navegación como función de la URL
+### Tema 1: go_router: navegación como función de la URL · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reemplazar la navegación imperativa de RutaFlow (`Navigator.push`/`pop`) por go_router, donde `/envios/:id` sea la fuente de verdad de qué envío se muestra. Prerrequisitos: Módulo 2 completo.
@@ -112,7 +112,7 @@ Corregí el Paso 5 devolviendo `context.go('/envios/$id')`, y agregá una segund
 Entregá la navegación declarativa del Paso 4, la desincronización de URL provocada en el Paso 5, y la segunda ruta del Paso 6; explicá por qué go_router resuelve el problema de que el Navigator 1.0 no tiene ninguna representación explícita de "en qué ruta está la app". Siguiente paso: estudia guards y deep linking. Errores comunes: mezclar `Navigator.push` imperativo con rutas de go_router ya definidas, usar `state.pathParameters['id']!` sin verificar que el parámetro realmente puede faltar, y definir rutas sin un `builder` que use efectivamente ese parámetro. Fuentes oficiales: https://pub.dev/packages/go_router y https://docs.flutter.dev/ui/navigation.
 **Implicación práctica:** go_router resuelve el problema de que el Navigator 1.0 imperativo no tiene ninguna representación explícita de "en qué ruta está la app", crítico para deep linking y Flutter Web.
 
-### Tema 2: Guards y deep linking
+### Tema 2: Guards y deep linking · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a proteger `/admin` de RutaFlow con un `redirect` declarativo, y a confirmar que un deep link externo a `/envios/RF-4471` abre directamente ese envío sin pasos manuales. Prerrequisitos: Tema 1 de este módulo.
@@ -221,7 +221,7 @@ Corregí el Paso 5 devolviendo el `redirect` a la definición de la ruta `/admin
 Entregá el guard declarativo del Paso 4, la ruta desprotegida por verificación dispersa del Paso 5, y la ruta hija heredando protección del Paso 6; explicá por qué centralizar el guard en la definición de la ruta evita que una ruta nueva quede desprotegida por descuido. Siguiente paso: estudia transiciones personalizadas. Errores comunes: verificar autenticación manualmente dentro de cada widget de pantalla protegida en vez de en un `redirect`, no confirmar que las rutas hijas heredan protección, y tratar el deep linking como un sistema separado en vez de la misma función de URL ya existente. Fuentes oficiales: https://pub.dev/packages/go_router y https://docs.flutter.dev/ui/navigation/deep-linking.
 **Implicación práctica:** Los guards declarativos centralizan la protección de rutas directamente en su definición, evitando verificaciones dispersas y propensas a omisión.
 
-### Tema 3: Transiciones personalizadas
+### Tema 3: Transiciones personalizadas · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a aplicar un fundido (`FadeTransition`) específicamente a la transición hacia la pantalla de confirmación exitosa, comunicando "este flujo terminó" en vez del deslizamiento estándar. Prerrequisitos: Tema 2 de este módulo.

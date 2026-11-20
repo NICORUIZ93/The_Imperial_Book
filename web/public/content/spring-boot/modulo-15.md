@@ -4,7 +4,7 @@
 
 Cada Tema parte de una carpeta vacía, produce un artefacto concreto y lo verifica con un comando real. El recorrido va de dentro hacia afuera: puertos y adaptadores (Temas 1–3), cómo documentar y decidir la arquitectura (Temas 4–5) y cómo verificar los límites dentro de un mismo proceso con Spring Modulith (Temas 6–9). Un módulo de Modulith es una frontera lógica, no un microservicio; la decisión de separar servicios se estudia en el curso [Microservicios](/curso/microservices/0).
 
-### Tema 1: Hexagonal: puertos que hablan el idioma del dominio
+### Tema 1: Hexagonal: puertos que hablan el idioma del dominio · Avanzado · 35 min
 
 Al finalizar vas a separar una regla de negocio de su infraestructura con un puerto que devuelve tipos del dominio, y a compilar el caso de uso sin Spring ni JPA en el classpath.
 
@@ -180,7 +180,7 @@ Siguiente paso: documentar el sistema completo con C4. **Evidencia de aprendizaj
 
 **Fuente oficial:** [Hexagonal Architecture (Alistair Cockburn)](https://alistair.cockburn.us/hexagonal-architecture/) y [Spring Data JPA](https://docs.spring.io/spring-data/jpa/reference/).
 
-### Tema 2: Arquitectura hexagonal verificada con ArchUnit
+### Tema 2: Arquitectura hexagonal verificada con ArchUnit · Avanzado · 35 min
 
 **Objetivo observable:** agregar una regla ejecutable que bloquee dependencias desde `domain` y `application` hacia `infrastructure`.
 
@@ -288,7 +288,7 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 
 **Fuentes oficiales:** [ArchUnit User Guide](https://www.archunit.org/userguide/html/000_Index.html), [ArchUnit Getting Started](https://www.archunit.org/getting-started).
 
-### Tema 3: Clean Architecture y DDD táctico: caso de uso antes que framework
+### Tema 3: Clean Architecture y DDD táctico: caso de uso antes que framework · Experto · 35 min
 
 #### Subtema 3.1: Haz que el agregado proteja la regla · 8 min
 
@@ -458,7 +458,7 @@ javac -d "$build_dir" Main.java
 java -cp "$build_dir" Main
 ```
 
-### Tema 4: C4: contexto, contenedores, componentes y código
+### Tema 4: C4: contexto, contenedores, componentes y código · Avanzado · 35 min
 
 Al finalizar vas a dibujar los cuatro niveles C4 de una API de envíos, a enlazar cada relación con el código que la implementa y a validar el documento con un script que falla si un contenedor del sistema no aparece.
 
@@ -619,7 +619,7 @@ Siguiente paso: registrar por qué se eligió esta arquitectura. **Evidencia de 
 
 **Fuente oficial:** [C4 model](https://c4model.com/) y [Diagramas como código con Mermaid](https://mermaid.js.org/syntax/flowchart.html).
 
-### Tema 5: ADR: decisiones con contexto, alternativas y consecuencias
+### Tema 5: ADR: decisiones con contexto, alternativas y consecuencias · Experto · 35 min
 
 Al finalizar vas a escribir tres Architecture Decision Records con contexto, alternativas, consecuencias y estado, y a validarlos con un script que falla si falta una sección o si no se consideró ninguna alternativa.
 
@@ -782,7 +782,7 @@ Siguiente paso: aplicar el mismo criterio a cada nueva decisión del proyecto. *
 
 **Fuente oficial:** [Architecture Decision Records (AWS Prescriptive Guidance)](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html) y [ADR en Martin Fowler](https://martinfowler.com/bliki/ArchitectureDecisionRecord.html).
 
-### Tema 6: módulos y límites entre paquetes
+### Tema 6: módulos y límites entre paquetes · Avanzado · 30 min
 
 **Meta:** detectar una dependencia de un módulo hacia una clase interna de otro.
 
@@ -866,7 +866,7 @@ cd practica-m23-t1
 
 **Fuente primaria:** [Spring Modulith: fundamentos](https://docs.spring.io/spring-modulith/reference/fundamentals.html)
 
-### Tema 7: eventos entre módulos sin importar implementación
+### Tema 7: eventos entre módulos sin importar implementación · Avanzado · 30 min
 
 **Meta:** publicar un hecho de negocio y observar su reacción local después del commit.
 
@@ -950,7 +950,7 @@ cd practica-m23-t2
 
 **Fuente primaria:** [Spring Modulith: eventos](https://docs.spring.io/spring-modulith/reference/events.html)
 
-### Tema 8: documentación generada y mapa de dependencias
+### Tema 8: documentación generada y mapa de dependencias · Avanzado · 30 min
 
 **Meta:** generar PlantUML y fichas Asciidoc desde el modelo modular y contrastar una relación con un import.
 
@@ -1034,7 +1034,7 @@ cd practica-m23-t3
 
 **Fuente primaria:** [Spring Modulith: Documenter](https://docs.spring.io/spring-modulith/reference/documentation.html)
 
-### Tema 9: pruebas de integración por módulo
+### Tema 9: pruebas de integración por módulo · Avanzado · 30 min
 
 **Meta:** distinguir un test modular acotado del contexto completo y localizar qué evidencia produce cada uno.
 

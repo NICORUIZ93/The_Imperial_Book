@@ -804,7 +804,7 @@ services:
     expose: ["3000"]
 
   edge:
-    image: nginx:1.27-alpine
+    image: nginx:1.30-alpine
     ports: ["8080:80"]
     volumes:
       - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro

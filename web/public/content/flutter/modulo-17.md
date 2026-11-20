@@ -6,7 +6,7 @@ Vas a generar serialización para RutaFlow, inspeccionar código Dart como árbo
 
 ---
 
-### Tema 1: macros de Dart y alternativas disponibles
+### Tema 1: macros de Dart y alternativas disponibles · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar elegirás una herramienta disponible para generar serialización y explicarás el estado real de los macros. **Prerrequisitos:** Dart, clases y mapas JSON. **Ejemplo independiente en proyecto nuevo:** crea un paquete limpio:
@@ -93,7 +93,7 @@ Agrega el campo `status` a `Delivery`, regenera y comprueba la salida. Escribe e
 #### Paso 7 · Cierre y evidencia
 Errores comunes: presentar macros como disponibles, editar el `.g.dart` manualmente y confundir generación de código con reflexión. Entrega el archivo generado, salida JSON, error del `part` eliminado y la nota de estado del lenguaje. **Proyecto integrador RutaFlow:** genera el JSON de `Entrega` antes de enviar la solicitud en `lib/macros_status_lab.dart`. Siguiente tema: controlar, depurar y configurar la generación de código. Fuentes oficiales: [actualización de macros Dart](https://dart.dev/blog/an-update-on-dart-macros-data-serialization), [Dart 3.7: estado de macros](https://dart.dev/blog/announcing-dart-3-7) y [build_runner](https://dart.dev/tools/build_runner).
 
-### Tema 2: generación avanzada con build_runner
+### Tema 2: generación avanzada con build_runner · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar controlarás qué genera `build_runner`, qué archivos se reemplazan y cómo reproducir una generación limpia. **Prerrequisitos:** Tema 1 y una anotación `json_serializable`. **Ejemplo independiente:** crea `dart create -t console-simple generation_lab` en una carpeta vacía; instala las dependencias y `test`:
@@ -183,7 +183,7 @@ Activa `dart run build_runner watch` y modifica un campo; observa cuándo se act
 #### Paso 7 · Cierre y evidencia
 Errores comunes: modificar salida generada, dejar `watch` corriendo en CI y no regenerar tras editar la fuente. Entrega diff de entrada/salida, log de build limpio y test actualizado. **Proyecto integrador RutaFlow:** genera el adaptador JSON de la entrega y añade `dart run build_runner build` a las instrucciones de desarrollo. Siguiente tema: reemplazar la reflexión en runtime por un registro tipado. Fuentes oficiales: [build_runner](https://dart.dev/tools/build_runner), [opciones de builders](https://pub.dev/documentation/build_runner/latest/index.html) y [paquete json_serializable](https://pub.dev/packages/json_serializable).
 
-### Tema 3: reflexión limitada y registro tipado
+### Tema 3: reflexión limitada y registro tipado · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar reemplazarás una idea de reflexión por un registro explícito de constructores. **Prerrequisitos:** tipos Dart, JSON y Tema 1. **Ejemplo independiente:** crea `dart create -t console-simple reflection_lab` en una carpeta limpia y agrega carpetas/dependencias:
@@ -281,7 +281,7 @@ Añade `invoice` con su decoder, prueba ambos tipos y prueba `type: 7`. Comprueb
 #### Paso 7 · Cierre y evidencia
 Errores comunes: creer que `runtimeType` deserializa JSON, aceptar cualquier nombre externo y ocultar errores de esquema. Entrega registro, tests y error desconocido diagnosticado. **Proyecto integrador RutaFlow:** despacha eventos de entrega a decoders conocidos antes de actualizarlos en `lib/reflection_lab.dart`. Siguiente tema: leer el AST cuando el código fuente de Dart, y no un objeto en runtime, es la entrada. Fuentes oficiales: [Flutter FAQ: reflection/mirrors](https://docs.flutter.dev/resources/faq) y [Dart: generación de código](https://dart.dev/tools/build_runner).
 
-### Tema 4: recorrer el AST de Dart con analyzer
+### Tema 4: recorrer el AST de Dart con analyzer · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar recorrerás el AST de un archivo y listarás sus clases con un visitor. **Prerrequisitos:** Dart, clases y listas. **Ejemplo independiente:** crea `dart create -t console-simple ast_lab` en una carpeta vacía y añade el analizador:
@@ -372,7 +372,7 @@ Ejecuta `dart test`, agrega una clase abstracta y decide si el visitor la incluy
 #### Paso 7 · Cierre y evidencia
 Errores comunes: analizar código con regex, no fijar la versión de analyzer y asumir que el AST de todas las versiones es idéntico. Entrega visitor, salida, test y comentario que no produce falso positivo. **Proyecto integrador RutaFlow:** usa el visitor como herramienta de migración local para identificar clases `*Dto` y proponer nombres consistentes. Siguiente tema: convertir una regla propia en un builder de build_runner. Fuentes oficiales: [paquete analyzer](https://pub.dev/packages/analyzer), [AST visitors](https://pub.dev/documentation/analyzer/latest/dart_ast_visitor/) y [build_runner](https://dart.dev/tools/build_runner).
 
-### Tema 5: crear un builder pequeño para build_runner
+### Tema 5: crear un builder pequeño para build_runner · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar crearás un builder que lee una lista de nombres y genera una constante Dart. **Prerrequisitos:** paquetes Dart, Tema 2 y colecciones. **Ejemplo independiente:** crea `dart create -t package route_catalog_lab` en una carpeta vacía:
@@ -479,7 +479,7 @@ Añade test para la lista generada y una entrada con espacios al inicio; prueba 
 #### Paso 7 · Cierre y evidencia
 Errores comunes: no declarar la extensión, escribir salidas fuera de `allowedOutputs` y generar código desde texto sin validar. Entrega builder, `build.yaml`, entrada, salida y fallo por extensión diagnosticado. **Proyecto integrador RutaFlow:** genera una lista de estados de entrega permitidos que comparta la app y el validador de solicitudes. Siguiente tema: organizar y preparar la distribución de un paquete Dart. Fuentes oficiales: [build_runner: crear builders](https://dart.dev/tools/build_runner), [interfaz Builder](https://pub.dev/documentation/build/latest/build/Builder-class.html) y [build package](https://pub.dev/packages/build).
 
-### Tema 6: diseñar y validar un paquete Dart
+### Tema 6: diseñar y validar un paquete Dart · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar prepararás un paquete público pequeño con API, ejemplo, tests y documentación, y revisarás el archivo que se publicaría sin subirlo. **Prerrequisitos:** Dart y clases públicas/privadas. **Ejemplo independiente:** crea `dart create -t package route_labels` en una carpeta vacía.

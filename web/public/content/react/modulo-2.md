@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: useEffect — dependencias y limpieza
+### Tema 1: useEffect — dependencias y limpieza · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a hacer que `PanelEnvios` consulte la API de RutaFlow dentro de un `useEffect`, cancelando la petición con `AbortController` cuando el componente se desmonte o cambie el filtro. Prerrequisitos: Módulo 1 completo.
@@ -295,7 +295,7 @@ describe('lógica de eventos', () => {
 **Fallo deliberado:** en la primera prueba, envuelve el componente en `<StrictMode>`. **Error esperado:** `expected "vi.fn()" to be called 1 times, but got 2 times`. **Diagnóstico:** en desarrollo, `StrictMode` monta, desmonta y vuelve a montar cada componente para destapar efectos que no son idempotentes; el cliente recibiría dos mensajes. La versión con la notificación en el manejador no depende de cuántas veces se monte. Quita el `<StrictMode>` de esa prueba.
 
 **3. Entiende**
-Pregúntate **por qué** debe ejecutarse el código. Si la respuesta es «porque el usuario hizo algo» (clic, envío de formulario), va en el manejador de ese evento. Si es «porque el componente está en pantalla y debe estar sincronizado con algo externo» (una conexión, una suscripción, el título del documento), va en un efecto con su limpieza. **Límite:** a veces hace falta una petición al montar, por ejemplo para cargar datos; eso sí es sincronización y la verás con cancelación en el Tema 7 (y con TanStack Query en el Módulo 6).
+Pregúntate **por qué** debe ejecutarse el código. Si la respuesta es «porque el usuario hizo algo» (clic, envío de formulario), va en el manejador de ese evento. Si es «porque el componente está en pantalla y debe estar sincronizado con algo externo» (una conexión, una suscripción, el título del documento), va en un efecto con su limpieza. **Límite:** a veces hace falta una petición al montar, por ejemplo para cargar datos; eso sí es sincronización y la verás con cancelación en el Tema 7; con TanStack Query se trata en el curso más adelante.
 
 **4. Cierra**
 Guarda las pruebas. Anota en un comentario de `ConfirmarConEfecto` por qué es un antipatrón.
@@ -436,7 +436,7 @@ Compruébalo con `contarCommits` adaptado o con el Profiler de React DevTools: u
 
 **Fuentes oficiales:** [React — You Might Not Need an Effect](https://react.dev/learn/you-might-not-need-an-effect), [React — Preserving and Resetting State](https://react.dev/learn/preserving-and-resetting-state) y [React — `<Profiler>`](https://react.dev/reference/react/Profiler).
 
-### Tema 3: useRef — valores mutables sin re-render
+### Tema 3: useRef — valores mutables sin re-render · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a contar, con `useRef`, cuántas veces se renderizó `PanelEnvios` sin que ese contador dispare ningún render adicional por sí mismo. Prerrequisitos: Tema 1 de este módulo.
@@ -524,7 +524,7 @@ Corrige el Paso 5 devolviendo `useRef`, y agrega una segunda referencia que guar
 #### Paso 7 · Cierre
 Entrega el contador con `useRef` del Paso 4, el loop infinito provocado en el Paso 5, y la comparación de zona anterior del Paso 6; explica por qué `useState` dentro del cuerpo del componente (sin pasar por un evento o efecto) es peligroso para un contador de renders, mientras que `useRef` no lo es. Siguiente paso: estudia cuándo `useMemo`/`useCallback` valen la pena. Errores comunes: llamar a un setter de `useState` directamente en el cuerpo del componente fuera de un evento o efecto, usar `useRef` para datos que sí deberían reflejarse visualmente, y leer `.current` esperando que esté sincronizado inmediatamente con el render visual actual. Fuentes oficiales: https://react.dev/reference/react/useRef y https://react.dev/learn/referencing-values-with-refs.
 
-### Tema 4: useMemo y useCallback con criterio
+### Tema 4: useMemo y useCallback con criterio · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir (antes de "optimizar a ciegas") si ordenar la lista de envíos por fecha estimada es realmente costoso, y a decidir si `useMemo` vale la pena para ese cálculo. Prerrequisitos: Tema 3 de este módulo.
@@ -635,7 +635,7 @@ Corrige el Paso 5 quitando el `useMemo` innecesario sobre el `sort`, y en su lug
 #### Paso 7 · Cierre
 Entrega la medición del Paso 4, el `useMemo` innecesario descartado en el Paso 5, y la medición con el Profiler del Paso 6; explica la diferencia entre memoizar "por si acaso" y memoizar con evidencia concreta de que el problema de rendimiento existe. Siguiente paso: estudia las reglas de los hooks y `useReducer`. Errores comunes: envolver cálculos triviales en `useMemo` sin medir, memoizar una función sin que ningún hijo memoizado la use, y confundir "se ve más rápido" con una medición real del Profiler. Fuentes oficiales: https://react.dev/reference/react/useMemo y https://react.dev/reference/react/useCallback.
 
-### Tema 5: Reglas de los hooks, useReducer y useImperativeHandle
+### Tema 5: Reglas de los hooks, useReducer y useImperativeHandle · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar con `useReducer` las transiciones de estado de `PanelEnvios` (cargando/éxito/error), en vez de varios `useState` independientes que podrían quedar en combinaciones inconsistentes. Prerrequisitos: Tema 4 de este módulo.
@@ -737,7 +737,7 @@ Corrige el Paso 5 moviendo ese `useState` al nivel superior del componente (sin 
 Entrega el reducer sin estados inconsistentes del Paso 4, el error de hooks provocado en el Paso 5, y el `useImperativeHandle` del Paso 6; explica por qué React asocia cada hook por su posición de llamada y no por un nombre, y qué rompe exactamente llamar un hook dentro de una condición. Siguiente paso: estudia Context y cuándo usarlo. Errores comunes: llamar un hook dentro de un `if`, un bucle o una función anidada condicional, modelar estados mutuamente excluyentes con varios `useState` independientes en vez de un reducer, y exponer el nodo DOM completo con `ref` en vez de una API imperativa acotada. Fuentes oficiales: https://react.dev/reference/rules/rules-of-hooks y https://react.dev/reference/react/useReducer.
 **Implicación práctica:** Respetar las reglas de los hooks garantiza que React asocie correctamente cada hook con su estado interno entre renders; un reducer evita estados mutuamente excluyentes que coexistan por error.
 
-### Tema 6: Error Boundaries — contener errores de render sin romper toda la app
+### Tema 6: Error Boundaries — contener errores de render sin romper toda la app · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás envolver una parte de la UI en un Error Boundary que atrape un error de render y muestre una interfaz de recuperación, en vez de que toda la app quede en blanco. Prerrequisitos: Módulo 1 (componentes y estado).
@@ -858,7 +858,7 @@ Entrega la app con el mapa contenido, el reintento y la versión con `react-erro
 
 ## Laboratorio de transferencia
 
-### Tema 7: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual
+### Tema 7: Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar reproducirás una carrera entre dos solicitudes y evitarás mostrar datos de una selección anterior. **Prerrequisitos:** props, estado, efectos, promesas y cleanup. Node y npm compatibles con Vite 8. Ejemplo independiente desde carpeta vacía.

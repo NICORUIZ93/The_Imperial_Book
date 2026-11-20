@@ -1,4 +1,4 @@
-# Módulo 18: Spring Security II: OIDC, autorización por recurso y SAML
+# Módulo 18: Autenticación y backend seguro con Spring Security
 
 ## Aprende construyendo
 
@@ -11,7 +11,7 @@ El resultado será una API Spring Boot que autentica requests con un proveedor O
 
 El rol permite entrar a una clase de operación; la comprobación de propiedad autoriza el objeto concreto. El caso aplicado no se considera listo solo porque el token tenga firma válida.
 
-### Tema 1: SecurityFilterChain y autorización
+### Tema 1: SecurityFilterChain y autorización · Avanzado · 35 min
 
 **Meta:** crear reglas de acceso explícitas, convertir roles del JWT en authorities de Spring y comprobar que el rol general no sustituye la autorización sobre el pedido concreto.
 
@@ -104,7 +104,7 @@ Las pruebas anteriores usan un `JwtDecoder` simulado: comprueban reglas y owners
 
 **Fuentes primarias:** [Spring Security: autorización de peticiones HTTP](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html); [Spring Security: Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
 
-### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP
+### Tema 2: DTO validation, CORS, JWT/OIDC y clientes HTTP · Avanzado · 40 min
 
 **Meta:** validar datos antes de guardar, limitar qué páginas web leen la API, confiar en un emisor OIDC identificado y filtrar destinos de llamadas HTTP salientes.
 

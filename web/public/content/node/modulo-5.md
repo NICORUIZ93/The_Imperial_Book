@@ -154,7 +154,7 @@ docker compose down -v
 
 **Ejercicio independiente:** crea `src/registrar-cliente.js` en este mismo proyecto. Valida que el email no esté vacío antes de insertarlo y maneja una violación de unicidad sin revelar SQL interno. Entrega una inserción válida y una duplicada, con sus salidas; conserva el código de error SQL de PostgreSQL solo en el log local.
 
-En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, cada endpoint que lea o escriba datos reales debe tratar la entrada del cliente como valor, nunca como código SQL. Usa parámetros posicionales `$1`, `$2` tanto al consultar como al registrar.
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-practico)**, cada endpoint que lea o escriba datos reales debe tratar la entrada del cliente como valor, nunca como código SQL. Usa parámetros posicionales `$1`, `$2` tanto al consultar como al registrar.
 
 **Checklist de salida**
 
@@ -338,7 +338,7 @@ npx tsx src/usar-prisma.ts
 
 **Ejercicio independiente:** crea un modelo `Etiqueta` y una relación muchos-a-muchos con `Tarea`. Inserta una tarea con etiqueta en una sola operación y entrega la salida de una consulta que incluya las etiquetas. Explica qué atributo describe cada lado de la relación y qué migración produjo el cambio.
 
-En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, modela entregas y eventos con migraciones versionadas. Aplica la migración a una base local de prueba que ya contenga guías y verifica que conserva los datos existentes y las restricciones de unicidad.
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-practico)**, modela entregas y eventos con migraciones versionadas. Aplica la migración a una base local de prueba que ya contenga guías y verifica que conserva los datos existentes y las restricciones de unicidad.
 
 **Checklist de salida**
 
@@ -524,7 +524,7 @@ docker compose down -v
 
 **Ejercicio independiente:** agrega una tabla `movimientos_inventario` e inserta un movimiento dentro de la misma transacción. En la base local desechable, provoca un `CHECK` inválido en el movimiento y entrega la prueba de que ni stock, ni pedido, ni movimiento quedaron modificados. Corrige el dato y demuestra después que las tres escrituras se confirman juntas.
 
-En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, confirma la entrega y registra su evento dentro de una transacción. Provoca un fallo determinista entre ambas escrituras en el entorno local, verifica el rollback completo y comprueba que la conexión vuelve al pool. No presentes esa prueba de atomicidad como evidencia de ausencia de condiciones de carrera.
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-practico)**, confirma la entrega y registra su evento dentro de una transacción. Provoca un fallo determinista entre ambas escrituras en el entorno local, verifica el rollback completo y comprueba que la conexión vuelve al pool. No presentes esa prueba de atomicidad como evidencia de ausencia de condiciones de carrera.
 
 **Checklist de salida**
 
@@ -631,7 +631,7 @@ docker rm -f mongo-academia
 
 **Ejercicio independiente:** crea un modelo `Direccion` y referencia su `_id` desde `Cliente`; consulta con `.populate("direccion")`. Entrega el documento antes y después de poblarlo y explica el coste de la consulta adicional. Compara esa solución con anidar la dirección según las consultas que necesita el catálogo.
 
-En el **[proyecto integrador «API operativa de entregas»](#laboratorio-práctico)**, compara el modelo documental de evidencia con sus consultas reales. Explica qué reglas de consistencia necesitarías si dos procesos actualizaran el mismo documento antes de sustituir una base relacional; no uses una ejecución concurrente sin controles como demostración de seguridad.
+En el **[proyecto integrador «API operativa de entregas»](#laboratorio-practico)**, compara el modelo documental de evidencia con sus consultas reales. Explica qué reglas de consistencia necesitarías si dos procesos actualizaran el mismo documento antes de sustituir una base relacional; no uses una ejecución concurrente sin controles como demostración de seguridad.
 
 **Checklist de salida**
 

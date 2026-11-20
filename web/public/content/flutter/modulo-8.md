@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Animaciones implícitas vs explícitas
+### Tema 1: Animaciones implícitas vs explícitas · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a animar la expansión de `TarjetaEnvio` al tocarla con `AnimatedContainer`, y a comparar con la misma animación implementada explícitamente con `AnimationController`. Prerrequisitos: Módulo 7 completo.
@@ -128,7 +128,7 @@ Corregí el Paso 5 reemplazando esa animación por un `AnimationController` con 
 Entregá la animación implícita del Paso 4, la limitación de `AnimatedContainer` del Paso 5, y el `TweenSequence` explícito del Paso 6; explicá cuándo una animación implícita deja de ser suficiente y se necesita el control explícito de un `AnimationController`. Siguiente paso: estudia Flutter DevTools para medir si estas animaciones son realmente fluidas. Errores comunes: usar `AnimationController` para una interpolación simple que `AnimatedContainer` ya resuelve con menos código, olvidar hacer `dispose()` de un `AnimationController`, y no considerar `TweenSequence` cuando se necesita una secuencia de múltiples etapas. Fuentes oficiales: https://docs.flutter.dev/ui/animations/implicit-animations y https://docs.flutter.dev/ui/animations/tutorial.
 **Implicación práctica:** Una animación implícita es suficiente para interpolar automáticamente entre dos valores; se necesita el control de una explícita para secuencias coreografiadas o composición de múltiples animaciones coordinadas.
 
-### Tema 2: Flutter DevTools y detección de jank
+### Tema 2: Flutter DevTools y detección de jank · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a grabar con el panel de Performance de DevTools el scroll de `ListaEnvios` para identificar qué fase específica del renderizado causa frames perdidos. Prerrequisitos: Tema 1 de este módulo.
@@ -198,7 +198,7 @@ Corregí el Paso 5 volviendo a medir en modo `--profile`, e identificá el cálc
 Entregá la grabación en modo profile del Paso 4, la medición distorsionada en modo debug del Paso 5, y el cálculo costoso identificado en el Paso 6; explicá por qué medir rendimiento en modo debug produce conclusiones sistemáticamente equivocadas. Siguiente paso: estudia const widgets y RepaintBoundary para optimizar lo que encontraste. Errores comunes: medir rendimiento en modo debug en vez de profile/release, confiar en la percepción subjetiva de fluidez en el emulador de desarrollo, y no grabar una interacción específica real sino solo observar la app en reposo. Fuentes oficiales: https://docs.flutter.dev/tools/devtools/performance y https://docs.flutter.dev/perf/ui-performance.
 **Implicación práctica:** DevTools mide objetivamente el tiempo real de cada frame y señala exactamente qué fase del renderizado causó un frame perdido, en vez de depender de percepción visual subjetiva.
 
-### Tema 3: const widgets, RepaintBoundary y shouldRepaint
+### Tema 3: const widgets, RepaintBoundary y shouldRepaint · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a marcar los íconos estáticos de `TarjetaEnvio` como `const`, y a aislar con `RepaintBoundary` un indicador animado de "sincronizando" para que no fuerce repintar el resto de la tarjeta. Prerrequisitos: Tema 2 de este módulo.
@@ -299,7 +299,7 @@ Corregí el Paso 5 restaurando `RepaintBoundary`, y medí con DevTools (la opci�
 Entregá los widgets `const` y el `RepaintBoundary` del Paso 4, el repintado excesivo detectado en el Paso 5, y la medición comparativa del Paso 6; explicá por qué un elemento animado dentro de un árbol más grande necesita aislarse explícitamente con `RepaintBoundary`. Siguiente paso: cerrá el módulo integrando estas optimizaciones medibles en el proyecto completo. Errores comunes: omitir `const` en widgets estáticos dentro de listas largas, no aislar con `RepaintBoundary` elementos que se animan frecuentemente dentro de contenido mayormente estático, y aplicar estas optimizaciones sin medir primero con DevTools si realmente hacían falta. Fuentes oficiales: https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html y https://docs.flutter.dev/perf/best-practices.
 **Implicación práctica:** Marcar un widget como `const` permite a Flutter omitirlo por completo durante reconstrucciones futuras; `RepaintBoundary` aísla repinturas frecuentes evitando que afecten innecesariamente al resto del árbol circundante.
 
-### Tema 4: Isolates — trabajo pesado sin congelar la interfaz
+### Tema 4: Isolates — trabajo pesado sin congelar la interfaz · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás mover un cálculo pesado a un **isolate** con `compute()` para que no bloquee el hilo de UI, y explicar por qué `async/await` por sí solo no basta para trabajo intensivo de CPU. Prerrequisitos: Módulo 0 (Futures y async/await) y Tema 2 de este módulo (detección de jank).
@@ -388,7 +388,7 @@ Usa `compute` para parsear un JSON grande (simula el historial GPS como una list
 #### Paso 7 · Cierre
 Entrega el cálculo con `compute`, el congelamiento del fallo deliberado y el spinner que distingue ambos casos. **¿Por qué es importante?** La regla de oro de una app móvil fluida es "nunca bloquees el hilo de UI". `async/await` cubre la E/S, pero el trabajo de CPU (parseo masivo, imágenes, criptografía, cálculos geoespaciales) necesita isolates. Es la diferencia entre una app que se siente profesional y una que "se traba". Fuentes: [Flutter — Concurrency and isolates](https://docs.flutter.dev/perf/isolates) y [dart:isolate](https://api.dart.dev/stable/dart-isolate/dart-isolate-library.html).
 
-### Tema 5: CustomPainter: dibujar con Canvas sin repintar de más
+### Tema 5: CustomPainter: dibujar con Canvas sin repintar de más · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás dibujar un componente propio con `CustomPainter` y `Canvas`, controlar cuándo se repinta con `shouldRepaint`, aislarlo con `RepaintBoundary` y hacerlo accesible con `Semantics`. Prerrequisitos: Temas 2 y 3 de este módulo.

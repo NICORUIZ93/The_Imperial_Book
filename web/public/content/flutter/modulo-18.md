@@ -6,7 +6,7 @@ Vas a preparar una app que habla con servicios nativos, protege credenciales, mi
 
 ---
 
-### Tema 1: la frontera entre Dart y el código nativo
+### Tema 1: la frontera entre Dart y el código nativo · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar, podrás decidir si una función va en Dart, en un plugin o detrás de una API nativa. **Prerrequisitos:** Dart básico y conocer `async`/`await`. Para un ejemplo independiente, crea un proyecto nuevo con `flutter create rutaflow_mobile`; entra con `cd rutaflow_mobile`; confirma el entorno con `flutter doctor`. Necesitas Flutter y un emulador Android o simulador iOS.
@@ -120,7 +120,7 @@ sequenceDiagram
 
 ---
 
-### Tema 2: secretos fuera del binario
+### Tema 2: secretos fuera del binario · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar, localizarás credenciales que no deben vivir en Flutter y moverás una operación privilegiada al servidor. **Prerrequisitos:** llamadas HTTP y variables de entorno. Crea un proyecto nuevo de Flutter con `flutter create rutaflow_mobile`, luego agrega `lib/data/route_client.dart` y el servidor `server.mjs`; requiere Dart, Flutter y Node.js.
@@ -219,7 +219,7 @@ flowchart LR
 
 ---
 
-### Tema 3: fluidez y presupuesto de frames
+### Tema 3: fluidez y presupuesto de frames · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar, encontrarás si una demora viene del trabajo Dart o de dibujar la escena. **Prerrequisitos:** widgets y lectura básica de DevTools. Crea un proyecto nuevo con `flutter create frame_lab` y agrega `lib/screens/route_list.dart` con una lista de entregas. Registra modelo, resolución y frecuencia de pantalla.
@@ -296,7 +296,7 @@ flowchart LR
 
 ---
 
-### Tema 4: protocolo, telemetría y contención
+### Tema 4: protocolo, telemetría y contención · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar, definirás qué evento enviar, qué campos quitar y qué hacer cuando la red o el servicio de telemetría falla. **Prerrequisitos:** mapas y excepciones de Dart. Crea un proyecto nuevo con `flutter create telemetry_lab`; agrega `lib/telemetry/telemetry_event.dart` y una prueba.
@@ -360,7 +360,7 @@ flowchart LR
 
 ---
 
-### Tema 5: reportes de fallos con Crashlytics y Sentry
+### Tema 5: reportes de fallos con Crashlytics y Sentry · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar, distinguirás excepción fatal, error recuperable y evento esperado. **Prerrequisitos:** `try/catch`, stack traces y configuración de una app Flutter. Crea un proyecto nuevo con `flutter create error_reporting_lab` y `lib/observability/error_reporting.dart`. Para subir eventos se requieren un proyecto de Firebase o Sentry, configuración nativa y autorización del equipo.
@@ -461,7 +461,7 @@ flowchart LR
 
 ---
 
-### Tema 6: analítica con privacidad y consentimiento
+### Tema 6: analítica con privacidad y consentimiento · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar, podrás describir el propósito de cada evento, retrasar captura hasta obtener la elección requerida y respetar una revocación. **Prerrequisitos:** futures, preferencias del usuario y eventos nombrados. Crea un proyecto nuevo con `flutter create consent_lab` y agrega `lib/analytics/analytics_consent.dart`. Los requisitos legales dependen del lugar y del uso; valida el flujo con el responsable de privacidad.
@@ -523,7 +523,7 @@ stateDiagram-v2
 
 ---
 
-### Tema 7: monitoreo de rendimiento en una versión publicada
+### Tema 7: monitoreo de rendimiento en una versión publicada · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar, definirás señales de arranque, frames y red que sirven para detectar regresiones sin guardar datos innecesarios. **Prerrequisitos:** modo profile, frame timing y trazas de red. Crea un proyecto nuevo con `flutter create performance_monitor_lab`; agrega `lib/observability/frame_metrics.dart` y `docs/performance-runbook.md`. Necesitas DevTools y acceso al backend de monitorización que el equipo elija.

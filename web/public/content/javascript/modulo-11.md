@@ -423,7 +423,7 @@ Este `RepositorioMemoria<T, Id>` es el mismo patrón que reutilizarás para cada
 ### Tema 5: Decoradores estándar de TypeScript 5 · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar de TypeScript 5, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: Tema 5 de este módulo.
+Al finalizar podrás escribir decoradores de clase, método y campo con la sintaxis estándar de TypeScript 5, usar su objeto de contexto y explicar la diferencia con los decoradores experimentales que usan Angular y NestJS. Prerrequisito: temas «tsconfig esencial y modo strict» y «Generics» de este módulo.
 
 #### Paso 2 · Contexto y caso real
 En RutaFlow se quería registrar cada cotización y validar configuraciones sin repetir código en cada clase. Angular y NestJS usan decoradores todo el tiempo (`@Component`, `@Injectable`), y el capítulo de estructura de proyecto del libro de TypeScript los presenta como herramienta de productividad: un caso real de cualquier framework.

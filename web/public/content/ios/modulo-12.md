@@ -5,7 +5,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Arquitectura del proyecto integrador
+### Tema 1: Arquitectura del proyecto integrador · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a trazar en un diagrama de capas cómo se conectan `EnviosViewModel`, `ServicioAPI` y SwiftData en RutaFlow, confirmando que ninguna vista accede directamente a ninguna de las dos fuentes de datos. Prerrequisitos: módulos 0-11 completos.
@@ -88,7 +88,7 @@ Corregí el Paso 5 devolviendo esa llamada a `EnviosViewModel`, y recorré el re
 Entregá el diagrama de capas del Paso 4, la violación provocada en el Paso 5, y el resultado de la revisión del Paso 6; explicá con tus propias palabras por qué integrar todos los módulos del track en un solo proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: aplicá esta misma revisión al proyecto integrador de Android o Flutter. Errores comunes: lógica de red o persistencia filtrada directamente en una vista, un ViewModel que importa SwiftUI, y Dominio que depende de Servicios o Persistencia en vez de ser puro. Fuentes oficiales: https://developer.apple.com/documentation/swiftui y https://developer.apple.com/documentation/foundation/urlsession.
 **Implicación práctica:** Integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
 
-### Tema 2: Sincronización entre red y persistencia local
+### Tema 2: Sincronización entre red y persistencia local · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a hacer que `EnviosViewModel` orqueste tanto `ServicioAPI` (red) como SwiftData (persistencia local) para que `ListaEnvios` siga mostrando datos aunque la red falle. Prerrequisitos: Tema 1 de este módulo.
@@ -280,86 +280,10 @@ Pista: cambiá `try?` por `try` (sin el `?`) en la llamada a `servicio.obtenerEn
 Corregí el Paso 5 devolviendo `try?`, y agregá un log (no una propagación a la UI) cuando `obtenerEnvios()` falle, para poder diagnosticar fallas de sincronización sin interrumpir al conductor con un error intrusivo por cada corte de señal.
 
 #### Paso 7 · Cierre
-Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilación del Paso 5, y el log de diagnóstico del Paso 6; explicá por qué una falla de sincronización en background merece una degradación silenciosa, mientras que un error durante una acción directa del conductor (como confirmar una entrega) sí debería mostrarse explícitamente. Siguiente paso: cerrá el track con una retrospectiva. Errores comunes: vista que accede directamente a `URLSession` o `ModelContext`, propagar errores de sincronización en background de forma intrusiva a la UI, y degradar silenciosamente errores que sí deberían ser visibles (como un PIN incorrecto al confirmar entrega). Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/foundation/urlsession.
+Entregá el ViewModel orquestando ambas fuentes del Paso 4, el error de compilación del Paso 5, y el log de diagnóstico del Paso 6; explicá por qué una falla de sincronización en background merece una degradación silenciosa, mientras que un error durante una acción directa del conductor (como confirmar una entrega) sí debería mostrarse explícitamente. Siguiente paso: separá esa arquitectura en paquetes locales con Swift Package Manager. Errores comunes: vista que accede directamente a `URLSession` o `ModelContext`, propagar errores de sincronización en background de forma intrusiva a la UI, y degradar silenciosamente errores que sí deberían ser visibles (como un PIN incorrecto al confirmar entrega). Fuentes oficiales: https://developer.apple.com/documentation/swiftdata y https://developer.apple.com/documentation/foundation/urlsession.
 **Implicación práctica:** Mantener la orquestación entre red y persistencia local dentro del ViewModel, sin que la vista conozca ninguna de las dos fuentes directamente, preserva la separación de responsabilidades testeable establecida desde el Módulo 8.
 
-### Tema 3: Cierre del track
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a escribir una retrospectiva comparando una decisión de arquitectura de RutaFlow en iOS (`@Observable` en `EnviosViewModel`) contra la misma decisión en otro track de la Academia (Compose en Android, o React en la web). Prerrequisitos: Temas 1-2 de este módulo. Si no has hecho ninguno de esos cursos, compara en su lugar con la alternativa dentro de iOS que descartaste (por ejemplo, `ObservableObject` con `@Published` frente a `@Observable`, Módulo 2); el ejercicio es el mismo.
-
-#### Paso 2 · Contexto y caso real
-Completaste el track entero construyendo RutaFlow en SwiftUI — nadie te pidió todavía que articules explícitamente qué de esa experiencia fue específico de Swift/SwiftUI y qué es un principio universal de UI declarativa que verías igual en otra plataforma.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Una app iOS completa combina seguridad de tipos (optionals, enums exhaustivos), concurrencia estructurada (`async`/`await`, actors) y UI reactiva sincronizada automáticamente (`@Observable`) — una pieza musical interpretada con instrumentos diseñados para resaltar esas fortalezas específicas.
-**Conceptos clave:** lo que hace que una app "se sienta nativa" en el sentido más profundo.
-
-Una app iOS "completa" combina precisamente lo que Swift y SwiftUI hacen especialmente bien y que se ha estudiado a lo largo de todo el track: seguridad de tipos incorporada desde el diseño mismo del lenguaje (optionals, enums exhaustivos, Módulo 0), concurrencia estructurada que elimina por completo el anidamiento de callbacks tradicional (`async`/`await`, actors, `TaskGroup`, Módulo 4), y una UI declarativa que se mantiene automáticamente sincronizada con el estado subyacente sin código manual de actualización (`@Observable`, `@Query`, Módulos 2 y 6); el resultado combinado de estos tres pilares se percibe, de forma bastante literal, como genuinamente "nativo" de la plataforma, no simplemente como una app funcional construida con las herramientas de Apple.
-
-Reflexionar sobre qué decisión de arquitectura resultó más natural en SwiftUI comparado con otros frameworks conocidos (Compose en Android, React en la web) es un ejercicio valioso para consolidar qué aspectos son genuinamente específicos del ecosistema Apple (la integración nativa de `@Observable` con el sistema de tipos de Swift, la verificación de exhaustividad de los enums) frente a principios universales de UI declarativa moderna (composición de vistas, estado como fuente de verdad, flujo unidireccional de datos) que simplemente se expresan con sintaxis distinta en cada plataforma estudiada a lo largo de la Academia.
-
-**Analogía:** una app iOS completa es como una pieza musical interpretada con instrumentos específicamente diseñados para resaltar sus fortalezas naturales (seguridad de tipos, concurrencia estructurada, UI reactiva), en vez de forzar un estilo genérico que ignora las capacidades particulares de la plataforma para la que fue compuesta.
-
-**¿Por qué es importante?** Cerrar el track integrando todos los conceptos en un proyecto real consolida que una app iOS profesional requiere la combinación de seguridad de tipos, concurrencia estructurada, y UI reactiva sincronizada automáticamente, los tres pilares que hacen que una app se perciba genuinamente nativa de la plataforma.
-
-**Diagrama:**
-
-```mermaid
-graph TD
-    A["App iOS nativa"]
-    A -->|Pilar 1| B["Seguridad de tipos<br/>optionals, enums exhaustivos<br/>M0"]
-    A -->|Pilar 2| C["Concurrencia estructurada<br/>async/await, actors<br/>M4"]
-    A -->|Pilar 3| D["UI reactiva<br/>@Observable, @Query<br/>M2, M6"]
-    
-    E["Principios universales"]
-    E -.->|Composición de vistas| F["También en React, Compose"]
-    E -.->|Estado como verdad| F
-    E -.->|Flujo unidireccional| F
-    
-    style B fill:#e3f2fd
-    style C fill:#e3f2fd
-    style D fill:#e3f2fd
-    style F fill:#fff3e0
-```
-
-* Código: escribe la retrospectiva sobre tu propio `ViewModels/EnviosViewModel.swift`, creado manualmente en el target `RutaFlowApp`.
-
----
-
-#### Paso 4 · Demostración guiada desde cero
-```text
-Decisión: EnviosViewModel usa @Observable (Módulo 2) para que ListaEnvios
-se redibuje solo cuando lee la propiedad que cambió.
-
-Específico de Swift/SwiftUI: la integración de @Observable con el sistema
-de tipos del compilador (rastrea qué propiedad leíste, no qué objeto).
-
-Principio universal: "state hoisting" — un componente hijo recibe el
-valor y una forma de notificar cambios, sin poseer el estado él mismo
-(igual en Compose/Android y en hooks de React).
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
-```
-Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
-
-Resultado esperado: tu retrospectiva separa explícitamente qué parte de la decisión depende del compilador y el runtime de Swift (imposible de trasladar literalmente a otra plataforma) de qué parte es un principio que reconocerías en cualquier framework de UI declarativa moderno.
-
-#### Paso 5 · Práctica guiada
-Pista: escribí la retrospectiva afirmando que "`@Observable` es exclusivo de SwiftUI y no existe nada parecido en otras plataformas" — ese es el fallo deliberado: es una afirmación incorrecta que ignora que Compose (`mutableStateOf`) y React (hooks) resuelven exactamente el mismo problema de redibujado granular, solo con mecanismos de lenguaje distintos.
-
-#### Paso 6 · Práctica independiente
-Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente qué es sintaxis/mecanismo propio de Swift (la macro `@Observable` y el rastreo de acceso a propiedades en tiempo de compilación) de qué es el principio compartido (redibujado granular basado en qué se leyó realmente), citando el módulo específico de Android o React donde estudiaste el equivalente.
-
-#### Paso 7 · Cierre
-Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.
-**Implicación práctica:** Distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
-
-### Tema 4: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min
+### Tema 3: Swift Package Manager: separar la app en paquetes locales y declarar dependencias · Avanzado · 45 min
 
 **Prerrequisito:** tema «Arquitectura del proyecto integrador» de este módulo.
 
@@ -512,6 +436,82 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar `public` en
 **Transferencia al proyecto integrador «RutaFlow»:** mueve las reglas de tarifas y el cliente de red de RutaFlow a `RutaFlowKit` y ejecuta sus pruebas en el CI con `swift test`.
 
 **Fuente oficial:** [Swift.org — Package Manager](https://www.swift.org/documentation/package-manager/) y [Apple — Swift packages](https://developer.apple.com/documentation/xcode/swift-packages).
+
+### Tema 4: Cierre del track · Experto · 40 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a escribir una retrospectiva comparando una decisión de arquitectura de RutaFlow en iOS (`@Observable` en `EnviosViewModel`) contra la misma decisión en otro track de la Academia (Compose en Android, o React en la web). Prerrequisitos: Temas 1-2 de este módulo. Si no has hecho ninguno de esos cursos, compara en su lugar con la alternativa dentro de iOS que descartaste (por ejemplo, `ObservableObject` con `@Published` frente a `@Observable`, Módulo 2); el ejercicio es el mismo.
+
+#### Paso 2 · Contexto y caso real
+Completaste el track entero construyendo RutaFlow en SwiftUI — nadie te pidió todavía que articules explícitamente qué de esa experiencia fue específico de Swift/SwiftUI y qué es un principio universal de UI declarativa que verías igual en otra plataforma.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Una app iOS completa combina seguridad de tipos (optionals, enums exhaustivos), concurrencia estructurada (`async`/`await`, actors) y UI reactiva sincronizada automáticamente (`@Observable`) — una pieza musical interpretada con instrumentos diseñados para resaltar esas fortalezas específicas.
+**Conceptos clave:** lo que hace que una app "se sienta nativa" en el sentido más profundo.
+
+Una app iOS "completa" combina precisamente lo que Swift y SwiftUI hacen especialmente bien y que se ha estudiado a lo largo de todo el track: seguridad de tipos incorporada desde el diseño mismo del lenguaje (optionals, enums exhaustivos, Módulo 0), concurrencia estructurada que elimina por completo el anidamiento de callbacks tradicional (`async`/`await`, actors, `TaskGroup`, Módulo 4), y una UI declarativa que se mantiene automáticamente sincronizada con el estado subyacente sin código manual de actualización (`@Observable`, `@Query`, Módulos 2 y 6); el resultado combinado de estos tres pilares se percibe, de forma bastante literal, como genuinamente "nativo" de la plataforma, no simplemente como una app funcional construida con las herramientas de Apple.
+
+Reflexionar sobre qué decisión de arquitectura resultó más natural en SwiftUI comparado con otros frameworks conocidos (Compose en Android, React en la web) es un ejercicio valioso para consolidar qué aspectos son genuinamente específicos del ecosistema Apple (la integración nativa de `@Observable` con el sistema de tipos de Swift, la verificación de exhaustividad de los enums) frente a principios universales de UI declarativa moderna (composición de vistas, estado como fuente de verdad, flujo unidireccional de datos) que simplemente se expresan con sintaxis distinta en cada plataforma estudiada a lo largo de la Academia.
+
+**Analogía:** una app iOS completa es como una pieza musical interpretada con instrumentos específicamente diseñados para resaltar sus fortalezas naturales (seguridad de tipos, concurrencia estructurada, UI reactiva), en vez de forzar un estilo genérico que ignora las capacidades particulares de la plataforma para la que fue compuesta.
+
+**¿Por qué es importante?** Cerrar el track integrando todos los conceptos en un proyecto real consolida que una app iOS profesional requiere la combinación de seguridad de tipos, concurrencia estructurada, y UI reactiva sincronizada automáticamente, los tres pilares que hacen que una app se perciba genuinamente nativa de la plataforma.
+
+**Diagrama:**
+
+```mermaid
+graph TD
+    A["App iOS nativa"]
+    A -->|Pilar 1| B["Seguridad de tipos<br/>optionals, enums exhaustivos<br/>M0"]
+    A -->|Pilar 2| C["Concurrencia estructurada<br/>async/await, actors<br/>M4"]
+    A -->|Pilar 3| D["UI reactiva<br/>@Observable, @Query<br/>M2, M6"]
+    
+    E["Principios universales"]
+    E -.->|Composición de vistas| F["También en React, Compose"]
+    E -.->|Estado como verdad| F
+    E -.->|Flujo unidireccional| F
+    
+    style B fill:#e3f2fd
+    style C fill:#e3f2fd
+    style D fill:#e3f2fd
+    style F fill:#fff3e0
+```
+
+* Código: escribe la retrospectiva sobre tu propio `ViewModels/EnviosViewModel.swift`, creado manualmente en el target `RutaFlowApp`.
+
+---
+
+#### Paso 4 · Demostración guiada desde cero
+```text
+Decisión: EnviosViewModel usa @Observable (Módulo 2) para que ListaEnvios
+se redibuje solo cuando lee la propiedad que cambió.
+
+Específico de Swift/SwiftUI: la integración de @Observable con el sistema
+de tipos del compilador (rastrea qué propiedad leíste, no qué objeto).
+
+Principio universal: "state hoisting" — un componente hijo recibe el
+valor y una forma de notificar cambios, sin poseer el estado él mismo
+(igual en Compose/Android y en hooks de React).
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+xcodebuild -scheme RutaFlowApp -destination 'generic/platform=iOS Simulator' build
+```
+Luego corre con ⌘R en el simulador, o abre el canvas de Preview con ⌥⌘↵.
+
+Resultado esperado: tu retrospectiva separa explícitamente qué parte de la decisión depende del compilador y el runtime de Swift (imposible de trasladar literalmente a otra plataforma) de qué parte es un principio que reconocerías en cualquier framework de UI declarativa moderno.
+
+#### Paso 5 · Práctica guiada
+Pista: escribí la retrospectiva afirmando que "`@Observable` es exclusivo de SwiftUI y no existe nada parecido en otras plataformas" — ese es el fallo deliberado: es una afirmación incorrecta que ignora que Compose (`mutableStateOf`) y React (hooks) resuelven exactamente el mismo problema de redibujado granular, solo con mecanismos de lenguaje distintos.
+
+#### Paso 6 · Práctica independiente
+Corregí el Paso 5 reescribiendo la afirmación para distinguir específicamente qué es sintaxis/mecanismo propio de Swift (la macro `@Observable` y el rastreo de acceso a propiedades en tiempo de compilación) de qué es el principio compartido (redibujado granular basado en qué se leyó realmente), citando el módulo específico de Android o React donde estudiaste el equivalente.
+
+#### Paso 7 · Cierre
+Entregá la retrospectiva del Paso 4, la afirmación incorrecta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en iOS que repetirías igual en otra plataforma (el principio) aunque la sintaxis cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: afirmar que un mecanismo de una plataforma "no existe" en otra solo porque la sintaxis es distinta, confundir una ventaja de ergonomía con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://developer.apple.com/documentation/observation y https://developer.apple.com/swift/.
+**Implicación práctica:** Distinguir qué es específico de una plataforma de qué es un principio universal de UI declarativa consolida el aprendizaje de una forma que se transfiere al siguiente track que estudies.
 
 ## Laboratorio práctico
 

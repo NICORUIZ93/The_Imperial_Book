@@ -8,7 +8,7 @@ Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2
 
 ## Aprende construyendo
 
-### Tema 1: Entidades y repositorios derivados
+### Tema 1: Entidades y repositorios derivados · Intermedio · 30 min
 
 Al terminar, podrás probar que una entidad se guarda y se recupera, escribir un método de búsqueda a partir de propiedades reales y reconocer cuándo una consulta JPQL queda más clara. El tema usa `Tarea(titulo, prioridad, ubicacionInterna)` que ya existe en `academia-spring`.
 
@@ -191,7 +191,7 @@ Ejecuta desde la raíz del proyecto:
 
 La entidad y el repositorio de esta práctica continúan en el proyecto integrador del track. La estructura atómica describe actividades verificables; no certifica por sí sola dominio profesional.
 
-### Tema 2: El problema N+1 y su corrección
+### Tema 2: El problema N+1 y su corrección · Intermedio · 35 min
 
 En este tema añadimos `Cliente` y `Pedido` al proyecto `academia-spring` ya existente. Así probamos una relación propia sin alterar la entidad `Tarea` que usa el mapper del API.
 
@@ -532,7 +532,7 @@ Ejecuta la prueba que solicita dos elementos de una página de tres:
 
 **Fuentes primarias:** [Jakarta Persistence 3.2: `@ManyToOne` y estrategias de carga](https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html); [Spring Data JPA: proyecciones](https://docs.spring.io/spring-data/jpa/reference/repositories/projections.html).
 
-### Tema 4: Migraciones con Flyway
+### Tema 4: Migraciones con Flyway · Intermedio · 30 min
 
 Al cerrar este tema, el mismo backend `academia-spring` crea las tablas desde archivos SQL versionados y Hibernate solo confirma que el modelo Java coincide con ese esquema.
 

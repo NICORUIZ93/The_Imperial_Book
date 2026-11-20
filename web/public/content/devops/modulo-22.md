@@ -38,7 +38,7 @@ flowchart LR
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás instalar la CLI, iniciar el emulador, comprobar su salud y ejecutar un script que rechaza cualquier endpoint que no sea local. **Conocimiento previo:** terminal, Docker o Podman en ejecución, Node.js 20 o superior y nociones de variables de entorno.
+Al finalizar podrás instalar la CLI, iniciar el emulador, comprobar su salud y ejecutar un script que rechaza cualquier endpoint que no sea local. **Conocimiento previo:** terminal, Docker o Podman en ejecución, Node.js 22 o superior y nociones de variables de entorno.
 
 Crea una carpeta vacía para el laboratorio y descarga el instalador antes de ejecutarlo:
 

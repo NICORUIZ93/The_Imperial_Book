@@ -27,7 +27,7 @@ La dirección de dependencias es `presentation → application → domain`; `dat
 
 ## Aprende construyendo
 
-### Tema 1: Diseño de pantallas y Riverpod
+### Tema 1: Diseño de pantallas y Riverpod · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar el estado de una jornada de entrega como un `sealed class JourneyState` observado con Riverpod, evitando las combinaciones imposibles que producen varios booleanos sueltos. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma `flutter doctor`.
@@ -109,7 +109,7 @@ Agrega un caso límite al `switch` exhaustivo y una prueba que confirme que la v
 #### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: estado duplicado, secretos en código y probar solo online. Fuentes oficiales: https://riverpod.dev/ y https://docs.flutter.dev/.
 
-### Tema 2: Google Maps y localización en tiempo real
+### Tema 2: Google Maps y localización en tiempo real · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a convertir una `Position` cruda del plugin de geolocalización en un `PositionSample` de dominio que rechaza coordenadas imposibles, muestras viejas o imprecisas. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma `flutter doctor`.
@@ -195,7 +195,64 @@ Prueba una posición inválida (latitud fuera de rango) y documenta la decisión
 #### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: claves públicas, permisos ignorados y posiciones sin timestamp. Fuentes oficiales: https://pub.dev/packages/geolocator y https://docs.flutter.dev/.
 
-### Tema 3: Socket.IO y actualización de rutas
+### Tema 3: Animaciones de localización · Intermedio · 30 min
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar vas a interpolar la posición y el rumbo de un marcador entre dos muestras de GPS durante un intervalo limitado, en vez de saltar directamente a la nueva coordenada. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma `flutter doctor`.
+
+#### Paso 2 · Contexto y caso real
+Un marcador debe moverse sin saltos en el mapa; actualizar la posición directamente cada vez que llega una muestra nueva produce un salto brusco en vez de un movimiento continuo y creíble.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+La interpolación es un puente entre dos muestras; no inventa una ruta válida que el vehículo no haya recorrido, solo suaviza visualmente la transición entre dos posiciones ya confirmadas.
+
+**Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
+
+El marcador no salta entre puntos: interpola posición y rumbo durante un intervalo limitado. Los eventos fuera de orden no retroceden el vehículo. AnimationController se libera en dispose y el frame budget se mide con DevTools. La animación comunica movimiento estimado; no fabrica precisión que el GPS no posee. La implementación se conecta al resto de la app y se prueba con camino feliz, entrada inválida, repetición y dependencia no disponible.
+
+**Analogía:** Es como un tren que se desliza entre dos estaciones: suaviza el trayecto visible, pero no puede pasar por una vía que no existe.
+
+**¿Por qué es importante?** Porque interpolar entre dos muestras válidas evita saltos visuales sin inventar una ruta que el vehículo no recorrió realmente; una animación que haga parecer actual una posición obsoleta engaña al operador que la observa.
+
+**Casos de uso reales:** dos muestras GPS separadas por 30 m y un segundo; una muestra vieja que llega después de la nueva y no debe mover el marcador hacia atrás; una animación interrumpida por una posición más reciente.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+  A["muestra GPS válida"] --> B["interpolar posición y rumbo"]
+  B --> C["animación acotada"]
+  C --> D["marcador en destino"]
+  E["muestra nueva"] --> F["cancela la anterior"] --> B
+  G["muestra vieja"] --> H["se descarta"]
+```
+
+**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Interpola visualmente entre dos posiciones válidas sin modificar sus datos originales. Prueba una pausa larga y evita que la animación haga parecer actual una ubicación que ya está obsoleta.
+
+#### Paso 4 · Demostración guiada
+**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/features/map/presentation/marker_motion.dart` con el contenido de este tema.
+```bash
+flutter create ejemplo
+```
+
+Ejecuta `flutter create ejemplo_animacion`, crea `lib/features/map/presentation/marker_motion.dart` y comenta duración y curva.
+```bash
+flutter create ejemplo_animacion
+flutter analyze
+```
+**Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y el marcador debe llegar al destino.
+**Fallo deliberado:** usa una duración extrema para observar el diagnóstico, registra el error y corrígelo.
+**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
+#### Paso 5 · Práctica guiada
+Pista: observa el diagnóstico antes de corregirlo, y añade cancelación del `AnimationController` si llega una muestra nueva antes de que termine la animación anterior.
+
+#### Paso 6 · Práctica independiente
+Prueba muestras que llegan fuera de orden y confirma que el marcador nunca retrocede visualmente por una muestra vieja llegada tarde.
+
+#### Paso 7 · Cierre
+Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: animar cada evento sin límite y bloquear el hilo UI. Fuentes oficiales: https://docs.flutter.dev/ui/animations.
+
+### Tema 4: Socket.IO y actualización de rutas · Avanzado · 40 min
 
 Este cliente requiere un servidor **Socket.IO compatible**. No se conecta al endpoint STOMP del laboratorio Spring Boot 14: ese es un protocolo diferente. Prepara primero el gateway y la prueba de compatibilidad de [RutaFlow: seguimiento en tiempo real](/curso/rutaflow/5). `socket_io_client` 3.x corresponde a servidores Socket.IO 4.7 o superiores de la rama 4.x. El gateway local de ese laboratorio solo acepta ENV-42 con credencial ficticia; la autorización de producción requiere identidad y propiedad verificadas por el servidor.
 
@@ -282,64 +339,7 @@ Ignora eventos duplicados o con `sequence` menor a la última aplicada, y prueba
 #### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: listeners duplicados y mensajes sin versión. Fuentes oficiales: https://socket.io/docs/ y https://docs.flutter.dev/.
 
-### Tema 4: Animaciones de localización
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar vas a interpolar la posición y el rumbo de un marcador entre dos muestras de GPS durante un intervalo limitado, en vez de saltar directamente a la nueva coordenada. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma `flutter doctor`.
-
-#### Paso 2 · Contexto y caso real
-Un marcador debe moverse sin saltos en el mapa; actualizar la posición directamente cada vez que llega una muestra nueva produce un salto brusco en vez de un movimiento continuo y creíble.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-La interpolación es un puente entre dos muestras; no inventa una ruta válida que el vehículo no haya recorrido, solo suaviza visualmente la transición entre dos posiciones ya confirmadas.
-
-**Conceptos clave:** contratos, estados explícitos, fallos, seguridad y verificación.
-
-El marcador no salta entre puntos: interpola posición y rumbo durante un intervalo limitado. Los eventos fuera de orden no retroceden el vehículo. AnimationController se libera en dispose y el frame budget se mide con DevTools. La animación comunica movimiento estimado; no fabrica precisión que el GPS no posee. La implementación se conecta al resto de la app y se prueba con camino feliz, entrada inválida, repetición y dependencia no disponible.
-
-**Analogía:** Es como un tren que se desliza entre dos estaciones: suaviza el trayecto visible, pero no puede pasar por una vía que no existe.
-
-**¿Por qué es importante?** Porque interpolar entre dos muestras válidas evita saltos visuales sin inventar una ruta que el vehículo no recorrió realmente; una animación que haga parecer actual una posición obsoleta engaña al operador que la observa.
-
-**Casos de uso reales:** dos muestras GPS separadas por 30 m y un segundo; una muestra vieja que llega después de la nueva y no debe mover el marcador hacia atrás; una animación interrumpida por una posición más reciente.
-
-**Diagrama:**
-
-```mermaid
-flowchart TD
-  A["muestra GPS válida"] --> B["interpolar posición y rumbo"]
-  B --> C["animación acotada"]
-  C --> D["marcador en destino"]
-  E["muestra nueva"] --> F["cancela la anterior"] --> B
-  G["muestra vieja"] --> H["se descarta"]
-```
-
-**Transferencia al proyecto integrador «Aplicación móvil del repartidor»:** Interpola visualmente entre dos posiciones válidas sin modificar sus datos originales. Prueba una pausa larga y evita que la animación haga parecer actual una ubicación que ya está obsoleta.
-
-#### Paso 4 · Demostración guiada
-**Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `lib/features/map/presentation/marker_motion.dart` con el contenido de este tema.
-```bash
-flutter create ejemplo
-```
-
-Ejecuta `flutter create ejemplo_animacion`, crea `lib/features/map/presentation/marker_motion.dart` y comenta duración y curva.
-```bash
-flutter create ejemplo_animacion
-flutter analyze
-```
-**Ejecución y resultado:** corre `flutter analyze` y `flutter test`; la salida debe terminar sin errores y el marcador debe llegar al destino.
-**Fallo deliberado:** usa una duración extrema para observar el diagnóstico, registra el error y corrígelo.
-**Resultado esperado:** la ejecución termina sin errores y produce la salida descrita arriba.
-#### Paso 5 · Práctica guiada
-Pista: observa el diagnóstico antes de corregirlo, y añade cancelación del `AnimationController` si llega una muestra nueva antes de que termine la animación anterior.
-
-#### Paso 6 · Práctica independiente
-Prueba muestras que llegan fuera de orden y confirma que el marcador nunca retrocede visualmente por una muestra vieja llegada tarde.
-
-#### Paso 7 · Cierre
-Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: animar cada evento sin límite y bloquear el hilo UI. Fuentes oficiales: https://docs.flutter.dev/ui/animations.
-
-### Tema 5: Almacenamiento local, imágenes y offline
+### Tema 5: Almacenamiento local, imágenes y offline · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conservar una confirmación de entrega en una cola local (SQLite) con estado `pending`/`syncing`/`synced`/`failed`, que sobrevive aunque el conductor pierda conexión o reinicie la app. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma `flutter doctor`.
@@ -398,7 +398,7 @@ Resuelve el conflicto entre un registro local marcado `pending` y uno que el ser
 #### Paso 7 · Cierre
 Entrega árbol, código, salida, el fallo corregido y explica el resultado. Como siguiente paso, integra la siguiente capacidad. Errores comunes: imágenes sin compresión, duplicados y secretos en texto plano. Fuentes oficiales: https://docs.flutter.dev/cookbook/persistence.
 
-### Tema 6: Dio y notificaciones push
+### Tema 6: Dio y notificaciones push · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar un cliente Dio con interceptores que serializan la renovación de token, y a tratar una notificación push como un aviso, no como una autorización. Prerrequisitos: Flutter estable, Dart y un dispositivo o emulador; confirma `flutter doctor`.

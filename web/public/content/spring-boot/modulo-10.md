@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Producers y consumers con Spring Kafka
+### Tema 1: Producers y consumers con Spring Kafka · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Un evento permite que quien registra un envío continúe sin llamar directamente a cada sistema que lo usa. Kafka conserva los mensajes y varios grupos pueden procesarlos por separado.
@@ -157,7 +157,7 @@ Entrega los resultados de ambas pruebas y describe qué esperarías si publicara
 
 **Transferencia al proyecto integrador:** conecta el evento de envío con consumidores independientes y conserva el identificador del envío como clave para el procesamiento ordenado por partición.
 
-### Tema 2: Dead-letter queue
+### Tema 2: Dead-letter queue · Intermedio · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Si el consumidor rechaza un mensaje cada vez, los reintentos deben tener un límite y el mensaje requiere un destino donde el equipo pueda investigarlo.
@@ -266,7 +266,7 @@ Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la sal
 
 **Transferencia al proyecto integrador:** define reintentos según el tipo de fallo y envía los eventos irrecuperables a un DLT monitoreado con un procedimiento de revisión.
 
-### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once
+### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once · Avanzado · 50 min
 
 **Duración estimada:** 50 min.
 **¿Por qué es importante?** Un productor puede repetir un envío y un consumidor puede volver a recibir un evento. Evita duplicar el efecto y distingue la transacción del broker de la transacción de la base de datos.
@@ -458,7 +458,7 @@ Identifica qué fila ve cada nivel de aislamiento y di qué parte de la garantí
 
 **Transferencia al proyecto integrador:** conserva eventos pendientes en outbox, publica con clave estable y protege cada `eventId` en inbox. Describe la garantía y sus límites por cada frontera; no llames exactly-once a la operación total sin una transacción que cubra su entrada y salida.
 
-### Tema 4: Outbox transaccional y flujo de negocio
+### Tema 4: Outbox transaccional y flujo de negocio · Avanzado · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Outbox permite recuperar el evento si la aplicación cae entre guardar el envío y publicarlo.
@@ -543,7 +543,7 @@ Guarda el resultado y explica por qué el replay puede duplicar mensajes, pero n
 
 **Aplicación y decisión:** En el proyecto integrador, guarda envío e intención outbox en una misma transacción y permite que el consumidor deduplique reenvíos. No atribuyas atomicidad entre SQL y Kafka a la anotación local del servicio.
 
-### Tema 5: Rebalanceo de consumer groups y asignación de particiones
+### Tema 5: Rebalanceo de consumer groups y asignación de particiones · Avanzado · 45 min
 
 **Duración estimada:** 45 min.
 
@@ -700,7 +700,7 @@ Anota una situación apropiada para membresía estática, el costo de un timeout
 
 **Fuentes oficiales:** [Rebalance listeners en Spring Kafka 4.0](https://docs.spring.io/spring-kafka/reference/4.0/kafka/receiving-messages/rebalance-listeners.html), [configuración de consumidores Apache Kafka 4.2](https://kafka.apache.org/42/generated/consumer_config.html) y [protocolo de rebalanceo Apache Kafka 4.3](https://kafka.apache.org/43/operations/consumer-rebalance-protocol/).
 
-### Tema 6: Kafka Streams con Spring para transformar eventos
+### Tema 6: Kafka Streams con Spring para transformar eventos · Avanzado · 50 min
 
 **Duración estimada:** 50 min.
 **Resultado:** filtras eventos, conservas su clave, agregas por ventana y ejecutas la topología con Spring.
@@ -848,7 +848,7 @@ Enumera los tópicos visibles y explica por qué una aplicación aislada necesit
 
 **Aplicación y decisión:** Límite del test driver: observa registros y estado con tiempo controlado, sin broker, rebalanceo o ACL. Usa el conteo por ventana en el proyecto integrador solo después de definir tiempo de evento, retención y política para llegadas tardías.
 
-### Tema 7: Avro y Schema Registry para contratos de eventos
+### Tema 7: Avro y Schema Registry para contratos de eventos · Avanzado · 50 min
 
 **Duración estimada:** 50 min.
 **Resultado:** lees datos Avro con un esquema escritor y otro lector, pruebas una evolución y compruebas compatibilidad en Schema Registry.

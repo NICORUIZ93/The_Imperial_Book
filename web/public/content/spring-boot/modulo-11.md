@@ -8,7 +8,7 @@ El laboratorio [`examples/spring-stream-rutaflow/`](https://github.com/NICORUIZ9
 
 Cada tema toma 20–45 min. Completa sus subtemas y el hito antes de avanzar.
 
-### Tema 1: Kafka frente a RabbitMQ
+### Tema 1: Kafka frente a RabbitMQ · Avanzado · 45 min
 
 **Duración estimada:** 45 min.
 
@@ -55,7 +55,7 @@ Kafka conserva registros según las políticas de retención del tópico, aunque
 
 **2. Hazlo tú**
 
-Compara el log de Kafka en [M10 T1](#tema-1-producers-y-consumers-con-spring-kafka) y la cola `envios` de `examples/node-messaging/rabbit/topology.mjs`. En RabbitMQ abre `examples/node-messaging/rabbit/worker.mjs` y localiza `channel.ack(message)`. Para ver la persistencia por broker, inicia cada ejemplo desde sus carpetas según sus README:
+Compara el log de Kafka en [Módulo 10, Tema 1](/curso/spring-boot/10) y la cola `envios` de `examples/node-messaging/rabbit/topology.mjs`. En RabbitMQ abre `examples/node-messaging/rabbit/worker.mjs` y localiza `channel.ack(message)`. Para ver la persistencia por broker, inicia cada ejemplo desde sus carpetas según sus README:
 
 ```bash
 cd examples/spring-stream-rutaflow
@@ -146,7 +146,7 @@ Entrega una decisión breve para un flujo de reprocesamiento histórico y otra p
 
 **Transferencia al proyecto integrador:** documenta por evento quién lo necesita, si necesita copia independiente o competencia por trabajo, cuánto retenerlo, qué confirma publicación y qué confirma procesamiento, cómo reintenta y qué efecto idempotente protege una redelivery.
 
-### Tema 2: RabbitMQ con Spring AMQP: routing, ack y prefetch
+### Tema 2: RabbitMQ con Spring AMQP: routing, ack y prefetch · Avanzado · 40 min
 
 Este tema continúa la comparación Kafka/RabbitMQ y el trabajo con binders de T5–T6. Aquí usamos Spring AMQP directamente para ver el contrato de una cola y el ciclo de una entrega.
 
@@ -413,7 +413,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confirmar mensajes 
 
 **Fuente oficial:** [Spring Boot — JMS](https://docs.spring.io/spring-boot/reference/messaging/jms.html) y [Apache ActiveMQ Artemis — Documentation](https://activemq.apache.org/components/artemis/documentation/).
 
-### Tema 4: bindings y destinations
+### Tema 4: bindings y destinations · Intermedio · 25 min
 
 **Duración estimada:** 25 min.
 **¿Por qué es importante?** Separar función y binding permite cambiar el broker sin duplicar la regla de negocio.
@@ -497,7 +497,7 @@ Guarda la salida y el mensaje exacto que indica por qué se rechaza el dato.
 
 **Aplicación y decisión:** En el proyecto integrador, conserva nombres lógicos de binding en código y destinos de broker en configuración. Límite: cambiar destination puede desconectar un consumidor sin cambiar una sola línea de la función.
 
-### Tema 5: binder Kafka y binder RabbitMQ
+### Tema 5: binder Kafka y binder RabbitMQ · Intermedio · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Probar ambos perfiles muestra qué comportamiento depende del broker elegido.
@@ -593,7 +593,7 @@ Entrega una comparación con una evidencia observada en cada broker.
 
 **Aplicación y decisión:** Práctica del proyecto integrador: ejecuta la misma entrada en perfiles separados y registra el tópico Kafka o exchange/cola Rabbit que recibió la salida. La diferencia de transporte no desaparece por compartir Function; el test binder no acredita esa ejecución de broker.
 
-### Tema 6: reintentos, error handler y dead-letter
+### Tema 6: reintentos, error handler y dead-letter · Avanzado · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Una política de reintentos evita ciclos infinitos y conserva los mensajes que requieren reparación.
@@ -676,7 +676,7 @@ Escribe qué persona o proceso revisaría el mensaje antes de reenviarlo.
 
 **Aplicación y decisión:** Práctica del proyecto integrador: clasifica un fallo transitorio y otro permanente, fija intentos y demuestra el destino final del evento. Límite: replay desde DLQ puede repetir efectos; conserva idempotencia y no reintentes errores de contrato indefinidamente.
 
-### Tema 7: test binder y límites de la prueba
+### Tema 7: test binder y límites de la prueba · Avanzado · 25 min
 
 **Duración estimada:** 25 min.
 **¿Por qué es importante?** Un test en memoria no detecta problemas de red o topología; declarar su límite evita falsa confianza.

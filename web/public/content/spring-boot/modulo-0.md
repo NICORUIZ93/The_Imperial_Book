@@ -73,7 +73,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Inversión de control y el contenedor de Spring
+### Tema 1: Inversión de control y el contenedor de Spring · Básico · 30 min
 
 Una API de envíos necesita separar la regla de negocio de la fuente de datos. Primero conectaremos un repositorio en memoria y un servicio; después una ruta HTTP permitirá observar el resultado. Necesitas clases, interfaces y constructores de Java.
 
@@ -242,7 +242,7 @@ Guarda la respuesta de `curl` y los dos fallos diagnosticados. Explica con tus p
 
 Este mismo mecanismo se usará en el proyecto integrador: el servicio de envíos declarará por constructor un repositorio y un cliente de notificaciones, sin decidir qué implementación recibe cada entorno.
 
-### Tema 2: Inyección por constructor vs por campo
+### Tema 2: Inyección por constructor vs por campo · Intermedio · 30 min
 
 En el tema anterior, `ServicioEnvios` recibió el repositorio por su constructor. Aquí compararás esa forma con un campo `@Autowired` y comprobarás qué aprende cada tipo de prueba. Necesitas el proyecto y los archivos del Tema 1.
 
@@ -400,7 +400,7 @@ Para una regla de negocio simple, el constructor facilita un test rápido con un
 
 **Decisión práctica:** prefiere constructor para dependencias obligatorias. La inyección por campo no es imposible ni está prohibida; el constructor hace visibles los requisitos y deja que el compilador proteja la referencia con `final`.
 
-### Tema 3: Estereotipos, autoconfiguración y scopes
+### Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 35 min
 
 En los temas anteriores Spring encontró beans por sus anotaciones y conectó sus constructores. Ahora revisarás qué significan esas anotaciones, qué prepara Spring Boot al detectar dependencias y cómo cambia el ciclo de vida de un bean.
 

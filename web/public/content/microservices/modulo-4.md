@@ -293,7 +293,7 @@ reducido (*multi-stage*, Módulo 12): menos tamaño y menos superficie de ataque
 
 Se ve como el mismo código que pasa en una máquina y falla en otra, con mensajes de versión distintos. Fija la
 versión: en la Fase 1 con `<java.version>25</java.version>` en el `pom.xml` (y la *toolchain* de Maven o Gradle), y
-en todas partes con una **imagen Docker** que trae el JDK exacto (tema 3 de este módulo).
+en todas partes con una **imagen Docker** que trae el JDK exacto (tercera ficha de este módulo).
 
 ---
 

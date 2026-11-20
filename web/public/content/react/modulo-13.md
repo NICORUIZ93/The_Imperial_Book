@@ -7,7 +7,7 @@ Una SPA puede aprobar el flujo feliz y aun desaparecer ante un error de render, 
 
 **Servidor del módulo:** los temas 1 y 2 se ejecutan en `mi-react` (`npm run dev`, `http://localhost:5173`; `npm test` usa el Vitest configurado en el módulo 0). Los temas 3 y 4 necesitan servidor y se ejecutan en el proyecto Next.js `app` del módulo 10 (`http://localhost:3000`).
 
-### Tema 1: Diseñar estados de carga, error y recuperación
+### Tema 1: Diseñar estados de carga, error y recuperación · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a envolver `DetalleEnvio` en un `ErrorBoundary` + `Suspense` que distinga un fallo real de la carga normal, con un botón de recuperación que invalida la query en vez de repetir el mismo recurso rechazado. Prerrequisitos: Módulo 6 completo.
@@ -169,7 +169,7 @@ Corrige el Paso 5 haciendo que `resetErrorBoundary` invalide la query de ese env
 #### Paso 7 · Cierre
 Entrega el ErrorBoundary con recuperación real del Paso 4, el botón que no recupera nada del Paso 5, y el test del Paso 6; explica por qué un botón "Intentar de nuevo" que no cambia ninguna precondición del fallo no es una recuperación real, solo una ilusión de progreso. Siguiente paso: estudia cómo la composición visual debe conservar semántica y foco. Errores comunes: un boundary global único para toda la app en vez de unidades que fallan independientemente, esperar que el Error Boundary capture errores de manejadores de eventos o callbacks asíncronos (no lo hace), y un botón de reintentar que repite el mismo recurso ya rechazado. Fuentes oficiales: https://react.dev/reference/react/Suspense y https://github.com/bvaughn/react-error-boundary.
 
-### Tema 2: La composición visual debe conservar semántica y foco
+### Tema 2: La composición visual debe conservar semántica y foco · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a corregir el campo de PIN de confirmación de entrega para que un error de validación mueva el foco al campo inválido y lo anuncie mediante `aria-describedby`, en vez de solo cambiar un color. Prerrequisitos: Tema 1 de este módulo.
@@ -275,7 +275,7 @@ Corrige el Paso 5 restaurando `aria-describedby`, y agrega además que, tras un 
 #### Paso 7 · Cierre
 Entrega el campo accesible del Paso 4, el error indicado solo por color del Paso 5, y el movimiento de foco del Paso 6; explica por qué un color por sí solo nunca es información accesible, y por qué mover el foco al primer error ayuda específicamente a quien navega con teclado. Siguiente paso: estudia la frontera de seguridad entre cliente y servidor. Errores comunes: indicar un error solo con color sin texto ni atributos ARIA, no mover el foco tras un submit inválido, y usar un índice de lista como `key` en una lista reordenable. Fuentes oficiales: https://www.w3.org/WAI/ARIA/apg/ y https://testing-library.com/docs/queries/byrole/.
 
-### Tema 3: Cliente y servidor forman una sola frontera de seguridad
+### Tema 3: Cliente y servidor forman una sola frontera de seguridad · Experto · 50 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a auditar la Server Action `confirmarEntregaAction` (Módulo 10) para confirmar que autentica y autoriza dentro de la propia función, no solo ocultando el botón en el cliente. Prerrequisitos: Tema 2 de este módulo.
@@ -425,7 +425,7 @@ Valida la **forma** de `envioId` con un esquema (por ejemplo, `z.string().regex(
 #### Paso 7 · Cierre
 Entrega la Server Action con autorización real del Paso 4, el acceso indebido provocado en el Paso 5, y la prueba directa del Paso 6; explica por qué "el botón está oculto" nunca es un control de seguridad, y por qué cada Server Action necesita repetir las mismas verificaciones que cualquier otro endpoint de servidor. Siguiente paso: estudia hidratación determinista y releases medibles. Errores comunes: autorizar ocultando elementos de UI en vez de validar dentro de la acción del servidor, pasar objetos con campos privados desde un Server Component a un Client Component, y usar `dangerouslySetInnerHTML` con contenido no sanitizado por una política real. Fuentes oficiales: https://react.dev/reference/rsc/server-functions y https://nextjs.org/docs/app/building-your-application/data-fetching/forms-and-mutations.
 
-### Tema 4: Hidratación determinista, idioma y releases medibles
+### Tema 4: Hidratación determinista, idioma y releases medibles · Experto · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a eliminar un mismatch de hidratación en `DetalleEnvio` causado por formatear la fecha estimada con la zona horaria del navegador del cliente, distinta de la usada en el servidor. Prerrequisitos: Tema 3 de este módulo.
@@ -537,7 +537,7 @@ Corrige el Paso 5 devolviendo `timeZone: userTimeZone` explícito, y confirma en
 Entrega el formato determinista del Paso 4, el mismatch provocado en el Paso 5, y la confirmación sin advertencias del Paso 6; explica por qué `suppressHydrationWarning` no habría sido la corrección correcta aquí: oculta el síntoma sin eliminar la causa (dos zonas horarias distintas decidiendo el mismo dato). Siguiente paso: cierra el módulo con la auditoría completa de resiliencia del proyecto integrador. Errores comunes: depender de la zona horaria o locale implícitos del entorno de ejecución en vez de uno explícito y compartido, usar `suppressHydrationWarning` para silenciar un mismatch real en vez de eliminar su causa, y no medir Core Web Vitals segmentados por versión antes de confirmar que un cambio mejoró algo. Fuentes oficiales: https://react.dev/reference/react-dom/client/hydrateRoot y https://react.dev/link/hydration-mismatch.
 **Implicación práctica:** SSR solo aporta valor si el cliente conserva el resultado; una app que decide locale/zona de forma distinta en servidor y cliente produce discrepancias reales, no solo advertencias cosméticas.
 
-### Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Avanzado · 45 min
+### Tema 5: Migrar a React 19: codemods, cambios que rompen y verificación · Experto · 50 min
 
 **Prerrequisito:** tema «Hidratación determinista, idioma y releases medibles» de este módulo.
 

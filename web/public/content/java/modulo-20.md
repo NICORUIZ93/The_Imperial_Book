@@ -6,7 +6,7 @@ El módulo se amplía de 3 a 13 temas para cubrir el inventario del prompt: func
 
 Cada Tema parte de una carpeta vacía y se compila con `javac` para ver el error real, no para describirlo.
 
-### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier
+### Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min
 
 **Duración:** 30 min. **Prerrequisitos:** Java M0 T1–T3 (clases, métodos y tipos). **Proyecto continuo:** Motor de asignación de entregas.
 
@@ -150,7 +150,139 @@ Entrega `Formas.java`, `Etiqueta.java`, `Registro.java` y las tres salidas.
 
 **Fuente oficial:** [java.util.function](https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/function/package-summary.html) y [expresiones lambda](https://docs.oracle.com/javase/tutorial/java/javaOO/lambdaexpressions.html).
 
-### Tema 2: Componer sin anidar: andThen, compose, negate y reglas encadenadas
+### Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min
+
+#### Paso 1 · Objetivo y preparación
+
+Al finalizar podrás escoger `Function<T,R>` cuando entra un dato y `BiFunction<T,U,R>` cuando entran dos, y ejecutar cada regla con valores de RutaFlow. **Prerrequisito:** Java M20 Tema 1, `java -version` 21 o superior. Crea su carpeta: `mkdir -p java-funcional-t04/src`.
+
+#### Paso 2 · Contexto y caso real
+
+**¿Por qué es importante?** Una tarifa se calcula con peso y distancia; un formato de guía se transforma a partir de una sola cadena. La cantidad de entradas ayuda a elegir la interfaz sin envolver datos en arreglos o clases innecesarias.
+
+#### Paso 3 · Entiende
+
+Piensa en una función como una máquina: recibe lo que necesita y entrega un resultado. `Function` recibe una entrada; `BiFunction`, dos. Ambas devuelven un valor y no describen por sí solas una acción que guarda datos.
+
+#### Paso 4 · Ejercicio 1
+
+#### Subtema 2.1: Transformar una entrada · 10 min
+**1. Contexto** la vista debe convertir el peso de un envío a una etiqueta legible.
+
+**2. Hazlo tú** desde la raíz del repositorio crea `java-funcional-t04/src/Peso.java`:
+
+```java
+import java.util.function.Function;
+
+public class Peso {
+    public static void main(String[] args) {
+        Function<Double, String> describir = kg -> kg > 20 ? "pesado" : "normal";
+        System.out.println(describir.apply(8.5));
+        System.out.println(describir.apply(32.0));
+    }
+}
+```
+
+Ejecuta `cd java-funcional-t04 && java src/Peso.java`.
+
+```bash
+cd java-funcional-t04
+java src/Peso.java
+```
+
+**Resultado esperado:** `normal` y luego `pesado`.
+
+**Fallo deliberado:** cambia `apply(8.5)` por `apply("8.5")`. **Error esperado:** el compilador indica que `String` no se puede convertir a `Double`. **Diagnóstico:** el tipo de entrada de `Function<Double, String>` es `Double`.
+
+**3. Entiende** `apply` entrega un valor nuevo. El dato original no cambia si la función solo lo calcula.
+
+**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
+
+**4. Cierra**
+
+Anota la entrada, la salida y la firma funcional que permitió calcularla.
+
+#### Paso 5 · Ejercicio 2
+
+#### Subtema 2.2: Combinar dos entradas · 10 min
+**1. Contexto** el código de envío necesita unir un prefijo con un número.
+
+**2. Hazlo tú** crea `java-funcional-t04/src/Guia.java`:
+
+```java
+import java.util.function.BiFunction;
+
+public class Guia {
+    public static void main(String[] args) {
+        BiFunction<String, Integer, String> crear = (prefijo, numero) -> prefijo + "-" + numero;
+        System.out.println(crear.apply("RT", 18));
+    }
+}
+```
+
+Ejecuta `cd java-funcional-t04 && java src/Guia.java`.
+
+```bash
+cd java-funcional-t04
+java src/Guia.java
+```
+
+**Resultado esperado:** `RT-18`.
+
+**Fallo deliberado:** reemplaza el segundo argumento por `"18"`. **Error esperado:** `String cannot be converted to Integer`. **Diagnóstico:** `BiFunction` tiene dos tipos de entrada y ambos deben respetarse.
+
+**3. Entiende** los dos primeros parámetros genéricos son las entradas; el tercero es el resultado.
+
+**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
+
+**4. Cierra**
+
+Anota la entrada, la salida y la firma funcional que permitió calcularla.
+
+#### Paso 6 · Ejercicio 3
+
+#### Subtema 2.3: Calcular un valor con ambos datos · 10 min
+**1. Contexto** una tarifa usa el precio por kilómetro y la distancia.
+
+**2. Hazlo tú** crea `java-funcional-t04/src/Tarifa.java`:
+
+```java
+import java.math.BigDecimal;
+import java.util.function.BiFunction;
+
+public class Tarifa {
+    public static void main(String[] args) {
+        BiFunction<BigDecimal, BigDecimal, BigDecimal> multiplicar = BigDecimal::multiply;
+        BigDecimal total = multiplicar.apply(new BigDecimal("1250"), new BigDecimal("2.4"));
+        System.out.println(total.setScale(2));
+    }
+}
+```
+
+Ejecuta `cd java-funcional-t04 && java src/Tarifa.java`.
+
+```bash
+cd java-funcional-t04
+java src/Tarifa.java
+```
+
+**Resultado esperado:** `3000.00`.
+
+**Fallo deliberado:** cambia `multiplicar.apply` a `multiplicar.apply("1250", new BigDecimal("2.4"))`. **Error esperado:** argumento `String` no compatible con `BigDecimal`. **Diagnóstico:** crea valores decimales desde texto antes de pasarlos.
+
+**3. Entiende** usa `BiFunction` cuando el resultado depende de dos valores; para dinero, representa ambos con `BigDecimal`.
+
+**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
+
+**4. Cierra**
+
+Anota la entrada, la salida y la firma funcional que permitió calcularla.
+
+#### Paso 7 · Cierre y evidencia
+
+**Hito de 4 puntos:** corre los tres archivos; muestra el resultado de cada uno; reproduce y diagnostica un error de tipo; explica cuándo la regla necesita una entrada y cuándo dos. **Proyecto integrador (RutaFlow):** usa una función para describir el peso y una bifunción para calcular la tarifa. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
+
+### Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -172,7 +304,7 @@ Componer con las interfaces de Java hace visible ese orden en una sola expresió
 
 #### Paso 4 · Demostración guiada desde cero
 
-#### Subtema 2.1: Encadenar una validación y una transformación · 10 min
+#### Subtema 3.1: Encadenar una validación y una transformación · 10 min
 **1. Contexto**
 
 Un correo con espacios puede ser válido después de limpiarlo; el orden de composición determina si el validador lo acepta.
@@ -249,7 +381,7 @@ Guarda la entrada, el resultado con composición y el resultado al cambiar el or
 
 #### Paso 5 · Práctica guiada
 
-#### Subtema 2.2: Combinar dos condiciones · 10 min
+#### Subtema 3.2: Combinar dos condiciones · 10 min
 **1. Contexto** RutaFlow acepta destinos habilitados solo si el nombre está presente y tiene el prefijo del país.
 
 **2. Hazlo tú** crea `src/Destino.java` dentro de `java-composicion`:
@@ -284,7 +416,7 @@ Guarda la entrada, el resultado con composición y el resultado al cambiar el or
 
 #### Paso 6 · Práctica independiente
 
-#### Subtema 2.3: Hacer visible el orden de ejecución · 10 min
+#### Subtema 3.3: Hacer visible el orden de ejecución · 10 min
 **1. Contexto** el correo del formulario puede traer espacios y mayúsculas; la regla solo acepta el texto limpio.
 
 **2. Hazlo tú** crea `src/OrdenCorreo.java` dentro de `java-composicion`:
@@ -332,13 +464,13 @@ Siguiente paso: aplicar composición a colecciones con Streams. **Evidencia de a
 
 **Hito del tema:** confirma que puedes (1) decidir con `Predicate`, (2) transformar con `Function`, (3) ejecutar un efecto con `Consumer` y (4) pedir un dato con `Supplier`; anota el método usado (`test`, `apply`, `accept` o `get`) y su salida.
 
-### Tema 3: Streams como composición: pereza, orden y efectos que se esconden
+### Tema 4: Streams como composición: pereza, orden y efectos que se esconden · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
 Al finalizar vas a explicar por qué un Stream no ejecuta nada hasta la operación terminal, a depurar un pipeline con `peek` sin confundirlo con un `for`, y a diagnosticar el error de reutilizar un Stream consumido.
 
-**Conocimiento previo:** Java M20 Temas 1–2 y Java M2 (colecciones); `javac` y `java` funcionando.
+**Conocimiento previo:** Java M20 Temas 1 y 3 y Java M2 (colecciones); `javac` y `java` funcionando.
 
 #### Paso 2 · Contexto y caso real
 
@@ -362,7 +494,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 
-#### Subtema 3.1: Observar cuándo empieza el trabajo · 10 min
+#### Subtema 4.1: Observar cuándo empieza el trabajo · 10 min
 **1. Contexto**
 
 Un informe de envíos puede definir varias transformaciones antes de producir una sola salida.
@@ -449,7 +581,7 @@ Guarda el orden de los mensajes y la excepción que aparece al intentar reutiliz
 
 #### Paso 5 · Práctica guiada
 
-#### Subtema 3.2: No reutilizar un Stream consumido · 10 min
+#### Subtema 4.2: No reutilizar un Stream consumido · 10 min
 **1. Contexto** cada informe debe crear su propio recorrido; un Stream solo sirve para una operación terminal.
 
 **2. Hazlo tú** crea `src/UnaVez.java` dentro de `java-streams`:
@@ -483,7 +615,7 @@ Guarda el orden de los mensajes y la excepción que aparece al intentar reutiliz
 
 #### Paso 6 · Práctica independiente
 
-#### Subtema 3.3: Dejar los efectos en el borde del flujo · 10 min
+#### Subtema 4.3: Dejar los efectos en el borde del flujo · 10 min
 **1. Contexto** una transformación calcula una etiqueta; el registro la imprime solo cuando se consume el resultado.
 
 **2. Hazlo tú** crea `src/Efectos.java` dentro de `java-streams`:
@@ -527,143 +659,11 @@ Siguiente paso: decidir cuándo Streams no conviene. **Evidencia de aprendizaje:
 
 **Hito del tema:** identifica la operación terminal; muestra el mensaje que no aparece antes de ella; reproduce la excepción al reutilizar el Stream; corrige el caso creando un Stream nuevo.
 
-### Tema 4: Function y BiFunction: transformar uno o dos datos
+### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás escoger `Function<T,R>` cuando entra un dato y `BiFunction<T,U,R>` cuando entran dos, y ejecutar cada regla con valores de RutaFlow. **Prerrequisito:** Java M20 Tema 1, `java -version` 21 o superior. Crea su carpeta: `mkdir -p java-funcional-t04/src`.
-
-#### Paso 2 · Contexto y caso real
-
-**¿Por qué es importante?** Una tarifa se calcula con peso y distancia; un formato de guía se transforma a partir de una sola cadena. La cantidad de entradas ayuda a elegir la interfaz sin envolver datos en arreglos o clases innecesarias.
-
-#### Paso 3 · Entiende
-
-Piensa en una función como una máquina: recibe lo que necesita y entrega un resultado. `Function` recibe una entrada; `BiFunction`, dos. Ambas devuelven un valor y no describen por sí solas una acción que guarda datos.
-
-#### Paso 4 · Ejercicio 1
-
-#### Subtema 4.1: Transformar una entrada · 10 min
-**1. Contexto** la vista debe convertir el peso de un envío a una etiqueta legible.
-
-**2. Hazlo tú** desde la raíz del repositorio crea `java-funcional-t04/src/Peso.java`:
-
-```java
-import java.util.function.Function;
-
-public class Peso {
-    public static void main(String[] args) {
-        Function<Double, String> describir = kg -> kg > 20 ? "pesado" : "normal";
-        System.out.println(describir.apply(8.5));
-        System.out.println(describir.apply(32.0));
-    }
-}
-```
-
-Ejecuta `cd java-funcional-t04 && java src/Peso.java`.
-
-```bash
-cd java-funcional-t04
-java src/Peso.java
-```
-
-**Resultado esperado:** `normal` y luego `pesado`.
-
-**Fallo deliberado:** cambia `apply(8.5)` por `apply("8.5")`. **Error esperado:** el compilador indica que `String` no se puede convertir a `Double`. **Diagnóstico:** el tipo de entrada de `Function<Double, String>` es `Double`.
-
-**3. Entiende** `apply` entrega un valor nuevo. El dato original no cambia si la función solo lo calcula.
-
-**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
-
-**4. Cierra**
-
-Anota la entrada, la salida y la firma funcional que permitió calcularla.
-
-#### Paso 5 · Ejercicio 2
-
-#### Subtema 4.2: Combinar dos entradas · 10 min
-**1. Contexto** el código de envío necesita unir un prefijo con un número.
-
-**2. Hazlo tú** crea `java-funcional-t04/src/Guia.java`:
-
-```java
-import java.util.function.BiFunction;
-
-public class Guia {
-    public static void main(String[] args) {
-        BiFunction<String, Integer, String> crear = (prefijo, numero) -> prefijo + "-" + numero;
-        System.out.println(crear.apply("RT", 18));
-    }
-}
-```
-
-Ejecuta `cd java-funcional-t04 && java src/Guia.java`.
-
-```bash
-cd java-funcional-t04
-java src/Guia.java
-```
-
-**Resultado esperado:** `RT-18`.
-
-**Fallo deliberado:** reemplaza el segundo argumento por `"18"`. **Error esperado:** `String cannot be converted to Integer`. **Diagnóstico:** `BiFunction` tiene dos tipos de entrada y ambos deben respetarse.
-
-**3. Entiende** los dos primeros parámetros genéricos son las entradas; el tercero es el resultado.
-
-**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
-
-**4. Cierra**
-
-Anota la entrada, la salida y la firma funcional que permitió calcularla.
-
-#### Paso 6 · Ejercicio 3
-
-#### Subtema 4.3: Calcular un valor con ambos datos · 10 min
-**1. Contexto** una tarifa usa el precio por kilómetro y la distancia.
-
-**2. Hazlo tú** crea `java-funcional-t04/src/Tarifa.java`:
-
-```java
-import java.math.BigDecimal;
-import java.util.function.BiFunction;
-
-public class Tarifa {
-    public static void main(String[] args) {
-        BiFunction<BigDecimal, BigDecimal, BigDecimal> multiplicar = BigDecimal::multiply;
-        BigDecimal total = multiplicar.apply(new BigDecimal("1250"), new BigDecimal("2.4"));
-        System.out.println(total.setScale(2));
-    }
-}
-```
-
-Ejecuta `cd java-funcional-t04 && java src/Tarifa.java`.
-
-```bash
-cd java-funcional-t04
-java src/Tarifa.java
-```
-
-**Resultado esperado:** `3000.00`.
-
-**Fallo deliberado:** cambia `multiplicar.apply` a `multiplicar.apply("1250", new BigDecimal("2.4"))`. **Error esperado:** argumento `String` no compatible con `BigDecimal`. **Diagnóstico:** crea valores decimales desde texto antes de pasarlos.
-
-**3. Entiende** usa `BiFunction` cuando el resultado depende de dos valores; para dinero, representa ambos con `BigDecimal`.
-
-**Diagnóstico:** lee los tipos declarados en la interfaz funcional y compáralos, en orden, con los argumentos que pasaste.
-
-**4. Cierra**
-
-Anota la entrada, la salida y la firma funcional que permitió calcularla.
-
-#### Paso 7 · Cierre y evidencia
-
-**Hito de 4 puntos:** corre los tres archivos; muestra el resultado de cada uno; reproduce y diagnostica un error de tipo; explica cuándo la regla necesita una entrada y cuándo dos. **Proyecto integrador (RutaFlow):** usa una función para describir el peso y una bifunción para calcular la tarifa. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
-
-### Tema 5: UnaryOperator y BinaryOperator: la salida conserva el tipo
-
-#### Paso 1 · Objetivo y preparación
-
-Al finalizar podrás usar `UnaryOperator<T>` para transformar un valor de tipo `T` en otro `T`, y `BinaryOperator<T>` para combinar dos valores `T` en uno. **Prerrequisito:** Java M20 Tema 4. Crea su carpeta: `mkdir -p java-funcional-t05/src`.
+Al finalizar podrás usar `UnaryOperator<T>` para transformar un valor de tipo `T` en otro `T`, y `BinaryOperator<T>` para combinar dos valores `T` en uno. **Prerrequisito:** Java M20 Tema 2. Crea su carpeta: `mkdir -p java-funcional-t05/src`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -790,11 +790,11 @@ Guarda los valores de entrada, el tipo `T` y el valor que produjo el operador.
 
 **Hito de 4 puntos:** demuestra una transformación del mismo tipo; una suma; una selección de mínimo; diagnostica el fallo de tipo. **Proyecto integrador (RutaFlow):** normaliza el destino y escoge la menor tarifa entre dos opciones. **Límite:** `UnaryOperator`/`BinaryOperator` solo aplican cuando entrada y salida comparten exactamente el mismo tipo `T`; si la tarifa final debe ser otro tipo (por ejemplo un `Resultado` con motivo de rechazo), usa `Function`/`BiFunction` normales en vez de forzar el mismo tipo de entrada y salida. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
-### Tema 6: Referencias a métodos: escribir la operación sin repetirla
+### Tema 6: Referencias a métodos: escribir la operación sin repetirla · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar identificarás referencias estáticas, ligadas a un objeto, no ligadas y de constructor. **Prerrequisito:** Java M20 Temas 1 y 4. Crea su carpeta: `mkdir -p java-funcional-t06/src`.
+Al finalizar identificarás referencias estáticas, ligadas a un objeto, no ligadas y de constructor. **Prerrequisito:** Java M20 Temas 1–2. Crea su carpeta: `mkdir -p java-funcional-t06/src`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -927,11 +927,11 @@ Guarda la salida y explica si la referencia necesitó un objeto, una clase o cre
 
 **Hito de 4 puntos:** muestra las cuatro formas; asocia cada forma con su sintaxis; ejecuta la conversión de guía; diagnostica la referencia de constructor incompatible. **Proyecto integrador (RutaFlow):** normaliza y construye una guía con referencias legibles. **Límite:** usa una referencia a método solo cuando ya existe un método o constructor que calza exactamente con la firma de la interfaz funcional; si necesitas transformar un argumento antes de llamarlo, escribe una lambda explícita en vez de forzar una referencia. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
-### Tema 7: Optional: buscar un envío que puede no existir
+### Tema 7: Optional: buscar un envío que puede no existir · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás convertir un resultado que puede faltar en `Optional`, transformarlo y decidir qué hacer con la ausencia. **Prerrequisito:** Java M20 Tema 4; no uses `Optional` como campo de entidad ni como reemplazo de una lista. Crea su carpeta: `mkdir -p java-funcional-t07/src`.
+Al finalizar podrás convertir un resultado que puede faltar en `Optional`, transformarlo y decidir qué hacer con la ausencia. **Prerrequisito:** Java M20 Tema 2; no uses `Optional` como campo de entidad ni como reemplazo de una lista. Crea su carpeta: `mkdir -p java-funcional-t07/src`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1064,11 +1064,11 @@ Guarda los casos con valor y vacío y explica qué decisión tomó el programa e
 
 **Hito de 4 puntos:** demuestra una búsqueda vacía; transforma un valor presente; muestra el error útil de una búsqueda obligatoria; explica por qué `Optional` no reemplaza una lista. **Proyecto integrador (RutaFlow):** busca el estado de una guía e informa cuál referencia falta. Fuente: [Optional de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/Optional.html).
 
-### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar
+### Tema 8: Streams intermedios: filtrar, transformar, aplanar y ordenar · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás transformar una lista de entregas con `filter`, `map`, `flatMap` y `sorted`. **Prerrequisito:** Java M20 Tema 3. Crea su carpeta: `mkdir -p java-funcional-t08/src`.
+Al finalizar podrás transformar una lista de entregas con `filter`, `map`, `flatMap` y `sorted`. **Prerrequisito:** Java M20 Tema 4. Crea su carpeta: `mkdir -p java-funcional-t08/src`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1197,11 +1197,11 @@ Guarda la colección inicial, la salida final y el orden de operaciones que la p
 
 **Hito de 4 puntos:** filtra por peso; transforma a guía; aplana paradas; ordena una lista con criterio explícito. **Proyecto integrador (RutaFlow):** genera el resumen de paquetes pesados y paradas de la ruta. **Límite:** encadena operaciones intermedias solo mientras cada paso siga siendo legible; si la cadena supera cuatro o cinco operadores o mezcla responsabilidades distintas (filtrar, transformar y agrupar a la vez), divídela en variables intermedias con nombre en vez de un único stream ilegible. Fuente: [java.util.stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
 
-### Tema 9: Streams terminales: encontrar, contar y combinar resultados
+### Tema 9: Streams terminales: encontrar, contar y combinar resultados · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar distinguirás entre `findFirst`, `forEach`, `reduce` y operaciones que terminan el recorrido. **Prerrequisito:** Java M20 Temas 3 y 8. Crea su carpeta: `mkdir -p java-funcional-t09/src`.
+Al finalizar distinguirás entre `findFirst`, `forEach`, `reduce` y operaciones que terminan el recorrido. **Prerrequisito:** Java M20 Temas 4 y 8. Crea su carpeta: `mkdir -p java-funcional-t09/src`.
 
 #### Paso 2 · Contexto y caso real
 
@@ -1321,7 +1321,7 @@ Guarda el resultado terminal y explica si produjo un valor, un conteo, una combi
 
 **Hito de 4 puntos:** encuentra el primer envío; suma los pesos; imprime el lote; explica por qué cada terminal consume el Stream. **Proyecto integrador (RutaFlow):** busca guías urgentes y suma la carga del vehículo. Fuente: [Stream de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Stream.html).
 
-### Tema 10: Collectors: formar listas, mapas, grupos y texto
+### Tema 10: Collectors: formar listas, mapas, grupos y texto · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1454,7 +1454,7 @@ Guarda la estructura final y anota qué datos se usaron como elemento, clave o g
 
 **Hito de 4 puntos:** crea una lista; crea un mapa sin duplicados; agrupa por ciudad; une textos con separador. **Proyecto integrador (RutaFlow):** produce un resumen de destinos por lote. Fuente: [Collectors de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Collectors.html).
 
-### Tema 11: Streams paralelos: comparar antes de acelerarlos
+### Tema 11: Streams paralelos: comparar antes de acelerarlos · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1584,7 +1584,7 @@ Guarda ambas salidas, el tamaño de la prueba y las mediciones que observaste.
 
 **Hito de 4 puntos:** iguala resultados; conserva orden con `forEachOrdered`; registra tiempos repetidos; explica por qué no se promete que paralelo sea más rápido. **Proyecto integrador (RutaFlow):** evalúa paralelismo solo en un cálculo grande sin efectos externos. **Límite:** no conviene usar `parallelStream()` en colecciones pequeñas, con efectos secundarios (I/O, impresión, acceso a estado compartido) o cuando no mediste antes un cuello de botella real; el paralelismo solo gana frente al stream secuencial en cómputo puro y grande, y tiene costo de coordinación que puede hacerlo más lento. Fuente: [Parallelism de Streams, Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/package-summary.html).
 
-### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir
+### Tema 12: Pureza y efectos: calcular separado de guardar o imprimir · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1712,7 +1712,7 @@ Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto exte
 
 **Hito de 4 puntos:** muestra que la lista de entrada no cambia; realiza el registro después del cálculo; repite una entrada y obtiene la misma salida; señala qué línea produce el efecto. **Proyecto integrador (RutaFlow):** separa el costo de envío del envío de notificaciones. **Límite:** mantén la lambda pura (sin leer ni escribir estado externo) mientras calcula; cuando el paso realmente necesite guardar, notificar o imprimir, sepáralo en una llamada aparte después del cálculo en vez de mezclar cómputo y efecto en la misma función. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
-### Tema 13: Flow API: publicar datos con demanda y cierre
+### Tema 13: Flow API: publicar datos con demanda y cierre · Avanzado · 50 min
 
 #### Paso 1 · Objetivo y preparación
 

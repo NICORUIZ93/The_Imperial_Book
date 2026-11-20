@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** cada ejemplo se sirve con `npm run dev` dentro del proyecto `mi-react` del módulo 0; abre `http://localhost:5173` para ver el resultado y ejecuta `npm test` para las pruebas (Vitest, configurado una sola vez en «Prepara las pruebas» del módulo 0). Si el puerto cambia, usa el que imprima la terminal.
 
-### Tema 1: createContext y useContext
+### Tema 1: createContext y useContext · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear `SesionContext` para compartir el operador autenticado de RutaFlow con cualquier componente del árbol, sin pasarlo por props en cada nivel intermedio. Prerrequisitos: Módulo 3 completo.
@@ -121,7 +121,7 @@ Corrige el Paso 5 envolviendo también ese modal con `SesionContext.Provider`, y
 Entrega el Context funcionando del Paso 4, el crash por Provider faltante del Paso 5, y la validación explícita del Paso 6; explica por qué `useContext` nunca "busca" el Provider más cercano en todo el árbol, sino solo entre los ancestros reales del componente que lo consume. Siguiente paso: estudia cuándo Context deja de ser suficiente. Errores comunes: olvidar envolver una parte del árbol (especialmente contenido montado vía portales) con el Provider correspondiente, no validar que el valor del contexto no sea el valor por defecto antes de usarlo, y crear un nuevo objeto de valor en cada render del Provider sin memoizarlo. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/reference/react/useContext.
 **Implicación práctica:** Context permite que un componente lea un valor compartido sin que cada componente intermedio en el árbol tenga que reenviarlo manualmente, pero solo funciona dentro del subárbol efectivamente envuelto por su Provider.
 
-### Tema 2: Cuándo Context es suficiente y cuándo no
+### Tema 2: Cuándo Context es suficiente y cuándo no · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir cuántos componentes se re-renderizan cuando `SesionContext` cambia, y a decidir si ese costo es aceptable para el caso de RutaFlow. Prerrequisitos: Tema 1 de este módulo.
@@ -213,7 +213,7 @@ Corrige el Paso 5 sacando `filtroBusqueda` de `SesionContext` y manejándolo con
 Entrega la medición del re-render innecesario de los Pasos 4-5, y la corrección del Paso 6; explica con tus propias palabras por qué "ya que está el Context, meto todo ahí" ignora la frecuencia de cambio de cada valor. Siguiente paso: estudia componentes compuestos y hooks personalizados. Errores comunes: meter valores de cambio frecuente dentro de un Context de cambio infrecuente, no medir el impacto real de re-renders antes de decidir, y asumir que Context siempre es más simple que una librería de estado dedicada sin considerar el costo real. Fuentes oficiales: https://react.dev/learn/passing-data-deeply-with-context y https://react.dev/learn/scaling-up-with-reducer-and-context.
 **Implicación práctica:** Context es apropiado para valores que cambian con poca frecuencia consumidos ampliamente; mezclar un valor de cambio frecuente dentro del mismo Context re-renderiza innecesariamente a todos los consumidores que no lo usan.
 
-### Tema 3: Componentes compuestos, render props y hooks personalizados
+### Tema 3: Componentes compuestos, render props y hooks personalizados · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `Pestanias`/`Pestanias.Panel` (un componente compuesto) para organizar el panel de operador en pestañas ("Envíos activos", "Historial"), coordinadas internamente sin que quien lo usa gestione ese estado. Prerrequisitos: Tema 2 de este módulo.
