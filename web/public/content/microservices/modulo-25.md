@@ -782,7 +782,8 @@ const COLA = 'f131.pedidos';
 const total = Number(process.argv[2] ?? 1);
 const conexion = await amqplib.connect(AMQP_URL);
 const canal = await conexion.createConfirmChannel();
-await canal.assertQueue(COLA, { durable: false });
+// RabbitMQ 4.x rechaza colas no exclusivas y no durables («transient_nonexcl_queues» está retirada): durable.
+await canal.assertQueue(COLA, { durable: true });
 
 for (let i = 1; i <= total; i++) {
   // Span raíz «crear pedido»: simula la petición HTTP que origina el evento.
@@ -811,7 +812,8 @@ const esperados = Number(process.argv[2] ?? 1);
 let procesados = 0;
 const conexion = await amqplib.connect(AMQP_URL);
 const canal = await conexion.createChannel();
-await canal.assertQueue(COLA, { durable: false });
+// RabbitMQ 4.x rechaza colas no exclusivas y no durables («transient_nonexcl_queues» está retirada): durable.
+await canal.assertQueue(COLA, { durable: true });
 console.log('facturacion esperando mensajes');
 
 await canal.consume(COLA, async (mensaje) => {
@@ -840,6 +842,12 @@ const TOPIC = 'f131.pedidos';
 const esperados = Number(process.argv[2] ?? 1);
 let procesados = 0;
 const kafka = new Kafka({ clientId: 'facturacion', brokers: KAFKA_BROKERS, logLevel: logLevel.ERROR });
+// Crear el topic antes de suscribirse: si no existe, el broker responde UNKNOWN_TOPIC_OR_PARTITION
+// («This server does not host this topic-partition») y el consumidor se cae al arrancar.
+const admin = kafka.admin();
+await admin.connect();
+await admin.createTopics({ topics: [{ topic: TOPIC, numPartitions: 1 }], waitForLeaders: true });
+await admin.disconnect();
 const consumidor = kafka.consumer({ groupId: 'f131-facturacion' });
 await consumidor.connect();
 await consumidor.subscribe({ topic: TOPIC, fromBeginning: true });

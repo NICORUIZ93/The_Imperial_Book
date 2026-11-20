@@ -10,7 +10,8 @@ const COLA = 'f131.pedidos';
 const total = Number(process.argv[2] ?? 1);
 const conexion = await amqplib.connect(AMQP_URL);
 const canal = await conexion.createConfirmChannel();
-await canal.assertQueue(COLA, { durable: false });
+// RabbitMQ 4.x rechaza colas no exclusivas y no durables («transient_nonexcl_queues» está retirada): durable.
+await canal.assertQueue(COLA, { durable: true });
 
 for (let i = 1; i <= total; i++) {
   // Span raíz «crear pedido»: simula la petición HTTP que origina el evento.

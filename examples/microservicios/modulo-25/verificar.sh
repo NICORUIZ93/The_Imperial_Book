@@ -114,7 +114,8 @@ if [ "$modo" = "--compose" ]; then
       curl -s -X POST localhost:3130/pedidos/TEC-1 > logs/f130-respuesta.log 2>&1
       i=0; ok=0
       while [ $i -lt 30 ]; do # el BatchSpanProcessor envía cada 5 s
-        curl -s "http://localhost:16686/api/services" > logs/f130-jaeger-servicios.log 2>&1
+        # Jaeger 2: la API de consulta estable es /api/v3/services; /api/services (la interna de la UI) puede dar 404.
+        { curl -s "http://localhost:16686/api/v3/services"; echo; curl -s "http://localhost:16686/api/services"; } > logs/f130-jaeger-servicios.log 2>&1
         if grep -q '"pedidos"' logs/f130-jaeger-servicios.log && grep -q '"inventario"' logs/f130-jaeger-servicios.log; then ok=1; break; fi
         sleep 2; i=$((i + 1))
       done

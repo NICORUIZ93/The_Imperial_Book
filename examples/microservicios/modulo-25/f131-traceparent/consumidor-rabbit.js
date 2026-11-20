@@ -10,7 +10,8 @@ const esperados = Number(process.argv[2] ?? 1);
 let procesados = 0;
 const conexion = await amqplib.connect(AMQP_URL);
 const canal = await conexion.createChannel();
-await canal.assertQueue(COLA, { durable: false });
+// RabbitMQ 4.x rechaza colas no exclusivas y no durables («transient_nonexcl_queues» está retirada): durable.
+await canal.assertQueue(COLA, { durable: true });
 console.log('facturacion esperando mensajes');
 
 await canal.consume(COLA, async (mensaje) => {
