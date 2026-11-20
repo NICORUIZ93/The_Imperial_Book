@@ -932,7 +932,10 @@ const pagos = proxyActivities({ taskQueue: 'cobros', startToCloseTimeout: '10 se
   retry: { ...reintentos, maximumAttempts: 0 } }); // 0 = sin límite de intentos: manda scheduleToCloseTimeout
 
 export async function reservaWorkflow(reserva) {
-  return sagaReserva(reserva, { ...act, cobrar: pagos.cobrar, reembolsar: pagos.reembolsar });
+  // Nombradas una a una: proxyActivities devuelve un Proxy sin claves propias, así que «{ ...act }» copia un objeto
+  // VACÍO y la saga falla con «act.cancelar is not a function» (visto con el servidor real de Temporal en el Mac).
+  const { reservarPlaza, liberarPlaza, confirmar, cancelar } = act;
+  return sagaReserva(reserva, { reservarPlaza, liberarPlaza, confirmar, cancelar, cobrar: pagos.cobrar, reembolsar: pagos.reembolsar });
 }
 ```
 
