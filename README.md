@@ -31,7 +31,8 @@ npm start            # abre http://localhost:4200
 
 ```bash
 docker compose up -d      # desde la raíz del repositorio
-docker compose ps         # los cuatro servicios deben aparecer «running»
+docker compose ps         # espera a que aws-local diga «healthy» (tarda entre 15 y 45 segundos)
+curl http://localhost:4566/_floci/health   # debe responder HTTP 200
 docker compose down       # apaga el entorno (los datos de AWS quedan en ./data/aws)
 ```
 
@@ -49,6 +50,11 @@ export AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-e
 aws --endpoint-url http://localhost:4566 s3 mb s3://mi-primer-bucket
 aws --endpoint-url http://localhost:4566 s3 ls
 ```
+
+Comprobado en macOS el 2026-11-20 (Docker 29.9, AWS CLI): los cuatro servicios arrancan, AWS local queda
+listo a los 16 segundos y los comandos de arriba crean y listan el bucket. Si la CLI responde «Could not
+connect to the endpoint URL», AWS local todavía está arrancando: espera a que `docker compose ps` lo muestre
+«healthy».
 
 Floci es un emulador para aprender y probar: no reproduce todos los detalles de la nube real (permisos,
 límites, costos). Cada laboratorio de nube indica qué cambia al pasar a una cuenta real. Los puertos se

@@ -14,7 +14,7 @@ Se marca cada línea cuando su fase termina y queda su informe en esta carpeta.
 - [ ] Z9 · profundidad: mitad de temas en Integración/Experto, ejemplo realista, error real y criterio
 - [ ] Z10 · formato educativo único en cursos, módulos, temas, laboratorios y página
 
-Pendiente menor de Z0: comprobar los comandos de Floci del README en el Mac (`probar-floci.command`).
+Floci comprobado en el Mac el 2026-11-20: los cuatro servicios arrancan, AWS local responde 200 en `/_floci/health` a los ~16 s y `aws s3 mb/ls/rb` funcionan. Azure responde en `/_floci/health`; GCP no tiene esa ruta.
 
 Formato único aprobado por el dueño el 2026-11-20 (12 secciones; Microservicios conserva su ficha de 14 puntos).
 - [ ] Z11 · Microservicios con Gradle verificado en el Mac y temario contrastado
