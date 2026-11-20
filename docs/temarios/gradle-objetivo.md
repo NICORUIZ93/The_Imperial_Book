@@ -2,8 +2,7 @@
 
 > **Aprobado por el dueño el 2026-11-20** (versión extendida). Decisiones: 28 módulos y 166 temas (versión extendida); Gradle 9.9.x en el curso y 9.7.x para Android/KMP; Maven sin curso propio.
 
-**Estado:** propuesta para aprobación del dueño (specs/021, Fase 3, criterio Z2). No hay lecciones escritas
-y este documento no cambia ningún tema actual.
+**Estado:** aprobado por el dueño el 2026-11-20 con la opción recomendada en cada decisión (specs/021, Fase 3, criterio Z2). 28 módulos y 166 temas; Gradle 9.9.x en el curso y 9.7.x para Android/KMP; Maven sin curso propio. Este documento no cambia ningún tema actual.
 **Fecha de revisión de fuentes:** 2026-11-20.
 **Identificador de ruta previsto:** `gradle`.
 **Posición en la academia:** 2.º curso prioritario (Java → **Gradle** → Spring). Regla 7 de specs/021: Gradle

@@ -20,12 +20,20 @@ Al menos la mitad de los temas del curso son de Integración o Experto.
 ## Módulo
 
 Cabecera: objetivo · prerrequisitos · duración · versiones · laboratorio (`examples/<curso>/modulo-N/`) ·
-mapa del módulo (diagrama). De 3 a 7 temas. Cierre: resumen, autoevaluación y siguiente módulo.
+mapa del módulo (diagrama). De 3 a 7 temas (esta es la única cifra de la academia; `CONTINUAR.md` decía 4 a 7
+y está corregido). **Ningún validador lo comprueba** — `scripts/validate_formato.py` mide las 12 secciones y
+el nivel/minutos, no el tamaño del módulo. Medido en lo publicado: los 324 módulos van de 1 a 17 temas (11
+con 1–2 y 32 con 8 o más). Cierre: resumen, autoevaluación y siguiente módulo.
 
 ## Tema
 
 Encabezado: `### Tema N: Título · Nivel · NN min` (nivel: Básico, Intermedio, Avanzado o Experto; de 20 a
-45 minutos). Debajo, siempre estas 12 secciones, con este nombre y en este orden:
+45 minutos). **Única excepción escrita:** la ficha de 14 puntos de Microservicios (sección «Microservicios»
+abajo) abre por `### Título` sin sufijo y sus puntos `#### 1.`…`#### 14.`; por eso las 187 fichas no declaran
+nivel ni minutos. `scripts/validate_formato.py:35` sí las mide (usa `^### (.+)$` para ese curso); lo que
+**no** las mide es `audit_topic_order` y `audit_topic_citations`, que siguen leyendo `### Tema N:`, así que el
+orden pedagógico y las citas de Microservicios no están comprobados. Debajo del encabezado, siempre estas 12
+secciones, con este nombre y en este orden:
 
 | # | Sección (`####`) | Qué contiene | Regla comprobable |
 |---|---|---|---|

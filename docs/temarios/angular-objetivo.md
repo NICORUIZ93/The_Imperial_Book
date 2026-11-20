@@ -1,6 +1,6 @@
 # Temario objetivo · Angular 22, de cero a experto (web y Angular Native)
 
-> **Pendiente de aprobación del dueño** (versión extendida, regla 10 de la spec 021).
+> **Aprobado por el dueño el 2026-11-20** (versión extendida, regla 10 de la spec 021).
 
 **Estado:** Aprobado por el dueño el 2026-11-20, con la opción recomendada en cada decisión. (specs/021, Fase 3, criterio Z2). No hay lecciones escritas ni
 cambiadas: este documento solo fija qué temas tendrá el curso, en qué orden y de dónde sale cada uno.

@@ -22,5 +22,14 @@ Formato único aprobado por el dueño el 2026-11-20 (12 secciones; Microservicio
 Decisiones del dueño sobre los temarios (2026-11-20): siempre la versión extendida, nunca la reducida.
 Gradle: 28 módulos y 166 temas. Java: 279 temas. Spring: 281 temas (Spring AI incluido).
 
-Temarios objetivo aprobados por el dueño (2026-11-20): Java (279 temas), Gradle (166) y Spring (281).
+Temarios objetivo **aprobados por el dueño: 8** (comprobado el 2026-11-20 buscando «Aprobado por el dueño»
+en `docs/temarios/*-objetivo.md`): Java (279), Gradle (166), Spring (281), Microservicios (395), Flutter
+(345), iOS (324), Angular (297) y Fundamentos (298). Suman los **2.385 temas en 379 módulos** de
+`ESTADO-DE-TEMAS.csv`. Antes esta línea decía 3, lo que hacía contradecir a `CONTINUAR.md:113`.
+Aún quedan en «propuesta» dentro del propio documento aprobado: `java-objetivo.md:5`, `gradle-objetivo.md:5`
+y `spring-objetivo.md:5` conservaban la frase «Estado: propuesta para aprobación del dueño» bajo el banner de
+aprobación, y `angular-objetivo.md:3` decía «Pendiente de aprobación del dueño» mientras su línea 5 declaraba
+aprobado. **Corregidos el 2026-11-20**: las cuatro líneas dicen ahora lo que decide el banner, porque un
+relevo que aplicara la regla 2 de `CONTINUAR.md` se habría parado ahí y no habría escrito Java, Gradle,
+Spring ni Angular.
 La reescritura se prepara en `docs/reestructuracion/cursos/<curso>/` y se publica en la página por tramos completos.

@@ -2,8 +2,7 @@
 
 > **Aprobado por el dueño el 2026-11-20** (versión extendida). Decisiones: JPA/Hibernate pasa a Spring; los temas de Gradle pasan al curso de Gradle; Maven queda en dos temas.
 
-**Estado:** propuesta para aprobación del dueño (specs/021, Fase 3, criterio Z2). No hay lecciones escritas ni
-cambiadas: este documento solo fija qué temas tendrá el curso, en qué orden y de dónde sale cada uno.
+**Estado:** aprobado por el dueño el 2026-11-20 con la opción recomendada en cada decisión (specs/021, Fase 3, criterio Z2). JPA/Hibernate pasa a Spring; los temas de Gradle pasan al curso de Gradle; Maven queda en dos temas. Este documento no cambia ningún tema actual.
 **Fecha de revisión de fuentes:** 2026-11-20.
 **Versión de referencia:** JDK 25 (LTS; disponibilidad general el 2025-09-16, según la página del proyecto
 JDK 25). `docs/VERSIONES.md` es la fuente de las versiones de la academia.

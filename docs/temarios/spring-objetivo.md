@@ -2,8 +2,7 @@
 
 > **Aprobado por el dueño el 2026-11-20** (versión extendida). Decisiones: Spring Boot 4.1.x; JPA llega desde Java; Spring Cloud vive en Microservicios; Spring AI se queda (versión extendida).
 
-**Estado:** propuesta para aprobación del dueño (specs/021, Fase 3, criterio Z2). No hay lecciones escritas ni
-cambiadas: este documento solo fija qué temas tendrá el curso, en qué orden y de dónde sale cada uno.
+**Estado:** aprobado por el dueño el 2026-11-20 con la opción recomendada en cada decisión (specs/021, Fase 3, criterio Z2). Spring Boot 4.1.x; JPA llega desde Java; Spring Cloud vive en Microservicios; Spring AI se queda. Este documento no cambia ningún tema actual.
 **Fecha de revisión de fuentes:** 2026-11-20.
 **Identificador de ruta:** `spring-boot` (el actual; el nombre visible pasa a «Spring»).
 **Prerrequisitos de la academia:** Java (lenguaje, colecciones, concurrencia, JDBC, pruebas con JUnit) y Gradle

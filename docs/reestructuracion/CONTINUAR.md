@@ -17,7 +17,10 @@ Pega este archivo completo como primer mensaje a la IA que continúe, con acceso
 
 The Imperial Book es una academia en español. Una app Angular (`web/`) dibuja lecciones Markdown de
 `web/public/content/<curso>/modulo-N.md`. Los módulos de cada curso se declaran en
-`web/src/app/tracks/<curso>.track.ts` y se agregan en `web/src/app/course-data.ts`.
+`web/src/app/tracks/<curso>.track.ts` y se agregan en `web/src/app/course-data.ts`. **Excepción medida:**
+hay 15 archivos `.track.ts` para 16 cursos porque Cloud no tiene archivo propio; sus módulos viven
+inline en `web/src/app/course-data.ts:42` (`COURSE_MODULES`) y se registran en `TRACKS`
+(`web/src/app/course-data.ts:874`, `modules: COURSE_MODULES`).
 
 El dueño es Nicolás Ruiz. Solo habla español y lee desde el móvil: respóndele en español, corto y con el
 resultado primero.
@@ -40,11 +43,16 @@ demasiado básicos, muchos temas faltantes y un formato distinto en cada curso.
 5. **Formato único** (sección 6). Lo mide `scripts/validate_formato.py`.
 6. **Un concepto, un curso dueño.** Si otro curso ya lo enseña, se enlaza; no se repite. Cada temario tiene
    una sección de reparto con los demás cursos: respétala.
-7. **Nada se pierde.** Lo retirado va a una etiqueta `retirado/*`. El repositorio solo tiene la rama `main`;
-   no crees ramas que queden en GitHub.
+7. **Nada se pierde.** Lo retirado va a una etiqueta `retirado/*`. En GitHub (`origin`) solo hay la rama
+   `main`, y no crees ramas que queden allí. **Medido el 2026-11-20:** el repositorio local conserva 6 ramas
+   viejas que no son respaldo de nada y no debes seguir como si tuvieran trabajo
+   (`agent/ampliar-temas-ejemplos`, `codex/biblioteca-continuidad-20261013`, `completar-siete-pasos-20261028`,
+   `rediseno-dark-y-fix-temas-20261028`, `revision-minuciosa-java-20261101`,
+   `worktree-agent-general-purpose-c9e74e2e`).
 8. **Laboratorios JVM con Gradle**: Kotlin DSL, wrapper y catálogo `gradle/libs.versions.toml`. Maven no se
    usa en laboratorios nuevos.
-9. **Nube en local con Floci** (`docker-compose.yml` de la raíz). AWS tarda unos 16 s en estar `healthy`.
+9. **Nube en local con Floci** (`docker-compose.yml` de la raíz). AWS tarda entre 15 y 45 segundos en estar
+   `healthy` (es lo que mide y dice `README.md:34`; no uses un tiempo fijo).
 10. **No envíes mensajes ni correos en nombre del dueño, ni borres comprobantes o documentos suyos, sin
     preguntarle antes.**
 11. **Antes de cada commit:** `./scripts/validate.sh` debe terminar en `validate.sh: ok`.
@@ -85,7 +93,7 @@ tema se reescribe en el formato único salvo los que ya tienen `escrito_formato_
 
 | Curso | Temas | Módulos | Ya está | Básico | Falta | Escritos | Verificados |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Java | 279 | 44 | 46 | 92 | 141 | 0 | 0 |
+| Java | 279 | 44 | 46 | 92 | 141 | 14 | 0 |
 | Gradle | 166 | 28 | 0 | 31 | 135 | 0 | 0 |
 | Spring | 281 | 47 | 57 | 83 | 141 | 0 | 0 |
 | Microservicios | 395 | 62 | 173 | 72 | 150 | 173 | 110 |
@@ -109,43 +117,79 @@ La tabla viva es `ESTADO-DE-TEMAS.md`; esta copia puede quedar vieja.
 
 - **Plan, formato y validadores:** `specs/021`, `FORMATO-UNICO.md`, `scripts/validate_formato.py`,
   `scripts/build_estado_temas.py`, lección modelo en `docs/reestructuracion/leccion-modelo/`.
-- **Repositorio:** una sola rama `main`; README con Floci comprobado en el Mac.
+- **Repositorio:** `main` publicada y comprobada; en el repo local quedan 6 ramas viejas sin borrar
+  (ver regla 7). README con Floci comprobado en el Mac.
 - **Temarios aprobados (8):** Java, Gradle, Spring, Microservicios, Fundamentos, Flutter, iOS, Angular. Cada
   uno trae sus decisiones D1..Dn; el dueño aprobó la opción recomendada de cada una.
 - **Microservicios:** 187 fichas en `web/public/content/microservices/modulo-0..36.md`, con laboratorios en
   `examples/microservicios/modulo-0..36/` y documentación en `docs/microservicios/`. De ellas, 173 cuentan
   como escritas; las otras 14 están básicas y hay que ampliarlas (ver su `detalle_origen`). Este curso
   conserva su ficha de 14 puntos, que el validador acepta.
+  El 2026-11-20 dejaron de ser invisibles: antes `topic-index.json` registraba **0** temas de Microservicios
+  (el indexador solo reconocía `### Tema N:`), así que ni la página Temario ni el menú del lector ni los
+  auditores los veían. Hoy el índice marca **1608 temas** y los 187 son navegables. Detalle en
+  `docs/cambios-2026-11-20.md`. **Lo que sigue sin medirse:** `audit_topic_order` y
+  `audit_topic_citations` solo leen `### Tema N:`, así que el orden pedagógico, el nivel y las citas de las
+  187 fichas no están comprobados por nadie (no es «en verde», es «sin medir»).
 
 ### 4.4 Qué está a medias
 
-1. **Piloto de Java, módulos 0 y 1.** En `docs/reestructuracion/cursos/java/` (`CURSO.md`, `modulo-0.md`,
-   `modulo-1.md`, `laboratorios/modulo-0` y `modulo-1`). Hay 7 temas escritos por módulo. Antes de darlos
-   por buenos: comprueba que cada tema tiene las 12 secciones, ejecuta `laboratorios/modulo-N/verificar.sh`
-   y solo entonces regístralos en `temas-escritos.txt` (`java/M0/T1` … `java/M1/T7`). Si esa carpeta no
-   está en `main`, el piloto se perdió y hay que escribirlo de nuevo.
-2. **Laboratorios de Spring de Microservicios migrados a Gradle sin compilar.** Son
-   `examples/microservicios/modulo-5` a `modulo-16` y `modulo-36/spring`. Se escribieron sin acceso a
-   Gradle 9.9.2 ni a los plugins. Pendiente, en el Mac del dueño:
-   - regenerar el wrapper: `./gradlew wrapper --gradle-version 9.9.2 --gradle-distribution-sha256-sum <oficial>`;
-   - ejecutar `verificar.sh` de cada laboratorio y corregir lo que falle;
-   - piezas más dudosas: `pact { }`, `gatling { }`, `protobuf { plugins { create("grpc") } }`, la tarea de
-     Avro y la versión 1.1.18 del plugin nativo de GraalVM;
-   - sustituir en las lecciones las salidas marcadas «pendiente de verificación en el Mac» por las reales;
-   - al pasar, añadir `;verificado` a las 63 líneas de la Fase 1 en `temas-escritos.txt`.
-   El detalle, con archivo y línea, está al final de `verificacion/microservicios/pendiente.md`.
+1. **Piloto de Java, módulos 0 y 1: escrito y registrado, pero NO verificado.** En
+   `docs/reestructuracion/cursos/java/` (`CURSO.md`, `modulo-0.md`, `modulo-1.md`,
+   `laboratorios/modulo-0` y `modulo-1`): 7 temas por módulo, los 14 pasan las 12 secciones del formato y
+   están dados de alta en `temas-escritos.txt` (`java/M0/T1` … `java/M1/T7`, **sin** `;verificado`, como
+   exige la regla 12). La carpeta sí está en `main` (102 archivos con `git ls-files
+   docs/reestructuracion/cursos/java`), así que el piloto no se perdió.
+   El 2026-11-20 se ejecutaron los dos `verificar.sh` con Gradle real en el Mac del dueño
+   (`~/Downloads/imperial-verificacion/logs/gradle-resumen.txt`):
+   - `modulo-1` → **OK** (67 comprobaciones correctas, 0 fallidas).
+   - `modulo-0` → **FALLO** (46 correctas, 2 fallidas). Las dos son aserciones del propio
+     `verificar.sh` que no reconocen el mensaje real del JDK en español, no fallos del contenido enseñado:
+     «classpath equivocado» y «sin método main (clase compilada)». El log muestra lo que imprime la JVM
+     (`Error: no se ha encontrado o cargado la clase principal Despacho` y
+     `Error: el método principal no es SinMain en la clase javafx.application.Application, defina el método
+     principal del siguiente modo:`). Hay que corregir **el reconocimiento de esas dos cadenas** (sin bajar
+     el listón de la comprobación) y volver a ejecutar; solo entonces se añade `;verificado` a los 14.
+2. **Laboratorios de Spring de Microservicios ya compilados en Gradle.** Son
+   `examples/microservicios/modulo-5` a `modulo-16` y `modulo-36/spring`. El 2026-11-20 se ejecutaron con
+   Gradle real en el Mac del dueño (log `~/Downloads/imperial-verificacion/logs/gradle-resumen.txt`,
+   script `verificar-gradle.command`):
+   - `modulo-5` … `modulo-15` → **PASS** (11 módulos, de 15 s a 133 s).
+   - `modulo-16` → **FAIL** (`rc=1`, 666 s): en F087 Blue-Green/Canary el pod `catalogo`
+     `failed liveness probe, will be restarted` y el corte nunca se estabiliza.
+   - `modulo-36/spring` → **FAIL** (`rc=1`, 145 s): `BUILD FAILED` en la tarea `tests de spring/`; la
+     prueba «una nota fuera de 1-4 es un error, no un 0 silencioso» pasa y después falla el build.
+   - Queda pendiente arreglar esos dos laboratorios, sustituir en las lecciones las salidas marcadas
+     «pendiente de verificación en el Mac» por las reales y, al pasar, añadir `;verificado` a las 63 líneas
+     de la Fase 1 en `temas-escritos.txt`. El detalle con archivo y línea está al final de
+     `verificacion/microservicios/pendiente.md`.
+   - Ojo con la versión de Gradle: esta sección ordenaba regenerar el wrapper a **9.9.2**, pero el piloto
+     Java que se acaba de ejecutar fija **9.8.2** (`docs/reestructuracion/cursos/java/CURSO.md:140` y los
+     `gradle-wrapper.properties` de sus dos laboratorios) mientras los laboratorios de Microservicios usan
+     9.9.2. Hoy conviven dos versiones «oficiales»; hay que decidir una y dejarla escrita.
 3. **La reescritura se prepara fuera de la página.** Los cursos nuevos se escriben en
    `docs/reestructuracion/cursos/<curso>/` y se publican en `web/public/content/` por tramos completos, para
    no dejar un curso a medio cambiar a la vista del lector.
 
 ### 4.5 Qué falta por completo
 
-- Escribir 2.212 temas (todos menos los 173 de Microservicios).
-- Temarios de 12 cursos: JavaScript, Node, React, Docker, Kubernetes, DevOps, Cloud, Android, Kotlin
-  Multiplatform, Control, Diseño de sistemas, RutaFlow. Cada uno necesita aprobación del dueño.
+- Escribir 2.198 temas (los 2.385 objetivo menos los 187 que ya cuentan; es la columna «Por escribir» de
+  `ESTADO-DE-TEMAS.md`, reproducida por `python3 scripts/build_estado_temas.py`).
+- Temarios: de los 16 cursos publicados solo 8 tienen temario `-objetivo` aprobado. De la lista de 12 que
+  faltaba, **Docker, Kubernetes y Diseño de sistemas ya tienen temario en propuesta**
+  (`docs/temarios/docker.md`, `kubernetes.md`, `diseno-de-sistemas.md`, los tres de 2026-11-18 con
+  «propuesta para aprobación del dueño»): lo que falta ahí es la versión extendida `-objetivo` y la
+  aprobación, no investigarlos desde cero. Sin temario alguno quedan JavaScript, Node, React, DevOps, Cloud,
+  Android, Kotlin Multiplatform, Control y RutaFlow. También están en propuesta `ia-aplicada.md` y
+  `blockchain.md` (cursos fuera de los 16). Cada aprobación es decisión del dueño (regla 2).
 - Criterios Z1 a Z11 de `specs/021` (ver `ESTADO.md`): mapa de conceptos, que la app dibuje las 12
-  secciones con los mismos componentes, lección «Nube en local con Floci», migrar a Kotlin DSL los 52 builds
-  Groovy de `examples/`, cierre por curso.
+  secciones con los mismos componentes, lección «Nube en local con Floci», cierre por curso, y la regla de
+  laboratorios JVM (regla 8: Kotlin DSL, wrapper y catálogo; Maven como alternativa). **Medido en
+  `examples/`:** 83 `build.gradle.kts`, 52 `build.gradle` en Groovy y 57 `pom.xml` (55 fuera de
+  Microservicios). Dos de esos pom viven dentro de lo que el plan da por resuelto:
+  `examples/microservicios/modulo-13/f069-escaneo/{antes,despues}/pom.xml` (son el caso real de escaneo de
+  dependencias Maven que enseña ese tema; o se excepciona el caso docente por escrito o se cambia el
+  laboratorio).
 
 ### 4.6 Datos del dueño que condicionan los laboratorios
 
@@ -186,7 +230,10 @@ La tabla viva es `ESTADO-DE-TEMAS.md`; esta copia puede quedar vieja.
    juguete: usa el proyecto guía del curso.
 4. El laboratorio va en `examples/<curso>/modulo-N/` (o en `laboratorios/modulo-N/` mientras el curso esté
    en `docs/reestructuracion/cursos/`), con un `verificar.sh` que termina en `RESULTADO: OK`.
-5. Módulos de 4 a 7 temas. Un tema con más de 45 minutos se parte.
+5. Módulos de 3 a 7 temas (lo que fija `FORMATO-UNICO.md:23`; no existe una segunda regla, y **ningún
+   validador lo comprueba**: `validate_formato.py` mide las 12 secciones y el nivel/minutos, no el tamaño del
+   módulo). Medido en la página publicada: los 324 módulos van de 1 a 17 temas, con 11 módulos de 1–2 y 32 de
+   8 o más — esa es la desviación real, no «en verde». Un tema con más de 45 minutos se parte.
 6. Referencia de calidad: `docs/reestructuracion/leccion-modelo/LECCION.md`.
 7. Registra el tema (sección 4.2), ejecuta `./scripts/validate.sh` y haz commit.
 
@@ -228,9 +275,17 @@ Lo que necesita Docker, Gradle con red, Xcode o Flutter se ejecuta en el Mac del
 | Script | Qué hace |
 |---|---|
 | `verificar-lote.command` | ejecuta los `verificar.sh` de los módulos listados en `lote.txt` |
+| `verificar-gradle.command` | **es el que produjo los resultados de la sección 4.4** (Gradle real, 2026-11-20 14:36→15:00); su salida es `logs/gradle-resumen.txt` y `logs/gradle-java-m0.log` |
 | `subir-avance.command` | sube a `main` el contenido de `imperial-avance.bundle` si es continuación directa |
 | `actualizar-mi-carpeta.command` | guarda en stash lo pendiente y pone la carpeta local al día con `main` |
 | `probar-floci.command` | arranca Floci y prueba los servicios |
+
+Hay más scripts de los cinco de la tabla (`diag-floci`, `probar-floci2`, `exportar-local`,
+`restaurar-stash`, `revisar-local`, `main-y-limpiar-ramas`, `solo-main`, `subir-imperial`,
+`subir-main`, `subir-rama`). Dos son relevantes para lo que dicen los documentos de relevo:
+`main-y-limpiar-ramas.command:11-13` es el que **borró las ramas `respaldo/dueno-*`** que aún cita
+`fusion-2026-11-20.md` (ver su corrección), y `restaurar-stash.command` es el que devuelve el `stash@{0}`
+de hoy («antes-de-actualizar-20261120-141747», 28 archivos modificados).
 
 Lecciones de ese Mac: bash es 3.2 (cuidado con `${var}` pegado a letras con tilde); `node --test` necesita
 `--test-force-exit`; Trivy puede recibir 429 de Maven Central; RabbitMQ 4 no admite colas transitorias no

@@ -5,7 +5,8 @@ implementación. Cada criterio tiene un estado (`pendiente` o `hecho`) y un coma
 lo comprueba. `python3 scripts/validate_specs.py --run` ejecuta las verificaciones de los criterios hechos.
 
 Las specs 001 a 010 y todo lo que se retiró del repositorio están en las etiquetas `retirado/archivo` y
-`retirado/archivo-2026-11-18` (no se borró nada; el repositorio solo tiene la rama `main`).
+`retirado/archivo-2026-11-18` (no se borró nada; en GitHub solo hay la rama `main` — el repo local conserva
+6 ramas viejas sin borrar, enumeradas en la regla 7 de `docs/reestructuracion/CONTINUAR.md`).
 
 | Spec | Tema | Estado |
 |---|---|---|
