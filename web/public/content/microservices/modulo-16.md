@@ -3121,6 +3121,10 @@ $K apply -f k8s/despliegues/canary.yaml
 for d in catalogo-estable catalogo-canario; do
   $K -n despliegues rollout status "deployment/$d" --timeout=180s || fallos=$((fallos + 1))
 done
+# rollout status solo dice que los pods están listos; el Service (EndpointSlice + kube-proxy) tarda un poco más
+# en incluirlos. Sin esta espera, la muestra puede salir antes de que el canario reciba tráfico (0 de 100).
+esperar 60 "el Service canary tiene los 4 pods como endpoints listos" hay_endpoints despliegues catalogo-canary 4 || fallos=$((fallos + 1))
+esperar 30 "el canario ya responde a través del Service" responde_con http://localhost:30083/api/info '"version":"1.1.0"' || fallos=$((fallos + 1))
 canario=0
 i=0
 while [ $i -lt 100 ]; do

@@ -240,7 +240,10 @@ export class LessonViewerComponent implements OnDestroy {
   });
   readonly chapterAnnouncement = computed(() => {
     const module = this.module();
-    return module ? `Módulo ${module.id}: ${module.title}` : '';
+    if (!module) return '';
+    // Cursos como Microservicios ya numeran sus módulos en el título («Módulo 19 · Resiliencia»);
+    // anteponer el número interno del archivo daría «Módulo 23: Módulo 19 · …».
+    return /^(Módulo|Fase)\b/.test(module.title) ? module.title : `Módulo ${module.id}: ${module.title}`;
   });
   /** Resumen corto del capítulo para que el siguiente tema no quede escondido
    * al final del documento largo. El Markdown sigue siendo la fuente real. */
