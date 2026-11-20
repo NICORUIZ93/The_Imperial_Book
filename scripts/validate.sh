@@ -35,6 +35,12 @@ python3 scripts/audit_topic_citations.py --check
 echo "== Completitud de cada curso (capítulos registrados, etapas, capítulo Master, anclas)"
 python3 scripts/audit_course_completeness.py --check
 
+echo "== Microservicios de Cero a Maestro: fichas de 14 puntos, track e índice (specs/018)"
+python3 scripts/validate_fichas.py --resumen > /dev/null
+echo "validate_fichas: ok"
+python3 scripts/build_microservices_track.py --check
+python3 scripts/build_microservices_indice.py --check
+
 echo "== Laboratorios citados por las lecciones"
 python3 scripts/validate_lesson_labs.py
 
@@ -47,6 +53,11 @@ python3 scripts/audit_lesson_assets.py
 echo "== Reportes del prompt maestro al día (specs/003 y specs/004)"
 python3 scripts/build_zero_to_master_report.py --check
 python3 scripts/audit_track_master_prompt.py --check
+
+echo "== Auditoría de los 12 puntos de la definición de terminado (MASTER-PROMPT sección 4)"
+# Se comprueba que el informe esté al día, no un porcentaje: la puerta de umbral solo se pone
+# cuando el criterio exista en todos, si no se legaliza la deuda que hay hoy.
+python3 scripts/audit_master_prompt_items.py --check
 
 echo "== Specs"
 echo "== Formato único (specs/021)"

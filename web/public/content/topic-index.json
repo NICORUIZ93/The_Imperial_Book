@@ -4988,43 +4988,828 @@
     ]
   },
   "microservices": {
-    "0": [],
-    "1": [],
-    "10": [],
-    "11": [],
-    "12": [],
-    "13": [],
-    "14": [],
-    "15": [],
-    "16": [],
-    "17": [],
-    "18": [],
-    "19": [],
-    "2": [],
-    "20": [],
-    "21": [],
-    "22": [],
-    "23": [],
-    "24": [],
-    "25": [],
-    "26": [],
-    "27": [],
-    "28": [],
-    "29": [],
-    "3": [],
-    "30": [],
-    "31": [],
-    "32": [],
-    "33": [],
-    "34": [],
-    "35": [],
-    "36": [],
-    "4": [],
-    "5": [],
-    "6": [],
-    "7": [],
-    "8": [],
-    "9": []
+    "0": [
+      {
+        "title": "Qué es un programa",
+        "fragment": "que-es-un-programa"
+      },
+      {
+        "title": "Qué es un servidor",
+        "fragment": "que-es-un-servidor"
+      },
+      {
+        "title": "Qué es una API",
+        "fragment": "que-es-una-api"
+      }
+    ],
+    "1": [
+      {
+        "title": "Lógica de programación",
+        "fragment": "logica-de-programacion"
+      },
+      {
+        "title": "Pensamiento computacional",
+        "fragment": "pensamiento-computacional"
+      }
+    ],
+    "10": [
+      {
+        "title": "REST síncrono: RestTemplate, WebClient, OpenFeign",
+        "fragment": "rest-sincrono-resttemplate-webclient-openfeign"
+      },
+      {
+        "title": "gRPC: Protocol Buffers, servicios, streaming",
+        "fragment": "grpc-protocol-buffers-servicios-streaming"
+      },
+      {
+        "title": "GraphQL con Spring for GraphQL",
+        "fragment": "graphql-con-spring-for-graphql"
+      },
+      {
+        "title": "Mensajería asíncrona: RabbitMQ y Kafka (introducción)",
+        "fragment": "mensajeria-asincrona-rabbitmq-y-kafka-introduccion"
+      },
+      {
+        "title": "Sync vs async: criterios de decisión",
+        "fragment": "sync-vs-async-criterios-de-decision"
+      }
+    ],
+    "11": [
+      {
+        "title": "Service Discovery: Eureka, Consul",
+        "fragment": "service-discovery-eureka-consul"
+      },
+      {
+        "title": "API Gateway: Spring Cloud Gateway",
+        "fragment": "api-gateway-spring-cloud-gateway"
+      },
+      {
+        "title": "Config Server: configuración centralizada",
+        "fragment": "config-server-configuracion-centralizada"
+      },
+      {
+        "title": "Load Balancing: Spring Cloud LoadBalancer",
+        "fragment": "load-balancing-spring-cloud-loadbalancer"
+      },
+      {
+        "title": "BFF pattern",
+        "fragment": "bff-pattern"
+      }
+    ],
+    "12": [
+      {
+        "title": "Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter",
+        "fragment": "resilience4j-circuit-breaker-retry-ratelimiter-bulkhead-timelimiter"
+      },
+      {
+        "title": "Timeouts en cascada y presupuesto de latencia",
+        "fragment": "timeouts-en-cascada-y-presupuesto-de-latencia"
+      },
+      {
+        "title": "Fallback strategies",
+        "fragment": "fallback-strategies"
+      },
+      {
+        "title": "Chaos Engineering con Toxiproxy",
+        "fragment": "chaos-engineering-con-toxiproxy"
+      }
+    ],
+    "13": [
+      {
+        "title": "Spring Security: filter chain",
+        "fragment": "spring-security-filter-chain"
+      },
+      {
+        "title": "JWT: firmas simétricas vs asimétricas",
+        "fragment": "jwt-firmas-simetricas-vs-asimetricas"
+      },
+      {
+        "title": "OAuth2 y OIDC",
+        "fragment": "oauth2-y-oidc"
+      },
+      {
+        "title": "Keycloak",
+        "fragment": "keycloak"
+      },
+      {
+        "title": "RBAC y Scopes",
+        "fragment": "rbac-y-scopes"
+      },
+      {
+        "title": "Token Exchange (RFC 8693)",
+        "fragment": "token-exchange-rfc-8693"
+      },
+      {
+        "title": "mTLS con Service Mesh",
+        "fragment": "mtls-con-service-mesh"
+      },
+      {
+        "title": "HashiCorp Vault",
+        "fragment": "hashicorp-vault"
+      },
+      {
+        "title": "Escaneo de vulnerabilidades: Trivy, Snyk",
+        "fragment": "escaneo-de-vulnerabilidades-trivy-snyk"
+      }
+    ],
+    "14": [
+      {
+        "title": "Micrometer + Prometheus",
+        "fragment": "micrometer-prometheus"
+      },
+      {
+        "title": "OpenTelemetry + Zipkin/Jaeger",
+        "fragment": "opentelemetry-zipkin-jaeger"
+      },
+      {
+        "title": "Logging estructurado",
+        "fragment": "logging-estructurado"
+      },
+      {
+        "title": "Grafana: dashboards",
+        "fragment": "grafana-dashboards"
+      },
+      {
+        "title": "Alerting basado en p99",
+        "fragment": "alerting-basado-en-p99"
+      }
+    ],
+    "15": [
+      {
+        "title": "Kafka profundo: particionamiento, consumer groups",
+        "fragment": "kafka-profundo-particionamiento-consumer-groups"
+      },
+      {
+        "title": "Exactly-Once Semantics (EOS)",
+        "fragment": "exactly-once-semantics-eos"
+      },
+      {
+        "title": "Schema Registry y Avro",
+        "fragment": "schema-registry-y-avro"
+      },
+      {
+        "title": "Dead Letter Topics",
+        "fragment": "dead-letter-topics"
+      },
+      {
+        "title": "RabbitMQ: publisher confirms, DLQ",
+        "fragment": "rabbitmq-publisher-confirms-dlq"
+      },
+      {
+        "title": "NATS",
+        "fragment": "nats"
+      }
+    ],
+    "16": [
+      {
+        "title": "Dockerfile multi-stage, distroless",
+        "fragment": "dockerfile-multi-stage-distroless"
+      },
+      {
+        "title": "Docker Compose",
+        "fragment": "docker-compose"
+      },
+      {
+        "title": "Kubernetes: Deployments, Services, ConfigMaps, Secrets",
+        "fragment": "kubernetes-deployments-services-configmaps-secrets"
+      },
+      {
+        "title": "Readiness/Liveness Probes",
+        "fragment": "readiness-liveness-probes"
+      },
+      {
+        "title": "HPA",
+        "fragment": "hpa"
+      },
+      {
+        "title": "Helm",
+        "fragment": "helm"
+      },
+      {
+        "title": "Blue-Green y Canary",
+        "fragment": "blue-green-y-canary"
+      },
+      {
+        "title": "GitOps con ArgoCD",
+        "fragment": "gitops-con-argocd"
+      }
+    ],
+    "17": [
+      {
+        "title": "ES6+: async/await, Promises, destructuring, modules",
+        "fragment": "es6-async-await-promises-destructuring-modules"
+      },
+      {
+        "title": "TypeScript: tipos, interfaces, generics, strict mode",
+        "fragment": "typescript-tipos-interfaces-generics-strict-mode"
+      },
+      {
+        "title": "Event Loop: fases, microtasks, macrotasks",
+        "fragment": "event-loop-fases-microtasks-macrotasks"
+      },
+      {
+        "title": "perf_hooks y clinic.js",
+        "fragment": "perf-hooks-y-clinic-js"
+      },
+      {
+        "title": "Worker Threads vs Child Processes",
+        "fragment": "worker-threads-vs-child-processes"
+      },
+      {
+        "title": "Backpressure en Streams",
+        "fragment": "backpressure-en-streams"
+      },
+      {
+        "title": "Graceful shutdown",
+        "fragment": "graceful-shutdown"
+      }
+    ],
+    "18": [
+      {
+        "title": "Express: routing, middleware, error handling",
+        "fragment": "express-routing-middleware-error-handling"
+      },
+      {
+        "title": "NestJS: módulos, controllers, providers, interceptors, guards",
+        "fragment": "nestjs-modulos-controllers-providers-interceptors-guards"
+      },
+      {
+        "title": "Validación con Zod o class-validator",
+        "fragment": "validacion-con-zod-o-class-validator"
+      },
+      {
+        "title": "DTOs",
+        "fragment": "dtos"
+      },
+      {
+        "title": "OpenAPI/Swagger",
+        "fragment": "openapi-swagger"
+      }
+    ],
+    "19": [
+      {
+        "title": "MongoDB + Mongoose",
+        "fragment": "mongodb-mongoose"
+      },
+      {
+        "title": "PostgreSQL + Prisma/Sequelize",
+        "fragment": "postgresql-prisma-sequelize"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "database-per-service"
+      },
+      {
+        "title": "Connection pooling y transacciones",
+        "fragment": "connection-pooling-y-transacciones"
+      }
+    ],
+    "2": [
+      {
+        "title": "Java y Node.js lado a lado: sintaxis y ejecución",
+        "fragment": "java-y-node-js-lado-a-lado-sintaxis-y-ejecucion"
+      },
+      {
+        "title": "Java y Node.js lado a lado: tipos, errores y concurrencia",
+        "fragment": "java-y-node-js-lado-a-lado-tipos-errores-y-concurrencia"
+      }
+    ],
+    "20": [
+      {
+        "title": "Jest",
+        "fragment": "jest"
+      },
+      {
+        "title": "Supertest",
+        "fragment": "supertest"
+      },
+      {
+        "title": "Contract Testing con Pact",
+        "fragment": "contract-testing-con-pact"
+      },
+      {
+        "title": "Testcontainers para Node",
+        "fragment": "testcontainers-para-node"
+      }
+    ],
+    "21": [
+      {
+        "title": "Estructura de carpetas escalable",
+        "fragment": "estructura-de-carpetas-escalable"
+      },
+      {
+        "title": "dotenv",
+        "fragment": "dotenv"
+      },
+      {
+        "title": "Service Discovery con Consul",
+        "fragment": "service-discovery-con-consul"
+      },
+      {
+        "title": "Configuración centralizada",
+        "fragment": "configuracion-centralizada"
+      }
+    ],
+    "22": [
+      {
+        "title": "REST con Axios/Fetch",
+        "fragment": "rest-con-axios-fetch"
+      },
+      {
+        "title": "gRPC con @grpc/grpc-js",
+        "fragment": "grpc-con-grpc-grpc-js"
+      },
+      {
+        "title": "GraphQL con Apollo Server",
+        "fragment": "graphql-con-apollo-server"
+      },
+      {
+        "title": "KafkaJS, amqplib",
+        "fragment": "kafkajs-amqplib"
+      },
+      {
+        "title": "NATS",
+        "fragment": "nats"
+      },
+      {
+        "title": "Sync vs async",
+        "fragment": "sync-vs-async"
+      }
+    ],
+    "23": [
+      {
+        "title": "Circuit Breaker con opossum o cockatiel",
+        "fragment": "circuit-breaker-con-opossum-o-cockatiel"
+      },
+      {
+        "title": "Retry con jitter",
+        "fragment": "retry-con-jitter"
+      },
+      {
+        "title": "Rate Limiting con Redis",
+        "fragment": "rate-limiting-con-redis"
+      },
+      {
+        "title": "Timeouts",
+        "fragment": "timeouts"
+      },
+      {
+        "title": "Fallback strategies",
+        "fragment": "fallback-strategies"
+      }
+    ],
+    "24": [
+      {
+        "title": "JWT con jsonwebtoken",
+        "fragment": "jwt-con-jsonwebtoken"
+      },
+      {
+        "title": "Passport.js",
+        "fragment": "passport-js"
+      },
+      {
+        "title": "Helmet, CORS",
+        "fragment": "helmet-cors"
+      },
+      {
+        "title": "Prevención de inyecciones NoSQL",
+        "fragment": "prevencion-de-inyecciones-nosql"
+      },
+      {
+        "title": "OWASP Top 10",
+        "fragment": "owasp-top-10"
+      },
+      {
+        "title": "Secretos: AWS Secrets Manager, Vault, Azure Key Vault",
+        "fragment": "secretos-aws-secrets-manager-vault-azure-key-vault"
+      }
+    ],
+    "25": [
+      {
+        "title": "OpenTelemetry para Node",
+        "fragment": "opentelemetry-para-node"
+      },
+      {
+        "title": "Propagación de traceparent en AMQP/Kafka",
+        "fragment": "propagacion-de-traceparent-en-amqp-kafka"
+      },
+      {
+        "title": "Pino/Winston",
+        "fragment": "pino-winston"
+      },
+      {
+        "title": "ELK o Grafana Loki",
+        "fragment": "elk-o-grafana-loki"
+      },
+      {
+        "title": "Prometheus client",
+        "fragment": "prometheus-client"
+      }
+    ],
+    "26": [
+      {
+        "title": "RabbitMQ: publisher confirms, consumer acknowledgments",
+        "fragment": "rabbitmq-publisher-confirms-consumer-acknowledgments"
+      },
+      {
+        "title": "Deduplicación con Redis",
+        "fragment": "deduplicacion-con-redis"
+      },
+      {
+        "title": "Sagas con NestJS CQRS",
+        "fragment": "sagas-con-nestjs-cqrs"
+      },
+      {
+        "title": "Compensaciones idempotentes",
+        "fragment": "compensaciones-idempotentes"
+      },
+      {
+        "title": "Event Sourcing con EventStoreDB o MongoDB",
+        "fragment": "event-sourcing-con-eventstoredb-o-mongodb"
+      },
+      {
+        "title": "Proyecciones materializadas",
+        "fragment": "proyecciones-materializadas"
+      },
+      {
+        "title": "CQRS",
+        "fragment": "cqrs"
+      }
+    ],
+    "27": [
+      {
+        "title": "Dockerfile multi-stage",
+        "fragment": "dockerfile-multi-stage"
+      },
+      {
+        "title": "Kubernetes",
+        "fragment": "kubernetes"
+      },
+      {
+        "title": "HPA",
+        "fragment": "hpa"
+      },
+      {
+        "title": "GitHub Actions",
+        "fragment": "github-actions"
+      },
+      {
+        "title": "Blue-Green y Canary",
+        "fragment": "blue-green-y-canary"
+      },
+      {
+        "title": "GitOps con ArgoCD",
+        "fragment": "gitops-con-argocd"
+      }
+    ],
+    "28": [
+      {
+        "title": "ADRs",
+        "fragment": "adrs"
+      },
+      {
+        "title": "Modelo C4",
+        "fragment": "modelo-c4"
+      },
+      {
+        "title": "ATAM ligero",
+        "fragment": "atam-ligero"
+      },
+      {
+        "title": "Fitness functions en producción",
+        "fragment": "fitness-functions-en-produccion"
+      }
+    ],
+    "29": [
+      {
+        "title": "Outbox Pattern + CDC con Debezium",
+        "fragment": "outbox-pattern-cdc-con-debezium"
+      },
+      {
+        "title": "Sagas orquestadas con Temporal.io",
+        "fragment": "sagas-orquestadas-con-temporal-io"
+      },
+      {
+        "title": "Idempotencia real en consumidores Kafka",
+        "fragment": "idempotencia-real-en-consumidores-kafka"
+      },
+      {
+        "title": "Exactly-once semantics en la práctica",
+        "fragment": "exactly-once-semantics-en-la-practica"
+      },
+      {
+        "title": "Two-Phase Commit: por qué no usar",
+        "fragment": "two-phase-commit-por-que-no-usar"
+      }
+    ],
+    "3": [
+      {
+        "title": "Git",
+        "fragment": "git"
+      },
+      {
+        "title": "Terminal",
+        "fragment": "terminal"
+      },
+      {
+        "title": "HTTP",
+        "fragment": "http"
+      },
+      {
+        "title": "JSON",
+        "fragment": "json"
+      },
+      {
+        "title": "YAML",
+        "fragment": "yaml"
+      },
+      {
+        "title": "Variables de entorno",
+        "fragment": "variables-de-entorno"
+      }
+    ],
+    "30": [
+      {
+        "title": "Kafka profundo: transacciones, EOS, Schema Registry",
+        "fragment": "kafka-profundo-transacciones-eos-schema-registry"
+      },
+      {
+        "title": "RabbitMQ avanzado",
+        "fragment": "rabbitmq-avanzado"
+      },
+      {
+        "title": "NATS",
+        "fragment": "nats"
+      },
+      {
+        "title": "Event Notification vs Event-Carried State Transfer",
+        "fragment": "event-notification-vs-event-carried-state-transfer"
+      }
+    ],
+    "31": [
+      {
+        "title": "mTLS con Istio/Linkerd",
+        "fragment": "mtls-con-istio-linkerd"
+      },
+      {
+        "title": "Token Exchange (RFC 8693)",
+        "fragment": "token-exchange-rfc-8693"
+      },
+      {
+        "title": "Vault",
+        "fragment": "vault"
+      },
+      {
+        "title": "Service Mesh",
+        "fragment": "service-mesh"
+      }
+    ],
+    "32": [
+      {
+        "title": "Modelo de costo cloud",
+        "fragment": "modelo-de-costo-cloud"
+      },
+      {
+        "title": "Right-sizing",
+        "fragment": "right-sizing"
+      },
+      {
+        "title": "Break-even Serverless vs Contenedores",
+        "fragment": "break-even-serverless-vs-contenedores"
+      },
+      {
+        "title": "Observability tax",
+        "fragment": "observability-tax"
+      }
+    ],
+    "33": [
+      {
+        "title": "Ley de Conway",
+        "fragment": "ley-de-conway"
+      },
+      {
+        "title": "Stream-aligned, Platform, Enabling teams",
+        "fragment": "stream-aligned-platform-enabling-teams"
+      },
+      {
+        "title": "Carga cognitiva",
+        "fragment": "carga-cognitiva"
+      },
+      {
+        "title": "Dimensionamiento de equipos",
+        "fragment": "dimensionamiento-de-equipos"
+      }
+    ],
+    "34": [
+      {
+        "title": "Monolito distribuido",
+        "fragment": "monolito-distribuido"
+      },
+      {
+        "title": "Sobre-descomposición",
+        "fragment": "sobre-descomposicion"
+      },
+      {
+        "title": "Sagas innecesarias",
+        "fragment": "sagas-innecesarias"
+      },
+      {
+        "title": "Fitness functions",
+        "fragment": "fitness-functions"
+      }
+    ],
+    "35": [
+      {
+        "title": "Strangler Fig",
+        "fragment": "strangler-fig"
+      },
+      {
+        "title": "Coexistencia monolito + servicios",
+        "fragment": "coexistencia-monolito-servicios"
+      },
+      {
+        "title": "Métricas de éxito",
+        "fragment": "metricas-de-exito"
+      },
+      {
+        "title": "Deuda técnica",
+        "fragment": "deuda-tecnica"
+      }
+    ],
+    "36": [
+      {
+        "title": "Sistema de reservas con pago externo",
+        "fragment": "sistema-de-reservas-con-pago-externo"
+      },
+      {
+        "title": "Saga orquestada con Temporal.io",
+        "fragment": "saga-orquestada-con-temporal-io"
+      },
+      {
+        "title": "API Gateway con rate limiting",
+        "fragment": "api-gateway-con-rate-limiting"
+      },
+      {
+        "title": "Test de carga con Gatling",
+        "fragment": "test-de-carga-con-gatling"
+      },
+      {
+        "title": "Restricción sobrevenida",
+        "fragment": "restriccion-sobrevenida"
+      },
+      {
+        "title": "Rediseño documentado en ADR",
+        "fragment": "rediseno-documentado-en-adr"
+      },
+      {
+        "title": "Defensa ante Architecture Review Board",
+        "fragment": "defensa-ante-architecture-review-board"
+      }
+    ],
+    "4": [
+      {
+        "title": "Primer «Hola Mundo» en Java",
+        "fragment": "primer-hola-mundo-en-java"
+      },
+      {
+        "title": "Primer «Hola Mundo» en Node.js",
+        "fragment": "primer-hola-mundo-en-node-js"
+      },
+      {
+        "title": "Docker básico",
+        "fragment": "docker-basico"
+      }
+    ],
+    "5": [
+      {
+        "title": "Java 21: Streams, Lambdas, Optional, Records, Pattern Matching",
+        "fragment": "java-21-streams-lambdas-optional-records-pattern-matching"
+      },
+      {
+        "title": "Virtual Threads (Project Loom)",
+        "fragment": "virtual-threads-project-loom"
+      },
+      {
+        "title": "Spring IoC, DI, Bean Lifecycle, ApplicationContext",
+        "fragment": "spring-ioc-di-bean-lifecycle-applicationcontext"
+      },
+      {
+        "title": "Auto-configuración condicional, @Conditional, starters",
+        "fragment": "auto-configuracion-condicional-conditional-starters"
+      },
+      {
+        "title": "Multi-module Spring Boot projects",
+        "fragment": "multi-module-spring-boot-projects"
+      },
+      {
+        "title": "Perfiles y configuración externalizada",
+        "fragment": "perfiles-y-configuracion-externalizada"
+      },
+      {
+        "title": "CRaC (Coordinated Restore at Checkpoint)",
+        "fragment": "crac-coordinated-restore-at-checkpoint"
+      },
+      {
+        "title": "GraalVM Native Image",
+        "fragment": "graalvm-native-image"
+      }
+    ],
+    "6": [
+      {
+        "title": "Spring MVC: DispatcherServlet, Controllers, Validación",
+        "fragment": "spring-mvc-dispatcherservlet-controllers-validacion"
+      },
+      {
+        "title": "DTOs, @JsonProperty, Jackson",
+        "fragment": "dtos-jsonproperty-jackson"
+      },
+      {
+        "title": "Manejo global de excepciones (@ControllerAdvice)",
+        "fragment": "manejo-global-de-excepciones-controlleradvice"
+      },
+      {
+        "title": "Spring Data JPA, Hibernate, entidades, relaciones, transacciones",
+        "fragment": "spring-data-jpa-hibernate-entidades-relaciones-transacciones"
+      },
+      {
+        "title": "Criteria API y Specifications",
+        "fragment": "criteria-api-y-specifications"
+      },
+      {
+        "title": "Flyway/Liquibase",
+        "fragment": "flyway-liquibase"
+      },
+      {
+        "title": "PostgreSQL y MySQL",
+        "fragment": "postgresql-y-mysql"
+      }
+    ],
+    "7": [
+      {
+        "title": "JUnit 5, Mockito, MockMvc",
+        "fragment": "junit-5-mockito-mockmvc"
+      },
+      {
+        "title": "Testcontainers",
+        "fragment": "testcontainers"
+      },
+      {
+        "title": "Contract Testing con Pact y Pact Broker",
+        "fragment": "contract-testing-con-pact-y-pact-broker"
+      },
+      {
+        "title": "ArchUnit",
+        "fragment": "archunit"
+      },
+      {
+        "title": "SonarQube",
+        "fragment": "sonarqube"
+      }
+    ],
+    "8": [
+      {
+        "title": "Caching con Redis: @Cacheable, @CacheEvict, TTL",
+        "fragment": "caching-con-redis-cacheable-cacheevict-ttl"
+      },
+      {
+        "title": "Patrones: Read-Through, Write-Behind, Write-Through",
+        "fragment": "patrones-read-through-write-behind-write-through"
+      },
+      {
+        "title": "Distributed Locking con Redlock y Fencing Tokens",
+        "fragment": "distributed-locking-con-redlock-y-fencing-tokens"
+      },
+      {
+        "title": "Cache stampede y solución con locks",
+        "fragment": "cache-stampede-y-solucion-con-locks"
+      }
+    ],
+    "9": [
+      {
+        "title": "Monolito vs Microservicios vs SOA",
+        "fragment": "monolito-vs-microservicios-vs-soa"
+      },
+      {
+        "title": "DDD: Bounded Contexts, Agregados, Eventos de Dominio",
+        "fragment": "ddd-bounded-contexts-agregados-eventos-de-dominio"
+      },
+      {
+        "title": "Spring Modulith",
+        "fragment": "spring-modulith"
+      },
+      {
+        "title": "12-Factor App",
+        "fragment": "12-factor-app"
+      },
+      {
+        "title": "Strangler Fig Pattern",
+        "fragment": "strangler-fig-pattern"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "database-per-service"
+      }
+    ]
   },
   "node": {
     "0": [

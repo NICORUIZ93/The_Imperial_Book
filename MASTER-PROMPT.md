@@ -1,7 +1,8 @@
 # MASTER-PROMPT v3 · The Imperial Book
 
 > **Versión 3 (2026-11-18, specs/008).** Reemplaza a la v2 (specs/003), que sigue en el historial de git.
-> Cifras vigentes: **16 rutas · 289 módulos · 1420 temas** (fuente: `web/public/content/topic-index.json`).
+> Cifras vigentes (medidas el 2026-11-20): **16 rutas · 324 módulos · 1608 temas** (fuente:
+> `web/public/content/topic-index.json`; las comprueba `python3 scripts/audit_lesson_assets.py --docs-counts`).
 > El temario vigente por ruta está en `specs/tracks/*.md` y en el índice web. Las pautas 13–17 de la v2
 > siguen vigentes dentro de la sección 4 (equivalencias al final).
 
@@ -58,7 +59,8 @@ Reglas:
   reproduce en un laboratorio.
 - Registrar por curso: fuente, fecha de consulta, qué aporta y si se verificó.
 - Mapear: cada tema oficial del temario de referencia tiene un tema propio o una decisión escrita
-  (`docs/official-topic-coverage.json`).
+  (`docs/official-topic-atlas.json`, el archivo que lee el criterio T3 de
+  `scripts/audit_track_master_prompt.py`).
 
 ## 4. Estándar de tema (definición de terminado)
 Cada tema tiene, en este orden:

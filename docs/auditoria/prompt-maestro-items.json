@@ -1,0 +1,323 @@
+{
+  "temas_medidos": 1608,
+  "puntos": {
+    "P1": "Encabezado con nivel y duración + prerrequisitos",
+    "P2": "Objetivo verificable",
+    "P3": "Por qué importa, con caso real",
+    "P4": "Explicación sencilla y precisa + analogía con su límite",
+    "P5": "Ayuda visual propia (diagrama o imagen)",
+    "P6": "Ejemplo ejecutable con nombre de archivo",
+    "P7": "Explicación por bloques del código",
+    "P8": "Captura real con resultado en texto",
+    "P9": "Fallo deliberado: error exacto y diagnóstico",
+    "P10": "Ejercicios en tres niveles con solución",
+    "P11": "Checklist de salida y siguiente paso",
+    "P12": "Aporte al proyecto integrador y fuentes con fecha"
+  },
+  "resumen": {
+    "P1": {
+      "cumplen": 350,
+      "total": 1608,
+      "porcentaje": 22
+    },
+    "P2": {
+      "cumplen": 1314,
+      "total": 1608,
+      "porcentaje": 82
+    },
+    "P3": {
+      "cumplen": 1421,
+      "total": 1608,
+      "porcentaje": 88
+    },
+    "P4": {
+      "cumplen": 1281,
+      "total": 1608,
+      "porcentaje": 80
+    },
+    "P5": {
+      "cumplen": 939,
+      "total": 1608,
+      "porcentaje": 58
+    },
+    "P6": {
+      "cumplen": 1605,
+      "total": 1608,
+      "porcentaje": 100
+    },
+    "P7": {
+      "cumplen": 1214,
+      "total": 1608,
+      "porcentaje": 75
+    },
+    "P8": {
+      "cumplen": 9,
+      "total": 1608,
+      "porcentaje": 1
+    },
+    "P9": {
+      "cumplen": 1543,
+      "total": 1608,
+      "porcentaje": 96
+    },
+    "P10": {
+      "cumplen": 1098,
+      "total": 1608,
+      "porcentaje": 68
+    },
+    "P11": {
+      "cumplen": 1288,
+      "total": 1608,
+      "porcentaje": 80
+    },
+    "P12": {
+      "cumplen": 74,
+      "total": 1608,
+      "porcentaje": 5
+    }
+  },
+  "por_curso": {
+    "android": {
+      "P1": 1,
+      "P2": 82,
+      "P3": 83,
+      "P4": 82,
+      "P5": 36,
+      "P6": 83,
+      "P7": 82,
+      "P8": 0,
+      "P9": 83,
+      "P10": 82,
+      "P11": 78,
+      "P12": 2
+    },
+    "angular": {
+      "P1": 2,
+      "P2": 76,
+      "P3": 78,
+      "P4": 78,
+      "P5": 36,
+      "P6": 78,
+      "P7": 77,
+      "P8": 0,
+      "P9": 78,
+      "P10": 76,
+      "P11": 78,
+      "P12": 4
+    },
+    "cloud": {
+      "P1": 0,
+      "P2": 168,
+      "P3": 168,
+      "P4": 150,
+      "P5": 86,
+      "P6": 168,
+      "P7": 168,
+      "P8": 1,
+      "P9": 163,
+      "P10": 167,
+      "P11": 167,
+      "P12": 1
+    },
+    "control-1": {
+      "P1": 0,
+      "P2": 0,
+      "P3": 88,
+      "P4": 18,
+      "P5": 15,
+      "P6": 86,
+      "P7": 0,
+      "P8": 6,
+      "P9": 34,
+      "P10": 0,
+      "P11": 70,
+      "P12": 3
+    },
+    "devops": {
+      "P1": 0,
+      "P2": 139,
+      "P3": 139,
+      "P4": 132,
+      "P5": 92,
+      "P6": 139,
+      "P7": 139,
+      "P8": 0,
+      "P9": 138,
+      "P10": 138,
+      "P11": 134,
+      "P12": 8
+    },
+    "flutter": {
+      "P1": 109,
+      "P2": 118,
+      "P3": 119,
+      "P4": 78,
+      "P5": 95,
+      "P6": 119,
+      "P7": 118,
+      "P8": 0,
+      "P9": 119,
+      "P10": 118,
+      "P11": 118,
+      "P12": 1
+    },
+    "foundations": {
+      "P1": 3,
+      "P2": 102,
+      "P3": 105,
+      "P4": 102,
+      "P5": 74,
+      "P6": 104,
+      "P7": 102,
+      "P8": 2,
+      "P9": 104,
+      "P10": 101,
+      "P11": 86,
+      "P12": 21
+    },
+    "ios": {
+      "P1": 57,
+      "P2": 69,
+      "P3": 69,
+      "P4": 63,
+      "P5": 47,
+      "P6": 69,
+      "P7": 69,
+      "P8": 0,
+      "P9": 69,
+      "P10": 69,
+      "P11": 69,
+      "P12": 0
+    },
+    "java": {
+      "P1": 23,
+      "P2": 39,
+      "P3": 120,
+      "P4": 45,
+      "P5": 24,
+      "P6": 120,
+      "P7": 8,
+      "P8": 0,
+      "P9": 120,
+      "P10": 14,
+      "P11": 40,
+      "P12": 6
+    },
+    "javascript": {
+      "P1": 26,
+      "P2": 91,
+      "P3": 92,
+      "P4": 87,
+      "P5": 62,
+      "P6": 92,
+      "P7": 91,
+      "P8": 0,
+      "P9": 91,
+      "P10": 90,
+      "P11": 86,
+      "P12": 7
+    },
+    "kotlin-multiplatform": {
+      "P1": 0,
+      "P2": 66,
+      "P3": 66,
+      "P4": 60,
+      "P5": 42,
+      "P6": 66,
+      "P7": 66,
+      "P8": 0,
+      "P9": 66,
+      "P10": 66,
+      "P11": 66,
+      "P12": 1
+    },
+    "microservices": {
+      "P1": 0,
+      "P2": 187,
+      "P3": 0,
+      "P4": 187,
+      "P5": 187,
+      "P6": 187,
+      "P7": 187,
+      "P8": 0,
+      "P9": 185,
+      "P10": 19,
+      "P11": 185,
+      "P12": 0
+    },
+    "node": {
+      "P1": 38,
+      "P2": 71,
+      "P3": 78,
+      "P4": 78,
+      "P5": 29,
+      "P6": 78,
+      "P7": 7,
+      "P8": 0,
+      "P9": 78,
+      "P10": 60,
+      "P11": 7,
+      "P12": 8
+    },
+    "react": {
+      "P1": 56,
+      "P2": 61,
+      "P3": 64,
+      "P4": 58,
+      "P5": 42,
+      "P6": 64,
+      "P7": 63,
+      "P8": 0,
+      "P9": 64,
+      "P10": 61,
+      "P11": 64,
+      "P12": 4
+    },
+    "rutaflow": {
+      "P1": 0,
+      "P2": 29,
+      "P3": 29,
+      "P4": 29,
+      "P5": 26,
+      "P6": 29,
+      "P7": 29,
+      "P8": 0,
+      "P9": 29,
+      "P10": 29,
+      "P11": 29,
+      "P12": 1
+    },
+    "spring-boot": {
+      "P1": 35,
+      "P2": 16,
+      "P3": 123,
+      "P4": 34,
+      "P5": 46,
+      "P6": 123,
+      "P7": 8,
+      "P8": 0,
+      "P9": 122,
+      "P10": 8,
+      "P11": 11,
+      "P12": 7
+    }
+  },
+  "temas_por_curso": {
+    "android": 83,
+    "angular": 78,
+    "cloud": 168,
+    "control-1": 88,
+    "devops": 139,
+    "flutter": 119,
+    "foundations": 105,
+    "ios": 69,
+    "java": 120,
+    "javascript": 92,
+    "kotlin-multiplatform": 66,
+    "microservices": 187,
+    "node": 78,
+    "react": 64,
+    "rutaflow": 29,
+    "spring-boot": 123
+  }
+}

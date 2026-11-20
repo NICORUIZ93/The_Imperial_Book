@@ -721,6 +721,20 @@ export class LessonViewerComponent implements OnDestroy {
     });
   }
 
+  /** Una ficha (specs/018) abre siempre por su punto 1: eso la distingue de una sección suelta. */
+  private isFichaHeading(heading: HTMLHeadingElement): boolean {
+    let siguiente = heading.nextElementSibling;
+    while (siguiente) {
+      const etiqueta = siguiente.tagName;
+      if (etiqueta === 'H2' || etiqueta === 'H3') return false;
+      if (etiqueta === 'H4') {
+        return /^1\.\s*UBICACI[OÓ]N\b/i.test(siguiente.textContent?.trim() ?? '');
+      }
+      siguiente = siguiente.nextElementSibling;
+    }
+    return false;
+  }
+
   private enhanceEducationalContent(container: HTMLElement): void {
     this.groupLessonSections(container);
     this.addSectionGuides(container);
@@ -733,7 +747,9 @@ export class LessonViewerComponent implements OnDestroy {
     const topicSlugSeen = new Set<string>();
     container.querySelectorAll<HTMLHeadingElement>('h3').forEach(heading => {
       const text = heading.textContent?.trim() ?? '';
-      if (!text.startsWith('Tema ')) return;
+      // Dos formatos de tema conviven en la academia: el encabezado con prefijo
+      // «Tema N:» y la ficha (specs/018), que se reconoce por su primer punto.
+      if (!text.startsWith('Tema ') && !this.isFichaHeading(heading)) return;
       heading.classList.add('topic-heading');
       temaIndex += 1;
       // El id se calcula sobre el TÍTULO CRUDO (con "Tema N:"), igual que

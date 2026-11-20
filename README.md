@@ -8,8 +8,8 @@ Academia en español para aprender programación de cero a experto. Es una aplic
 lecciones escritas en Markdown, guarda el progreso en el navegador y trae laboratorios que se ejecutan en
 tu computador, incluida una **nube local con Floci** (AWS, Azure y GCP sin cuenta ni costo).
 
-**Estado (2026-11-20):** 16 cursos, 324 módulos y 1.421 temas indexados (más las 187 fichas de
-Microservicios). La academia está en reestructuración total: un tema en un solo lugar, un formato único y
+**Estado (2026-11-20):** 16 cursos, 324 módulos y 1.608 temas indexados, incluidas ya las 187
+fichas de Microservicios. La academia está en reestructuración total: un tema en un solo lugar, un formato único y
 temarios de cero a experto. El plan y su avance están en
 [specs/021](specs/021-reestructuracion-total-de-la-academia.md) y
 [docs/reestructuracion/ESTADO.md](docs/reestructuracion/ESTADO.md).

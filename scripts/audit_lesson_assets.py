@@ -74,13 +74,29 @@ def check_docs_counts(index: dict) -> list[str]:
     tracks = len(index)
     modules = sum(len(mods) for mods in index.values())
     topics = sum(len(items) for mods in index.values() for items in mods.values())
-    text = (ROOT / "CLAUDE.md").read_text(encoding="utf-8")
-    match = re.search(r"renders (\d+) curriculum tracks \((\d+) modules, (\d+) topics\)", text)
-    if not match:
-        return ["CLAUDE.md no declara 'renders N curriculum tracks (M modules, T topics)'"]
-    declared = tuple(int(n) for n in match.groups())
     real = (tracks, modules, topics)
-    return [] if declared == real else [f"CLAUDE.md declara {declared} y topic-index.json tiene {real}"]
+    # Los tres lugares donde el proyecto declara su tamaño. Hasta el 2026-11-20 solo se comprobaba
+    # CLAUDE.md, y MASTER-PROMPT se quedó diciendo «289 módulos · 1420 temas» mientras crecían los
+    # 187 temas de Microservicios: una cifra que nadie mide es una cifra que se pudre.
+    declaraciones = [
+        ("CLAUDE.md", r"renders (\d+) curriculum tracks \((\d+) modules, (\d+) topics\)"),
+        ("README.md", r"(\d+) cursos, (\d+) módulos y ([\d.]+) temas indexados"),
+        ("MASTER-PROMPT.md", r"(\d+) rutas · (\d+) módulos · ([\d.]+) temas"),
+    ]
+    errors = []
+    for nombre, patron in declaraciones:
+        ruta = ROOT / nombre
+        if not ruta.is_file():
+            errors.append(f"{nombre} no existe; no se puede comprobar su cifra declarada")
+            continue
+        match = re.search(patron, ruta.read_text(encoding="utf-8"))
+        if not match:
+            errors.append(f"{nombre} no declara su cifra con el patrón «{patron}»")
+            continue
+        declared = tuple(int(g.replace(".", "")) for g in match.groups())
+        if declared != real:
+            errors.append(f"{nombre} declara {declared} y topic-index.json tiene {real}")
+    return errors
 
 
 def main() -> int:

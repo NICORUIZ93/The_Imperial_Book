@@ -7,7 +7,7 @@ Guía para Claude Code en este repositorio.
 The_Imperial_Book es una academia en español: una app Angular (`web/`) que renderiza lecciones Markdown
 de `web/public/content/<curso>/modulo-N.md`. Los módulos de cada curso se definen en
 `web/src/app/tracks/<curso>.track.ts` y se agregan en `web/src/app/course-data.ts`. El progreso vive en
-`localStorage`. The app renders 16 curriculum tracks (324 modules, 1421 topics); la cifra la mide
+`localStorage`. The app renders 16 curriculum tracks (324 modules, 1608 topics); la cifra la mide
 `scripts/build_web_topic_index.py` sobre `web/public/content/topic-index.json` y
 `scripts/audit_lesson_assets.py --docs-counts` exige que este archivo la declare.
 
@@ -21,7 +21,9 @@ de `web/public/content/<curso>/modulo-N.md`. Los módulos de cada curso se defin
 - **Exactitud.** Ningún dato técnico se escribe sin ejecutarlo o verificarlo en una fuente primaria.
 - **El dueño aprueba** los temarios antes de escribir temas.
 - Lo retirado del repo está en las etiquetas `retirado/archivo`, `retirado/archivo-2026-11-18` y
-  `retirado/archivo-docker-piloto` (el repositorio solo tiene la rama `main`); no se vuelve a traer sin spec.
+  `retirado/archivo-docker-piloto`; en GitHub (`origin`) solo hay la rama `main`, y en el repo local quedan
+  6 ramas viejas sin borrar que no son respaldo de nada (lista en `docs/reestructuracion/CONTINUAR.md`,
+  regla 7). No se vuelve a traer material retirado sin spec.
 
 ## Comandos
 

@@ -13,7 +13,10 @@ Cuatro reglas objetivas, medidas sobre el contenido y sobre el registro de cada 
      (`visible-and-assessed`) un capítulo cuyo archivo ya no existe;
   4. anclas internas — todo enlace `](#fragmento)` resuelve contra un encabezado del mismo
      archivo, calculando el id tal como lo calcula el lector: sin diacríticos y sin el sufijo
-     ` · Nivel · XX min` de las cabeceras de tema.
+     ` · Nivel · XX min` de las cabeceras de tema;
+  5. capítulos silenciosos — ningún archivo de `MIN_LINEAS` líneas o más puede quedar con
+     cero temas reconocidos por el índice: contenido que la aplicación no lista es un fantasma
+     aunque el repositorio lo tenga escrito.
 
 Los cursos con una regla incumplida y dejada así a propósito se declaran en
 `docs/course-completeness-exceptions.json`, con su motivo. `--check` falla si un curso incumple
@@ -39,6 +42,12 @@ REGISTRY = ROOT / "docs" / "requested-master-topics.json"
 EXCEPTIONS = ROOT / "docs" / "course-completeness-exceptions.json"
 
 ETAPAS = ("Fundamentos", "Aplicación", "Integración", "Experto")
+# 150 líneas es el capítulo más corto que hoy declara temas (medido sobre los 16 cursos,
+# 2026-11-20). Un archivo más largo que eso y sin un solo tema reconocido es contenido
+# invisible: existe en el repositorio pero el índice, el menú del lector y los auditores
+# de temas no lo ven. Es la forma exacta en que Microservicios quedó en 0 temas teniendo
+# 187 fichas escritas.
+MIN_LINEAS = 150
 TOPIC_HEAD = re.compile(r"^### Tema \d+:[^\n]*", re.M)
 LEVEL_SUFFIX = re.compile(r"\s*[·•]\s*(Básico|Intermedio|Avanzado|Experto)\s*[·•]\s*\d+\s*min\s*$")
 
@@ -189,10 +198,15 @@ def measure() -> list[dict]:
                 if match.group(1) not in ids:
                     dead_anchors.append(f"{path.name} #{match.group(1)}")
         topics = sum(len(v) for v in index[course].values())
+        silent = [f"modulo-{n}.md ({len(read(modules_dir / f'modulo-{n}.md').splitlines())} líneas)"
+                  for n in files
+                  if len(read(modules_dir / f"modulo-{n}.md").splitlines()) >= MIN_LINEAS
+                  and not index[course].get(str(n))]
         rows.append({
             "track": course,
             "chapters": len(files),
             "topics": topics,
+            "silentChapters": silent,
             "etapas": sorted(etapas),
             "missingEtapas": missing_etapas,
             "ghostRegistered": ghost_registered,
@@ -219,6 +233,8 @@ def failures(rows: list[dict], declared: dict[str, dict]) -> list[str]:
                            + ", ".join(str(n) for n in row["orphanFiles"]))
         if row["masterGhost"]:
             pending.append("el registro declara un capítulo Master que no existe")
+        if row["silentChapters"]:
+            pending.append("capítulos sin ningún tema reconocido: " + ", ".join(row["silentChapters"]))
         if row["deadAnchors"]:
             pending.append("anclas internas rotas: " + ", ".join(row["deadAnchors"]))
         if not pending:
@@ -251,6 +267,7 @@ def main() -> int:
     print(f"TOTAL {total} cursos; "
           f"{sum(1 for r in rows if not r['missingEtapas'])} con las cuatro etapas; "
           f"{sum(1 for r in rows if r['masterGhost'])} capítulos Master fantasma; "
+          f"{sum(len(r['silentChapters']) for r in rows)} capítulos sin ningún tema reconocido; "
           f"{sum(len(r['deadAnchors']) for r in rows)} anclas rotas")
     if problems:
         print("\nINCIDENCIAS:")

@@ -565,14 +565,14 @@
     },
     {
       "track": "microservices",
-      "topics": 0,
+      "topics": 187,
       "status": {
         "T1": false,
         "T2": false,
         "T3": false,
         "T4": false,
-        "T5": false,
-        "T6": true,
+        "T5": true,
+        "T6": false,
         "T7": false
       },
       "exempt": {},
@@ -591,8 +591,8 @@
         },
         "masterGhost": false,
         "visual": 2,
-        "easy": 0,
-        "measuredTopics": 0,
+        "easy": 187,
+        "measuredTopics": 187,
         "captureScope": 0,
         "project": 24
       }

@@ -61,13 +61,22 @@ def load(path: Path) -> dict:
 
 
 def topic_blocks(track: str) -> list[str]:
-    """Devuelve el Markdown de cada tema (### Tema N:) de la ruta, sin módulos de cierre."""
+    """Devuelve el Markdown de cada tema de la ruta, sin los módulos de cierre.
+
+    Hay dos formatos de tema y los dos cuentan: el estándar (`### Tema N: …`) y la ficha de
+    specs/018 (`### Título` + `#### 1. UBICACIÓN`), reconocida por su primer punto igual que en
+    `scripts/build_web_topic_index.py`. Con el criterio viejo Microservicios devolvía una lista
+    vacía y su T5 se reportaba como `0/0`, que en un informe en verde se lee como «nada que medir».
+    """
     blocks = []
     for path in sorted((CONTENT / track).glob("modulo-*.md"), key=lambda p: int(p.stem.split("-")[1])):
         lines = path.read_text(encoding="utf-8").splitlines()
-        starts = [i for i, line in enumerate(lines) if re.match(r"^### Tema \d+:", line)]
+        starts = [i for i, line in enumerate(lines) if re.match(r"^### ", line)
+                  and (re.match(r"^### Tema \d+:", line)
+                       or any(re.match(r"^#### 1\.\s+UBICACI[OÓ]N\b", siguiente)
+                              for siguiente in lines[i + 1:i + 30]))]
         for n, start in enumerate(starts):
-            end = next((i for i in range(start + 1, len(lines)) if re.match(r"^(### Tema \d+:|## )", lines[i])), len(lines))
+            end = next((i for i in range(start + 1, len(lines)) if re.match(r"^(### |## )", lines[i])), len(lines))
             blocks.append("\n".join(lines[start:end]))
     return blocks
 

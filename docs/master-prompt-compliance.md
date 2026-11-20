@@ -16,7 +16,7 @@
 | java | 120 | ✅ | ✅ | ⬜ 24/49 | ⬜ 25/120 | ✅ | ⬜ 6/120 | ⬜ 117/120 |
 | javascript | 92 | ✅ | ✅ | ⬜ 22/42 | ⬜ 62/92 | ✅ | ⬜ 3/92 | ✅ |
 | kotlin-multiplatform | 66 | ✅ | ✅ | ⬜ 32/46 | ⬜ 57/66 | ✅ | ⬜ 0/66 | ✅ |
-| microservices | 0 | ⬜ Fundamentos, Aplicación, Integración, Experto | ⬜ | ⬜ sin atlas | ⬜ 2/0 | ⬜ 0/0 | ✅ | ⬜ 24/0 |
+| microservices | 187 | ⬜ Fundamentos, Aplicación, Integración, Experto | ⬜ | ⬜ sin atlas | ⬜ 2/187 | ✅ | ⬜ 0/187 | ⬜ 24/187 |
 | node | 78 | ✅ | ⬜ registrado sin capítulo | ⬜ 21/46 | ⬜ 33/78 | ✅ | ⬜ 7/78 | ✅ |
 | react | 64 | ✅ | ✅ | ⬜ 28/45 | ⬜ 43/64 | ⬜ 51/64 | ⬜ 0/64 | ✅ |
 | rutaflow | 29 | ✅ | ➖ | ⬜ sin atlas | ⬜ 26/29 | ✅ | ⬜ 0/29 | ✅ |

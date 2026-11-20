@@ -105,7 +105,10 @@
               "branches": 50,
               "functions": 55,
               "lines": 60
-            }
+            },
+            "setupFiles": [
+              "src/tests/almacenamiento.setup.ts"
+            ]
           }
         }
       }
