@@ -68,21 +68,43 @@ cuerpo() {
             dentro && l ~ /^[0-9]+:/ { print l; next }
             dentro { dentro=0 }'
 }
-# constructor <carpeta> <archivo> <clase> <descriptor>: las instrucciones del <init> con ESE descriptor.
-# Un metodo normal no sirve para esto: javap imprime los tres constructores como «Guia(...)», y la unica
-# forma de separarlos es el descriptor que solo aparece en la linea del <init>.
-constructor() {
-    (cd "$RAIZ/$1" && javac --release 25 -d "$TMP/ctor" "$2" && javap -c -p -cp "$TMP/ctor" "$3") \
-        | awk -v f="$4" '{ l=$0; sub(/^ +/, "", l) }
-            index(l, "init)") > 0 && index(l, f) > 0 { dentro=1; next }
-            dentro && l == "Code:" { next }
+# miembro <carpeta> <archivo> <clase> <cabecera>: instrucciones del miembro cuya linea de cabecera coincide
+# exacta (sin el sangrado). Hace falta esto y no el descriptor: javap imprime «Guia();» y «static {};» con el
+# MISMO descriptor ()V, y ninguna busqueda por descriptor los separa. Tampoco sirve buscar la firma sin mas:
+# «Guia(int);» empieza igual que «Guia();», y un index()>0 meteria los tres constructores en el mismo corte.
+miembro() {
+    (cd "$RAIZ/$1" && javac --release 25 -d "$TMP/mie" "$2" && javap -c -p -cp "$TMP/mie" "$3") \
+        | awk -v h="$4" '{ l=$0; sub(/^ +/, "", l) }
+            l == h { dentro=1; next }
             dentro && l ~ /^[0-9]+:/ { print l; next }
-            dentro { dentro=0 }'
+            dentro && l != "Code:" { dentro=0 }'
 }
-# cuenta <carpeta> <archivo> <clase> <descriptor> <patrón>: veces que aparece un patron en ese constructor.
-cuenta() {
-    constructor "$1" "$2" "$3" "$4" | grep -c "$5"
+# cuenta <carpeta> <archivo> <clase> <cabecera> <patrón>: veces que aparece el patron en ESE miembro.
+cuenta() { miembro "$1" "$2" "$3" "$4" | grep -c "$5"; }
+# cero <descripción> <carpeta> <archivo> <clase> <cabecera> <patrón>: el miembro existe —su cuerpo tiene
+# instrucciones— y aun asi el patron no aparece. Sin esta forma, un cero sacado de un volcado vacio
+# (clase mal escrita, cabecera que no cuadra) pasa como ok sin haber mirado nada.
+cero() {
+    desc=$1; cue=$(miembro "$2" "$3" "$4" "$5")
+    if [ -z "$cue" ]; then mal "$1 (el miembro «$5» no salio del volcado: el cero no prueba nada)" ""; return; fi
+    n=$(printf '%s\n' "$cue" | grep -c "$6")
+    if [ "$n" = "0" ]; then bien "$1"; else mal "$1 (aparece $n veces)" "$cue"; fi
 }
+# veces <descripción> <salida> <línea> <n>: esa linea exacta aparece N veces en la salida.
+veces() {
+    n=$(printf '%s\n' "$2" | grep -c -F -- "$3")
+    if [ "$n" = "$4" ]; then bien "$1"; else mal "$1 (aparece $n veces, se esperaban $4)" ""; fi
+}
+# antes <descripción> <salida> <línea1> <línea2>: la primera aparición de línea1 va NUMERICAMENTE antes
+# que la de línea2. Si falta una de las dos el recuento sale vacio y la comparación falla: aqui un orden
+# solo tiene sentido sobre las dos lineas vivas, y un orden entre dos desaparecidos seria un falso ok.
+antes() {
+    n1=$(printf '%s\n' "$2" | grep -n -F -m1 -- "$3" | cut -d: -f1)
+    n2=$(printf '%s\n' "$2" | grep -n -F -m1 -- "$4" | cut -d: -f1)
+    if [ -n "$n1" ] && [ -n "$n2" ] && [ "$n1" -lt "$n2" ]; then bien "$1"; else mal "$1 (línea ${n1:-?} frente a línea ${n2:-?})" ""; fi
+}
+# vacio <descripción> <texto>: un comando que no debe decir NADA. Es la comprobacion del aviso que falta.
+vacio() { if [ -z "$2" ]; then bien "$1"; else mal "$1 (si dijo algo)" "$2"; fi; }
 
 titulo "Tema 1 · Clases, objetos, campos, metodos y this"
 (cd "$RAIZ/tema-1" && javac --release 25 -d "$TMP/t1" ClaseYObjetos.java) > "$TMP/t1.log" 2>&1 \
@@ -144,5 +166,79 @@ no_compila "un metodo de instancia necesita un objeto" 'non-static method etique
 no_compila "la variable local no tiene valor por defecto" 'variable local might not have been initialized' tema-1 errores/LocalSinValor.java
 no_compila "una public por archivo, y el archivo se llama como la clase" 'class Guia is public, should be declared in a file named Guia.java' tema-1 errores/DosPublicasEnUnArchivo.java
 no_compila "dos clases sin parentesco ni se pueden comparar" 'incomparable types: Mal and Bien' tema-1 errores/ComparaTiposDistintos.java
+
+titulo "Tema 2 · Constructores, encadenamiento con this(), bloques y orden de inicializacion"
+(cd "$RAIZ/tema-2" && javac --release 25 -d "$TMP/t2" ConstructoresYOrden.java) > "$TMP/t2.log" 2>&1 \
+    || { mal "Compilar tema-2/ConstructoresYOrden.java" "$(cat "$TMP/t2.log")"; exit 1; }
+(cd "$RAIZ/tema-2" && javac --release 25 -d "$TMP/t2e" EncadenamientoSilencioso.java) > "$TMP/t2e.log" 2>&1 \
+    || { mal "Compilar tema-2/EncadenamientoSilencioso.java" "$(cat "$TMP/t2e.log")"; exit 1; }
+(cd "$RAIZ/tema-2/por-dentro" && javac --release 25 -d "$TMP/t2b" OrdenEnBytecode.java) > "$TMP/t2b.log" 2>&1 \
+    || { mal "Compilar tema-2/por-dentro/OrdenEnBytecode.java" "$(cat "$TMP/t2b.log")"; exit 1; }
+(cd "$RAIZ/tema-2/por-dentro" && javac --release 25 -d "$TMP/t2c" SinEncadenar.java) > "$TMP/t2c.log" 2>&1 \
+    || { mal "Compilar tema-2/por-dentro/SinEncadenar.java" "$(cat "$TMP/t2c.log")"; exit 1; }
+(cd "$RAIZ/tema-2" && javap -p -cp "$TMP/t2" 'ConstructoresYOrden$Vacia' > "$TMP/t2vacia.txt" 2>&1) \
+    || { mal "Volcar el .class de ConstructoresYOrden\$Vacia" ""; exit 1; }
+SAL2=$( (cd "$RAIZ/tema-2" && $J -cp "$TMP/t2" ConstructoresYOrden) )
+
+espera "tocar un campo static fuerza la inicializacion de la clase" 'static campo aviso   : clase inicializada' tema-2 $J -cp "$TMP/t2" ConstructoresYOrden
+espera "cuando llega el primer objeto, el static ya esta puesto" 'a = sin-codigo · 0 g · umbral 700' tema-2 $J -cp "$TMP/t2" ConstructoresYOrden
+veces "el static corre UNA sola vez aunque se creen tres objetos" "$SAL2" 'static campo aviso' 1
+veces "los inicializadores de instancia corren una vez POR OBJETO" "$SAL2" 'inst   campo gramos' 3
+veces "el cuerpo del constructor delegado corre en los tres objetos" "$SAL2" 'ctor   Guia()' 3
+antes "el bloque static va antes que el primer inicializador de instancia" "$SAL2" 'static bloque' 'inst   campo codigo'
+antes "y el ultimo inicializador de instancia va antes que el cuerpo del constructor" "$SAL2" 'inst   bloque 2' 'ctor   Guia()'
+antes "en la cadena, el cuerpo del delegado corre antes que el del que delega" "$SAL2" 'ctor   Guia()' 'ctor   Guia(String)'
+espera "los dos saltos de this() no repiten los inicializadores" 'c = RF-888 · 1250 g · umbral 700' tema-2 $J -cp "$TMP/t2" ConstructoresYOrden
+espera "un inicializador que lama a un metodo ve el campo como estaba, no como va a quedar" 'gramos al inicializar = 0 | y al leerlo despues, gramos = 1250' tema-2 $J -cp "$TMP/t2" ConstructoresYOrden
+espera "sin escribir ningun constructor, new Vacia() funciona y los campos salen en su valor por defecto" 'v = null | 0' tema-2 $J -cp "$TMP/t2" ConstructoresYOrden
+
+# El orden impreso tiene que ser el orden del bytecode, no una coincidencia de la maquina.
+espera "el <init> que no delega arranca encadenando a Object" 'Method java/lang/Object."<init>":()V' tema-2/por-dentro sh -c "javap -c -p -cp '$TMP/t2b' 'OrdenEnBytecode\$Guia'"
+espera "quien ejecuta new deja el objeto en la pila y despues guarda la variable" 'astore_1' tema-2/por-dentro sh -c "javap -c -p -cp '$TMP/t2b' OrdenEnBytecode"
+espera "el enlace se hace por descriptor: un argumento es (I)V" 'Method OrdenEnBytecode$Guia."<init>":(I)V' tema-2/por-dentro sh -c "javap -c -p -cp '$TMP/t2b' OrdenEnBytecode"
+espera "y dos argumentos son (II)V, que es otro metodo" 'Method OrdenEnBytecode$Guia."<init>":(II)V' tema-2/por-dentro sh -c "javap -c -p -cp '$TMP/t2b' OrdenEnBytecode"
+igual "el constructor que no delega ejecuta los DOS inicializadores" "2" "$(cuenta tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia();' 'invokestatic')"
+cero "el que delega con this() no ejecuta NINGUNO" tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia(int);' 'invokestatic'
+cero "el del segundo salto tampoco" tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia(int, int);' 'invokestatic'
+igual "la cadena se ve como un invokespecial al otro descriptor" "1" "$(cuenta tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia(int);' '"<init>":()V')"
+igual "y el ultimo salta al del medio, no al primero" "1" "$(cuenta tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia(int, int);' '"<init>":(I)V')"
+igual "el campo static solo se escribe en <clinit>" "1" "$(cuenta tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'static {};' 'putstatic')"
+cero "ningun <init> de instancia toca ese campo static" tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia();' 'putstatic'
+distinto "los dos <init> son bytecode distinto: no hay un unico constructor que se herede" \
+    "$(miembro tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia();')" \
+    "$(miembro tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia(int);')"
+
+# La otra cara de la cadena: el MISMO caso escrito sin this(). Lo que se gana con this() no se ve en los
+# valores, se ve en el tamano de cada metodo; por eso se comparan los dos fuentes y no se narra de memoria.
+VAL1=$( (cd "$RAIZ/tema-2/por-dentro" && $J -cp "$TMP/t2b" OrdenEnBytecode) | sed -n 's/.*\(a\/b = .*\)/\1/p' )
+VAL2=$( (cd "$RAIZ/tema-2/por-dentro" && $J -cp "$TMP/t2c" SinEncadenar) | sed -n 's/.*\(a\/b = .*\)/\1/p' )
+igual_no_vacio "encadenar o no encadenar deja los MISMOS valores en los tres objetos" "$VAL1" "$VAL2"
+espera "el <init> suelta llega a escribir los dos campos y luego los pisa" 'sin encadenar, new Guia(5, 6) : a/b = 5 / 6' tema-2/por-dentro $J -cp "$TMP/t2c" SinEncadenar
+igual "el que no delega gasta 11 instrucciones encadenando" "11" "$(cuenta tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia();' '^[0-9]')"
+igual "y exactamente 11 sin encadenar: ahi this() no ahorra nada" "11" "$(cuenta tema-2/por-dentro SinEncadenar.java 'SinEncadenar$Guia' 'SinEncadenar$Guia();' '^[0-9]')"
+igual "quien si ahorra es el del medio: 6 instrucciones con this()" "6" "$(cuenta tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia(int);' '^[0-9]')"
+igual "frente a 14 sin la cadena: los inicializadores se han copiado enteros" "14" "$(cuenta tema-2/por-dentro SinEncadenar.java 'SinEncadenar$Guia' 'SinEncadenar$Guia(int);' '^[0-9]')"
+igual "y el del segundo salto, 7 con this()" "7" "$(cuenta tema-2/por-dentro OrdenEnBytecode.java 'OrdenEnBytecode$Guia' 'OrdenEnBytecode$Guia(int, int);' '^[0-9]')"
+igual "frente a 17 sin ella" "17" "$(cuenta tema-2/por-dentro SinEncadenar.java 'SinEncadenar$Guia' 'SinEncadenar$Guia(int, int);' '^[0-9]')"
+igual "sin cadena, invokestatic vuelve a salir en el primer <init>" "2" "$(cuenta tema-2/por-dentro SinEncadenar.java 'SinEncadenar$Guia' 'SinEncadenar$Guia();' 'invokestatic')"
+igual "y en el segundo, que con this() era cero" "2" "$(cuenta tema-2/por-dentro SinEncadenar.java 'SinEncadenar$Guia' 'SinEncadenar$Guia(int);' 'invokestatic')"
+igual "y en el tercero, que con this() tambien era cero" "2" "$(cuenta tema-2/por-dentro SinEncadenar.java 'SinEncadenar$Guia' 'SinEncadenar$Guia(int, int);' 'invokestatic')"
+
+espera "escribir un campo antes de this() compila, pero el this() pisa esa escritura" 'escribir antes de this() : v = 9' tema-2 $J -cp "$TMP/t2e" EncadenamientoSilencioso
+espera "la linea que llega al objeto es la que va despues de this()" 'escribir despues de this(): v = 5' tema-2 $J -cp "$TMP/t2e" EncadenamientoSilencioso
+vacio "javac -Xlint:all no avisa de ese campo pisado: el bug sale mudo" "$( (cd "$RAIZ/tema-2" && javac --release 25 -Xlint:all -d "$TMP/t2w" EncadenamientoSilencioso.java) 2>&1 )"
+
+espera "las anidadas y la exterior forman un nest" 'NestMembers' tema-2 sh -c "javap -p -v -cp '$TMP/t2' ConstructoresYOrden"
+espera "cada anidada declara su NestHost, que es lo que le da acceso a lo privado del vecino" 'NestHost' tema-2 sh -c "javap -p -v -cp '$TMP/t2' 'ConstructoresYOrden\$Vacia'"
+igual "por eso aqui tampoco hace falta un metodo sintetico de acceso" "0" "$( (cd "$RAIZ/tema-2" && javap -p -cp "$TMP/t2" ConstructoresYOrden 'ConstructoresYOrden$Guia' 'ConstructoresYOrden$Trampa' 'ConstructoresYOrden$Vacia') | grep -c 'access\$' )"
+espera "el constructor implicito copia el acceso de la clase: en la exterior publica sale public" 'public ConstructoresYOrden();' tema-2 sh -c "javap -p -cp '$TMP/t2' ConstructoresYOrden"
+igual "y en la anidada de paquete no aparece ni un public" "0" "$(grep -c public "$TMP/t2vacia.txt")"
+
+no_compila "tocar el objeto antes de la cadena esta prohibido" 'reference to this may only appear after an explicit constructor invocation' tema-2 errores/ThisAntesDeTiempo.java
+no_compila "lo mismo con un campo: solo se puede leer despues de la llamada explicita" 'reference to v may only appear after an explicit constructor invocation' tema-2 errores/CampoAntesDeSuper.java
+no_compila "this() llamandose a si mismo" 'recursive constructor invocation' tema-2 errores/ConstructorRecursivo.java
+no_compila "un final que el constructor no asigna" 'variable codigo might not have been initialized' tema-2 errores/FinalSinAsignar.java
+no_compila "un inicializador que lee un campo mas abajo" 'illegal forward reference' tema-2 errores/ReferenciaAdelantada.java
+no_compila "poner un constructor es borrar el que venia gratis" 'constructor Guia in class Guia cannot be applied to given types' tema-2 errores/SinConstructorPorDefecto.java
 
 resultado
