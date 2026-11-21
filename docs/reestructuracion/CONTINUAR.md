@@ -93,7 +93,7 @@ tema se reescribe en el formato único salvo los que ya tienen `escrito_formato_
 
 | Curso | Temas | Módulos | Ya está | Básico | Falta | Escritos | Verificados |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| Java | 279 | 44 | 46 | 92 | 141 | 14 | 0 |
+| Java | 279 | 44 | 46 | 92 | 141 | 26 | 0 |
 | Gradle | 166 | 28 | 0 | 31 | 135 | 0 | 0 |
 | Spring | 281 | 47 | 57 | 83 | 141 | 0 | 0 |
 | Microservicios | 395 | 62 | 173 | 72 | 150 | 173 | 110 |
@@ -141,20 +141,28 @@ La tabla viva es `ESTADO-DE-TEMAS.md`; esta copia puede quedar vieja.
 > encuentra y la papelera no es legible. Los resultados del punto 2 se citan tal como se registraron esa
 > tarde y no vuelven a comprobarse aquí hasta volver a ejecutarlos. **El punto 1 ya no depende de ese
 > registro**: los tres laboratorios de Java se volvieron a ejecutar en el repositorio el mismo 2026-11-20, con
-> el resultado escrito ahí.
+> el resultado escrito ahí. *(Añadido después del mismo 2026-11-20: ya son cuatro, M0 a M3. Las corridas de M0
+> y M2 son las de esa tarde, citadas tal cual; M1 se volvió a ejecutar al añadirle tres comprobaciones y M3 se
+> ejecutó por primera vez al escribirse. Cada cifra está en su `laboratorios/modulo-N/README.md`.)*
 
-1. **Piloto de Java, módulos 0, 1 y 2: escrito y ejecutado aquí; falta la corrida con JDK 25.** En
-   `docs/reestructuracion/cursos/java/` (`CURSO.md`, `modulo-0.md`, `modulo-1.md`, `modulo-2.md` y
-   `laboratorios/modulo-0`, `modulo-1`, `modulo-2`): 7 temas en M0, 7 en M1 y 6 en M2, todos con las 12
-   secciones del formato y dados de alta en `temas-escritos.txt` (`java/M0/T1` … `java/M2/T6`, **sin**
-   `;verificado`, como exige la regla 12). Los tres módulos están en `main` (M0 y M1 en `a87d9b62`, M2 en
-   `fb70b49e`), así que no se perdió nada.
+1. **Java, módulos 0, 1, 2 y 3: escritos y ejecutados aquí; falta la corrida con JDK 25.** En
+   `docs/reestructuracion/cursos/java/` (`CURSO.md`, `modulo-0.md` … `modulo-3.md` y
+   `laboratorios/modulo-0` … `laboratorios/modulo-3`): 7 temas en M0, 7 en M1, 6 en M2 y 6 en M3 —26 en total—,
+   todos con las 12 secciones del formato y dados de alta en `temas-escritos.txt` (`java/M0/T1` …
+   `java/M3/T6`, **sin** `;verificado`, como exige la regla 12). Los cuatro están en `main` (M0 y M1 en
+   `a87d9b62`, M2 en `fb70b49e`, M3 en `0169ab6b` el documento + `f39666af` el laboratorio + `878801e4` el
+   registro), así que no se perdió nada. Duración declarada por tema, sumada con `grep` sobre los encabezados
+   `### Tema`: M0 260 min, M1 280, M2 250, M3 245 → **17 h 15 min** de temas, más 1 h de laboratorio por
+   módulo (4 h) = **21 h 15 min** del Tramo 1 disponibles hoy; el tramo son 8 módulos.
    **Reejecutado el 2026-11-20 en esta máquina** (macOS arm64, Temurin 27.0.1.0.2+1, locale `es_CO`), con el
    wrapper offline y el init script que presta el toolchain 27 (no forma parte del curso):
    - `modulo-0` → **OK**: 47 correctas, 0 fallidas, 1 omitida. La omitida es «java es la entrega 25», que
      depende del runtime instalado; con `EXIGIR_JDK25=1` se vuelve fallo.
-   - `modulo-1` → **OK**: 67 correctas, 0 fallidas, 0 omitidas (64 ejemplos + 3 del proyecto Gradle).
-   - `modulo-2` → **OK**: 77 correctas, 0 fallidas, 2 omitidas.
+   - `modulo-1` → **OK**: 70 correctas, 0 fallidas, 0 omitidas (67 ejemplos + 3 del proyecto Gradle). Sin el
+     init script: 68 / 2 / 0.
+   - `modulo-2` → **OK**: 77 correctas, 0 fallidas, 2 omitidas (su `README.md`, corrida de la misma tarde).
+   - `modulo-3` → **OK**: 108 correctas, 0 fallidas, 0 omitidas (105 ejemplos sueltos + 3 de Gradle; reparto
+     T1 11 · T2 29 · T3 16 · T4 22 · T5 16 · T6 11 · Gradle 3). Sin el init script: 106 / 2 / 0.
    - Las dos aserciones que el 2026-11-20 por la mañana daban `rc=1` en `modulo-0` estaban mal formuladas:
      dependían de la **frase** del lanzador. El parche de esa tarde añadió un helper `falla_con_idioma` que
      aceptaba dos redacciones en español **no reproducibles** (su registro se fue con
@@ -163,9 +171,21 @@ La tabla viva es `ESTADO-DE-TEMAS.md`; esta copia puede quedar vieja.
      las dos cadenas sin probar; ahora exigen código distinto de cero más lo que escribe la propia JVM
      (`java.lang.ClassNotFoundException: Despacho`, `public static void main(String[] args)`). Puerta más
      estricta, no más floja. Detalle completo en `docs/cambios-2026-11-20.md`.
-   - **No se añadió `;verificado` todavía**: queda la corrida en el Mac del dueño con JDK 25 en PATH, sin el
-     init script y con `EXIGIR_GRADLE=1 EXIGIR_JDK25=1 ./verificar.sh` en los tres módulos. Solo entonces los
-     20 temas (`java/M0/T1` … `java/M2/T6`) pasan a verificado.
+   - Corrección del 2026-11-20 en el **tema 2 de M1**: el documento fijaba `ThreadStackSize = 1024` («1 MB por
+     hilo»), `InitialHeapSize = 100663296`, `MaxHeapSize = 1610612736` y `UseCompactObjectHeaders = false`
+     «por defecto». Medido en las dos JVM instaladas en esta máquina —OpenJDK 26.0.2+10-55 y Temurin
+     27.0.1.0.2+1, 16 GB—: `ThreadStackSize` vale 2048 KB en ambas, `InitialHeapSize` 8388608 y `MaxHeapSize`
+     4294967296 (la cuarta parte justa de la RAM); solo la cabecera compacta cambia de build: `false` en 26,
+     `true` en 27. Esas tres cifras antiguas no las produce ninguna corrida guardada en el repo. El texto ya no
+     las fija: muestra las dos salidas reales, y `verificar.sh` ganó tres comprobaciones que leen el flag y su
+     **origen** (`{default}`, `{command line}`, `{ergonomic}`) en lugar del número de esta máquina.
+   - **No se añadió `;verificado` todavía**: queda la corrida en el Mac del dueño con JDK 25 en PATH y sin el
+     init script, con `EXIGIR_GRADLE=1 ./verificar.sh` en los cuatro módulos. `EXIGIR_JDK25=1` solo lo
+     implementa `modulo-0/verificar.sh`, que es el único con una comprobación que se *omite* por el runtime
+     (1 omitida). En M1 y M3 no hace falta ningún flag para verlo: sin JDK 25 fallan las dos comprobaciones que
+     lanzan el wrapper —medido hoy, 68 / 2 / 0 y 106 / 2 / 0—, y el README de M2 anota que en su módulo fallan
+     las tres de Gradle. Solo con esas cuatro corridas verdes en el Mac pasan los 26 temas
+     (`java/M0/T1` … `java/M3/T6`) a verificado.
 2. **Laboratorios de Spring de Microservicios ya compilados en Gradle.** Son
    `examples/microservicios/modulo-5` a `modulo-16` y `modulo-36/spring`. El 2026-11-20 se ejecutaron con
    Gradle real en el Mac del dueño (log `~/Downloads/imperial-verificacion/logs/gradle-resumen.txt`,
