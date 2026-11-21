@@ -227,7 +227,7 @@ def main() -> int:
         args.json.write_text(json.dumps(filas, ensure_ascii=False, indent=1), encoding="utf-8")
     if args.csv:
         with args.csv.open("w", newline="", encoding="utf-8") as fh:
-            wr = csv.DictWriter(fh, fieldnames=list(filas[0]))
+            wr = csv.DictWriter(fh, fieldnames=list(filas[0]), lineterminator="\n")
             wr.writeheader()
             wr.writerows(filas)
     return 0
