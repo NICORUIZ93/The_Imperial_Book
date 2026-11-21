@@ -3,9 +3,9 @@
 > Portada del curso según el [formato único](../../FORMATO-UNICO.md) (specs/021). Temario aprobado por el
 > dueño el 2026-11-20: [`docs/temarios/java-objetivo.md`](../../../temarios/java-objetivo.md) (279 temas, 44
 > módulos). **Estado de esta zona de preparación:** escritos el [módulo 0](modulo-0.md), el
-> [módulo 1](modulo-1.md), el [módulo 2](modulo-2.md) y el [módulo 3](modulo-3.md) —los cuatro con su
-> laboratorio ejecutado y en verde, ver el `README.md` de cada carpeta `laboratorios/modulo-N/`; el resto se
-> escribe igual, por tramos completos.
+> [módulo 1](modulo-1.md), el [módulo 2](modulo-2.md), el [módulo 3](modulo-3.md) y los cuatro primeros temas
+> del [módulo 4](modulo-4.md) —todos con su laboratorio ejecutado y en verde, ver el `README.md` de cada carpeta
+> `laboratorios/modulo-N/`; el resto se escribe igual, por tramos completos—.
 
 ## 1. Para quién es
 
@@ -92,7 +92,7 @@ Integración y Experto suman 145 de 279 temas (52 %): se cumple «al menos la mi
 
 | Tramo | Módulos | Temas | Escritos en formato único |
 |---|---|---:|---|
-| Fundamentos | M0–M8 | 57 | **M0 (7 temas) y M1 (7 temas)** |
+| Fundamentos | M0–M8 | 57 | **30**: M0 (7) · M1 (7) · M2 (6) · M3 (6) y 4 de los 6 de M4 |
 | Aplicación | M9–M20 | 77 | — |
 | Integración | M21–M32 | 76 | — |
 | Experto | M33–M43 | 69 | — |
@@ -116,6 +116,9 @@ Lo que ya existe tras el piloto:
 |---|---|---|
 | M0 | El proyecto Gradle (wrapper, toolchain 25, catálogo), la regla `Tarifa`, el `Cotizador` de consola y 3 pruebas | [`laboratorios/modulo-0/`](laboratorios/modulo-0/README.md) |
 | M1 | `CalculadoraDeTarifas` sin desbordamientos, truncados ni errores de céntimos; `CalculadoraIngenua` con los cuatro fallos demostrados; 11 pruebas | [`laboratorios/modulo-1/`](laboratorios/modulo-1/README.md) |
+| M2 | `GuiaDeEnvio` (record que parsea `código;destino;peso` y devuelve el **motivo** de rechazo, no una excepción) y `LectorDeGuias` con `IO.readln()`; 12 pruebas | [`laboratorios/modulo-2/`](laboratorios/modulo-2/README.md) |
+| M3 | `Zona` (enum de cinco zonas) y `Despachador`: expresión `switch` con `yield`, ternarios anidados, `break` con etiqueta, `sumaGramos` recursiva con sobrecarga `varargs`; 12 pruebas | [`laboratorios/modulo-3/`](laboratorios/modulo-3/README.md) |
+| M4 | `Manifiesto`: el mismo manifiesto de guías resuelto **dos veces** —con arreglos (`Arrays.sort` + `binarySearch`) y con colecciones (`merge` para los totales por zona y `totalesOrdenados` para imprimirlos siempre igual, ordenando las claves a mano)— y las dos versiones cuadrando; 9 pruebas | [`laboratorios/modulo-4/`](laboratorios/modulo-4/README.md) |
 
 Cada laboratorio parte del estado final del anterior y su `README.md` dice qué cambia y por qué.
 
@@ -133,8 +136,9 @@ Cada laboratorio parte del estado final del anterior y su `README.md` dice qué 
 | **Total** | **279** | **≈ 206 h** |
 
 Medido en lo ya escrito, sumando los minutos declarados por tema (cuadrilla `### Tema` de cada módulo): M0,
-4 h 20 min; M1, 4 h 40 min; M2, 4 h 10 min; M3, 4 h 05 min. Total de temas escritos: **17 h 15 min**, más una
-hora de laboratorio por módulo (4 h) → **21 h 15 min** de Tramo 1 disponible hoy (el tramo son 8 módulos).
+4 h 20 min; M1, 4 h 40 min; M2, 4 h 10 min; M3, 4 h 05 min y M4, **2 h 45 min de los 4 h 10 min planeados**
+(quedan el tema 5 y el 6). Total de temas escritos: **20 h 00 min**, más una hora de laboratorio por módulo
+(5 h, de M0 a M4) → **25 h 00 min** de Tramo 1 disponible hoy (el tramo son 8 módulos).
 
 **Versiones fijadas** (fuente: `docs/VERSIONES.md`).
 

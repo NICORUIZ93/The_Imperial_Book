@@ -3455,9 +3455,12 @@ no ve nada). Y antes de tocar nada, pido reproducirla con la entrada mínima: si
 
 ### Siguiente módulo
 
-Módulo 4 · Arreglos y primeras colecciones (pendiente de escribir; temario en
-`docs/temarios/java-objetivo.md`): el arreglo como objeto con `length`, `Arrays` y `ArrayList`, y las dos
-formas de recorrerlo —el `for` con índice y el for-each que ya comparaste en `tema-3/RecorrerGuias.java`, y
-que `Despachador.guiasAceptadas` usa en su versión for-each—, para que la tanda de guías deje de ser un
-arreglo suelto y pase a ser una colección con criterio.
+Módulo 4 · Arreglos y primeras colecciones ([modulo-4.md](modulo-4.md), con los temas 1 a 4 escritos y medidos
+sobre la salida real; faltan el 5 y el 6; temario en `docs/temarios/java-objetivo.md`): el arreglo como objeto con
+`length`, `Arrays` y `ArrayList`, y las dos formas de recorrerlo —el `for` con índice y el for-each que ya
+comparaste en `tema-3/RecorrerGuias.java`, y que `Despachador.guiasAceptadas` usa en su versión for-each—, para
+que la tanda de guías deje de ser un arreglo suelto y pase a ser una colección con criterio. En el laboratorio de
+M4 el mismo manifiesto se resuelve dos veces, con arreglos y con colecciones, y las dos versiones tienen que
+cuadrar: `tema-4/por-dentro/RecorridoEnBytecode.java` mide, instrucción a instrucción, que las dos formas de
+recorrer dan la misma suma.
 
