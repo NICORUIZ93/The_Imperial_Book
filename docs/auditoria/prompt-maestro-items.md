@@ -7,18 +7,18 @@
 
 | Punto | Qué exige la sección 4 | Temas que lo tienen | % |
 |---|---|---:|---:|
-| P1 | Encabezado con nivel y duración + prerrequisitos | 350/1608 | 22 % |
-| P2 | Objetivo verificable | 1314/1608 | 82 % |
+| P1 | Encabezado con nivel y duración + prerrequisitos | 355/1608 | 22 % |
+| P2 | Objetivo verificable | 1315/1608 | 82 % |
 | P3 | Por qué importa, con caso real | 1421/1608 | 88 % |
 | P4 | Explicación sencilla y precisa + analogía con su límite | 1281/1608 | 80 % |
-| P5 | Ayuda visual propia (diagrama o imagen) | 939/1608 | 58 % |
+| P5 | Ayuda visual propia (diagrama o imagen) | 944/1608 | 59 % |
 | P6 | Ejemplo ejecutable con nombre de archivo | 1605/1608 | 100 % |
-| P7 | Explicación por bloques del código | 1214/1608 | 75 % |
-| P8 | Captura real con resultado en texto | 28/1608 | 2 % |
+| P7 | Explicación por bloques del código | 1215/1608 | 76 % |
+| P8 | Captura real con resultado en texto | 34/1608 | 2 % |
 | P9 | Fallo deliberado: error exacto y diagnóstico | 1543/1608 | 96 % |
-| P10 | Ejercicios en tres niveles con solución | 1098/1608 | 68 % |
-| P11 | Checklist de salida y siguiente paso | 1288/1608 | 80 % |
-| P12 | Aporte al proyecto integrador y fuentes con fecha | 75/1608 | 5 % |
+| P10 | Ejercicios en tres niveles con solución | 1099/1608 | 68 % |
+| P11 | Checklist de salida y siguiente paso | 1289/1608 | 80 % |
+| P12 | Aporte al proyecto integrador y fuentes con fecha | 79/1608 | 5 % |
 
 ## Por curso
 
@@ -30,7 +30,7 @@
 | control-1 | 88 | 0/88 | 0/88 | 88/88 | 18/88 | 15/88 | 86/88 | 0/88 | 0/88 | 34/88 | 0/88 | 70/88 | 3/88 |
 | devops | 139 | 0/139 | 139/139 | 139/139 | 132/139 | 92/139 | 139/139 | 139/139 | 1/139 | 138/139 | 138/139 | 134/139 | 8/139 |
 | flutter | 119 | 109/119 | 118/119 | 119/119 | 78/119 | 95/119 | 119/119 | 118/119 | 0/119 | 119/119 | 118/119 | 118/119 | 1/119 |
-| foundations | 105 | 3/105 | 102/105 | 105/105 | 102/105 | 74/105 | 104/105 | 102/105 | 3/105 | 104/105 | 101/105 | 86/105 | 21/105 |
+| foundations | 105 | 8/105 | 103/105 | 105/105 | 102/105 | 79/105 | 104/105 | 103/105 | 9/105 | 104/105 | 102/105 | 87/105 | 25/105 |
 | ios | 69 | 57/69 | 69/69 | 69/69 | 63/69 | 47/69 | 69/69 | 69/69 | 0/69 | 69/69 | 69/69 | 69/69 | 0/69 |
 | java | 120 | 23/120 | 39/120 | 120/120 | 45/120 | 24/120 | 120/120 | 8/120 | 6/120 | 120/120 | 14/120 | 40/120 | 6/120 |
 | javascript | 92 | 26/92 | 91/92 | 92/92 | 87/92 | 62/92 | 92/92 | 91/92 | 3/92 | 91/92 | 90/92 | 86/92 | 7/92 |

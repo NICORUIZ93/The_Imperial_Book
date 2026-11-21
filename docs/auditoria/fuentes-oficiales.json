@@ -3,16 +3,16 @@
   "caducidad_dias": 120,
   "curso": "todos",
   "temas": {
-    "con_region": 770,
-    "con_fecha": 7,
-    "sin_fecha": 698,
+    "con_region": 772,
+    "con_fecha": 6,
+    "sin_fecha": 696,
     "sin_enlace": 5,
     "caducos": 0,
     "total": 1608,
     "locales": 0,
-    "porcentaje_sin_fecha": 43.7
+    "porcentaje_sin_fecha": 43.6
   },
-  "urls_distintas": 1177,
+  "urls_distintas": 1181,
   "urls_sin_comprobar": 0,
   "urls_rotas": 39,
   "urls": {
@@ -491,9 +491,29 @@
       "final": "https://cloud.google.com/kubernetes-engine/pricing",
       "comprobada": "2026-11-21"
     },
+    "https://code.visualstudio.com/docs/configure/command-line": {
+      "estado": 200,
+      "final": "https://code.visualstudio.com/docs/configure/command-line",
+      "comprobada": "2026-11-21"
+    },
+    "https://code.visualstudio.com/docs/configure/keybindings": {
+      "estado": 200,
+      "final": "https://code.visualstudio.com/docs/configure/keybindings",
+      "comprobada": "2026-11-21"
+    },
+    "https://code.visualstudio.com/docs/editing/codebasics": {
+      "estado": 200,
+      "final": "https://code.visualstudio.com/docs/editing/codebasics",
+      "comprobada": "2026-11-21"
+    },
     "https://code.visualstudio.com/docs/python/run": {
       "estado": 200,
       "final": "https://code.visualstudio.com/docs/python/run",
+      "comprobada": "2026-11-21"
+    },
+    "https://code.visualstudio.com/docs/reference/default-keybindings": {
+      "estado": 200,
+      "final": "https://code.visualstudio.com/docs/reference/default-keybindings",
       "comprobada": "2026-11-21"
     },
     "https://code.visualstudio.com/docs/terminal/basics": {

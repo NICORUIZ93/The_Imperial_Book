@@ -728,6 +728,42 @@
       "module": 7,
       "topic": 7,
       "capture": "requerida"
+    },
+    {
+      "track": "foundations",
+      "module": 0,
+      "topic": 1,
+      "capture": "requerida"
+    },
+    {
+      "track": "foundations",
+      "module": 0,
+      "topic": 2,
+      "capture": "requerida"
+    },
+    {
+      "track": "foundations",
+      "module": 0,
+      "topic": 3,
+      "capture": "requerida"
+    },
+    {
+      "track": "foundations",
+      "module": 0,
+      "topic": 4,
+      "capture": "requerida"
+    },
+    {
+      "track": "foundations",
+      "module": 0,
+      "topic": 5,
+      "capture": "requerida"
+    },
+    {
+      "track": "foundations",
+      "module": 0,
+      "topic": 6,
+      "capture": "requerida"
     }
   ]
 }

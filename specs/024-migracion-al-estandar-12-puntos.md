@@ -19,6 +19,25 @@ Medición de partida, ejecutada el 2026-11-21 sobre los 1608 temas:
 
 Cero temas cumplen los doce a la vez: la intersección no puede superar a P8 (28).
 
+Medición actual, también del 2026-11-21, después de cerrar el capítulo 0 de Fundamentos y de corregir el
+reconocimiento de los dos detectores que estaban ciegos (`audit_master_prompt_items.py` leía mal los rótulos
+partidos en dos renglones y `validate_official_sources.py` contaba como valla el marcador `~~~~~~~~~^^^` de los
+tracebacks de Python 3.14, lo que ocultaba cuatro fuentes):
+
+| punto | cumplen | punto | cumplen |
+|---|---:|---|---:|
+| P1 | 355 | P7 | 1215 |
+| P2 | 1315 | **P8** | **34** |
+| P3 | 1421 | P9 | 1543 |
+| P4 | 1281 | P10 | 1099 |
+| P5 | 944 | P11 | 1289 |
+| P6 | 1605 | P12 | 79 |
+
+Ninguna deuda de partida subió: los doce contadores son mayores o iguales que los de la tabla anterior. P8 pasó
+de 28 a 34, P12 de 74 a 79 y P1 de 350 a 355 al cerrar los seis temas de `foundations/modulo-0` y al reparar los
+dos detectores. La intersección sigue siendo cero porque ningún tema de los otros 15 cursos tiene a la vez
+captura real (P8) y fuentes con fecha (P12).
+
 ## 1. Reglas de ejecución
 
 1. **Una ruta por lote** (sección 7). Dentro de la ruta, un capítulo por entrega, y cada entrega se sube a
@@ -54,8 +73,16 @@ literal. Ningún criterio se marca `hecho` si su comando no pasó en esta máqui
   `docs/reestructuracion/FORMATO-UNICO.md`, en orden, con encabezado `### Tema N: título · Nivel · NN min`,
   y el curso declarado en `docs/reestructuracion/cursos-en-formato.json`.
   Verificación: `python3 -c "import json,sys;sys.exit('foundations' not in json.load(open('docs/reestructuracion/cursos-en-formato.json'))['cursos'])" && python3 scripts/validate_formato.py --check`
-- **C4** `pendiente` — Los 105 temas de Fundamentos cumplen los doce puntos de la sección 4. Medido hoy:
-  0 de 105 cumplen los doce; deben P1 102, P8 102, P12 84, P5 31, P11 19, P10 4, P2 3, P4 3, P7 3, P6 1, P9 1.
+- **C4** `pendiente` — Los 105 temas de Fundamentos cumplen los doce puntos de la sección 4. Medido el
+  2026-11-21 con el capítulo 0 cerrado: 6 de 105 cumplen los doce; deben P1 97, P8 96, P12 80, P5 26, P11 18,
+  P2 2, P4 3, P7 2, P10 3, P6 1, P9 1. Los seis son los temas 1 a 6 de `modulo-0`: el Tema 4 quedó dentro al
+  escribir `**Prerrequisitos:** comprobar Python…` en un solo renglón, porque el detector exige contenido en la
+  misma línea del rótulo. Cerrar el capítulo costó algo más que etiquetas: los comandos que el lector debe
+  escribir nombran el intérprete fijado (`python3.14`, y `py -3.14` en Windows) en vez de un `python3` que en
+  esta máquina responde 3.15.2 o 3.9.6 según el `PATH`; las transcripciones se reprodujeron literales con el
+  corte a 96 columnas de la herramienta; y se corrigieron tres afirmaciones falsas (un `sha256` inventado en el
+  Tema 6, un `segundo.py` que se ejecutaba antes de existir y una secuencia `cd ..` que dejaba al lector en la
+  carpeta equivocada para el Paso 5).
   Verificación: `python3 scripts/plan_maestro_items.py --curso foundations`
 - **C5** `pendiente` — Cada tema de Fundamentos tiene su ejemplo ejecutado en esta máquina y su captura
   versionada en `web/public/content/figures/foundations/`, enlazada con alt descriptivo y acompañada del
@@ -73,9 +100,13 @@ literal. Ningún criterio se marca `hecho` si su comando no pasó en esta máqui
   tiene herramienta: hasta el 2026-11-21 el apuntador `scripts/validate_official_sources.py` no existía y
   nadie podía comprobar una fecha de consulta. Ahora lee la sección de fuentes de cada tema, separa lo que
   es cita de lo que es enlace de ejemplo dentro del código, consulta cada URL por red y versiona el
-  resultado. Medido hoy sobre los 1608 temas: 770 declaran fuentes, 1177 URLs oficiales distintas (39 no
-  responden), 698 con enlace pero **sin fecha de consulta**, 7 con fecha, 0 caducadas. La deuda de P12 es
-  de fecha, no de enlace.
+  resultado. Medido hoy sobre los 1608 temas: 772 declaran fuentes, 1181 URLs oficiales distintas (39 no
+  responden), 696 con enlace pero **sin fecha de consulta**, 6 con fecha, 0 caducadas. La deuda de P12 es
+  de fecha, no de enlace. El separador de vallas se corrigió hoy mismo: contaba como apertura de bloque el
+  marcador `~~~~~~~~~^^^` que Python 3.14 imprime bajo una llamada errónea, lo que dejaba cuatro fuentes del
+  Tema 1 de Fundamentos fuera del registro; con el reconocimiento correcto (cierre = mismo carácter, sin info
+  string) las URLs medias subieron de 1177 a 1181 y las regiones con fuentes de 770 a 772, y esas cuatro URLs
+  respondieron `200` hoy.
   Verificación: `python3 scripts/validate_official_sources.py --check`
 
 ## 3. Lotes
@@ -99,7 +130,28 @@ literal. Ningún criterio se marca `hecho` si su comando no pasó en esta máqui
 | 15 | Android | 83 | |
 | 16 | Control 1 | 88 | examen: decidir el género aparte (tres temas no son lección) |
 
-## 4. Fuera de alcance de esta spec
+## 4. Las dos listas de doce, y cuál mide cada puerta
+
+Hay dos estándares de doce elementos y no son el mismo. Confundirlos produce capítulos que pasan una puerta
+y siguen rojos en la otra, así que se documentan las dos con su medidor:
+
+- Los **doce puntos** de la sección 4 del `MASTER-PROMPT.md` son requisitos de contenido, reconocidos por
+  rótulos (`**Prerrequisitos:**`, `**Resultado esperado:**`, `#### Paso 5 · Práctica guiada`…) y medidos por
+  `scripts/audit_master_prompt_items.py` y `scripts/plan_maestro_items.py`. Es lo que mide **C4**.
+- Las **doce secciones** de `docs/reestructuracion/FORMATO-UNICO.md` son encabezados numerados obligatorios
+  (`#### 1. Ubicación y prerrequisitos` … `#### 12. Cuándo usarlo y cuándo no`), aprobadas por el dueño el
+  2026-11-20 como regla de toda la academia, y medidas por `scripts/validate_formato.py`. Es lo que mide
+  **C3**.
+
+Medido el 2026-11-21: `validate_formato.py` da 187 de 1608 temas en formato (11 %), y los 187 son las fichas
+de Microservicios; Fundamentos está en 0 de 105 porque sus temas reescritos usan la estructura `Paso 1…7`. El
+capítulo 0 de Fundamentos cumple los doce puntos y no cumple las doce secciones. Cerrar **C3** exige una
+migración de forma sobre el trabajo ya hecho, tema por tema, con contenido nuevo en las secciones que hoy no
+existen (Explicación en tres niveles, Mini-laboratorio con «Listo cuando…», Verificación ejecutable, Error
+común con Síntoma/Causa/Arreglo, Pregunta con respuesta modelo y Cuándo usarlo y cuándo no). Es el lote
+inmediato después de este; no se declara nada hecho hasta que `validate_formato.py` cuente esos temas.
+
+## 5. Fuera de alcance de esta spec
 
 La sección 8 del prompt (la app renderiza las 12 secciones con los mismos componentes en todos los cursos)
 vive en `specs/021` (criterio Z10). Los cursos nuevos (Docker, Kubernetes, Diseño de sistemas) viven en

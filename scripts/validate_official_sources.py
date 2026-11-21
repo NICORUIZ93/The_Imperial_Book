@@ -47,7 +47,7 @@ USER_AGENT = "Academia-Floci-verificador-fuentes/1.0 (+docs/auditoria)"
 FECHA = re.compile(r"(?:consultadas?|revisadas?|verificadas?|comprobadas?)\s+(?:el|al|de|a)\s+"
                    r"(?P<fecha>\d{4}-\d{2}-\d{2})", re.I)
 URL = re.compile(r"https?://[^\s)\]\"'<>]+")
-FENCE = re.compile(r"^\s*(?:```|~~~)")
+FENCE = re.compile(r"^ {0,3}(`{3,}|~{3,})(.*)$")
 BULLET = re.compile(r"^\s*(?:[-*+]|\d+[.)])\s+")
 # Un enlace de ejemplo (`http://127.0.0.1:3000/health`, una IP del laboratorio) no es una fuente oficial:
 # consultarla sería contar deuda donde no la hay.
@@ -67,10 +67,15 @@ def region_de_fuentes(lineas: list[str]) -> list[str]:
     """Las líneas que declaran fuentes: la que dice fuentes/referencias/bibliografía y los bullets que le
     siguen. Lo que está dentro de un bloque de código se descarta: ahí un `http://127.0.0.1:8080` es parte
     del ejercicio, no una cita."""
-    fuera, dentro = [], False
+    fuera, dentro, marca = [], False, ""
     for linea in lineas:
-        if FENCE.match(linea):
-            dentro = not dentro
+        valla = FENCE.match(linea)
+        if valla:
+            simbolo, resto = valla.group(1), valla.group(2).strip()
+            if not dentro:
+                dentro, marca = True, simbolo[0]
+            elif simbolo[0] == marca and not resto:
+                dentro = False
             continue
         if not dentro:
             fuera.append(linea)
