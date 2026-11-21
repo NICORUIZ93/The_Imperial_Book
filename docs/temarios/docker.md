@@ -72,8 +72,9 @@ Datos de Engine 29 que el curso usa, todos con cita de las notas de versión:
 | Fundamentos M8 T4 | Contenedores: aislamiento reproducible | M0 T1–T3 | En Fundamentos queda un resumen con enlace |
 
 **Nota sobre el origen «Fundamentos M12».** El reparto aprobado dice «Fundamentos M12: Electrónica, Web3 y
-Docker». En el repositorio, `foundations/modulo-12.md` es solo Electrónica (17 temas). El tema de contenedores
-de Fundamentos está en **M8 T4** (`foundations/modulo-8.md:324`), y es el que se cita aquí.
+Docker». En el repositorio ese módulo era solo Electrónica (17 temas) y el 2026-11-21 se movió a
+`control-1/modulo-29.md`; hoy `foundations/modulo-12.md` es Algoritmos clásicos. El tema de contenedores de
+Fundamentos está en **M8 T4** (`foundations/modulo-8.md:324`), y es el que se cita aquí.
 
 Estos temas no se mueven; se enlazan para no duplicarlos:
 - Spring Boot M19 T1 (capas del JAR) y M11 T4 (Buildpacks), desde M4 T1.

@@ -1,17 +1,20 @@
-# Listado de temas por curso (2026-11-20)
+# Listado de temas por curso (2026-11-20, ajustado el 2026-11-21)
 
 Generado desde las lecciones para la auditoría de specs/021. La misma tabla, con columnas para anotar, está en
 `listado-de-temas.csv`.
+
+El 2026-11-21 los 17 temas de Electrónica salieron de Fundamentos y pasaron a Control 1 como su módulo 29
+(Decisión D2 de `docs/temarios/fundamentos-objetivo.md`); los módulos 13, 14 y 15 de Fundamentos se renumeraron 12, 13 y 14.
 
 | Curso | Módulos | Temas | Con nivel |
 |---|---|---|---|
 | android | 19 | 83 | 10 |
 | angular | 17 | 78 | 9 |
 | cloud | 35 | 168 | 12 |
-| control-1 | 29 | 88 | 18 |
+| control-1 | 30 | 105 | 18 |
 | devops | 23 | 139 | 9 |
 | flutter | 23 | 119 | 119 |
-| foundations | 16 | 105 | 4 |
+| foundations | 15 | 88 | 4 |
 | ios | 15 | 69 | 69 |
 | java | 23 | 120 | 118 |
 | javascript | 15 | 92 | 92 |
@@ -97,14 +100,14 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 3. Cierre del track y próximos pasos
 4. Capa de dominio y casos de uso: reglas de negocio fuera del ViewModel — Avanzado
 
-**Módulo 13 · Módulo 13: Android en producción — seguridad, sincronización y calidad**
+**Módulo 12 · Módulo 12: Android en producción — seguridad, sincronización y calidad**
 1. El sistema operativo conecta tu app con entradas externas
 2. Proteger datos exige conocer copias y ciclo de vida
 3. Offline-first necesita un protocolo de cambios
 4. La calidad se opera por dispositivo y versión
 5. Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado
 
-**Módulo 14 · Módulo 14: Compose Master — pruebas, accesibilidad y animación**
+**Módulo 12 · Módulo 12: Compose Master — pruebas, accesibilidad y animación**
 1. ComposeTestRule ejecuta tu UI sin emulador visible
 2. Finders, assertions y actions navegan el árbol semántico
 3. Semantics y clearAndSetSemantics definen qué percibe la accesibilidad
@@ -112,7 +115,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 5. Animaciones de estado y visibilidad usan una especificación medible
 6. AnimatedContent y AnimationSpec especifican transiciones completas
 
-**Módulo 15 · Módulo 15: Android como plataforma — Intents, broadcasts, servicios y content providers**
+**Módulo 12 · Módulo 12: Android como plataforma — Intents, broadcasts, servicios y content providers**
 1. Intents implícitos y Activity Result API
 2. BroadcastReceiver: reaccionar a eventos del sistema
 3. Foreground Service de ubicación con FusedLocationProvider
@@ -236,12 +239,12 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 2. Leer la guía de actualización antes de modificar archivos
 3. Migrar una versión mayor a la vez y verificar cada salto
 
-**Módulo 13 · Módulo 13: Proyecto integrador — aplicación standalone completa**
+**Módulo 12 · Módulo 12: Proyecto integrador — aplicación standalone completa**
 1. Estructura del proyecto integrador
 2. Integrando routing, store y formularios
 3. TareasStore — combinando signals, computed y HttpClient
 
-**Módulo 14 · Módulo 14: Angular en producción — accesibilidad, seguridad e internacionalización**
+**Módulo 12 · Módulo 12: Angular en producción — accesibilidad, seguridad e internacionalización**
 1. Accesibilidad es comportamiento, no una puntuación
 2. La seguridad automática tiene fronteras explícitas
 3. Internacionalizar implica significado, no reemplazo de texto
@@ -249,7 +252,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 5. Perfilar con Angular DevTools y el panel Performance de Chrome — Avanzado
 6. CSP con nonce y Trusted Types en Angular — Experto
 
-**Módulo 15 · Módulo 15: Pruebas de signals, E2E, animación y TransferState**
+**Módulo 12 · Módulo 12: Pruebas de signals, E2E, animación y TransferState**
 1. Pruebas de Signals
 2. Cypress y Playwright
 3. Animaciones accesibles
@@ -352,18 +355,18 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 2. Metric filters y alarmas
 3. Diagnóstico sistemático y X-Ray
 
-**Módulo 13 · Módulo 13: Bases de datos relacionales con RDS (PostgreSQL real)**
+**Módulo 12 · Módulo 12: Bases de datos relacionales con RDS (PostgreSQL real)**
 1. RDS Instance y cuándo elegir SQL sobre NoSQL
 2. Snapshots y restore
 3. Migrations
 
-**Módulo 14 · Módulo 14: Contenedores: ECR, ECS y comparación con Cloud Run**
+**Módulo 12 · Módulo 12: Contenedores: ECR, ECS y comparación con Cloud Run**
 1. ECR y por qué no basta con Docker Hub
 2. Task Definition y ECS Cluster
 3. Contenedores vs Lambda, y EKS
 4. Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR — Avanzado
 
-**Módulo 15 · Módulo 15: Infraestructura como código con CloudFormation**
+**Módulo 12 · Módulo 12: Infraestructura como código con CloudFormation**
 1. Stack, Template y por qué no crear recursos manualmente con la CLI
 2. Change sets
 3. Drift detection, Terraform/CDK, y compatibilidad multi-herramienta
@@ -572,16 +575,16 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 4. Fórmulas del caso subamortiguado
 5. De las especificaciones a la función de transferencia
 
-**Módulo 13 · Módulo 13: Polos dominantes, polos adicionales y ceros**
+**Módulo 12 · Módulo 12: Polos dominantes, polos adicionales y ceros**
 1. Polos dominantes
 2. Efecto de un cero
 3. Cero de fase no mínima
 
-**Módulo 14 · Módulo 14: Error en estado estacionario**
+**Módulo 12 · Módulo 12: Error en estado estacionario**
 1. Fórmula general del error en estado estacionario
 2. Tipo de sistema y constantes
 
-**Módulo 15 · Módulo 15: Estabilidad y criterio de Routh-Hurwitz**
+**Módulo 12 · Módulo 12: Estabilidad y criterio de Routh-Hurwitz**
 1. Qué es estabilidad
 2. El arreglo de Routh
 3. Casos especiales del arreglo de Routh
@@ -650,6 +653,25 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 1. Bloque A — frecuencia (puntos 1 a 3) — Avanzado
 2. Bloque B — estado y método algebraico (puntos 4 a 6) — Avanzado
 3. Corrige con python-control y planea el repaso — Intermedio
+**Módulo 29 · Módulo 29: Electrónica, sensores y control para software e IoT**
+1. Matemáticas aplicadas: derivada, integral y modelos
+2. Circuitos DC y AC: Kirchhoff, Thévenin y Norton
+3. Electrónica analógica: diodos, transistores y amplificadores
+4. Electrónica digital: lógica y máquinas de estados
+5. Microcontroladores: GPIO, ADC, PWM e interrupciones
+6. Comunicaciones: modulación y detección de errores
+7. Señales y sistemas: muestreo, Fourier y convolución
+8. DSP: filtros digitales y compresión
+9. Instrumentación: calibración, DAQ e incertidumbre
+10. Control automático: realimentación, PID y estabilidad
+11. Potencia: conversión, eficiencia y disipación
+12. PCB: esquemático, ERC, DRC y fabricación
+13. Sistemas embebidos: RTOS, buses y firmware
+14. Programación de bajo nivel: C, memoria y depuración
+15. Electromagnetismo: Faraday y líneas de transmisión
+16. Gestión profesional: requisitos, riesgos y evidencia
+17. PLC y control industrial: ciclo de scan e IEC 61131-3
+
 
 
 ## devops
@@ -776,18 +798,18 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 6. Platform Engineering — Internal Developer Platforms (IDPs)
 7. FinOps: costos visibles por servicio, etiquetas obligatorias y presupuestos con alertas — Avanzado
 
-**Módulo 13 · Módulo 13: Proyecto integrador — pipeline CI/CD completo**
+**Módulo 12 · Módulo 12: Proyecto integrador — pipeline CI/CD completo**
 1. El pipeline completo — de commit a producción verificada
 2. Uniendo cada módulo del track en un solo flujo
 3. Cierre del track — checklist final y reflexión
 
-**Módulo 14 · Módulo 14: SRE y plataforma — confiabilidad, incidentes y supply chain**
+**Módulo 12 · Módulo 12: SRE y plataforma — confiabilidad, incidentes y supply chain**
 1. Confiabilidad es una expectativa cuantificada
 2. Una alerta debe conducir a una acción
 3. Construir una imagen no demuestra de dónde proviene
 4. Una plataforma interna es un producto con límites
 
-**Módulo 15 · Módulo 15: DevOps Master: GitOps, Service Mesh y DevSecOps**
+**Módulo 12 · Módulo 12: DevOps Master: GitOps, Service Mesh y DevSecOps**
 1. Docker y Compose avanzados
 2. Kubernetes extensible y Helm avanzado
 3. Service Mesh con Istio o Linkerd
@@ -926,13 +948,13 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 3. Retrospectiva del proyecto integrador — Avanzado
 4. Arquitectura recomendada de Flutter: views, view models, repositories y services — Avanzado
 
-**Módulo 13 · Módulo 13: Flutter en producción — seguridad, isolates y operación**
+**Módulo 12 · Módulo 12: Flutter en producción — seguridad, isolates y operación**
 1. Una API Dart puede terminar en una frontera nativa — Avanzado
 2. Los secretos no pertenecen al binario — Avanzado
 3. Fluidez se mide contra el presupuesto de cada frame — Avanzado
 4. Producción exige protocolo, telemetría y contención — Avanzado
 
-**Módulo 14 · Módulo 14: Flutter para entregas: mapas, GPS y tiempo real**
+**Módulo 12 · Módulo 12: Flutter para entregas: mapas, GPS y tiempo real**
 1. Diseño de pantallas y Riverpod — Intermedio
 2. Google Maps y localización en tiempo real — Intermedio
 3. Animaciones de localización — Intermedio
@@ -940,7 +962,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 5. Almacenamiento local, imágenes y offline — Avanzado
 6. Dio y notificaciones push — Avanzado
 
-**Módulo 15 · Módulo 15: Flutter Master: calidad, arquitectura y despliegue**
+**Módulo 12 · Módulo 12: Flutter Master: calidad, arquitectura y despliegue**
 1. flutter test y WidgetTester — Intermedio
 2. pumpAndSettle, golden e integration tests — Avanzado
 3. Rendimiento, RepaintBoundary y Keys — Avanzado
@@ -1105,33 +1127,14 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 5. Gráficos y cómputo científico
 6. Redes, seguridad, web e ingeniería profesional
 
-**Módulo 12 · Módulo 12: Electrónica, sensores y control para software e IoT**
-1. Matemáticas aplicadas: derivada, integral y modelos
-2. Circuitos DC y AC: Kirchhoff, Thévenin y Norton
-3. Electrónica analógica: diodos, transistores y amplificadores
-4. Electrónica digital: lógica y máquinas de estados
-5. Microcontroladores: GPIO, ADC, PWM e interrupciones
-6. Comunicaciones: modulación y detección de errores
-7. Señales y sistemas: muestreo, Fourier y convolución
-8. DSP: filtros digitales y compresión
-9. Instrumentación: calibración, DAQ e incertidumbre
-10. Control automático: realimentación, PID y estabilidad
-11. Potencia: conversión, eficiencia y disipación
-12. PCB: esquemático, ERC, DRC y fabricación
-13. Sistemas embebidos: RTOS, buses y firmware
-14. Programación de bajo nivel: C, memoria y depuración
-15. Electromagnetismo: Faraday y líneas de transmisión
-16. Gestión profesional: requisitos, riesgos y evidencia
-17. PLC y control industrial: ciclo de scan e IEC 61131-3
-
-**Módulo 13 · Módulo 13: Algoritmos clásicos**
+**Módulo 12 · Módulo 12: Algoritmos clásicos**
 1. Ordenamientos: insertion, merge y quick sort
 2. Algoritmos codiciosos y árbol de expansión mínima
 3. Caminos más cortos con Dijkstra
 4. Búsqueda en cadenas: de la fuerza bruta a KMP
 5. Problemas intratables: P, NP y heurísticas
 
-**Módulo 14 · Módulo 14: Catálogo de patrones de diseño**
+**Módulo 12 · Módulo 12: Catálogo de patrones de diseño**
 1. Decorator: agregar comportamiento sin heredar
 2. State: un objeto que cambia de comportamiento según su estado
 3. Template Method: un algoritmo fijo con pasos variables
@@ -1141,7 +1144,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 7. Visitor: operaciones nuevas sin tocar las clases
 8. Flyweight: compartir estado para ahorrar memoria
 
-**Módulo 15 · Módulo 15: Código limpio**
+**Módulo 12 · Módulo 12: Código limpio**
 1. Nombres que revelan intención y funciones pequeñas
 2. Comentarios honestos y excepciones en lugar de códigos de error
 3. Objetos frente a estructuras de datos y la ley de Demeter
@@ -1225,7 +1228,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 3. Swift Package Manager: separar la app en paquetes locales y declarar dependencias — Avanzado
 4. Cierre del track — Experto
 
-**Módulo 13 · Módulo 13: iOS en producción — seguridad, sincronización y operación**
+**Módulo 12 · Módulo 12: iOS en producción — seguridad, sincronización y operación**
 1. El sandbox reduce superficie, pero no valida intenciones — Intermedio
 2. Proteger datos es controlar todas sus copias — Intermedio
 3. Keychain — guardar secretos de forma segura — Intermedio
@@ -1237,7 +1240,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 9. Core Location moderno: CLLocationUpdate, permisos y precisión — Avanzado
 10. BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite — Avanzado
 
-**Módulo 14 · Módulo 14: SwiftUI Master: pruebas, animación e interoperabilidad**
+**Módulo 12 · Módulo 12: SwiftUI Master: pruebas, animación e interoperabilidad**
 1. Animaciones y matchedGeometryEffect — Intermedio
 2. Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos — Intermedio
 3. Swift Testing y pruebas asíncronas — Intermedio
@@ -1340,12 +1343,12 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 5. Prototype: copiar un objeto sin compartir sus datos — Intermedio
 6. Patrones estructurales para conectar piezas existentes — Intermedio
 
-**Módulo 13 · Módulo 13: Proyecto integrador**
+**Módulo 12 · Módulo 12: Proyecto integrador**
 1. Arquitectura por capas del proyecto integrador — Intermedio
 2. Build reproducible y cierre del track — Intermedio
 3. Integrando concurrencia, modelado y testing — Avanzado
 
-**Módulo 14 · Módulo 14: Java en producción — memoria, benchmarks y runtime seguro**
+**Módulo 12 · Módulo 12: Java en producción — memoria, benchmarks y runtime seguro**
 1. Compartir memoria requiere orden y visibilidad — Avanzado
 2. La JVM optimiza y puede invalidar un cronómetro ingenuo — Avanzado
 3. Deserializar es permitir construcción y comportamiento — Avanzado
@@ -1353,7 +1356,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 5. Arranque más rápido: archivos CDS y la caché AOT — Avanzado
 6. Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps — Avanzado
 
-**Módulo 15 · Módulo 15: Java Master — builds, pruebas y observabilidad**
+**Módulo 12 · Módulo 12: Java Master — builds, pruebas y observabilidad**
 1. Maven avanzado — Intermedio
 2. Gradle y builds reproducibles — Avanzado
 3. Proyectos multi-módulo sin ciclos — Intermedio
@@ -1520,13 +1523,13 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 3. Consumo de una API real con manejo de errores — Avanzado
 4. Conectando todo — el patrón completo de una SPA — Experto
 
-**Módulo 13 · Módulo 13: JavaScript en producción — seguridad, memoria y compatibilidad**
+**Módulo 12 · Módulo 12: JavaScript en producción — seguridad, memoria y compatibilidad**
 1. Datos no confiables y seguridad en el navegador — Avanzado
 2. Memoria administrada no significa memoria infinita — Avanzado
 3. Errores útiles sin convertir usuarios en sensores involuntarios — Avanzado
 4. Compatibilidad, idioma y tiempo son requisitos de datos — Avanzado
 
-**Módulo 14 · Módulo 14: JavaScript Master: TypeScript, WASM y cómputo emergente**
+**Módulo 12 · Módulo 12: JavaScript Master: TypeScript, WASM y cómputo emergente**
 1. TypeScript avanzado — Avanzado
 2. Workers y ejecución fuera del hilo principal — Avanzado
 3. Bundlers y optimización — Avanzado
@@ -1632,7 +1635,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 3. Un artefacto compatible necesita más que el mismo número de versión
 4. Un fallo compartido necesita símbolos y contexto de ambas plataformas
 
-**Módulo 13 · Módulo 13: KMP Master: Native, Swift Export y publicación**
+**Módulo 12 · Módulo 12: KMP Master: Native, Swift Export y publicación**
 1. Kotlin/Native
 2. Interop con C
 3. Swift Export
@@ -2006,7 +2009,7 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 5. Qué le falta a esta API para producción real — Avanzado
 6. Próximos pasos — microservicios, colas de mensajes y TypeScript — Avanzado
 
-**Módulo 13 · Módulo 13: TypeScript, contratos e integraciones confiables**
+**Módulo 12 · Módulo 12: TypeScript, contratos e integraciones confiables**
 1. Tipos estáticos dentro, datos desconocidos en la frontera — Intermedio
 2. Un contrato HTTP es comportamiento, no solo documentación — Avanzado
 3. OpenAPI como contrato ejecutable — Avanzado
@@ -2097,14 +2100,14 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 2. Integrando rutas, TanStack Query y Zustand — Experto
 3. useEnvios — hook dedicado con TanStack Query — Experto
 
-**Módulo 13 · Módulo 13: React en producción — resiliencia, accesibilidad y seguridad**
+**Módulo 12 · Módulo 12: React en producción — resiliencia, accesibilidad y seguridad**
 1. Diseñar estados de carga, error y recuperación — Avanzado
 2. La composición visual debe conservar semántica y foco — Avanzado
 3. Cliente y servidor forman una sola frontera de seguridad — Experto
 4. Hidratación determinista, idioma y releases medibles — Experto
 5. Migrar a React 19: codemods, cambios que rompen y verificación — Experto
 
-**Módulo 14 · Módulo 14: Next.js en producción: caché, Proxy, imágenes, React Aria e i18n**
+**Módulo 12 · Módulo 12: Next.js en producción: caché, Proxy, imágenes, React Aria e i18n**
 1. Next.js ISR, Metadata y Proxy (antes Middleware) — Avanzado
 2. Optimización de imágenes y fuentes — Avanzado
 3. Accesibilidad y React Aria — Avanzado
@@ -2258,19 +2261,19 @@ Generado desde las lecciones para la auditoría de specs/021. La misma tabla, co
 1. Job, Step, Tasklet y chunk processing — Intermedio
 2. Reinicio, JobParameters, retry, skip y listeners — Avanzado
 
-**Módulo 13 · Módulo 13: Programación reactiva con WebFlux**
+**Módulo 12 · Módulo 12: Programación reactiva con WebFlux**
 1. Mono y Flux — Intermedio
 2. WebClient y composición no bloqueante — Avanzado
 3. Cuándo WebFlux vale la complejidad, y R2DBC — Avanzado
 4. Backpressure real en WebFlux con reactor-test — Avanzado
 
-**Módulo 14 · Módulo 14: Spring GraphQL: contrato, datos anidados y cambios**
+**Módulo 12 · Módulo 12: Spring GraphQL: contrato, datos anidados y cambios**
 1. schema-first con tipos y consultas — Intermedio
 2. data fetchers, relaciones y problema N+1 — Avanzado
 3. mutations y subscriptions — Avanzado
 4. pruebas GraphQL con GraphQlTester — Avanzado
 
-**Módulo 15 · Módulo 15: Arquitectura: hexagonal, Clean, C4, ADR y Spring Modulith**
+**Módulo 12 · Módulo 12: Arquitectura: hexagonal, Clean, C4, ADR y Spring Modulith**
 1. Hexagonal: puertos que hablan el idioma del dominio — Avanzado
 2. Arquitectura hexagonal verificada con ArchUnit — Avanzado
 3. Clean Architecture y DDD táctico: caso de uso antes que framework — Experto

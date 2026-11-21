@@ -1,887 +1,442 @@
-# Módulo 14: Catálogo de patrones de diseño
+# Módulo 14: Código limpio
 
-## Antes de empezar: cómo usar este catálogo
-
-Este módulo es la referencia de patrones del curso; el Módulo 7 (Tema 3) solo practica Repository y Adapter y remite aquí. Un patrón nombra una solución recurrente **con sus consecuencias**. No empieces eligiendo patrón: identifica el problema, las fuerzas que tiran en direcciones distintas y la alternativa más simple. Un patrón innecesario añade archivos, saltos y conceptos. **Analogía con límite:** un patrón es un plano reutilizable; usar el plano de un aeropuerto para una casa demuestra que conoces el plano, no que tengas buen juicio.
-
-**Prerrequisitos:** clases, métodos y `self` (Módulo 1, Tema 6); herencia, composición y `abc` (Módulo 1, Tema 7). La idea de Strategy, pasar un objeto o una función intercambiable, ya la usaste con los avisos del Módulo 1, Tema 7; aquí aparece como alternativa simple en los apartados «Cuándo no usarlo».
 
 ## Aprende construyendo
 
-### Tema 1: Decorator: agregar comportamiento sin heredar
+### Tema 1: Nombres que revelan intención y funciones pequeñas
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás envolver un objeto con decoradores apilables, distinguir el patrón Decorator del decorador `@` de Python y decidir cuándo preferirlo a la herencia. Prerrequisitos: Módulo 7, Tema 3 (diseño modular y principios).
+Al finalizar podrás renombrar variables y funciones para que expliquen su propósito, dividir una función que hace varias cosas en funciones de un solo nivel de abstracción, reemplazar números mágicos por constantes y eliminar argumentos bandera, sin cambiar el comportamiento. Prerrequisitos: Módulo 1, Tema 4 (funciones) y Módulo 7, Tema 3 (cohesión, acoplamiento y la primera prueba caracterizadora).
 
 #### Paso 2 · Contexto y caso real
-RutaFlow envía notificaciones de estado. Unos clientes quieren el texto en mayúsculas, otros con firma, otros ambas cosas. Con herencia necesitarías una subclase por combinación (`NotificadorFirmadoMayusculas`…). Este mismo patrón es el que usan los middlewares de Express, los filtros de Spring y los interceptores de Angular: un caso real que verás en cada framework.
+La función `calc` de RutaFlow calculaba lo facturable del día. Nadie se atrevía a tocarla: `l`, `f`, `x[2] == "E"` y `5000` no decían nada, y un cambio de tarifa se hizo en un lugar y se olvidó en otro. Es el caso real más común en código heredado, y el primer capítulo práctico de *Código limpio*.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Un **decorador** implementa la misma interfaz que el objeto que envuelve, delega en él y agrega algo antes o después. Como cada decorador también es "un notificador", se pueden apilar en cualquier orden y combinación en tiempo de ejecución. Python además tiene el **decorador de función** (`@cronometrado`): una función que recibe otra y devuelve una envoltura. Son la misma idea aplicada a funciones.
+Un buen **nombre** responde por qué existe algo y cómo se usa (`total_facturable` en lugar de `calc`). Una **función** debe hacer una sola cosa y mantener un solo **nivel de abstracción**: o habla del negocio (facturar entregadas) o del detalle (sumar números), no de ambos. Los **números mágicos** se reemplazan por **constantes con nombre**, y un **argumento bandera** (`f=True`) indica que la función hace dos cosas: mejor dos funciones. Antes de refactorizar, una **verificación** (aquí, un `assert` de equivalencia) garantiza que el comportamiento no cambió. Este tema es la referencia de **refactoring** del curso: refactorizar es cambiar la estructura sin cambiar el comportamiento. Si el código heredado no tiene pruebas, primero escribe una **prueba caracterizadora** que documente lo que hace hoy, aunque no sea lo ideal; después avanza en pasos pequeños con la suite en verde (renombrar, extraer función, mover una responsabilidad, introducir una interfaz) y no mezcles en el mismo commit un refactor con un cambio funcional, para que la revisión pueda distinguirlos.
 
-**Analogía:** es como vestirse por capas: la camiseta, el saco y la chaqueta se agregan y se quitan sin cambiar a la persona que está debajo.
+**Analogía:** es ordenar un taller y rotular cada cajón: las herramientas son las mismas, pero cualquiera encuentra la que necesita sin preguntar.
 
 **Diagrama:**
 
 ```mermaid
 flowchart LR
-    C[Cliente] --> F[ConFirma]
-    F --> M[EnMayusculas]
-    M --> N[Notificador]
+    A[calc l f] --> R[refactor con assert de equivalencia]
+    R --> T[tarifa_envio]
+    R --> E[es_entregado]
+    R --> S[total_facturable]
+    R --> D[con_descuento_frecuente]
 ```
 
-**¿Por qué es importante?** porque reconocer el patrón te permite entender middlewares, interceptores y anotaciones como `@Transactional` sin magia.
-**Fuente oficial:** [Decorator (refactoring.guru)](https://refactoring.guru/es/design-patterns/decorator), [functools.wraps (docs.python.org)](https://docs.python.org/3/library/functools.html#functools.wraps).
-**Conceptos clave:** misma interfaz, composición, delegación, apilamiento, `functools.wraps`, decorador de función.
-**Cuándo no usarlo:** si solo hay una variante fija, una subclase o un parámetro es más claro. Muchas capas de decoradores dificultan depurar qué capa hizo qué.
+**¿Por qué es importante?** porque el código se lee muchas más veces de las que se escribe, y la mayor parte del costo de un sistema está en mantenerlo.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** nombres que revelan intención, una sola responsabilidad, nivel de abstracción, número mágico, argumento bandera, refactor con red de seguridad.
+**Cuándo no usarlo:** no renombres de forma masiva código que no entiendes ni tienes cubierto con pruebas: primero agrega la verificación, luego refactoriza en pasos pequeños.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega a las tareas un decorador que registre en un log cada cambio de estado sin modificar la clase `Tarea`.
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** renombra y divide la función que calcula el progreso de las tareas hasta que cada función quepa en la pantalla.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar `@functools.wraps` al escribir un decorador de función, con lo que `calcular_tarifa.__name__` pasa a ser `envoltura` y rompe logs y pruebas que dependen del nombre real; y apilar los decoradores en el orden equivocado (por ejemplo `EnMayusculas(ConFirma(...))` en vez de `ConFirma(EnMayusculas(...))`), cambiando sin darse cuenta cuál transformación se aplica primero.
+**Errores comunes:** repetir una regla de negocio como número suelto en más de un lugar (como la tarifa `5000` de Bogotá dentro de `calc`) en vez de una sola constante con nombre, lo que lleva a actualizarla en un sitio y olvidarla en otro; y mantener un argumento bandera (como `f=True`) que hace que la misma función calcule dos cosas distintas según su valor.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir patrones && cd patrones
+mkdir codigo-limpio && cd codigo-limpio
 ```
 
-Crea `decorator.py`:
+Crea `nombres_funciones.py`:
 
 ```python
-import time
-from functools import wraps
+# ANTES: nombres crípticos, una función que hace tres cosas y un argumento bandera
+def calc(l, f):
+    t = 0
+    for x in l:
+        if x[2] == "E":
+            t += x[1] * 1200 + (5000 if x[0] == "BOG" else 9000)
+    if f:
+        t = t * 0.9
+    return round(t)
 
-class Notificador:                         # componente base
-    def enviar(self, guia, mensaje):
-        return f"[{guia}] {mensaje}"
+# DESPUÉS: nombres que revelan intención y funciones pequeñas de un solo nivel de abstracción
+TARIFA_POR_KILO = 1200
+TARIFA_BASE = {"BOG": 5000}
+TARIFA_BASE_OTRAS_CIUDADES = 9000
+DESCUENTO_CLIENTE_FRECUENTE = 0.10
 
-class ConFirma:                            # decorador: misma interfaz, envuelve otro notificador
-    def __init__(self, envuelto):
-        self.envuelto = envuelto
-    def enviar(self, guia, mensaje):
-        return self.envuelto.enviar(guia, mensaje) + " -- RutaFlow"
+def tarifa_envio(ciudad, kilos):
+    return TARIFA_BASE.get(ciudad, TARIFA_BASE_OTRAS_CIUDADES) + kilos * TARIFA_POR_KILO
 
-class EnMayusculas:
-    def __init__(self, envuelto):
-        self.envuelto = envuelto
-    def enviar(self, guia, mensaje):
-        return self.envuelto.enviar(guia, mensaje.upper())
+def es_entregado(envio):
+    return envio["estado"] == "entregado"
 
-def cronometrado(funcion):                 # decorador de función de Python (@)
-    @wraps(funcion)
-    def envoltura(*args):
-        inicio = time.perf_counter()
-        resultado = funcion(*args)
-        print(f"  {funcion.__name__} tardó {(time.perf_counter() - inicio) * 1000:.0f} ms")
-        return resultado
-    return envoltura
+def total_facturable(envios):
+    return sum(tarifa_envio(e["ciudad"], e["kilos"]) for e in envios if es_entregado(e))
 
-@cronometrado
-def calcular_tarifa(kilos):
-    time.sleep(0.05)
-    return 4000 + kilos * 1200
+def con_descuento_frecuente(total):          # en vez de un booleano que cambia el comportamiento
+    return round(total * (1 - DESCUENTO_CLIENTE_FRECUENTE))
 
-simple = Notificador()
-completo = ConFirma(EnMayusculas(Notificador()))
-print(simple.enviar("G-101", "Tu paquete salió"))
-print(completo.enviar("G-101", "Tu paquete salió"))
-print("Tarifa:", calcular_tarifa(3))
+tuplas = [("BOG", 2, "E"), ("CAL", 1, "P"), ("MED", 3, "E")]
+envios = [{"ciudad": c, "kilos": k, "estado": "entregado" if s == "E" else "pendiente"} for c, k, s in tuplas]
+
+print("Antes:  ", calc(tuplas, False), calc(tuplas, True))
+print("Después:", total_facturable(envios), con_descuento_frecuente(total_facturable(envios)))
+assert calc(tuplas, True) == con_descuento_frecuente(total_facturable(envios))
+print("Mismo resultado, código legible")
 ```
 
 **Ejecuta el ejemplo:**
 
 ```bash
-python3 decorator.py
+python3 nombres_funciones.py
 ```
 
 **Resultado esperado:**
 
 ```text
-[G-101] Tu paquete salió
-[G-101] TU PAQUETE SALIÓ -- RutaFlow
-  calcular_tarifa tardó 55 ms
-Tarifa: 7600
+Antes:   20000 18000
+Después: 20000 18000
+Mismo resultado, código legible
 ```
 
-La segunda línea pasó por dos decoradores: primero `EnMayusculas` cambió el mensaje y luego `ConFirma` agregó la firma. El tiempo exacto de `calcular_tarifa` varía unos milisegundos entre ejecuciones.
+Ambas versiones producen 20000 y 18000; el `assert` es la red de seguridad del refactor. Cuando tengas pruebas automáticas (Tema 4), esa red será la suite.
 
-**Fallo deliberado:** Borra la línea `@wraps(funcion)` y agrega al final `print(calcular_tarifa.__name__)`. Imprime `envoltura` en vez de `calcular_tarifa`: el decorador ocultó el nombre y la documentación de la función original, lo que confunde logs, trazas y herramientas de pruebas. `functools.wraps` copia esos metadatos.
+**Fallo deliberado:** En la versión **antes** cambia `5000` por `5500`, como si alguien hubiera actualizado la tarifa de Bogotá solo en un lugar. El programa termina con `AssertionError`: hay dos copias de la misma regla y quedaron desincronizadas. Con la constante `TARIFA_BASE` el cambio se hace una sola vez.
 
 #### Paso 5 · Práctica guiada
-Crea un decorador `ConRegistro` que imprima `enviando G-101` antes de delegar, y apílalo encima de los otros dos. **Pista:** el orden de construcción importa: `ConRegistro(ConFirma(EnMayusculas(Notificador())))` registra antes que todo lo demás.
+Renombra y divide esta función: `def p(d): return [x for x in d if x[1] > 30 and x[2] != 'C']` (pedidos de más de 30 kg que no están cancelados). **Pista:** empieza por nombres: `pedidos_pesados_activos`, `es_pesado` y `esta_activo`, y saca el 30 a `PESO_MAXIMO_MOTO`.
 
 #### Paso 6 · Práctica independiente
-Escribe un decorador de función `@reintentar(veces=3)` que repita la llamada si lanza `ConnectionError` y pruébalo con una función que falla dos veces y luego funciona.
+Toma una función larga de uno de tus proyectos anteriores, escribe primero una verificación de su salida actual y luego refactorízala con estas reglas. Documenta cada paso en un commit separado.
 
 #### Paso 7 · Cierre
 
 
-### Tema 2: State: un objeto que cambia de comportamiento según su estado
+### Tema 2: Comentarios honestos y excepciones en lugar de códigos de error
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás reemplazar cadenas de `if estado == ...` por objetos estado, impedir transiciones inválidas y dibujar la máquina de estados de un envío. Prerrequisitos: Módulo 12, Tema 4 (máquinas de estados) y Tema 1 de este módulo.
+Al finalizar podrás reemplazar códigos de error por excepciones con nombre, decidir cuándo un comentario aporta y cuándo debe convertirse en código, y separar el camino feliz del manejo de errores. Prerrequisito: Tema 1 de este módulo.
 
 #### Paso 2 · Contexto y caso real
-Un envío de RutaFlow pasa por registrado, en ruta, entregado o cancelado. Un bug real muy común es cancelar un envío que ya se entregó porque un `if` olvidó un caso. Con el patrón State, cada estado decide qué acciones permite.
+En RutaFlow, `estado_con_codigo` devolvía `-1` o `-2` y cada llamador debía recordar revisarlo; uno lo olvidó y la app mostró "-1" a un cliente como si fuera un estado. Los comentarios que explicaban los códigos quedaron desactualizados. Es un caso real que *Código limpio* trata en sus capítulos de comentarios y de procesamiento de errores.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-El objeto **contexto** (`Envio`) guarda una referencia a su estado actual y le **delega** cada acción. Cada clase de estado implementa solo las transiciones válidas y cambia el estado del contexto; las demás lanzan un error. Agregar un estado nuevo es agregar una clase, no tocar diez `if`.
+Un **código de error** mezcla el resultado con el fallo y obliga a cada llamador a verificarlo: si lo olvida, el error viaja en silencio. Una **excepción con nombre** (`EnvioNoEncontrado`) interrumpe el flujo, lleva contexto y se maneja donde tiene sentido. Sobre **comentarios**: el mejor comentario es el que no hace falta porque el nombre lo dice; los comentarios valiosos explican *por qué* (una decisión, una advertencia legal, una referencia), no *qué* hace la línea. `raise ... from None` oculta la excepción interna cuando no aporta información al llamador.
 
-**Analogía:** un semáforo no tiene un manual de "si estoy en rojo y… si estoy en verde y…": cada luz sabe cuál viene después.
-
-**Diagrama:**
-
-```mermaid
-stateDiagram-v2
-    [*] --> Registrado
-    Registrado --> EnRuta: despachar
-    Registrado --> Cancelado: cancelar
-    EnRuta --> Entregado: entregar
-```
-
-**¿Por qué es importante?** porque los flujos de pedidos, pagos y aprobaciones son máquinas de estados, y modelarlas explícitamente elimina transiciones imposibles.
-**Fuente oficial:** [State (refactoring.guru)](https://refactoring.guru/es/design-patterns/state).
-**Conceptos clave:** contexto, objeto estado, delegación, transición válida, máquina de estados.
-**Cuándo no usarlo:** con dos o tres estados y casi sin comportamiento distinto, un `Enum` y un diccionario de transiciones permitidas es más simple.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela los estados de una tarea (pendiente, en progreso, bloqueada, terminada) y rechaza las transiciones imposibles.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** agregar una acción nueva (como `pagar`) sin declararla primero en la clase base `Estado` con su error por defecto, lo que produce un `AttributeError` críptico en vez de un rechazo claro; y redefinir una transición en la subclase equivocada, dejando que un estado permita una acción que debería rechazar.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir patrones && cd patrones
-```
-
-Crea `state.py`:
-
-```python
-class Estado:
-    nombre = "?"
-    def despachar(self, envio): raise ValueError(f"No se puede despachar en estado {self.nombre}")
-    def entregar(self, envio):  raise ValueError(f"No se puede entregar en estado {self.nombre}")
-    def cancelar(self, envio):  raise ValueError(f"No se puede cancelar en estado {self.nombre}")
-
-class Registrado(Estado):
-    nombre = "registrado"
-    def despachar(self, envio): envio.estado = EnRuta()
-    def cancelar(self, envio):  envio.estado = Cancelado()
-
-class EnRuta(Estado):
-    nombre = "en ruta"
-    def entregar(self, envio):  envio.estado = Entregado()
-
-class Entregado(Estado):
-    nombre = "entregado"
-
-class Cancelado(Estado):
-    nombre = "cancelado"
-
-class Envio:
-    def __init__(self, guia):
-        self.guia, self.estado = guia, Registrado()
-    def ejecutar(self, accion):
-        getattr(self.estado, accion)(self)    # delega en el objeto estado actual
-        print(f"{self.guia}: {accion:<9} -> {self.estado.nombre}")
-
-envio = Envio("G-202")
-envio.ejecutar("despachar")
-envio.ejecutar("entregar")
-try:
-    envio.ejecutar("cancelar")
-except ValueError as error:
-    print("Rechazado:", error)
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 state.py
-```
-
-**Resultado esperado:**
-
-```text
-G-202: despachar -> en ruta
-G-202: entregar  -> entregado
-Rechazado: No se puede cancelar en estado entregado
-```
-
-La cancelación se rechaza porque `Entregado` no redefine `cancelar`, así que hereda la versión que lanza `ValueError`.
-
-**Fallo deliberado:** Agrega `envio.ejecutar("pagar")` después de crear el envío. Obtienes `AttributeError: 'Registrado' object has no attribute 'pagar'`: la acción no existe en ningún estado. Diagnostica si debe ser una acción nueva (agrégala a `Estado` con su error por defecto) o un error de quien llama.
-
-#### Paso 5 · Práctica guiada
-Agrega el estado `Devuelto`, al que solo se llega desde `EnRuta` con la acción `devolver`. **Pista:** crea la clase `Devuelto(Estado)`, agrega `devolver` a `Estado` con el error por defecto y redefínela solo en `EnRuta`.
-
-#### Paso 6 · Práctica independiente
-Guarda en el contexto un historial de transiciones con fecha y hora, e imprímelo al final.
-
-#### Paso 7 · Cierre
-
-
-### Tema 3: Template Method: un algoritmo fijo con pasos variables
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos). Prerrequisito: herencia y clases abstractas con `abc` (Módulo 1, Tema 7).
-
-#### Paso 2 · Contexto y caso real
-RutaFlow genera varios reportes diarios: CSV para contabilidad y una lista de entregas fallidas para soporte. Todos siguen el mismo orden (filtrar, formatear, encabezado y pie); solo cambian algunos pasos. Es el caso real de los frameworks: `unittest.TestCase` llama a `setUp`, la prueba y `tearDown` en un orden fijo.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-El **método plantilla** (`generar`) fija el orden de los pasos y no se sobrescribe. Algunos pasos son **abstractos** (cada subclase debe implementarlos) y otros son **ganchos** con un comportamiento por defecto que se puede cambiar. Es el principio de Hollywood: "no nos llames, nosotros te llamamos".
-
-**Analogía:** una receta de pan fija los pasos (mezclar, amasar, hornear); cada panadero decide qué harina usar y cuánto tiempo hornear.
-
-**Diagrama:**
-
-```mermaid
-classDiagram
-    ReporteDiario <|-- ReporteCSV
-    ReporteDiario <|-- ReporteFallidas
-    class ReporteDiario {
-      +generar()
-      +encabezado()
-      +incluir()
-      +formatear()*
-      +pie()
-    }
-```
-
-**¿Por qué es importante?** porque explica cómo funcionan los ciclos de vida de los frameworks (pruebas, componentes, servlets) que te llaman a ti.
-**Fuente oficial:** [Template Method (refactoring.guru)](https://refactoring.guru/es/design-patterns/template-method), [abc (docs.python.org)](https://docs.python.org/3/library/abc.html).
-**Conceptos clave:** método plantilla, paso abstracto, gancho, principio de Hollywood, `abc.abstractmethod`.
-**Cuándo no usarlo:** si las variantes difieren en un solo paso, pasar una función o usar Strategy evita una jerarquía de clases.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un exportador de tareas con el mismo esqueleto y dos formatos (texto y CSV).
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** olvidar implementar el paso abstracto (`formatear`) en una subclase nueva, lo que lanza `TypeError: Can't instantiate abstract class` recién al crear el objeto; y sobrescribir el método plantilla `generar` en una subclase para "ajustarlo", rompiendo el orden fijo de pasos que el patrón existe para proteger.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir patrones && cd patrones
-```
-
-Crea `template_method.py`:
-
-```python
-from abc import ABC, abstractmethod
-
-class ReporteDiario(ABC):
-    def generar(self, entregas):             # método plantilla: fija el orden de los pasos
-        datos = [e for e in entregas if self.incluir(e)]
-        cuerpo = self.formatear(datos)
-        return self.encabezado() + cuerpo + self.pie(len(datos))
-
-    def encabezado(self):                    # paso con implementación por defecto (gancho)
-        return "Reporte RutaFlow\n"
-    def incluir(self, entrega):
-        return True
-    @abstractmethod
-    def formatear(self, datos): ...         # paso obligatorio para cada subclase
-    def pie(self, total):
-        return f"Total: {total}\n"
-
-class ReporteCSV(ReporteDiario):
-    def formatear(self, datos):
-        return "guia,estado\n" + "".join(f"{g},{e}\n" for g, e in datos)
-
-class ReporteFallidas(ReporteDiario):
-    def encabezado(self):
-        return "Entregas fallidas\n"
-    def incluir(self, entrega):
-        return entrega[1] == "fallida"
-    def formatear(self, datos):
-        return "".join(f"- {g}\n" for g, _ in datos)
-
-entregas = [("G-1", "entregada"), ("G-2", "fallida"), ("G-3", "entregada"), ("G-4", "fallida")]
-print(ReporteCSV().generar(entregas))
-print(ReporteFallidas().generar(entregas))
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 template_method.py
-```
-
-**Resultado esperado:**
-
-```text
-Reporte RutaFlow
-guia,estado
-G-1,entregada
-G-2,fallida
-G-3,entregada
-G-4,fallida
-Total: 4
-
-Entregas fallidas
-- G-2
-- G-4
-Total: 2
-```
-
-`ReporteFallidas` solo cambió el encabezado y el filtro; el orden de los pasos lo sigue decidiendo la clase base.
-
-**Fallo deliberado:** Crea `class ReporteVacio(ReporteDiario): pass` e instancia `ReporteVacio()`. Python 3.14 responde `TypeError: Can't instantiate abstract class ReporteVacio without an implementation for abstract method 'formatear'`: el paso obligatorio no está implementado y el error aparece al crear el objeto, no en producción.
-
-#### Paso 5 · Práctica guiada
-Crea `ReporteJSON` que devuelva las entregas como JSON usando `json.dumps`. **Pista:** solo necesitas redefinir `formatear`; si el JSON no debe llevar encabezado ni pie, redefine también esos dos ganchos para que devuelvan una cadena vacía.
-
-#### Paso 6 · Práctica independiente
-Reescribe los dos reportes sin herencia, pasando funciones como parámetros (`generar(entregas, formatear, incluir)`), y compara cuál te parece más fácil de extender.
-
-#### Paso 7 · Cierre
-
-
-### Tema 4: Chain of Responsibility: una cadena de validadores
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás encadenar manejadores independientes, cortar la cadena en el primer error y razonar sobre el orden de la cadena. Prerrequisito: Tema 1 de este módulo.
-
-#### Paso 2 · Contexto y caso real
-Antes de aceptar un pedido, RutaFlow valida dirección, peso y cobertura. Mañana se agregarán validaciones de seguro y de horario. Es el caso real de los middlewares HTTP y de los filtros de seguridad de Spring: cada eslabón decide si atiende, rechaza o pasa al siguiente.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Cada **manejador** tiene una referencia al **siguiente**. Al recibir una petición la revisa: si encuentra un problema responde y corta; si no, la pasa. El cliente solo conoce el primer eslabón, y agregar una validación es insertar un eslabón sin tocar los demás.
-
-**Analogía:** es la fila de controles de un aeropuerto: documentos, equipaje y puerta de embarque; cualquiera puede detenerte y ninguno necesita saber cómo trabaja el otro.
+**Analogía:** un código de error es una nota pegada en el paquete que alguien puede no leer; una excepción es una alarma que obliga a detenerse.
 
 **Diagrama:**
 
 ```mermaid
 flowchart LR
-    P[Pedido] --> D[Direccion]
-    D -- ok --> W[Peso]
-    W -- ok --> C[Cobertura]
-    C -- ok --> A[aceptado]
-    D -- error --> X[rechazado]
-    W -- error --> X
-    C -- error --> X
+    G[guía] --> V{válida?}
+    V -- no --> I[GuiaInvalida]
+    V -- sí --> B{existe?}
+    B -- no --> N[EnvioNoEncontrado]
+    B -- sí --> E[estado]
 ```
 
-**¿Por qué es importante?** porque es la estructura interna de los pipelines de middlewares, filtros de seguridad y manejadores de eventos.
-**Fuente oficial:** [Chain Of Responsibility (refactoring.guru)](https://refactoring.guru/es/design-patterns/chain-of-responsibility).
-**Conceptos clave:** manejador, siguiente eslabón, corte de la cadena, orden de evaluación, falla silenciosa.
-**Cuándo no usarlo:** si todas las validaciones siempre se ejecutan y no importa el orden, una lista de funciones recorrida con un bucle es más simple.
+**¿Por qué es importante?** porque los errores silenciosos son de los más caros, y los comentarios desactualizados engañan más que la ausencia de comentarios.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** código de error, excepción con nombre, camino feliz, `raise from`, comentario de intención, comentario redundante, comentario desactualizado.
+**Cuándo no usarlo:** no uses excepciones para el flujo normal (por ejemplo, para salir de un bucle). En sistemas donde el error es un resultado esperado y frecuente, un tipo resultado explícito también es válido.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** valida las tareas nuevas (título, fecha límite, responsable) con una cadena de validadores.
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reemplaza los valores especiales que devuelven las funciones de tareas por excepciones con nombre.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** armar la cadena olvidando un eslabón (como `Direccion(Peso())` sin `Cobertura`), lo que acepta pedidos inválidos sin ningún error visible; y asumir que el orden de los eslabones no afecta el resultado, cuando en realidad decide cuál validación corta la cadena primero.
+**Errores comunes:** devolver un código de error (como `-2`) que el llamador olvida revisar y trata como si fuera el valor real, provocando un `AttributeError` lejos de la causa (como en el fallo deliberado); y mantener comentarios que explican *qué* hace la línea en vez de *por qué*, que quedan desactualizados en cuanto el código cambia.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir patrones && cd patrones
+mkdir codigo-limpio && cd codigo-limpio
 ```
 
-Crea `chain.py`:
+Crea `errores_comentarios.py`:
 
 ```python
-class Validador:
-    def __init__(self, siguiente=None):
-        self.siguiente = siguiente
-    def manejar(self, pedido):
-        error = self.revisar(pedido)
-        if error:
-            return f"rechazado por {type(self).__name__}: {error}"
-        return self.siguiente.manejar(pedido) if self.siguiente else "aceptado"
-    def revisar(self, pedido):
-        return None
+class EnvioNoEncontrado(Exception):
+    pass
 
-class Direccion(Validador):
-    def revisar(self, pedido):
-        return None if pedido.get("direccion") else "falta la dirección"
+class GuiaInvalida(ValueError):
+    pass
 
-class Peso(Validador):
-    def revisar(self, pedido):
-        return None if 0 < pedido["kilos"] <= 30 else f"{pedido['kilos']} kg fuera de rango"
+ENVIOS = {"BO-000001": "en ruta"}
 
-class Cobertura(Validador):
-    CIUDADES = {"Bogotá", "Medellín", "Cali"}
-    def revisar(self, pedido):
-        return None if pedido["ciudad"] in self.CIUDADES else f"sin cobertura en {pedido['ciudad']}"
+# ANTES: devolver códigos de error obliga a cada llamador a recordar revisarlos
+def estado_con_codigo(guia):
+    if len(guia) != 9:
+        return -2          # -2 = guía inválida (comentario que alguien debe mantener sincronizado)
+    if guia not in ENVIOS:
+        return -1          # -1 = no existe
+    return ENVIOS[guia]
 
-cadena = Direccion(Peso(Cobertura()))       # el orden de la cadena es una decisión de diseño
-pedidos = [
-    {"direccion": "Cra 7 # 10-20", "kilos": 4, "ciudad": "Cali"},
-    {"direccion": "", "kilos": 4, "ciudad": "Cali"},
-    {"direccion": "Cl 80 # 5-12", "kilos": 45, "ciudad": "Bogotá"},
-    {"direccion": "Av 30 # 2-1", "kilos": 2, "ciudad": "Leticia"},
-]
-for pedido in pedidos:
-    print(cadena.manejar(pedido))
+# DESPUÉS: excepciones con nombre; el camino feliz se lee sin ruido
+def estado(guia):
+    if len(guia) != 9:
+        raise GuiaInvalida(f"La guía {guia!r} debe tener 9 caracteres")
+    try:
+        return ENVIOS[guia]
+    except KeyError:
+        raise EnvioNoEncontrado(guia) from None
+
+for guia in ["BO-000001", "BO-9", "BO-000777"]:
+    resultado = estado_con_codigo(guia)
+    print(f"{guia:<10} código={resultado!r:<10}", end=" ")
+    try:
+        print("excepción: ninguna, estado =", estado(guia))
+    except (GuiaInvalida, EnvioNoEncontrado) as error:
+        print(f"excepción: {type(error).__name__}: {error}")
 ```
 
 **Ejecuta el ejemplo:**
 
 ```bash
-python3 chain.py
+python3 errores_comentarios.py
 ```
 
 **Resultado esperado:**
 
 ```text
-aceptado
-rechazado por Direccion: falta la dirección
-rechazado por Peso: 45 kg fuera de rango
-rechazado por Cobertura: sin cobertura en Leticia
+BO-000001  código='en ruta'  excepción: ninguna, estado = en ruta
+BO-9       código=-2         excepción: GuiaInvalida: La guía 'BO-9' debe tener 9 caracteres
+BO-000777  código=-1         excepción: EnvioNoEncontrado: BO-000777
 ```
 
-Cada pedido se detiene en el primer eslabón que encuentra un problema; el primero pasa los tres.
+La segunda columna muestra lo que recibía el llamador antes: un número que había que interpretar con un comentario.
 
-**Fallo deliberado:** Construye la cadena como `Direccion(Peso())`, olvidando `Cobertura`. El pedido a Leticia ahora imprime `aceptado`: no hay ningún error visible, pero se aceptó un envío sin cobertura. Las cadenas mal armadas fallan en silencio, por eso conviene una prueba por cada eslabón.
+**Fallo deliberado:** Agrega al final `print(estado_con_codigo("BO-9").upper())`. El programa termina con `AttributeError: 'int' object has no attribute 'upper'`: el llamador trató `-2` como si fuera un estado. Con la versión con excepciones, el error sale en el punto exacto y con un mensaje que explica la causa.
 
 #### Paso 5 · Práctica guiada
-Agrega un eslabón `Horario` que rechace pedidos con `"hora"` fuera de 7 a 19. **Pista:** crea la subclase con su `revisar`, ponle a los pedidos de prueba la clave `"hora"` y decide en qué posición de la cadena colocarla.
+Agrega la excepción `EnvioCancelado` para las guías canceladas y manéjala en el bucle sin tocar las otras ramas. **Pista:** agrega una guía con estado `"cancelado"` a `ENVIOS` y lanza la excepción en `estado` antes de devolverlo.
 
 #### Paso 6 · Práctica independiente
-Haz que la cadena devuelva **todos** los errores en lugar de cortar en el primero y discute cuándo es mejor cada comportamiento (formularios frente a seguridad).
+Busca en un proyecto tuyo tres comentarios que expliquen *qué* hace el código y reemplázalos por mejores nombres o funciones; conserva solo los que expliquen *por qué*.
 
 #### Paso 7 · Cierre
 
 
-### Tema 5: Mediator: coordinar objetos sin que se conozcan
+### Tema 3: Objetos frente a estructuras de datos y la ley de Demeter
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás centralizar la coordinación entre objetos en un mediador, reducir dependencias cruzadas y reconocer cuándo el mediador se vuelve demasiado grande. Prerrequisito: Tema 4 de este módulo.
+Al finalizar podrás distinguir un objeto (esconde datos y expone comportamiento) de una estructura de datos (expone datos), aplicar la ley de Demeter y evitar las "cadenas de vagón" que acoplan el código a la estructura interna. Prerrequisitos: Temas 1 y 2 de este módulo.
 
 #### Paso 2 · Contexto y caso real
-Cuando un mensajero de RutaFlow sufre una avería, otro libre debe tomar su paquete. Si cada mensajero conociera a todos los demás, con 50 mensajeros habría cientos de referencias cruzadas. Es el mismo caso real de una torre de control o de un formulario en el que cambiar un campo habilita otros.
+En RutaFlow, decenas de lugares escribían `pedido.cliente.direccion.ciudad`. Cuando se permitió crear clientes sin dirección, todos esos lugares fallaron a la vez. Es el caso real que *Código limpio* llama "choque de trenes" y que hace frágil cualquier cambio de modelo.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-El **mediador** (`Central`) es el único que conoce a todos los participantes. Los participantes solo le **notifican eventos** y él decide qué hacer. Las dependencias pasan de "muchos a muchos" a "muchos a uno", y la regla de reasignación vive en un solo lugar.
+Una **estructura de datos** (como una `dataclass`) expone sus campos y casi no tiene lógica. Un **objeto** esconde sus datos y ofrece operaciones con significado (`puede_despacharse_a`). La **ley de Demeter** dice que un método solo debería hablar con sus "vecinos inmediatos": sus atributos, sus parámetros y los objetos que crea, no con los objetos internos de estos. La regla práctica es **dile, no le preguntes**: en vez de sacar datos y decidir afuera, pide al objeto que decida.
 
-**Analogía:** los aviones no se hablan entre ellos para decidir quién aterriza: todos hablan con la torre de control.
+**Analogía:** para enviar un paquete le das la dirección al mensajero; no le abres la mochila para revisar su mapa y su gasolina.
 
 **Diagrama:**
 
 ```mermaid
-flowchart TD
-    A[Ana] --> C((Central))
-    B[Beto] --> C
-    K[Caro] --> C
-    C --> B
+flowchart LR
+    L[llamador] -- ciudad_destino --> P[Pedido]
+    P --> C[Cliente]
+    C --> D[Direccion]
+    L -. "evitar: pedido.cliente.direccion.ciudad" .-> D
 ```
 
-**¿Por qué es importante?** porque te da un lugar claro para reglas de coordinación, y te enseña a detectar el riesgo opuesto: un mediador que lo sabe todo y se convierte en una "clase dios".
-**Fuente oficial:** [Mediator (refactoring.guru)](https://refactoring.guru/es/design-patterns/mediator).
-**Conceptos clave:** mediador, participante, notificación de eventos, acoplamiento muchos a uno, clase dios.
-**Cuándo no usarlo:** si solo dos objetos se comunican, una referencia directa es más clara. Si la coordinación crece mucho, divide el mediador o usa eventos (Observer).
+**¿Por qué es importante?** porque el acoplamiento a la estructura interna es lo que hace que un cambio pequeño en el modelo rompa medio sistema.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** objeto, estructura de datos, encapsulamiento, ley de Demeter, "dile, no le preguntes", choque de trenes, acoplamiento.
+**Cuándo no usarlo:** en DTOs, JSON o resultados de consultas, que son estructuras de datos puras, navegar campos anidados es normal: Demeter aplica a objetos con comportamiento.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un coordinador que, al terminar una tarea, desbloquee automáticamente las que dependían de ella.
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** mueve dentro de la clase `Tarea` las decisiones sobre su responsable y su fecha límite en lugar de consultarlas desde fuera.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** crear un participante y usarlo sin registrarlo antes en el mediador (como `Mensajero("Dani")` sin pasar por `central.registrar(dani)`), lo que produce `AttributeError: 'NoneType' object has no attribute 'notificar'`; y acumular cada vez más reglas de negocio dentro del mediador hasta que se vuelve una clase dios difícil de mantener.
+**Errores comunes:** navegar directamente la cadena interna de otro objeto (como `pedido._cliente.direccion.ciudad`) en vez de pedirle al objeto que decida (`pedido.ciudad_destino()`), lo que rompe con `AttributeError` apenas un eslabón intermedio es `None`; y duplicar en cada llamador la lógica de qué hacer cuando falta la dirección, en vez de resolverla una sola vez dentro de `Pedido`.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir patrones && cd patrones
+mkdir codigo-limpio && cd codigo-limpio
 ```
 
-Crea `mediator.py`:
-
-```python
-class Central:                                # mediador: único punto que conoce a todos
-    def __init__(self):
-        self.mensajeros, self.registro = {}, []
-    def registrar(self, mensajero):
-        self.mensajeros[mensajero.nombre] = mensajero
-        mensajero.central = self
-    def notificar(self, emisor, evento, dato):
-        self.registro.append((emisor.nombre, evento, dato))
-        if evento == "averia":
-            libres = [m for m in self.mensajeros.values() if m is not emisor and m.libre]
-            if libres:
-                libres[0].asignar(dato)
-            else:
-                print(f"  Central: nadie libre para {dato}, queda en espera")
-
-class Mensajero:
-    def __init__(self, nombre, libre=True):
-        self.nombre, self.libre, self.central = nombre, libre, None
-    def reportar_averia(self, guia):
-        print(f"{self.nombre} reporta avería con {guia}")
-        self.central.notificar(self, "averia", guia)   # no conoce a los otros mensajeros
-    def asignar(self, guia):
-        self.libre = False
-        print(f"  {self.nombre} recibe {guia}")
-
-central = Central()
-ana, beto, caro = Mensajero("Ana", libre=False), Mensajero("Beto"), Mensajero("Caro")
-for m in (ana, beto, caro):
-    central.registrar(m)
-ana.reportar_averia("G-301")
-caro.reportar_averia("G-302")
-print("Eventos registrados:", len(central.registro))
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 mediator.py
-```
-
-**Resultado esperado:**
-
-```text
-Ana reporta avería con G-301
-  Beto recibe G-301
-Caro reporta avería con G-302
-  Central: nadie libre para G-302, queda en espera
-Eventos registrados: 2
-```
-
-Ana no sabe que Beto existe; la Central eligió a Beto porque era el primero libre. Para G-302 ya no quedaba nadie disponible.
-
-**Fallo deliberado:** Crea `dani = Mensajero("Dani")` sin registrarlo y llama `dani.reportar_averia("G-303")`. Obtienes `AttributeError: 'NoneType' object has no attribute 'notificar'`: un participante sin mediador no puede comunicarse. Diagnostica si conviene exigir la central en el constructor.
-
-#### Paso 5 · Práctica guiada
-Haz que la Central elija al mensajero libre con menos entregas asignadas en vez del primero. **Pista:** agrega un contador `entregas` a `Mensajero`, increméntalo en `asignar` y usa `min(libres, key=...)`.
-
-#### Paso 6 · Práctica independiente
-Agrega el evento `"libre"`: cuando un mensajero termina, avisa a la Central y esta le asigna el primer paquete en espera.
-
-#### Paso 7 · Cierre
-
-
-### Tema 6: Memento: guardar y restaurar estado para deshacer
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar deshacer con instantáneas inmutables, separar a quien guarda el estado de quien lo produce y explicar por qué una copia superficial rompe el historial. Prerrequisito: Módulo 2, Tema 2 (pilas).
-
-#### Paso 2 · Contexto y caso real
-El planificador de rutas de RutaFlow permite agregar paradas y deshacer cambios. Es el caso real de "Ctrl+Z" en editores, de los borradores de formularios y de los puntos de restauración.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-El **originador** (`Ruta`) sabe crear una **instantánea** (memento) de su estado y restaurarse desde ella. El **cuidador** (`Historial`) apila los mementos sin mirar su contenido. La instantánea debe ser una **copia**: si comparte la lista interna con el originador, los cambios posteriores la modifican y el historial deja de servir.
-
-**Analogía:** es la foto que tomas de un rompecabezas antes de moverlo: si algo sale mal, lo armas igual que en la foto.
-
-**Diagrama:**
-
-```mermaid
-sequenceDiagram
-    participant H as Historial
-    participant R as Ruta
-    H->>R: guardar()
-    R-->>H: Memento
-    H->>R: agregar(parada)
-    H->>R: restaurar(Memento)
-```
-
-**¿Por qué es importante?** porque deshacer, borradores y versiones son requisitos frecuentes, y el error de la copia superficial aparece también en Redux, NgRx y cualquier estado inmutable.
-**Fuente oficial:** [Memento (refactoring.guru)](https://refactoring.guru/es/design-patterns/memento), [dataclasses (docs.python.org)](https://docs.python.org/3/library/dataclasses.html).
-**Conceptos clave:** originador, memento, cuidador, instantánea inmutable, copia superficial frente a copia.
-**Cuándo no usarlo:** si el estado es enorme, guardar copias completas es caro: usa comandos reversibles (patrón Command) o diferencias.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** permite deshacer el último cambio de estado de una tarea con un historial de mementos.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** guardar el memento con una referencia directa a la lista interna (`Memento(self._paradas)`) en vez de una copia (`Memento(tuple(self._paradas))`), con lo que `deshacer` no recupera nada porque el historial apunta al mismo objeto que la ruta sigue modificando; y dejar que el cuidador (`Historial`) inspeccione o modifique el contenido del memento en vez de tratarlo como opaco.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir patrones && cd patrones
-```
-
-Crea `memento.py`:
+Crea `demeter.py`:
 
 ```python
 from dataclasses import dataclass
+from typing import Optional
 
-@dataclass(frozen=True)
-class Memento:                               # instantánea inmutable y opaca para el historial
-    paradas: tuple
+# Estructura de datos: expone datos, no tiene comportamiento
+@dataclass
+class Direccion:
+    ciudad: str
+    barrio: str
 
-class Ruta:
-    def __init__(self):
-        self._paradas = []
-    def agregar(self, parada):
-        self._paradas.append(parada)
-    def guardar(self):
-        return Memento(tuple(self._paradas))
-    def restaurar(self, memento):
-        self._paradas = list(memento.paradas)
-    def __str__(self):
-        return " -> ".join(self._paradas) or "(vacía)"
+@dataclass
+class Cliente:
+    nombre: str
+    direccion: Optional[Direccion]
 
-class Historial:                             # cuidador: guarda mementos sin mirar su interior
-    def __init__(self, ruta):
-        self.ruta, self.pila = ruta, []
-    def cambiar(self, parada):
-        self.pila.append(self.ruta.guardar())
-        self.ruta.agregar(parada)
-    def deshacer(self):
-        if self.pila:
-            self.ruta.restaurar(self.pila.pop())
+# Objeto: esconde sus datos y expone comportamiento ("dile, no le preguntes")
+class Pedido:
+    def __init__(self, guia, cliente):
+        self._guia, self._cliente = guia, cliente
 
-ruta = Ruta()
-historial = Historial(ruta)
-for parada in ["Depósito", "Chapinero", "Suba"]:
-    historial.cambiar(parada)
-print("Actual:  ", ruta)
-historial.deshacer()
-print("Deshacer:", ruta)
-historial.deshacer()
-print("Deshacer:", ruta)
+    def ciudad_destino(self):
+        direccion = self._cliente.direccion
+        return direccion.ciudad if direccion else "sin dirección"
+
+    def puede_despacharse_a(self, ciudades_con_cobertura):
+        return self.ciudad_destino() in ciudades_con_cobertura
+
+pedidos = [
+    Pedido("G-1", Cliente("Ana", Direccion("Bogotá", "Chapinero"))),
+    Pedido("G-2", Cliente("Beto", None)),
+]
+COBERTURA = {"Bogotá", "Medellín"}
+for pedido in pedidos:
+    # El llamador habla solo con su vecino inmediato (Pedido), no recorre la cadena interna
+    print(pedido._guia, pedido.ciudad_destino(), "despachable:", pedido.puede_despacharse_a(COBERTURA))
 ```
 
 **Ejecuta el ejemplo:**
 
 ```bash
-python3 memento.py
+python3 demeter.py
 ```
 
 **Resultado esperado:**
 
 ```text
-Actual:   Depósito -> Chapinero -> Suba
-Deshacer: Depósito -> Chapinero
-Deshacer: Depósito
+G-1 Bogotá despachable: True
+G-2 sin dirección despachable: False
 ```
 
-Cada `deshacer` restaura la instantánea que se tomó antes del último cambio.
+El pedido sin dirección no rompe nada porque la decisión de qué hacer sin dirección vive en un solo lugar, dentro de `Pedido`.
 
-**Fallo deliberado:** En `guardar` cambia `Memento(tuple(self._paradas))` por `Memento(self._paradas)`. Ahora `deshacer` no cambia nada: el memento guarda **la misma lista** que la ruta sigue modificando. No aparece ningún error, solo un resultado incorrecto; compara con `id()` las dos listas para demostrarlo.
+**Fallo deliberado:** Cambia el `print` del bucle para usar la cadena directa: `pedido._cliente.direccion.ciudad`. El segundo pedido termina con `AttributeError: 'NoneType' object has no attribute 'ciudad'`. El llamador dependía de que cada eslabón existiera; al cambiar el modelo, se rompió fuera de la clase que lo sabía manejar.
 
 #### Paso 5 · Práctica guiada
-Agrega `rehacer`: al deshacer, guarda el estado actual en una segunda pila. **Pista:** al hacer un cambio nuevo, vacía la pila de rehacer, como hacen todos los editores.
+Agrega a `Pedido` el método `etiqueta()` que devuelva `"BOG-Chapinero"` (o `"SIN-DIRECCION"`) y úsalo en lugar de construir la etiqueta afuera. **Pista:** toma las tres primeras letras de la ciudad en mayúsculas y el barrio; resuelve el caso sin dirección dentro del método.
 
 #### Paso 6 · Práctica independiente
-Limita el historial a 20 instantáneas y mide cuánta memoria ahorras con `sys.getsizeof` en una ruta de 1 000 paradas.
+Revisa un proyecto tuyo con `grep -rE "\.\w+\.\w+\.\w+"` y clasifica cada cadena encontrada: ¿es navegación por una estructura de datos (aceptable) o por objetos con comportamiento (a corregir)?
 
 #### Paso 7 · Cierre
 
 
-### Tema 7: Visitor: operaciones nuevas sin tocar las clases
+### Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás separar operaciones (tarifa, etiqueta) de una jerarquía estable de clases usando doble despacho, y reconocer su costo cuando la jerarquía cambia. Prerrequisitos: Temas 1 y 3 de este módulo.
+Al finalizar podrás escribir pruebas unitarias rápidas, independientes, repetibles, autoevaluadas y oportunas (F.I.R.S.T.), con un concepto por prueba y nombres que describen el comportamiento. Prerrequisitos: Módulo 5, Tema 2 y los temas anteriores de este módulo.
 
 #### Paso 2 · Contexto y caso real
-RutaFlow transporta sobres, cajas y pallets. Cada mes contabilidad, bodega y seguros piden una operación nueva sobre esos mismos tipos. El caso real más conocido es el de los compiladores y linters, que recorren el árbol de sintaxis con visitantes (`ast.NodeVisitor` en Python).
+La suite de RutaFlow fallaba "a veces": una prueba usaba datos aleatorios y otra dependía del orden de ejecución. Nadie confiaba en ella y se empezó a ignorar. *Código limpio* dedica un capítulo a este caso real: pruebas sucias son peores que no tener pruebas, porque se pudren junto con el código.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-Cada elemento implementa `aceptar(visitante)` y llama al método del visitante que corresponde a su tipo (**doble despacho**). Una operación nueva es una clase visitante nueva; las clases de paquetes no cambian. El precio: agregar un **tipo** nuevo obliga a modificar todos los visitantes.
+**F.I.R.S.T.**: **F**ast (rápidas, para ejecutarlas siempre), **I**ndependent (ninguna depende de otra ni del orden), **R**epeatable (mismo resultado en cualquier entorno y momento), **S**elf-validating (pasan o fallan sin revisar a mano) y **T**imely (se escriben a tiempo, junto al código). Cada prueba verifica **un concepto** y su nombre lo describe como una frase; así, cuando falla, el nombre ya dice qué regla se rompió. El código de prueba merece el mismo cuidado que el de producción.
 
-**Analogía:** un inspector de impuestos visita una tienda, una fábrica y una finca; cada lugar le abre la puerta y el inspector aplica las reglas de ese tipo de negocio.
+**Analogía:** una buena prueba es una alarma de humo: suena solo cuando hay humo, siempre que lo hay, y te dice en qué habitación.
 
 **Diagrama:**
 
 ```mermaid
 flowchart LR
-    S[Sobre] -- aceptar --> V{Visitante}
-    K[Caja] -- aceptar --> V
-    P[Pallet] -- aceptar --> V
-    V --> T[CalculoTarifa]
-    V --> E[EtiquetaBodega]
+    F[Fast] --> S[suite confiable]
+    I[Independent] --> S
+    R[Repeatable] --> S
+    V[Self-validating] --> S
+    T[Timely] --> S
 ```
 
-**¿Por qué es importante?** porque explica cómo funcionan los linters, compiladores y serializadores, y entrena el análisis de qué cambia más: los tipos o las operaciones.
-**Fuente oficial:** [Visitor (refactoring.guru)](https://refactoring.guru/es/design-patterns/visitor), [ast.NodeVisitor (docs.python.org)](https://docs.python.org/3/library/ast.html#ast.NodeVisitor).
-**Conceptos clave:** doble despacho, visitante, elemento, jerarquía estable, `ast.NodeVisitor`.
-**Cuándo no usarlo:** si los tipos cambian a menudo, o si Python te permite resolverlo con `match` o `singledispatch` en pocas líneas.
+**¿Por qué es importante?** porque solo una suite confiable permite refactorizar sin miedo, que es la base de todo lo visto en este módulo.
+**Fuente oficial:** [PEP 8 — Style Guide for Python Code](https://peps.python.org/pep-0008/), [Martin Fowler: Refactoring](https://refactoring.com/); Robert C. Martin, *Código limpio* (biblioteca externa).
+**Conceptos clave:** F.I.R.S.T., un concepto por prueba, nombre descriptivo, prueba no determinista, independencia, `unittest`.
+**Cuándo no usarlo:** las pruebas de integración y extremo a extremo no pueden ser tan rápidas: sepáralas de las unitarias y ejecútalas en otra etapa del pipeline.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un visitante que calcule horas estimadas de tareas simples y de tareas compuestas por subtareas.
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** reescribe las pruebas del gestor de tareas para que cumplan F.I.R.S.T. y ejecútalas en orden aleatorio.
 Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** agregar un tipo de elemento nuevo (como `Bolsa`) sin agregar el método correspondiente (`visitar_bolsa`) en cada visitante existente, lo que produce `AttributeError` recién al ejecutar y no al escribir el código; y usar Visitor sobre una jerarquía que cambia seguido, multiplicando el costo de mantener cada visitante sincronizado.
+**Errores comunes:** escribir una prueba que depende de datos aleatorios o de la hora sin fijar una semilla, lo que rompe la `R` de Repeatable (pasa o falla según la ejecución, como en el fallo deliberado); y dejar que una prueba dependa del estado que dejó otra o del orden en que corren, lo que rompe la `I` de Independent.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir patrones && cd patrones
+mkdir codigo-limpio && cd codigo-limpio
 ```
 
-Crea `visitor.py`:
+Crea `test_pruebas_limpias.py`:
 
 ```python
-class Sobre:
-    def __init__(self, gramos): self.gramos = gramos
-    def aceptar(self, visitante): return visitante.visitar_sobre(self)
+import unittest
 
-class Caja:
-    def __init__(self, kilos, fragil): self.kilos, self.fragil = kilos, fragil
-    def aceptar(self, visitante): return visitante.visitar_caja(self)
+def tarifa(ciudad, kilos):
+    if kilos <= 0:
+        raise ValueError("kilos debe ser positivo")
+    return (5000 if ciudad == "Bogotá" else 9000) + kilos * 1200
 
-class Pallet:
-    def __init__(self, cajas): self.cajas = cajas
-    def aceptar(self, visitante): return visitante.visitar_pallet(self)
+class TarifaTest(unittest.TestCase):
+    # F.I.R.S.T.: rápidas (Fast), independientes (Independent), repetibles (Repeatable),
+    # autoevaluadas (Self-validating) y oportunas (Timely). Un concepto por prueba.
 
-class CalculoTarifa:                         # una operación nueva = un visitante nuevo
-    def visitar_sobre(self, s):  return 3000
-    def visitar_caja(self, c):   return 5000 + c.kilos * 1500 + (4000 if c.fragil else 0)
-    def visitar_pallet(self, p): return 50000 + sum(c.aceptar(self) for c in p.cajas)
+    def test_bogota_cobra_base_local_mas_precio_por_kilo(self):
+        self.assertEqual(tarifa("Bogotá", 2), 7400)
 
-class EtiquetaBodega:
-    def visitar_sobre(self, s):  return f"SOBRE {s.gramos} g"
-    def visitar_caja(self, c):   return f"CAJA {c.kilos} kg" + (" FRÁGIL" if c.fragil else "")
-    def visitar_pallet(self, p): return f"PALLET con {len(p.cajas)} cajas"
+    def test_otras_ciudades_cobran_base_nacional(self):
+        self.assertEqual(tarifa("Cali", 1), 10200)
 
-carga = [Sobre(120), Caja(4, fragil=True), Pallet([Caja(10, False), Caja(12, True)])]
-for paquete in carga:
-    print(f"{paquete.aceptar(EtiquetaBodega()):<22} tarifa ${paquete.aceptar(CalculoTarifa()):,}")
+    def test_rechaza_kilos_no_positivos(self):
+        with self.assertRaisesRegex(ValueError, "positivo"):
+            tarifa("Bogotá", 0)
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
 ```
 
 **Ejecuta el ejemplo:**
 
 ```bash
-python3 visitor.py
+python3 test_pruebas_limpias.py
 ```
 
 **Resultado esperado:**
 
 ```text
-SOBRE 120 g            tarifa $3,000
-CAJA 4 kg FRÁGIL       tarifa $15,000
-PALLET con 2 cajas     tarifa $97,000
+test_bogota_cobra_base_local_mas_precio_por_kilo (__main__.TarifaTest) ... ok
+test_otras_ciudades_cobran_base_nacional (__main__.TarifaTest) ... ok
+test_rechaza_kilos_no_positivos (__main__.TarifaTest) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+OK
 ```
 
-El pallet visita sus cajas con el mismo visitante, así que su tarifa incluye la de cada caja.
+El tiempo total varía, pero debe ser de milésimas de segundo: si una prueba unitaria tarda segundos, probablemente toca red o disco.
 
-**Fallo deliberado:** Agrega `class Bolsa:` con `def aceptar(self, visitante): return visitante.visitar_bolsa(self)` y ponla en `carga`. Obtienes `AttributeError: 'EtiquetaBodega' object has no attribute 'visitar_bolsa'`: el visitante no conoce el tipo nuevo. Ese es el costo de Visitor, y el motivo de usarlo solo con jerarquías estables.
+**Fallo deliberado:** Agrega una prueba no repetible: `import random` y `def test_tarifa_azar(self): self.assertEqual(tarifa("Bogotá", random.randint(1, 3)), 7400)`. Ejecuta varias veces: unas pasan y otras fallan con `AssertionError: 6200 != 7400` o `8600 != 7400`. Una prueba que depende del azar destruye la confianza en la suite; fija los datos o la semilla.
 
 #### Paso 5 · Práctica guiada
-Crea el visitante `PesoTotal` que devuelva los kilos de cada paquete (un sobre pesa sus gramos / 1000). **Pista:** el pallet debe sumar el resultado de visitar cada una de sus cajas, igual que `CalculoTarifa`.
+Agrega la regla "más de 30 kg no se aceptan" escribiendo primero una prueba con un nombre que la describa. **Pista:** nómbrala `test_rechaza_paquetes_de_mas_de_30_kilos` y usa `assertRaisesRegex` igual que en la prueba de kilos no positivos.
 
 #### Paso 6 · Práctica independiente
-Reescribe `CalculoTarifa` con `functools.singledispatch` o `match` por tipo y compara las dos soluciones.
-
-#### Paso 7 · Cierre
-
-
-### Tema 8: Flyweight: compartir estado para ahorrar memoria
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás separar estado intrínseco (compartido) de extrínseco (propio), compartir objetos con una fábrica y medir el ahorro de memoria. Prerrequisito: Módulo 2, Tema 6 (tablas hash).
-
-#### Paso 2 · Contexto y caso real
-El mapa de RutaFlow muestra 10 000 entregas, cada una con un marcador. Si cada marcador guardara su propio ícono, el mapa consumiría cientos de megas. Es el caso real de los videojuegos (miles de árboles con la misma textura) y de los editores de texto (glifos compartidos).
-
-#### Paso 3 · Teoría, modelo mental y analogía
-El **estado intrínseco** (color, ícono) es igual para muchos objetos y se guarda una sola vez en un **flyweight** inmutable. El **estado extrínseco** (latitud, longitud) es propio de cada marcador. Una **fábrica** con caché devuelve siempre el mismo flyweight para la misma clave. Python ya hace algo parecido con cadenas cortas y enteros pequeños (*interning*).
-
-**Analogía:** en una biblioteca hay un solo ejemplar de cada libro de referencia; cada lector anota sus apuntes en su propio cuaderno.
-
-**Diagrama:**
-
-```mermaid
-flowchart LR
-    M1[Marcador 1] --> T1[TipoMarcador verde]
-    M2[Marcador 4] --> T1
-    M3[Marcador 2] --> T2[TipoMarcador rojo]
-    F[FabricaMarcadores] --> T1
-    F --> T2
-```
-
-**¿Por qué es importante?** porque te enseña a medir memoria y a separar datos compartidos de datos propios, algo clave en mapas, juegos y cachés.
-**Fuente oficial:** [Flyweight (refactoring.guru)](https://refactoring.guru/es/design-patterns/flyweight), [tracemalloc (docs.python.org)](https://docs.python.org/3/library/tracemalloc.html).
-**Conceptos clave:** estado intrínseco, estado extrínseco, fábrica con caché, inmutabilidad, `__slots__`, interning.
-**Cuándo no usarlo:** con pocos objetos o sin datos repetidos el ahorro no compensa la complejidad. Mide antes de optimizar.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** comparte las etiquetas de categoría entre todas las tareas en lugar de crear una cadena por tarea.
-Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
-**Errores comunes:** dejar mutable el estado intrínseco del flyweight (como asignar `marcador.tipo.color = "negro"` directamente), lo que afecta a todos los marcadores que comparten ese mismo objeto compartido; y guardar estado extrínseco propio de cada marcador (como `lat`/`lon`) dentro del flyweight compartido en vez de en `Marcador`.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir patrones && cd patrones
-```
-
-Crea `flyweight.py`:
-
-```python
-import sys
-
-class TipoMarcador:                          # estado intrínseco: compartido e inmutable
-    def __init__(self, color, icono):
-        self.color, self.icono = color, icono * 2000   # simula un ícono pesado en memoria
-
-class FabricaMarcadores:
-    _cache = {}
-    @classmethod
-    def obtener(cls, color, icono):
-        clave = (color, icono)
-        if clave not in cls._cache:
-            cls._cache[clave] = TipoMarcador(color, icono)
-        return cls._cache[clave]
-
-class Marcador:                              # estado extrínseco: propio de cada entrega
-    __slots__ = ("lat", "lon", "tipo")
-    def __init__(self, lat, lon, tipo):
-        self.lat, self.lon, self.tipo = lat, lon, tipo
-
-estados = [("verde", "entregado"), ("rojo", "fallido"), ("azul", "en ruta")]
-marcadores = [Marcador(4.6 + i * 1e-4, -74.08, FabricaMarcadores.obtener(*estados[i % 3]))
-              for i in range(10000)]
-tipos = {id(m.tipo) for m in marcadores}
-peso_tipos = sum(sys.getsizeof(t.icono) for t in FabricaMarcadores._cache.values())
-print("Marcadores:", len(marcadores))
-print("Objetos de tipo distintos:", len(tipos))
-print(f"Memoria de íconos compartidos: {peso_tipos / 1024:.0f} KB")
-sin_compartir = sum(sys.getsizeof(m.tipo.icono) for m in marcadores)   # si cada uno tuviera su copia
-print(f"Sin compartir serían: {sin_compartir / 1024 / 1024:.0f} MB")
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 flyweight.py
-```
-
-**Resultado esperado:**
-
-```text
-Marcadores: 10000
-Objetos de tipo distintos: 3
-Memoria de íconos compartidos: 45 KB
-Sin compartir serían: 147 MB
-```
-
-10 000 marcadores comparten solo 3 objetos de tipo. La cifra "sin compartir" suma lo que ocuparía un ícono por marcador.
-
-**Fallo deliberado:** Al final agrega `marcadores[0].tipo.color = "negro"` y cuenta cuántos marcadores quedaron negros con `sum(m.tipo.color == "negro" for m in marcadores)`. Resultado: `3334`. Cambiaste un dato compartido y afectaste a todos los marcadores verdes. Por eso un flyweight debe ser inmutable (por ejemplo, con `@dataclass(frozen=True)`).
-
-#### Paso 5 · Práctica guiada
-Haz inmutable `TipoMarcador` y comprueba que el fallo deliberado ahora lanza un error. **Pista:** con `@dataclass(frozen=True)`, asignar un atributo lanza `dataclasses.FrozenInstanceError`.
-
-#### Paso 6 · Práctica independiente
-Mide con `tracemalloc` la memoria real de crear 10 000 marcadores con y sin la fábrica, y compárala con la estimación del ejemplo.
+Ejecuta tus pruebas en orden aleatorio (por ejemplo, con `pytest -p random_order`) y corrige cualquier prueba que dependa de otra.
 
 #### Paso 7 · Cierre
 
 
 ## Construcción guiada del capítulo
 
-### Proyecto 14: núcleo de envíos con patrones
+### Proyecto 14: rescate de código heredado
 
-Desde una carpeta vacía crea `nucleo-envios/`, inicializa Git y construye una pequeña librería de consola con:
+Toma el código de un proyecto anterior (o el archivo `heredado.py` que escribas a propósito con malas prácticas) y rescátalo sin cambiar su comportamiento:
 
-1. Un `Envio` cuyo ciclo de vida es una máquina de estados (State).
-2. Una cadena de validadores para aceptar envíos (Chain of Responsibility).
-3. Notificaciones decoradas con firma y registro (Decorator).
-4. Deshacer y rehacer en la planificación de paradas (Memento).
-5. Reportes diarios con un esqueleto común (Template Method).
-6. Cálculo de tarifas y etiquetas por tipo de paquete (Visitor).
-7. README con un diagrama por patrón y, para cada uno, la alternativa más simple que descartaste y por qué.
+1. Escribe una verificación de la salida actual (prueba de caracterización).
+2. Renombra variables y funciones hasta que se lean como prosa.
+3. Divide funciones largas y elimina argumentos bandera y números mágicos.
+4. Reemplaza códigos de error por excepciones con nombre.
+5. Mueve decisiones a los objetos que tienen los datos (Demeter).
+6. Deja una suite F.I.R.S.T. que corra en orden aleatorio.
+7. README con un antes y después y la lista de olores encontrados.
 
-**Verificación:** una transición inválida se rechaza; una cadena sin un eslabón tiene una prueba que falla; deshacer restaura exactamente el estado anterior; el README justifica cada patrón con un requisito, no con el nombre del patrón.
+**Verificación:** la prueba de caracterización pasa al inicio y al final; cada commit hace un solo tipo de cambio; ninguna prueba depende del orden ni del azar; el README nombra cada olor (nombre críptico, función larga, código duplicado, choque de trenes).
 
 **Errores comunes y soluciones**
 
-- Aplicar un patrón porque existe: escribe primero el requisito y la alternativa simple.
-- Compartir estado mutable en mementos o flyweights: usa tuplas o `dataclass(frozen=True)`.
-- Mediadores que lo saben todo: divide por responsabilidad.
-- Visitor sobre jerarquías que cambian cada semana: usa `match` o `singledispatch`.
+- Refactorizar sin red de seguridad: escribe primero la prueba de caracterización.
+- Cambiar comportamiento y estructura en el mismo commit: sepáralos.
+- Comentar en vez de renombrar: si el comentario explica qué hace, el nombre está mal.
+- Pruebas que se ignoran porque fallan "a veces": arréglalas o bórralas.

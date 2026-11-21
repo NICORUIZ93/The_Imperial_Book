@@ -71,13 +71,13 @@ y PowerShell siguen contrastadas solo contra la documentación: **no se ejecutar
 
 ## Mapa de la ruta
 
-«Fundamentos de Ingeniería de Software» tiene 16 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
+«Fundamentos de Ingeniería de Software» tiene 15 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
 
 ```mermaid
 flowchart LR
     E0["Fundamentos<br/>módulos 0–3"]
-    E1["Aplicación<br/>módulos 4–5 y 12–13"]
-    E2["Integración<br/>módulos 6–8 y 14–15"]
+    E1["Aplicación<br/>módulos 4–5 y 12"]
+    E2["Integración<br/>módulos 6–8 y 13–14"]
     E3["Experto<br/>módulos 9–11"]
     E0 --> E1
     E1 --> E2
@@ -98,10 +98,11 @@ flowchart LR
 | 9 | Experto | [Matemáticas discretas, lógica y probabilidad para software](/curso/foundations/9) |
 | 10 | Experto | [Sistemas distribuidos, resiliencia y observabilidad](/curso/foundations/10) |
 | 11 | Experto | [Ciencias de la Computación: mapa de especializaciones](/curso/foundations/11) |
-| 12 | Aplicación | [Electrónica, sensores y control para software e IoT](/curso/foundations/12) |
-| 13 | Aplicación | [Algoritmos clásicos](/curso/foundations/13) |
-| 14 | Integración | [Catálogo de patrones de diseño](/curso/foundations/14) |
-| 15 | Integración | [Código limpio](/curso/foundations/15) |
+| 12 | Aplicación | [Algoritmos clásicos](/curso/foundations/12) |
+| 13 | Integración | [Catálogo de patrones de diseño](/curso/foundations/13) |
+| 14 | Integración | [Código limpio](/curso/foundations/14) |
+
+Los 17 temas de Electrónica, sensores y control para software e IoT que hasta el 2026-11-21 formaban parte de este curso pertenecen ahora al curso **Control 1**, como su módulo 29 (`/curso/control-1/29`). No eran fundamentos de ingeniería de software: eran circuitería, señales, DSP, potencia, PCB y PLC.
 
 ## Aprende construyendo
 

@@ -182,7 +182,7 @@ export class LessonViewerComponent implements OnDestroy {
   readonly track = computed(() => findTrack(this.trackId()));
   readonly module = computed(() => this.track()?.modules.find(m => m.id === this.moduleId()));
   readonly officialSource = computed(() => {
-    if (this.trackId() === 'foundations' && this.moduleId() === 12) {
+    if (this.trackId() === 'control-1' && this.moduleId() === 29) {
       return { label: 'MIT: circuitos y electrónica', url: 'https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/' };
     }
     return this.trackId() === 'cloud'

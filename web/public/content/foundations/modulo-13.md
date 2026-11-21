@@ -1,582 +1,887 @@
-# Módulo 13: Algoritmos clásicos
+# Módulo 13: Catálogo de patrones de diseño
 
+## Antes de empezar: cómo usar este catálogo
+
+Este módulo es la referencia de patrones del curso; el Módulo 7 (Tema 3) solo practica Repository y Adapter y remite aquí. Un patrón nombra una solución recurrente **con sus consecuencias**. No empieces eligiendo patrón: identifica el problema, las fuerzas que tiran en direcciones distintas y la alternativa más simple. Un patrón innecesario añade archivos, saltos y conceptos. **Analogía con límite:** un patrón es un plano reutilizable; usar el plano de un aeropuerto para una casa demuestra que conoces el plano, no que tengas buen juicio.
+
+**Prerrequisitos:** clases, métodos y `self` (Módulo 1, Tema 6); herencia, composición y `abc` (Módulo 1, Tema 7). La idea de Strategy, pasar un objeto o una función intercambiable, ya la usaste con los avisos del Módulo 1, Tema 7; aquí aparece como alternativa simple en los apartados «Cuándo no usarlo».
 
 ## Aprende construyendo
 
-### Tema 1: Ordenamientos: insertion, merge y quick sort
+### Tema 1: Decorator: agregar comportamiento sin heredar
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar tres algoritmos de ordenamiento, explicar su complejidad (O(n²) frente a O(n log n)) y decidir cuándo uno es mejor que otro. Prerrequisito: Módulo 2, Tema 4 (complejidad y recursión). Necesitas Python 3.14, la línea del curso.
+Al finalizar podrás envolver un objeto con decoradores apilables, distinguir el patrón Decorator del decorador `@` de Python y decidir cuándo preferirlo a la herencia. Prerrequisitos: Módulo 7, Tema 3 (diseño modular y principios).
 
 #### Paso 2 · Contexto y caso real
-En RutaFlow, antes de cargar un camión se ordenan los paquetes por peso para equilibrar la carga. Con 30 paquetes cualquier método sirve; con 30 000 la elección del algoritmo separa una respuesta instantánea de una pantalla congelada. `sorted()` de Python usa Timsort, una mezcla de merge sort e insertion sort: entender ambos explica por qué es tan rápido.
+RutaFlow envía notificaciones de estado. Unos clientes quieren el texto en mayúsculas, otros con firma, otros ambas cosas. Con herencia necesitarías una subclase por combinación (`NotificadorFirmadoMayusculas`…). Este mismo patrón es el que usan los middlewares de Express, los filtros de Spring y los interceptores de Angular: un caso real que verás en cada framework.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-**Insertion sort** toma cada elemento y lo inserta en su lugar dentro de la parte ya ordenada: O(n²) en el peor caso, pero muy rápido con listas pequeñas o casi ordenadas. **Merge sort** divide la lista en mitades, ordena cada una y las **mezcla**: siempre O(n log n) y **estable** (respeta el orden original de los iguales), a costa de memoria extra. **Quick sort** elige un **pivote** y separa menores, iguales y mayores: O(n log n) en promedio, pero O(n²) si el pivote es siempre el peor.
+Un **decorador** implementa la misma interfaz que el objeto que envuelve, delega en él y agrega algo antes o después. Como cada decorador también es "un notificador", se pueden apilar en cualquier orden y combinación en tiempo de ejecución. Python además tiene el **decorador de función** (`@cronometrado`): una función que recibe otra y devuelve una envoltura. Son la misma idea aplicada a funciones.
 
-**Analogía:** insertion sort es ordenar las cartas de tu mano una a una; merge sort es repartir el mazo entre dos amigos, que cada uno ordene su mitad y luego juntar las dos pilas mirando la carta de arriba de cada una; quick sort es separar el mazo en "menores que 7" y "mayores que 7" y repetir en cada montón.
-
-**Diagrama:**
-
-```mermaid
-flowchart TD
-    A["[38, 27, 43, 3]"] --> B["[38, 27]"]
-    A --> C["[43, 3]"]
-    B --> D["[27, 38]"]
-    C --> E["[3, 43]"]
-    D --> F["mezcla: [3, 27, 38, 43]"]
-    E --> F
-```
-
-**Fuente oficial:** [Sorting algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Sorting_algorithm), [Sorting HOW TO (docs.python.org)](https://docs.python.org/3/howto/sorting.html); Baase y Van Gelder, cap. 4.
-**Conceptos clave:** divide y vencerás, pivote, mezcla, estabilidad, O(n log n) frente a O(n²), peor caso.
-**Cuándo no usarlo:** en código de producción usa `sorted()` o `list.sort()` (Timsort): está optimizado en C y es estable. Implementa tu propio ordenamiento solo para aprender o cuando tengas una restricción muy concreta (por ejemplo, datos que no caben en memoria).
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** ordena las tareas por prioridad y fecha límite con una clave compuesta y explica por qué la estabilidad importa cuando dos tareas tienen la misma prioridad.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir algoritmos && cd algoritmos
-```
-
-Crea `ordenamientos.py`:
-
-```python
-import random
-import time
-
-def merge_sort(datos):
-    if len(datos) <= 1:
-        return datos
-    medio = len(datos) // 2
-    izquierda = merge_sort(datos[:medio])
-    derecha = merge_sort(datos[medio:])
-    resultado, i, j = [], 0, 0
-    while i < len(izquierda) and j < len(derecha):
-        if izquierda[i] <= derecha[j]:          # <= mantiene el orden de los iguales (estable)
-            resultado.append(izquierda[i]); i += 1
-        else:
-            resultado.append(derecha[j]); j += 1
-    resultado.extend(izquierda[i:])
-    resultado.extend(derecha[j:])
-    return resultado
-
-def quick_sort(datos):
-    if len(datos) <= 1:
-        return datos
-    pivote = datos[len(datos) // 2]
-    menores = [x for x in datos if x < pivote]
-    iguales = [x for x in datos if x == pivote]
-    mayores = [x for x in datos if x > pivote]
-    return quick_sort(menores) + iguales + quick_sort(mayores)
-
-def insertion_sort(datos):
-    datos = list(datos)
-    for i in range(1, len(datos)):
-        actual, j = datos[i], i - 1
-        while j >= 0 and datos[j] > actual:
-            datos[j + 1] = datos[j]; j -= 1
-        datos[j + 1] = actual
-    return datos
-
-random.seed(42)
-pesos = [random.randint(1, 5000) for _ in range(3000)]   # pesos de paquetes en gramos
-esperado = sorted(pesos)
-for nombre, f in [("insertion", insertion_sort), ("merge", merge_sort), ("quick", quick_sort)]:
-    inicio = time.perf_counter()
-    ok = f(pesos) == esperado
-    ms = (time.perf_counter() - inicio) * 1000
-    print(f"{nombre:<9} correcto={ok} tiempo={ms:.1f} ms")
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 ordenamientos.py
-```
-
-**Resultado esperado:**
-
-```text
-insertion correcto=True tiempo=88.7 ms
-merge     correcto=True tiempo=2.8 ms
-quick     correcto=True tiempo=2.0 ms
-```
-
-Los tiempos cambian según tu máquina, pero la proporción se mantiene: insertion sort es decenas de veces más lento con 3 000 elementos. Observa que los tres son **correctos**; la diferencia es solo de crecimiento.
-
-**Fallo deliberado:** Cambia `pivote = datos[len(datos) // 2]` por `pivote = datos[0]` y ordena una lista **ya ordenada** de 3 000 elementos (`quick_sort(esperado)`). Obtendrás `RecursionError: maximum recursion depth exceeded`: con el primer elemento como pivote, cada partición deja n-1 elementos de un lado, la recursión tiene profundidad n y el tiempo se vuelve O(n²). Por eso las implementaciones reales eligen el pivote al azar o con la mediana de tres.
-
-#### Paso 5 · Práctica guiada
-Agrega un contador de comparaciones a `insertion_sort` y a `merge_sort` y ejecútalos con 100, 1 000 y 3 000 elementos. Construye una tabla: ¿la cantidad de comparaciones crece como n² y n log n? **Pista:** en `merge_sort` cuenta cada vez que se ejecuta el `if izquierda[i] <= derecha[j]`; en `insertion_sort`, cada evaluación de `datos[j] > actual`.
-
-#### Paso 6 · Práctica independiente
-Ordena una lista de paquetes `(peso, guia)` por peso con `merge_sort` adaptado y comprueba que dos paquetes con el mismo peso conservan su orden original (estabilidad). Repite con `quick_sort` y explica si se conserva.
-
-#### Paso 7 · Cierre
-Entrega la tabla de comparaciones, la prueba de estabilidad y el `RecursionError` del fallo deliberado con su explicación. **¿Por qué es importante?** porque las preguntas de entrevista sobre ordenamiento no buscan que reemplaces `sorted()`, sino que sepas razonar sobre complejidad, estabilidad, memoria y peor caso.
-
-### Tema 2: Algoritmos codiciosos y árbol de expansión mínima
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reconocer un algoritmo codicioso, demostrar con un contraejemplo cuándo falla y construir un árbol de expansión mínima con Kruskal. Prerrequisitos: Módulo 2, Temas 7 (grafos) y 8 (programación dinámica).
-
-#### Paso 2 · Contexto y caso real
-RutaFlow quiere conectar sus bodegas con fibra óptica gastando lo mínimo y sin cables redundantes. También da cambio en efectivo a los mensajeros. Ambos problemas parecen pedir "lo más barato o lo más grande primero", pero solo uno de ellos funciona siempre así.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-Un algoritmo **codicioso** (greedy) toma en cada paso la decisión que parece mejor en ese momento y **nunca la deshace**. Es rápido y simple, pero solo es correcto si el problema tiene la *propiedad de elección codiciosa*: que la mejor decisión local forme parte de alguna solución óptima global. **Kruskal** ordena las aristas por costo y agrega cada una si no forma un ciclo (usa una estructura *union-find* para saberlo); el resultado es un **árbol de expansión mínima** (MST): conecta todos los nodos con el menor costo total.
-
-**Analogía:** el codicioso es el turista que en cada cruce toma la calle que parece más corta; a veces llega rápido, a veces termina en un callejón sin salida.
-
-**Diagrama:**
-
-```mermaid
-graph LR
-    N[Norte] -- 3 --- C[Centro]
-    C -- 4 --- S[Sur]
-    C -- 6 --- O[Occidente]
-    N -. 7 descartada .- S
-    S -. 9 descartada .- O
-```
-
-**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), que incluyen dos clases de árboles de expansión mínima, y Baase y Van Gelder, cap. 8, pendiente de lectura completa en el disco externo. Wikipedia deja de ser la referencia principal del tema.
-**Conceptos clave:** elección codiciosa, contraejemplo, union-find, árbol de expansión mínima, Kruskal, Prim.
-**Cuándo no usarlo:** cuando no puedes justificar la propiedad de elección codiciosa. Si un contraejemplo pequeño la rompe, usa programación dinámica o búsqueda exhaustiva.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** asigna tareas a franjas horarias con selección de actividades y documenta qué tareas quedan fuera.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir algoritmos && cd algoritmos
-```
-
-Crea `codiciosos.py`:
-
-```python
-def cambio_codicioso(monto, monedas):
-    usadas = []
-    for moneda in sorted(monedas, reverse=True):
-        while monto >= moneda:
-            monto -= moneda
-            usadas.append(moneda)
-    return usadas
-
-def cambio_optimo(monto, monedas):
-    # programación dinámica: mínimo de monedas para cada valor de 0 a monto
-    mejor = [0] + [None] * monto
-    for valor in range(1, monto + 1):
-        opciones = [mejor[valor - m] for m in monedas if m <= valor and mejor[valor - m] is not None]
-        mejor[valor] = min(opciones) + 1 if opciones else None
-    return mejor[monto]
-
-def kruskal(nodos, aristas):
-    padre = {n: n for n in nodos}
-    def raiz(n):
-        while padre[n] != n:
-            padre[n] = padre[padre[n]]
-            n = padre[n]
-        return n
-    arbol, total = [], 0
-    for costo, a, b in sorted(aristas):        # decisión codiciosa: la más barata primero
-        ra, rb = raiz(a), raiz(b)
-        if ra != rb:                            # no forma ciclo
-            padre[ra] = rb
-            arbol.append((a, b, costo)); total += costo
-    return arbol, total
-
-print("Pesos colombianos 1700:", cambio_codicioso(1700, [1000, 500, 200, 100, 50]))
-print("Sistema raro 6 con [4,3,1]: codicioso usa", len(cambio_codicioso(6, [4, 3, 1])),
-      "monedas; óptimo usa", cambio_optimo(6, [4, 3, 1]))
-
-bodegas = ["Norte", "Sur", "Centro", "Occidente"]
-cables = [(7, "Norte", "Sur"), (3, "Norte", "Centro"), (4, "Centro", "Sur"),
-          (6, "Centro", "Occidente"), (9, "Sur", "Occidente")]
-arbol, total = kruskal(bodegas, cables)
-print("Red mínima:", arbol, "costo total:", total)
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 codiciosos.py
-```
-
-**Resultado esperado:**
-
-```text
-Pesos colombianos 1700: [1000, 500, 200]
-Sistema raro 6 con [4,3,1]: codicioso usa 3 monedas; óptimo usa 2
-Red mínima: [('Norte', 'Centro', 3), ('Centro', 'Sur', 4), ('Centro', 'Occidente', 6)] costo total: 13
-```
-
-Con las denominaciones colombianas el cambio codicioso es óptimo, pero con monedas `[4, 3, 1]` y monto 6 elige `4 + 1 + 1` (3 monedas) cuando `3 + 3` (2 monedas) es mejor. La programación dinámica del Módulo 2 sí encuentra el óptimo.
-
-**Fallo deliberado:** Quita la condición `if ra != rb:` de `kruskal`. El árbol incluye las 5 aristas y el costo sube a 29: ya no es un árbol, porque `Norte-Sur` y `Sur-Occidente` cierran ciclos. Sin la comprobación de ciclos, "lo más barato primero" deja de ser correcto.
-
-#### Paso 5 · Práctica guiada
-Implementa **Prim** (crece el árbol desde un nodo, agregando siempre la arista más barata que sale del árbol, usando `heapq`) y comprueba que obtiene el mismo costo total que Kruskal. **Pista:** Prim es Dijkstra con otra prioridad: mete en el heap `(costo, destino)` de las aristas que salen del árbol y descarta los destinos ya incluidos.
-
-#### Paso 6 · Práctica independiente
-Resuelve el problema de **selección de actividades**: dadas franjas `(inicio, fin)` de citas de entrega, elige el máximo número de citas que no se solapen ordenando por hora de fin. Escribe en dos frases por qué aquí la elección codiciosa sí es óptima.
-
-#### Paso 7 · Cierre
-Entrega el contraejemplo del cambio, la comparación Kruskal/Prim y la selección de actividades. **¿Por qué es importante?** porque muchos algoritmos de la industria (Dijkstra, Huffman, planificadores) son codiciosos, y saber demostrar o refutar la elección codiciosa evita bugs que solo aparecen con datos raros.
-
-### Tema 3: Caminos más cortos con Dijkstra
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular la ruta de menor costo en un grafo con pesos usando Dijkstra y una cola de prioridad, reconstruir el camino y explicar por qué falla con pesos negativos. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (BFS).
-
-#### Paso 2 · Contexto y caso real
-BFS encuentra la ruta con **menos tramos**, pero a un mensajero de RutaFlow le importan los **minutos**: dos tramos cortos pueden ser mejores que uno largo. Así funcionan, en esencia, los navegadores GPS y el enrutamiento de paquetes en Internet (OSPF).
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Dijkstra** mantiene la mejor distancia conocida a cada nodo. Usa una **cola de prioridad** (un *heap*) para sacar siempre el nodo pendiente más cercano; desde él **relaja** las aristas: si pasar por él mejora la distancia de un vecino, la actualiza y guarda de dónde vino. Es codicioso: una vez que saca un nodo del heap, su distancia es definitiva. Eso solo es cierto si **ningún peso es negativo**. Con un heap binario cuesta O((V + E) log V).
-
-**Analogía:** es como derramar agua en el depósito: el agua llega primero a los puntos más cercanos y el momento en que moja cada punto es su distancia mínima.
-
-**Diagrama:**
-
-```mermaid
-graph LR
-    D[Deposito] -- 15 --> C[Chapinero]
-    D -- 25 --> K[Kennedy]
-    C -- 5 --> K
-    C -- 20 --> U[Usaquen]
-    K -- 10 --> B[Bosa]
-    K -- 40 --> U
-    U -- 30 --> B
-```
-
-**Fuente oficial:** [Dijkstra's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm), [heapq (docs.python.org)](https://docs.python.org/3/library/heapq.html); Baase y Van Gelder, caps. 8-9.
-**Conceptos clave:** grafo con pesos, relajación, cola de prioridad (heapq), camino reconstruido, pesos negativos, Bellman-Ford.
-**Cuándo no usarlo:** si todos los tramos cuestan lo mismo, BFS es más simple y rápido. Si hay pesos negativos, usa Bellman-Ford. Para mapas reales enormes se usan variantes como A* con heurística o jerarquías de contracción.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela el tiempo estimado entre tareas dependientes como pesos y calcula la cadena de tareas más larga o la más corta hasta una entrega.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir algoritmos && cd algoritmos
-```
-
-Crea `rutas.py`:
-
-```python
-import heapq
-
-# minutos de viaje entre puntos de reparto (grafo dirigido con pesos)
-mapa = {
-    "Deposito": {"Chapinero": 15, "Kennedy": 25},
-    "Chapinero": {"Usaquen": 20, "Kennedy": 5},
-    "Kennedy": {"Bosa": 10, "Usaquen": 40},
-    "Usaquen": {"Bosa": 30},
-    "Bosa": {},
-}
-
-def dijkstra(grafo, origen):
-    distancia = {nodo: float("inf") for nodo in grafo}
-    anterior = {}
-    distancia[origen] = 0
-    pendientes = [(0, origen)]                 # cola de prioridad: (minutos, nodo)
-    while pendientes:
-        d, nodo = heapq.heappop(pendientes)
-        if d > distancia[nodo]:
-            continue                           # entrada vieja: ya encontramos algo mejor
-        for vecino, peso in grafo[nodo].items():
-            nueva = d + peso
-            if nueva < distancia[vecino]:
-                distancia[vecino] = nueva
-                anterior[vecino] = nodo
-                heapq.heappush(pendientes, (nueva, vecino))
-    return distancia, anterior
-
-def camino(anterior, destino):
-    ruta = [destino]
-    while ruta[-1] in anterior:
-        ruta.append(anterior[ruta[-1]])
-    return list(reversed(ruta))
-
-distancia, anterior = dijkstra(mapa, "Deposito")
-for destino in ["Chapinero", "Kennedy", "Usaquen", "Bosa"]:
-    print(f"{destino:<9} {distancia[destino]:>3} min  ruta: {' -> '.join(camino(anterior, destino))}")
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 rutas.py
-```
-
-**Resultado esperado:**
-
-```text
-Chapinero  15 min  ruta: Deposito -> Chapinero
-Kennedy    20 min  ruta: Deposito -> Chapinero -> Kennedy
-Usaquen    35 min  ruta: Deposito -> Chapinero -> Usaquen
-Bosa       30 min  ruta: Deposito -> Chapinero -> Kennedy -> Bosa
-```
-
-Fíjate en Kennedy: la arista directa cuesta 25, pero pasar por Chapinero cuesta 15 + 5 = 20. BFS habría elegido la directa.
-
-**Fallo deliberado:** En el diccionario de Usaquen agrega `"Kennedy": -50` (un "descuento" mal modelado). El programa **no termina**: Kennedy → Usaquen → Kennedy suma 40 - 50 = -10, un **ciclo negativo**; cada vuelta "mejora" la distancia y el heap nunca se vacía. Detenlo con Ctrl+C. Dijkstra supone pesos no negativos: la versión clásica, que nunca reabre un nodo, da resultados incorrectos, y esta versión puede no terminar. Para pesos negativos se usa **Bellman-Ford**, que relaja todas las aristas V-1 veces y detecta ciclos negativos.
-
-#### Paso 5 · Práctica guiada
-Agrega la función `ruta_mas_rapida(origen, destino)` que detenga el algoritmo en cuanto saque `destino` del heap y compara cuántos nodos procesa frente a la versión completa. **Pista:** basta con comprobar `if nodo == destino: break` justo después del `heappop`, porque en ese momento su distancia ya es definitiva.
-
-#### Paso 6 · Práctica independiente
-Implementa Bellman-Ford sobre el mismo mapa con la arista negativa y comprueba que detecta el ciclo negativo en vez de quedarse en bucle. Después escribe en un README cuándo usarías BFS, Dijkstra o Bellman-Ford.
-
-#### Paso 7 · Cierre
-Entrega las rutas calculadas, la comparación con parada temprana y Bellman-Ford. **¿Por qué es importante?** porque "camino más corto" es una de las preguntas de entrevista más frecuentes y la base de mapas, redes y planificación de rutas.
-
-### Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás implementar la búsqueda ingenua y el algoritmo Knuth-Morris-Pratt (KMP), construir su tabla de fallos y medir la diferencia en comparaciones. Prerrequisito: Módulo 2, Tema 4.
-
-#### Paso 2 · Contexto y caso real
-RutaFlow busca códigos de guía dentro de textos enormes (logs, archivos de manifiesto). `str.find` o `in` resuelven el caso normal, pero el mismo problema aparece en buscadores, `grep`, editores y detección de secuencias de ADN, donde un mal algoritmo se vuelve cuadrático.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-La búsqueda **ingenua** prueba el patrón en cada posición del texto: O(n·m) en el peor caso. **KMP** precalcula una **tabla de fallos**: para cada prefijo del patrón, cuánto mide el prefijo más largo que también es sufijo. Cuando hay una discrepancia, en vez de retroceder en el texto, salta dentro del patrón usando esa tabla. Así nunca vuelve a leer un carácter del texto: O(n + m).
-
-**Analogía:** si buscas "ABABC" y fallas en la C después de leer "ABAB", ya sabes que las últimas letras leídas ("AB") son el comienzo del patrón: no hace falta volver a leerlas.
-
-**Diagrama:**
-
-```mermaid
-flowchart TD
-    T["texto: ...A B A B X..."] --> F["discrepancia en el 5.º carácter"]
-    F --> S["tabla de fallos de ABAB = 2"]
-    S --> R["continúa comparando desde patrón[2]"]
-```
-
-**Fuentes oficiales y primarias:** [artículo original *Fast Pattern Matching in Strings* alojado por Brown University](https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf), Knuth, Morris y Pratt (1977), y Baase y Van Gelder, cap. 11, pendiente de lectura completa en el disco externo. El artículo establece tiempo proporcional a la suma de las longitudes; esta lección conserva una implementación educativa propia.
-**Conceptos clave:** búsqueda ingenua, prefijo-sufijo, tabla de fallos, KMP, coincidencias solapadas, hash rodante.
-**Cuándo no usarlo:** en Python, `str.find`, `in` y el módulo `re` ya están optimizados en C: úsalos en código real. Implementa KMP para aprender, para entrevistas o cuando trabajes sobre flujos donde no puedes retroceder.
-
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una búsqueda por texto en los títulos de las tareas y mide la diferencia entre tu KMP y `in`.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
-
-#### Paso 4 · Demostración guiada desde cero
-**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
-
-```bash
-mkdir algoritmos && cd algoritmos
-```
-
-Crea `cadenas.py`:
-
-```python
-def busqueda_ingenua(texto, patron):
-    posiciones, comparaciones = [], 0
-    for i in range(len(texto) - len(patron) + 1):
-        j = 0
-        while j < len(patron):
-            comparaciones += 1
-            if texto[i + j] != patron[j]:
-                break
-            j += 1
-        if j == len(patron):
-            posiciones.append(i)
-    return posiciones, comparaciones
-
-def tabla_fallos(patron):
-    # fallo[i] = longitud del prefijo más largo que también es sufijo de patron[:i+1]
-    fallo, k = [0] * len(patron), 0
-    for i in range(1, len(patron)):
-        while k > 0 and patron[i] != patron[k]:
-            k = fallo[k - 1]
-        if patron[i] == patron[k]:
-            k += 1
-        fallo[i] = k
-    return fallo
-
-def kmp(texto, patron):
-    fallo, posiciones, k, comparaciones = tabla_fallos(patron), [], 0, 0
-    for i, c in enumerate(texto):
-        while k > 0 and c != patron[k]:
-            comparaciones += 1
-            k = fallo[k - 1]
-        comparaciones += 1
-        if c == patron[k]:
-            k += 1
-        if k == len(patron):
-            posiciones.append(i - k + 1)
-            k = fallo[k - 1]
-    return posiciones, comparaciones
-
-guia = "A" * 20000 + "B"            # caso adversario: casi coincide en cada posición
-patron = "A" * 50 + "B"
-print("tabla de fallos de 'ABABC':", tabla_fallos("ABABC"))
-print("ingenua:", busqueda_ingenua(guia, patron))
-print("kmp:    ", kmp(guia, patron))
-```
-
-**Ejecuta el ejemplo:**
-
-```bash
-python3 cadenas.py
-```
-
-**Resultado esperado:**
-
-```text
-tabla de fallos de 'ABABC': [0, 0, 1, 2, 0]
-ingenua: ([19950], 1017501)
-kmp:     ([19950], 39951)
-```
-
-Ambos encuentran la misma posición, pero la ingenua hace más de un millón de comparaciones y KMP menos de 40 000, porque el texto está construido para casi coincidir en cada posición.
-
-**Fallo deliberado:** En `kmp`, después de una coincidencia completa cambia `k = fallo[k - 1]` por `k = 0`. Busca `"AA"` en `"AAAA"`: la versión correcta devuelve `[0, 1, 2]` y la rota `[0, 2]`, porque pierde las coincidencias que se **solapan**.
-
-#### Paso 5 · Práctica guiada
-Construye a mano la tabla de fallos de `"AABAAAB"` y compárala con la salida de `tabla_fallos`. Explica cada número. **Pista:** recorre el patrón de izquierda a derecha; en cada posición pregúntate qué prefijo del patrón coincide con el final de lo que llevas leído.
-
-#### Paso 6 · Práctica independiente
-Implementa **Rabin-Karp** (hash rodante) y compáralo con KMP buscando varios patrones a la vez. Escribe cuándo preferirías cada uno.
-
-#### Paso 7 · Cierre
-Entrega la tabla hecha a mano, el caso de solapamiento y la comparación con Rabin-Karp. **¿Por qué es importante?** porque explica por qué herramientas como `grep` son rápidas y entrena el razonamiento sobre invariantes en bucles.
-
-### Tema 5: Problemas intratables: P, NP y heurísticas
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás explicar qué significa que un problema sea NP-completo, observar el crecimiento factorial de una búsqueda exhaustiva y justificar el uso de una heurística con su costo en calidad. Prerrequisitos: los temas anteriores de este módulo.
-
-#### Paso 2 · Contexto y caso real
-RutaFlow quiere la ruta más corta que visite **todas** las entregas del día y vuelva al depósito: es el **problema del viajante** (TSP). Con 10 entregas hay 362 880 órdenes posibles; con 20, más de 10^17. Ningún servidor lo resuelve por fuerza bruta, y aun así las empresas de logística planean rutas todos los días.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**P** son los problemas que se resuelven en tiempo polinómico (ordenar, Dijkstra). **NP** son aquellos cuya solución se puede **verificar** rápido. Un problema es **NP-completo** si está en NP y cualquier problema de NP se reduce a él: si alguien resolviera uno en tiempo polinómico, los resolvería todos. Nadie sabe si P = NP. La versión de decisión del TSP, la mochila y la satisfacibilidad (SAT) son NP-completos. En la práctica se usan **heurísticas** (como el vecino más cercano), algoritmos de aproximación o solvers especializados, aceptando soluciones buenas en vez de óptimas.
-
-**Analogía:** comprobar que un sudoku resuelto es correcto toma un minuto; resolverlo desde cero puede tomar horas.
+**Analogía:** es como vestirse por capas: la camiseta, el saco y la chaqueta se agregan y se quitan sin cambiar a la persona que está debajo.
 
 **Diagrama:**
 
 ```mermaid
 flowchart LR
-    P["P: se resuelve rápido"] --> NP["NP: se verifica rápido"]
-    NPC["NP-completos: TSP, SAT, mochila"] --> NP
+    C[Cliente] --> F[ConFirma]
+    F --> M[EnMayusculas]
+    M --> N[Notificador]
 ```
 
-**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), en particular la clase 17 de complejidad y NP-completitud y la clase 18 de aproximaciones; Baase y Van Gelder, cap. 13, queda pendiente de lectura completa en el disco externo. Las notas definen P, NP, reducciones y NP-hard; no prueban que toda heurística produzca una aproximación con cota.
-**Conceptos clave:** P, NP, NP-completo, reducción, crecimiento factorial, heurística, aproximación, 2-opt.
-**Cuándo no usarlo:** no uses heurísticas cuando el tamaño es pequeño y fijo (fuerza bruta es exacta y simple) ni cuando necesitas una garantía de optimalidad que el negocio sí exige: ahí van los solvers de programación entera.
+**¿Por qué es importante?** porque reconocer el patrón te permite entender middlewares, interceptores y anotaciones como `@Transactional` sin magia.
+**Fuente oficial:** [Decorator (refactoring.guru)](https://refactoring.guru/es/design-patterns/decorator), [functools.wraps (docs.python.org)](https://docs.python.org/3/library/functools.html#functools.wraps).
+**Conceptos clave:** misma interfaz, composición, delegación, apilamiento, `functools.wraps`, decorador de función.
+**Cuándo no usarlo:** si solo hay una variante fija, una subclase o un parámetro es más claro. Muchas capas de decoradores dificultan depurar qué capa hizo qué.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** planifica el orden de las tareas de un día con un tiempo máximo y justifica por qué aceptas una solución aproximada.
-Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
-**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega a las tareas un decorador que registre en un log cada cambio de estado sin modificar la clase `Tarea`.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** olvidar `@functools.wraps` al escribir un decorador de función, con lo que `calcular_tarifa.__name__` pasa a ser `envoltura` y rompe logs y pruebas que dependen del nombre real; y apilar los decoradores en el orden equivocado (por ejemplo `EnMayusculas(ConFirma(...))` en vez de `ConFirma(EnMayusculas(...))`), cambiando sin darse cuenta cuál transformación se aplica primero.
 
 #### Paso 4 · Demostración guiada desde cero
 **Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-mkdir algoritmos && cd algoritmos
+mkdir patrones && cd patrones
 ```
 
-Crea `np.py`:
+Crea `decorator.py`:
 
 ```python
-from itertools import permutations
-import random
 import time
+from functools import wraps
 
-def distancia_total(ruta, d):
-    return sum(d[a][b] for a, b in zip(ruta, ruta[1:]))
+class Notificador:                         # componente base
+    def enviar(self, guia, mensaje):
+        return f"[{guia}] {mensaje}"
 
-def tsp_fuerza_bruta(n, d):
-    mejor = None
-    for orden in permutations(range(1, n)):
-        ruta = (0,) + orden + (0,)
-        costo = distancia_total(ruta, d)
-        if mejor is None or costo < mejor[0]:
-            mejor = (costo, ruta)
-    return mejor
+class ConFirma:                            # decorador: misma interfaz, envuelve otro notificador
+    def __init__(self, envuelto):
+        self.envuelto = envuelto
+    def enviar(self, guia, mensaje):
+        return self.envuelto.enviar(guia, mensaje) + " -- RutaFlow"
 
-def vecino_mas_cercano(n, d):
-    ruta, pendientes = [0], set(range(1, n))
-    while pendientes:
-        siguiente = min(pendientes, key=lambda c: d[ruta[-1]][c])
-        ruta.append(siguiente); pendientes.remove(siguiente)
-    ruta.append(0)
-    return distancia_total(ruta, d), tuple(ruta)
+class EnMayusculas:
+    def __init__(self, envuelto):
+        self.envuelto = envuelto
+    def enviar(self, guia, mensaje):
+        return self.envuelto.enviar(guia, mensaje.upper())
 
-def puntos_de_entrega(n, semilla=1):
-    random.seed(semilla)
-    p = [(random.randint(0, 100), random.randint(0, 100)) for _ in range(n)]
-    return [[round(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5) for b in p] for a in p]
+def cronometrado(funcion):                 # decorador de función de Python (@)
+    @wraps(funcion)
+    def envoltura(*args):
+        inicio = time.perf_counter()
+        resultado = funcion(*args)
+        print(f"  {funcion.__name__} tardó {(time.perf_counter() - inicio) * 1000:.0f} ms")
+        return resultado
+    return envoltura
 
-for n in [6, 8, 10]:
-    d = puntos_de_entrega(n)
-    t = time.perf_counter(); exacto = tsp_fuerza_bruta(n, d); te = time.perf_counter() - t
-    aprox = vecino_mas_cercano(n, d)
-    print(f"n={n:>2}  rutas posibles={len(list(permutations(range(1, n)))):>7}  exacto={exacto[0]:>4} ({te*1000:7.1f} ms)  heurística={aprox[0]:>4}")
+@cronometrado
+def calcular_tarifa(kilos):
+    time.sleep(0.05)
+    return 4000 + kilos * 1200
+
+simple = Notificador()
+completo = ConFirma(EnMayusculas(Notificador()))
+print(simple.enviar("G-101", "Tu paquete salió"))
+print(completo.enviar("G-101", "Tu paquete salió"))
+print("Tarifa:", calcular_tarifa(3))
 ```
 
 **Ejecuta el ejemplo:**
 
 ```bash
-python3 np.py
+python3 decorator.py
 ```
 
 **Resultado esperado:**
 
 ```text
-n= 6  rutas posibles=    120  exacto= 284 (    0.1 ms)  heurística= 318
-n= 8  rutas posibles=   5040  exacto= 291 (    2.4 ms)  heurística= 336
-n=10  rutas posibles= 362880  exacto= 303 (  197.1 ms)  heurística= 363
+[G-101] Tu paquete salió
+[G-101] TU PAQUETE SALIÓ -- RutaFlow
+  calcular_tarifa tardó 55 ms
+Tarifa: 7600
 ```
 
-Cada vez que n sube en 2 el tiempo exacto se multiplica por unas 80. La heurística es instantánea, pero entrega rutas entre 12 % y 20 % más largas.
+La segunda línea pasó por dos decoradores: primero `EnMayusculas` cambió el mensaje y luego `ConFirma` agregó la firma. El tiempo exacto de `calcular_tarifa` varía unos milisegundos entre ejecuciones.
 
-**Fallo deliberado:** Ejecuta `tsp_fuerza_bruta` con `n = 12`. Revisa unos 40 millones de rutas y tarda decenas de segundos; con `n = 14` serían más de 6 000 millones y tardaría horas. Ese "error" no es un bug: es el crecimiento factorial. Detén el programa con Ctrl+C.
+**Fallo deliberado:** Borra la línea `@wraps(funcion)` y agrega al final `print(calcular_tarifa.__name__)`. Imprime `envoltura` en vez de `calcular_tarifa`: el decorador ocultó el nombre y la documentación de la función original, lo que confunde logs, trazas y herramientas de pruebas. `functools.wraps` copia esos metadatos.
 
 #### Paso 5 · Práctica guiada
-Mejora la heurística con **2-opt**: toma la ruta del vecino más cercano y, mientras invertir un tramo la acorte, inviértelo. Mide cuánto se acerca al óptimo para n = 8 y n = 10. **Pista:** 2-opt prueba todos los pares `(i, j)` y evalúa la ruta `ruta[:i] + ruta[i:j+1][::-1] + ruta[j+1:]`; repite mientras alguna inversión la acorte.
+Crea un decorador `ConRegistro` que imprima `enviando G-101` antes de delegar, y apílalo encima de los otros dos. **Pista:** el orden de construcción importa: `ConRegistro(ConFirma(EnMayusculas(Notificador())))` registra antes que todo lo demás.
 
 #### Paso 6 · Práctica independiente
-Investiga y explica con tus palabras otro problema NP-completo que aparezca en logística (por ejemplo, la mochila al cargar un camión) y qué heurística usarías.
+Escribe un decorador de función `@reintentar(veces=3)` que repita la llamada si lanza `ConnectionError` y pruébalo con una función que falla dos veces y luego funciona.
 
 #### Paso 7 · Cierre
-Entrega la tabla de tiempos, la mejora con 2-opt y tu explicación del segundo problema. **¿Por qué es importante?** porque reconocer un problema intratable te evita prometer una solución "óptima y rápida" imposible y te lleva a negociar requisitos: calidad suficiente, límite de tiempo o tamaño acotado.
+
+
+### Tema 2: State: un objeto que cambia de comportamiento según su estado
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás reemplazar cadenas de `if estado == ...` por objetos estado, impedir transiciones inválidas y dibujar la máquina de estados de un envío. Prerrequisitos: Tema 1 de este módulo, que a su vez usa las clases del Módulo 1. La máquina de estados se define aquí, en el Paso 3; su versión con entradas eléctricas se estudia en el curso Control 1, módulo 29, tema 4.
+
+#### Paso 2 · Contexto y caso real
+Un envío de RutaFlow pasa por registrado, en ruta, entregado o cancelado. Un bug real muy común es cancelar un envío que ya se entregó porque un `if` olvidó un caso. Con el patrón State, cada estado decide qué acciones permite.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El objeto **contexto** (`Envio`) guarda una referencia a su estado actual y le **delega** cada acción. Cada clase de estado implementa solo las transiciones válidas y cambia el estado del contexto; las demás lanzan un error. Agregar un estado nuevo es agregar una clase, no tocar diez `if`.
+
+**Analogía:** un semáforo no tiene un manual de "si estoy en rojo y… si estoy en verde y…": cada luz sabe cuál viene después.
+
+**Diagrama:**
+
+```mermaid
+stateDiagram-v2
+    [*] --> Registrado
+    Registrado --> EnRuta: despachar
+    Registrado --> Cancelado: cancelar
+    EnRuta --> Entregado: entregar
+```
+
+**¿Por qué es importante?** porque los flujos de pedidos, pagos y aprobaciones son máquinas de estados, y modelarlas explícitamente elimina transiciones imposibles.
+**Fuente oficial:** [State (refactoring.guru)](https://refactoring.guru/es/design-patterns/state).
+**Conceptos clave:** contexto, objeto estado, delegación, transición válida, máquina de estados.
+**Cuándo no usarlo:** con dos o tres estados y casi sin comportamiento distinto, un `Enum` y un diccionario de transiciones permitidas es más simple.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela los estados de una tarea (pendiente, en progreso, bloqueada, terminada) y rechaza las transiciones imposibles.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** agregar una acción nueva (como `pagar`) sin declararla primero en la clase base `Estado` con su error por defecto, lo que produce un `AttributeError` críptico en vez de un rechazo claro; y redefinir una transición en la subclase equivocada, dejando que un estado permita una acción que debería rechazar.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir patrones && cd patrones
+```
+
+Crea `state.py`:
+
+```python
+class Estado:
+    nombre = "?"
+    def despachar(self, envio): raise ValueError(f"No se puede despachar en estado {self.nombre}")
+    def entregar(self, envio):  raise ValueError(f"No se puede entregar en estado {self.nombre}")
+    def cancelar(self, envio):  raise ValueError(f"No se puede cancelar en estado {self.nombre}")
+
+class Registrado(Estado):
+    nombre = "registrado"
+    def despachar(self, envio): envio.estado = EnRuta()
+    def cancelar(self, envio):  envio.estado = Cancelado()
+
+class EnRuta(Estado):
+    nombre = "en ruta"
+    def entregar(self, envio):  envio.estado = Entregado()
+
+class Entregado(Estado):
+    nombre = "entregado"
+
+class Cancelado(Estado):
+    nombre = "cancelado"
+
+class Envio:
+    def __init__(self, guia):
+        self.guia, self.estado = guia, Registrado()
+    def ejecutar(self, accion):
+        getattr(self.estado, accion)(self)    # delega en el objeto estado actual
+        print(f"{self.guia}: {accion:<9} -> {self.estado.nombre}")
+
+envio = Envio("G-202")
+envio.ejecutar("despachar")
+envio.ejecutar("entregar")
+try:
+    envio.ejecutar("cancelar")
+except ValueError as error:
+    print("Rechazado:", error)
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 state.py
+```
+
+**Resultado esperado:**
+
+```text
+G-202: despachar -> en ruta
+G-202: entregar  -> entregado
+Rechazado: No se puede cancelar en estado entregado
+```
+
+La cancelación se rechaza porque `Entregado` no redefine `cancelar`, así que hereda la versión que lanza `ValueError`.
+
+**Fallo deliberado:** Agrega `envio.ejecutar("pagar")` después de crear el envío. Obtienes `AttributeError: 'Registrado' object has no attribute 'pagar'`: la acción no existe en ningún estado. Diagnostica si debe ser una acción nueva (agrégala a `Estado` con su error por defecto) o un error de quien llama.
+
+#### Paso 5 · Práctica guiada
+Agrega el estado `Devuelto`, al que solo se llega desde `EnRuta` con la acción `devolver`. **Pista:** crea la clase `Devuelto(Estado)`, agrega `devolver` a `Estado` con el error por defecto y redefínela solo en `EnRuta`.
+
+#### Paso 6 · Práctica independiente
+Guarda en el contexto un historial de transiciones con fecha y hora, e imprímelo al final.
+
+#### Paso 7 · Cierre
+
+
+### Tema 3: Template Method: un algoritmo fijo con pasos variables
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos). Prerrequisito: herencia y clases abstractas con `abc` (Módulo 1, Tema 7).
+
+#### Paso 2 · Contexto y caso real
+RutaFlow genera varios reportes diarios: CSV para contabilidad y una lista de entregas fallidas para soporte. Todos siguen el mismo orden (filtrar, formatear, encabezado y pie); solo cambian algunos pasos. Es el caso real de los frameworks: `unittest.TestCase` llama a `setUp`, la prueba y `tearDown` en un orden fijo.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El **método plantilla** (`generar`) fija el orden de los pasos y no se sobrescribe. Algunos pasos son **abstractos** (cada subclase debe implementarlos) y otros son **ganchos** con un comportamiento por defecto que se puede cambiar. Es el principio de Hollywood: "no nos llames, nosotros te llamamos".
+
+**Analogía:** una receta de pan fija los pasos (mezclar, amasar, hornear); cada panadero decide qué harina usar y cuánto tiempo hornear.
+
+**Diagrama:**
+
+```mermaid
+classDiagram
+    ReporteDiario <|-- ReporteCSV
+    ReporteDiario <|-- ReporteFallidas
+    class ReporteDiario {
+      +generar()
+      +encabezado()
+      +incluir()
+      +formatear()*
+      +pie()
+    }
+```
+
+**¿Por qué es importante?** porque explica cómo funcionan los ciclos de vida de los frameworks (pruebas, componentes, servlets) que te llaman a ti.
+**Fuente oficial:** [Template Method (refactoring.guru)](https://refactoring.guru/es/design-patterns/template-method), [abc (docs.python.org)](https://docs.python.org/3/library/abc.html).
+**Conceptos clave:** método plantilla, paso abstracto, gancho, principio de Hollywood, `abc.abstractmethod`.
+**Cuándo no usarlo:** si las variantes difieren en un solo paso, pasar una función o usar Strategy evita una jerarquía de clases.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un exportador de tareas con el mismo esqueleto y dos formatos (texto y CSV).
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** olvidar implementar el paso abstracto (`formatear`) en una subclase nueva, lo que lanza `TypeError: Can't instantiate abstract class` recién al crear el objeto; y sobrescribir el método plantilla `generar` en una subclase para "ajustarlo", rompiendo el orden fijo de pasos que el patrón existe para proteger.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir patrones && cd patrones
+```
+
+Crea `template_method.py`:
+
+```python
+from abc import ABC, abstractmethod
+
+class ReporteDiario(ABC):
+    def generar(self, entregas):             # método plantilla: fija el orden de los pasos
+        datos = [e for e in entregas if self.incluir(e)]
+        cuerpo = self.formatear(datos)
+        return self.encabezado() + cuerpo + self.pie(len(datos))
+
+    def encabezado(self):                    # paso con implementación por defecto (gancho)
+        return "Reporte RutaFlow\n"
+    def incluir(self, entrega):
+        return True
+    @abstractmethod
+    def formatear(self, datos): ...         # paso obligatorio para cada subclase
+    def pie(self, total):
+        return f"Total: {total}\n"
+
+class ReporteCSV(ReporteDiario):
+    def formatear(self, datos):
+        return "guia,estado\n" + "".join(f"{g},{e}\n" for g, e in datos)
+
+class ReporteFallidas(ReporteDiario):
+    def encabezado(self):
+        return "Entregas fallidas\n"
+    def incluir(self, entrega):
+        return entrega[1] == "fallida"
+    def formatear(self, datos):
+        return "".join(f"- {g}\n" for g, _ in datos)
+
+entregas = [("G-1", "entregada"), ("G-2", "fallida"), ("G-3", "entregada"), ("G-4", "fallida")]
+print(ReporteCSV().generar(entregas))
+print(ReporteFallidas().generar(entregas))
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 template_method.py
+```
+
+**Resultado esperado:**
+
+```text
+Reporte RutaFlow
+guia,estado
+G-1,entregada
+G-2,fallida
+G-3,entregada
+G-4,fallida
+Total: 4
+
+Entregas fallidas
+- G-2
+- G-4
+Total: 2
+```
+
+`ReporteFallidas` solo cambió el encabezado y el filtro; el orden de los pasos lo sigue decidiendo la clase base.
+
+**Fallo deliberado:** Crea `class ReporteVacio(ReporteDiario): pass` e instancia `ReporteVacio()`. Python 3.14 responde `TypeError: Can't instantiate abstract class ReporteVacio without an implementation for abstract method 'formatear'`: el paso obligatorio no está implementado y el error aparece al crear el objeto, no en producción.
+
+#### Paso 5 · Práctica guiada
+Crea `ReporteJSON` que devuelva las entregas como JSON usando `json.dumps`. **Pista:** solo necesitas redefinir `formatear`; si el JSON no debe llevar encabezado ni pie, redefine también esos dos ganchos para que devuelvan una cadena vacía.
+
+#### Paso 6 · Práctica independiente
+Reescribe los dos reportes sin herencia, pasando funciones como parámetros (`generar(entregas, formatear, incluir)`), y compara cuál te parece más fácil de extender.
+
+#### Paso 7 · Cierre
+
+
+### Tema 4: Chain of Responsibility: una cadena de validadores
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás encadenar manejadores independientes, cortar la cadena en el primer error y razonar sobre el orden de la cadena. Prerrequisito: Tema 1 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Antes de aceptar un pedido, RutaFlow valida dirección, peso y cobertura. Mañana se agregarán validaciones de seguro y de horario. Es el caso real de los middlewares HTTP y de los filtros de seguridad de Spring: cada eslabón decide si atiende, rechaza o pasa al siguiente.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Cada **manejador** tiene una referencia al **siguiente**. Al recibir una petición la revisa: si encuentra un problema responde y corta; si no, la pasa. El cliente solo conoce el primer eslabón, y agregar una validación es insertar un eslabón sin tocar los demás.
+
+**Analogía:** es la fila de controles de un aeropuerto: documentos, equipaje y puerta de embarque; cualquiera puede detenerte y ninguno necesita saber cómo trabaja el otro.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    P[Pedido] --> D[Direccion]
+    D -- ok --> W[Peso]
+    W -- ok --> C[Cobertura]
+    C -- ok --> A[aceptado]
+    D -- error --> X[rechazado]
+    W -- error --> X
+    C -- error --> X
+```
+
+**¿Por qué es importante?** porque es la estructura interna de los pipelines de middlewares, filtros de seguridad y manejadores de eventos.
+**Fuente oficial:** [Chain Of Responsibility (refactoring.guru)](https://refactoring.guru/es/design-patterns/chain-of-responsibility).
+**Conceptos clave:** manejador, siguiente eslabón, corte de la cadena, orden de evaluación, falla silenciosa.
+**Cuándo no usarlo:** si todas las validaciones siempre se ejecutan y no importa el orden, una lista de funciones recorrida con un bucle es más simple.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** valida las tareas nuevas (título, fecha límite, responsable) con una cadena de validadores.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** armar la cadena olvidando un eslabón (como `Direccion(Peso())` sin `Cobertura`), lo que acepta pedidos inválidos sin ningún error visible; y asumir que el orden de los eslabones no afecta el resultado, cuando en realidad decide cuál validación corta la cadena primero.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir patrones && cd patrones
+```
+
+Crea `chain.py`:
+
+```python
+class Validador:
+    def __init__(self, siguiente=None):
+        self.siguiente = siguiente
+    def manejar(self, pedido):
+        error = self.revisar(pedido)
+        if error:
+            return f"rechazado por {type(self).__name__}: {error}"
+        return self.siguiente.manejar(pedido) if self.siguiente else "aceptado"
+    def revisar(self, pedido):
+        return None
+
+class Direccion(Validador):
+    def revisar(self, pedido):
+        return None if pedido.get("direccion") else "falta la dirección"
+
+class Peso(Validador):
+    def revisar(self, pedido):
+        return None if 0 < pedido["kilos"] <= 30 else f"{pedido['kilos']} kg fuera de rango"
+
+class Cobertura(Validador):
+    CIUDADES = {"Bogotá", "Medellín", "Cali"}
+    def revisar(self, pedido):
+        return None if pedido["ciudad"] in self.CIUDADES else f"sin cobertura en {pedido['ciudad']}"
+
+cadena = Direccion(Peso(Cobertura()))       # el orden de la cadena es una decisión de diseño
+pedidos = [
+    {"direccion": "Cra 7 # 10-20", "kilos": 4, "ciudad": "Cali"},
+    {"direccion": "", "kilos": 4, "ciudad": "Cali"},
+    {"direccion": "Cl 80 # 5-12", "kilos": 45, "ciudad": "Bogotá"},
+    {"direccion": "Av 30 # 2-1", "kilos": 2, "ciudad": "Leticia"},
+]
+for pedido in pedidos:
+    print(cadena.manejar(pedido))
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 chain.py
+```
+
+**Resultado esperado:**
+
+```text
+aceptado
+rechazado por Direccion: falta la dirección
+rechazado por Peso: 45 kg fuera de rango
+rechazado por Cobertura: sin cobertura en Leticia
+```
+
+Cada pedido se detiene en el primer eslabón que encuentra un problema; el primero pasa los tres.
+
+**Fallo deliberado:** Construye la cadena como `Direccion(Peso())`, olvidando `Cobertura`. El pedido a Leticia ahora imprime `aceptado`: no hay ningún error visible, pero se aceptó un envío sin cobertura. Las cadenas mal armadas fallan en silencio, por eso conviene una prueba por cada eslabón.
+
+#### Paso 5 · Práctica guiada
+Agrega un eslabón `Horario` que rechace pedidos con `"hora"` fuera de 7 a 19. **Pista:** crea la subclase con su `revisar`, ponle a los pedidos de prueba la clave `"hora"` y decide en qué posición de la cadena colocarla.
+
+#### Paso 6 · Práctica independiente
+Haz que la cadena devuelva **todos** los errores en lugar de cortar en el primero y discute cuándo es mejor cada comportamiento (formularios frente a seguridad).
+
+#### Paso 7 · Cierre
+
+
+### Tema 5: Mediator: coordinar objetos sin que se conozcan
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás centralizar la coordinación entre objetos en un mediador, reducir dependencias cruzadas y reconocer cuándo el mediador se vuelve demasiado grande. Prerrequisito: Tema 4 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+Cuando un mensajero de RutaFlow sufre una avería, otro libre debe tomar su paquete. Si cada mensajero conociera a todos los demás, con 50 mensajeros habría cientos de referencias cruzadas. Es el mismo caso real de una torre de control o de un formulario en el que cambiar un campo habilita otros.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El **mediador** (`Central`) es el único que conoce a todos los participantes. Los participantes solo le **notifican eventos** y él decide qué hacer. Las dependencias pasan de "muchos a muchos" a "muchos a uno", y la regla de reasignación vive en un solo lugar.
+
+**Analogía:** los aviones no se hablan entre ellos para decidir quién aterriza: todos hablan con la torre de control.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    A[Ana] --> C((Central))
+    B[Beto] --> C
+    K[Caro] --> C
+    C --> B
+```
+
+**¿Por qué es importante?** porque te da un lugar claro para reglas de coordinación, y te enseña a detectar el riesgo opuesto: un mediador que lo sabe todo y se convierte en una "clase dios".
+**Fuente oficial:** [Mediator (refactoring.guru)](https://refactoring.guru/es/design-patterns/mediator).
+**Conceptos clave:** mediador, participante, notificación de eventos, acoplamiento muchos a uno, clase dios.
+**Cuándo no usarlo:** si solo dos objetos se comunican, una referencia directa es más clara. Si la coordinación crece mucho, divide el mediador o usa eventos (Observer).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un coordinador que, al terminar una tarea, desbloquee automáticamente las que dependían de ella.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** crear un participante y usarlo sin registrarlo antes en el mediador (como `Mensajero("Dani")` sin pasar por `central.registrar(dani)`), lo que produce `AttributeError: 'NoneType' object has no attribute 'notificar'`; y acumular cada vez más reglas de negocio dentro del mediador hasta que se vuelve una clase dios difícil de mantener.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir patrones && cd patrones
+```
+
+Crea `mediator.py`:
+
+```python
+class Central:                                # mediador: único punto que conoce a todos
+    def __init__(self):
+        self.mensajeros, self.registro = {}, []
+    def registrar(self, mensajero):
+        self.mensajeros[mensajero.nombre] = mensajero
+        mensajero.central = self
+    def notificar(self, emisor, evento, dato):
+        self.registro.append((emisor.nombre, evento, dato))
+        if evento == "averia":
+            libres = [m for m in self.mensajeros.values() if m is not emisor and m.libre]
+            if libres:
+                libres[0].asignar(dato)
+            else:
+                print(f"  Central: nadie libre para {dato}, queda en espera")
+
+class Mensajero:
+    def __init__(self, nombre, libre=True):
+        self.nombre, self.libre, self.central = nombre, libre, None
+    def reportar_averia(self, guia):
+        print(f"{self.nombre} reporta avería con {guia}")
+        self.central.notificar(self, "averia", guia)   # no conoce a los otros mensajeros
+    def asignar(self, guia):
+        self.libre = False
+        print(f"  {self.nombre} recibe {guia}")
+
+central = Central()
+ana, beto, caro = Mensajero("Ana", libre=False), Mensajero("Beto"), Mensajero("Caro")
+for m in (ana, beto, caro):
+    central.registrar(m)
+ana.reportar_averia("G-301")
+caro.reportar_averia("G-302")
+print("Eventos registrados:", len(central.registro))
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 mediator.py
+```
+
+**Resultado esperado:**
+
+```text
+Ana reporta avería con G-301
+  Beto recibe G-301
+Caro reporta avería con G-302
+  Central: nadie libre para G-302, queda en espera
+Eventos registrados: 2
+```
+
+Ana no sabe que Beto existe; la Central eligió a Beto porque era el primero libre. Para G-302 ya no quedaba nadie disponible.
+
+**Fallo deliberado:** Crea `dani = Mensajero("Dani")` sin registrarlo y llama `dani.reportar_averia("G-303")`. Obtienes `AttributeError: 'NoneType' object has no attribute 'notificar'`: un participante sin mediador no puede comunicarse. Diagnostica si conviene exigir la central en el constructor.
+
+#### Paso 5 · Práctica guiada
+Haz que la Central elija al mensajero libre con menos entregas asignadas en vez del primero. **Pista:** agrega un contador `entregas` a `Mensajero`, increméntalo en `asignar` y usa `min(libres, key=...)`.
+
+#### Paso 6 · Práctica independiente
+Agrega el evento `"libre"`: cuando un mensajero termina, avisa a la Central y esta le asigna el primer paquete en espera.
+
+#### Paso 7 · Cierre
+
+
+### Tema 6: Memento: guardar y restaurar estado para deshacer
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás implementar deshacer con instantáneas inmutables, separar a quien guarda el estado de quien lo produce y explicar por qué una copia superficial rompe el historial. Prerrequisito: Módulo 2, Tema 2 (pilas).
+
+#### Paso 2 · Contexto y caso real
+El planificador de rutas de RutaFlow permite agregar paradas y deshacer cambios. Es el caso real de "Ctrl+Z" en editores, de los borradores de formularios y de los puntos de restauración.
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El **originador** (`Ruta`) sabe crear una **instantánea** (memento) de su estado y restaurarse desde ella. El **cuidador** (`Historial`) apila los mementos sin mirar su contenido. La instantánea debe ser una **copia**: si comparte la lista interna con el originador, los cambios posteriores la modifican y el historial deja de servir.
+
+**Analogía:** es la foto que tomas de un rompecabezas antes de moverlo: si algo sale mal, lo armas igual que en la foto.
+
+**Diagrama:**
+
+```mermaid
+sequenceDiagram
+    participant H as Historial
+    participant R as Ruta
+    H->>R: guardar()
+    R-->>H: Memento
+    H->>R: agregar(parada)
+    H->>R: restaurar(Memento)
+```
+
+**¿Por qué es importante?** porque deshacer, borradores y versiones son requisitos frecuentes, y el error de la copia superficial aparece también en Redux, NgRx y cualquier estado inmutable.
+**Fuente oficial:** [Memento (refactoring.guru)](https://refactoring.guru/es/design-patterns/memento), [dataclasses (docs.python.org)](https://docs.python.org/3/library/dataclasses.html).
+**Conceptos clave:** originador, memento, cuidador, instantánea inmutable, copia superficial frente a copia.
+**Cuándo no usarlo:** si el estado es enorme, guardar copias completas es caro: usa comandos reversibles (patrón Command) o diferencias.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** permite deshacer el último cambio de estado de una tarea con un historial de mementos.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** guardar el memento con una referencia directa a la lista interna (`Memento(self._paradas)`) en vez de una copia (`Memento(tuple(self._paradas))`), con lo que `deshacer` no recupera nada porque el historial apunta al mismo objeto que la ruta sigue modificando; y dejar que el cuidador (`Historial`) inspeccione o modifique el contenido del memento en vez de tratarlo como opaco.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir patrones && cd patrones
+```
+
+Crea `memento.py`:
+
+```python
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Memento:                               # instantánea inmutable y opaca para el historial
+    paradas: tuple
+
+class Ruta:
+    def __init__(self):
+        self._paradas = []
+    def agregar(self, parada):
+        self._paradas.append(parada)
+    def guardar(self):
+        return Memento(tuple(self._paradas))
+    def restaurar(self, memento):
+        self._paradas = list(memento.paradas)
+    def __str__(self):
+        return " -> ".join(self._paradas) or "(vacía)"
+
+class Historial:                             # cuidador: guarda mementos sin mirar su interior
+    def __init__(self, ruta):
+        self.ruta, self.pila = ruta, []
+    def cambiar(self, parada):
+        self.pila.append(self.ruta.guardar())
+        self.ruta.agregar(parada)
+    def deshacer(self):
+        if self.pila:
+            self.ruta.restaurar(self.pila.pop())
+
+ruta = Ruta()
+historial = Historial(ruta)
+for parada in ["Depósito", "Chapinero", "Suba"]:
+    historial.cambiar(parada)
+print("Actual:  ", ruta)
+historial.deshacer()
+print("Deshacer:", ruta)
+historial.deshacer()
+print("Deshacer:", ruta)
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 memento.py
+```
+
+**Resultado esperado:**
+
+```text
+Actual:   Depósito -> Chapinero -> Suba
+Deshacer: Depósito -> Chapinero
+Deshacer: Depósito
+```
+
+Cada `deshacer` restaura la instantánea que se tomó antes del último cambio.
+
+**Fallo deliberado:** En `guardar` cambia `Memento(tuple(self._paradas))` por `Memento(self._paradas)`. Ahora `deshacer` no cambia nada: el memento guarda **la misma lista** que la ruta sigue modificando. No aparece ningún error, solo un resultado incorrecto; compara con `id()` las dos listas para demostrarlo.
+
+#### Paso 5 · Práctica guiada
+Agrega `rehacer`: al deshacer, guarda el estado actual en una segunda pila. **Pista:** al hacer un cambio nuevo, vacía la pila de rehacer, como hacen todos los editores.
+
+#### Paso 6 · Práctica independiente
+Limita el historial a 20 instantáneas y mide cuánta memoria ahorras con `sys.getsizeof` en una ruta de 1 000 paradas.
+
+#### Paso 7 · Cierre
+
+
+### Tema 7: Visitor: operaciones nuevas sin tocar las clases
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás separar operaciones (tarifa, etiqueta) de una jerarquía estable de clases usando doble despacho, y reconocer su costo cuando la jerarquía cambia. Prerrequisitos: Temas 1 y 3 de este módulo.
+
+#### Paso 2 · Contexto y caso real
+RutaFlow transporta sobres, cajas y pallets. Cada mes contabilidad, bodega y seguros piden una operación nueva sobre esos mismos tipos. El caso real más conocido es el de los compiladores y linters, que recorren el árbol de sintaxis con visitantes (`ast.NodeVisitor` en Python).
+
+#### Paso 3 · Teoría, modelo mental y analogía
+Cada elemento implementa `aceptar(visitante)` y llama al método del visitante que corresponde a su tipo (**doble despacho**). Una operación nueva es una clase visitante nueva; las clases de paquetes no cambian. El precio: agregar un **tipo** nuevo obliga a modificar todos los visitantes.
+
+**Analogía:** un inspector de impuestos visita una tienda, una fábrica y una finca; cada lugar le abre la puerta y el inspector aplica las reglas de ese tipo de negocio.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    S[Sobre] -- aceptar --> V{Visitante}
+    K[Caja] -- aceptar --> V
+    P[Pallet] -- aceptar --> V
+    V --> T[CalculoTarifa]
+    V --> E[EtiquetaBodega]
+```
+
+**¿Por qué es importante?** porque explica cómo funcionan los linters, compiladores y serializadores, y entrena el análisis de qué cambia más: los tipos o las operaciones.
+**Fuente oficial:** [Visitor (refactoring.guru)](https://refactoring.guru/es/design-patterns/visitor), [ast.NodeVisitor (docs.python.org)](https://docs.python.org/3/library/ast.html#ast.NodeVisitor).
+**Conceptos clave:** doble despacho, visitante, elemento, jerarquía estable, `ast.NodeVisitor`.
+**Cuándo no usarlo:** si los tipos cambian a menudo, o si Python te permite resolverlo con `match` o `singledispatch` en pocas líneas.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** crea un visitante que calcule horas estimadas de tareas simples y de tareas compuestas por subtareas.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** agregar un tipo de elemento nuevo (como `Bolsa`) sin agregar el método correspondiente (`visitar_bolsa`) en cada visitante existente, lo que produce `AttributeError` recién al ejecutar y no al escribir el código; y usar Visitor sobre una jerarquía que cambia seguido, multiplicando el costo de mantener cada visitante sincronizado.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir patrones && cd patrones
+```
+
+Crea `visitor.py`:
+
+```python
+class Sobre:
+    def __init__(self, gramos): self.gramos = gramos
+    def aceptar(self, visitante): return visitante.visitar_sobre(self)
+
+class Caja:
+    def __init__(self, kilos, fragil): self.kilos, self.fragil = kilos, fragil
+    def aceptar(self, visitante): return visitante.visitar_caja(self)
+
+class Pallet:
+    def __init__(self, cajas): self.cajas = cajas
+    def aceptar(self, visitante): return visitante.visitar_pallet(self)
+
+class CalculoTarifa:                         # una operación nueva = un visitante nuevo
+    def visitar_sobre(self, s):  return 3000
+    def visitar_caja(self, c):   return 5000 + c.kilos * 1500 + (4000 if c.fragil else 0)
+    def visitar_pallet(self, p): return 50000 + sum(c.aceptar(self) for c in p.cajas)
+
+class EtiquetaBodega:
+    def visitar_sobre(self, s):  return f"SOBRE {s.gramos} g"
+    def visitar_caja(self, c):   return f"CAJA {c.kilos} kg" + (" FRÁGIL" if c.fragil else "")
+    def visitar_pallet(self, p): return f"PALLET con {len(p.cajas)} cajas"
+
+carga = [Sobre(120), Caja(4, fragil=True), Pallet([Caja(10, False), Caja(12, True)])]
+for paquete in carga:
+    print(f"{paquete.aceptar(EtiquetaBodega()):<22} tarifa ${paquete.aceptar(CalculoTarifa()):,}")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 visitor.py
+```
+
+**Resultado esperado:**
+
+```text
+SOBRE 120 g            tarifa $3,000
+CAJA 4 kg FRÁGIL       tarifa $15,000
+PALLET con 2 cajas     tarifa $97,000
+```
+
+El pallet visita sus cajas con el mismo visitante, así que su tarifa incluye la de cada caja.
+
+**Fallo deliberado:** Agrega `class Bolsa:` con `def aceptar(self, visitante): return visitante.visitar_bolsa(self)` y ponla en `carga`. Obtienes `AttributeError: 'EtiquetaBodega' object has no attribute 'visitar_bolsa'`: el visitante no conoce el tipo nuevo. Ese es el costo de Visitor, y el motivo de usarlo solo con jerarquías estables.
+
+#### Paso 5 · Práctica guiada
+Crea el visitante `PesoTotal` que devuelva los kilos de cada paquete (un sobre pesa sus gramos / 1000). **Pista:** el pallet debe sumar el resultado de visitar cada una de sus cajas, igual que `CalculoTarifa`.
+
+#### Paso 6 · Práctica independiente
+Reescribe `CalculoTarifa` con `functools.singledispatch` o `match` por tipo y compara las dos soluciones.
+
+#### Paso 7 · Cierre
+
+
+### Tema 8: Flyweight: compartir estado para ahorrar memoria
+
+#### Paso 1 · Objetivo y preparación
+Al finalizar podrás separar estado intrínseco (compartido) de extrínseco (propio), compartir objetos con una fábrica y medir el ahorro de memoria. Prerrequisito: Módulo 2, Tema 6 (tablas hash).
+
+#### Paso 2 · Contexto y caso real
+El mapa de RutaFlow muestra 10 000 entregas, cada una con un marcador. Si cada marcador guardara su propio ícono, el mapa consumiría cientos de megas. Es el caso real de los videojuegos (miles de árboles con la misma textura) y de los editores de texto (glifos compartidos).
+
+#### Paso 3 · Teoría, modelo mental y analogía
+El **estado intrínseco** (color, ícono) es igual para muchos objetos y se guarda una sola vez en un **flyweight** inmutable. El **estado extrínseco** (latitud, longitud) es propio de cada marcador. Una **fábrica** con caché devuelve siempre el mismo flyweight para la misma clave. Python ya hace algo parecido con cadenas cortas y enteros pequeños (*interning*).
+
+**Analogía:** en una biblioteca hay un solo ejemplar de cada libro de referencia; cada lector anota sus apuntes en su propio cuaderno.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    M1[Marcador 1] --> T1[TipoMarcador verde]
+    M2[Marcador 4] --> T1
+    M3[Marcador 2] --> T2[TipoMarcador rojo]
+    F[FabricaMarcadores] --> T1
+    F --> T2
+```
+
+**¿Por qué es importante?** porque te enseña a medir memoria y a separar datos compartidos de datos propios, algo clave en mapas, juegos y cachés.
+**Fuente oficial:** [Flyweight (refactoring.guru)](https://refactoring.guru/es/design-patterns/flyweight), [tracemalloc (docs.python.org)](https://docs.python.org/3/library/tracemalloc.html).
+**Conceptos clave:** estado intrínseco, estado extrínseco, fábrica con caché, inmutabilidad, `__slots__`, interning.
+**Cuándo no usarlo:** con pocos objetos o sin datos repetidos el ahorro no compensa la complejidad. Mide antes de optimizar.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** comparte las etiquetas de categoría entre todas las tareas en lugar de crear una cadena por tarea.
+Como **siguiente** paso, aplica lo aprendido en el proyecto integrador del track y compara el resultado con lo que esperabas.
+**Errores comunes:** dejar mutable el estado intrínseco del flyweight (como asignar `marcador.tipo.color = "negro"` directamente), lo que afecta a todos los marcadores que comparten ese mismo objeto compartido; y guardar estado extrínseco propio de cada marcador (como `lat`/`lon`) dentro del flyweight compartido en vez de en `Marcador`.
+
+#### Paso 4 · Demostración guiada desde cero
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
+
+```bash
+mkdir patrones && cd patrones
+```
+
+Crea `flyweight.py`:
+
+```python
+import sys
+
+class TipoMarcador:                          # estado intrínseco: compartido e inmutable
+    def __init__(self, color, icono):
+        self.color, self.icono = color, icono * 2000   # simula un ícono pesado en memoria
+
+class FabricaMarcadores:
+    _cache = {}
+    @classmethod
+    def obtener(cls, color, icono):
+        clave = (color, icono)
+        if clave not in cls._cache:
+            cls._cache[clave] = TipoMarcador(color, icono)
+        return cls._cache[clave]
+
+class Marcador:                              # estado extrínseco: propio de cada entrega
+    __slots__ = ("lat", "lon", "tipo")
+    def __init__(self, lat, lon, tipo):
+        self.lat, self.lon, self.tipo = lat, lon, tipo
+
+estados = [("verde", "entregado"), ("rojo", "fallido"), ("azul", "en ruta")]
+marcadores = [Marcador(4.6 + i * 1e-4, -74.08, FabricaMarcadores.obtener(*estados[i % 3]))
+              for i in range(10000)]
+tipos = {id(m.tipo) for m in marcadores}
+peso_tipos = sum(sys.getsizeof(t.icono) for t in FabricaMarcadores._cache.values())
+print("Marcadores:", len(marcadores))
+print("Objetos de tipo distintos:", len(tipos))
+print(f"Memoria de íconos compartidos: {peso_tipos / 1024:.0f} KB")
+sin_compartir = sum(sys.getsizeof(m.tipo.icono) for m in marcadores)   # si cada uno tuviera su copia
+print(f"Sin compartir serían: {sin_compartir / 1024 / 1024:.0f} MB")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 flyweight.py
+```
+
+**Resultado esperado:**
+
+```text
+Marcadores: 10000
+Objetos de tipo distintos: 3
+Memoria de íconos compartidos: 45 KB
+Sin compartir serían: 147 MB
+```
+
+10 000 marcadores comparten solo 3 objetos de tipo. La cifra "sin compartir" suma lo que ocuparía un ícono por marcador.
+
+**Fallo deliberado:** Al final agrega `marcadores[0].tipo.color = "negro"` y cuenta cuántos marcadores quedaron negros con `sum(m.tipo.color == "negro" for m in marcadores)`. Resultado: `3334`. Cambiaste un dato compartido y afectaste a todos los marcadores verdes. Por eso un flyweight debe ser inmutable (por ejemplo, con `@dataclass(frozen=True)`).
+
+#### Paso 5 · Práctica guiada
+Haz inmutable `TipoMarcador` y comprueba que el fallo deliberado ahora lanza un error. **Pista:** con `@dataclass(frozen=True)`, asignar un atributo lanza `dataclasses.FrozenInstanceError`.
+
+#### Paso 6 · Práctica independiente
+Mide con `tracemalloc` la memoria real de crear 10 000 marcadores con y sin la fábrica, y compárala con la estimación del ejemplo.
+
+#### Paso 7 · Cierre
+
 
 ## Construcción guiada del capítulo
 
-### Proyecto 13: planificador de entregas de RutaFlow
+### Proyecto 13: núcleo de envíos con patrones
 
-Desde una carpeta vacía crea `planificador/`, inicializa Git y construye una herramienta de consola que reciba un archivo `entregas.json` con puntos de entrega, tiempos entre ellos y peso de cada paquete.
+Desde una carpeta vacía crea `nucleo-envios/`, inicializa Git y construye una pequeña librería de consola con:
 
-Fases y commits sugeridos:
+1. Un `Envio` cuyo ciclo de vida es una máquina de estados (State).
+2. Una cadena de validadores para aceptar envíos (Chain of Responsibility).
+3. Notificaciones decoradas con firma y registro (Decorator).
+4. Deshacer y rehacer en la planificación de paradas (Memento).
+5. Reportes diarios con un esqueleto común (Template Method).
+6. Cálculo de tarifas y etiquetas por tipo de paquete (Visitor).
+7. README con un diagrama por patrón y, para cada uno, la alternativa más simple que descartaste y por qué.
 
-1. Carga y validación del JSON (pesos positivos, tiempos no negativos).
-2. Orden de carga por peso con tu `merge_sort` estable.
-3. Tiempo mínimo del depósito a cada punto con Dijkstra.
-4. Ruta del día con vecino más cercano y mejora 2-opt.
-5. Comparación contra la ruta exacta para 8 puntos o menos.
-6. Búsqueda de guías en el manifiesto con KMP.
-7. README con complejidad de cada fase, tabla de tiempos y límites conocidos.
-
-**Verificación:** las rutas reconstruidas existen en el grafo; el resultado exacto y el heurístico coinciden en casos pequeños triviales; un tiempo negativo se rechaza con mensaje accionable; el README no afirma optimalidad de la heurística.
+**Verificación:** una transición inválida se rechaza; una cadena sin un eslabón tiene una prueba que falla; deshacer restaura exactamente el estado anterior; el README justifica cada patrón con un requisito, no con el nombre del patrón.
 
 **Errores comunes y soluciones**
 
-- Usar Dijkstra con pesos negativos: valida la entrada o usa Bellman-Ford.
-- Prometer la ruta óptima para 30 puntos: documenta que es una aproximación y mide su calidad en casos pequeños.
-- Implementar un ordenamiento propio en producción: usa `sorted()` salvo que tengas un motivo medido.
-- Olvidar marcar visitados o comprobar ciclos: provoca bucles infinitos o árboles con ciclos.
+- Aplicar un patrón porque existe: escribe primero el requisito y la alternativa simple.
+- Compartir estado mutable en mementos o flyweights: usa tuplas o `dataclass(frozen=True)`.
+- Mediadores que lo saben todo: divide por responsabilidad.
+- Visitor sobre jerarquías que cambian cada semana: usa `match` o `singledispatch`.

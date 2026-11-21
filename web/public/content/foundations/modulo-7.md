@@ -247,7 +247,7 @@ En esta práctica `DeliveryRepository` será una interfaz con dos operaciones (`
 #### Paso 3 · Teoría, modelo mental y analogía
 Baja cohesión significa que `confirmDelivery` conoce solo lo que necesita del repositorio (dos métodos), nunca cómo esos datos llegan a disco — el mismo principio de "el dominio no importa SQLite" aplicado a un archivo que ya existe.
 
-**Conceptos clave:** cohesión, acoplamiento, encapsulación, abstracción, composición, SOLID, puerto, Repository, Adapter y prueba caracterizadora (el catálogo de patrones está en el Módulo 14 y el refactoring en el Módulo 15).
+**Conceptos clave:** cohesión, acoplamiento, encapsulación, abstracción, composición, SOLID, puerto, Repository, Adapter y prueba caracterizadora (el catálogo de patrones está en el Módulo 13 y el refactoring en el Módulo 14).
 
 Alta cohesión significa que un módulo reúne responsabilidades relacionadas. Bajo acoplamiento significa que conoce poco de detalles externos. Encapsulación protege invariantes; abstracción presenta un contrato relevante y oculta detalles que pueden cambiar.
 
@@ -270,9 +270,9 @@ class RetirarStock:
 
 El caso de uso depende de capacidad, no SQLite. Responsabilidad única no significa “una función por línea”; significa una razón coherente de cambio. Inversión de dependencias no obliga a interfaz para todo; se aplica en límites que necesitan sustitución, prueba o aislamiento.
 
-En este tema practicas dos patrones porque el diseño los necesita: **Repository** (el puerto `DeliveryRepository`) y **Adapter** (cada implementación del puerto). El criterio para elegir cualquier otro patrón y el catálogo completo, con un requisito de RutaFlow y la alternativa más simple en cada caso, viven en el **Módulo 14**; no se repiten aquí.
+En este tema practicas dos patrones porque el diseño los necesita: **Repository** (el puerto `DeliveryRepository`) y **Adapter** (cada implementación del puerto). El criterio para elegir cualquier otro patrón y el catálogo completo, con un requisito de RutaFlow y la alternativa más simple en cada caso, viven en el **Módulo 13**; no se repiten aquí.
 
-Para el Paso 6 necesitas una idea de refactoring: antes de cambiar código que ya funciona, una **prueba caracterizadora** registra lo que hace hoy. La técnica completa (pasos pequeños con la suite en verde, nombres, funciones y commits que separan refactor de cambio funcional) es la referencia del **Módulo 15**, Tema 1 y Proyecto 15.
+Para el Paso 6 necesitas una idea de refactoring: antes de cambiar código que ya funciona, una **prueba caracterizadora** registra lo que hace hoy. La técnica completa (pasos pequeños con la suite en verde, nombres, funciones y commits que separan refactor de cambio funcional) es la referencia del **Módulo 14**, Tema 1 y Proyecto 14.
 
 **Analogía:** un puerto es un enchufe estándar en la pared; el adaptador es el cargador concreto que conectas. Cambias de cargador sin tocar la instalación eléctrica. **Límite:** si solo existe un cargador posible y nunca vas a probarlo aparte, el enchufe extra no aporta nada.
 

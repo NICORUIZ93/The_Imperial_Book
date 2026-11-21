@@ -1,1024 +1,582 @@
-# Módulo 12: Electrónica, sensores y control para software e IoT
+# Módulo 12: Algoritmos clásicos
 
-Capítulo de introducción aplicada a la electrónica, los sensores y el control industrial. Las explicaciones y programas siguientes son originales; las referencias técnicas sostienen el modelo y sus límites.
-
-Este capítulo conecta programación con mediciones físicas. Empieza por unidades, circuitos y lógica antes de integrar sensores. Los ejemplos se ejecutan con la biblioteca estándar de Python; simulan fenómenos y decisiones, no sustituyen montaje, datasheets ni práctica de laboratorio.
-
-**Preparación:** instala Python 3. Cada práctica parte de una carpeta vacía y tú escribes manualmente el archivo indicado; no necesitas clonar ningún proyecto. En Windows reemplaza `python3` por `py`. No requiere compra de componentes ni conexión de cargas eléctricas.
-
-**Proyecto integrador:** diseña un sensor de temperatura para RutaFlow con señal cruda, calibración, filtrado, consumo, contrato binario y criterios de aceptación. Conserva unidades y condiciones de medición en el registro, para que el backend no confunda una muestra con una verdad absoluta.
-
-**Progresión profesional:** primero predice la salida; después ejecuta, cambia una entrada y explica el efecto. Solo avanza si puedes justificar unidades, supuestos y el límite del modelo. Una simulación que imprime un número no demuestra que un dispositivo funcione.
 
 ## Aprende construyendo
 
-### Tema 1: Matemáticas aplicadas: derivada, integral y modelos
+### Tema 1: Ordenamientos: insertion, merge y quick sort
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico. **En una frase:** Las matemáticas convierten una variación física en un modelo calculable para predecir corriente, energía o movimiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `matematicas.py`.
+Al finalizar podrás implementar tres algoritmos de ordenamiento, explicar su complejidad (O(n²) frente a O(n log n)) y decidir cuándo uno es mejor que otro. Prerrequisito: Módulo 2, Tema 4 (complejidad y recursión). Necesitas Python 3.14, la línea del curso.
 
 #### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un sensor de una entrega informa corriente cada segundo; integrar esas muestras estima carga consumida por su batería. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+En RutaFlow, antes de cargar un camión se ordenan los paquetes por peso para equilibrar la carga. Con 30 paquetes cualquier método sirve; con 30 000 la elección del algoritmo separa una respuesta instantánea de una pantalla congelada. `sorted()` de Python usa Timsort, una mezcla de merge sort e insertion sort: entender ambos explica por qué es tan rápido.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** La derivada es el velocímetro y la integral es el odómetro: una describe cuánto cambia algo y la otra acumula cambios. Para una carga Q(t)=t², I(t)=dQ/dt=2t. La integración numérica aproxima áreas; reducir el paso permite estudiar el error. Álgebra lineal expresa circuitos como Ax=b; las ecuaciones diferenciales describen RC/RLC; Laplace facilita estudiar transitorios y Fourier separa frecuencias. Las series aproximan funciones dentro de su región de convergencia, no universalmente.
+**Insertion sort** toma cada elemento y lo inserta en su lugar dentro de la parte ya ordenada: O(n²) en el peor caso, pero muy rápido con listas pequeñas o casi ordenadas. **Merge sort** divide la lista en mitades, ordena cada una y las **mezcla**: siempre O(n log n) y **estable** (respeta el orden original de los iguales), a costa de memoria extra. **Quick sort** elige un **pivote** y separa menores, iguales y mayores: O(n log n) en promedio, pero O(n²) si el pivote es siempre el peor.
+
+**Analogía:** insertion sort es ordenar las cartas de tu mano una a una; merge sort es repartir el mazo entre dos amigos, que cada uno ordene su mitad y luego juntar las dos pilas mirando la carta de arriba de cada una; quick sort es separar el mazo en "menores que 7" y "mayores que 7" y repetir en cada montón.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    A["[38, 27, 43, 3]"] --> B["[38, 27]"]
+    A --> C["[43, 3]"]
+    B --> D["[27, 38]"]
+    C --> E["[3, 43]"]
+    D --> F["mezcla: [3, 27, 38, 43]"]
+    E --> F
+```
+
+**Fuente oficial:** [Sorting algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Sorting_algorithm), [Sorting HOW TO (docs.python.org)](https://docs.python.org/3/howto/sorting.html); Baase y Van Gelder, cap. 4.
+**Conceptos clave:** divide y vencerás, pivote, mezcla, estabilidad, O(n log n) frente a O(n²), peor caso.
+**Cuándo no usarlo:** en código de producción usa `sorted()` o `list.sort()` (Timsort): está optimizado en C y es estable. Implementa tu propio ordenamiento solo para aprender o cuando tengas una restricción muy concreta (por ejemplo, datos que no caben en memoria).
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** ordena las tareas por prioridad y fecha límite con una clave compuesta y explica por qué la estabilidad importa cuando dos tareas tienen la misma prioridad.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `matematicas.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-tiempos = [0, 1, 2, 3]
-corrientes = [2 * t for t in tiempos]
-# Trapecios: aproximan el área entre dos muestras.
-carga = sum((corrientes[i] + corrientes[i+1]) / 2 *
-            (tiempos[i+1] - tiempos[i]) for i in range(3))
-print(f"Carga: {carga:.1f} C")
-```
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-python3 matematicas.py
+mkdir algoritmos && cd algoritmos
 ```
 
-**Salida esperada:**
+Crea `ordenamientos.py`:
+
+```python
+import random
+import time
+
+def merge_sort(datos):
+    if len(datos) <= 1:
+        return datos
+    medio = len(datos) // 2
+    izquierda = merge_sort(datos[:medio])
+    derecha = merge_sort(datos[medio:])
+    resultado, i, j = [], 0, 0
+    while i < len(izquierda) and j < len(derecha):
+        if izquierda[i] <= derecha[j]:          # <= mantiene el orden de los iguales (estable)
+            resultado.append(izquierda[i]); i += 1
+        else:
+            resultado.append(derecha[j]); j += 1
+    resultado.extend(izquierda[i:])
+    resultado.extend(derecha[j:])
+    return resultado
+
+def quick_sort(datos):
+    if len(datos) <= 1:
+        return datos
+    pivote = datos[len(datos) // 2]
+    menores = [x for x in datos if x < pivote]
+    iguales = [x for x in datos if x == pivote]
+    mayores = [x for x in datos if x > pivote]
+    return quick_sort(menores) + iguales + quick_sort(mayores)
+
+def insertion_sort(datos):
+    datos = list(datos)
+    for i in range(1, len(datos)):
+        actual, j = datos[i], i - 1
+        while j >= 0 and datos[j] > actual:
+            datos[j + 1] = datos[j]; j -= 1
+        datos[j + 1] = actual
+    return datos
+
+random.seed(42)
+pesos = [random.randint(1, 5000) for _ in range(3000)]   # pesos de paquetes en gramos
+esperado = sorted(pesos)
+for nombre, f in [("insertion", insertion_sort), ("merge", merge_sort), ("quick", quick_sort)]:
+    inicio = time.perf_counter()
+    ok = f(pesos) == esperado
+    ms = (time.perf_counter() - inicio) * 1000
+    print(f"{nombre:<9} correcto={ok} tiempo={ms:.1f} ms")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 ordenamientos.py
+```
+
+**Resultado esperado:**
 
 ```text
-Carga: 9.0 C
+insertion correcto=True tiempo=88.7 ms
+merge     correcto=True tiempo=2.8 ms
+quick     correcto=True tiempo=2.0 ms
 ```
 
-**Explicación por bloques:** `tiempos` define segundos y `corrientes` amperios; la comprensión calcula I(t)=2t. Cada término de `sum` multiplica corriente media por duración: amperios por segundos son culombios. Hay tres intervalos aunque existan cuatro muestras. Para esta corriente lineal, el área 0–3 coincide con 3²=9 C.
+Los tiempos cambian según tu máquina, pero la proporción se mantiene: insertion sort es decenas de veces más lento con 3 000 elementos. Observa que los tres son **correctos**; la diferencia es solo de crecimiento.
 
-**Fallo deliberado y diagnóstico:** Cambia el último tiempo a 2: el muestreo deja de representar intervalos de un segundo; diagnostica comparando cada diferencia de tiempos. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
+**Fallo deliberado:** Cambia `pivote = datos[len(datos) // 2]` por `pivote = datos[0]` y ordena una lista **ya ordenada** de 3 000 elementos (`quick_sort(esperado)`). Obtendrás `RecursionError: maximum recursion depth exceeded`: con el primer elemento como pivote, cada partición deja n-1 elementos de un lado, la recursión tiene profundidad n y el tiempo se vuelve O(n²). Por eso las implementaciones reales eligen el pivote al azar o con la mediana de tres.
 
 #### Paso 5 · Práctica guiada
-**Pista específica:** Calcula la carga hasta t=4 y contrasta con Q(4)-Q(0)=16 C. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
+Agrega un contador de comparaciones a `insertion_sort` y a `merge_sort` y ejecútalos con 100, 1 000 y 3 000 elementos. Construye una tabla: ¿la cantidad de comparaciones crece como n² y n log n? **Pista:** en `merge_sort` cuenta cada vez que se ejecuta el `if izquierda[i] <= derecha[j]`; en `insertion_sort`, cada evaluación de `datos[j] > actual`.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El trapecio es exacto aquí porque la corriente es lineal; para señales curvas existe error de discretización.
+Ordena una lista de paquetes `(peso, guia)` por peso con `merge_sort` adaptado y comprueba que dos paquetes con el mismo peso conservan su orden original (estabilidad). Repite con `quick_sort` y explica si se conserva.
 
 #### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
+Entrega la tabla de comparaciones, la prueba de estabilidad y el `RecursionError` del fallo deliberado con su explicación. **¿Por qué es importante?** porque las preguntas de entrevista sobre ordenamiento no buscan que reemplaces `sorted()`, sino que sepas razonar sobre complejidad, estabilidad, memoria y peor caso.
 
-1. ¿Qué unidad tiene la derivada de carga?
-2. ¿Por qué el intervalo importa al integrar?
-3. ¿Qué cambia al duplicar la frecuencia de muestreo?
-
-**Errores comunes:** confundir el área bajo la curva con el valor de la función en un extremo; mezclar horas y segundos en una fórmula de carga; extrapolar una tabla fuera del intervalo medido. Si fallas una pregunta, rehaz la integral con una tabla de tres puntos y comprueba el trapecio contra un caso lineal exacto.
-
-**Fuente oficial:** [MIT OpenCourseWare: Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/). La integración numérica y la suma de Riemann se consultan allí; la sintaxis de Python, en [docs.python.org](https://docs.python.org/3/).
-
-### Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton
+### Tema 2: Algoritmos codiciosos y árbol de expansión mínima
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin. **En una frase:** Un circuito distribuye tensiones y corrientes según sus conexiones y permite alimentar o medir dispositivos sin adivinar sus cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `circuitos.py`.
+Al finalizar podrás reconocer un algoritmo codicioso, demostrar con un contraejemplo cuándo falla y construir un árbol de expansión mínima con Kruskal. Prerrequisitos: Módulo 2, Temas 7 (grafos) y 8 (programación dinámica).
 
 #### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Una entrada ADC carga un divisor de tensión; su voltaje cae respecto al valor calculado sin carga. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+RutaFlow quiere conectar sus bodegas con fibra óptica gastando lo mínimo y sin cables redundantes. También da cambio en efectivo a los mensajeros. Ambos problemas parecen pedir "lo más barato o lo más grande primero", pero solo uno de ellos funciona siempre así.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Una red de agua ayuda a recordar que en un nodo se conserva flujo, pero la corriente eléctrica exige un circuito cerrado. Kirchhoff impone suma de corrientes cero en nodos y suma de tensiones cero en lazos. Thévenin reduce una red lineal a Vth en serie con Rth; Norton usa In=Vth/Rth en paralelo. Superposición combina respuestas lineales, no potencias. En AC se usan impedancias: R, jωL y 1/(jωC); la potencia activa es Vrms·Irms·cos(φ). RC, RL y RLC almacenan energía y generan transitorios.
+Un algoritmo **codicioso** (greedy) toma en cada paso la decisión que parece mejor en ese momento y **nunca la deshace**. Es rápido y simple, pero solo es correcto si el problema tiene la *propiedad de elección codiciosa*: que la mejor decisión local forme parte de alguna solución óptima global. **Kruskal** ordena las aristas por costo y agrega cada una si no forma un ciclo (usa una estructura *union-find* para saberlo); el resultado es un **árbol de expansión mínima** (MST): conecta todos los nodos con el menor costo total.
+
+**Analogía:** el codicioso es el turista que en cada cruce toma la calle que parece más corta; a veces llega rápido, a veces termina en un callejón sin salida.
+
+**Diagrama:**
+
+```mermaid
+graph LR
+    N[Norte] -- 3 --- C[Centro]
+    C -- 4 --- S[Sur]
+    C -- 6 --- O[Occidente]
+    N -. 7 descartada .- S
+    S -. 9 descartada .- O
+```
+
+**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), que incluyen dos clases de árboles de expansión mínima, y Baase y Van Gelder, cap. 8, pendiente de lectura completa en el disco externo. Wikipedia deja de ser la referencia principal del tema.
+**Conceptos clave:** elección codiciosa, contraejemplo, union-find, árbol de expansión mínima, Kruskal, Prim.
+**Cuándo no usarlo:** cuando no puedes justificar la propiedad de elección codiciosa. Si un contraejemplo pequeño la rompe, usa programación dinámica o búsqueda exhaustiva.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** asigna tareas a franjas horarias con selección de actividades y documenta qué tareas quedan fuera.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `circuitos.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-fuente, r1, r2, carga = 5.0, 1000.0, 1000.0, 1000.0
-vth = fuente * r2 / (r1 + r2)
-rth = r1 * r2 / (r1 + r2)
-# La entrada de medida es parte del circuito.
-v_carga = vth * carga / (rth + carga)
-print(f"Vth={vth:.3f} V; Rth={rth:.0f} ohm; salida={v_carga:.3f} V")
-```
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-python3 circuitos.py
+mkdir algoritmos && cd algoritmos
 ```
 
-**Salida esperada:**
+Crea `codiciosos.py`:
+
+```python
+def cambio_codicioso(monto, monedas):
+    usadas = []
+    for moneda in sorted(monedas, reverse=True):
+        while monto >= moneda:
+            monto -= moneda
+            usadas.append(moneda)
+    return usadas
+
+def cambio_optimo(monto, monedas):
+    # programación dinámica: mínimo de monedas para cada valor de 0 a monto
+    mejor = [0] + [None] * monto
+    for valor in range(1, monto + 1):
+        opciones = [mejor[valor - m] for m in monedas if m <= valor and mejor[valor - m] is not None]
+        mejor[valor] = min(opciones) + 1 if opciones else None
+    return mejor[monto]
+
+def kruskal(nodos, aristas):
+    padre = {n: n for n in nodos}
+    def raiz(n):
+        while padre[n] != n:
+            padre[n] = padre[padre[n]]
+            n = padre[n]
+        return n
+    arbol, total = [], 0
+    for costo, a, b in sorted(aristas):        # decisión codiciosa: la más barata primero
+        ra, rb = raiz(a), raiz(b)
+        if ra != rb:                            # no forma ciclo
+            padre[ra] = rb
+            arbol.append((a, b, costo)); total += costo
+    return arbol, total
+
+print("Pesos colombianos 1700:", cambio_codicioso(1700, [1000, 500, 200, 100, 50]))
+print("Sistema raro 6 con [4,3,1]: codicioso usa", len(cambio_codicioso(6, [4, 3, 1])),
+      "monedas; óptimo usa", cambio_optimo(6, [4, 3, 1]))
+
+bodegas = ["Norte", "Sur", "Centro", "Occidente"]
+cables = [(7, "Norte", "Sur"), (3, "Norte", "Centro"), (4, "Centro", "Sur"),
+          (6, "Centro", "Occidente"), (9, "Sur", "Occidente")]
+arbol, total = kruskal(bodegas, cables)
+print("Red mínima:", arbol, "costo total:", total)
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 codiciosos.py
+```
+
+**Resultado esperado:**
 
 ```text
-Vth=2.500 V; Rth=500 ohm; salida=1.667 V
+Pesos colombianos 1700: [1000, 500, 200]
+Sistema raro 6 con [4,3,1]: codicioso usa 3 monedas; óptimo usa 2
+Red mínima: [('Norte', 'Centro', 3), ('Centro', 'Sur', 4), ('Centro', 'Occidente', 6)] costo total: 13
 ```
 
-**Explicación por bloques:** `fuente`, resistencias y carga definen el divisor. `vth` calcula su salida sin carga; `rth` calcula el paralelo de las resistencias con la fuente ideal cortocircuitada. La última expresión modela el divisor entre Rth y la carga: 2.5·1000/1500=1.667 V. Conectar la entrada no deja intacto el circuito.
+Con las denominaciones colombianas el cambio codicioso es óptimo, pero con monedas `[4, 3, 1]` y monto 6 elige `4 + 1 + 1` (3 monedas) cuando `3 + 3` (2 monedas) es mejor. La programación dinámica del Módulo 2 sí encuentra el óptimo.
 
-**Fallo deliberado y diagnóstico:** Sustituye r1 por 1 creyendo que representa 1 kΩ; diagnostica el error de unidades. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
+**Fallo deliberado:** Quita la condición `if ra != rb:` de `kruskal`. El árbol incluye las 5 aristas y el costo sube a 29: ya no es un árbol, porque `Norte-Sur` y `Sur-Occidente` cierran ciclos. Sin la comprobación de ciclos, "lo más barato primero" deja de ser correcto.
 
 #### Paso 5 · Práctica guiada
-**Pista específica:** Usa una carga de 100000 ohm y explica por qué se aproxima a 2.5 V. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
+Implementa **Prim** (crece el árbol desde un nodo, agregando siempre la arista más barata que sale del árbol, usando `heapq`) y comprueba que obtiene el mismo costo total que Kruskal. **Pista:** Prim es Dijkstra con otra prioridad: mete en el heap `(costo, destino)` de las aristas que salen del árbol y descarta los destinos ya incluidos.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Con fuentes dependientes se conservan sus relaciones y se aplica una fuente de prueba; no se borran todas las fuentes sin criterio.
+Resuelve el problema de **selección de actividades**: dadas franjas `(inicio, fin)` de citas de entrega, elige el máximo número de citas que no se solapen ordenando por hora de fin. Escribe en dos frases por qué aquí la elección codiciosa sí es óptima.
 
 #### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
+Entrega el contraejemplo del cambio, la comparación Kruskal/Prim y la selección de actividades. **¿Por qué es importante?** porque muchos algoritmos de la industria (Dijkstra, Huffman, planificadores) son codiciosos, y saber demostrar o refutar la elección codiciosa evita bugs que solo aparecen con datos raros.
 
-1. ¿Qué conserva Kirchhoff?
-2. ¿Por qué cambia la salida al conectar una carga?
-3. ¿Qué fuentes se desactivan para calcular Rth?
-
-**Errores comunes:** medir la tensión de circuito abierto con la carga conectada; anular una fuente de corriente cortocircuitándola en vez de abrirla; reutilizar el equivalente de Thévenin con otra carga sin recalcular. Si fallas una pregunta, dibuja el circuito sin carga y obtén Voc e Isc por separado.
-
-**Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). El curso cubre superposición, Thévenin y Norton con las convenciones de signo usadas en el tema.
-
-### Tema 3: Electrónica analógica: diodos, transistores y amplificadores
+### Tema 3: Caminos más cortos con Dijkstra
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación. **En una frase:** La electrónica analógica controla señales continuas para amplificar sensores, limitar tensiones y accionar cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `analogica.py`.
+Al finalizar podrás calcular la ruta de menor costo en un grafo con pesos usando Dijkstra y una cola de prioridad, reconstruir el camino y explicar por qué falla con pesos negativos. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (BFS).
 
 #### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Una señal de temperatura de 0.2 V requiere ganancia diez para usar mejor el rango de un ADC de 3.3 V. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+BFS encuentra la ruta con **menos tramos**, pero a un mensajero de RutaFlow le importan los **minutos**: dos tramos cortos pueden ser mejores que uno largo. Así funcionan, en esencia, los navegadores GPS y el enrutamiento de paquetes en Internet (OSPF).
 
 #### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un amplificador se parece a un megáfono: aumenta una señal usando energía de su alimentación. Un diodo conduce asimétricamente; el modelo de caída fija es una aproximación. BJT y MOSFET pueden amplificar o conmutar según su polarización. Un operacional con realimentación negativa aproxima V+=V− dentro de sus límites de alimentación, ganancia y ancho de banda. Fuentes y reguladores estabilizan alimentación; osciladores generan señales; filtros seleccionan frecuencias.
+**Dijkstra** mantiene la mejor distancia conocida a cada nodo. Usa una **cola de prioridad** (un *heap*) para sacar siempre el nodo pendiente más cercano; desde él **relaja** las aristas: si pasar por él mejora la distancia de un vecino, la actualiza y guarda de dónde vino. Es codicioso: una vez que saca un nodo del heap, su distancia es definitiva. Eso solo es cierto si **ningún peso es negativo**. Con un heap binario cuesta O((V + E) log V).
+
+**Analogía:** es como derramar agua en el depósito: el agua llega primero a los puntos más cercanos y el momento en que moja cada punto es su distancia mínima.
+
+**Diagrama:**
+
+```mermaid
+graph LR
+    D[Deposito] -- 15 --> C[Chapinero]
+    D -- 25 --> K[Kennedy]
+    C -- 5 --> K
+    C -- 20 --> U[Usaquen]
+    K -- 10 --> B[Bosa]
+    K -- 40 --> U
+    U -- 30 --> B
+```
+
+**Fuente oficial:** [Dijkstra's algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm), [heapq (docs.python.org)](https://docs.python.org/3/library/heapq.html); Baase y Van Gelder, caps. 8-9.
+**Conceptos clave:** grafo con pesos, relajación, cola de prioridad (heapq), camino reconstruido, pesos negativos, Bellman-Ford.
+**Cuándo no usarlo:** si todos los tramos cuestan lo mismo, BFS es más simple y rápido. Si hay pesos negativos, usa Bellman-Ford. Para mapas reales enormes se usan variantes como A* con heurística o jerarquías de contracción.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** modela el tiempo estimado entre tareas dependientes como pesos y calcula la cadena de tareas más larga o la más corta hasta una entrega.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `analogica.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-vin, rf, rg, alimentacion = 0.2, 9000, 1000, 3.3
-ganancia = 1 + rf / rg
-ideal = vin * ganancia
-# Modelo didáctico: un amplificador no supera su alimentación.
-salida = min(max(ideal, 0), alimentacion)
-print(f"Ganancia={ganancia:.1f}; salida={salida:.2f} V")
-```
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-python3 analogica.py
+mkdir algoritmos && cd algoritmos
 ```
 
-**Salida esperada:**
+Crea `rutas.py`:
+
+```python
+import heapq
+
+# minutos de viaje entre puntos de reparto (grafo dirigido con pesos)
+mapa = {
+    "Deposito": {"Chapinero": 15, "Kennedy": 25},
+    "Chapinero": {"Usaquen": 20, "Kennedy": 5},
+    "Kennedy": {"Bosa": 10, "Usaquen": 40},
+    "Usaquen": {"Bosa": 30},
+    "Bosa": {},
+}
+
+def dijkstra(grafo, origen):
+    distancia = {nodo: float("inf") for nodo in grafo}
+    anterior = {}
+    distancia[origen] = 0
+    pendientes = [(0, origen)]                 # cola de prioridad: (minutos, nodo)
+    while pendientes:
+        d, nodo = heapq.heappop(pendientes)
+        if d > distancia[nodo]:
+            continue                           # entrada vieja: ya encontramos algo mejor
+        for vecino, peso in grafo[nodo].items():
+            nueva = d + peso
+            if nueva < distancia[vecino]:
+                distancia[vecino] = nueva
+                anterior[vecino] = nodo
+                heapq.heappush(pendientes, (nueva, vecino))
+    return distancia, anterior
+
+def camino(anterior, destino):
+    ruta = [destino]
+    while ruta[-1] in anterior:
+        ruta.append(anterior[ruta[-1]])
+    return list(reversed(ruta))
+
+distancia, anterior = dijkstra(mapa, "Deposito")
+for destino in ["Chapinero", "Kennedy", "Usaquen", "Bosa"]:
+    print(f"{destino:<9} {distancia[destino]:>3} min  ruta: {' -> '.join(camino(anterior, destino))}")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 rutas.py
+```
+
+**Resultado esperado:**
 
 ```text
-Ganancia=10.0; salida=2.00 V
+Chapinero  15 min  ruta: Deposito -> Chapinero
+Kennedy    20 min  ruta: Deposito -> Chapinero -> Kennedy
+Usaquen    35 min  ruta: Deposito -> Chapinero -> Usaquen
+Bosa       30 min  ruta: Deposito -> Chapinero -> Kennedy -> Bosa
 ```
 
-**Explicación por bloques:** La razón `rf/rg` fija la ganancia no inversora 1+9=10. `ideal` calcula 0.2·10=2 V y `min/max` limita la salida entre 0 y 3.3 V. Ese recorte representa saturación, no una respuesta lineal que sigue amplificando. Un dispositivo real suele tener un margen adicional respecto a los rieles.
+Fíjate en Kennedy: la arista directa cuesta 25, pero pasar por Chapinero cuesta 15 + 5 = 20. BFS habría elegido la directa.
 
-**Fallo deliberado y diagnóstico:** Cambia vin a 0.5: aparece saturación a 3.3 V; el diagnóstico compara salida ideal de 5 V con alimentación. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
+**Fallo deliberado:** En el diccionario de Usaquen agrega `"Kennedy": -50` (un "descuento" mal modelado). El programa **no termina**: Kennedy → Usaquen → Kennedy suma 40 - 50 = -10, un **ciclo negativo**; cada vuelta "mejora" la distancia y el heap nunca se vacía. Detenlo con Ctrl+C. Dijkstra supone pesos no negativos: la versión clásica, que nunca reabre un nodo, da resultados incorrectos, y esta versión puede no terminar. Para pesos negativos se usa **Bellman-Ford**, que relaja todas las aristas V-1 veces y detecta ciclos negativos.
 
 #### Paso 5 · Práctica guiada
-**Pista específica:** Calcula la máxima entrada sin saturar y compara con el datasheet de un operacional real. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
+Agrega la función `ruta_mas_rapida(origen, destino)` que detenga el algoritmo en cuanto saque `destino` del heap y compara cuántos nodos procesa frente a la versión completa. **Pista:** basta con comprobar `if nodo == destino: break` justo después del `heappop`, porque en ese momento su distancia ya es definitiva.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo no incluye caída de salida, slew rate ni corriente máxima. En un circuito con varios diodos (como la ampliación de los cuatro diodos al final del módulo) identifica primero polaridades y cuáles son Zener; prueba cada hipótesis de conducción mediante KCL y desigualdades. No traslades la caída de 0.5 V a cualquier componente real.
+Implementa Bellman-Ford sobre el mismo mapa con la arista negativa y comprueba que detecta el ciclo negativo en vez de quedarse en bucle. Después escribe en un README cuándo usarías BFS, Dijkstra o Bellman-Ford.
 
 #### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
+Entrega las rutas calculadas, la comparación con parada temprana y Bellman-Ford. **¿Por qué es importante?** porque "camino más corto" es una de las preguntas de entrevista más frecuentes y la base de mapas, redes y planificación de rutas.
 
-1. ¿De dónde sale la energía amplificada?
-2. ¿Cuándo falla V+=V−?
-3. ¿Por qué importa la polaridad de un diodo?
-
-**Errores comunes:** aplicar la ganancia lineal más allá de los rieles de alimentación; ignorar el offset de entrada al comparar la salida esperada; cambiar la realimentación sin recalcular la ganancia. Si fallas una pregunta, lleva la entrada hasta que la salida toque el riel y localiza dónde deja de valer el modelo.
-
-**Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Los amplificadores operacionales, la realimentación negativa y la saturación se desarrollan en ese curso.
-
-### Tema 4: Electrónica digital: lógica y máquinas de estados
+### Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado. **En una frase:** La electrónica digital representa decisiones mediante niveles discretos para construir controladores verificables. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `digital.py`.
+Al finalizar podrás implementar la búsqueda ingenua y el algoritmo Knuth-Morris-Pratt (KMP), construir su tabla de fallos y medir la diferencia en comparaciones. Prerrequisito: Módulo 2, Tema 4.
 
 #### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Una puerta de almacén autoriza despacho solo si hay paquete y la puerta está cerrada. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+RutaFlow busca códigos de guía dentro de textos enormes (logs, archivos de manifiesto). `str.find` o `in` resuelven el caso normal, pero el mismo problema aparece en buscadores, `grep`, editores y detección de secuencias de ADN, donde un mal algoritmo se vuelve cuadrático.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un semáforo es una máquina de estados: la misma entrada produce efectos distintos según el estado actual. Álgebra booleana modela AND, OR y NOT; un circuito combinacional depende de entradas actuales y uno secuencial conserva memoria. Contadores, registros y memorias almacenan estado. TTL y CMOS describen familias eléctricas con umbrales, alimentación y capacidad de corriente distintos, no solo ceros y unos.
+La búsqueda **ingenua** prueba el patrón en cada posición del texto: O(n·m) en el peor caso. **KMP** precalcula una **tabla de fallos**: para cada prefijo del patrón, cuánto mide el prefijo más largo que también es sufijo. Cuando hay una discrepancia, en vez de retroceder en el texto, salta dentro del patrón usando esa tabla. Así nunca vuelve a leer un carácter del texto: O(n + m).
+
+**Analogía:** si buscas "ABABC" y fallas en la C después de leer "ABAB", ya sabes que las últimas letras leídas ("AB") son el comienzo del patrón: no hace falta volver a leerlas.
+
+**Diagrama:**
+
+```mermaid
+flowchart TD
+    T["texto: ...A B A B X..."] --> F["discrepancia en el 5.º carácter"]
+    F --> S["tabla de fallos de ABAB = 2"]
+    S --> R["continúa comparando desde patrón[2]"]
+```
+
+**Fuentes oficiales y primarias:** [artículo original *Fast Pattern Matching in Strings* alojado por Brown University](https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf), Knuth, Morris y Pratt (1977), y Baase y Van Gelder, cap. 11, pendiente de lectura completa en el disco externo. El artículo establece tiempo proporcional a la suma de las longitudes; esta lección conserva una implementación educativa propia.
+**Conceptos clave:** búsqueda ingenua, prefijo-sufijo, tabla de fallos, KMP, coincidencias solapadas, hash rodante.
+**Cuándo no usarlo:** en Python, `str.find`, `in` y el módulo `re` ya están optimizados en C: úsalos en código real. Implementa KMP para aprender, para entrevistas o cuando trabajes sobre flujos donde no puedes retroceder.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** agrega una búsqueda por texto en los títulos de las tareas y mide la diferencia entre tu KMP y `in`.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `digital.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-for paquete in (False, True):
-    for cerrada in (False, True):
-        # La decisión exige ambas condiciones.
-        despachar = paquete and cerrada
-        print(int(paquete), int(cerrada), int(despachar))
-```
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-python3 digital.py
+mkdir algoritmos && cd algoritmos
 ```
 
-**Salida esperada:**
+Crea `cadenas.py`:
+
+```python
+def busqueda_ingenua(texto, patron):
+    posiciones, comparaciones = [], 0
+    for i in range(len(texto) - len(patron) + 1):
+        j = 0
+        while j < len(patron):
+            comparaciones += 1
+            if texto[i + j] != patron[j]:
+                break
+            j += 1
+        if j == len(patron):
+            posiciones.append(i)
+    return posiciones, comparaciones
+
+def tabla_fallos(patron):
+    # fallo[i] = longitud del prefijo más largo que también es sufijo de patron[:i+1]
+    fallo, k = [0] * len(patron), 0
+    for i in range(1, len(patron)):
+        while k > 0 and patron[i] != patron[k]:
+            k = fallo[k - 1]
+        if patron[i] == patron[k]:
+            k += 1
+        fallo[i] = k
+    return fallo
+
+def kmp(texto, patron):
+    fallo, posiciones, k, comparaciones = tabla_fallos(patron), [], 0, 0
+    for i, c in enumerate(texto):
+        while k > 0 and c != patron[k]:
+            comparaciones += 1
+            k = fallo[k - 1]
+        comparaciones += 1
+        if c == patron[k]:
+            k += 1
+        if k == len(patron):
+            posiciones.append(i - k + 1)
+            k = fallo[k - 1]
+    return posiciones, comparaciones
+
+guia = "A" * 20000 + "B"            # caso adversario: casi coincide en cada posición
+patron = "A" * 50 + "B"
+print("tabla de fallos de 'ABABC':", tabla_fallos("ABABC"))
+print("ingenua:", busqueda_ingenua(guia, patron))
+print("kmp:    ", kmp(guia, patron))
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 cadenas.py
+```
+
+**Resultado esperado:**
 
 ```text
-0 0 0
-0 1 0
-1 0 0
-1 1 1
+tabla de fallos de 'ABABC': [0, 0, 1, 2, 0]
+ingenua: ([19950], 1017501)
+kmp:     ([19950], 39951)
 ```
 
-**Explicación por bloques:** Los dos bucles enumeran cuatro pares de entradas: no son cuatro instantes de una máquina con memoria. `and` exige ambas condiciones y `int` presenta False/True como 0/1. La única salida habilitada es 1,1; el contraejemplo con puerta abierta demuestra la diferencia respecto a `or`.
+Ambos encuentran la misma posición, pero la ingenua hace más de un millón de comparaciones y KMP menos de 40 000, porque el texto está construido para casi coincidir en cada posición.
 
-**Fallo deliberado y diagnóstico:** Cambia and por or: permite despacho con puerta abierta; localiza el contraejemplo en la tabla. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
+**Fallo deliberado:** En `kmp`, después de una coincidencia completa cambia `k = fallo[k - 1]` por `k = 0`. Busca `"AA"` en `"AAAA"`: la versión correcta devuelve `[0, 1, 2]` y la rota `[0, 2]`, porque pierde las coincidencias que se **solapan**.
 
 #### Paso 5 · Práctica guiada
-**Pista específica:** Añade estado BLOQUEADO y exige rearme después de una alarma. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
+Construye a mano la tabla de fallos de `"AABAAAB"` y compárala con la salida de `tabla_fallos`. Explica cada número. **Pista:** recorre el patrón de izquierda a derecha; en cada posición pregúntate qué prefijo del patrón coincide con el final de lo que llevas leído.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Una simulación booleana no verifica rebotes, tiempos de setup/hold ni metastabilidad.
+Implementa **Rabin-Karp** (hash rodante) y compáralo con KMP buscando varios patrones a la vez. Escribe cuándo preferirías cada uno.
 
 #### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
+Entrega la tabla hecha a mano, el caso de solapamiento y la comparación con Rabin-Karp. **¿Por qué es importante?** porque explica por qué herramientas como `grep` son rápidas y entrena el razonamiento sobre invariantes en bucles.
 
-1. ¿Qué diferencia lógica combinacional y secuencial?
-2. ¿Dónde se guarda el estado?
-3. ¿Por qué 3.3 V no siempre es compatible con 5 V?
-
-**Errores comunes:** confundir nivel lógico con tensión sin revisar los umbrales del dispositivo; tratar una entrada flotante como un cero; simplificar la tabla de verdad y eliminar una combinación de seguridad. Si fallas una pregunta, rehaz las cuatro filas del interlock y verifica cuál habilita la puerta.
-
-**Fuente oficial:** [MIT OpenCourseWare: Computation Structures](https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/). Lógica combinacional, tablas de verdad y temporización digital se cubren en ese curso.
-
-### Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones
+### Tema 5: Problemas intratables: P, NP y heurísticas
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC. **En una frase:** Un microcontrolador combina procesador, memoria y periféricos para interactuar con sensores y actuadores. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `microcontroladores.py`.
+Al finalizar podrás explicar qué significa que un problema sea NP-completo, observar el crecimiento factorial de una búsqueda exhaustiva y justificar el uso de una heurística con su costo en calidad. Prerrequisitos: los temas anteriores de este módulo.
 
 #### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** El dispositivo del repartidor convierte la batería en una lectura ADC y reporta autonomía. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+RutaFlow quiere la ruta más corta que visite **todas** las entregas del día y vuelva al depósito: es el **problema del viajante** (TSP). Con 10 entregas hay 362 880 órdenes posibles; con 20, más de 10^17. Ningún servidor lo resuelve por fuerza bruta, y aun así las empresas de logística planean rutas todos los días.
 
 #### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Es una pequeña oficina: CPU decide, memoria conserva trabajo y periféricos atienden entradas y salidas. GPIO lee niveles; ADC cuantiza voltaje; PWM varía el ciclo de trabajo de pulsos. UART es comunicación serial asíncrona; I2C usa direcciones y dos líneas; SPI suele usar reloj y selección de dispositivo. Interrupciones notifican eventos y temporizadores marcan periodos sin bloquear el programa. C/C++ permiten controlar registros y memoria, pero Python aquí solo simula el cálculo.
+**P** son los problemas que se resuelven en tiempo polinómico (ordenar, Dijkstra). **NP** son aquellos cuya solución se puede **verificar** rápido. Un problema es **NP-completo** si está en NP y cualquier problema de NP se reduce a él: si alguien resolviera uno en tiempo polinómico, los resolvería todos. Nadie sabe si P = NP. La versión de decisión del TSP, la mochila y la satisfacibilidad (SAT) son NP-completos. En la práctica se usan **heurísticas** (como el vecino más cercano), algoritmos de aproximación o solvers especializados, aceptando soluciones buenas en vez de óptimas.
+
+**Analogía:** comprobar que un sudoku resuelto es correcto toma un minuto; resolverlo desde cero puede tomar horas.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    P["P: se resuelve rápido"] --> NP["NP: se verifica rápido"]
+    NPC["NP-completos: TSP, SAT, mochila"] --> NP
+```
+
+**Fuentes oficiales y de contraste:** [notas de 6.046J de MIT OpenCourseWare](https://ocw.mit.edu/courses/6-046j-design-and-analysis-of-algorithms-spring-2012/resources/lecture-notes/), en particular la clase 17 de complejidad y NP-completitud y la clase 18 de aproximaciones; Baase y Van Gelder, cap. 13, queda pendiente de lectura completa en el disco externo. Las notas definen P, NP, reducciones y NP-hard; no prueban que toda heurística produzca una aproximación con cota.
+**Conceptos clave:** P, NP, NP-completo, reducción, crecimiento factorial, heurística, aproximación, 2-opt.
+**Cuándo no usarlo:** no uses heurísticas cuando el tamaño es pequeño y fijo (fuerza bruta es exacta y simple) ni cuando necesitas una garantía de optimalidad que el negocio sí exige: ahí van los solvers de programación entera.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** planifica el orden de las tareas de un día con un tiempo máximo y justifica por qué aceptas una solución aproximada.
+Como **siguiente** paso, aplica el algoritmo en el proyecto del capítulo y compara tu medición con la complejidad esperada.
+**Errores comunes:** dar por hecho que el algoritmo es correcto porque funcionó con un solo ejemplo, y medir una sola vez sin repetir.
 
 #### Paso 4 · Demostración guiada desde cero
-Crea `microcontroladores.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-bits, referencia, voltaje = 12, 3.3, 1.65
-maximo = 2 ** bits - 1
-# Cuantización ideal; no representa ruido ni tolerancias.
-codigo = round(voltaje / referencia * maximo)
-reconstruido = codigo / maximo * referencia
-print(f"ADC={codigo}; reconstruido={reconstruido:.4f} V")
-```
+**Ejemplo independiente (desde cero):** este tema se reproduce en una **carpeta vacía**, como **proyecto nuevo**, sin estado de otros temas.
 
 ```bash
-python3 microcontroladores.py
+mkdir algoritmos && cd algoritmos
 ```
 
-**Salida esperada:**
+Crea `np.py`:
+
+```python
+from itertools import permutations
+import random
+import time
+
+def distancia_total(ruta, d):
+    return sum(d[a][b] for a, b in zip(ruta, ruta[1:]))
+
+def tsp_fuerza_bruta(n, d):
+    mejor = None
+    for orden in permutations(range(1, n)):
+        ruta = (0,) + orden + (0,)
+        costo = distancia_total(ruta, d)
+        if mejor is None or costo < mejor[0]:
+            mejor = (costo, ruta)
+    return mejor
+
+def vecino_mas_cercano(n, d):
+    ruta, pendientes = [0], set(range(1, n))
+    while pendientes:
+        siguiente = min(pendientes, key=lambda c: d[ruta[-1]][c])
+        ruta.append(siguiente); pendientes.remove(siguiente)
+    ruta.append(0)
+    return distancia_total(ruta, d), tuple(ruta)
+
+def puntos_de_entrega(n, semilla=1):
+    random.seed(semilla)
+    p = [(random.randint(0, 100), random.randint(0, 100)) for _ in range(n)]
+    return [[round(((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5) for b in p] for a in p]
+
+for n in [6, 8, 10]:
+    d = puntos_de_entrega(n)
+    t = time.perf_counter(); exacto = tsp_fuerza_bruta(n, d); te = time.perf_counter() - t
+    aprox = vecino_mas_cercano(n, d)
+    print(f"n={n:>2}  rutas posibles={len(list(permutations(range(1, n)))):>7}  exacto={exacto[0]:>4} ({te*1000:7.1f} ms)  heurística={aprox[0]:>4}")
+```
+
+**Ejecuta el ejemplo:**
+
+```bash
+python3 np.py
+```
+
+**Resultado esperado:**
 
 ```text
-ADC=2048; reconstruido=1.6504 V
+n= 6  rutas posibles=    120  exacto= 284 (    0.1 ms)  heurística= 318
+n= 8  rutas posibles=   5040  exacto= 291 (    2.4 ms)  heurística= 336
+n=10  rutas posibles= 362880  exacto= 303 (  197.1 ms)  heurística= 363
 ```
 
-**Explicación por bloques:** 12 bits representan 4096 códigos de 0 a 4095; por eso `maximo` resta uno. `round` asigna 1.65 V al código 2048, y la operación inversa da 1.6504 V. Este modelo de escala es didáctico: el fabricante puede especificar umbrales y LSB con otra convención. El error de redondeo no representa toda la incertidumbre.
+Cada vez que n sube en 2 el tiempo exacto se multiplica por unas 80. La heurística es instantánea, pero entrega rutas entre 12 % y 20 % más largas.
 
-**Fallo deliberado y diagnóstico:** Usa referencia=5 con una placa de 3.3 V: la conversión reporta un voltaje incorrecto. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
+**Fallo deliberado:** Ejecuta `tsp_fuerza_bruta` con `n = 12`. Revisa unos 40 millones de rutas y tarda decenas de segundos; con `n = 14` serían más de 6 000 millones y tardaría horas. Ese "error" no es un bug: es el crecimiento factorial. Detén el programa con Ctrl+C.
 
 #### Paso 5 · Práctica guiada
-**Pista específica:** Compara cuantización a 8 y 12 bits; agrega validación de 0 <= voltaje <= referencia. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
+Mejora la heurística con **2-opt**: toma la ruta del vecino más cercano y, mientras invertir un tramo la acorte, inviértelo. Mide cuánto se acerca al óptimo para n = 8 y n = 10. **Pista:** 2-opt prueba todos los pares `(i, j)` y evalúa la ruta `ruta[:i] + ruta[i:j+1][::-1] + ruta[j+1:]`; repite mientras alguna inversión la acorte.
 
 #### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** No se conectan voltajes fuera del rango de un pin. La arquitectura real requiere reloj, datasheet y niveles compatibles.
+Investiga y explica con tus palabras otro problema NP-completo que aparezca en logística (por ejemplo, la mochila al cargar un camión) y qué heurística usarías.
 
 #### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
+Entrega la tabla de tiempos, la mejora con 2-opt y tu explicación del segundo problema. **¿Por qué es importante?** porque reconocer un problema intratable te evita prometer una solución "óptima y rápida" imposible y te lleva a negociar requisitos: calidad suficiente, límite de tiempo o tamaño acotado.
 
-1. ¿Qué hace el ADC?
-2. ¿Por qué PWM no es tensión analógica instantánea?
-3. ¿Qué trabajo debe evitar una interrupción?
+## Construcción guiada del capítulo
 
-**Errores comunes:** dividir por 4095 en vez de 4096 al escalar un ADC de 12 bits; comparar cuentas de placas con distinta referencia; confundir resolución con exactitud. Si fallas una pregunta, calcula la cuenta de 0 V y la de Vref y comprueba que el rango completo ocupa 4096 pasos.
+### Proyecto 12: planificador de entregas de RutaFlow
 
-**Fuente oficial:** [Arduino: entradas analógicas](https://docs.arduino.cc/learn/microcontrollers/analog-input/). La referencia describe `analogRead`, la tensión de referencia y cómo la resolución depende de la placa; el ejemplo usa 12 bits, así que su divisor es 4096.
+Desde una carpeta vacía crea `planificador/`, inicializa Git y construye una herramienta de consola que reciba un archivo `entregas.json` con puntos de entrega, tiempos entre ellos y peso de cada paquete.
 
-### Tema 6: Comunicaciones: modulación y detección de errores
+Fases y commits sugeridos:
 
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad. **En una frase:** Una comunicación codifica información sobre un canal para reconstruirla pese a ruido y limitaciones de ancho de banda. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `comunicaciones.py`.
+1. Carga y validación del JSON (pesos positivos, tiempos no negativos).
+2. Orden de carga por peso con tu `merge_sort` estable.
+3. Tiempo mínimo del depósito a cada punto con Dijkstra.
+4. Ruta del día con vecino más cercano y mejora 2-opt.
+5. Comparación contra la ruta exacta para 8 puntos o menos.
+6. Búsqueda de guías en el manifiesto con KMP.
+7. README con complejidad de cada fase, tabla de tiempos y límites conocidos.
 
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un sensor envía un byte y un bit de paridad; el receptor detecta una alteración simple. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
+**Verificación:** las rutas reconstruidas existen en el grafo; el resultado exacto y el heurístico coinciden en casos pequeños triviales; un tiempo negativo se rechaza con mensaje accionable; el README no afirma optimalidad de la heurística.
 
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Hablar por teléfono separa mensaje, medio y receptor. Modulación modifica amplitud, frecuencia o fase de una portadora; demodulación recupera el mensaje. La teoría de información relaciona incertidumbre, tasa y capacidad. Código de línea representa bits físicamente; antenas y propagación determinan alcance y pérdidas. Detectar un error no equivale a corregirlo ni autenticar al emisor.
+**Errores comunes y soluciones**
 
-#### Paso 4 · Demostración guiada desde cero
-Crea `comunicaciones.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-dato = 0b10110010
-paridad = bin(dato).count("1") % 2
-recibido = dato ^ 0b00000001
-# Un cambio de un bit altera la paridad.
-valido = bin(recibido).count("1") % 2 == paridad
-print(f"Trama válida: {valido}")
-```
-
-```bash
-python3 comunicaciones.py
-```
-
-**Salida esperada:**
-
-```text
-Trama válida: False
-```
-
-**Explicación por bloques:** `bin(x).count("1")` cuenta los bits en 1 del byte; el módulo dos calcula paridad. XOR con 1 invierte un bit sin tocar los demás. El receptor vuelve a calcular y compara: una cuenta impar cambia de paridad. Invertir dos bits puede mantenerla, así que el resultado True no demostraría integridad completa.
-
-**Fallo deliberado y diagnóstico:** Invierte dos bits con ^ 0b00000011: la paridad acepta una trama corrupta; identifica su límite. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Propón CRC para detección y un MAC para autenticidad; explica qué problema resuelve cada uno. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El ejemplo opera sobre bits ideales; no modela BER, sincronización ni presupuesto de enlace.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué modula una portadora?
-2. ¿Por qué paridad falla con dos cambios?
-3. ¿Detectar errores autentica al sensor?
-
-**Errores comunes:** suponer que un bit de paridad detecta cualquier error; confundir detección con corrección; comparar protocolos sin contar la cabecera. Si fallas una pregunta, altera dos bits del mismo mensaje y explica por qué la paridad vuelve a coincidir.
-
-**Fuente oficial:** [MIT OpenCourseWare: Digital Communication Systems](https://ocw.mit.edu/courses/6-02-introduction-to-eecs-ii-digital-communication-systems-fall-2012/). Detección de errores, codificación y capacidad del canal se tratan con el formalismo que el tema solo introduce.
-
-### Tema 7: Señales y sistemas: muestreo, Fourier y convolución
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo. **En una frase:** Una señal describe una magnitud que cambia y un sistema transforma esa señal para medir o controlar algo. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `senales.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un sensor vibratorio de 7 Hz muestreado a 10 Hz produce muestras indistinguibles de otra frecuencia. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Tomar fotos de una rueda ilustra el muestreo: si fotografías demasiado lento puede parecer que gira al revés. Un sistema LTI es lineal e invariante en el tiempo; su salida es la convolución de entrada con respuesta al impulso. Correlación mide semejanza a distintos desplazamientos. Fourier analiza frecuencias y Laplace incluye dinámica y condiciones de convergencia. Reconstrucción exige señal acotada en banda y filtrado antialias previo.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `senales.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-import math
-fs = 10
-a = [math.cos(2 * math.pi * 7 * n / fs) for n in range(10)]
-b = [math.cos(2 * math.pi * 3 * n / fs) for n in range(10)]
-# El alias se comprueba sobre todas las muestras.
-print(f"Diferencia máxima: {max(abs(x-y) for x,y in zip(a,b)):.6f}")
-```
-
-```bash
-python3 senales.py
-```
-
-**Salida esperada:**
-
-```text
-Diferencia máxima: 0.000000
-```
-
-**Explicación por bloques:** Ambas listas toman diez muestras en los mismos instantes n/fs. Una describe coseno de 7 Hz y otra de 3 Hz; a 10 muestras/s sus valores coinciden por periodicidad y simetría del coseno. `max(abs(...))` comprueba toda la secuencia; la salida redondeada a seis decimales oculta solo residuos de coma flotante, no la identidad de las señales continuas.
-
-**Fallo deliberado y diagnóstico:** Concluye que la señal original era de 3 Hz: el fallo es inferir frecuencia sin controlar el muestreo. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Sube fs a 20 y compara otra vez; explica el criterio fs > 2·fmax. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El teorema ideal no garantiza reconstrucción con ruido, banda desconocida o reloj irregular.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué conserva una muestra?
-2. ¿Qué es aliasing?
-3. ¿Por qué el filtro antialias debe actuar antes del ADC?
-
-**Errores comunes:** inferir la frecuencia original mirando solo las muestras; muestrear sin filtro antialias; confundir la frecuencia de Nyquist con el doble de la frecuencia de muestreo. Si fallas una pregunta, sube `fs` a 20 y repite la comparación antes de afirmar qué señal se observó.
-
-**Fuente oficial:** [MIT OpenCourseWare: Signals and Systems](https://ocw.mit.edu/courses/6-003-signals-and-systems-fall-2011/). El muestreo y el teorema de Nyquist se desarrollan allí; para implementar filtros en Python, [SciPy Signal](https://docs.scipy.org/doc/scipy/reference/signal.html).
-
-**Diagrama interactivo:** [Muestreo y aliasing: 7 Hz y 3 Hz a 10 muestras/s](/visuals/temas/foundations/modulo-12-tema-7-aliasing.html).
-
-### Tema 8: DSP: filtros digitales y compresión
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal. **En una frase:** El procesamiento digital de señales transforma muestras para reducir ruido, extraer información o reducir almacenamiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `dsp.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La temperatura del paquete tiene un pico aislado; una media móvil lo atenúa sin demostrar que el pico fuera falso. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Promediar varias opiniones reduce fluctuaciones, pero retrasa una noticia nueva: un filtro también introduce compromiso entre ruido y respuesta. Un FIR combina muestras finitas; un IIR reutiliza salidas y necesita estabilidad. La transformada Z estudia sistemas discretos; polos y ceros condicionan respuesta. Compresión sin pérdida conserva muestras y con pérdida admite distorsión a cambio de menor tamaño; audio, imagen y video requieren métricas apropiadas.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `dsp.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-muestras = [20, 20, 29, 20, 20]
-ventana = 3
-# Media causal: solo usa presente y pasado.
-filtradas = [sum(muestras[i-ventana+1:i+1]) / ventana
-             for i in range(ventana-1, len(muestras))]
-print(filtradas)
-```
-
-```bash
-python3 dsp.py
-```
-
-**Salida esperada:**
-
-```text
-[23.0, 23.0, 23.0]
-```
-
-**Explicación por bloques:** La ventana incluye tres muestras y el primer índice de salida es dos: no se inventan datos anteriores. Cada ventana alrededor del pico suma 69 y su promedio es 23. Se emiten tres salidas correspondientes a posiciones 2, 3 y 4. Un filtro de longitud tres tiene retardo de grupo de una muestra en su régimen FIR lineal; una alarma exige analizar también el umbral de detección.
-
-**Fallo deliberado y diagnóstico:** Usa el promedio para ocultar una alarma real; diagnostica comparando señal cruda y filtrada. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Procesa [20,20,29,29,29]; mide cuándo el filtro reconoce el escalón. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** No suavices señales de seguridad sin especificar tiempo máximo de detección. Conserva muestras originales.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Por qué aparece retardo?
-2. ¿Cuál es la diferencia FIR/IIR?
-3. ¿Qué evidencia permite elegir una ventana?
-
-**Errores comunes:** centrar una ventana causal y adelantar la salida en el tiempo; usar el suavizado para ocultar una alarma sin medir el retardo; comparar señales sin alinear sus índices. Si fallas una pregunta, filtra un escalón y anota en qué muestra la salida alcanza el nuevo nivel.
-
-**Fuente oficial:** [SciPy: referencia de `scipy.signal`](https://docs.scipy.org/doc/scipy/reference/signal.html). Allí se documentan filtros FIR/IIR, `lfilter` y `filtfilt`; la diferencia entre filtrado causal y de fase cero se explica en la guía de procesamiento de señal.
-
-**Diagrama interactivo:** [Media móvil causal: ventanas, salida y retardo](/visuals/temas/foundations/modulo-12-tema-8-media-movil.html).
-
-### Tema 9: Instrumentación: calibración, DAQ e incertidumbre
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto. **En una frase:** La instrumentación convierte una magnitud física en una medición con unidades, calibración y límites conocidos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `sensores.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Dos referencias permiten corregir ganancia y offset de un sensor térmico del transporte. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Una regla desplazada puede medir siempre dos centímetros de más: muchos dígitos no la vuelven exacta. Sensores de temperatura, presión, humedad, luz y posición requieren acondicionamiento y adquisición DAQ. Calibración compara referencias; linealización corrige una curva; transductores convierten energía y actuadores cambian el entorno. Resolución, repetibilidad, exactitud e incertidumbre describen propiedades distintas.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `sensores.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-raw_frio, raw_caliente = 102, 902
-ref_frio, ref_caliente = 0.0, 100.0
-pendiente = (ref_caliente-ref_frio) / (raw_caliente-raw_frio)
-offset = ref_frio - pendiente * raw_frio
-# Modelo lineal válido entre referencias bajo estas condiciones.
-print(f"Temperatura: {pendiente * 502 + offset:.2f} °C")
-```
-
-```bash
-python3 sensores.py
-```
-
-**Salida esperada:**
-
-```text
-Temperatura: 50.00 °C
-```
-
-**Explicación por bloques:** La pendiente convierte diferencias de cuentas a grados: 100/800=0.125 °C/cuenta. El offset obliga a que la cuenta 102 represente 0 °C. La cuenta 502 queda 400 cuentas por encima y produce 50 °C. El tercer punto permite detectar que una recta de dos puntos puede no representar la curva real.
-
-**Fallo deliberado y diagnóstico:** Introduce raw_caliente=102: ZeroDivisionError revela referencias indistinguibles; revisa adquisición y configuración. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Comprueba un tercer punto a 25 °C; calcula residuo y documenta incertidumbre de la referencia. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Dos puntos no prueban linealidad ni cubren deriva temporal; no extrapoles sin caracterización.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué es offset?
-2. ¿Qué distingue resolución y exactitud?
-3. ¿Por qué se necesita un tercer punto?
-
-**Errores comunes:** extrapolar fuera del intervalo calibrado; confundir resolución con exactitud; aceptar una recta de dos puntos sin una tercera referencia. Si fallas una pregunta, agrega un punto intermedio, calcula su residuo y documenta la incertidumbre antes de aprobar el sensor.
-
-**Fuente oficial:** [NIST Technical Note 1297: incertidumbre de medida](https://www.nist.gov/pml/nist-technical-note-1297). Es la guía de referencia para expresar incertidumbre; la calibración concreta depende del certificado y del instrumento patrón.
-
-### Tema 10: Control automático: realimentación, PID y estabilidad
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás simular un lazo proporcional y explicar su error estacionario. **En una frase:** El control automático compara una medición con una referencia y ajusta una acción para reducir el error. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `control.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Se simula la temperatura de un compartimento con pérdidas y potencia acotada. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un termostato compara temperatura deseada y real. El modelo de planta describe su dinámica; P reacciona al error, I lo acumula y D estima su cambio. Saturación exige anti-windup. Bode, Nyquist y Routh permiten analizar estabilidad bajo sus supuestos; ver una respuesta rápida no demuestra margen ante retardo o perturbaciones. Compensadores modifican la dinámica del lazo.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `control.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-temperatura, referencia = 20.0, 25.0
-for _ in range(100):
-    error = referencia - temperatura
-    # Control P con saturación y planta discreta de primer orden.
-    potencia = min(10.0, max(0.0, 2 * error))
-    temperatura += 0.1 * (potencia - (temperatura - 20))
-print(f"Temperatura: {temperatura:.2f} °C")
-```
-
-```bash
-python3 control.py
-```
-
-**Salida esperada:**
-
-```text
-Temperatura: 23.33 °C
-```
-
-**Explicación por bloques:** Cada iteración calcula error, potencia saturada y actualización de la planta. La planta pierde energía proporcional a T−20. En equilibrio 2·(25−T)=T−20, de modo que T=70/3≈23.33 °C. El periodo implícito y el modelo térmico están fijados en esta simulación; una temperatura diferente no se corrige aumentando Kp sin estudiar estabilidad.
-
-**Fallo deliberado y diagnóstico:** Espera 25 °C exactos: el control P deja error estacionario por las pérdidas; el diagnóstico usa equilibrio de la planta. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Añade acción integral con límite y prueba una referencia inalcanzable antes de volver a 25 °C. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** La simulación no certifica un controlador físico; mide retardo, saturación y margen de estabilidad.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué variable se realimenta?
-2. ¿Por qué P deja error?
-3. ¿Qué ocurre con la integral cuando el actuador satura?
-
-**Errores comunes:** subir Kp para eliminar el error estacionario sin revisar estabilidad; ignorar la saturación del actuador; confundir error de régimen con lentitud de respuesta. Si fallas una pregunta, calcula el equilibrio de la planta y explica por qué la temperatura no llega a la referencia.
-
-**Fuente oficial:** [MIT OpenCourseWare: Feedback Systems](https://ocw.mit.edu/courses/6-302-feedback-systems-spring-2007/). Realimentación, estabilidad y análisis de lazo cerrado se cubren en ese curso; el PID con anti-windup requiere además la hoja del fabricante del controlador.
-
-**Diagrama interactivo:** [Lazo proporcional: realimentación y error estacionario](/visuals/temas/foundations/modulo-12-tema-10-lazo-p.html).
-
-### Tema 11: Potencia: conversión, eficiencia y disipación
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC. **En una frase:** La electrónica de potencia transforma energía eléctrica para alimentar cargas dentro de límites eléctricos y térmicos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `potencia.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La unidad de seguimiento requiere 5 V y 1 A desde la batería de 12 V de un vehículo. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un convertidor se parece a una transmisión: cambia la relación de salida, no crea energía. Rectificadores convierten AC en DC; inversores hacen DC a AC; buck reduce DC y boost la eleva. En un buck ideal Vout=D·Vin. Motores requieren dimensionar arranque, conmutación y protecciones; las fuentes conmutadas disipan pérdidas y generan rizado. La temperatura depende de pérdidas y resistencia térmica.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `potencia.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-vin, vout, corriente, eficiencia = 12, 5, 1, 0.9
-duty = vout / vin
-pout = vout * corriente
-pin = pout / eficiencia
-# Las pérdidas se convierten principalmente en calor.
-print(f"Duty={duty:.3f}; pérdidas={pin-pout:.3f} W")
-```
-
-```bash
-python3 potencia.py
-```
-
-**Salida esperada:**
-
-```text
-Duty=0.417; pérdidas=0.556 W
-```
-
-**Explicación por bloques:** El duty ideal es 5/12 y la potencia de salida 5·1=5 W. Dividir por eficiencia 0.9 exige entrada de 5.556 W. La diferencia 0.556 W es la pérdida total del modelo; no puede atribuirse entera a un MOSFET sin descomponer pérdidas. La resistencia térmica permite una estimación preliminar de temperatura.
-
-**Fallo deliberado y diagnóstico:** Fija eficiencia=1.2: el modelo produce pérdidas negativas; diagnostica una entrada físicamente inválida. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Calcula pérdidas a 80% y aumento térmico con 40 °C/W; compara con el límite del componente. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Estos cálculos no dimensionan inductancia, MOSFET, SOA, aislamiento ni compensación del convertidor; el laboratorio es numérico.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué significa duty?
-2. ¿Por qué hay pérdidas?
-3. ¿Por qué medir eficiencia a varias cargas?
-
-**Errores comunes:** confundir duty con eficiencia; usar una eficiencia mayor que 1 y obtener pérdidas negativas; atribuir toda la pérdida a un solo componente sin descomponerla. Si fallas una pregunta, recalcula con 80% y comprueba que la entrada sigue siendo mayor que la salida.
-
-**Fuente oficial:** [MIT OpenCourseWare: Power Electronics](https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/). Convertidores buck y boost, conmutación y pérdidas se analizan allí; inductancia, MOSFET y lazo de compensación exigen el diseño completo del convertidor.
-
-### Tema 12: PCB: esquemático, ERC, DRC y fabricación
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa. **En una frase:** El diseño de PCB convierte un circuito en conexiones físicas fabricables con reglas eléctricas y geométricas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `pcb.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La placa del sensor tiene dos pistas paralelas cuyo espacio debe respetar la regla del fabricante. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** El esquemático es el plano de conexiones y el layout es la distribución real de calles. ERC encuentra incompatibilidades eléctricas y DRC verifica geometría; ninguno demuestra funcionamiento. Retorno de corriente, desacoplo, integridad de señal y gestión térmica importan tanto como unir redes. KiCad organiza esquemático, placa, BOM y Gerbers; el fabricante define anchos, separaciones y tolerancias.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `pcb.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-centros_mm, ancho_a, ancho_b, minimo = 0.50, 0.30, 0.30, 0.25
-# Distancia de centros menos ambas mitades de pista.
-espacio = centros_mm - (ancho_a + ancho_b) / 2
-print(f"Espacio={espacio:.2f} mm; cumple={espacio >= minimo}")
-```
-
-```bash
-python3 pcb.py
-```
-
-**Salida esperada:**
-
-```text
-Espacio=0.20 mm; cumple=False
-```
-
-**Explicación por bloques:** Los centros están a 0.50 mm y cada pista ocupa 0.15 mm a cada lado de su centro. Restar ambas mitades deja 0.20 mm entre bordes, menor que 0.25 mm permitidos. Esta relación solo corresponde a pistas paralelas con esa geometría; un verificador de placa analiza todos los objetos y reglas de red.
-
-**Fallo deliberado y diagnóstico:** Compara distancia entre centros con mínimo: acepta falsamente las pistas; diagnostica midiendo borde a borde. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Aumenta centros a 0.60 mm y reproduce la restricción en KiCad con ERC/DRC y captura de resultados. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo es una regla geométrica introductoria; no sustituye KiCad, revisión de retorno, EMC ni pruebas de placa. Como extensión opcional, reproduce el ejemplo en un proyecto de KiCad (esquemático y layout) y ejecuta ERC/DRC. Fuente específica: https://docs.kicad.org/
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué compara DRC?
-2. ¿Qué diferencia esquemático y layout?
-3. ¿Dónde regresa la corriente?
-
-**Errores comunes:** confundir ERC (conectividad y reglas eléctricas) con DRC (geometría); aceptar un clearance menor que la regla sin justificarlo; medir en unidades de pantalla en vez de milímetros. Si fallas una pregunta, abre el reporte de DRC y localiza el par de pistas que incumple antes de mover nada.
-
-**Fuente oficial:** [Documentación de KiCad](https://docs.kicad.org/). Allí se describen el editor de PCB, las reglas de diseño y el DRC; los valores de clearance de fabricación se contrastan con la capacidad del fabricante, no con el ejemplo.
-
-### Tema 13: Sistemas embebidos: RTOS, buses y firmware
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales. **En una frase:** Un sistema embebido ejecuta una tarea dedicada y coordina hardware y software con restricciones de tiempo, memoria y energía. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `embebidos.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** El sensor debe adquirir temperatura cada 20 ms y publicar cada 100 ms. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Una cocina con varias órdenes requiere prioridad y plazos, no solo velocidad media. RTOS planifica tareas; tiempo real significa cumplir deadlines. SPI, I2C, CAN y USB tienen contratos y costes distintos; firmware inicializa hardware, valida datos y recupera fallos. IoT añade conectividad, identidad y actualizaciones. Una tarea que bloquea un bus puede impedir medir a tiempo aunque la CPU esté libre.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `embebidos.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-def simular_rms(tareas, horizonte_ms):
-    """Planificación por prioridad fija Rate Monotonic (menor periodo = mayor
-    prioridad), con preempción real tick a tick (resolución 1 ms). Un deadline
-    incumplido se detecta observando la ejecución -- no sumando utilización --:
-    ocurre cuando llega una nueva instancia de una tarea y la anterior todavía
-    tiene trabajo pendiente."""
-    orden = sorted(tareas, key=lambda t: t[2])  # menor periodo primero
-    restante = {nombre: 0 for nombre, _, _ in tareas}
-    fallos = []
-    for tick in range(horizonte_ms):
-        for nombre, coste, periodo in tareas:
-            if tick % periodo == 0:
-                if restante[nombre] > 0:
-                    fallos.append((tick, nombre, restante[nombre]))
-                restante[nombre] = coste
-        activa = next((nombre for nombre, _, _ in orden if restante[nombre] > 0), None)
-        if activa:
-            restante[activa] -= 1
-    return fallos
-
-
-tareas = [("sensor", 2, 20), ("publicar", 5, 100)]
-fallos = simular_rms(tareas, horizonte_ms=200)
-print(f"Deadlines incumplidos en 200 ms simulados: {len(fallos)}")
-for tick, nombre, pendiente in fallos:
-    print(f"  t={tick}ms tarea={nombre}: quedan {pendiente}ms de la instancia anterior")
-```
-
-```bash
-python3 embebidos.py
-```
-
-**Salida esperada:**
-
-```text
-Deadlines incumplidos en 200 ms simulados: 0
-```
-
-**Explicación por bloques:** `simular_rms` avanza un reloj discreto de 1 ms. En cada tick, si una tarea cumple su periodo, libera una nueva instancia: si la anterior no terminó (`restante > 0`), eso es un deadline incumplido real, no una cuenta de utilización. Luego la CPU ejecuta un ms de la tarea de mayor prioridad (menor periodo, Rate Monotonic) que tenga trabajo pendiente -- hay preempción real: `sensor` (periodo 20) interrumpe a `publicar` (periodo 100) cuando ambas compiten. Con sensor=2/20 y publicar=5/100 (15% de utilización combinada) la simulación no registra ningún incumplimiento en 200 ms.
-
-**Fallo deliberado y diagnóstico:** agrega una tercera tarea `("reportes", 100, 100)` a la lista (cuesta 100 ms y se repite cada 100 ms: sola ya ocupa el 100% de la CPU). Al volver a ejecutar, la simulación real -- no una fórmula -- reporta `Deadlines incumplidos en 200 ms simulados: 1` con `t=100ms tarea=reportes: quedan 15ms de la instancia anterior`: la sobrecarga se ve en la ejecución, con el tick y la tarea exactos que fallaron. Conserva ambas salidas y corrige la entrada o condición responsable (quitar `reportes` o bajarle el coste) antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** agregá un parámetro `bloqueo_bus_ms` que, cuando `sensor` necesita el bus, le reste tiempo de CPU a `publicar` aunque `sensor` no esté listo todavía (inversión de prioridad simplificada), y contá cuántos deadlines se incumplen con distintos valores; explicá por qué el promedio de utilización no avisa de este caso. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El modelo ignora jitter, inversión de prioridad y WCET real. La validación de tiempo exige mediciones y análisis de planificación.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué es un deadline?
-2. ¿Por qué baja utilización no prueba cumplimiento?
-3. ¿Qué hace firmware cuando pierde red?
-
-**Errores comunes:** sumar utilizaciones y concluir que se cumplen deadlines; ignorar la inversión de prioridad y el bloqueo de bus; confundir tiempo real con velocidad media. Si fallas una pregunta, ejecuta la simulación con la tarea de 100 ms y localiza el tick exacto del incumplimiento.
-
-**Fuente oficial:** [Zephyr: planificación del kernel](https://docs.zephyrproject.org/latest/kernel/services/scheduling/index.html). La documentación describe prioridades, preempción y planificación; garantías temporales de un sistema concreto exigen medir WCET, jitter y bloqueos.
-
-### Tema 14: Programación de bajo nivel: C, memoria y depuración
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness. **En una frase:** La programación de bajo nivel controla representación y memoria para implementar firmware y diagnosticar errores cercanos al hardware. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `bajo-nivel.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un mensaje UART transmite una medición sin signo de 16 bits en little-endian. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un buffer es una fila de casillas con capacidad fija; escribir fuera invade otra responsabilidad. C/C++ dan control explícito y requieren ownership, límites y vida útil; ASM expresa instrucciones de máquina. Estructuras y algoritmos condicionan coste; depuración con GDB, warnings y sanitizers ayuda a localizar errores. Python puede ensayar un contrato binario, pero no reproduce comportamiento indefinido de C.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `bajo-nivel.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-import struct
-medicion = 513
-# Contrato explícito: dos bytes, sin signo, little-endian.
-trama = struct.pack("<H", medicion)
-print(trama.hex(), struct.unpack("<H", trama)[0])
-```
-
-```bash
-python3 bajo-nivel.py
-```
-
-**Salida esperada:**
-
-```text
-0102 513
-```
-
-**Explicación por bloques:** `<H` indica unsigned short de dos bytes en little-endian. 513=2·256+1 se representa como bytes 01 y 02; `hex` muestra 0102 y `unpack` reconstruye 513. Leer esos bytes en big-endian calcula 1·256+2=258, un valor legal pero incorrecto que podría pasar inadvertido sin comprobar el contrato.
-
-**Fallo deliberado y diagnóstico:** Decodifica con >H: obtienes 258; diagnostica el desacuerdo de endianness entre emisor y receptor. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Prueba 65535, 65536 y una trama de un byte; registra errores y exige tamaño antes de decodificar. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Un contrato binario no gestiona ownership ni sincronización. Para C usa compilación con warnings y AddressSanitizer en un entorno compatible.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué significa little-endian?
-2. ¿Cuántos valores caben en 16 bits?
-3. ¿Por qué C necesita comprobar límites?
-
-**Errores comunes:** decodificar sin acordar endianness y tamaño; suponer que `<H` acepta cualquier valor sin comprobar el rango; confundir un valor legal con un valor correcto. Si fallas una pregunta, empaqueta 513 y 65536 y anota qué bytes o excepción aparecen en cada caso.
-
-**Fuente oficial:** [Python: módulo `struct`](https://docs.python.org/3/library/struct.html). La tabla de formatos define tamaño y alineación; para C, el contrato equivalente se consulta en la norma del lenguaje y en la documentación del compilador.
-
-### Tema 15: Electromagnetismo: Faraday y líneas de transmisión
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo. **En una frase:** El electromagnetismo relaciona cargas, campos y ondas para entender interferencia, antenas y señales rápidas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `electromagnetismo.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** Un cable de sensor cercano a un motor capta tensión inducida por un campo cambiante. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Un lazo de cable funciona como una pequeña antena: capta cambios de flujo magnético. Coulomb describe fuerzas entre cargas; Faraday relaciona variación de flujo con tensión inducida; Maxwell unifica campos eléctricos y magnéticos. Ondas y líneas de transmisión requieren considerar velocidad de propagación, impedancia y terminaciones cuando el retardo no es despreciable frente al flanco.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `electromagnetismo.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-area, cambio_campo, intervalo = 0.001, 0.01, 0.001
-# Campo uniforme y perpendicular; una sola vuelta.
-voltaje = -area * cambio_campo / intervalo
-print(f"Tensión inducida: {voltaje:.3f} V")
-```
-
-```bash
-python3 electromagnetismo.py
-```
-
-**Salida esperada:**
-
-```text
-Tensión inducida: -0.010 V
-```
-
-**Explicación por bloques:** El cambio de flujo es área por cambio de campo bajo orientación perpendicular. Dividir 0.001·0.01 por 0.001 s da 0.01 V; el signo menos expresa oposición al cambio según la orientación de referencia. Reducir área reduce magnitud; no modifica el hecho de que la inducción necesita variación de flujo.
-
-**Fallo deliberado y diagnóstico:** Usa 10 cm² como 10 m²: el error de conversión domina el resultado; convierte primero a 0.001 m². Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Reduce el área del lazo diez veces; explica por qué trenzar conductores puede reducir captación. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** El cálculo supone geometría y campo uniformes; no reemplaza simulación EM ni ensayos de compatibilidad.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué cambia para inducir tensión?
-2. ¿Qué expresa el signo negativo?
-3. ¿Cuándo una pista exige modelo de línea?
-
-**Errores comunes:** convertir cm² a m² dividiendo por 100 en vez de 10 000; olvidar que la inducción exige flujo variable; ignorar la orientación del lazo respecto al campo. Si fallas una pregunta, repite el cálculo con el área en m² y con el lazo paralelo al campo.
-
-**Fuente oficial:** [MIT OpenCourseWare: Electricity and Magnetism](https://ocw.mit.edu/courses/8-02-physics-ii-electricity-and-magnetism-spring-2007/). Ley de Faraday, flujo e inducción se desarrollan allí; el comportamiento de una pista rápida exige además simulación electromagnética.
-
-### Tema 16: Gestión profesional: requisitos, riesgos y evidencia
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida. **En una frase:** La gestión técnica convierte una necesidad en entregables comprobables y decisiones documentadas que un equipo puede mantener. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `gestion.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** RutaFlow acepta un sensor si su error máximo medido es menor o igual a 0.5 °C en los puntos acordados. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Construir un puente exige acordar carga, plazo y prueba de aceptación antes de elegir materiales. Documentación técnica captura supuestos y decisiones; trabajo en equipo necesita interfaces y responsables; pensamiento crítico separa observación y explicación. Innovación y aprendizaje continuo consisten en experimentar con criterios, no perseguir herramientas sin objetivo.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `gestion.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-referencias = [0, 25, 50]
-medidas = [0.2, 25.4, 49.7]
-# La aceptación parte de un requisito medible.
-errores = [abs(a-b) for a,b in zip(referencias, medidas)]
-print(f"Error máximo={max(errores):.2f} °C; acepta={max(errores) <= 0.5}")
-```
-
-```bash
-python3 gestion.py
-```
-
-**Salida esperada:**
-
-```text
-Error máximo=0.40 °C; acepta=True
-```
-
-**Explicación por bloques:** `zip` empareja tres medidas con sus referencias; `abs` convierte diferencias firmadas en magnitudes de error. Los errores son 0.2, 0.4 y 0.3 °C; máximo 0.4 cumple el umbral 0.5. La conclusión se limita a estos puntos y condiciones: una medida válida en laboratorio no acredita todo rango ni meses de uso.
-
-**Fallo deliberado y diagnóstico:** Modifica 49.7 a 48: la aceptación falla; no cambies el umbral para ocultar el defecto. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Redacta requisito de latencia, dueño, riesgo y plan de prueba; agrega una decisión sobre recalibración. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Tres muestras no demuestran exactitud en todo rango; define cobertura, condiciones y evidencia antes de aprobar.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué hace verificable un requisito?
-2. ¿Por qué documentar supuestos?
-3. ¿Quién decide si una desviación es aceptable?
-
-**Errores comunes:** redactar un requisito sin umbral ni condición de medida; cambiar el umbral para que pase la prueba; presentar tres puntos como cobertura de todo el rango. Si fallas una pregunta, escribe la evidencia que falta (punto, condición y responsable) antes de declarar aceptado el sensor.
-
-**Fuente oficial:** [MIT OpenCourseWare: Fundamentals of Systems Engineering](https://ocw.mit.edu/courses/16-842-fundamentals-of-systems-engineering-fall-2015/). El curso cubre requisitos, verificación y gestión de riesgos; la aceptación formal de un producto se rige además por el contrato y la norma aplicable.
-
-### Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3
-
-#### Paso 1 · Objetivo y preparación
-Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha. **En una frase:** Un PLC lee entradas, ejecuta lógica y actualiza salidas cíclicamente para controlar procesos industriales. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `plc.py`.
-
-#### Paso 2 · Contexto y caso real
-**¿Por qué es importante?** La cinta del almacén debe detenerse si se abre una puerta o se activa una alarma. En el proyecto integrador de RutaFlow documenta esta decisión antes de enviar mediciones al backend: el valor calculado solo tiene sentido junto a sus condiciones y unidades.
-
-#### Paso 3 · Teoría, modelo mental y analogía
-**Analogía y mecanismo:** Es un supervisor que toma una foto de entradas, decide y publica órdenes en cada ronda. El ciclo de scan no es instantáneo: entradas pueden cambiar entre rondas. IEC 61131-3 define lenguajes de programación de controladores; Structured Text y Ladder tienen semántica y herramientas propias. Variables globales, bus de campo, HMI y registro cumplen funciones distintas. Una HMI muestra y solicita acciones; el control valida interlocks.
-
-#### Paso 4 · Demostración guiada desde cero
-Crea `plc.py` en una carpeta vacía. Ejecuta primero `mkdir practica && cd practica` y luego escribe manualmente el archivo:
-
-```python
-entradas = {"marcha": True, "puerta_cerrada": False, "alarma": False}
-# Interlock: marcha solicitada no basta para habilitar motor.
-motor = entradas["marcha"] and entradas["puerta_cerrada"] and not entradas["alarma"]
-print(f"Motor habilitado: {motor}")
-```
-
-```bash
-python3 plc.py
-```
-
-**Salida esperada:**
-
-```text
-Motor habilitado: False
-```
-
-**Explicación por bloques:** El diccionario representa la foto de entradas de un scan. Se necesita marcha, puerta cerrada y ausencia de alarma simultáneamente. La puerta False deshabilita la salida aunque exista marcha True. La asignación produce la decisión de un ciclo; el código no contiene memoria de rearme, ni watchdog ni circuito independiente de seguridad.
-
-**Fallo deliberado y diagnóstico:** Elimina puerta_cerrada de la condición: el motor se habilita; diagnostica ausencia de interlock mediante tabla de entradas. Conserva ambas salidas y corrige la entrada o condición responsable antes de continuar.
-
-#### Paso 5 · Práctica guiada
-**Pista específica:** Construye la tabla completa y agrega política de rearme manual; describe entradas, lógica, salidas y tiempo máximo de respuesta. Cambia una sola variable y escribe la predicción antes de ejecutar. No tomes una salida diferente como error hasta contrastarla con el modelo.
-
-#### Paso 6 · Práctica independiente
-Integra este resultado en el registro del sensor del proyecto transversal RutaFlow: escribe entrada, unidad, resultado y condición del ensayo. **Límites y decisión de uso:** Python simula lógica, no es runtime PLC ni implementación de seguridad funcional. Consulta documentación del controlador y edición aplicable del estándar; un interlock didáctico no certifica una máquina.
-
-#### Paso 7 · Cierre
-Entrega el archivo, salida normal, fallo diagnosticado y resultado de la práctica; explica qué supuesto cambiaste. Para avanzar al siguiente tema, contesta sin mirar:
-
-1. ¿Qué ocurre en un scan?
-2. ¿Quién valida una orden de la HMI?
-3. ¿Por qué se separa control normal y seguridad?
-
-**Errores comunes:** confundir la HMI con el control de seguridad; asumir que un scan es instantáneo; presentar un interlock didáctico como seguridad funcional certificada. Si fallas una pregunta, dibuja la tabla de entradas del scan y localiza qué combinación habilita el motor sin puerta cerrada.
-
-**Fuente oficial:** [IEC 61131-3: controladores programables](https://webstore.iec.ch/en/publication/3800). La norma define los lenguajes de programación; el ciclo de scan, el watchdog y la seguridad funcional dependen del controlador y de la edición aplicable del estándar.
-
-**Diagrama interactivo:** [Scan PLC: interlock y actualización de salida](/visuals/temas/foundations/modulo-12-tema-17-plc-scan.html).
-
-## Ampliación: equivalente de Thévenin con tres fuentes
-
-Dibuja primero el circuito a partir de esta descripción: tierra inferior, fuente de 4 V con positivo abajo (`Va=-4 V`), resistencia de carga 6 Ω entre a y b, resistencia de 12 Ω de b a tierra, fuente de 8 V positiva en b y negativa en c (`Vb-Vc=8 V`), otra resistencia de 12 Ω de c a tierra y fuente de 2 A desde tierra hacia c.
-
-Retira la carga. El supernodo b-c cumple `Vb/12 + Vc/12 = 2`; junto con `Vb-Vc=8` da `Vb=16 V`, `Vc=8 V`. Por tanto `Vth=Va-Vb=-20 V`. Para hallar Rth, cortocircuita fuentes independientes de tensión y abre la de corriente: ambas resistencias de 12 Ω quedan en paralelo y `Rth=6 Ω`. Reconecta la carga: `Iab=-20/(6+6)=-5/3 A` y `Vab=Iab·6=-10 V`. El signo indica que b está 10 V por encima de a.
-
-Comprueba por nodos con carga: `(Vb+4)/6 + Vb/12 + Vc/12 = 2` y `Vc=Vb-8`; resulta `Vb=6 V`, `Vc=-2 V`, coherente con `Va-Vb=-10 V`. Para Norton, `In=Vth/Rth=-10/3 A`. Si cambias la polaridad de una fuente, cambia el sistema de ecuaciones antes de ejecutar: no reutilices este resultado para otro circuito.
-
-## Ampliación: cuatro diodos
-
-Dibuja primero el circuito con esta lista de conexiones (todas las tensiones respecto a tierra, 0 V):
-
-- **V1:** fuente de +8 V en el nodo superior izquierdo. **VA:** fija el nodo inferior derecho en −10 V.
-- **R1** = 3 kΩ entre V1 (+8 V) y el nodo x.
-- **D1:** ánodo en x, cátodo en tierra (0 V). **D2:** ánodo en x, cátodo en el nodo y.
-- **R2** = 1 kΩ entre y y el nodo z.
-- **D3** (Zener): ánodo en el nodo de −10 V, cátodo en z.
-- **VB** = 10 V: positivo en y, negativo en el nodo w, así que w = y − 10.
-- **R3** = 1 kΩ entre w y el nodo u.
-- **D4:** ánodo en u, cátodo en el nodo de −10 V.
-
-Modelo de diodo: conducción directa a 0.5 V y ruptura inversa a 8 V. Si cambias la orientación de un diodo, estas ecuaciones deben cambiar. Por VB, w=y-10. Hipótesis: D1 y D2 directos, D3 en ruptura y D4 bloqueado. Entonces x=0.5, y=x-0.5=0, z=-10+8=-2, u=w=-10 V.
-
-La corriente por R1 es (8-0.5)/3000 = 2.5 mA. R2 conduce (0-(-2))/1000 = 2 mA hacia D3; por tanto D2 lleva 2 mA y D1 recibe los 0.5 mA restantes. D3 conduce 2 mA en sentido inverso: ánodo a -10 V y cátodo a -2 V. D4 tiene 0 V ánodo-cátodo y 0 mA, consistente con bloqueo. Se cumplen KCL y las desigualdades de los cuatro estados; asumirlos sin comprobar corrientes no sería una solución.
-
-Para comprobar el modelo, parte de una carpeta vacía y crea manualmente `diodos.py`:
-
-```bash
-mkdir practica-diodos && cd practica-diodos
-```
-
-```python
-from fractions import Fraction as F
-
-izquierda, derecha = F(0), F(-10)
-x, y, z, u = F(1, 2), F(0), F(-2), F(-10)
-w = y - 10
-# Corrientes orientadas de ánodo a cátodo según la lista de conexiones.
-i2 = (y - z) / 1000
-i3 = (z - y) / 1000
-i4 = (w - u) / 1000
-i1 = (8 - x) / 3000 - i2
-
-# KCL en los cuatro nodos desconocidos.
-assert (x - 8) / 3000 + i1 + i2 == 0
-assert (y - z) / 1000 + (w - u) / 1000 - i2 == 0
-assert (z - y) / 1000 - i3 == 0
-assert (u - w) / 1000 + i4 == 0
-# Cada hipótesis debe satisfacer tanto tensión como corriente.
-assert x - izquierda == F(1, 2) and i1 > 0
-assert x - y == F(1, 2) and i2 > 0
-assert derecha - z == -8 and i3 < 0
-assert -8 < u - derecha < F(1, 2) and i4 == 0
-
-print(f"D1 directa: {float(i1 * 1000):.3f} mA")
-print(f"D2 directa: {float(i2 * 1000):.3f} mA")
-print(f"D3 ruptura Zener: {float(-i3 * 1000):.3f} mA (sentido inverso)")
-print("D4 bloqueado: 0.000 mA")
-```
-
-Ejecuta:
-
-```bash
-python3 diodos.py
-```
-
-**Salida esperada:** D1 directa 0.500 mA; D2 directa 2.000 mA; D3 ruptura Zener 2.000 mA inversos; D4 bloqueado 0.000 mA. El archivo usa fracciones exactas para comprobar KCL y condiciones de estado. **Fallo deliberado:** cambia `derecha` a `F(10)` sin reconstruir los demás nodos: las aserciones de polarización fallan y te obligan a revisar el modelo. **Práctica:** calcula `p_r1 = (8 - x) * ((8 - x) / 3000)` y `p_r2 = (y - z) * i2`, y demuestra que ambas potencias son no negativas.
-
-**Límite profesional:** esto valida el modelo de umbral y las polaridades de la lista de conexiones, no curvas reales, temperatura ni potencia máxima de los Zener. La comparación con SPICE y datasheets queda pendiente. No se afirma haber simulado hardware. Como extensión opcional, escribe la lista de conexiones como netlist de `ngspice` y compara sus corrientes con las calculadas aquí.
+- Usar Dijkstra con pesos negativos: valida la entrada o usa Bellman-Ford.
+- Prometer la ruta óptima para 30 puntos: documenta que es una aproximación y mide su calidad en casos pequeños.
+- Implementar un ordenamiento propio en producción: usa `sorted()` salvo que tengas un motivo medido.
+- Olvidar marcar visitados o comprobar ciclos: provoca bucles infinitos o árboles con ciclos.

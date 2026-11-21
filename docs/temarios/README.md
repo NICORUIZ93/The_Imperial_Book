@@ -49,15 +49,16 @@ Todos los integradores trabajan sobre el backend Spring Boot de RutaFlow (specs/
 
 El reparto aprobado (`docs/auditoria/PROPUESTAS-TEMARIO.md` §3) dice «Fundamentos M12: Electrónica, Web3 y
 Docker a sus cursos». En el repositorio:
-- `foundations/modulo-12.md` es **solo Electrónica** (17 temas). No tiene Web3 ni Docker.
+- El que fue `foundations/modulo-12.md` era **solo Electrónica** (17 temas), sin Web3 ni Docker. El 2026-11-21
+  se movió a `control-1/modulo-29.md` y Fundamentos renumeró sus módulos 13/14/15 como 12/13/14.
 - El tema de contenedores de Fundamentos es **M8 T4** «Contenedores: aislamiento reproducible»
   (`foundations/modulo-8.md:324`). El temario de Docker lo cita como origen.
 - El único tema de Web3 es **JavaScript M14 «Web3 y machine learning en navegador»**
   (Tema 6 en el último commit; Tema 3 en la fusión de JavaScript M14 que está sin confirmar en el árbol de trabajo). La auditoría ya proponía moverlo a Blockchain. El temario de Blockchain lo
   cita como origen.
 
-Propuesta: aprobar estos dos orígenes corregidos. Electrónica (Fundamentos M12) tiene su propia propuesta (Control 1
-u optativo de IoT) y no forma parte de estos temarios.
+Propuesta: aprobar estos dos orígenes corregidos. Electrónica ya se resolvió el 2026-11-21: pasó a Control 1 como
+su módulo 29 (Decisión D2 del temario de Fundamentos) y no forma parte de estos temarios.
 
 ## Datos verificados en fuentes primarias para estos temarios
 

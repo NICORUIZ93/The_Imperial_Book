@@ -54,12 +54,12 @@
     },
     {
       "track": "control-1",
-      "modules": 29,
-      "topics": 88,
+      "modules": 30,
+      "topics": 105,
       "levels": {
         "Fundamentos": 6,
         "Aplicación": 6,
-        "Integración": 16,
+        "Integración": 17,
         "Experto": 1
       },
       "missingLevels": [],
@@ -105,11 +105,11 @@
     },
     {
       "track": "foundations",
-      "modules": 16,
-      "topics": 105,
+      "modules": 15,
+      "topics": 88,
       "levels": {
         "Fundamentos": 4,
-        "Aplicación": 4,
+        "Aplicación": 3,
         "Integración": 5,
         "Experto": 3
       },

@@ -4,6 +4,14 @@
 cambiadas: este documento solo fija qué temas tendrá el curso, en qué orden y de dónde sale cada uno.
 **Fecha de revisión de fuentes:** 2026-11-20.
 **Identificador de ruta:** `foundations` (se conserva, y con él el progreso de lectura).
+
+**Aviso 2026-11-21 · Decisión D2 ejecutada.** Los 17 temas de Electrónica (`M12` en la medición de este
+documento) ya no están en Fundamentos: viven en el curso **Control 1 como su módulo 29**
+(`/curso/control-1/29`), y sus cuatro diagramas interactivos pasaron a
+`web/public/visuals/temas/control-1/modulo-29-*.html`. Al vacarse ese hueco, los módulos 13, 14 y 15 de
+Fundamentos se renumeraron **12 (Algoritmos clásicos), 13 (Patrones de diseño) y 14 (Código limpio)**. Todo este
+documento conserva la numeración que midió el 2026-11-20: cuando leas «M13», «M14» o «M15» corresponde a 12, 13
+y 14 actuales. Fundamentos queda en 88 temas y 15 módulos.
 **Papel en la academia:** Fundamentos es el curso dueño de lo transversal (regla 1 de specs/021): cómo
 funcionan un computador y un programa, terminal, Git, redes y HTTP, SQL y modelado de datos, estructuras de
 datos y algoritmos, pruebas básicas, seguridad básica, pensamiento computacional y formatos de datos. Los
@@ -704,7 +712,7 @@ Al aprobar este temario hay que actualizar esas citas en `docs/temarios/` (no se
 | OAuth 2.0, OpenID Connect, SAML y JWT como implementación | RM-BE | Cursos Spring y Node. Aquí el concepto en la traza HTTP (M18 T4 y M26 T2) |
 | Procesamiento por lotes y de flujos | DDIA c11–c13 | Curso Microservicios |
 | Ordenamientos por dígitos, arreglos de sufijos, aplicaciones geométricas de árboles, pesos multiplicativos | ALG 5.1 y 6.3, 61B c36, COS226 13 y 21 | Fuera por ahora. Si el dueño aplica la regla 10 de forma estricta, forman un módulo «Algoritmos III» de 5 temas en Experto. Decisión D13 |
-| Sistemas embebidos, señales y electrónica | CS2023 SPD y AR; M12 actual | Curso Control u optativo de IoT. Decisión D2 |
+| Sistemas embebidos, señales y electrónica | CS2023 SPD y AR; M12 actual (hoy Control 1 M29) | **Control 1, módulo 29** (D2 ejecutada el 2026-11-21) |
 
 ## 3. Temas transversales: qué llega a Fundamentos y qué sale
 
@@ -760,7 +768,7 @@ lo recojan (regla 2: nada se pierde).
 
 | Qué hay hoy en Fundamentos | Temas actuales | Curso dueño propuesto | Qué queda en Fundamentos |
 |---|---|---|---|
-| Electrónica, sensores y control: circuitos, analógica y digital, microcontroladores, señales, DSP, instrumentación, PID, potencia, PCB, embebidos, PLC | M12 T1–T17 (17 temas) | **Control** u optativo de IoT (ya lo proponen `docs/auditoria/PROPUESTAS-TEMARIO.md` §3 y `docs/temarios/README.md`). Decisión D2 | Nada. La representación binaria y la visión de la CPU quedan en el M5 objetivo y en M23 T6 |
+| Electrónica, sensores y control: circuitos, analógica y digital, microcontroladores, señales, DSP, instrumentación, PID, potencia, PCB, embebidos, PLC | M12 T1–T17 (17 temas) | **Movido a Control 1, módulo 29**, el 2026-11-21 (D2 ejecutada; ya lo proponían `docs/auditoria/PROPUESTAS-TEMARIO.md` §3 y `docs/temarios/README.md`) | Nada. La representación binaria y la visión de la CPU quedan en el M5 objetivo y en M23 T6 |
 | Records de C# | M7 T5 (1 tema) | Rama `archivo`: la academia no tiene curso de C#. La idea se enlaza desde Java objetivo M9 T2. Decisión D9 | Nada |
 | Contenedores: aislamiento reproducible | M8 T4 (1 tema) | **Docker** M0 T1–T3 (ya lo fija `docs/temarios/docker.md`) | Un resumen con enlace (M23 T7) |
 | Proyecto integrador — sitio de seguimiento accesible | M3 T5 (1 tema) | No cambia de curso: deja de ser tema y pasa a ser el laboratorio de M19 | El contenido completo, como laboratorio |
@@ -880,8 +888,9 @@ distribuido provocado y diagnosticado; y (7) un registro de decisiones.
 
 - **D1 · Tamaño.** Aprobar 298 temas en 46 módulos (hoy 105 en 16), unas 174 h más el proyecto.
   Es la versión extendida (regla 10). Quedaría por encima de Java (279 temas aprobados) y de Spring (281).
-- **D2 · Electrónica (M12, 17 temas).** Confirmar que sale completa hacia Control o hacia un optativo de IoT, y
-  cuál de los dos.
+- **D2 · Electrónica (M12, 17 temas).** Resuelta el 2026-11-21 por el dueño: «no tiene nada que ver, elimínalo o
+  sacalo de Fundamentos, no es lógico». Se movió completa al curso Control 1 (módulo 29) en lugar de borrarse,
+  porque los 17 temas tienen contenido propio y ejecutable; no se abrió un optativo de IoT.
 - **D3 · Catálogo de patrones (M14, 8 temas).** Propuesta: se queda en Fundamentos (M34 y
   M35), en Python y como catálogo neutral, porque el temario de Java ya está aprobado con 279
   temas y su M19 cubre los patrones «con Java moderno». Alternativa: mudarlo a Java o a Diseño de sistemas.
@@ -1096,23 +1105,23 @@ Numeración de la columna «Tema actual»: la de hoy. Numeración de «Fundament
 | M11 T4 | Inteligencia artificial, aprendizaje automático y visión | 994 | Fundamentos objetivo: M45 T4 |
 | M11 T5 | Gráficos y cómputo científico | 959 | Fundamentos objetivo: M45 T5 |
 | M11 T6 | Redes, seguridad, web e ingeniería profesional | 957 | Fundamentos objetivo: M45 T6 |
-| M12 T1 | Matemáticas aplicadas: derivada, integral y modelos | 583 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T2 | Circuitos DC y AC: Kirchhoff, Thévenin y Norton | 605 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T3 | Electrónica analógica: diodos, transistores y amplificadores | 610 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T4 | Electrónica digital: lógica y máquinas de estados | 535 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T5 | Microcontroladores: GPIO, ADC, PWM e interrupciones | 586 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T6 | Comunicaciones: modulación y detección de errores | 542 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T7 | Señales y sistemas: muestreo, Fourier y convolución | 596 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T8 | DSP: filtros digitales y compresión | 582 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T9 | Instrumentación: calibración, DAQ e incertidumbre | 535 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T10 | Control automático: realimentación, PID y estabilidad | 574 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T11 | Potencia: conversión, eficiencia y disipación | 555 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T12 | PCB: esquemático, ERC, DRC y fabricación | 588 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T13 | Sistemas embebidos: RTOS, buses y firmware | 825 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T14 | Programación de bajo nivel: C, memoria y depuración | 541 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T15 | Electromagnetismo: Faraday y líneas de transmisión | 546 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T16 | Gestión profesional: requisitos, riesgos y evidencia | 556 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
-| M12 T17 | PLC y control industrial: ciclo de scan e IEC 61131-3 | 1.419 | Sale: curso Control u optativo de IoT (propuesta de `docs/auditoria/PROPUESTAS-TEMARIO.md` §3). Decisión D2 |
+| M12 T1 | Matemáticas aplicadas: derivada, integral y modelos | 583 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T2 | Circuitos DC y AC: Kirchhoff, Thévenin y Norton | 605 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T3 | Electrónica analógica: diodos, transistores y amplificadores | 610 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T4 | Electrónica digital: lógica y máquinas de estados | 535 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T5 | Microcontroladores: GPIO, ADC, PWM e interrupciones | 586 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T6 | Comunicaciones: modulación y detección de errores | 542 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T7 | Señales y sistemas: muestreo, Fourier y convolución | 596 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T8 | DSP: filtros digitales y compresión | 582 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T9 | Instrumentación: calibración, DAQ e incertidumbre | 535 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T10 | Control automático: realimentación, PID y estabilidad | 574 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T11 | Potencia: conversión, eficiencia y disipación | 555 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T12 | PCB: esquemático, ERC, DRC y fabricación | 588 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T13 | Sistemas embebidos: RTOS, buses y firmware | 825 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T14 | Programación de bajo nivel: C, memoria y depuración | 541 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T15 | Electromagnetismo: Faraday y líneas de transmisión | 546 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T16 | Gestión profesional: requisitos, riesgos y evidencia | 556 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
+| M12 T17 | PLC y control industrial: ciclo de scan e IEC 61131-3 | 1.419 | **Movido** el 2026-11-21 a Control 1 como su módulo 29 (D2 ejecutada) |
 | M13 T1 | Ordenamientos: insertion, merge y quick sort | 975 | Fundamentos objetivo: M15 T2, M15 T3, M15 T4 |
 | M13 T2 | Algoritmos codiciosos y árbol de expansión mínima | 937 | Fundamentos objetivo: M38 T5, M39 T1 |
 | M13 T3 | Caminos más cortos con Dijkstra | 868 | Fundamentos objetivo: M38 T3 |

@@ -333,4 +333,15 @@ export const CONTROL_1_MODULES: CourseModule[] = [
     ['Cuaderno', 'Calculadora', 'python-control'],
     'Simulacro resuelto, corregido con script y plan de repaso.'
   ),
+  m(29,
+    'Electrónica, sensores y control para software e IoT',
+    'Electrónica e IoT',
+    'Integración', '7 h', '#9a3412',
+    'Los 17 temas que hasta el 2026-11-21 estaban en el curso Fundamentos: circuitos, electrónica analógica y digital, microcontroladores, comunicaciones, señales, DSP, instrumentación, PID, potencia, PCB, firmware, electromagnetismo, PLC y gestión de la evidencia, todos simulados con la biblioteca estándar de Python.',
+    ['Matemáticas y circuitos DC/AC', 'Electrónica analógica y digital', 'Microcontroladores, comunicaciones, señales y DSP', 'Instrumentación, control, potencia y PCB', 'Firmware, electromagnetismo y gestión técnica', 'PLC y ciclo de scan'],
+    ['Predice y ejecuta cada modelo', 'Diagnostica unidades, saturación y aliasing', 'Define calibración y contrato de telemetría', 'Documenta límites y aceptación del sensor'],
+    ['¿Qué diferencia hay entre resolución y exactitud?', '¿Por qué una simulación no acredita un dispositivo real?', '¿Qué evidencia exige la integración del sensor?'],
+    ['Python', 'KiCad', 'Datasheets', 'Simulación'],
+    'Portafolio de modelos reproducibles y especificación del sensor de temperatura de RutaFlow con unidades, fallos, calibración, consumo y criterios de aceptación.'
+  ),
 ];

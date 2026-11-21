@@ -686,7 +686,7 @@ Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo 
 ### Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min
 
 **Duración estimada:** 35 min (tres subtemas de 12, 13 y 10 min).
-**¿Por qué es importante?** Este tema abre la **programación orientada a objetos**: agrupar en un solo lugar los datos de una cosa y las reglas que los cambian. Desde el Módulo 2 el curso usa clases (el árbol binario de búsqueda, la tabla hash, los patrones del Módulo 14), así que aquí aprendes a leerlas y escribirlas.
+**¿Por qué es importante?** Este tema abre la **programación orientada a objetos**: agrupar en un solo lugar los datos de una cosa y las reglas que los cambian. Desde el Módulo 2 el curso usa clases (el árbol binario de búsqueda, la tabla hash, los patrones del Módulo 13), así que aquí aprendes a leerlas y escribirlas.
 **Prerrequisitos:** Temas 2 a 4 de este módulo (variables, decisiones y funciones). Del Tema 1 basta recordar que `raise ValueError("mensaje")` detiene el programa con un error explicado. Línea de versiones: Python 3.14; los mensajes de error que se citan se obtuvieron con Python 3.14.6.
 
 **Mapa de subtemas críticos:** clase, objeto y `__init__` (núcleo, 6.1); métodos, `self` y reglas que protege el objeto (núcleo y diagnóstico, 6.2); identidad frente a igualdad y `__eq__` (límite y diagnóstico, 6.3). La herencia, la composición y las clases abstractas llegan en el Tema 7; `@dataclass`, que escribe `__init__` por ti, se usa desde el Módulo 8.
@@ -945,7 +945,7 @@ hecha
 True False True
 ```
 
-`mismo` es otro nombre para la misma lista. `list(tareas)` crea una lista nueva (por eso agregar a `copia` no cambia `tareas`), pero sus elementos son **los mismos objetos**: completar `copia[0]` cambia `tareas[0]`. Esto se llama copia superficial; el Módulo 14 (Memento) la vuelve a usar para explicar por qué deshacer exige copias que no compartan objetos mutables.
+`mismo` es otro nombre para la misma lista. `list(tareas)` crea una lista nueva (por eso agregar a `copia` no cambia `tareas`), pero sus elementos son **los mismos objetos**: completar `copia[0]` cambia `tareas[0]`. Esto se llama copia superficial; el Módulo 13 (Memento) la vuelve a usar para explicar por qué deshacer exige copias que no compartan objetos mutables.
 
 </details>
 
@@ -956,10 +956,10 @@ True False True
 ### Tema 7: Herencia, composición y clases abstractas con `abc` · Intermedio · 40 min
 
 **Duración estimada:** 40 min (tres subtemas de 13, 14 y 13 min).
-**¿Por qué es importante?** Con varias clases aparece la pregunta de diseño central de la programación orientada a objetos: ¿una clase **es un** caso especial de otra (herencia) o **tiene** otra a la que le encarga trabajo (composición)? Los patrones del Módulo 14 (Decorator, State, Template Method) se construyen con estas tres herramientas.
+**¿Por qué es importante?** Con varias clases aparece la pregunta de diseño central de la programación orientada a objetos: ¿una clase **es un** caso especial de otra (herencia) o **tiene** otra a la que le encarga trabajo (composición)? Los patrones del Módulo 13 (Decorator, State, Template Method) se construyen con estas tres herramientas.
 **Prerrequisitos:** Tema 6 de este módulo (clases, métodos y `self`). Línea de versiones: Python 3.14.
 
-**Mapa de subtemas críticos:** herencia, sobrescritura y `super()` (núcleo y diagnóstico, 7.1); composición y delegación (núcleo y decisión, 7.2); clases abstractas con `abc` como contrato comprobado (núcleo y límite, 7.3). Los decoradores (la línea con `@`) se explican a fondo en el Módulo 14, Tema 1; `typing.Protocol`, la alternativa sin herencia, aparece en el Módulo 7.
+**Mapa de subtemas críticos:** herencia, sobrescritura y `super()` (núcleo y diagnóstico, 7.1); composición y delegación (núcleo y decisión, 7.2); clases abstractas con `abc` como contrato comprobado (núcleo y límite, 7.3). Los decoradores (la línea con `@`) se explican a fondo en el Módulo 13, Tema 1; `typing.Protocol`, la alternativa sin herencia, aparece en el Módulo 7.
 
 #### Subtema 7.1: Herencia y `super()`: una tarea con fecha límite · 13 min
 
@@ -1145,7 +1145,7 @@ AvisoCorreo()
 **Error esperado en Python 3.14:** `TypeError: Can't instantiate abstract class AvisoCorreo without an implementation for abstract method 'enviar'`. Lo mismo ocurre con `Aviso()`. **Diagnóstico:** el error aparece al **crear** el objeto y nombra el método que falta; renombra `mandar` a `enviar` y el programa vuelve a funcionar.
 
 **3. Entiende**
-Una clase que hereda de `ABC` y marca métodos con `@abstractmethod` es una **clase abstracta**: no se puede instanciar, y sus subclases tampoco hasta que implementen todos los métodos abstractos. La línea `@abstractmethod` es un **decorador**: modifica la función que está debajo (verás cómo funcionan en el Módulo 14). La clase abstracta también puede traer métodos concretos que se heredan, como `enviar_varios`, que usa `enviar` sin saber qué subclase lo implementa: esa idea es el núcleo del patrón Template Method (Módulo 14, Tema 3). **Límite:** `abc` solo comprueba que el método exista; no revisa sus parámetros ni lo que hace. Eso sigue siendo trabajo de las pruebas (Módulo 5).
+Una clase que hereda de `ABC` y marca métodos con `@abstractmethod` es una **clase abstracta**: no se puede instanciar, y sus subclases tampoco hasta que implementen todos los métodos abstractos. La línea `@abstractmethod` es un **decorador**: modifica la función que está debajo (verás cómo funcionan en el Módulo 13). La clase abstracta también puede traer métodos concretos que se heredan, como `enviar_varios`, que usa `enviar` sin saber qué subclase lo implementa: esa idea es el núcleo del patrón Template Method (Módulo 13, Tema 3). **Límite:** `abc` solo comprueba que el método exista; no revisa sus parámetros ni lo que hace. Eso sigue siendo trabajo de las pruebas (Módulo 5).
 
 **4. Cierra**
 En `composicion.py` (subtema 7.2), copia la clase `Aviso`, haz que `AvisoConsola` y `AvisoMemoria` hereden de ella y reemplaza `"correo"` por `AvisoCorreo()`. Anota en qué línea aparece ahora el error y compáralo con el `AttributeError` del subtema 7.2.
@@ -1239,7 +1239,7 @@ memoria.enviar("estudiar")
 print(memoria.mensajes)
 ```
 
-Imprime `['PAGAR EL ARRIENDO HOY', 'estudiar']`. `AvisoMayusculas` **es un** `Aviso` (herencia de la clase abstracta) y **tiene un** `Aviso` (composición): esa combinación es el patrón Decorator del Módulo 14, Tema 1.
+Imprime `['PAGAR EL ARRIENDO HOY', 'estudiar']`. `AvisoMayusculas` **es un** `Aviso` (herencia de la clase abstracta) y **tiene un** `Aviso` (composición): esa combinación es el patrón Decorator del Módulo 13, Tema 1.
 
 </details>
 

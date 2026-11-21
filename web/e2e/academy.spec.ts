@@ -411,7 +411,7 @@ test('estructura: cada Tema se muestra como una tarjeta separada, no anidado en 
 });
 
 test('formación: electrónica incorpora ejemplos sin prompts generados en la lectura', async ({ page }) => {
-  await page.goto('/curso/foundations/12');
+  await page.goto('/curso/control-1/29');
   await expect(page.locator('.topic-card')).toHaveCount(17);
   await expect(page.locator('.lesson-meta')).toContainText('MIT: circuitos y electrónica');
   const topic = page.locator('.topic-card').first();

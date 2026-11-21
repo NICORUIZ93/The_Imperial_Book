@@ -180,7 +180,7 @@
     },
     {
       "track": "control-1",
-      "topics": 88,
+      "topics": 105,
       "status": {
         "T1": true,
         "T2": false,
@@ -201,8 +201,8 @@
         },
         "masterGhost": false,
         "visual": 11,
-        "easy": 88,
-        "measuredTopics": 88,
+        "easy": 105,
+        "measuredTopics": 105,
         "captureScope": 0,
         "project": 5
       }
@@ -334,7 +334,7 @@
     },
     {
       "track": "foundations",
-      "topics": 105,
+      "topics": 88,
       "status": {
         "T1": true,
         "T2": false,
@@ -357,8 +357,8 @@
         },
         "masterGhost": false,
         "visual": 78,
-        "easy": 105,
-        "measuredTopics": 105,
+        "easy": 88,
+        "measuredTopics": 88,
         "captureScope": 9,
         "project": 103
       }

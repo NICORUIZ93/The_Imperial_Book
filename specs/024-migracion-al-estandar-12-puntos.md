@@ -73,9 +73,11 @@ literal. Ningún criterio se marca `hecho` si su comando no pasó en esta máqui
   `docs/reestructuracion/FORMATO-UNICO.md`, en orden, con encabezado `### Tema N: título · Nivel · NN min`,
   y el curso declarado en `docs/reestructuracion/cursos-en-formato.json`.
   Verificación: `python3 -c "import json,sys;sys.exit('foundations' not in json.load(open('docs/reestructuracion/cursos-en-formato.json'))['cursos'])" && python3 scripts/validate_formato.py --check`
-- **C4** `pendiente` — Los 105 temas de Fundamentos cumplen los doce puntos de la sección 4. Medido el
-  2026-11-21 con el capítulo 0 cerrado: 6 de 105 cumplen los doce; deben P1 97, P8 96, P12 80, P5 26, P11 18,
-  P2 2, P4 3, P7 2, P10 3, P6 1, P9 1. Los seis son los temas 1 a 6 de `modulo-0`: el Tema 4 quedó dentro al
+- **C4** `pendiente` — Los 88 temas de Fundamentos cumplen los doce puntos de la sección 4 (eran 105 hasta que
+  los 17 de Electrónica se movieron a Control 1 el 2026-11-21). Medido con `python3
+  scripts/plan_maestro_items.py --curso foundations` sobre el informe regenerado
+  (`docs/auditoria/prompt-maestro-items.csv`, medido el 2026-11-21): cumplen los doce 10 de 88; deben P1 75,
+  P8 75, P12 64, P11 18, P5 8, P4 3, P10 3, P2 2, P7 2, P9 1, P6 1; P3 lo cumplen los 88. Los seis son los temas 1 a 6 de `modulo-0`: el Tema 4 quedó dentro al
   escribir `**Prerrequisitos:** comprobar Python…` en un solo renglón, porque el detector exige contenido en la
   misma línea del rótulo. Cerrar el capítulo costó algo más que etiquetas: los comandos que el lector debe
   escribir nombran el intérprete fijado (`python3.14`, y `py -3.14` en Windows) en vez de un `python3` que en
@@ -88,7 +90,7 @@ literal. Ningún criterio se marca `hecho` si su comando no pasó en esta máqui
   versionada en `web/public/content/figures/foundations/`, enlazada con alt descriptivo y acompañada del
   bloque `**Resultado esperado:**` transcrito de esa ejecución. Si el ejemplo no corre, el tema queda
   `pendiente` con su motivo (sección 1.2): no se simula la salida.
-  Verificación: `python3 scripts/audit_lesson_assets.py && [ $(grep -rl 'Captura de terminal' web/public/content/figures/foundations/ 2>/dev/null | wc -l) -ge 105 ]`
+  Verificación: `python3 scripts/audit_lesson_assets.py && [ $(grep -rl 'Captura de terminal' web/public/content/figures/foundations/ 2>/dev/null | wc -l) -ge 88 ]`
 - **C6** `en-curso` — Cada capítulo cerrado deja la suite en verde y llega a `main`. Conseguido en la
   maquinaria el 2026-11-21: `python3 scripts/validate.sh` da `validate.sh: ok` tras cerrar las dos puertas
   que el hilo Manus dejó rojas (`specs/022` y `specs/023` ya declaran criterios con comando, y el
