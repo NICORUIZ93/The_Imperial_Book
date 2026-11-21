@@ -53,9 +53,43 @@ contiene() {   # contiene "texto esperado" comando args...
   esac
 }
 
-paso "JDK 25" contiene 'version "25' java -version
+# El paso «JDK 25» no puede conformarse con el `java` del PATH: en esta Mac el PATH apunta a
+# Temurin 27 y Gradle aprovisiona el 25 en ~/.gradle/jdks, que es el que usan las fichas.
+# El requisito no se relaja: se recurren los candidatos hasta que uno declare de verdad 25
+# (java_home -v 25 devuelve el 27 si no hay ningún 25 registrado, así que no vale como prueba).
+buscar_jdk25() {
+  jh=""
+  [ -x /usr/libexec/java_home ] && jh=$(/usr/libexec/java_home -v 25 2>/dev/null)
+  for candidato in \
+      "$HOME"/.gradle/jdks/*25*/jdk-25*/Contents/Home/bin/java \
+      "$HOME"/.gradle/jdks/*25*/Contents/Home/bin/java \
+      /Library/Java/JavaVirtualMachines/*25*/Contents/Home/bin/java \
+      "$HOME"/Library/Java/JavaVirtualMachines/*25*/Contents/Home/bin/java \
+      "${jh:+$jh/bin/java}" \
+      "${JAVA_HOME:-}/bin/java"; do
+    [ -x "$candidato" ] || continue
+    case "$("$candidato" -version 2>&1 | head -1)" in
+      *'version "25'*) echo "$candidato"; return 0 ;;
+    esac
+  done
+  return 1
+}
+JAVA25=$(buscar_jdk25)
+[ -n "$JAVA25" ] || JAVA25=java
+
+jdk25() {
+  if [ "$JAVA25" != java ]; then
+    echo "   JDK 25 detectado en $JAVA25"
+    "$JAVA25" -version 2>&1 | head -1
+  else
+    echo "   Ningún JDK 25 en la máquina; se muestra el del PATH:"
+    java -version 2>&1
+  fi
+}
+
+paso "JDK 25" contiene 'version "25' jdk25
 paso "Docker Compose v2" docker compose version
-paso "Simulador del particionador (murmur2 + RangeAssignor)" java -Dstdout.encoding=UTF-8 jdk/Particionador.java
+paso "Simulador del particionador (murmur2 + RangeAssignor)" "$JAVA25" -Dstdout.encoding=UTF-8 jdk/Particionador.java
 
 diagnostico() {   # diagnostico servicio  -> estado y últimas líneas del log cuando un broker no arranca
   echo "---- docker compose ps"
