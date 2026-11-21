@@ -42,13 +42,13 @@ ESTADO: completo
 
 | ✔ | Herramienta | Mínimo del prompt | Versión elegida | Publicada | Comprobación | Fuente oficial |
 |---|---|---|---|---|---|---|
-| ☐ | Java (OpenJDK) | Java 21 | **25.0.5 (LTS)** — JDK 27 es la GA más nueva, ver decisiones | 25 GA 2025-09-16; 25.0.5 en la CPU de octubre de 2026 | `java -version` | https://openjdk.org/projects/jdk/ · https://www.oracle.com/java/technologies/javase/25u-relnotes.html · https://www.infoq.com/news/2026/09/java27-released |
-| ☐ | Node.js | Node 20 LTS | **26.13.1 (LTS «Lithium»)** | 2026-11-10 | `node -v` | https://nodejs.org/en/about/previous-releases |
-| ☐ | Git | — | la que traiga tu sistema (2.4x) | — | `git --version` | https://git-scm.com/downloads |
-| ☐ | Docker Engine | — | **29.10.0** | 2026-11-16 | `docker version` | https://docs.docker.com/engine/release-notes/ |
-| ☐ | Docker Compose | — | **v5.6.1** | 21 oct (año no visible) | `docker compose version` | https://github.com/docker/compose/releases/latest |
-| ☐ | Maven | — | **3.10.1** (Maven 4 sigue en `4.0.0-rc-7`, no apto para producción) | — | `mvn -v` | https://maven.apache.org/download.cgi |
-| ☐ | Gradle (build de la pista Spring desde el 2026-11-20; Maven queda como equivalencia) | — | **9.9.2** por el wrapper (corre en JVM 17–27) | 2026-11-19 | `./gradlew -v` | https://docs.gradle.org/current/userguide/compatibility.html |
+| ✔ | Java (OpenJDK) | Java 21 | **25.0.5 (LTS)** — JDK 27 es la GA más nueva, ver decisiones | 25 GA 2025-09-16; 25.0.5 en la CPU de octubre de 2026 | `java -version` → medido 2026-11-21: el host tiene 27.0.1.0.2 y los builds Gradle autoaproveen **25.0.5.1** (los logs de Spring dicen `using Java 25.0.5.1`) | https://openjdk.org/projects/jdk/ · https://www.oracle.com/java/technologies/javase/25u-relnotes.html · https://www.infoq.com/news/2026/09/java27-released |
+| ✔ | Node.js | Node 20 LTS | **26.13.1 (LTS «Lithium»)** | 2026-11-10 | `node -v` → medido 2026-11-21: `v26.13.1` | https://nodejs.org/en/about/previous-releases |
+| ✔ | Git | — | la que traiga tu sistema | — | `git --version` → medido 2026-11-21: `2.54.0 (Apple Git-157)` | https://git-scm.com/downloads |
+| ☐ | Docker Engine | — | **29.10.0** | 2026-11-16 | `docker version` → medido 2026-11-21 en la Mac del dueño: server **29.9.3** (Docker Desktop, 10 CPUs, 8.32 GB), un paso por detrás | https://docs.docker.com/engine/release-notes/ |
+| ☐ | Docker Compose | — | **v5.8.0** (releído el 2026-11-21 en `api.github.com/repos/docker/compose/releases/latest`; antes teníamos v5.6.1) | 2026-11-17 | `docker compose version` → en esta Mac da **v5.7.1**, un paso por detrás de la elegida; la casilla no se marca | https://github.com/docker/compose/releases/latest |
+| ☐ | Maven | — | **3.10.1**, confirmado el 2026-11-21 en la propia página de descarga (Maven 4 sigue en `4.0.0-rc-7`, no apto para producción) | — | `mvn -v` → esta Mac trae **3.10.0** por Homebrew, así que la casilla no se marca | https://maven.apache.org/download.cgi |
+| ✔ | Gradle (build de la pista Spring desde el 2026-11-20; Maven queda como equivalencia) | — | **9.9.2** por el wrapper (corre en JVM 17–27) | 2026-11-19 | `./gradlew -v` → medido 2026-11-21 en un `GRADLE_USER_HOME` limpio: 9.9.2, build time 2026-11-19 19:52 UTC. El `distributionSha256Sum` quedó fijado en los 13 `gradle-wrapper.properties` del curso: `971fcd7150ca4ba04852c0b2ca0d2d0ab9468e14b03473eab19528809914c76b` | https://docs.gradle.org/current/userguide/compatibility.html · https://services.gradle.org/distributions/gradle-9.9.2-bin.zip.sha256 |
 
 ## Fase 1 · Spring Boot
 
