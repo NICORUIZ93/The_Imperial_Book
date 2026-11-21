@@ -538,13 +538,21 @@ enlace a un objeto. `=` copia lo que la variable guarda; nunca copia un objeto.
 - **En el bytecode** se ve la diferencia: `iload`/`istore` mueven enteros; `aload`/`astore` mueven
   referencias. Copiar una referencia es `aload_3; astore 4`: no hay `new`, no se crea nada. `new` reserva
   el objeto en el heap y deja su referencia en la pila; `invokespecial <init>` ejecuta el constructor.
-- **Cuánto ocupa una referencia.** En esta JVM de 64 bits, 4 bytes: con `UseCompressedOops` activo (lo
-  está por defecto con heaps de hasta unos 32 GB) las referencias se guardan comprimidas. Cada objeto lleva
-  además una cabecera; el formato compacto de cabeceras (JEP 519, definitivo en JDK 25) **no** está activado
-  por defecto: `UseCompactObjectHeaders = false` en la salida de abajo.
-- **Tamaño de la pila.** 1 MB por hilo por defecto en esta plataforma (`ThreadStackSize = 1024`, en KB); se
-  cambia con `-Xss`. Se agota con recursión muy profunda (`StackOverflowError`, módulo 3). El heap máximo
-  lo fija `-Xmx`; por defecto, una fracción de la memoria de la máquina.
+- **Cuánto ocupa una referencia.** En esta JVM de 64 bits, 4 bytes: `UseCompressedOops` arranca en `true` y las
+  referencias se guardan comprimidas. Cada objeto lleva además una cabecera: son 96 bits, y el formato compacto
+  los deja en 64 (JEP 519, que llega a producto en JDK 25). Si está activado **por defecto** no es una constante
+  del lenguaje sino de la build, y aquí se comprueba con las dos JVM instaladas en la misma máquina:
+  `UseCompactObjectHeaders` sale `false {default}` en OpenJDK 26.0.2 y `true {default}` en Temurin 27.0.1 —las
+  dos salidas, línea por línea, están en el bloque de abajo. Lo que **no** se mide aquí es el tamaño real de un
+  objeto: para eso hace falta JOL y no está en la caché local.
+- **Tamaño de la pila.** 2 MB por hilo en esta máquina (`ThreadStackSize = 2048`, en KB, igual en las dos
+  builds); se cambia con `-Xss`. Es un flag `product_pd`, que en la salida aparece como `{pd product}`: en el
+  código de HotSpot se declara sin valor —`product_pd(intx, ThreadStackSize, "Thread Stack Size (in Kbytes)")`—
+  porque, como recuerda el comentario de esa familia de flags, su valor por defecto vive en los cabeceros
+  dependientes de la plataforma. Así que este número se lee en la máquina de cada uno y no se memoriza. La
+  pila se agota con recursión muy profunda (`StackOverflowError`, módulo 3). El heap máximo la fija `-Xmx`, pero
+  sin darla sale con origen `{ergonomic}`: lo calcula la JVM con los recursos de la máquina. Aquí, con 16 GB
+  (`hw.memsize` = 17 179 869 184), salen 4 294 967 296 bytes: la cuarta parte justa.
 - **El mensaje del `NullPointerException`** dice qué era nulo desde JDK 14 (JEP 358, activo por defecto
   desde JDK 15). Para nombrar una variable **local** necesita la tabla de variables del `.class`: sin
   `javac -g` dice `"<local3>"`; con `-g`, `"sinEtiqueta"`. Es lo que ocurre al lanzar desde el fuente con
@@ -689,15 +697,34 @@ Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.l
 
 Los tamaños de esta JVM ·
 `java -XX:+PrintFlagsFinal -version | grep -E " (ThreadStackSize|MaxHeapSize|InitialHeapSize|UseCompressedOops|UseCompactObjectHeaders) "`
-(el heap depende de la memoria de cada máquina)
+— Temurin 27.0.1.0.2+1, macOS aarch64, máquina de 16 GB. Es la JVM con la que se ejecuta este laboratorio.
 
 ```text
-   size_t InitialHeapSize                          = 100663296                                 {product} {ergonomic}
-   size_t MaxHeapSize                              = 1610612736                                {product} {ergonomic}
-     intx ThreadStackSize                          = 1024                                   {pd product} {default}
+   size_t InitialHeapSize                          = 8388608                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 4294967296                                {product} {ergonomic}
+     intx ThreadStackSize                          = 2048                                   {pd product} {default}
+     bool UseCompactObjectHeaders                  = true                           {product lp64_product} {default}
+     bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
+```
+
+El mismo mando, con la otra JVM instalada en la misma máquina ·
+`"/$(/usr/libexec/java_home -v 26)/bin/java" -XX:+PrintFlagsFinal -version | grep -E " (ThreadStackSize|MaxHeapSize|InitialHeapSize|UseCompressedOops|UseCompactObjectHeaders) "`
+— OpenJDK 26.0.2+10-55. Mismo hardware, misma plataforma, otra build:
+
+```text
+   size_t InitialHeapSize                          = 8388608                                   {product} {ergonomic}
+   size_t MaxHeapSize                              = 4294967296                                {product} {ergonomic}
+     intx ThreadStackSize                          = 2048                                   {pd product} {default}
      bool UseCompactObjectHeaders                  = false                          {product lp64_product} {default}
      bool UseCompressedOops                        = true                           {product lp64_product} {ergonomic}
 ```
+
+Cuatro de las cinco líneas son idénticas en las dos builds; cambia la cabecera compacta, y eso es lo que hay que
+saber leer: el heap viene marcado `{ergonomic}` (depende de la memoria de la máquina), `ThreadStackSize` viene
+marcado `{pd product}` (lo define el código de la plataforma) y `UseCompactObjectHeaders` vale `false` en 26 y
+`true` en 27 sin que nadie lo pidiera. Ninguno de los tres es una regla del lenguaje Java. El módulo 3 aplica la
+misma disciplina al revés: en lugar de cifrar cuántos marcos caben en la pila, lee el flag y comprueba el tope
+fijo de la traza.
 
 Identidad frente a contenido · archivo `tema-2/por-dentro/Identidad.java` · `java -Dstdout.encoding=UTF-8 Identidad.java`
 
@@ -734,10 +761,16 @@ programa termina con código 0.
 
 ```bash
 java -Dstdout.encoding=UTF-8 EtiquetaDeEnvio.java; echo "código de salida: $?"
+java -XX:+PrintFlagsFinal -version 2>&1 | grep -cE " (ThreadStackSize|MaxHeapSize|InitialHeapSize|UseCompressedOops|UseCompactObjectHeaders) "
+java -XX:+PrintFlagsFinal -version 2>&1 | grep -E " ThreadStackSize " | tr -s " "
+java -Xss256k -XX:+PrintFlagsFinal -version 2>&1 | grep -E " ThreadStackSize " | tr -s " "
 ```
 
 Con el archivo original termina en `código de salida: 1` y la traza del `NullPointerException`; tras el
-laboratorio, en `código de salida: 0` y sin traza.
+laboratorio, en `código de salida: 0` y sin traza. Las otras tres órdenes imprimen `5`, luego
+` intx ThreadStackSize = 2048 {pd product} {default}` y ` intx ThreadStackSize = 256 {pd product} {command
+line}` —medido aquí; ese `2048` lo pone la plataforma, así que léelo en tu máquina antes de darlo por hecho
+en un apunte. Las tres comprobaciones de flags están en `verificar.sh`, en el bloque del tema 2.
 
 #### 10. Error común y diagnóstico
 

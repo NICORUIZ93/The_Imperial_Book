@@ -74,6 +74,10 @@ falla_con "con -g la excepción nombra la variable" 'because "sinEtiqueta" is nu
 no_compila "un primitivo no puede ser null" '<null> cannot be converted to int' tema-2/errores PrimitivoNull.java
 falla_con "String null" 'Cannot invoke "String.length()"' tema-2/errores $J DestinoNulo.java
 espera "identidad de objetos" 'a y c, ¿misma identidad? false' tema-2/por-dentro $J Identidad.java
+# Los tres de la sección 7 y 9 del tema 2: se comprueba el MÉTODO de leer el flag, no el número que da esta máquina.
+espera "el grep de la sección 7 selecciona los cinco flags" '5' . sh -c 'java -XX:+PrintFlagsFinal -version 2>&1 | grep -cE " (ThreadStackSize|MaxHeapSize|InitialHeapSize|UseCompressedOops|UseCompactObjectHeaders) "'
+espera "el tamaño de pila sin -Xss sale con origen {default}" 'intx ThreadStackSize = <valor> {pd product} {default}' . sh -c 'java -XX:+PrintFlagsFinal -version 2>&1 | grep -E " ThreadStackSize " | tr -s " " | sed -E "s/= [0-9]+/= <valor>/"'
+espera "el mismo flag con -Xss256k sale con origen {command line}" 'intx ThreadStackSize = 256 {pd product} {command line}' . sh -c 'java -Xss256k -XX:+PrintFlagsFinal -version 2>&1 | grep -E " ThreadStackSize " | tr -s " "'
 
 titulo "Tema 3 · Variables, ámbito, final, var y asignación definitiva"
 espera "ámbito de bloque" 'Medellín: 3000 g de un tope de 30000 g' tema-3 $J Ambito.java
