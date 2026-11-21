@@ -702,7 +702,7 @@ foundations,1,"Tema 2: Variables, tipos, expresiones y cambios de estado · Bás
 foundations,1,"Tema 3: Decisiones, repeticiones y trazado de ejecución · Básico · 35 min",estandar,foundations/modulo-1,0,0,0,0,0,0,0,,,,,,
 foundations,1,Tema 4: Funciones y descomposición de problemas · Básico · 35 min,estandar,foundations/modulo-1,0,0,0,0,0,0,0,,,,,,
 foundations,1,"Tema 5: Cómo la computadora representa los datos — binario, texto y decimales · Básico · 40 min",estandar,foundations/modulo-1,0,0,0,0,0,0,0,,,,,,
-foundations,1,"Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min",estandar,foundations/modulo-1,0,0,0,1,0,0,0,,,,,,
+foundations,1,"Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min",estandar,foundations/modulo-1,0,0,0,0,0,0,0,,,,,,
 foundations,1,"Tema 7: Herencia, composición y clases abstractas con `abc` · Intermedio · 40 min",estandar,foundations/modulo-1,0,0,0,1,0,0,0,,,,,,
 foundations,2,Tema 1: Elegir estructuras según las operaciones,estandar,foundations/modulo-2,0,0,0,2,0,0,0,,,,,,
 foundations,2,"Tema 2: Pilas, colas y abstracciones de comportamiento",estandar,foundations/modulo-2,0,0,0,2,0,0,0,,,,,,

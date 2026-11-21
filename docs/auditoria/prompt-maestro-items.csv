@@ -702,7 +702,7 @@ foundations,1,"Tema 2: Variables, tipos, expresiones y cambios de estado · Bás
 foundations,1,"Tema 3: Decisiones, repeticiones y trazado de ejecución · Básico · 35 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
 foundations,1,Tema 4: Funciones y descomposición de problemas · Básico · 35 min,estandar,si,si,si,si,si,si,si,no,si,si,si,si,P8
 foundations,1,"Tema 5: Cómo la computadora representa los datos — binario, texto y decimales · Básico · 40 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
-foundations,1,"Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min",estandar,si,no,si,no,no,si,no,no,si,no,no,si,P2 P4 P5 P7 P8 P10 P11
+foundations,1,"Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
 foundations,1,"Tema 7: Herencia, composición y clases abstractas con `abc` · Intermedio · 40 min",estandar,si,no,si,no,no,si,no,no,si,no,no,si,P2 P4 P5 P7 P8 P10 P11
 foundations,2,Tema 1: Elegir estructuras según las operaciones,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 foundations,2,"Tema 2: Pilas, colas y abstracciones de comportamiento",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12

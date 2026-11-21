@@ -21,7 +21,7 @@
       "porcentaje": 22
     },
     "P2": {
-      "cumplen": 1315,
+      "cumplen": 1316,
       "total": 1608,
       "porcentaje": 82
     },
@@ -31,12 +31,12 @@
       "porcentaje": 88
     },
     "P4": {
-      "cumplen": 1281,
+      "cumplen": 1282,
       "total": 1608,
       "porcentaje": 80
     },
     "P5": {
-      "cumplen": 945,
+      "cumplen": 946,
       "total": 1608,
       "porcentaje": 59
     },
@@ -46,12 +46,12 @@
       "porcentaje": 100
     },
     "P7": {
-      "cumplen": 1215,
+      "cumplen": 1216,
       "total": 1608,
       "porcentaje": 76
     },
     "P8": {
-      "cumplen": 38,
+      "cumplen": 39,
       "total": 1608,
       "porcentaje": 2
     },
@@ -61,12 +61,12 @@
       "porcentaje": 96
     },
     "P10": {
-      "cumplen": 1099,
+      "cumplen": 1100,
       "total": 1608,
       "porcentaje": 68
     },
     "P11": {
-      "cumplen": 1289,
+      "cumplen": 1290,
       "total": 1608,
       "porcentaje": 80
     },
@@ -163,16 +163,16 @@
     },
     "foundations": {
       "P1": 13,
-      "P2": 86,
+      "P2": 87,
       "P3": 88,
-      "P4": 85,
-      "P5": 80,
+      "P4": 86,
+      "P5": 81,
       "P6": 87,
-      "P7": 86,
-      "P8": 13,
+      "P7": 87,
+      "P8": 14,
       "P9": 87,
-      "P10": 85,
-      "P11": 70,
+      "P10": 86,
+      "P11": 71,
       "P12": 24
     },
     "ios": {

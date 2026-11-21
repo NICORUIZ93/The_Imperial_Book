@@ -950,19 +950,92 @@ Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo 
 
 ### Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min
 
-**Duración estimada:** 35 min (tres subtemas de 12, 13 y 10 min).
-**¿Por qué es importante?** Este tema abre la **programación orientada a objetos**: agrupar en un solo lugar los datos de una cosa y las reglas que los cambian. Desde el Módulo 2 el curso usa clases (el árbol binario de búsqueda, la tabla hash, los patrones del Módulo 13), así que aquí aprendes a leerlas y escribirlas.
-**Prerrequisitos:** Temas 2 a 4 de este módulo (variables, decisiones y funciones). Del Tema 1 basta recordar que `raise ValueError("mensaje")` detiene el programa con un error explicado. Línea de versiones: Python 3.14; los mensajes de error que se citan se obtuvieron con Python 3.14.6.
+#### Paso 1 · Objetivo y preparación
+Al terminar vas a poder escribir una clase con `__init__`, crear objetos con esa clase, leer sus atributos desde
+el objeto, y explicar por qué una regla («una tarea solo pasa de `pendiente` a `hecha`») vive dentro de un método
+del objeto en lugar de copiarse en cada bucle del programa. **Prerrequisitos:** los Temas 2 a 4 de este módulo
+(variables y tipos, decisiones y bucles, funciones). Del Tema 1 basta con recordar que
+`raise ValueError("mensaje")` detiene el programa entero con un error explicado. Comprueba el intérprete con
+`python3.14 --version` (en Windows, `py -3.14 --version`): debe responder `Python 3.14.10` o un 3.14 más reciente.
+Todos los mensajes que se transcriben en este tema son salidas literales de Python 3.14.10 en macOS 27.2 arm64,
+tomadas el 2026-11-21; las rutas de los *tracebacks* son las de esta máquina y en la tuya aparecerá la tuya.
 
-**Mapa de subtemas críticos:** clase, objeto y `__init__` (núcleo, 6.1); métodos, `self` y reglas que protege el objeto (núcleo y diagnóstico, 6.2); identidad frente a igualdad y `__eq__` (límite y diagnóstico, 6.3). La herencia, la composición y las clases abstractas llegan en el Tema 7; `@dataclass`, que escribe `__init__` por ti, se usa desde el Módulo 8.
+#### Paso 2 · Contexto y caso real
+En el Tema 1 guardaste cada tarea del gestor como un diccionario: `{"titulo": "Lavar la loza", "estado": "pendiente"}`.
+El defecto aparece el primer día en que dos personas tocan el programa: alguien escribe
+`tarea["estdo"] = "hecha"` y Python no protesta. La tarea termina con las dos claves a la vez —`'estado': 'pendiente'`
+y `'estdo': 'hecha'`—, el reporte sigue contando esa tarea como pendiente y el error viaja hasta producción, porque
+en ningún lugar del código estaba declarado qué claves son legales. Lo mismo pasa con la regla: «una tarea hecha no se
+completa dos veces» se copia dentro del botón, dentro del reporte y dentro de la importación; la copia que alguien olvida
+es la que falla. Una **clase** pone en un solo sitio los datos de una tarea y las operaciones que los cambian, de modo
+que haya un único lugar que equivocarse —y un único lugar que arreglar—.
 
-#### Subtema 6.1: De un diccionario suelto a una clase · 12 min
+#### Paso 3 · Teoría, modelo mental y analogía
+Una **clase** es un molde que declara dos cosas: qué datos lleva cada objeto y qué operaciones los cambian. Un
+**objeto** (o instancia) es una tarea concreta creada con ese molde. Al escribir `Tarea("Lavar la loza")` Python hace
+dos pasos: reserva un objeto vacío y llama a `__init__` con `"Lavar la loza"` como `titulo` y `"pendiente"` como
+`estado`, que es el valor por defecto del parámetro. Dentro de `__init__`, `self` es **el objeto que se está creando**:
+la línea `self.titulo = titulo` guarda el texto dentro de ese objeto, no dentro de la clase. Por eso `lavar` y `pagar`
+pueden tener estados distintos.
 
-**1. Contexto**
-En el Tema 1 guardaste cada tarea del gestor como un diccionario (`{"titulo": ..., "estado": ...}`). Nada impide que otra parte del programa escriba `"estdo"` por error: aparece una clave nueva y la tarea queda a medias. Una **clase** declara en un solo lugar qué datos tiene toda tarea.
+Un **método** es una función definida dentro de la clase. Al llamar `lavar.completar()`, Python pasa el objeto como
+primer argumento, así que la firma se escribe `def completar(self):` y `self` recibe a `lavar`. Los valores que se
+escriben en el cuerpo de la clase, fuera de los métodos —como `ESTADOS = ("pendiente", "hecha")`— son **atributos de
+clase**: los comparten todas las instancias. Los que se asignan con `self.` dentro de `__init__` son **atributos de
+instancia**: cada objeto tiene los suyos. `__str__` es un método especial: `print(objeto)` lo llama para decidir qué
+texto mostrar.
 
-**2. Hazlo tú**
-Crea la carpeta `ejemplo-clases` y entra en ella (`mkdir ejemplo-clases` y después `cd ejemplo-clases`). Crea `tarea.py`:
+**Analogía:** la clase es la ficha de un modelo de lavadora en el catálogo: dice cuántos botones tiene y qué hace cada
+botón. Cada objeto es una lavadora entregada en una casa: el botón «iniciar» es el mismo mecanismo en todas, pero el
+programa que cada una está cumpliendo es suyo. **Su límite:** en una lavadora real nadie tiene que decirle al botón
+«esta es la lavadora que me estás pulsando»; en Python cada método recibe el objeto explícitamente como primer
+parámetro, y escribir el método sin `self` produce un error que aparece **al llamarlo**, no al definirlo —en el Paso 4
+lo vas a reproducir—.
+
+**Conceptos clave:** clase, objeto (instancia), `__init__`, `self`, atributo de instancia frente a atributo de clase,
+método, `__str__`, identidad (`is`) frente a igualdad (`==`), `__eq__` y `__hash__`.
+
+**Cuándo no usarlo:** una clase no es la respuesta por defecto. Si lo que tienes es un registro fijo de datos sin
+reglas que proteger, un diccionario o una tupla siguen siendo más claros; `@dataclass`, que aparece en el Módulo 8,
+ya escribe solo el `__init__` cuando los datos son lo único importante. Se justifica una clase cuando aparecen juntas
+dos cosas: invariantes («el estado nunca puede ser un texto cualquiera») y operaciones que los respetan.
+
+**Diagrama:**
+
+```mermaid
+flowchart TB
+    subgraph MOLDE["class Tarea (el molde)"]
+        EST["ESTADOS = ('pendiente', 'hecha')"]
+        INIT["__init__(self, titulo, estado)"]
+        COMP["completar(self)"]
+        STR["__str__(self)"]
+    end
+    INIT -->|"Tarea('Lavar la loza')"| LAV["lavar<br/>titulo='Lavar la loza'<br/>estado='pendiente'"]
+    INIT -->|"Tarea('Pagar el arriendo', 'hecha')"| PAG["pagar<br/>titulo='Pagar el arriendo'<br/>estado='hecha'"]
+    LAV -->|"lavar.completar() pasa self=lavar"| COMP
+```
+
+Los rótulos del diagrama son los valores que se ven en la terminal: ejecutar `src/tarea.py` imprime
+`Lavar la loza - pendiente`, `Pagar el arriendo - hecha`, `Tarea` y `False`; `type(lavar).__name__` devuelve el nombre
+del molde y `lavar is pagar` devuelve `False` porque son dos objetos. Que los métodos vivan en la clase y no en cada
+objeto se comprueba con `vars(lavar)`, que responde
+`{'titulo': 'Lavar la loza', 'estado': 'pendiente'}`: solo datos, ningún método.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** convierte los diccionarios del Tema 1 en
+objetos `Tarea` con `completar()` y `esta_pendiente()`, y cuenta las pendientes llamando al método en vez de leer la
+clave `"estado"`. Si el gestor guarda importes, la regla «el importe no puede ser negativo» tampoco debe repetirse en
+cada pantalla: va dentro de `__init__`.
+
+#### Paso 4 · Demostración guiada desde cero
+**Desde cero:** parte de una carpeta vacía. Estos tres comandos funcionan igual en PowerShell, macOS y Linux:
+
+```bash
+mkdir ejemplo-clases
+cd ejemplo-clases
+mkdir src
+```
+
+**Parte A · de un diccionario suelto a una clase.** Guarda en `src/tarea.py`:
 
 ```python
 class Tarea:
@@ -980,36 +1053,81 @@ print(type(lavar).__name__)
 print(lavar is pagar)
 ```
 
+**Explicación por bloques:** el primer bloque define la clase con un solo método, `__init__`, que no calcula nada:
+copia los dos argumentos dentro del objeto naciente. El segundo bloque crea dos objetos: `pagar` pasa el segundo
+argumento, así que su `estado` es `"hecha"`, y `lavar` usa el valor por defecto. El tercer bloque hace cuatro
+preguntas distintas: dos leen atributos del objeto, `type(lavar).__name__` pregunta el nombre de la clase y
+`lavar is pagar` pregunta si son el mismo objeto —no lo son, por eso la respuesta es `False` aunque compartan molde—.
+
+Ejecuta con:
+
 ```bash
-python3 tarea.py
+python3.14 src/tarea.py
 ```
 
-En Windows usa `py tarea.py`.
+**Resultado esperado:** `Lavar la loza - pendiente`, `Pagar el arriendo - hecha`, `Tarea` y `False`.
 
-**Resultado esperado:**
+Salida literal de las cuatro ejecuciones de la captura (esta máquina, macOS 27.2 arm64, 2026-11-21, generada con
+`scripts/render_terminal_capture.py` dentro de `ejemplo-clases`):
+
+![Captura de terminal: src/tarea.py responde las dos tareas, Tarea y False; src/tarea-sin-titulo.py termina en TypeError: Tarea.__init__() missing 1 required positional argument: 'titulo'; src/tarea-reglas.py imprime dos tareas hechas y pendientes: 1; src/clave-en-conjunto.py termina en TypeError: cannot use 'Tarea' as a set element (unhashable type: 'Tarea')](content/figures/foundations/clases-objetos-init.svg)
+
+**Fallo deliberado 1:** guarda una copia como `src/tarea-sin-titulo.py` y quita el título al crear la primera tarea:
+
+```python
+class Tarea:
+    def __init__(self, titulo, estado="pendiente"):
+        self.titulo = titulo
+        self.estado = estado
+
+
+lavar = Tarea()
+print(lavar.titulo)
+```
+
+Con `python3.14 src/tarea-sin-titulo.py` el programa muere así:
 
 ```text
-Lavar la loza - pendiente
-Pagar el arriendo - hecha
-Tarea
-False
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t6/src/tarea-sin-titulo.py", line 7, in <module>
+    lavar = Tarea()
+TypeError: Tarea.__init__() missing 1 required positional argument: 'titulo'
 ```
 
-**Fallo deliberado:** cambia `Tarea("Lavar la loza")` por `Tarea()`. **Error esperado:** `TypeError: Tarea.__init__() missing 1 required positional argument: 'titulo'`. **Diagnóstico:** al escribir `Tarea(...)`, Python crea el objeto y llama a `__init__` con los argumentos que pasaste; `titulo` no tiene valor por defecto, así que es obligatorio. Restaura la línea y prueba ahora `print(lavar.estdo)`: Python 3.14 responde `AttributeError: 'Tarea' object has no attribute 'estdo'. Did you mean: 'estado'?`.
+**Diagnóstico:** escribir `Tarea(...)` no solo crea el objeto: también llama a `__init__` con los argumentos que pasaste.
+`titulo` no tiene valor por defecto, así que es obligatorio; `estado` sí lo tiene y por eso omitirlo no falla. El
+mensaje dice exactamente qué falta, y el `Traceback` señala la línea 7, la llamada, no la definición.
 
-**3. Entiende**
-Una **clase** es el molde; cada **objeto** (o instancia) es una tarea concreta creada con ese molde. `__init__` es el método que se ejecuta solo al crear el objeto, y `self` es el objeto que se está creando. Los **atributos** (`self.titulo`, `self.estado`) son variables que viven dentro de cada objeto: `lavar` y `pagar` tienen los suyos, por eso `lavar is pagar` es `False`. **Límite:** Python no prohíbe crear atributos nuevos después: `lavar.estdo = "hecha"` no da error, crea un tercer atributo y deja `estado` igual. La clase ordena el código, pero no reemplaza las pruebas.
+**Fallo deliberado 2:** en una copia llamada `src/atributo-mal-escrito.py` lee el atributo con un dedo equivocado:
 
-**4. Cierra**
-Agrega a `__init__` un parámetro `prioridad` con valor por defecto `2`, crea tres tareas y anota en tu cuaderno qué imprime `vars(lavar)` (la función `vars` muestra los atributos de un objeto como diccionario).
+```python
+class Tarea:
+    def __init__(self, titulo, estado="pendiente"):
+        self.titulo = titulo
+        self.estado = estado
 
-#### Subtema 6.2: Métodos: el objeto protege sus propias reglas · 13 min
 
-**1. Contexto**
-Una tarea solo puede pasar de `pendiente` a `hecha`. Si cada parte del programa cambia `tarea.estado` a mano, la regla se repite (y se olvida) en muchos lugares. Un **método** pone la regla junto a los datos que protege.
+lavar = Tarea("Lavar la loza")
+print(lavar.estdo)
+```
 
-**2. Hazlo tú**
-Reemplaza `tarea.py`:
+Al ejecutar `python3.14 src/atributo-mal-escrito.py`:
+
+```text
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t6/src/atributo-mal-escrito.py", line 8, in <module>
+    print(lavar.estdo)
+          ^^^^^^^^^^^
+AttributeError: 'Tarea' object has no attribute 'estdo'. Did you mean: 'estado'?
+```
+
+**Diagnóstico:** Python 3.14 sugiere la corrección («Did you mean: `'estado`?»), pero fíjate en lo que **no** pasa: si
+en vez de leer escribieras `lavar.estdo = "hecha"`, no habría ningún error. Ejecutado, `vars(lavar)` devuelve
+`{'titulo': 'Lavar la loza', 'estado': 'pendiente', 'estdo': 'hecha'}`: la clase ordena el código, no reemplaza las
+pruebas.
+
+**Parte B · el objeto protege sus propias reglas.** La regla «solo existen dos estados» y «una tarea hecha no se
+completa dos veces» ahora viven dentro del objeto. Guarda `src/tarea-reglas.py`:
 
 ```python
 class Tarea:
@@ -1045,9 +1163,15 @@ for tarea in tareas:
 print("pendientes:", pendientes)
 ```
 
-Ejecuta `python3 tarea.py`.
+**Explicación por bloques:** el primer bloque es la clase. `ESTADOS` es un atributo de clase: la tupla se escribe una
+vez y la consulta `estado not in Tarea.ESTADOS` la protege en cada creación. `completar` comprueba el estado de partida
+**antes** de cambiarlo: ese es el patrón que se va a repetir en todos los cursos (State, en el módulo de patrones, es
+esto mismo con nombre elegante). `esta_pendiente` devuelve un booleano en vez de cambiar nada. `__str__` arma el texto
+`[x] título` o `[ ] título` llamando a otro método del mismo objeto con `self.esta_pendiente()`. El segundo bloque crea
+tres tareas y completa la primera; el tercero recorre, imprime cada objeto —y ahí es Python quien invoca `__str__`, sin
+que nadie lo escriba— y cuenta pendientes llamando al método.
 
-**Resultado esperado:**
+Ejecuta `python3.14 src/tarea-reglas.py`. **Resultado esperado:**
 
 ```text
 [x] Lavar la loza
@@ -1056,23 +1180,93 @@ Ejecuta `python3 tarea.py`.
 pendientes: 1
 ```
 
-**Fallo deliberado 1:** duplica la línea `tareas[0].completar()`. **Error esperado:** `ValueError: 'Lavar la loza' ya estaba hecha`. **Diagnóstico:** el error lo lanza la regla del objeto, no un `if` repartido por el programa. Cambia también `"hecha"` por `"hcha"` en la tercera tarea: obtienes `ValueError: estado no admitido: hcha` al crearla.
+Sin `__str__`, la misma línea `print(tarea)` imprimiría algo como `<__main__.Tarea object at 0x10a0ec590>`: la
+dirección de memoria cambia en cada ejecución, nunca es un texto para el usuario.
 
-**Fallo deliberado 2:** borra `self` en `def esta_pendiente(self):`. **Error esperado:** `TypeError: Tarea.esta_pendiente() takes 0 positional arguments but 1 was given`. **Diagnóstico:** `tarea.esta_pendiente()` equivale a `Tarea.esta_pendiente(tarea)`; Python siempre pasa el objeto como primer argumento, y el método debe recibirlo.
+**Fallo deliberado 3:** copia el programa como `src/dos-veces-completar.py` y duplica la línea 24 (`tareas[0].completar()`):
 
-**3. Entiende**
-Un **método** es una función definida dentro de la clase; su primer parámetro, `self`, es el objeto sobre el que se llama. `ESTADOS` es un **atributo de clase**: lo comparten todas las tareas, mientras que `titulo` y `estado` son de cada objeto. `__str__` es un método especial: `print(tarea)` lo usa para mostrar el objeto; sin él verías algo como `<__main__.Tarea object at 0x...>`. **Límite:** Python no tiene atributos privados de verdad; `tareas[1].estado = "hcha"` sigue funcionando. La convención es nombrar con guion bajo (`_estado`) lo que no debe tocarse desde fuera, y cambiar el estado solo con métodos.
+```python
+tareas = [Tarea("Lavar la loza"), Tarea("Pagar el arriendo"), Tarea("Estudiar", "hecha")]
+tareas[0].completar()
+tareas[0].completar()
+```
 
-**4. Cierra**
-Escribe qué línea del programa protege la regla «no se completa dos veces» y por qué ya no necesitas repetir esa comprobación en el bucle.
+Con `python3.14 src/dos-veces-completar.py` el `Traceback` muestra dos marcos, y eso es información:
 
-#### Subtema 6.3: Identidad, igualdad y `__eq__` · 10 min
+```text
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t6/src/dos-veces-completar.py", line 25, in <module>
+    tareas[0].completar()
+    ~~~~~~~~~~~~~~~~~~~^^
+  File "/private/tmp/f1m1/t6/src/dos-veces-completar.py", line 12, in completar
+    raise ValueError(f"'{self.titulo}' ya estaba hecha")
+ValueError: 'Lavar la loza' ya estaba hecha
+```
 
-**1. Contexto**
-El gestor va a evitar tareas repetidas. Antes de compararlas necesitas saber qué significa que dos objetos sean «el mismo» y qué significa que sean «iguales».
+**Diagnóstico:** el primer marco es la llamada (línea 25), el segundo es la regla que la rechazó (línea 12). Nadie
+escribió un `if` suelto para atrapar esto: lo protege el objeto, y por tanto lo protege cualquier parte del programa
+que intente completar la tarea.
 
-**2. Hazlo tú**
-Crea `identidad.py`:
+**Fallo deliberado 4:** en otra copia, `src/estado-tipeado.py`, escribe mal el estado de la tercera tarea (`"hcha"`):
+
+```python
+tareas = [Tarea("Lavar la loza"), Tarea("Pagar el arriendo"), Tarea("Estudiar", "hcha")]
+```
+
+Ejecuta `python3.14 src/estado-tipeado.py`:
+
+```text
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t6/src/estado-tipeado.py", line 23, in <module>
+    tareas = [Tarea("Lavar la loza"), Tarea("Pagar el arriendo"), Tarea("Estudiar", "hcha")]
+                                                                  ~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/private/tmp/f1m1/t6/src/estado-tipeado.py", line 6, in __init__
+    raise ValueError(f"estado no admitido: {estado}")
+ValueError: estado no admitido: hcha
+```
+
+**Diagnóstico:** la línea de caretas (`~~~~~`) señala la llamada concreta dentro de la lista: Python 3.14 imprime esas
+marcas para que veas qué elemento falló, y por eso el mensaje señala `Tarea("Estudiar", "hcha")` y no la línea de la
+asignación. Falla **al crear** la tarea, no tres pantallas después.
+**Límite, y hay que decirlo en voz alta:** Python no tiene atributos privados de verdad. Ejecutado:
+`tarea.estado = "hcha"` desde fuera de la clase funciona sin quejarse, aunque `"hcha"` no esté en `ESTADOS`. La
+convención es escribir con guion bajo (`self._estado`) lo que no debe tocarse desde fuera y cambiar el estado solo con
+métodos; la garantía la dan las pruebas, no la sintaxis.
+
+**Fallo deliberado 5:** en `src/sin-self.py` olvida `self` en un método. Cambia la firma de `esta_pendiente` por
+`def esta_pendiente():` y deja el resto del programa igual:
+
+```python
+    def esta_pendiente():
+        return self.estado == "pendiente"
+
+    def __str__(self):
+        marca = " " if self.esta_pendiente() else "x"
+        return f"[{marca}] {self.titulo}"
+```
+
+Al ejecutar `python3.14 src/sin-self.py` el error **no** aparece donde está el método olvidado ni donde lo llamas
+explícitamente en el bucle; aparece antes, en el `print(tarea)` de la línea 28, porque `__str__` lo usa por detrás:
+
+```text
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t6/src/sin-self.py", line 28, in <module>
+    print(tarea)
+    ~~~~~^^^^^^^
+  File "/private/tmp/f1m1/t6/src/sin-self.py", line 19, in __str__
+    marca = " " if self.esta_pendiente() else "x"
+                   ~~~~~~~~~~~~~~~~~~~^^
+TypeError: Tarea.esta_pendiente() takes 0 positional arguments but 1 was given
+```
+
+**Diagnóstico:** `tarea.esta_pendiente()` equivale a `Tarea.esta_pendiente(tarea)`: Python siempre pasa el objeto como
+primer argumento. Como la función definida sin `self` no recibe nada, el `TypeError` se arma al llamarla. Lee los dos
+marcos del revés: el de abajo (`__str__`, línea 19) es el sitio real de la llamada que falló, y el de arriba (línea 28)
+es el `print` que la disparó. Esa distancia entre el síntoma y la causa es la razón por la que este fallo está en el
+tema: el error útil suele estar una llamada más adentro de donde lo ves.
+
+**Parte C · identidad, igualdad y `hash`.** El gestor va a evitar tareas repetidas, así que necesitas distinguir «el
+mismo objeto» de «otro objeto con los mismos datos». Guarda `src/identidad.py`:
 
 ```python
 class Tarea:
@@ -1095,9 +1289,12 @@ print("a.estado:", a.estado)
 print("b.estado:", b.estado)
 ```
 
-Ejecuta `python3 identidad.py`.
+**Explicación por bloques:** el primer bloque crea dos objetos distintos (`a`, `b`) con los mismos datos y un tercer
+nombre, `alias`, que apunta al mismo objeto que `a`: `alias = a` no copia nada. El segundo bloque compara de dos maneras
+y luego modifica a través del alias: `a == b` da `False` porque sin `__eq__` una clase compara por identidad, `a is alias`
+da `True`, y el `completar()` pedido a través de `alias` cambia `a` (queda `hecha`) sin tocar `b` (queda `pendiente`).
 
-**Resultado esperado:**
+Ejecuta `python3.14 src/identidad.py`. **Resultado esperado:**
 
 ```text
 a == b: False
@@ -1106,16 +1303,23 @@ a.estado: hecha
 b.estado: pendiente
 ```
 
-Ahora agrega este método dentro de la clase, debajo de `completar`, y cambia el final del archivo:
+Ahora define la igualdad. Guarda `src/igualdad.py`:
 
 ```python
+class Tarea:
+    def __init__(self, titulo, estado="pendiente"):
+        self.titulo = titulo
+        self.estado = estado
+
+    def completar(self):
+        self.estado = "hecha"
+
     def __eq__(self, otra):
         if not isinstance(otra, Tarea):
             return NotImplemented
         return self.titulo == otra.titulo and self.estado == otra.estado
-```
 
-```python
+
 a = Tarea("Estudiar")
 b = Tarea("Estudiar")
 print("a == b:", a == b)
@@ -1125,29 +1329,84 @@ print("tras completar b:", a == b)
 print("a == 'Estudiar':", a == "Estudiar")
 ```
 
-**Resultado esperado:** `a == b: True`, `a is b: False`, `tras completar b: False` y `a == 'Estudiar': False`.
+**Explicación por bloques:** el método nuevo compara título y estado, y antes pregunta con `isinstance` si el de al lado
+es una `Tarea`; si no lo es devuelve `NotImplemented`, que no es un error sino «no sé compararme con esto, inténtalo tú».
+`NotImplemented` hace que `a == "Estudiar"` dé `False` en lugar de reventar. Las cuatro líneas finales cubren los cuatro
+casos que importan: dos objetos con los mismos datos (`True`), identidad (`False`), el mismo par de objetos después de un
+cambio (`False`, porque la igualdad depende del estado) y la comparación con un texto (`False`).
 
-**Fallo deliberado:** al final agrega `vistas = {a}` para guardar la tarea en un conjunto. **Error esperado en Python 3.14:** `TypeError: cannot use 'Tarea' as a set element (unhashable type: 'Tarea')`. **Diagnóstico:** al definir `__eq__`, Python desactiva el hash por defecto de la clase. Es lo correcto aquí: una tarea cambia de estado, y un objeto que cambia no debe servir de clave en un conjunto o diccionario. Usa como clave algo que no cambie, como el título: `vistas = {a.titulo}`.
+Ejecuta `python3.14 src/igualdad.py`. **Resultado esperado:** `a == b: True`, `a is b: False`,
+`tras completar b: False`, `a == 'Estudiar': False`.
 
-**3. Entiende**
-`is` pregunta por **identidad**: ¿son el mismo objeto en memoria? `==` pregunta por **igualdad**, y sin `__eq__` una clase compara por identidad. Una asignación como `alias = a` no copia el objeto: crea otro nombre para él, por eso completar `alias` cambia `a`. Devolver `NotImplemented` le dice a Python «no sé compararme con eso», y la comparación con un texto da `False` en vez de un error. **Límite:** decidir qué hace iguales a dos objetos es una decisión del dominio; aquí cuentan título y estado, en otro programa podría bastar un identificador. Las tablas hash del Módulo 2 (Tema 6) explican por qué el hash y la igualdad deben ir de acuerdo.
+**Fallo deliberado 6:** guarda el programa anterior como `src/clave-en-conjunto.py` y añade al final
+`vistas = {a}` (una línea 22):
 
-**4. Cierra**
-Anota con tus palabras la diferencia entre `a is b` y `a == b`, y un caso del gestor en el que cada una sea la pregunta correcta.
+```python
+vistas = {a}
+print(vistas)
+```
 
-**Hito del tema:**
+Con `python3.14 src/clave-en-conjunto.py`:
 
-- [ ] Creé objetos con `__init__` y leí sus atributos.
-- [ ] Provoqué y diagnostiqué un `TypeError` por olvidar `self`.
-- [ ] Hice que un método rechazara un cambio de estado inválido.
-- [ ] Expliqué con un ejemplo la diferencia entre identidad e igualdad.
+```text
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t6/src/clave-en-conjunto.py", line 22, in <module>
+    vistas = {a}
+             ^^^
+TypeError: cannot use 'Tarea' as a set element (unhashable type: 'Tarea')
+```
 
-**Ejercicios.** Antes de abrir cada solución, escribe tu predicción o el error que obtuviste.
+**Diagnóstico:** al definir `__eq__`, Python desactiva el `__hash__` heredado de `object`. Es la decisión correcta para
+este caso: un objeto cuyo estado cambia no puede ser clave de un conjunto o un diccionario, porque su hueco en la tabla
+hash se calculó con otros datos. Lo mismo pasa con un diccionario: ejecutado, `{Tarea("Estudiar"): 1}` termina en
+`TypeError: cannot use 'Tarea' as a dict key (unhashable type: 'Tarea')`. Dos arreglos legítimos, y hay que saber
+cuándo toca cada uno. El primero, si basta con el título: usa el texto como clave y el conjunto funciona —
+`vistas = {a.titulo}` imprime `{'Estudiar'}`—. El segundo, si quieres que las propias tareas sean claves, tienes que
+hacerlas inmutables en la práctica y definir `__hash__` con el mismo campo que usa `__eq__`; ejecutado, un
+`__eq__` que compara solo `titulo` más un `__hash__` que devuelve `hash(self.titulo)` hace que
+`{Tarea("Estudiar"), Tarea("Estudiar"), Tarea("Lavar la loza")}` tenga `len` 2, que dos tareas del mismo título
+comparen `True` y que `{Tarea("Estudiar"): 1}[Tarea("Estudiar")]` devuelva `1`.
 
-1. Agrega a la `Tarea` del subtema 6.2 un método `reabrir()` que pase de `hecha` a `pendiente` y lance `ValueError` si la tarea ya estaba pendiente. Pruébalo completando, reabriendo y volviendo a reabrir la misma tarea.
+#### Paso 5 · Práctica guiada
+Predice antes de ejecutar: si `completar()` lanza `ValueError` cuando el estado ya es `"hecha"`, ¿qué tendría que hacer
+`reabrir()`? Escribe la firma y la comprobación simétrica en una copia de la clase llamada `src/reabrir.py`, con la
+misma estructura de la Parte B. Pista: la regla no dice «cambia el estado», dice «cambia el estado **desde** tal estado
+de partida»; por eso la primera línea del método es un `if` sobre `self.estado`, y el mensaje debe llevar el título
+(`f"'{self.titulo}' ya estaba pendiente"`) para que el error diga de qué tarea se trata. Ejecuta la copia: debe imprimir
+`pendiente` y detenerse en la segunda llamada con `ValueError: 'Estudiar' ya estaba pendiente`.
+
+#### Paso 6 · Práctica independiente
+Escribe los tres ejercicios de abajo en tu carpeta `ejemplo-clases`. En cada uno, anota primero tu predicción (qué se
+imprime o qué error sale y en qué línea), y solo después ejecuta y compara. Los tres niveles usan las piezas del Paso 4:
+el primero copia una regla, el segundo exige entender cuántos objetos hay detrás de una lista, el tercero decide qué hace
+«iguales» a dos tareas.
+
+#### Paso 7 · Cierre
+**Checklist de salida:** marca solo lo que ejecutaste en tu máquina.
+
+- [ ] Creé dos objetos con `__init__` y leí sus atributos: `src/tarea.py` imprime `Tarea` y `False`.
+- [ ] Reproduje el `TypeError` por olvidar el título (`src/tarea-sin-titulo.py`) y el `AttributeError` con sugerencia
+      (`src/atributo-mal-escrito.py`).
+- [ ] Hice que un método rechazara un cambio inválido y que `__init__` rechazara un estado desconocido.
+- [ ] Vi el `TypeError` de `sin-self.py` aparecer dentro de `__str__`, no en la línea que yo esperaba.
+- [ ] Expliqué con `src/identidad.py` por qué `alias = a` cambia a `a` y `==` sigue dando `False`.
+- [ ] Expliqué por qué definir `__eq__` quita el hash (`src/clave-en-conjunto.py`).
+
+**Errores comunes:** olvidar `self` en la firma del método; comparar objetos con `==` esperando igualdad de contenido sin
+haber definido `__eq__`; usar un objeto mutable como clave de diccionario; creer que la clase «protege» el atributo
+cuando cualquier línea puede asignarlo; escribir `tarea.estado = "hecha"` en vez de `tarea.completar()` y duplicar la
+regla. **Siguiente paso:** el Tema 7 responde la pregunta de diseño que este tema deja abierta —cuándo una clase es un
+caso especial de otra (herencia) y cuándo simplemente usa otra (composición)—, y `abc` convierte la regla de `__init__`
+en un contrato que el intérprete comprueba. Como *siguiente* aplicación, en el Módulo 2 (estructuras de datos) el árbol
+binario y la tabla hash se escriben con esta misma forma: una clase con el estado dentro y los métodos que lo protegen.
+
+**Ejercicios.** Antes de abrir cada solución, escribe tu predicción o pega el error que obtuviste.
+
+1. **(Guiado.)** Agrega a la `Tarea` de la Parte B un método `reabrir()` que pase de `hecha` a `pendiente` y lance
+   `ValueError` si la tarea ya estaba pendiente. Pruébalo completando, reabriendo y volviendo a reabrir la misma tarea.
 
 <details>
-<summary>Solución del ejercicio 1</summary>
+<summary>Solución del ejercicio 1: `src/reabrir.py`</summary>
 
 ```python
 class Tarea:
@@ -1173,11 +1432,17 @@ print(tarea.estado)
 tarea.reabrir()
 ```
 
-Imprime `pendiente` y después termina con `ValueError: 'Estudiar' ya estaba pendiente`. La regla es simétrica a la de `completar`: cada método comprueba el estado de partida antes de cambiarlo.
+Ejecutado con `python3.14 src/reabrir.py`, imprime `pendiente` y después termina con
+`ValueError: 'Estudiar' ya estaba pendiente`. La regla es simétrica a la de `completar`: cada método comprueba el estado
+de partida antes de cambiarlo.
 
 </details>
 
-2. Predice las tres líneas que imprime este programa y después ejecútalo:
+2. **(Intermedio.)** Predice las tres líneas que imprime este programa —guardado como `src/copia-superficial.py`— y
+   después ejecútalo:
+
+<details>
+<summary>Solución del ejercicio 2: `src/copia-superficial.py`</summary>
 
 ```python
 class Tarea:
@@ -1201,8 +1466,7 @@ print(tareas[0].estado)
 print(mismo is tareas, copia is tareas, copia[0] is tareas[0])
 ```
 
-<details>
-<summary>Solución del ejercicio 2</summary>
+Salida literal con `python3.14 src/copia-superficial.py`:
 
 ```text
 2 2 3
@@ -1210,13 +1474,54 @@ hecha
 True False True
 ```
 
-`mismo` es otro nombre para la misma lista. `list(tareas)` crea una lista nueva (por eso agregar a `copia` no cambia `tareas`), pero sus elementos son **los mismos objetos**: completar `copia[0]` cambia `tareas[0]`. Esto se llama copia superficial; el Módulo 13 (Memento) la vuelve a usar para explicar por qué deshacer exige copias que no compartan objetos mutables.
+`mismo` es otro nombre para la misma lista. `list(tareas)` crea una lista nueva —por eso agregar a `copia` deja
+`tareas` en 2—, pero sus elementos son **los mismos objetos**: completar `copia[0]` cambia `tareas[0]`, que queda
+`hecha`. Eso es una copia superficial. El módulo de patrones lo vuelve a usar (Memento) para explicar por qué deshacer
+exige copias que no compartan objetos mutables.
 
 </details>
 
-**Fuentes oficiales consultadas el 2026-11-18:** [Clases, en el tutorial de Python](https://docs.python.org/es/3/tutorial/classes.html), [`object.__eq__` y `__hash__`](https://docs.python.org/3/reference/datamodel.html#object.__hash__) y [`__str__`](https://docs.python.org/3/reference/datamodel.html#object.__str__).
+3. **(Avanzado.)** El gestor debe poder meter tareas en un conjunto para no repetir avisos, pero una tarea cambia de
+   estado. Escribe `src/hashable-por-titulo.py`: una `Tarea` cuyo `__eq__` compare solo el título y cuyo `__hash__`
+   devuelva `hash(self.titulo)`. Crea el conjunto `{Tarea("Estudiar"), Tarea("Estudiar"), Tarea("Lavar la loza")}` y
+   responde por escrito: ¿cuántos elementos tiene?, ¿`Tarea("Estudiar") == Tarea("Estudiar")` es `True`?, ¿qué valor da
+   `{Tarea("Estudiar"): 1}[Tarea("Estudiar")]`?
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** convierte los diccionarios de tareas del Tema 1 en objetos `Tarea` con `completar()` y `esta_pendiente()`, y cuenta las pendientes llamando al método en vez de leer la clave `"estado"`.
+<details>
+<summary>Solución del ejercicio 3: `src/hashable-por-titulo.py`</summary>
+
+```python
+class Tarea:
+    def __init__(self, titulo, estado="pendiente"):
+        self.titulo = titulo
+        self.estado = estado
+
+    def __eq__(self, otra):
+        if not isinstance(otra, Tarea):
+            return NotImplemented
+        return self.titulo == otra.titulo
+
+    def __hash__(self):
+        return hash(self.titulo)
+
+
+vistas = {Tarea("Estudiar"), Tarea("Estudiar"), Tarea("Lavar la loza")}
+print(len(vistas))
+print(Tarea("Estudiar") == Tarea("Estudiar"))
+print({Tarea("Estudiar"): 1}[Tarea("Estudiar")])
+```
+
+Salida literal con `python3.14 src/hashable-por-titulo.py`: `2`, `True`, `1`. La decisión de diseño está escrita en el
+código: dos tareas son «la misma» si coinciden en título, así que el hash usa el título y nada más. Si mañana el título
+dejara de ser único, esta clase volvería a mezclar tareas distintas —por eso el estado **no** entra ni en `__eq__` ni en
+`__hash__`, y por eso `hash()` y `==` tienen que mirar siempre los mismos campos—.
+
+</details>
+
+**Fuentes oficiales consultadas el 2026-11-21:** [Clases, en el tutorial de Python](https://docs.python.org/es/3/tutorial/classes.html),
+[modelo de datos: `__eq__` y `__hash__`](https://docs.python.org/3/reference/datamodel.html#object.__hash__),
+[`__str__`](https://docs.python.org/3/reference/datamodel.html#object.__str__) y
+[errores y excepciones, con sus *tracebacks*](https://docs.python.org/3/tutorial/errors.html).
 
 ### Tema 7: Herencia, composición y clases abstractas con `abc` · Intermedio · 40 min
 

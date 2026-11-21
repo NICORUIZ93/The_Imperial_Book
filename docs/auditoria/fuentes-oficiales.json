@@ -12,7 +12,7 @@
     "locales": 0,
     "porcentaje_sin_fecha": 43.4
   },
-  "urls_distintas": 1181,
+  "urls_distintas": 1182,
   "urls_sin_comprobar": 0,
   "urls_rotas": 39,
   "urls": {
@@ -2449,6 +2449,11 @@
     "https://docs.python.org/3/tutorial/controlflow.html": {
       "estado": 200,
       "final": "https://docs.python.org/3/tutorial/controlflow.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.python.org/3/tutorial/errors.html": {
+      "estado": 200,
+      "final": "https://docs.python.org/3/tutorial/errors.html",
       "comprobada": "2026-11-21"
     },
     "https://docs.python.org/3/tutorial/floatingpoint.html": {

@@ -3,6 +3,12 @@
   "topics": [
     {
       "track": "foundations",
+      "module": 1,
+      "topic": 6,
+      "capture": "requerida"
+    },
+    {
+      "track": "foundations",
       "module": 7,
       "topic": 6,
       "capture": "requerida"
