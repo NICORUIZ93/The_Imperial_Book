@@ -4253,12 +4253,11 @@ tramo Fundamentos, 7 temas: clases, campos, métodos y `this`; constructores con
 inicialización y su orden exacto; encapsulación y modificadores de acceso; `static`; paquetes e importaciones
 —incluido `import module`, JEP 511, definitivo en JDK 25—; los métodos de `Object` (`toString`, `equals`,
 `hashCode`); y objetos inmutables con `record`. Cuando cerraste este módulo no estaba escrito ninguno; hoy va
-**3 de 7** (los temas 1, 2 y 3, con una puerta de 140 comprobaciones en verde: 41 del primero, 48 del segundo y
-51 del tercero) y siguen pendientes los cuatro restantes, cuyo
-reparto original no cambia: `static` figura como **falta**, cuatro como **está pero básico** y los de `this` y
-`Object` como **ya está**, pero redactados en M0, M1 y M2 del
-curso antiguo): aquí dejaste
-los datos en arreglos y colecciones de `int` y `String`; ahí entran tus propias clases, y tres cosas de este módulo
+**4 de 7** (los temas 1, 2, 3 y 4, con una puerta de 243 comprobaciones en verde: 41 del primero, 48 del segundo,
+51 del tercero y 103 del cuarto) y siguen pendientes los tres restantes —paquetes e importaciones (tema 5), los
+métodos de `Object` (tema 6) y `record` (tema 7)—, que el temario clasifica, en ese orden, como
+**está pero básico**, **ya está** y **está pero básico** frente al curso antiguo; `static`, que era el único
+**falta**, ya está escrito): aquí dejaste los datos en arreglos y colecciones de `int` y `String`; ahí entran tus propias clases, y tres cosas de este módulo
 vuelven a cobrarse el día uno. La primera es `equals` (Tema 5): cuando tus objetos estén en un `HashMap` como claves,
 la trampa de `==` deja de tener red de seguridad. La segunda es la covarianza (Tema 3): un `Guia[]` dentro de una
 `List<Guia>` se comporta distinto, y hay que saber por qué. La tercera es el conteo de este tema: cuando en M21 se

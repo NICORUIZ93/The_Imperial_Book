@@ -11,23 +11,27 @@
 > —que los redacta la herramienta— y nunca la regla de lenguaje que se enseña. Las citas de la JLS y de la JVMS de
 > este módulo se verificaron contra la especificación **Java SE 25** que Oracle sirve hoy como
 > «Specifications Latest» (páginas con `dateModified` 2026-09-15; el propio capítulo 12 remite a _The Java
-> Virtual Machine Specification, Java SE 25 Edition_): §4.12.5, §6.6, §6.6.1, §6.6.2, §6.6.2.1 (con su
-> Ejemplo 6.6.2-1), §7.6, §8.1, §8.1.1.4, §8.2, §8.3, §8.3.2, §8.3.3, §8.4, §8.4.3.2, §8.4.8.1, §8.4.8.3, §8.6,
-> §8.7, §8.8, §8.8.7, §8.8.7.1, §8.8.8, §8.8.9, §8.8.10, §12.4.1, §12.4.2, §12.5, §15.8.3, §15.21.3 y el
-> capítulo 16 (§16.9); JVMS §2.6.1, §2.9.1, §2.9.2, §4.7.28, §4.7.29, §4.10.1.8, §5.4.3 y §5.4.4.
-> **Estado de escritura:** tema 3 de 7. Los temas 4 a 7 están previstos y aún no escritos; el laboratorio tiene
-> su puerta para los tres temas escritos (**140 comprobaciones, 0 fallidas, 0 omitidas**: 41 del tema 1, 48 del
-> tema 2 y 51 del tema 3), y esta portada no declara horas del módulo completo hasta que los siete estén medidos.
+> Virtual Machine Specification, Java SE 25 Edition_). JLS: §4.12.4, §4.12.5, §6.4.1, §6.6, §6.6.1, §6.6.2,
+> §6.6.2.1 (con su Ejemplo 6.6.2-1), §7.6, §8.1, §8.1.1.4, §8.1.3, §8.2, §8.3, §8.3.1.1, §8.3.2, §8.3.3, §8.4,
+> §8.4.3.2, §8.4.8.1, §8.4.8.2 (con su Ejemplo 8.4.8.2-1 «Goodnight, Dick»), §8.4.8.3, §8.6, §8.7, §8.8, §8.8.7,
+> §8.8.7.1, §8.8.8, §8.8.9, §8.8.10, §8.10, §9.3, §9.3.1, §9.6.4.4, §12.4.1, §12.4.2, §12.5, §12.6, §12.7, §13.1,
+> §13.4.9, §14.22, §15.8.3, §15.11.1, §15.12.4, §15.12.4.1, §15.21.3, §15.29 y el capítulo 16 (§16.1.1 y §16.9).
+> JVMS: §2.6.1, §2.9.1, §2.9.2, §4.7.2, §4.7.28, §4.7.29, §4.10.1.8, §5.3.2, §5.4.3, §5.4.4 y §5.5. JEP: 358 (los
+> mensajes del `NullPointerException`), 395 (miembros `static` en clases internas) y 511 (imports de módulo, tema 5).
+> **Estado de escritura:** tema 4 de 7. Los temas 5 a 7 están previstos y aún no escritos; el laboratorio tiene
+> su puerta para los cuatro temas escritos (**243 comprobaciones, 0 fallidas, 0 omitidas**: 41 del tema 1, 48 del
+> tema 2, 51 del tema 3 y 103 del tema 4), y esta portada no declara horas del módulo completo hasta que los siete
+> estén medidos.
 
 ## Cabecera del módulo
 
 | | |
 |---|---|
-| **Objetivo** | Pasar de «datos sueltos en arreglos» a **un tipo propio**: declarar una clase cuyos campos son su estado y cuyos métodos reciben el objeto como primer argumento, entender que `new` crea un objeto y la variable solo lo señala, seguir el `this` hasta el bytecode, saber **en qué orden** se le llenan las casillas —los siete pasos de §12.5, dónde caen los inicializadores y por qué `this(...)` se salta los propios—, y dominar las tres cosas que más programas rompen: que asignar copie la **referencia** (no el objeto), que `null` sea un valor de referencia y no «un objeto vacío», y que el nivel de acceso es la única barrera que se comprueba sola —un getter que devuelve la lista viva anula tu invariante con el compilador callado, y un método que repite el nombre de un `private` del padre no se ejecuta **nunca**—. |
+| **Objetivo** | Pasar de «datos sueltos en arreglos» a **un tipo propio**: declarar una clase cuyos campos son su estado y cuyos métodos reciben el objeto como primer argumento, entender que `new` crea un objeto y la variable solo lo señala, seguir el `this` hasta el bytecode, saber **en qué orden** se le llenan las casillas —los siete pasos de §12.5, dónde caen los inicializadores y por qué `this(...)` se salta los propios—, y dominar las tres cosas que más programas rompen: que asignar copie la **referencia** (no el objeto), que `null` sea un valor de referencia y no «un objeto vacío», y que el nivel de acceso es la única barrera que se comprueba sola —un getter que devuelve la lista viva anula tu invariante con el compilador callado, y un método que repite el nombre de un `private` del padre no se ejecuta **nunca**—, y que hay casillas que no viven en el objeto sino en la **clase**: una sola encarnación aunque ya no quede ningún objeto, un método de clase que se escoge por el tipo del fuente y no por el objeto, y una constante que se hornea dentro del archivo que la lee y por eso no ve el valor nuevo aunque se recompile quien la declara. |
 | **Prerrequisitos** | [Módulo 4](modulo-4.md) completo —en especial su tema 1 (`new Punto[2]` deja casillas `null`: aquí eso mismo pasa con objetos que no son arreglos) y su tema 4 (`ArrayList`/`HashMap`, porque el siguiente paso natural es una lista de objetos)— y [Módulo 3](modulo-3.md) completo, sobre todo su tema 4: **al método se le copia la referencia, no el contenido**; esa regla es la que aquí se ve funcionando dentro de un objeto. Del [Módulo 0](modulo-0.md) se sigue usando `javap -c -p`. |
-| **Duración** | Escrito: 120 min (temas 1, 2 y 3, 40 min cada uno). Previstos 7 temas de 40 min · **4 h 40 min** según el temario, cifra que se fija con las cabeceras cuando el módulo esté completo. |
-| **Versiones** | JDK 25 (`--release 25`). Nada de este módulo depende de una función *preview*. Cuatro cosas que sí dependen del ejecutable y se tratan como tales: el **texto** del `NullPointerException` con mensajes útiles (lo redacta la JVM 27; el fenómeno es de 14+), el **número** que devuelve `System.identityHashCode` (medido: cambia con `-XX:hashCode=` y no es una cifra del lenguaje), el **número de instrucciones** de cada `<init>` que publica el tema 2 (11 / 6 / 7 con cadena, 11 / 14 / 17 sin ella) —es política del generador de código de `javac`, no regla del lenguaje; lo que §12.5 paso 4 sí exige es el **reparto** de los inicializadores (2 / 0 / 0 frente a 2 / 2 / 2)—, y lo del tema 3: el mismo fuente sale con **`invokespecial`** al llamarse un `private` desde su clase compilando `--release 8` y con **`invokevirtual`** de 11 a 25 (medido release a release), el puente `access$000` solo aparece en el 8, y el nombre interno `ImmutableCollections$List12` que imprime `B2` depende del tamaño de la lista y de la JDK. En los tres casos del tema 3 lo que se enseña es la **regla** (§6.6.2.1, §8.2, §5.4.4 y el rechazo `UnsupportedOperationException`), no el detalle del volcado. |
-| **Laboratorio** | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) (al publicar: `examples/java/modulo-5/`), con `verificar.sh`: **140 comprobaciones, 0 fallidas, 0 omitidas** ejecutadas aquí (41 del tema 1, 48 del tema 2 y 51 del tema 3). |
+| **Duración** | Escrito: 160 min (temas 1, 2, 3 y 4, 40 min cada uno). Previstos 7 temas de 40 min · **4 h 40 min** según el temario, cifra que se fija con las cabeceras cuando el módulo esté completo. |
+| **Versiones** | JDK 25 (`--release 25`). Nada de este módulo depende de una función *preview*. Cinco cosas que sí dependen del ejecutable y se tratan como tales: el **texto** del `NullPointerException` con mensajes útiles (lo redacta la JVM 27; el fenómeno es de 14+), el **número** que devuelve `System.identityHashCode` (medido: cambia con `-XX:hashCode=` y no es una cifra del lenguaje), el **número de instrucciones** de cada `<init>` que publica el tema 2 (11 / 6 / 7 con cadena, 11 / 14 / 17 sin ella) —es política del generador de código de `javac`, no regla del lenguaje; lo que §12.5 paso 4 sí exige es el **reparto** de los inicializadores (2 / 0 / 0 frente a 2 / 2 / 2)—, y lo del tema 3: el mismo fuente sale con **`invokespecial`** al llamarse un `private` desde su clase compilando `--release 8` y con **`invokevirtual`** de 11 a 25 (medido release a release), el puente `access$000` solo aparece en el 8, y el nombre interno `ImmutableCollections$List12` que imprime `B2` depende del tamaño de la lista y de la JDK; y las del tema 4: la redacción de los cinco avisos `[static]` y de los seis cortes de `javac`, el nombre de ranura `<local4>` que la JVM escoge para el `NullPointerException`, los conteos de instrucciones del `.class` (5 `getstatic` de `creadas`, 0 `getfield`, 2 `invokevirtual` de `describe`, 0 `aload_0` en `sumar`) y la cota del JEP 395, que para medirse necesita que la JDK todavía acepte `--release 15`. En los tres casos del tema 3 lo que se enseña es la **regla** (§6.6.2.1, §8.2, §5.4.4 y el rechazo `UnsupportedOperationException`), no el detalle del volcado. |
+| **Laboratorio** | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) (al publicar: `examples/java/modulo-5/`), con `verificar.sh`: **243 comprobaciones, 0 fallidas, 0 omitidas** ejecutadas aquí (41 del tema 1, 48 del tema 2, 51 del tema 3 y 103 del tema 4). |
 | **Proyecto guía** | `rutaflow-nucleo`: la **ficha de carga**. En M4 una guía era un `String` con guiones que se partía con `split`; aquí pasa a ser un objeto `Guia` con `codigo`, `gramos` y `zona`, su método `etiqueta()` y su constructor. Cada tema cierra una parte: la clase y su receptor (T1), cómo se construye y en qué orden (T2), qué se puede tocar desde fuera (T3), qué pertenece a la clase y no al objeto (T4), dónde vive el archivo (T5), cómo se compara e imprime (T6) y cómo se hace inmutable (T7). |
 
 ### Mapa del módulo
@@ -2564,11 +2568,1170 @@ cuando hay **módulos** (JPMS), un miembro `public` en un paquete no exportado s
 lo pone como primera rama de cada nivel—, y todo lo de este tema se midió con classpath, que es el caso en el que esa
 quinta pared no existe: de ahí el `unnamed module of loader 'app'` que aparece en el error.
 
+### Tema 4: `static`: campos, métodos, constantes e inicialización de clase · Básico · 40 min
+
+#### 1. Ubicación y prerrequisitos
+
+Es el cuarto de los siete temas. El tema 1 te dio el campo del objeto y el `this`; el tema 2 te dio el orden en que
+ese objeto se llena (`<init>` y los siete pasos de §12.5); el tema 3 decidió quién puede tocarlo. Este tema añade
+**la otra mitad del almacén**: hay datos que no están dentro de ningún objeto, y hay un momento de ejecución —el
+arranque de la clase— que no es un constructor y que **corre una sola vez**.
+
+Necesitas tener cerrado:
+
+- **Tema 1 de este módulo**: campo de instancia, método de instancia y `this`. Todo este tema es una oposición con
+  esos tres: un campo de clase no está en la hoja de campos del objeto y un método de clase no recibe receptor.
+- **Tema 2 de este módulo**: `<init>`, los inicializadores de campo y el orden de §12.5. Aquí aparece su gemelo
+  `<clinit>`, y la diferencia es la puerta del tema: **uno corre por objeto, el otro una vez por clase**. Fíjate en
+  que el orden no es el mismo: en el objeto los inicializadores caen *después* del `super()` (paso 6 de §12.5); en la
+  clase las constantes caen *antes* que cualquier bloque `static` (pasos 6 y 9 de §12.4.2) y todo ello antes de que
+  exista el primer objeto.
+- **Tema 3 de este módulo**: los bits de `flags`. Aquí se suma un bit a la misma tabla —`0x0008 ACC_STATIC`— y lo
+  verás **sumarse** a los que ya conoces: `static final int` sale con `flags: (0x0018) ACC_STATIC, ACC_FINAL`.
+- **Módulo 3, tema 4**: al método se le copia la referencia, no el contenido. Aquí se necesita al revés: un método
+  de clase **no tiene referencia que copiar**, y esa es la razón de que `this` y `super` estén prohibidos dentro.
+- **Módulo 0**: `javap -v -p` (banderas, atributos) y `javap -c -p` (instrucciones). En este tema la diferencia
+  entre los dos volcados no es estética: el atributo `ConstantValue` solo se ve con `-v` y la instrucción que lo
+  sustituye solo se ve con `-c`.
+
+Dos advertencias de orden, porque son reales. La primera: `Errores` y `InicializacionBajoDemanda` usan
+`Class.forName(...)`. No es un ejercicio de reflexión y la reflexión no se enseña en este módulo: se usa como
+**sonda**, porque es la única palanca del lenguaje que te deja elegir en qué momento se inicializa una clase y
+probar así que las otras tres vías no la inicializan. Nada de lo que se demuestra aquí depende de conocer la API.
+La segunda: `errores/CaseNoConstante.java` importa `java.util.concurrent.ThreadLocalRandom` con un solo fin, que el
+inicializador **no** sea una expresión constante. No se da la clase en este curso: cualquier llamada vale, y el
+propio tema usa `System.nanoTime()` para lo mismo en `por-dentro/FlagsEstaticos.java`.
+
+Laboratorio: [`laboratorios/modulo-5/tema-4/`](laboratorios/modulo-5/tema-4) — `CamposEstaticos.java`,
+`InicializacionBajoDemanda.java`, `ContadorCompartido.java`, `por-dentro/FlagsEstaticos.java`, el trío
+`por-dentro/constante/` (`Lector.java` más dos versiones de `Config.java`) y ocho fuentes en `errores/`.
+
+#### 2. Objetivo
+
+**Enunciado**: dado un miembro que quieres escribir, decides si es **del objeto o de la clase** diciendo quién lo
+escribe y cuándo se apaga, y sabes en qué momento exacto corre el código de la clase y qué ve un `.class` que ya
+estaba compilado.
+
+Al terminar eres capaz de:
+
+1. Escribir los cuatro miembros de clase (campo, método, bloque `static` y constante) y **reconocerlos en el
+   `.class`**: por el bit `0x0008`, por la ausencia de `aload_0` en sus ranuras y por la presencia o ausencia del
+   atributo `ConstantValue`.
+2. Predecir a qué implementación llega una llamada escrita igual: `p.describe()` busca en el **objeto** (imprime
+   `hijo`) y `p.total()` busca en el **tipo del fuente** (imprime la versión de `CamposEstaticos` aunque `p` sea un
+   `Ruta`), y provocar los dos cortes del compilador cuando se confunden las dos cosas.
+3. Decir, acceso por acceso, si dispara la inicialización: `Bascula.class` no, `Bascula.CONSTANTE` no,
+   `Class.forName(.., false, ..)` no, `Class.forName(..)` sí, `new` sí, leer un campo no constante sí —y citar el
+   motivo en §12.4.1 o en §13.1 según el caso.
+4. Predecir el **orden** del `<clinit>`: primero las constantes (paso 6, sin ninguna instrucción en el bytecode),
+   luego el padre (paso 7), después inicializadores de campo y bloques `static` en orden de texto (paso 9).
+5. Diagnosticar un `<clinit>` que revienta: por qué el primer contacto da `ExceptionInInitializerError` y el
+   segundo `NoClassDefFoundError`, y por qué en el segundo **no** se vuelve a ejecutar nada.
+6. Elegir entre variable constante y casilla de clase con el argumento de compatibilidad delante, medido y no de
+   oído: subir el valor de una constante a 99 deja a un `.class` viejo diciendo `5` sin error ni aviso.
+
+#### 3. Por qué importa
+
+La especificación describe el mecanismo, y lo describe en dos frases que son la base de todo el tema:
+
+> *«If a field is declared `static`, there exists exactly one incarnation of the field, no matter how many
+> instances (possibly zero) of the class may eventually be created. A `static` field, sometimes called a _class
+> variable_, is incarnated when the class is initialized (§12.4).»* — JLS §8.3.1.1
+
+> *«A class method is always invoked without reference to a particular object. […] Notably, the keywords `this` and
+> `super` are prohibited in a static context, as are unqualified references to instance variables, instance
+> methods, and type parameters of lexically enclosing declarations.»* — JLS §8.4.3.2
+
+Y el momento de ejecución es una lista cerrada de cuatro casos, no una intuición:
+
+> *«A class or interface T will be initialized immediately before the first occurrence of any one of the following:
+> T is a class and an instance of T is created. / A `static` method declared by T is invoked. / A `static` field
+> declared by T is assigned. / A `static` field declared by T is used and the field is not a constant variable
+> (§4.12.4).»* — JLS §12.4.1
+
+Cierro la cita con la frase que la hace verificable, porque es la que casi nadie recuerda:
+*«A class or interface will not be initialized under any other circumstance.»* (§12.4.1). Todo lo que hace el tema 4
+es **buscarle la esquina a esa frase**, y las cuatro salidas medidas de este tema son esas esquinas:
+
+- `#1 · RF-000999` en el bloque A y `#3 · RF-000999` en el bloque B. Es el **mismo** `println` del mismo fuente con
+  el mismo `new`, y el número cambia porque el contador no estaba en el objeto: estaba en la clase, y la clase ya
+  había trabajado antes. Dos líneas de salida y tienes demostrado por qué un test aislado no es un test reproducible.
+- `500 solicitudes ya inexistentes: la clase sigue en 503`. Ni un solo objeto vivo y el número no se apagó: «no
+  depende de los objetos vivos» no es una metáfora, es lo que imprime el programa.
+- **Cero bytes** de salida con `javac --release 25` a secas sobre las seis fuentes que compilan del tema, y
+  **cinco** avisos `[static]` en cuanto añades `-Xlint:static` (o `-Xlint:all`, que lo incluye) cerrados con la
+  línea `5 warnings`. Es el único fallo de este tema que el compilador ve y calla por defecto:
+  `static variable should be qualified by type name, CamposEstaticos, instead of by an expression`.
+- `LIMITE_CONSTANTE como lo vio el Lector: 5` contra `LIMITE_VIVO como lo vio el Lector: 99` usando el **mismo**
+  `Lector.class` compilado contra la versión vieja. Y en el bytecode del llamante se ve por qué: el `ldc` dice
+  `// String LIMITE_CONSTANTE como lo vio el Lector: 5` —el valor está **dentro del literal del llamante**— mientras
+  lo vivo conserva `getstatic Field Config.LIMITE_VIVO:I`. §13.1 lo exige: *«A reference to a field that is a
+  constant variable (§4.12.4) must be resolved at compile time to the value V denoted by the constant variable's
+  initializer.»*
+- El `<clinit>` que revienta: `ExceptionInInitializerError` la primera vez, y `NoClassDefFoundError: Could not
+  initialize class InitQueRevienta$Rompe` en todo intento posterior, con la causa colgando
+  `[in thread "main"]`. Eso es §12.4.2 pasos 11, 12 y 5 escritos en dos ejecuciones.
+
+Dos palabras de honestidad, para que no cites cosas que no están. Primera: la JLS **no prohíbe** el estado de
+clase; lo describe. No hay en el capítulo 8 ninguna frase que diga que `static` es peligroso: lo que hay es la
+definición de arriba y el procedimiento de inicialización. La recomendación de diseño —no escribir acumuladores de
+clase y repartir en cambio un objeto que lleva la cuenta— es criterio de este curso y de Effective Java, no norma
+del lenguaje; la norma del lenguaje es la de §8.3.1.1 y se cumple en los dos casos. Segunda: el patrón de la clase
+de utilidad con constructor privado que lanza `AssertionError` (`Tarifas` en el ejemplo) es el **ítem 4** de
+Effective Java («enforce an instantiability decision»), no una regla del lenguaje: el lenguaje te deja escribir ese
+constructor y llamarlo, y por eso en `CamposEstaticos` la línea `new Tarifas();` **compila** y lo que produce es el
+`AssertionError: no se instancia` en tiempo de ejecución.
+
+Y hay una frontera histórica que hoy es invisible y que conviene tener medida, porque es la que explica el 90 % del
+código `static` viejo: hasta Java 15 una clase interna no estática no podía declarar nada `static`. La JLS SE 25
+dice lo contrario, en §8.1.3: *«All of the rules that apply to nested classes apply to inner classes. In
+particular, an inner class may declare and inherit `static` members (§8.2), and declare static initializers (§8.7),
+even though the inner class itself is not `static`.»*, y el JEP 395 lo justifica en una frase: *«We relax this
+restriction in order to allow an inner class to declare members that are either explicitly or implicitly static.»*.
+Medido con tu propio compilador: el mismo fuente da **dos errores** con `--release 15` y compila limpio con
+`--release 16` y con `--release 25`.
+
+#### 4. Analogía
+
+Piensa en un depósito de reparto con furgonetas y una sala de máquinas.
+
+- **Campo de instancia** es la cajonera de cada furgoneta: hay una por furgoneta, se monta cuando la furgoneta se
+  fabrica (`<init>`) y se va con ella a la chatarra.
+- **Campo de clase** es el tablero clavado en la pared del depósito. No está dentro de ninguna furgoneta: puedes
+  fabricar quinientas y chatarrear las quinientas y el número del tablero **sigue puesto** (medido: `503`). Y puedes
+  tener el depósito sin una sola furgoneta y el tablero ya existe, porque se colgó al abrir el depósito, no al
+  fabricar el primer vehículo.
+- **`<clinit>`** es la apertura de la mañana: se hace **una sola vez**, antes del primer reparto, en el orden del
+  cartel de la pared (los papeles clavados se leen de arriba abajo, como los escribe el electricista). Si esa
+  mañana revienta la caldera, el primer repartidor ve el reventón y el humo (`ExceptionInInitializerError`), y los
+  que llegan después ven un cartel distinto —«depósito cerrado» (`NoClassDefFoundError`)— que ya no dice qué pasó:
+  la apertura no se repite.
+- **Método de instancia** es el mecánico: lo llamas **señalando una furgoneta**, y viene a esa. **Método de clase**
+  es el altavoz del depósito: no se señala ninguna furgoneta, y por eso dentro no existe «esta furgoneta» (`this`
+  prohibido). Que en el parte hayas escrito «vehículo de la flota A» o «vehículo de la flota B» no cambia qué
+  altavoz suena: el altavoz se elige por **lo que pusiste en el parte** (el tipo del fuente), no por el vehículo que
+  hay debajo. Esa es la ocultación, y es literal: `p.total()` con `p` declarado `CamposEstaticos` suena al altavoz
+  de `CamposEstaticos` aunque el vehículo sea un `Ruta`.
+- **Ocultar** no es sustituir: sustituir es cambiar el procedimiento colgado en **la misma** pared del vehículo
+  (tabla de métodos del objeto); ocultar es colgar un cartel con el mismo nombre en la pared de la oficina. Como no
+  es la misma pared, no hay nada sustituido, y por eso `@Override` protesta: pregunta *a qué cartel de la pared del
+  vehículo estás sustituyendo* y no hay ninguno.
+- **Variable constante** es el reglamento **fotocopiado en la guantera** al firmar: si mañana enmiendas el
+  reglamento, las guanteras viejas siguen con el papel viejo y nadie te avisa. **Casilla de clase** es el cartel en
+  la pared: lo que leas hoy es lo que hay hoy. La diferencia entre las dos no se ve en el fuente —las dos son
+  `static final int`—; se ve en `ConstantValue` y en que la guantera no tiene ni una instrucción en la apertura.
+- **El contador global mal puesto** es el numerador de tickets clavado en la pared del depósito: da igual cuántas
+  furgonetas haya, lo que salga depende de todo lo que se repartió antes. El remedio no es «borrar el numerador»: es
+  **comprar un numerador por mostrador** y repartirlo, que es exactamente el `Secuenciador` del tercer ejemplo —y
+  por eso los dos mostradores dan `#1` el uno y `#1` el otro, cada uno empezando de cero.
+
+#### 5. Diagrama
+
+```mermaid
+flowchart TD
+    IN["quiero escribir un dato<br/>que no es de un objeto"] --> Q1{"es un numero fijo<br/>en el fuente?"}
+    Q1 -->|"si: static final + expresion constante"| K["variable constante<br/>flags 0x0018 + ConstantValue: int 25000<br/>CERO instrucciones en <clinit>"]
+    Q1 -->|"no"| Q2{"cambia por objeto<br/>o por clase?"}
+    Q2 -->|"por objeto"| F["campo de instancia<br/>flags 0x0000 · putfield · 1 por new"]
+    Q2 -->|"por clase"| Q3{"quien lo escribe?"}
+    Q3 -->|"la propia clase"| S["inicializador de campo o<br/>bloque static · putstatic<br/>orden de texto, paso 9"]
+    Q3 -->|"un objeto al nacer"| C["creadas++ sin this<br/>putstatic #7 en el <init>"]
+    K -->|"el llamante lo hornea"| L["ldc String ...: 5<br/>el .class viejo no ve 99<br/>§13.1 · §13.4.9"]
+    C -->|"y la clase no se apaga"| G["estado GLOBAL de la JVM<br/>medido: 503 sin objetos vivos<br/>remedio: repartir un Secuenciador"]
+    S --> O["orden de <clinit><br/>1 constantes · paso 6<br/>2 padre · paso 7<br/>3 texto · paso 9"]
+    O -->|"disparadores §12.4.1"| D["new · metodo de clase ·<br/>asignar campo · leer campo NO constante"]
+    O -->|"si revienta"| X["1er contacto ExceptionInInitializerError<br/>despues NoClassDefFoundError<br/>la apertura no se repite"]
+    D -->|"lo que NO dispara"| N["Bascula.class · constante leida<br/>forName(.., false, ..) · interface<br/>con solo constantes"]
+```
+
+**Texto alternativo:** el diagrama es una decisión de **tres preguntas** y luego el mecanismo que las une. ¿Es un
+valor fijo escrito en el fuente? Si es `static final` con expresión constante, no es una casilla: es un valor que se
+**enlaza al compilar** y por eso en `<clinit>` no hay ni una instrucción para él (medido: `ConstantValue: int
+25000` y `ldc` con el 5 ya horneado dentro del literal del llamante, §13.1). ¿Cambia por objeto o por clase? Si
+cambia por objeto, es un campo normal y corriente (`flags: (0x0000)`, `putfield`). Si cambia por clase, la tercera
+pregunta decide el diseño: ¿lo escribe la propia clase (bloque `static` o inicializador de campo) o lo escribe un
+objeto al nacer (`creadas++` sin `this`, que es un `putstatic` dentro de `<init>`)? Esta última rama es la que
+produce el estado global: la casilla sigue en 503 cuando ya no queda ningún objeto vivo, y el remedio dibujado es
+sustituir la casilla por un objeto que repartes. Todo lo de clase confluye en la caja de la derecha: el orden real
+del `<clinit>` es constantes → padre → texto (§12.4.2 pasos 6, 7 y 9), y sus cuatro disparadores son exactamente los
+de §12.4.1 —con sus tres negatives medidos, que son la parte que la gente no sabe: el literal de clase, leer una
+constante y `Class.forName(.., false, ..)` **no** inicializan nada—. Abajo a la derecha está la segunda lección del
+orden: si la apertura falla, el primer contacto recibe la causa y los siguientes reciben `NoClassDefFoundError`.
+
+#### 6. Explicación
+
+**Nivel 0 — `static` no es un modificador de «visibilidad»: es una dirección. Hay cuatro cosas que puedes hacer de
+clase, y las cuatro se reconocen en el `.class`.**
+
+En el fuente son una palabra delante de lo de siempre:
+
+```java
+public class CamposEstaticos {
+
+    String codigo;                        // UNO POR OBJETO
+    int gramos;
+
+    static int creadas = 0;               // UNO SOLO PARA LA CLASE
+    static int fueraDePeso = 0;
+
+    static final int PESO_MAXIMO = 25000; // variable constante: valor enlazado al compilar
+    static int umbralVivo = 25000;        // la misma pinta en el fuente, otra cosa en el .class
+
+    CamposEstaticos(String codigo) {
+        creadas++;                        // sin `this.`: escribe la casilla de la clase
+        this.codigo = codigo;
+    }
+
+    static String total() {               // metodo de CLASE: no recibe this
+        return "creadas=" + creadas + " · fueraDePeso=" + fueraDePeso;
+    }
+
+    static { /* y tambien hay bloque static, el <clinit> escrito a mano */ }
+}
+```
+
+La cuarta cosa es el **bloque** `static` (§8.7, y el teletipo de la especificación es literalmente *«A static
+initializer declared in a class is executed when the class is initialized (§12.4.2). Together with any field
+initializers for class variables (§8.3.2), static initializers may be used to initialize the class variables of the
+class.»*). Junto a él está la regla de forma que casi nadie cita y que sí te va a pasar: *«It is a compile-time error
+if a static initializer cannot complete normally (§14.22).»* —un bloque `static` que solo lanza se corta en la
+compilación, no en la ejecución.
+
+Y este es el arranque del volcado de campos sobre ese mismo fuente, con las seis cabeceras que hay, pegado tal
+cual:
+
+```
+  java.lang.String codigo;
+    descriptor: Ljava/lang/String;
+    flags: (0x0000)
+  int gramos;
+    descriptor: I
+    flags: (0x0000)
+  static int creadas;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+  static int fueraDePeso;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+  static final int PESO_MAXIMO;
+    descriptor: I
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+    ConstantValue: int 25000
+  static int umbralVivo;
+    descriptor: I
+    flags: (0x0008) ACC_STATIC
+```
+
+Fíjate en lo que **no** está: `umbralVivo` tiene las mismas banderas de clase y el mismo `descriptor: I` que
+`PESO_MAXIMO`, y en cambio no tiene `ConstantValue`. Esa línea ausente es el tema entero, y se reproduce en
+`por-dentro/FlagsEstaticos.java` con un caso que engaña más todavía:
+
+```java
+static final int CONSTANTE = 42;               // variable constante: vive en el atributo ConstantValue
+static final long VIVA = System.nanoTime();    // `final` sin ser constante: se calcula en <clinit>
+```
+
+```
+  static final int CONSTANTE;
+    descriptor: I
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+    ConstantValue: int 42
+  static final long VIVA;
+    descriptor: J
+    flags: (0x0018) ACC_STATIC, ACC_FINAL
+```
+
+Las dos son `static final` y solo una es una **variable constante**. La definición (§4.12.4) es corta y exige dos
+cosas a la vez: *«A constant variable is a final variable of primitive type or type String that is initialized with a
+constant expression (§15.29).»* `final` es la primera; «inicializado con una expresión constante» es la segunda, y
+`System.nanoTime()` no lo es. Por eso `VIVA` conserva su casilla y su `putstatic` en `<clinit>`, y por eso la
+definición añade en la frase siguiente que esto *«may have implications with respect to class initialization
+(§12.4.1), binary compatibility (§13.1), reachability (§14.22), and definite assignment (§16.1.1)»* —las cuatro
+cosas que se comprueban más abajo.
+
+Lo segundo que se ve en el volcado es que un método de clase **no tiene receptor**. En `FlagsEstaticos`, los dos
+métodos que hacen lo mismo uno con y sin `static`:
+
+```
+  static int sumar(int, int);
+    descriptor: (II)I
+    flags: (0x0008) ACC_STATIC
+    Code:
+      stack=2, locals=2, args_size=2
+         0: getstatic     #7                  // Field contador:I
+         3: iload_0
+         4: iadd
+         5: iload_1
+         6: iadd
+         7: putstatic     #7                  // Field contador:I
+        10: getstatic     #7                  // Field contador:I
+        13: ireturn
+```
+
+Contrástala con `mover(int paso)`, que hace lo mismo sobre un campo del objeto:
+
+```
+  int mover(int);
+    Code:
+         0: aload_0
+         1: aload_0
+         2: getfield      #13                 // Field destino:I
+         5: iload_1
+         6: iadd
+         7: putfield      #13                 // Field destino:I
+```
+
+Dos `aload_0` en vez de ninguno, y el parámetro en la ranura **1** (`iload_1`) porque la 0 la ocupa el `this`. En
+`sumar`, en cambio, `args_size=2` son los dos `int`, `locals=2` son esos dos y **no** hay ranura de receptor: el
+primer parámetro cae en la 0, por eso el cuerpo empieza con `getstatic` y sigue con `iload_0`. El arnés lo cuenta
+literalmente: **cero** `aload_0` dentro de `sumar`. De ahí sale la regla práctica que este nivel te deja aplicar sin
+gusto: si dentro de un `static` necesitas «esto», el compilador te corta
+(`non-static variable codigo cannot be referenced from a static context`) porque no hay ningún objeto al que señalar,
+como dice §8.4.3.2.
+
+**Nivel 1 — el acceso a lo de clase se resuelve por el TIPO DEL FUENTE, y eso no es una metáfora: es la línea que
+imprime `p.total()`.**
+
+`CamposEstaticos` tiene un hijo `Ruta` con dos métodos de clase propios: `describe()` redefinido (de instancia, con
+`@Override`) y `total()` **ocultado** (misma firma, `static`). El mismo objeto, llamado desde una variable del
+padre:
+
+```
+el objeto real         : Ruta
+metodo de instancia    : hijo   (busca en el objeto)
+metodo de clase        : creadas=3 · fueraDePeso=1   (busca en el tipo del fuente)
+el mismo por su nombre : creadas=3 · hitos=1
+```
+
+Es decir: la línea de instancia mira **el objeto** (`Ruta` → `hijo`); la línea de clase mira **la declaración de la
+variable** (`CamposEstaticos` → `fueraDePeso=1`), y si quieres la otra tienes que escribirla por su nombre
+(`Ruta.total()` → `hitos=1`). Esto no es una rareza de implementación: el ejemplo oficial de §8.4.8.2 de la JLS es
+exactamente ese reparto —un `Super s = new Sub()` que imprime `Goodnight, Dick`— y su explicación dice, literal:
+
+> *«because the invocation of `greeting` uses the type of `s`, namely `Super`, to figure out, at compile time, which
+> class method to invoke, whereas the invocation of `name` uses the class of `s`, namely `Sub`, to figure out, at run
+> time, which instance method to invoke.»* — JLS §8.4.8.2
+
+Las dos consecuencias normativas, medidas con `javac`:
+
+- Un método de instancia **no puede** sustituir a uno de clase: `total() in Hijo cannot override total() in Padre`,
+  y javac añade la razón en una línea suelta —`overridden method is static`— porque si no el programador busca el
+  error en el sitio equivocado. (§8.4.8.1: *«It is a compile-time error if the overridden method, mA, is a static
+  method.»*)
+- Y al revés tampoco sirve de nada fingirlo: escribir `@Override` sobre un `static` del hijo se corta con
+  `static method total() in Hijo cannot be annotated with @Override` (§9.6.4.4 exige que una de las tres condiciones
+  de sobreescritura se cumpla, y un método de clase no cumple ninguna).
+
+Lo tercero que se resuelve aquí es `null`. Una variable `null` **no** estorba para lo de clase, y la razón no es que
+se compruebe que no es `null`: es que **no se mira**. Las dos frases que lo dicen, hoy, en SE 25:
+
+> §15.11.1: *«If the field is static: The Primary expression is evaluated, and the result is discarded.»*
+> §15.12.4.1: *«If the invocation mode is static, then there is no target reference. The ExpressionName is
+> evaluated, but the result is then discarded.»*
+
+Y su lectura en la salida:
+
+```
+de clase via null      : creadas=3 · fueraDePeso=1
+campo de clase via null: 3
+de instancia via null  : NullPointerException · Cannot invoke "CamposEstaticos.describe()" because "<local4>" is null
+```
+
+Dos matices que se pierden si te quedas con «`static` ignora el `null`». Primero: **sí se evalúa la expresión**
+(§15.11.1 lo dice y el Ejemplo 15.11.1-2 de la JLS lo presume: *«Even though the result of favorite() is null, a
+NullPointerException is not thrown»*, porque *only its type, not its value, is used*); si tu expresión objetivo hace
+algo, ese algo ocurre. Segundo: la rama de instancia no solo se comprueba, **se nombra**: el mensaje de la JVM te
+dice el método (`describe()`) y la ranura (`<local4>`), y por eso el fallo de una variable `null` se diagnostica en
+una línea. Y hay un tercero, administrativo: el compilador ve estos accesos y **no avisa por defecto**.
+`javac --release 25 -encoding UTF-8` a secas sobre las seis fuentes que compilan del tema no emite ni una línea (y
+`por-dentro/FlagsEstaticos.java` sigue callado incluso con `-Xlint:all`); en cuanto pides `-Xlint:static` —o
+`-Xlint:all`, que lo incluye— salen **cinco** avisos `[static]`, dos de ellos en la misma línea 80,
+`(a.creadas == b.creadas)`, y cierra con `5 warnings`. El texto que sale es una corrección, no una advertencia de
+peligro: *«static variable should be qualified by type name, CamposEstaticos, instead of by an expression»*.
+
+**Nivel 2 — `<clinit>` corre una vez, en un orden que puedes predecir, y solo lo dispara una de cuatro cosas.**
+
+Este es el ejercicio completo: `tema-4/InicializacionBajoDemanda.java`, nueve pasos, salida pegada tal cual:
+
+```
+paso 1 · literal de clase: no debe imprimir nada
+      leido Bascula.class, la clase es Bascula
+paso 2 · leer una constante: tampoco
+      Bascula.CONSTANTE = 7
+paso 3 · Class.forName con false: tampoco
+      forName(.., false, ..) devolvio la Class sin inicializar
+paso 4 · Class.forName normal: aqui SI, y en orden de texto
+      arranca(): inicializador de campo (texto 1)
+      bloque static explicito (texto 2)
+      forName(..) ya termino
+paso 5 · leer el campo NO constante: ya estaba inicializada, nada nuevo
+      Bascula.viva = 1
+paso 6 · dos objetos: <clinit> una vez, <init> dos veces
+      <init> de Bascula
+      <init> de Bascula
+      dos basculas creadas, vivas siguen siendo 1 (objetos distintos)
+paso 7 · tocar al hijo inicializa al padre primero
+      <clinit> de Padre
+      <clinit> de Hijo
+      Hijo.deHijo = 2
+paso 8 · una interface con solo constantes no se inicializa al leerla
+      ConConstante.LIMITE = 25000
+paso 9 · leer lo de Padre suelto ya no repite su <clinit>
+      Padre.dePadre = 1
+```
+
+Cada paso tiene su norma, y las tres primeras son la lista cerrada de §12.4.1 leída al revés: el literal de clase no
+es un uso, la constante leída está excluida expresamente («*used and the field is not a constant variable*») y
+`forName(.., false, ..)` pide la `Class` sin inicializar. Y la contrapartida, que es la que convierte esto en un
+diagnóstico: *«Invocation of certain reflective methods in class `Class` […] also causes class or interface
+initialization»* (§12.4.1) —paso 4— y *«A class or interface will not be initialized under any other circumstance»*.
+
+Los pasos 4 a 7 fijan el orden, y el orden es el procedimiento de §12.4.2 con sus pasos numerados:
+
+- **Paso 6**: *«initialize the `static` fields of C which are constant variables»* —las constantes **antes** que
+  nada, y no por azar: las reparte el cargador desde el atributo `ConstantValue`. JVMS §5.5 lo dice con esa
+  literalidad: *«Initialization of a class or interface involves assigning any ConstantValue attribute values to its
+  static fields and executing any declared class or interface initialization method (§2.9.2)»*, y §4.7.2 añade el
+  detalle que explica que no haya instrucciones: *«If the ACC_STATIC flag […] is set, then the field […] is assigned
+  the value represented by its ConstantValue attribute as part of the initialization of the class or interface
+  declaring the field (§5.5). This occurs prior to the invocation of the class or interface initialization method of
+  that class or interface.»*
+- **Paso 7**: el padre (y las superinterfaces con métodos de instancia no abstractos) antes que tú, con su misma
+  recursión —paso 7: `<clinit> de Padre` antes que `<clinit> de Hijo`.
+- **Paso 9**: *«execute either the class variable initializers and static initializers of the class […] in textual
+  order, as though they were a single block»* —de ahí el «texto 1» antes que el «bloque static explícito (texto 2)»
+  del paso 4, que es **el orden del fuente**, no el orden de una lista de banderas.
+- Y sobre las interfaces, dos frases que se contradicen si las lees a medias: §9.3 *«Every field declaration in the
+  body of an interface declaration is implicitly `public`, `static`, and `final`»* (paso 8: una constante de
+  interface no inicializa nada) y §9.3.1 *«interface fields that are constant variables are initialized before other
+  interface fields… Such fields will never be observed to have their default initial values, even by devious
+  programs»*.
+
+El paso 6 te deja, además, la comprobación más limpia del tema. El `<clinit>` de `CamposEstaticos`, volcado tal
+cual:
+
+```
+  static {};
+    Code:
+         0: iconst_0
+         1: putstatic     #7                  // Field creadas:I
+         4: iconst_0
+         5: putstatic     #17                 // Field fueraDePeso:I
+         8: sipush        25000
+        11: putstatic     #102                // Field umbralVivo:I
+        14: return
+```
+
+Tres casillas de clase se llenan… y `PESO_MAXIMO` **no aparece**, no porque javac lo haya optimizado, sino porque
+nunca fue una casilla: vive en el atributo `ConstantValue` y en el `ldc` de cada llamante. En el `<init>` del
+constructor en cambio sí hay un `putstatic` —el `creadas++` sin `this`—, mezclado con los `putfield` de lo que sí es
+del objeto. Ese contraste entre los dos `<…init>` es lo que hay que saber de memoria.
+
+Y el último tramo del orden es el que duele en producción: si el inicializador revienta, la clase queda **marcada
+como fallida**. `errores/InitQueRevienta.java` tiene un único campo cuyo inicializador lanza
+`IllegalStateException`, y se ejecuta dos veces (la segunda con un argumento para saltar el `if`):
+
+```
+primer contacto: java.lang.ExceptionInInitializerError · la causa es java.lang.IllegalStateException: no hay configuracion
+Exception in thread "main" java.lang.NoClassDefFoundError: Could not initialize class InitQueRevienta$Rompe
+	at InitQueRevienta.main(InitQueRevienta.java:25)
+Caused by: java.lang.ExceptionInInitializerError: Exception java.lang.IllegalStateException: no hay configuracion [in thread "main"]
+```
+
+Es §12.4.2 leído en voz alta: paso 11 ( *«If the class of E is not Error or one of its subclasses, then create a new
+instance of the class ExceptionInInitializerError, with E as the argument»* ), paso 12 ( *«label the Class object for
+C as erroneous»* ) y paso 5 ( *«If the Class object for C is in an erroneous state, then initialization is not
+possible. Release LC and throw a NoClassDefFoundError»* ). Tres consecuencias prácticas: el error que **ves** no es
+el que se produjo (hay que abrir `getCause()`, y por eso la primera línea del programa imprime la causa en vez de
+solo el nombre); el reintento **no vuelve a intentarlo** —la línea que lanza dentro del inicializador no se imprime
+nunca más, medido como «cero veces»—; y el segundo fallo **no repite la causa en el mensaje**, solo la enlaza con
+`[in thread "main"]`, que es la pista de que la clase ya había muerto antes.
+
+**Nivel 3 — la casilla de clase es estado global del proceso: tres preguntas para decidir, y un remedio que se
+mide.**
+
+`ContadorCompartido.java` es el caso real, con el reparto de un mostrador de solicitudes:
+
+```
+bloque A · una consulta y despues dos altas
+      consulta · por dentro crea #1 · RF-000999
+      alta 1: #2 · RF-000123
+      alta 2: #3 · RF-000124
+paso · el contador no depende de los objetos vivos
+      500 solicitudes ya inexistentes: la clase sigue en 503
+bloque B · el MISMO codigo, con la consulta al final
+      alta 1: #1 · RF-000123
+      alta 2: #2 · RF-000124
+      consulta · por dentro crea #3 · RF-000999
+      la misma guia RF-000999 salio antes con #1 y ahora con #3
+remedio · la cuenta la lleva un objeto, y cada objeto empieza en 1
+      mostrador 1: #1 · RF-000123
+      mostrador 2: #1 · RF-000123
+      y para reventar el numero de A hay que llamar a su metodo, no escribirlo
+```
+
+Tres cosas están demostradas en esas doce líneas, y las tres se te olvidan cuando escribes `static int contador`:
+
+1. **El orden de ejecución del resto del programa forma parte del resultado.** El número de la guía `RF-000999` es
+   `#1` o `#3` según dónde esté la consulta, y no hay ningún `if` en el fuente que lo explique. Esto es lo que
+   convierte un test en «pasa en mi máquina»: con `static`, el segundo test hereda el estado del primero.
+2. **La casilla no se apaga al morir los objetos.** `503` después de chatarrear 500 solicitudes. Y es
+   **escribible**: la línea `Solicitud.secuencial = 0;` del bloque B funciona porque el campo no es `final` —el
+   arnés comprueba que en el fuente original no hay `final` y que la asignación compila—. Un contador que cualquiera
+   puede poner a cero desde fuera no es un contador.
+3. **El remedio no es «quitar `static`», es mover la cuenta a un objeto que repartes.** `Secuenciador` tiene un
+   campo `private int ultimo` sin `static`, y `SolicitudLocal` lo recibe por parámetro. Salida: los dos mostradores
+   dan `#1`. Y la última línea del bloque —«para reventar el número de A hay que llamar a su método, no
+   escribirlo»— está ahí porque esa es la diferencia de diseño real: en A el estado es accesible y escribible desde
+   cualquier punto del programa; en B solo cambia por el método de un objeto que tú decidiste crear.
+
+Las tres preguntas que deja este tema, aplicables a cualquier `static` que escribas:
+
+- **¿Puede haber dos?** Si la respuesta es «no, esto es uno por proceso» (una constante, una tabla de factores, un
+  `ObjectMapper` reutilizable), lo de clase está bien. Si la respuesta es «debería haber uno por cliente, por hilo,
+  por test», no es un campo de clase: es un campo de instancia mal colocado.
+- **¿Quién lo escribe, y se puede escribir desde fuera?** `creadas++` sin `this` es legítimo si la casilla es `private`
+  y solo la mueve el constructor; el `static int secuencial` de `ContadorCompartido` con el que el propio ejemplo
+  pone a cero el contador es el mismo mecanismo puesto en público.
+- **¿Qué ve un binario ya compilado?** Si es una **variable constante**, nadie ve el cambio (§13.1: *«no reference to
+  the field should be present in the code in a binary file, including the class or interface which declared the
+  field»*; §13.4.9: *«pre-existing binaries do not see the new value at all»*), y medido es exacto: `Lector.class`
+  compilado contra `v1` imprime `5` contra `v1` y `5` contra `v2`, mientras lo vivo imprime `5` y `99`. Si es una
+  casilla de clase, todos la ven al instante, y eso también es una decisión: `static` **más** `final` no te da
+  inmutabilidad si el inicializador no es una expresión constante.
+
+Y la cota histórica, que ya se citó en la sección 3 y aquí es medible con tu propio `javac`, en las dos direcciones:
+el mismo fuente `errores/StaticEnClaseInterna.java` da dos errores con `--release 15` —uno por el campo y otro por el
+método, con el mensaje viejo `modifier 'static' is only allowed in constant variable declarations`—, y compila limpio
+con `--release 16` y con `--release 25`. El punto de corte es el 16 (JEP 395), y el mensaje viejo te lo dice con
+palabras: «only allowed in constant variable declarations», o sea que la única cosa que ya podías poner `static`
+dentro de una `inner` era precisamente una **variable constante** (§4.12.4), que es la misma noción que decide si hay
+casilla o si hay valor horneado.
+
+Lo que este tema **no** mide, y por tanto no afirma: si la misma clase cargada por dos cargadores distintos tiene
+una casilla o dos (eso exige un `ClassLoader` a medida y JVMS §5.3.2, y aquí no lo hemos montado); qué garantiza el
+modelo de memoria cuando dos hilos escriben la misma casilla de clase —`creadas++` en el constructor de
+`CamposEstaticos` lo hace—, que es materia del capítulo 17 de la JLS y no de este módulo; y cómo se comporta un
+`<clinit>` dentro de un contenedor de dependencias. Las tres cosas quedan como preguntas abiertas con nombre, no
+como respuestas recordadas.
+
+#### 7. Código ejecutable
+
+Seis fuentes compilan y ocho no (a propósito). Pegados tal cual están en `laboratorios/modulo-5/tema-4/` —solo se
+quitaron de abajo los tres primeras líneas de comentario de cada uno—, y estas son las dos piezas centrales.
+
+```java
+// CamposEstaticos.java
+public class CamposEstaticos {
+
+    // UNO POR OBJETO
+    String codigo;
+    int gramos;
+
+    // UNO SOLO PARA LA CLASE: no esta en la hoja de campos de ningun objeto
+    static int creadas = 0;
+    static int fueraDePeso = 0;
+
+    static final int PESO_MAXIMO = 25000;   // variable constante: su valor se enlaza al compilar
+    static int umbralVivo = 25000;          // la misma pinta, pero es una casilla de la clase
+
+    CamposEstaticos(String codigo) {
+        creadas++;                          // sin `this.`: escribe la casilla de la clase
+        this.codigo = codigo;
+    }
+
+    // metodo de CLASE: no recibe `this`, solo ve los miembros de clase
+    static String total() {
+        return "creadas=" + creadas + " · fueraDePeso=" + fueraDePeso;
+    }
+
+    // metodo de instancia: ve lo suyo y lo de la clase
+    String etiqueta() {
+        return codigo + " · " + gramos + " g";
+    }
+
+    String describe() {
+        return "padre";
+    }
+
+    void pesa(int gramos) {
+        if (gramos > PESO_MAXIMO) fueraDePeso++;
+        this.gramos = gramos;
+    }
+
+    static class Ruta extends CamposEstaticos {
+        static int hitos = 0;
+
+        Ruta(String codigo) {
+            super(codigo);
+            hitos++;
+        }
+
+        @Override String describe() {
+            return "hijo";
+        }
+
+        // MISMA firma y `static`: esto OCULTA, no sustituye
+        static String total() {
+            return "creadas=" + creadas + " · hitos=" + hitos;
+        }
+    }
+
+    // la forma de una clase de utilidad: metodos de clase y constructor que nadie puede llamar
+    static final class Tarifas {
+        private Tarifas() {
+            throw new AssertionError("no se instancia");
+        }
+
+        static double recargo(boolean urgente) {
+            return urgente ? 1.25 : 1.0;
+        }
+    }
+
+    interface Topes {
+        int LIMITE = 25000;                 // implicitamente public static final
+    }
+
+    public static void main(String[] args) {
+        CamposEstaticos a = new CamposEstaticos("RF-000123");
+        System.out.println("tras crear a           : " + total());
+        CamposEstaticos b = new CamposEstaticos("RF-000124");
+        System.out.println("tras crear b           : " + total() + "   (un contador, no dos)");
+        System.out.println("lo de cada objeto      : " + a.codigo + " / " + b.codigo);
+        System.out.println("los dos ven el mismo   : " + (a.creadas == b.creadas));
+
+        a.pesa(30000);
+        System.out.println("un golpe en lo de clase: " + total() + "   (a pesaba 30000, b no)");
+
+        CamposEstaticos p = new Ruta("RF-000125");
+        System.out.println("el objeto real         : " + p.getClass().getSimpleName());
+        System.out.println("metodo de instancia    : " + p.describe() + "   (busca en el objeto)");
+        System.out.println("metodo de clase        : " + p.total() + "   (busca en el tipo del fuente)");
+        System.out.println("el mismo por su nombre : " + Ruta.total());
+
+        CamposEstaticos nula = null;
+        System.out.println("de clase via null      : " + nula.total());
+        System.out.println("campo de clase via null: " + nula.creadas);
+        try {
+            System.out.println("de instancia via null  : " + nula.describe());
+        } catch (NullPointerException e) {
+            System.out.println("de instancia via null  : " + e.getClass().getSimpleName() + " · " + e.getMessage());
+        }
+
+        System.out.println("la constante           : " + PESO_MAXIMO + " · el umbral vivo: " + umbralVivo);
+        System.out.println("en una interface       : " + Topes.LIMITE);
+        System.out.println("utileria sin objetos   : " + Tarifas.recargo(true));
+        try {
+            new Tarifas();
+        } catch (Throwable t) {
+            System.out.println("su constructor privado : " + t.getClass().getSimpleName() + ": " + t.getMessage());
+        }
+    }
+}
+```
+
+Salida de `java -Dstdout.encoding=UTF-8 CamposEstaticos`, las dieciséis líneas:
+
+```text
+tras crear a           : creadas=1 · fueraDePeso=0
+tras crear b           : creadas=2 · fueraDePeso=0   (un contador, no dos)
+lo de cada objeto      : RF-000123 / RF-000124
+los dos ven el mismo   : true
+un golpe en lo de clase: creadas=2 · fueraDePeso=1   (a pesaba 30000, b no)
+el objeto real         : Ruta
+metodo de instancia    : hijo   (busca en el objeto)
+metodo de clase        : creadas=3 · fueraDePeso=1   (busca en el tipo del fuente)
+el mismo por su nombre : creadas=3 · hitos=1
+de clase via null      : creadas=3 · fueraDePeso=1
+campo de clase via null: 3
+de instancia via null  : NullPointerException · Cannot invoke "CamposEstaticos.describe()" because "<local4>" is null
+la constante           : 25000 · el umbral vivo: 25000
+en una interface       : 25000
+utileria sin objetos   : 1.25
+su constructor privado : AssertionError: no se instancia
+```
+
+Cuatro líneas de esas dieciséis son el tema entero, y conviene tenerlas numeradas: la 8 frente a la 7 (el mismo
+objeto, dos reglas de búsqueda distintas), la 10 y la 11 frente a la 12 (`null` no estorba para lo de clase y sí
+para lo de instancia), la 13 (las dos constantes que son la misma cosa en el fuente y otra cosa en el `.class`) y la
+16 (el constructor privado de una utilidad se puede *llamar*: compila, y lo que suelta es `AssertionError`).
+
+El tercero del par `static`-pero-no-constante, `por-dentro/FlagsEstaticos.java`, es el que se mira con `javap`:
+
+```java
+public class FlagsEstaticos {
+
+    int destino;                                   // casilla del OBJETO
+    static int contador;                           // casilla de la CLASE
+    static final int CONSTANTE = 42;               // variable constante: vive en el atributo ConstantValue
+    static final long VIVA = System.nanoTime();    // `final` sin ser constante: se calcula en <clinit>
+
+    interface Topes {
+        int LIMITE = 25000;                        // implicitamente public static final
+    }
+
+    static int sumar(int a, int b) {               // sin this: el primer parametro cae en la ranura 0
+        contador = contador + a + b;
+        return contador;
+    }
+
+    int mover(int paso) {                          // con this: el parametro cae en la ranura 1
+        destino = destino + paso;
+        return destino;
+    }
+
+    void usarLosDos() {
+        mover(2);
+        FlagsEstaticos.sumar(1, 4);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("constante=" + CONSTANTE + " · viva es positiva=" + (VIVA > 0));
+        FlagsEstaticos f = new FlagsEstaticos();
+        System.out.println("mover(5)  =" + f.mover(5) + " · contador=" + FlagsEstaticos.contador);
+        System.out.println("sumar(1,2)=" + FlagsEstaticos.sumar(1, 2) + " · destino del objeto=" + f.destino);
+        System.out.println("limite de la interface=" + Topes.LIMITE);
+        f.usarLosDos();
+        System.out.println("tras usar los dos: contador=" + FlagsEstaticos.contador + " · destino=" + f.destino);
+    }
+}
+```
+
+```text
+constante=42 · viva es positiva=true
+mover(5)  =5 · contador=0
+sumar(1,2)=3 · destino del objeto=5
+limite de la interface=25000
+tras usar los dos: contador=8 · destino=7
+```
+
+Las dos últimas líneas de esa salida llevan la cuenta de las dos casillas por separado: `contador` pasó de `3` a `8`
+(`sumar(1, 4)` dentro de `usarLosDos()`), y `destino` de `5` a `7` (`mover(2)`), o sea que el método de clase movió
+**la casilla de la clase** y el de instancia movió **la del objeto**, aunque los dos se llamaron desde el mismo
+objeto. Y `contador=0` en la segunda línea es la prueba inversa: `mover` no toca lo de clase.
+
+La pareja que demuestra el enlace de la constante, `por-dentro/constante/`, son tres archivos cortos:
+
+```java
+// Lector.java · el llamante, que NO se recompila entre las dos versiones
+public class Lector {
+
+    public static void main(String[] args) {
+        System.out.println("LIMITE_CONSTANTE como lo vio el Lector: " + Config.LIMITE_CONSTANTE);
+        System.out.println("LIMITE_VIVO      como lo vio el Lector: " + Config.LIMITE_VIVO);
+    }
+}
+
+// v1/Config.java · dos campos `static final int` con la MISMA pinta
+public class Config {
+
+    public static final int LIMITE_CONSTANTE = 5;     // expresion constante: se ENLAZA al compilar al llamante
+    public static final int LIMITE_VIVO = Calculo.cinco();
+
+    static class Calculo {
+        static int cinco() {
+            return 5;
+        }
+    }
+}
+
+// v2/Config.java · misma clase, mismos dos campos, valores nuevos
+public class Config {
+
+    public static final int LIMITE_CONSTANTE = 99;    // se cambia el valor...
+    public static final int LIMITE_VIVO = Calculo.noventaYNueve();
+
+    static class Calculo {
+        static int noventaYNueve() {                  // ...y tambien la forma de calcularlo
+            return 99;
+        }
+    }
+}
+```
+
+Ejecutado el **mismo** `Lector.class` contra las dos versiones (`java -cp out_del_lector:out_v1 Lector` y luego
+`java -cp out_del_lector:out_v2 Lector`), cuatro líneas:
+
+```text
+LIMITE_CONSTANTE como lo vio el Lector: 5
+LIMITE_VIVO      como lo vio el Lector: 5
+LIMITE_CONSTANTE como lo vio el Lector: 5
+LIMITE_VIVO      como lo vio el Lector: 99
+```
+
+Y el porqué, en el volcado del llamante, tal cual:
+
+```
+public static void main(java.lang.String[]);
+    Code:
+         0: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+         3: ldc           #15                 // String LIMITE_CONSTANTE como lo vio el Lector: 5
+         5: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+         8: getstatic     #7                  // Field java/lang/System.out:Ljava/io/PrintStream;
+        11: getstatic     #23                 // Field Config.LIMITE_VIVO:I
+        14: invokedynamic #27,  0             // InvokeDynamic #0:makeConcatWithConstants:(I)Ljava/lang/String;
+        19: invokevirtual #17                 // Method java/io/PrintStream.println:(Ljava/lang/String;)V
+        22: return
+```
+
+Línea 3 contra línea 11: en la primera **no hay ninguna referencia a `Config`** —el 5 está dentro del literal,
+`ldc // String …: 5`—, y en la segunda sí la hay (`getstatic Field Config.LIMITE_VIVO:I`) y por eso el `Lector` sin
+recompilar lee 99. Los otros dos programas del tema, `InicializacionBajoDemanda.java` y
+`ContadorCompartido.java`, están ya en la sección 6 con sus salidas completas pegadas (nueve pasos y doce líneas
+respectivamente), porque son el material del que se habla allí; su código es exactamente el de
+`laboratorios/modulo-5/tema-4/`.
+
+#### 8. Mini-laboratorio
+
+Todo desde cero en una carpeta vacía `laboratorios/modulo-5/tema-4-ejercicio/`. El ejercicio no es escribir
+`static`: es **decidir antes de ejecutar** dónde está la casilla, cuándo se llenó y qué vería un binario viejo, y
+que la salida te lleve la contraria. Si algún paso tuyo imprime lo que yo imprimo a la primera, has copiado en vez
+de deducir: vuelve al paso.
+
+1. **Las dos hojas del almacén.** Crea `Medidor.java` con `String lote`, `int gramos`, `static int calibradas = 0` y
+   un constructor que haga `calibradas++;` (sin `this.`) y `this.lote = lote;`. En `main` crea dos objetos, llama a
+   un método de instancia que lea `lote` y a uno de clase que devuelva `"calibradas=" + calibradas`, y **escribe
+   antes de ejecutar** cuántas veces esperas que se ejecute el cuerpo del constructor y cuántas veces se escribe la
+   casilla. Compila con `javac --release 25 -d out Medidor.java`, ejecuta y después
+   `javap -v -p -cp out Medidor | grep -B2 'ACC_STATIC'`. Deben salirte **tres** cabeceras con `ACC_STATIC` en su
+   línea `flags:`: el campo, tu método de clase y `main` —esta con `0x0009`, no `0x0008`, porque a `ACC_STATIC` se le
+   suma `ACC_PUBLIC`—. El `-B2` no es un capricho: probado con `-B1` sobre los ejemplos del tema, no aparece **ni una**
+   cabecera, solo las líneas `descriptor:` que las separan de `flags:`. Y en el `<init>` del constructor tiene que
+   aparecer un `putstatic` mezclado con los `putfield`: eso es que el objeto, al nacer, escribe en la pared del
+   depósito.
+2. **La constante que no es casilla.** Añade a `Medidor.java` dos líneas hermanas:
+   `static final int COTA = 25000;` y `static int cotaViva = 25000;`. Vuelve a `javap -v -p` y busca las dos
+   cabeceras: una tendrá `ConstantValue: int 25000` y la otra no, y la que **no** lo tiene aparecerá en el
+   `<clinit>` (`javap -c -p`) con su `sipush 25000` + `putstatic`, mientras la otra no aparece en ninguna
+   instrucción. Ese par es la diferencia entre `PESO_MAXIMO` y `umbralVivo`, y es la que decide qué ve un binario
+   viejo.
+3. **Ocultar no es sustituir, medido.** Crea `Hereda.java` con `class Hereda extends Medidor` y **dos** métodos
+   llamados igual que dos de `Medidor`: uno de instancia `@Override String loteDesc()` que devuelva `"hijo"`, y otro
+   `static String resumen()` que devuelva algo distinto del `resumen()` de `Medidor`. Declara la variable del tipo del
+   padre y asigna el hijo: `Medidor m = new Hereda();`. Escribe las dos llamadas, `m.loteDesc()` y `m.resumen()`, y
+   **predice** cuál de las dos va a dar la versión del hijo. Ejecuta. La respuesta no es intuición: la de instancia
+   busca en el objeto (`hijo`), la de clase busca en el tipo declarado (`Medidor`). Si te equivocaste en la segunda,
+   has entendido el tema; si te equivocaste en la primera, vuelve al tema 1.
+4. **Los cinco avisos que no ves.** Sin tocar nada más, compila el `Medidor.java` del paso 1 de forma que leas el
+   campo de clase a través del objeto (`m.calibradas`) y llames al método de clase a través del objeto
+   (`m.resumen()`). Primero con `javac --release 25 -d out2 Medidor.java Hereda.java` (no va a decir nada: el acceso
+   por objeto de un miembro de clase es legal, solo ruidoso) y luego con `-Xlint:static`. Cuenta los avisos y léelos:
+   te dicen el nombre del tipo con el que hay que escribirlo. Ese par de ejecuciones es la mitad del criterio de este
+   tema: **el código compila y está mal**, y solo la bandera del compilador lo revela.
+5. **Cuándo se llenó.** Crea `Arranque.java` con una clase interna `static class Caldera` que tenga, en este orden:
+   un campo `static int nivel = enciende();`, un `static { System.out.println("bloque explicito"); }` y un
+   `static final int COTA = 7;`, más un método `static int enciende()` que imprima `"encendido"` y devuelva 1. En
+   `main` escribe en este orden: `Class<Caldera> c = Caldera.class;`, luego
+   `System.out.println("leido el literal");`, después `System.out.println(Caldera.COTA);` y por último
+   `System.out.println(Caldera.nivel);`. **Escribe tu predicción** de cuántas líneas se imprimen antes de
+   `leido el literal` y de dónde cae el `7` respecto a `encendido`. Compila y ejecuta; aquí salió
+   `leido el literal / 7 / encendido / bloque explicito / 1`: cero líneas antes del literal, el `7` **antes** de que
+   corra el inicializador (§12.4.1: leer una variable constante no es disparador) y el par `encendido` +
+   `bloque explicito` en orden de texto (§12.4.2 paso 9). Ahora inserta una línea
+   `Class.forName("Arranque$Caldera");` justo después del `leido el literal` y vuelve a ejecutar sin mover nada más:
+   el orden pasa a `leido el literal / encendido / bloque explicito / 7 / 1`. Moviste el arranque metiendo una línea,
+   no cambiando el orden del fuente: ese par de runs es §12.4.1 y §12.4.2 con tus propias manos, y la lista de
+   disparadores es cerrada («will not be initialized under any other circumstance»).
+6. **El arranque que revienta, y el cartel de cerrado.** Cambia `enciende()` para que lance
+   `new IllegalStateException("no hay gas")` y ejecuta dos accesos consecutivos al campo dentro de un `try/catch`
+   que imprima `t.getClass().getName()` y luego `String.valueOf(t.getCause())`. Verás `ExceptionInInitializerError`
+   con causa en el primero y `NoClassDefFoundError` en el segundo, y el segundo **sin** volver a imprimir
+   `"no hay gas"` por sí solo: la apertura del depósito no se repite. Si querías leer la causa real del segundo, la
+   tienes que sacar del `getCause()` del *primero*, que ya no está: esa es la razón por la que un fallo de
+   `<clinit>` se diagnostica buscando el primer error del log, no el último.
+
+**Listo cuando** puedas, sin mirar el fuente, decir de un miembro si está en la hoja de campos del objeto o en la
+casilla de la clase **y** en qué momento exacto se escribió por última vez; cuando al ver dos métodos `static` con
+la misma firma en padre e hijo sepas qué llamada hay que escribir para ejecutar el del hijo; cuando sepas
+diferenciar `static final int X = 5;` de `static final int X = algoDeUnaFuncion()` con `javap` delante y sin
+dudarlo; y cuando, ante un `NoClassDefFoundError: Could not initialize class …`, lo primero que busques es el
+`ExceptionInInitializerError` que lo causó **antes** en el log, no la pila de ese segundo error.
+
+#### 9. Verificación
+
+```bash
+cd docs/reestructuracion/cursos/java/laboratorios/modulo-5/tema-4
+
+# 1) las cuatro piezas que compilan, y el compilador callando por defecto
+javac --release 25 -encoding UTF-8 -d out *.java                                        # sin un solo aviso
+javac --release 25 -encoding UTF-8 -Xlint:all -d out2 \
+      *.java por-dentro/FlagsEstaticos.java por-dentro/constante/Lector.java \
+      por-dentro/constante/v1/Config.java                                               # 5 avisos [static]
+javac --release 25 -encoding UTF-8 -Xlint:all -d out3 por-dentro/FlagsEstaticos.java    # 0 bytes
+java -Dstdout.encoding=UTF-8 -cp out CamposEstaticos                                    # 16 lineas, codigo 0
+java -Dstdout.encoding=UTF-8 -cp out InicializacionBajoDemanda                           # 9 pasos, codigo 0
+java -Dstdout.encoding=UTF-8 -cp out ContadorCompartido                                 # 12 lineas, codigo 0
+
+# 2) que es lo de clase dentro del .class: bandera, atributo e instrucciones
+javap -v -p -cp out CamposEstaticos | sed -n '/codigo;/,/umbralVivo;/p'                 # 0x0008 · ConstantValue
+javap -c -p -cp out CamposEstaticos | sed -n '/String);/,/return/p'                       # putstatic y putfield juntos
+javap -c -p -cp out CamposEstaticos | grep -c 'getstatic.*Field creadas:I'                # 5
+javap -c -p -cp out CamposEstaticos | grep -c 'getfield.*Field creadas'                   # 0
+javap -c -p -cp out CamposEstaticos | sed -n '/^  static {};/,/return/p'                 # sin PESO_MAXIMO
+javap -c -p -cp out CamposEstaticos | grep -c 'invokevirtual.*Method describe:()'          # 2 · por el objeto
+javap -c -p -cp out CamposEstaticos | grep -c '// Method total:()Ljava/lang/String;'       # 5 · invokestatic
+javap -c -p -cp out CamposEstaticos | grep -c 'invokevirtual.*// Method total'             # 0 · jamas virtual
+
+# 3) ranuras: un metodo de clase no tiene receptor
+javac --release 25 -d outp por-dentro/FlagsEstaticos.java
+javap -v -p -cp outp FlagsEstaticos | grep -A3 'static int sumar'                         # args_size=2 · 0 aload_0
+javap -c -p -cp outp FlagsEstaticos | sed -n '/int mover(int);/,/iadd/p'                    # 0: aload_0 · iload_1
+
+# 4) el enlace de la constante: el MISMO Lector.class contra dos Config
+cd por-dentro/constante
+javac --release 25 -d k1 v1/Config.java Lector.java
+javac --release 25 -d k2 v2/Config.java
+java  -Dstdout.encoding=UTF-8 -cp k1 Lector                                               # 5 · 5
+java  -Dstdout.encoding=UTF-8 -cp k2:k1 Lector                                            # 5 · 99  ← sin recompilar
+javap -c -p -cp k1 Lector | sed -n '/main/,/return/p'                                      # ldc String ...: 5 vs getstatic
+
+# 5) cuando corre <clinit> · los nueve pasos y su orden
+cd ../../..
+java -Dstdout.encoding=UTF-8 -cp out InicializacionBajoDemanda | sed -n '/paso 1/,/paso 5/p'   # texto1 antes que texto2
+java -Dstdout.encoding=UTF-8 -cp out InicializacionBajoDemanda | sed -n '/paso 7/,/paso 8/p'   # Padre antes que Hijo
+
+# 6) el contador global y su remedio
+java -Dstdout.encoding=UTF-8 -cp out ContadorCompartido | sed -n '/bloque A/,/bloque B/p'      # #1 y #3, misma guia
+java -Dstdout.encoding=UTF-8 -cp out ContadorCompartido | grep 'la clase sigue en'             # 503 · sin objetos vivos
+
+# 7) los cortes del compilador, con su mensaje literal
+cd errores
+javac --release 25 -d ../oute CampoDeInstanciaDesdeStatic.java      # non-static variable codigo cannot be referenced…
+javac --release 25 -d ../oute CaseNoConstante.java                   # constant expression required
+javac --release 25 -d ../oute FinalEstaticoEnBlanco.java             # cannot assign a value to static final variable LOTE
+javac --release 25 -d ../oute FinalEstaticoNuncaAsignado.java        # variable LOTE might not have been initialized
+javac --release 25 -d ../oute InstanceOverrideDeStatic.java          # … cannot override … · overridden method is static
+javac --release 25 -d ../oute OverrideDeUnStatic.java                # static method total() in Hijo cannot be annotated…
+
+# 8) la cota del JEP 395, medida en las dos direcciones
+javac --release 25 -d ../oute StaticEnClaseInterna.java              # compila limpio
+javac --release 16 -d ../out16 StaticEnClaseInterna.java             # compila limpio
+javac --release 15 -d ../out15 StaticEnClaseInterna.java             # 2 errores · modifier 'static' is only allowed…
+
+# 9) el inicializador que revienta · dos ejecuciones distintas del mismo .class
+javac --release 25 -d outi InitQueRevienta.java
+java  -Dstdout.encoding=UTF-8 -cp outi InitQueRevienta                # ExceptionInInitializerError + causa
+java  -Dstdout.encoding=UTF-8 -cp outi InitQueRevienta con-argumento  # ExceptionInInitializerError · luego NoClassDefFoundError
+```
+
+O el laboratorio del módulo entero: `cd .. && ./verificar.sh`. Esas **103** comprobaciones del tema pasan aquí con
+Temurin 27 y `--release 25`, y llevan el módulo a **243** (41 del tema 1, 48 del tema 2, 51 del tema 3 y 103 de
+esta); con JDK 25 en el `PATH` basta `./verificar.sh`. Reparto contado sobre el propio `verificar.sh` y no sumado de
+memoria: **3** abren el tema (los dos `vacio` de las compilaciones guardianas —`javac` mudo con los tres ejemplos y
+mudo `FlagsEstaticos` con `-Xlint:all`— más el `igual` sobre el código de salida 0 de `CamposEstaticos`); **11**
+sobre el par campo-de-clase/campo-de-objeto (5 `lleva` de la salida, 2 `cuenta_en` del `<init>` —un `putstatic` y un
+`putfield`—, 2 `igual` de conteos de instrucciones y 2 `flags_de` sobre el volcado `-v`); **10** de ocultación frente
+a sustitución (4 `lleva`, 1 `antes`, 2 `igual` de conteos, 1 `cero_en` de que `total` jamás sea `invokevirtual` y 2
+`lleva`/`igual` del pool y del `@Override` cortado); **3** del `null` como objetivo; **10** de constante frente a
+casilla viva; **5** del `-Xlint:static` (incluido el `igual` sobre el `5` de `5 warnings`); **12** de qué es
+`static` dentro del `.class` (7 `flags_de`/`cuenta_en` de banderas y ranuras, 5 de `aload_0` ausente y `ConstantValue`
+presente); **6** del enlace de la constante en el llamante con el `Lector` sin recompilar; **21** de cuándo y en qué
+orden corre `<clinit>` (los nueve pasos, el `no_entre` de que entre el paso 1 y el 4 no corre el inicializador, el
+orden del padre, la interface con solo constantes y el `vacio` de las cotas `--release`); **4** del contador global;
+**7** de los cortes del compilador (5 `no_compila` y 2 de las dos líneas del mensaje de `InstanceOverrideDeStatic`);
+**4** de la cota del JEP 395 en las dos direcciones; y **7** del inicializador que revienta.
+3 + 11 + 10 + 3 + 10 + 5 + 12 + 6 + 21 + 4 + 7 + 4 + 7 = 103, y por tipo: 50 `lleva`, 11 `igual`, 8 `flags_de`,
+6 `cuenta_en`, 6 `cero_en`, 5 `vacio`, 5 `no_compila`, 4 `veces`, 4 `antes`, 3 `no_entre`, 1 `igual_no_vacio` = 103.
+
+Tres guardas se escribieron para este tema, y las tres existen porque algo salió mal antes de funcionar:
+
+- `cuenta_en` corta el volcado **en la cabecera de un miembro** y cuenta ocurrencias de una instrucción dentro de
+  ese cuerpo. Falló seis llamadas al primer intento por dos motivos distintos: en cuatro me olvidé el argumento del
+  volcado (el patrón caía en la posición de la cabecera y el corte salía vacío) y en las otras seis apuntaba a
+  `$VC`, el volcado `javap -v -p`, donde entre la cabecera y las instrucciones se interponen `descriptor:`, `flags:`
+  y `stack=`. Hubo que crear una captura nueva, `$CF`, con `javap -c -p` puro. Lo que **no** se hizo fue relajar el
+  corte para que el `-v` pasara: un extractor que devuelve vacío y da ok es un contador roto, no un contador
+  tolerante.
+- `flags_de` lee la línea `flags:` que sigue a una cabecera exacta del `-v`, y sus primeras llamadas fallaron porque
+  escribí `int codigo;` cuando `javap` imprime `java.lang.String codigo;`. Se arregló el texto buscado, no la guarda:
+  si la cabecera no está, la comprobación tiene que fallar.
+- `no_entre` comprueba que una cadena **no** aparece entre dos anclas de la salida, y hace falta porque el paso 1 y
+  el paso 4 de `InicializacionBajoDemanda` comparten con el inicializador el prefijo de sangrado (`      `): un
+  `grep` plano sobre la salida entera habría encontrado `arranca(): inicializador de campo` y habría dado por bueno
+  un programa que imprime el inicializador en el paso 1. La mutación es la que manda: al revés del orden del texto,
+  el `no_entre` del paso 4 se cae.
+
+*Pendiente de reejecución en JDK 25:* los **textos**, que los redacta la herramienta —los cinco avisos
+`[static]` con su redacción exacta y la línea final `5 warnings`; los seis mensajes de `javac` de los cortes
+(incluido `constant expression required`, que es lo que javac imprime aunque en el fuente el comentario diga otra
+cosa, y las dos líneas de `InstanceOverrideDeStatic`); el `Cannot invoke "CamposEstaticos.describe()" because
+"<local4>" is null` del NPE, cuyo nombre de ranura decide la JVM; y el `Could not initialize class …` con su
+`[in thread "main"]`—. Y los **conteos de instrucciones** del `.class` (5 `getstatic` de `creadas`, 0 `getfield`,
+2 `invokevirtual` de `describe`, 5 `invokestatic` de `total`, 0 `aload_0` en `sumar`): son salida de `javac`, no
+regla del lenguaje; lo que §12.4.2 y §8.4.3.2 exigen es el **reparto** (que lo de clase se cargue con `getstatic` y
+que un método de clase no reciba receptor), no el número. Tres de esas cosas pueden caducar por el ejecutable: si
+una JDK dejara de aceptar `--release 15` la cota del JEP 395 no se podría medir aquí, y el arnés fallaría con nombre
+propio en lugar de omitirla.
+
+*Lo que no depende de la versión:* que un campo `static` tenga **exactamente una encarnación** por clase y se
+encarne al inicializar la clase (§8.3.1.1); que un método de clase se invoque sin referencia a un objeto y que `this`
+y `super` estén prohibidos dentro (§8.4.3.2); que un método de instancia no pueda sustituir a uno de clase
+(§8.4.8.1) y que un `static` que oculta no pueda llevar `@Override` (§8.4.8.2 y §9.6.4.4); que en un acceso de clase
+la expresión objetivo se evalúe y se **descarte** su valor, sin mirar si es `null` (§15.11.1 y §15.12.4.1); los
+cuatro disparadores de la inicialización y que no haya ninguno más (§12.4.1); el procedimiento con sus pasos 5, 6,
+7, 9, 11 y 12 (§12.4.2), incluido el orden de texto «as though they were a single block» y el estado
+*erróneo→`NoClassDefFoundError`*; la definición de variable constante y sus cuatro implicaciones (§4.12.4); que la
+referencia a una constante se resuelva en compilación al valor y que un binario viejo no vea nunca el valor nuevo
+(§13.1, §13.4.9); que un campo de interface sea implícitamente `public static final` y que las constantes de
+interface se inicialicen antes que el resto (§9.3, §9.3.1); que un bloque `static` se ejecute al inicializar la clase
+y que sea un error que no pueda completar normalmente (§8.7, §14.22); que los atributos `ConstantValue` se asignen
+**antes** de invocar `<clinit>` y que sin `ACC_STATIC` el atributo se ignore (JVMS §4.7.2, §5.5); y que una clase
+interna pueda hoy declarar miembros `static` (§8.1.3 en SE 25, JEP 395).
+
+#### 10. Error común y diagnóstico
+
+**Síntoma 1 — «mis tests pasan en bloque y fallan sueltos (o al revés)».** Hay un contador o un acumulador `static`
+en algún sitio, y el segundo test hereda lo que escribió el primero. Medido, sin hacer nada raro: la guía
+`RF-000999` sale `#1` cuando la consulta va antes y `#3` cuando va después, con el mismo fuente y el mismo `new`.
+Diagnóstico en una línea: `Solicitud.secuencial` es legible y **escribible** desde fuera —el propio ejemplo lo pone
+a cero con `Solicitud.secuencial = 0;`, y eso solo compila porque el campo no es `final`—. La corrección no es
+`secuencial = 0` en un `@BeforeEach`: es mover la cuenta a un objeto que tú creas por test (paso 6 del
+mini-laboratorio y el `Secuenciador` de `ContadorCompartido`), que da `#1` en los dos mostradores.
+
+**Síntoma 2 — «puse el `static` del padre en el hijo con `@Override` y me da un error, o sin `@Override` no se me
+ejecuta nunca».** Las dos caras del mismo malentendido, y las dos cortadas:
+
+- Con `@Override` sobre el `static` del hijo: `static method total() in Hijo cannot be annotated with @Override`
+  (§9.6.4.4 no cumple ninguna de sus tres condiciones, porque un método de clase **no se sobrescribe**).
+- Sin `@Override` y con el hijo declarando un método de **instancia** con la firma del `static` del padre:
+  `total() in Hijo cannot override total() in Padre` seguido de `overridden method is static` —la segunda línea es
+  la que te dice dónde mirar, y la borré una vez de mi diagnóstico creyendo que era ruido—.
+
+Lo que **no** te va a aparecer nunca es un error: si el hijo declara su propio `static`, compila, y `p.total()` con
+`p` declarado del padre ejecuta el del padre (medido: `creadas=3 · fueraDePeso=1` frente a `creadas=3 · hitos=1`).
+Por eso el diagnóstico útil es de una palabra: ¿busco esto en el **objeto** (tabla de métodos, sustitución) o en el
+**tipo del fuente** (ocultación)?
+
+**Síntoma 3 — «subí la constante de 5 a 99, recompilé la librería, y el servicio sigue viendo 5 sin decir nada».**
+No es un bug de caché ni de despliegue: es §13.1. Medido con el mismo `Lector.class` sin recompilar: contra `v1`
+`5/5`, contra `v2` `5/99`, y en el bytecode el `ldc // String LIMITE_CONSTANTE como lo vio el Lector: 5`.
+Diagnóstico en dos comandos, y los dos leídos hoy sobre `por-dentro/constante`:
+
+- `javap -v -p -cp k1 Config | grep '^ *ConstantValue'` → **una** línea, `ConstantValue: int 5` (con `v2`
+  recompilado, `ConstantValue: int 99`). `LIMITE_VIVO` no tiene atributo: su valor se escribe en `<clinit>` con
+  `0: invokestatic #7 // Method Config$Calculo.cinco:()I` y `3: putstatic #13 // Field LIMITE_VIVO:I`. Cuidado con
+  el ancla: el mismo `grep` sin el `^ *` da **2**, porque en `javap -v` la propia constant pool lista
+  `#… = Utf8  ConstantValue`. Se corrige el `grep`, no la duda.
+- `javap -c -p -cp k1 Lector | grep Config` → **una** línea, `11: getstatic #23 // Field Config.LIMITE_VIVO:I`. La
+  constante no deja ninguna referencia a `Config` en el llamante: ya no hay enlace que romper cuando cambie. La
+  asimetría que buscas cabe en un conteo de `grep`.
+
+Si necesitas que los binarios viejos vean el valor nuevo, **no** es una constante: `static final int X = Metodo.x()`
+sigue siendo `final` y deja de ser variable constante (§4.12.4), y eso es justo lo que separa `CONSTANTE = 42` de
+`VIVA = System.nanoTime()`.
+
+**Síntoma 4 — «`NoClassDefFoundError: Could not initialize class X` en producción, y la clase está en el jar».**
+La clase existe; lo que falló fue **su apertura**, antes. Medido en dos ejecuciones del mismo `.class`: el primer
+contacto da `ExceptionInInitializerError` con `Caused by: java.lang.IllegalStateException: no hay configuracion` y
+un frame que dice `<clinit>`; el segundo da `NoClassDefFoundError: Could not initialize class InitQueRevienta$Rompe`
+(§12.4.2 pasos 11, 12 y 5). Regla operativa: busca el **primer** `ExceptionInInitializerError` del log, no la última
+pila, y el reintento no va a volver a imprimir tu diagnóstico porque el inicializador no se ejecuta otra vez.
+
+**Síntoma 5 — «escribo `this.campo` dentro de un método `static` y me corta», o su versión tonta: «¿por qué `case
+UMBRAL:` no vale si `UMBRAL` es `static final`?».** Los dos son el mismo muro con dos caras: dentro de un contexto
+estático no hay objeto (§8.4.3.2: `non-static variable codigo cannot be referenced from a static context`), y un
+`case` exige una **variable constante**, no un `final` cualquiera: `constant expression required` para
+`static final int UMBRAL = ThreadLocalRandom.current().nextInt(9);`. Y el tercer caso de la misma familia: un
+`static final` en blanco se rellena en el inicializador de clase y **no** en el constructor
+(`cannot assign a value to static final variable LOTE`; si nadie lo rellena, `variable LOTE might not have been
+initialized`).
+
+**Y el error de concepto que los resume:** creer que `static` significa «global, y por tanto peligroso» o, en el
+extremo opuesto, «un sitio cómodo donde poner cosas que no sé dónde poner». La especificación no dice ninguna de las
+dos: dice que hay **exactamente una encarnación** por clase (§8.3.1.1) y que esa encarnación nace al inicializar la
+clase (§12.4). Con esa frase en la cabeza la decisión es mecánica: si debe haber una por proceso y nadie la escribe
+desde fuera, es tuya; si debería haber una por cliente, por hilo o por test, es un campo de instancia mal colocado; y
+si el valor no cambia nunca y está escrito en el fuente, es una constante que se hornea y no una casilla.
+
+#### 11. Pregunta con respuesta modelo
+
+**Pregunta.** Tienes `public class Bodega` con `String codigo`, `static int bandejas`,
+`static final int COTA = 25_000`, `static final long LATIDO = System.nanoTime();` y `static String resumen()`, y una
+subclase `Frio extends Bodega` que declara su propio `static String resumen()`. Responde: **(a)** qué imprime
+`Bodega b = new Frio(); System.out.println(b.resumen());` y por qué el mecanismo no es el de `b.codigo`; **(b)**
+cuántas casillas `bandejas` existen después de crear 500 `Bodega` y perderlas todas; **(c)** si cambias `COTA` a
+`30_000` y recompilas **solo** `Bodega`, qué ve un módulo que ya estaba compilado, y qué vería con `LATIDO`; **(d)**
+por qué leer `COTA` no dispara el inicializador de clase pero leer `LATIDO` sí.
+
+**Respuesta modelo.**
+
+**(a)** Imprime el `resumen()` de `Bodega`, el del padre, aunque el objeto sea un `Frio`. No es una excepción ni un
+empate: los métodos de clase no se sobrescriben, se **ocultan** (§8.4.8.2), y el compilador escoge el método a partir
+del **tipo declarado** de la expresión, no del objeto. Medido en el tema con `Padre`/`Hijo`: la misma variable `p` da
+`creadas=3 · fueraDePeso=1` (el `total()` de clase del padre) e `hijo` en la llamada de instancia del hijo, en la
+misma pantalla. Lo dice el ejemplo oficial de §8.4.8.2 con una frase que no se puede parafrasear sin perderla:
+*«because the invocation of `greeting` uses the type of `s`, namely `Super`, to figure out, at compile time, which
+class method to invoke, whereas the invocation of `name` uses the class of `s`, namely `Sub`, to figure out, at run
+time, which instance method to invoke.»* El bytecode lo separa en dos palabras: cinco `invokestatic` para `total`,
+cero `invokevirtual` —y es que la búsqueda por el objeto solo ocurre cuando hay receptor: el modo estático se decide
+en compilación con el *compile-time declaration* (§15.12.4), y en un método de clase no hay `this` que consultar
+(§8.4.3.2)—. Y si lo que querías era polimorfismo, `@Override` sobre el `static` del hijo lo corta:
+`static method total() in Hijo cannot be annotated with @Override` (§9.6.4.4).
+
+**(b)** **Una**, y no depende de cuántos objetos haya: §8.3.1.1 —*«there exists exactly one incarnation of the field,
+no matter how many instances (possibly zero) of the class may eventually be created»*. Medido con
+`ContadorCompartido`: tras 500 solicitudes cuyos objetos ya no existen, la casilla sigue en `503`. Las 500 hojas del
+almacén murieron; la casilla de la pared no. Y no se va con ellas: desaparece con la clase, y eso solo puede pasar
+cuando el **cargador** que la definió es recolectable —§12.7: *«A class or interface may be unloaded if and only if
+its defining class loader may be reclaimed by the garbage collector»*—, cosa que en una app normal no ocurre. La
+consecuencia práctica es la de `Solicitud.secuencial`: el contador no se reinicia entre tests ni entre clientes, y
+ahí se te desordena el orden de los tests sin que nadie haya tocado el fuente.
+
+**(c)** Con `COTA`, el módulo viejo sigue viendo `25000` aunque tú recompiles `Bodega` cien veces: §13.1 —*«A
+reference to a field that is a constant variable (§4.12.4) must be resolved at compile time to the value V denoted by
+the constant variable's initializer»* y, si es `static`, *«no reference to the field should be present in the code in
+a binary file»*. Medido: el mismo `Lector.class` sin recompilar imprime `5` contra `v1` y `5/99` contra `v2`, y en su
+bytecode el valor está dentro del `ldc // String LIMITE_CONSTANTE como lo vio el Lector: 5` —no hay `getstatic` que
+pueda ver el cambio—. Con `LATIDO` pasa lo contrario: no es variable constante (§4.12.4 exige una
+*expresión constante*, y `System.nanoTime()` no lo es), así que no lleva `ConstantValue`, su casilla se llena en
+`<clinit>` y el llamante la carga con `getstatic`; el módulo viejo la ve actualizada. Lo dice §13.4.9 con la frase
+que resuelve la pregunta: al cambiar el valor de una constante, *«pre-existing binaries do not see the new value at
+all»*.
+
+**(d)** Porque el cuarto disparador de §12.4.1 está condicionado exactamente a eso: la clase se inicializa al usar un
+campo `static` *«and the field is not a constant variable»*. `COTA` es variable constante, no es un acceso a la
+casilla: su valor ya vive en tu `.class`. `LATIDO` sí es una casilla, y §12.4.1 añade que el acceso inicializa **solo**
+la clase que declara el campo, no las subclases. Medido con el paso 5 del mini-laboratorio, que ejecuté antes de
+escribirlo: leer el literal `Caldera.class` no imprime nada del arranque y el `System.out.println(Caldera.COTA)`
+imprime `7` **antes** de `encendido` —el inicializador corre después, disparado por `Caldera.nivel`—; al insertar
+`Class.forName("Arranque$Caldera")` entre las dos, `encendido` y `bloque explicito` saltan **antes** del `7`. Mismo
+fuente, mismo orden de texto, distinto punto de arranque: §12.4.1 cierra la lista con
+*«A class or interface will not be initialized under any other circumstance»*, y la regla de *cuál* se inicializa
+con `getstatic`/`putstatic`/`invokestatic` está en JVMS §5.5.
+
+#### 12. Cuándo usarlo y cuándo no
+
+| Situación | Decisión y por qué |
+|---|---|
+| Un valor que no cambia nunca y está escrito en el fuente (`COTA = 25000`) | **`static final` con expresión constante**: es variable constante (§4.12.4), se hornea en el llamante y no cuesta ni una instrucción. Acepta el costo de §13.1: quien no recompila no ve el valor nuevo. |
+| Un valor que puede cambiar sin recompilar a los llamantes (límites por configuración, un reloj, una métrica) | **`static` sin `final`, o `static final` inicializado con un método** (§4.12.4 deja de ser constante): una casilla con `getstatic`, y el enlace sigue vivo (§13.4.9 al revés). |
+| Contadores, cachés y acumuladores que deben sobrevivir a los objetos | **`static`, y entonces la pregunta es de concurrencia, no de sintaxis**: medido en el `<init>` de `CamposEstaticos`, un `creadas++` son cuatro instrucciones —`getstatic #7`, `iconst_1`, `iadd`, `putstatic #7`— con la lectura y la escritura separadas, así que dos hilos pueden leer el mismo valor y escribir el mismo valor. Aquí no hay nada que lo proteja; eso le pertenece al track de concurrencia. |
+| Utilidades puras sin estado (`Objects.equals`, `Integer.valueOf`, un conversor de fechas) | **Métodos de clase, y sin campo de clase detrás**: es lo que §8.4.3.2 hace barato (sin receptor, `args_size` sin la ranura 0 de `this`) y lo que no te ensucia el test. |
+| El estado que un test o un cliente deberían poder tener por separado | **Campo de instancia**, no `static`. Medido: con la cuenta en la clase, la misma guía sale `#1` o `#3` según el orden de dos bloques; con el contador en un objeto creado por el test (`Secuenciador`), sale `#1` en los dos mostradores. |
+| «No sé dónde poner esta función» | **Todavía no es de clase.** Un `static` es una casilla global con vida de la clase (§12.4), no un estante: si no responde a «¿una por proceso?», va a un objeto o a un servicio que tú construyas. |
+
+**Costo.** El acceso a una casilla de clase es `getstatic`: una instrucción, sin carga de referencia, y `invokestatic`
+resuelve por tipo en compilación sin tocar tabla de métodos. Una constante sale **gratis en tiempo de ejecución**: en
+el `Lector` medido, el valor horneado viaja dentro del `ldc` del propio llamante y no queda ninguna referencia a
+`Config`, mientras que el campo vivo ocupa `11: getstatic #23 // Field Config.LIMITE_VIVO:I`. Lo que no es gratis es
+el efecto secundario: el campo de clase **es** estado global, se comparte entre tests, hilos y clientes (los `#1`/`#3`
+de `ContadorCompartido`), y una constante horneada **es** un contrato de compilación (§13.1) que obliga a recompilar a
+todos los que la leen. Ese es el precio real, y no se paga en ciclos.
+
+**Qué no resuelve este tema.** `static` no sincroniza nada (las cuatro instrucciones medidas arriba siguen perdiendo
+actualizaciones; eso es concurrencia), no hace que un objeto sea singleton ni que una clase sea accesible desde
+cualquier módulo, y no dice nada de **qué** campos tiene un objeto visto desde fuera: el acceso por nombre vive en el
+tema 3 y las dependencias entre unidades de compilación en el tema 5. Tampoco toca la finalización del objeto ni la
+carga y descarga de clases (§12.6 y §12.7, fuera de este módulo), ni el `Object` que hereda todo lo anterior (tema 6);
+y si lo que quieres es una casilla de clase inmutable sin escribir el `static` a mano, la forma corta es un `record`
+con sus componentes (tema 7). La única decisión que este tema te deja tomar con los datos en la mano es: **¿una por
+objeto o una por clase? ¿horneada o viva? ¿y quién la escribe?**
+
 ---
 
 ## Temas que faltan de este módulo
 
-Quedan cuatro temas del temario: **4** `static` (§8.3, §8.7, §12.4), **5** paquetes e importaciones incluyendo
-`import module` (JEP 511), **6** los métodos de `Object` y **7** objetos inmutables y `record` (§8.10, EJ 17). Cada
-uno traerá sus ejemplos, sus errores reproducibles y sus comprobaciones a `verificar.sh`; el `Laboratorio` y la
-`Duración` de esta portada se reescriben con las cifras medidas cuando el módulo esté completo.
+Quedan tres temas del temario: **5** paquetes, `import` e imports de módulo (JEP 511), **6** los métodos de `Object`
+(`equals`, `hashCode`, `toString`, clones y finalización, §8.1–§8.2, EJ 10–12) y **7** objetos inmutables y `record`
+(§8.10, EJ 17). Cada uno traerá sus ejemplos, sus errores reproducibles y sus comprobaciones a `verificar.sh`; el
+`Laboratorio` y la `Duración` de esta portada se reescriben con las cifras medidas cuando el módulo esté completo.

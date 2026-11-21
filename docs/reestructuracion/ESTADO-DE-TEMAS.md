@@ -10,7 +10,7 @@ Generado por `scripts/build_estado_temas.py` desde los temarios aprobados y
 
 | Curso | Temas | Módulos | Ya está | Básico | Falta | Escritos | Verificados | Por escribir |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| java | 279 | 44 | 46 | 92 | 141 | 35 | 0 | 244 |
+| java | 279 | 44 | 46 | 92 | 141 | 36 | 0 | 243 |
 | gradle | 166 | 28 | 0 | 31 | 135 | 0 | 0 | 166 |
 | spring | 281 | 47 | 57 | 83 | 141 | 0 | 0 | 281 |
 | microservicios | 395 | 62 | 173 | 72 | 150 | 173 | 110 | 222 |
@@ -18,7 +18,7 @@ Generado por `scripts/build_estado_temas.py` desde los temarios aprobados y
 | ios | 324 | 51 | 42 | 79 | 203 | 0 | 0 | 324 |
 | angular | 297 | 49 | 65 | 52 | 180 | 0 | 0 | 297 |
 | fundamentos | 298 | 46 | 65 | 130 | 103 | 0 | 0 | 298 |
-| **Total** | **2385** | **379** | **488** | **640** | **1257** | **208** | **110** | **2177** |
+| **Total** | **2385** | **379** | **488** | **640** | **1257** | **209** | **110** | **2176** |
 
 ## java
 
@@ -29,7 +29,7 @@ Generado por `scripts/build_estado_temas.py` desde los temarios aprobados y
 | M2 | Texto y entrada/salida de consola | Tramo 1 · Fundamentos | 6 | 6 | 0 |
 | M3 | Control de flujo y métodos | Tramo 1 · Fundamentos | 6 | 6 | 0 |
 | M4 | Arreglos y primeras colecciones | Tramo 1 · Fundamentos | 6 | 6 | 0 |
-| M5 | Objetos y clases | Tramo 1 · Fundamentos | 7 | 3 | 0 |
+| M5 | Objetos y clases | Tramo 1 · Fundamentos | 7 | 4 | 0 |
 | M6 | Herencia, interfaces y polimorfismo | Tramo 1 · Fundamentos | 7 | 0 | 0 |
 | M7 | Excepciones | Tramo 1 · Fundamentos | 6 | 0 | 0 |
 | M8 | Fechas, dinero y documentación | Tramo 1 · Fundamentos | 5 | 0 | 0 |
