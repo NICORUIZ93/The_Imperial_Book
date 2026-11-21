@@ -2188,8 +2188,13 @@ tasks.withType<JavaCompile> {
 gatling {
     // El plugin trae Gatling 3.16.0 por defecto; se fija la misma 3.16.1 que usaba el build de Maven
     gatlingVersion = libs.versions.gatling.get()
-    // Simulación que ejecuta gatlingRun (en Maven, <simulationClass>)
-    simulation = "academia.carga.ReservasSimulation"
+}
+
+// La simulación se elige en la TAREA, no en la extensión: GatlingRunTask expone
+// getSimulationClassName/setSimulationClassName (javap sobre gatling-gradle-plugin-3.16.0.jar).
+// Equivale a <simulationClass> del POM de Maven.
+tasks.named<io.gatling.gradle.GatlingRunTask>("gatlingRun") {
+    simulationClassName = "academia.carga.ReservasSimulation"
 }
 ```
 
@@ -2216,6 +2221,11 @@ pluginManagement {
         mavenCentral()
     }
 }
+// Sin esto, un alumno sin JDK 25 instalado ve el build morir en la configuración, antes de cualquier test.
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 
 dependencyResolutionManagement {
     repositories {

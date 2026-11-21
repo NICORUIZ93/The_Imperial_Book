@@ -201,6 +201,11 @@ pluginManagement {
         mavenCentral()
     }
 }
+// Sin esto, un alumno sin JDK 25 instalado ve el build morir en la configuración, antes de cualquier test.
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 
 dependencyResolutionManagement {
     repositories {

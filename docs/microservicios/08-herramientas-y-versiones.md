@@ -184,6 +184,38 @@ ESTADO: completo
 | Keycloak 24+ | Keycloak 26.8.2 | Sí |
 | Testcontainers 1.19+ | Java 2.0.5 · Node 12.2.2 | Sí |
 
+## Cómo consigue el build el JDK 25
+
+Cada `build.gradle.kts` del curso declara `JavaLanguageVersion.of(25)`. Eso es una **exigencia**, no una
+instalación: si en la máquina no hay un JDK 25 localizado por Gradle, el build muere en la **configuración**,
+antes de compilar ni ejecutar un solo test. Medido aquí el 2026-11-21 con JDK 27 y 26 instalados y ninguno 25:
+
+```
+* What went wrong:
+A problem occurred configuring project ':f024-graalvm-native'.
+> Failed to calculate the value of task ':f024-graalvm-native:compileTestJava' property 'javaCompiler'.
+   > Cannot find a Java installation on your machine (Mac OS X 27.2 aarch64) matching: {languageVersion=25, …}.
+     Toolchain download repositories have not been configured.
+BUILD FAILED in 7s
+```
+
+El arreglo es el resolver oficial de Gradle, en el `settings.gradle.kts` de los 14 builds del curso
+(`examples/microservicios/modulo-5` … `modulo-16/app`, `modulo-36/spring` y `modulo-5/f021-multimodulo`):
+
+```kotlin
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+```
+
+Versión confirmada en la fuente primaria (plugins.gradle.org, 2026-11-21); Gradle la pide explícitamente en la
+frase «Toolchain download repositories have not been configured». Con el resolver, el `./verificar.sh` de
+`modulo-5` pasó de fallar en 7 s a `RESULTADO: OK` en 46 s: Gradle descargó
+`OpenJDK25U-jdk_aarch64_mac_hotspot_25.0.5.1_2.tar.gz` a `~/.gradle/jdks/` y los logs de Spring arrancaron
+`using Java 25.0.5.1`. Coste: la primera vez baja el JDK (≈200 MB) además de las dependencias; luego queda en
+caché. Alternativas que **no** se usaron: instalar JDK 25 a mano en cada máquina (el alumno no instala nada,
+regla del curso) y relajar el toolchain a 26/27 (rompería CRaC y GraalVM, que solo publican builds sobre 25).
+
 ## Diferencias con `docs/VERSIONES.md`
 
 Este curso sigue su propia línea (specs/018). Coincide con `docs/VERSIONES.md` en JDK 25, Kubernetes 1.37 y
