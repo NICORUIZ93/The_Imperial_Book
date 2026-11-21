@@ -17,7 +17,7 @@
 | **Prerrequisitos** | [Módulo 3](modulo-3.md) completo —en especial su tema 3 (los cuatro lazos y el `for` con etiqueta, que es la forma en que se recorre cualquier arreglo de este módulo) y su tema 4 (parámetros de arreglo: se copia la referencia, medido allí)— y [Módulo 2](modulo-2.md) completo (`String.equals`, `substring`, `Integer.parseInt`: con eso se parten las guías antes de meterlas en un arreglo). Del [Módulo 0](modulo-0.md) se sigue usando `javap -c`. |
 | **Duración** | 4 h 10 min (6 temas de 35 a 45 min) más 1 h de laboratorio. |
 | **Versiones** | JDK 25 (`--release 25`) · Gradle 9.8.2 por wrapper · JUnit 6.0.3. Nada de este módulo depende de una función *preview*. Dos cosas que la gente cree borradas **siguen ahí** en la 25 y se miden: el constructor `new Integer(int)` (deprecado, no eliminado: `javac --release 25` emite una *Note*, medido en `tema-5/EncajarYDesencajar.java`) y la covarianza de arreglos (JLS §10.5), que es de 1996 y sigue colándose. |
-| **Laboratorio** | [`laboratorios/modulo-4/`](laboratorios/modulo-4/README.md) (al publicar: `examples/java/modulo-4/`), con `verificar.sh`: **187 comprobaciones, 0 fallidas** ejecutadas aquí. |
+| **Laboratorio** | [`laboratorios/modulo-4/`](laboratorios/modulo-4/README.md) (al publicar: `examples/java/modulo-4/`), con `verificar.sh`: **188 comprobaciones, 0 fallidas** ejecutadas aquí. |
 | **Proyecto guía** | `rutaflow-nucleo`: el **manifiesto de carga**. Lee la misma tanda de guías dos veces —con arreglos (`gramos`, `suma`, `mayor`, `mayoresQue`, `sobreElTope`) y con colecciones (`gramosLista`, `mayoresQueLista`, `totalesPorZona`)— y exige que los dos caminos den los mismos números. Cada tema cierra una parte: guardar los pesos (T1), ordenarlos y copiarlos (T2), entender por qué `Object[]` no es una salida (T3), acumular por zona en un mapa (T4), no perder una suma por un `Integer` `null` (T5) y medir el coste del filtro (T6). |
 
 ### Mapa del módulo
@@ -2319,7 +2319,7 @@ java -cp /tmp/d ImmutablesNoCrecen  # java.lang.UnsupportedOperationException
 ```
 
 Aquí las **43** comprobaciones del tema pasan con Temurin 27 y `--release 25`, y el total del laboratorio sigue en
-**187 / 0 fallidas / 0 omitidas** (el reparto medido bloque a bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 28 ·
+**188 / 0 fallidas / 0 omitidas** (el reparto medido bloque a bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 29 ·
 T6 22 · Gradle 4). Dentro de las 43 hay 38 de salida ejecutada, **2 de bytecode**
 (`List.iterator:()Ljava/util/Iterator;` y `List.get:(I)Ljava/lang/Object;`, las dos parejas del mismo
 `RecorridoEnBytecode`), 3 que exigen código ≠ 0 **y** el texto de la excepción, y 1 que exige el código **1** del
@@ -2482,3 +2482,765 @@ declara la interfaz, instancia la clase, porque la seguridad que ganaste en el t
 convertir `List<String>` en `List<Object>`) solo se mantiene si la firma dice `List`.
 
 ---
+
+### Tema 5: Wrappers y autoboxing: caché de `Integer`, `==` y el `NullPointerException` al desempaquetar · Básico · 45 min
+
+#### 1. Ubicación y prerrequisitos
+
+Curso Java · tramo Fundamentos · módulo 4 · quinto tema. Antes: [Tema 4](#tema-4-arraylist-y-hashmap-primer-uso)
+—dos de sus salidas son exactamente dos de las trampas de este tema: `desempaquetar el null : NullPointerException`
+y el `remove(Integer.valueOf(7))` que te obliga a **fabricar una caja a propósito** para que el compilador elija
+la sobrecarga de valor—, [Tema 3](#tema-3-covarianza-de-arreglos-y-arraystoreexception-por-que-las-listas-son-mas-seguras)
+(el borrado de tipos explica por qué un `List<Integer>` está lleno de cajas: no existe `List<int>`),
+[Tema 1](#tema-1-arreglos-creacion-valores-por-defecto-recorrido-y-arrayindexoutofboundsexception) (allí `int` vale
+`0` por defecto; aquí verás que `Integer` vale `null`, y esa es la diferencia que rompe programas) y
+[Tema 2](#tema-2-arreglos-multidimensionales-y-la-clase-arrays-ordenar-copiar-comparar-y-buscar) (`Arrays.equals`
+compara elementos; el equivalente con cajas es `equals`, nunca `==`). Del
+[Módulo 3 · tema 1](modulo-3.md) vienes con el operador ternario ya escrito varias veces; aquí se muestra que un
+ternario que mezcla `int` y `Integer` **no es el mismo ternario**. Del [Módulo 2 · tema 6](modulo-2.md) y del
+[Módulo 2 · tema 2](modulo-2.md) viene `Integer.parseInt`, que es el primo de `valueOf`: mismo `890`, dos tipos
+distintos (los dos medidos en este tema). Después: en M5 tus propias clases entran en estas colecciones y
+`equals`/`hashCode` dejan de ser curiosidad de un wrapper; en M11 los genéricos borran `T` a `Object`, que es la
+razón de fondo por la que cualquier `List<T>` guarda referencias; en M12 se usan `Map<String, Integer>` con `merge`
+a escala y ahí el `Integer::sum` de este tema es el acumulado. El temario marca este tema como
+«está pero básico»: en el curso antiguo los wrappers **se nombraban**, sin reproducir ninguna de las tres trampas
+(una en ejecución y dos en compilación); aquí las tres están ejecutadas y citadas con su salida. Versión: JDK 25.
+Fuentes del temario para este tema: JLS §5.1 · Effective Java ítem 61 · CJ1 cap. 5 · entrevistas técnicas.
+
+#### 2. Objetivo
+
+Al terminar sabes decir, con la salida delante, que `Integer caja = 1250;` **no** ejecuta un `new`: ejecuta
+`Integer.valueOf(1250)` (medido en el bytecode: `1: invokestatic  #7 // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;`).
+Que `valueOf` devuelve el **mismo objeto** entre −128 y 127 y objeto nuevo desde 128, y que el corte se puede medir
+por los dos lados (`corte por arriba : 128 (el primero que ya no)` y `corte por abajo : -129 (el primero que ya no)`).
+Que por eso `Integer a = 1000, b = 1000; a == b` es `false` (medido) pero `Integer x = 127, y = 127; x == y` es
+`true` (medido) —y esa pareja de resultados es la que hace que un test con números chicos pase y el mismo código con
+pesos reales reviente—. Que si un lado es primitivo, `==` **desempaca** y compara valor sin importar la caché
+(medido: `int == Integer : true` con `890`, muy por encima de 127). Que un `get` de clave ausente no protesta y el
+golpe llega tres líneas más tarde al desempaquetar, con un mensaje que dice el método que faltaba:
+`Cannot invoke "java.lang.Integer.intValue()" because "<local5>" is null` (y `because "tope" is null` si compilas
+con `-g`, medido las dos formas). Que `hayGuia ? 1250 : caja` se tipifica como `int` —porque las dos ramas son
+*numeric expressions*— y por eso desempaca la caja `null`, mientras `hayGuia ? 1250 : null` compila y corre sin
+tocar nada. Que `Long gramos = 100000;` no compila (`error: incompatible types: int cannot be converted to Long`) y
+`Byte desbordado = 128;` tampoco, pero `Byte cajaChica = 120;` sí (medido), y que el primitivo protesta con un
+mensaje **distinto** (`possible lossy conversion from int to byte`). Y que el límite de la caché no es del lenguaje:
+con `-Djava.lang.Integer.IntegerCache.high=5000`, y también con `-XX:AutoBoxCacheMax=5000`, el mismo programa
+reporta `corte por arriba : 5001` mientras `System.getProperty` sigue diciendo `propiedad visible : null`.
+
+#### 3. Por qué importa
+
+Tres motivos, en orden de daño.
+
+**1. El `Map<String, Integer>` del tema 4 es una máquina de fabricar `NullPointerException` diferidos.** El
+requisito de RutaFlow «gramos por zona» se escribe con valores empaquetados porque un `Map` no guarda `int`. En
+cuanto alguien hace `acumulado += topePorZona.get(zona)` con una zona que no está, el fallo no aparece en la línea
+del `get`: aparece en la de la suma, y en la traza el nombre de la variable que está `null` ni siquiera sale
+(si compilas sin `-g`). Medido en `tema-5/errores/SumaCajaNula.java`: primero se imprime `zona Bogota trae null`
+y **después** revienta. Es decir: el programa ya dijo en voz alta que traía `null` y nadie lo previno.
+
+**2. La caché hace pasar tests que no prueban nada.** `Integer x = 127, y = 127` → `x == y` es `true`;
+`Integer p = 128, q = 128` → `p == q` es `false`. Los dos medidos en `CacheDeInteger`, en la misma corrida. Un test
+escrito con índices, conteos o «un caso de prueba» de valor `1` pasa comparando cajas con `==`; el mismo test con
+`1250` gramos de una guía real falla. Y el fallo no es aleatorio ni depende de la máquina: depende del **valor**,
+que es la peor dependencia posible, porque el valor lo ponen los datos.
+
+**3. Cada caja es un objeto.** `suma con cajas : 5540 · clase Integer` cuesta dos `intValue` y un `valueOf` por
+vuelta (medido en el bytecode de `sumaDos`: `1: invokevirtual ... intValue`, `5: invokevirtual ... intValue`,
+`8: iadd`, `9: invokestatic ... valueOf`). En un lote de 30 000 guías eso son 30 000 objetos cortos. El Javadoc de
+`Integer` lo dice con todas las letras, y por eso el constructor `Integer(int)` está deprecado desde Java 9
+(medido: el `javac` de este tema imprime `Note: tema-5/EncajarYDesencajar.java uses or overrides a deprecated API.`).
+
+#### 4. Analogía
+
+**El mostrador de despachos con un cajón de etiquetas ya impresas.**
+
+- En el almacén de RutaFlow los números viajan dentro de **cajas de cartón** (`Integer`). Todo lo que vive en una
+  estantería —una lista, un mapa— guarda cajas: un número suelto, sin caja, no se puede estibar. Lo que tú escribes
+  en la ventanilla sí puede ser un número suelto (`int`), y el mostrador hace dos cosas por ti sin avisar:
+  **emetiendo** una caja cuando la guardas (`int → Integer`) y **abriéndola** cuando la usas (`Integer → int`). Eso
+  es el autoboxing: no es azúcar para que el código se lea bonito, es cartón moviéndose.
+- Las cajas con los números del −128 al 127 **no se fabrican**: hay un cajón con esas etiquetas ya impresas, y quien
+  pide 127 recibe siempre **la misma etiqueta física** (`valueOf(127) misma caja : true`). Del 128 para arriba no
+  hay cajón: el mostrador corta cartón nuevo cada vez, así que dos 128 son dos objetos distintos que dicen lo mismo
+  (`valueOf(128) misma caja : false`).
+- Comparar dos cajas con `==` es preguntar **si es la misma pieza de cartón**, no si dicen lo mismo. Con las
+  etiquetas del cajón la respuesta es «sí» por accidente; con las recortadas es «no». «¿Dicen lo mismo?» es `equals`
+  (medido: `equals no lo nota : true`), y «¿cuál va antes?» es `compareTo` (medido: `compareTo 0`).
+- El `null` es el mostrador tendiéndote **la mano vacía**. Si solo la miras, no pasa nada: `zona Bogota trae null`
+  se imprime tan tranquilo. El golpe llega cuando le pides el número de dentro —`acumulado += tope`—, porque abrir
+  una mano vacía no tiene definición. El mensaje lo dice con la boca grande:
+  `Cannot invoke "java.lang.Integer.intValue()"`.
+- El ternario raro (`hayGuia ? 1250 : caja`) es el caso en que el reglamento del mostrador decide, **antes de
+  mirar cuál rama se va a ejecutar**, que las dos salidas tienen que ser números sueltos. O sea: que hay que abrir
+  una caja. Y si la rama elegida es la de la caja vacía, ya no hay a dónde abrir. Prueba de que son dos reglas
+  distintas: `hayGuia ? 1250 : null` compila y corre, porque ahí ninguna de las dos ramas es un número suelto y el
+  reglamento trata la expresión como condicional de referencias.
+- `new Integer(30000)` es cortar el cartón en tu casa: el valor es idéntico (`valueOf vs new : false · equals true
+  · hashCode igual: true`) pero el mostrador ya no lo hace solo —hay que pedirlo a mano— porque desde Java 9 está
+  deprecado.
+
+**Dónde se rompe la analogía:** el cajón de etiquetas impresas no es una propiedad del cartón, es una decisión del
+mostrador, y el mostrador puede tener un cajón más grande: con la propiedad de JVM en 5000, el 128 también salió
+del cajón y el corte se fue a `5001` (medido). Un almacén físico no cambia de tamaño según un flag; la JVM sí.
+Segunda rotura: en el almacén abrir una caja siempre devuelve un número; en Java `intValue()` sobre `null` no
+devuelve `0`, lanza. Ahí la metáfora de «la mano vacía» se queda corta: el problema no es no encontrar el número,
+es que **no hay objeto** de donde sacarlo.
+
+#### 5. Diagrama
+
+```mermaid
+flowchart TB
+    subgraph BOX["int -> Integer: lo que javac emite, medido"]
+        V["Integer caja = 1250"] -->|"invokestatic Integer.valueOf:(I)"| VO["valueOf(1250)"]
+        VO --> Q{"-128 &lt;= v &lt;= high ?"}
+        Q -->|"si (medido 127)"| CACHE["cache[i - low]<br/>mismo objeto"]
+        Q -->|"no (medido 128)"| NUEVO["new Integer(i)<br/>otro objeto"]
+        NUEVO -.->|"solo si TU escribes new"| MANO["constructor deprecado<br/>@Deprecated(since=&quot;9&quot;)"]
+    end
+    subgraph UNBOX["Integer -> int: lo que javac emite, medido"]
+        U["int suelto = caja"] --> R{"caja == null ?"}
+        R -->|"no"| IV["invokevirtual Integer.intValue:()I"]
+        R -->|"si"| NPE["NullPointerException<br/>Cannot invoke intValue()"]
+    end
+    CACHE -->|"== entre cajas: identidad"| IDEM["autoboxing 127 == 127 : true<br/>autoboxing 128 == 128 : false"]
+    IV --> ARIT["aritmetica y comparaciones con primitivo"]
+    subgraph TERN["el ternario mixto: dos reglas"]
+        T1["cond ? 1250 : null"] -->|"referencia (JLS 15.25.3)"| OK["Integer · corre · sin desempacar"]
+        T2["cond ? 1250 : caja"] -->|"numerica (JLS 15.25.2)"| MAL["int · desempaca las dos ramas<br/>medido: NPE en la linea 8"]
+    end
+    MAL --> NPE
+```
+
+**Texto alternativo:** arriba a la izquierda, el camino de **encajar**. Un `int` asignado a una `Integer` no se
+compila a `new`, se compila a `Integer.valueOf(int)`. `valueOf` mira si el valor cae dentro del cajón: entre −128 y
+el `high` (127 por defecto) devuelve la caja que ya está en el arreglo `cache`, y fuera de él fabrica una nueva. El
+`new` explícito solo aparece si tú escribes `new`, y ese constructor está deprecado desde Java 9. Abajo a la
+izquierda, el camino de **desencajar**: `intValue()` sobre una caja que no es `null`; sobre `null` lanza el
+`NullPointerException`. A la derecha, la consecuencia de la caché: `==` entre dos cajas pregunta por identidad, así
+que `127 == 127` es `true` y `128 == 128` es `false` en la misma corrida. Y abajo, la bifurcación que confunde a
+quien cree que un ternario es un ternario: con `null` en una rama la expresión es de referencia (no se desempaca);
+con una caja en una rama y un literal en la otra es **numérica**, su tipo es `int`, y desempaca pase lo que pase.
+
+#### 6. Explicación
+
+**Nivel 0 — una caja es un objeto, y por eso puede no haber nada dentro.** Medido en `tema-5/EncajarYDesencajar.java`,
+dos primeras líneas:
+
+```java
+Integer caja = 1250;                        // boxed: valueOf, no new
+int suelto = caja;                          // unboxed: intValue
+```
+
+```text
+caja / suelto          : 1250 / 1250
+```
+
+La primera línea crea **un objeto** `Integer` en el heap y guarda la referencia en `caja`. La segunda lee ese objeto
+y saca el `int`. Nada de esto escribe `javac` por ti si no lo necesitas: `int` sigue siendo `int` en todas partes.
+Los ocho tipos que tienen caja son `Boolean`, `Byte`, `Character`, `Short`, `Integer`, `Long`, `Float`, `Double`, y
+se usan en tres situaciones y no en más: (1) dentro de una colección, porque un `List<Integer>` no puede guardar
+`int` —medido: `lista de cajas : [1250, 3400] · suma 4650`—; (2) cuando el dato **puede estar ausente**, porque un
+`int` nunca puede decir «no vino», y ahí la caja es el `null` que el tema 4 te dejó ver; (3) como tipo de un
+parámetro genérico. Todo lo demás —calcular, acumular, comparar— quiere el primitivo.
+
+**Nivel 0 — cuatro sitios donde el compilador encaja o desencaja solo, y los cuatro están medidos.**
+
+```java
+static double tarifaPorKilo(Integer gramos) { return gramos / 1000.0 * 8500; }  // entra caja, sale numero
+static int redondea(Integer valor) { return valor; }                             // sale numero de una caja
+```
+
+```text
+parametro int -> Integer: 28900.0
+Integer -> int de vuelta: 1250
+suma con cajas         : 5540 · clase Integer
+```
+
+Los cuatro sitios: **asignación** (`Integer caja = 1250;` y `int suelto = caja;`), **argumento**
+(`tarifaPorKilo(3400)` —llamas con un `int` suelto a un parámetro declarado `Integer` y el `javac` mete el
+`valueOf`; medido: `28900.0`, que es `3400 / 1000.0 * 8500`), **retorno** (`return valor;` desde un método
+declarado `int`; medido: `1250`) y **aritmética y comparaciones** (`total += peso` con las dos variables declaradas
+`Integer`: se desempaquetan las dos, se suma en `int`, y el resultado **vuelve a empaquetarse** porque `total` es
+`Integer` —de ahí el `clase Integer` medido, no `clase int`). Lo que no es autoboxing: `Integer.parseInt("890")`,
+que es un método normal que devuelve `int`, y `Integer.valueOf("890")`, que devuelve la caja. Los dos con el mismo
+texto de entrada, medidos en la misma línea: `parseInt / valueOf : 890 · 890`.
+
+**Nivel 1 — `==` tiene dos significados según qué haya a cada lado, y es la línea que más se confunde del tema.**
+
+```text
+int == Integer         : true · parseInt en contexto int: 891
+1000 == 1000 con cajas : false · equals true · compareTo 0
+```
+
+El primer caso es `int desdeParse == Integer desdeValueOf` con el valor `890`, muy fuera de la caché. Da `true`
+porque cuando **uno de los dos lados es primitivo** no hay identidad que valga: la caja se desempaqueta y la
+comparación es numérica. El segundo caso es caja contra caja, y ahí `==` es referencia: `false` porque `valueOf(1000)`
+no está en el cajón. En la misma línea salen las otras dos preguntas, que son las que sí contestan lo que la gente
+cree estar preguntando con `==`: `equals` compara valor (`true`), `compareTo` compara orden (`0` = empate). La regla
+práctica del curso, que se va a repetir en M5 y en todos los DTO: **entre objetos, `==` casi nunca es lo que
+quieres**; si los dos lados son cajas numéricas y quieres valor, escribe `equals` o `compareTo`; si un lado es
+primitivo, `==` ya compara valor y no necesitas nada más.
+
+**Nivel 1 — dónde está exactamente el cajón, medido por los dos lados y por tipo.** El JLS §5.1.7 fija la regla de
+identidad para *constant expressions*:
+
+> If the value `p` being boxed is the result of evaluating a constant expression (§15.29) of type `boolean`, `byte`,
+> `char`, `short`, `int`, or `long`, and the result is `true`, `false`, a character in the range `'\u0000'` to
+> `'\u007f'` inclusive, or an integer in the range `-128` to `127` inclusive, then let `a` and `b` be the results of
+> any two boxing conversions of `p`. It is always the case that `a` `==` `b`.
+
+Y el Javadoc de `Integer.valueOf(int)` (línea 980 de `java.base/java/lang/Integer.java` de esta JDK) cómo se
+implementa:
+
+> This method will always cache values in the range -128 to 127, inclusive, and may cache other values outside of
+> this range.
+
+`CacheDeInteger` no cree el corte: lo **busca**, subiendo desde 100 y bajando desde −100 hasta que
+`Integer.valueOf(v) != Integer.valueOf(v)`. Salida medida completa (14 líneas):
+
+```text
+propiedad visible      : null
+valueOf(127) misma caja : true
+valueOf(128) misma caja : false
+primer 128 de mas       : 128 y el otro 128
+corte por arriba        : 128 (el primero que ya no)
+corte por abajo         : -129 (el primero que ya no)
+equals no lo nota       : true · compareTo 0
+autoboxing 127 == 127   : true
+autoboxing 128 == 128   : false
+Long        -128/127    : true / true · 128: false
+Short       -128/127    : true / true · 128: false
+Character        0/127  : true / true · 128: false
+Byte   toda la gama     : true y true
+Boolean constantes      : true · Double NO tiene cache: false
+```
+
+Cuatro lecturas de esas catorce líneas:
+
+1. El corte por arriba es **128**, no 127: 127 es el último que comparte, 128 el primero que ya no. Y por abajo es
+   **−129**. Los dos se pueden pedir en un test porque son observables desde el programa.
+2. `equals no lo nota : true` — la caché **no cambia el valor**, solo la identidad. Un bug de `==` es invisible para
+   `equals`, para `hashCode` (medido `hashCode igual: true`) y para cualquier aserción de valor.
+3. `autoboxing 127 == 127 : true` / `autoboxing 128 == 128 : false`: como encajar **es** llamar a `valueOf`
+   (se ve en el bytecode abajo), el autoboxing hereda el cajón tal cual. Aquí está la trampa del test que pasa.
+4. Los cajones de los demás son distintos: `Long` y `Short` cortan en el mismo sitio (−128/127), `Character` guarda
+   `0..127` —y por eso `Character.valueOf((char) 127)` es `true` y el 128 no—, `Byte` está **entero** en su caché
+   porque toda su gama (−128 a 127) cabe dentro, y `Float`/`Double` no tienen: `Double.valueOf(1.0) == Double.valueOf(1.0)`
+   es `false`. El JLS §5.1.7 insinúa que una implementación con memoria podría ir mucho más allá —
+
+   > Less memory-limited implementations might, for example, cache all `char` and `short` values, as well as `int`
+   > and `long` values in the range of -32K to +32K.
+
+   —y en esta JVM eso no ocurre: `Long.valueOf(128) == Long.valueOf(128)` es `false` medido, pese a que 128 es un
+   «otro valor» y la regla dice que compartir «está permitido pero no requerido» («This allows (but does not require)
+   sharing of some or all of these references»).
+
+**Nivel 2 — el corte es una propiedad de esta JVM, no una regla del lenguaje, y se puede mover.** Dos formas, ambas
+medidas sobre el mismo `.class` de `CacheDeInteger`:
+
+```text
+java -Djava.lang.Integer.IntegerCache.high=5000 -cp /tmp/t5 CacheDeInteger
+  corte por arriba        : 5001 (el primero que ya no)
+java -XX:AutoBoxCacheMax=5000 -cp /tmp/t5 CacheDeInteger
+  corte por arriba        : 5001 (el primero que ya no)
+```
+
+En la primera corrida con propiedad, las líneas `valueOf(128) misma caja : true` y `autoboxing 128 == 128 : true`
+aparecen invertidas respecto del default, y `Long`/`Short`/`Character` **no cambian** (la propiedad es solo de
+`Integer`). El comentario del `IntegerCache` interno (líneas 879-895 de `Integer.java`) es la fuente de las dos
+opciones:
+
+> Cache to support the object identity semantics of autoboxing for values between -128 and 127 (inclusive) as
+> required by JLS. The cache is initialized on first usage. The size of the cache may be controlled by the
+> {@code -XX:AutoBoxCacheMax=<size>} option.
+
+Y en el propio código, `Integer.java:898` fija el suelo, `:938-939` recuerda el mandato del JLS, y `:988-991` es el
+cuerpo de `valueOf`:
+
+```java
+static final int low = -128;                                   // Integer.java:898
+// range [-128, 127] must be interned (JLS7 5.1.7)             // Integer.java:938
+assert IntegerCache.high >= 127;                               // Integer.java:939
+
+public static Integer valueOf(int i) {                         // Integer.java:988
+    if (i >= IntegerCache.low && i <= IntegerCache.high)
+        return IntegerCache.cache[i + (-IntegerCache.low)];
+    return new Integer(i);
+}
+```
+
+Hay un detalle pedagógico en la primera línea de la salida: `propiedad visible : null`. `System.getProperty("java.lang.Integer.IntegerCache.high")`
+sigue diciendo `null` **incluso cuando la propiedad se pasó y surtió efecto**. La JVM consume esa propiedad al
+arrancar, al construir el cajón; después ya no está en las propiedades del sistema como algo legible. Que un getter
+devuelva `null` no significa que la configuración no hiciera nada —mira `corte por arriba` en las dos corridas—, y
+esa es la lección que se aplica a cualquier bandera de arranque. El tamaño real del cajón no tiene API pública: lo
+único observable desde un programa es su **efecto**, que es justo lo que `corteArriba()` busca en lugar de recitar.
+
+Consecuencia profesional: **un `==` entre cajas que hoy pasa puede dejar de pasar mañana**, y viceversa, sin que
+nadie haya tocado el código —cambia el flag de arranque, cambia la JVM, cambia el valor de los datos—. El JLS lo dice
+en la misma página: «For other values, the rule disallows any assumptions about the identity of the boxed values on
+the programmer's part». Nota técnica sobre la línea 939: `assert IntegerCache.high >= 127` es una aserción, y las
+aserciones no corren por defecto (`-ea`), así que tampoco es una garantía ejecutable.
+
+**Nivel 2 — las dos trampas de desempaquetado: la suma y el ternario.** Las dos revientan con el mismo mensaje y
+suceden en momentos distintos.
+
+Trampa A — la aritmética sobre un `get` ausente. Medido en `tema-5/errores/SumaCajaNula.java` (sin `-g`):
+
+```text
+zona Medellin trae 30000
+zona Bogota trae null
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "<local5>" is null
+	at SumaCajaNula.main(SumaCajaNula.java:17)
+```
+
+La línea 15 (`Integer tope = topePorZona.get(zona);`) no falla. La línea 16 **imprime el `null` en la consola** y no
+falla. La línea 17, `acumulado += tope;`, sí: el compuesto `+=` sobre `int` con derecha empaquetada desempaca, y el
+JLS §5.1.8 no deja alternativa —«If `r` is `null`, unboxing conversion throws a `NullPointerException`»—. El
+`<local5>` es el hueco de la pila donde vive la variable cuando el `.class` no trae la tabla de nombres; compilando
+con `-g` la misma traza dice `because "tope" is null` (medido: `javac --release 25 -g -d out SumaCajaNula.java &&
+java -cp out SumaCajaNula`). Es un diagnóstico útil en producción: si el mensaje tuyo dice `<localN>`, la
+compilación del despliegue no lleva `-g`.
+
+Trampa B — el ternario que parece inofensivo. Medido en `tema-5/errores/TernarioDesempacota.java`:
+
+```java
+Integer caja = hayGuia ? 1250 : null;     // condicional de REFERENCIA: null entra bien
+int peso = hayGuia ? 1250 : caja;         // condicional NUMERICA: caja se desempaca
+```
+
+```text
+con guia    : 1250
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "<local1>" is null
+	at TernarioDesempacota.decide(TernarioDesempacota.java:8)
+	at TernarioDesempacota.main(TernarioDesempacota.java:14)
+```
+
+La línea 7 se ejecuta con `hayGuia = false` y **no pasa nada**: `1250` es un `int` y `null` es el *null type*; no
+son una pareja primitivo/caja, así que la expresión cae en §15.25.3 (reference conditional), cuya regla dice —«If
+the type of one of the second and third operands is the null type, and the type of the other operand is a reference
+type, then the type of the conditional expression is that reference type»—; el tipo sale `Integer`, y una `Integer`
+con `null` dentro no hace daño mientras no se abra. La línea 8 es otra cosa: `1250` es una *numeric expression* y
+`caja` (tipo `Integer`) también lo es, porque §15.25 cuenta como numérica cualquier expresión cuyo tipo es
+convertible a un tipo numérico —y la conversión relevante es justamente el unboxing de §5.1.8—. Dos ramas numéricas
+⇒ **numeric conditional expression**, y §15.25.2:
+
+> If one of the second and third operands is of primitive type T, and the type of the other is the result of
+> applying boxing conversion (§5.1.7) to T, then the type of the conditional expression is T.
+
+…con su nota, que es el pie de la trampa: «Note that numeric promotion may include unboxing conversion (§5.1.8)».
+El tipo de la expresión es `int`, se evalúa la rama de `false` (la caja `null`) y se desempaqueta. El `int peso` ya
+no tiene adónde abrir. Es el único bug de este tema que **no se puede detectar leyendo la línea con error**: la
+culpa está declarada dos líneas arriba, en el tipo de `caja`.
+
+**Nivel 2 — el literal tiene que CABER en el primitivo antes de encajarse: dos errores de compilación medidos.**
+
+```text
+tema-5/errores/LongSinEle.java:6: error: incompatible types: int cannot be converted to Long
+        Long gramos = 100000;                     // mal: 100000 es un int
+tema-5/errores/BordeDeByte.java:7: error: incompatible types: int cannot be converted to Byte
+        Byte desbordado = 128;                    // mal: 128 ya no cabe, ni encajado
+```
+
+Lo que sí compila, medido en el mismo archivo del nivel 0:
+
+```text
+constante que cabe     : 120 / 120 · Byte.valueOf(120) == cajaChica: true
+```
+
+Tres hechos, en este orden: (a) un literal sin sufijo es `int`, y `int → Long` **no existe** —no hay autoboxing que
+salte de `int` a `Long`—; hay que escribir `100000L`, que es `long` **antes** de encajarlo. (b) Con `Byte` y `Short`
+existe el atajo de la *narrowing conversion* de constantes (§5.2), así que `Byte cajaChica = 120;` compila porque
+120 es una constante que cabe en `byte`; `128` no cabe y el `javac` protesta. (c) La línea `Byte.valueOf((byte) 120)
+== cajaChica: true` demuestra que detrás del literal hubo un estrechamiento **y luego** un encajado, y que el
+resultado cayó en el cajón de `Byte` (que, como se midió, es toda la gama). Contraste **medido aparte**, en un
+archivo de dos líneas que no forma parte del laboratorio —puedes copiarlo y correrlo—:
+
+```java
+public class B { public static void main(String[] a){ byte x = 128; Byte y = 128; } }
+```
+
+```text
+/tmp/B.java:1: error: incompatible types: possible lossy conversion from int to byte
+/tmp/B.java:1: error: incompatible types: int cannot be converted to Byte
+```
+
+Dos mensajes distintos para el mismo `128`. El primitivo recibe «posible conversión con pérdida» (sí sabe estrechar,
+pero no con ese valor); la caja recibe «int cannot be converted to Long/Byte», que **no habla de pérdida** sino de
+que la conversión no existe. Por eso el mensaje «int cannot be converted to Byte» despista a quien cree que está
+encajando: no está encajando nada, está intentando una asignación de `int` a una clase que no es `Integer`.
+
+**Nivel 3 — qué emite `javac`: ni un `new`, dos `intValue` y un `valueOf`.** Medido con
+`javap -c -p` sobre `tema-5/por-dentro/AutoboxingEnBytecode.class`:
+
+```text
+static java.lang.Integer empaca(int);
+       0: iload_0
+       1: invokestatic  #7    // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+
+static int saca(java.lang.Integer);
+       0: aload_0
+       1: invokevirtual #13   // Method java/lang/Integer.intValue:()I
+
+static java.lang.Integer sumaDos(java.lang.Integer, java.lang.Integer);
+       1: invokevirtual #13   // Method java/lang/Integer.intValue:()I
+       5: invokevirtual #13   // Method java/lang/Integer.intValue:()I
+       8: iadd
+       9: invokestatic  #7    // Method java/lang/Integer.valueOf:(I)Ljava/lang/Integer;
+
+static java.lang.Integer forzadoNuevo(int);
+       0: new           #8    // class java/lang/Integer
+       3: dup
+       4: iload_0
+       5: invokespecial #17   // Method java/lang/Integer."<init>":(I)V
+```
+
+Cuatro consecuencias, todas verificables en ese volcado. Que el `Integer caja = v;` **no** contiene `new`: la
+palabra `new` en el constante pool aparece únicamente en `forzadoNuevo`, donde el programista la escribió. Que
+desencajar es una **invocación virtual** (`invokevirtual intValue:()I`), o sea un despacho normal: si el receptor es
+`null`, no hay a quién invocar —y el §5.1.8 lanza el NPE con el nombre del método, que es literalmente lo que dice
+el mensaje: `Cannot invoke "java.lang.Integer.intValue()"`. Que la suma de dos cajas cuesta **tres operaciones
+además del `iadd`** (dos desempaquetados y un re-empaquetado), y por eso `new Integer(v)` / cajas en un bucle grande
+son un problema de memoria y no de corrección. Y que `valueOf` está marcado `@IntrinsicCandidate` en el fuente
+(`Integer.java:987`), que es la razón por la que la JIT puede plegar encajados en bucles calientes —es decir: lo que
+mides en `javap` no es siempre lo que ejecutas—.
+
+El mismo volcado muestra el literal encajado: `127` sale como `bipush 127` + `invokestatic valueOf`, y `128` como
+`sipush 128` + `invokestatic valueOf` —un byte contra dos bytes en el código, misma llamada—. La diferencia de
+objeto no la decide el bytecode, la decide `valueOf`.
+
+Salida medida del programa completo (5 líneas):
+
+```text
+empaca(127)  es caja   : 127 · misma que valueOf: true
+empaca(128)  es caja   : 128 · misma que valueOf: false
+saca(valueOf)          : 3400
+sumaDos(1250, 3400)    : 4650
+new Integer(30)        : 30 · NO es la cache: false
+```
+
+`new Integer(30)` es `false` contra `Integer.valueOf(30)` **aunque 30 está dentro del cajón**: el `new` nunca mira el
+arreglo de caché, y por eso el Javadoc desaconseja el constructor —
+
+> It is rarely appropriate to use this constructor. The static factory {@link #valueOf(int)} is generally a better
+> choice, as it is likely to yield significantly better space and time performance.
+
+—anotado `@Deprecated(since="9")` sobre `public Integer(int value)` (`Integer.java:1013-1014`). El aviso del
+compilador, medido: `Note: tema-5/EncajarYDesencajar.java uses or overrides a deprecated API.`
+
+**Nivel 3 — lo que no se mide pero hay que saber: el coste puede ser un error.** El mismo §5.1.7 cierra con:
+
+> A boxing conversion may result in an `OutOfMemoryError` if a new instance of one of the wrapper classes (`Boolean`,
+> `Byte`, `Character`, `Short`, `Integer`, `Long`, `Float`, or `Double`) needs to be allocated and insufficient
+> storage is available.
+
+Que es la versión formal del punto 3 de «por qué importa». Y la regla del curso, que también es la regla de
+Effective Java ítem 61: **primitivos para calcular, cajas solo cuando la ausencia es un dato**. Un `Integer` en un
+DTO que viene de un JSON con campos opcionales está bien; un `int` acumulado en un `for` dentro de `Integer` está
+mal; y una aserción `assertSame`/`==` sobre valores fuera del cajón está rota aunque hoy pase.
+
+#### 7. Código ejecutable
+
+**Encajar y desencajar** · archivo `tema-5/EncajarYDesencajar.java` · ejecuta
+`javac --release 25 -d out tema-5/EncajarYDesencajar.java && java -Dstdout.encoding=UTF-8 -cp out EncajarYDesencajar`
+
+```java
+Integer caja = 1250;                        // boxed: valueOf, no new
+int suelto = caja;                          // unboxed: intValue
+System.out.println("caja / suelto          : " + caja + " / " + suelto);
+
+static double tarifaPorKilo(Integer gramos) { return gramos / 1000.0 * 8500; }
+System.out.println("parametro int -> Integer: " + tarifaPorKilo(3400));
+
+Integer total = 0;
+for (Integer peso : List.of(1250, 3400, 890)) { total += peso; }
+System.out.println("suma con cajas         : " + total + " · clase " + total.getClass().getSimpleName());
+
+Integer porValueOf = Integer.valueOf(30000);
+Integer porNew = new Integer(30000);        // deprecado: el compilador lo avisa
+System.out.println("valueOf vs new         : " + (porValueOf == porNew) + " · equals "
+        + porValueOf.equals(porNew) + " · hashCode igual: " + (porValueOf.hashCode() == porNew.hashCode()));
+
+byte sueltoChico = 120;
+Byte cajaChica = 120;
+System.out.println("constante que cabe     : " + sueltoChico + " / " + cajaChica
+        + " · Byte.valueOf(120) == cajaChica: " + (Byte.valueOf((byte) 120) == cajaChica));
+```
+
+Salida completa (10 líneas; nueve citadas en la sección 6 —seis en el nivel 0, dos en el nivel 1 y una en el nivel
+2— y la décima, `valueOf vs new`, citada en la analogía):
+
+```text
+caja / suelto          : 1250 / 1250
+parametro int -> Integer: 28900.0
+Integer -> int de vuelta: 1250
+suma con cajas         : 5540 · clase Integer
+valueOf vs new         : false · equals true · hashCode igual: true
+lista de cajas         : [1250, 3400] · suma 4650
+parseInt / valueOf     : 890 · 890
+int == Integer         : true · parseInt en contexto int: 891
+1000 == 1000 con cajas : false · equals true · compareTo 0
+constante que cabe     : 120 / 120 · Byte.valueOf(120) == cajaChica: true
+```
+
+`5540` es `1250 + 3400 + 890`; `4650` es `1250 + 3400`; `28900.0` es `3400 / 1000.0 * 8500`.
+
+**La caché, buscada por el programa** · `tema-5/CacheDeInteger.java`. El bloque que hay que copiar a mano (y que es
+el patrón de «medir un límite en vez de recitarlo»):
+
+```java
+static int corteArriba() {
+    for (int v = 100; v < 100000; v++) {
+        if (Integer.valueOf(v) != Integer.valueOf(v)) {
+            return v;
+        }
+    }
+    return -1;
+}
+```
+
+Salida completa: las 14 líneas de la sección 6, y la misma corrida con la propiedad de JVM puesta, que es la que
+convierte el «así funciona Java» en «así funciona esta JVM» (citada literalmente arriba: `corte por arriba : 5001`,
+con `propiedad visible : null` sin cambiar).
+
+**Por dentro** · `tema-5/por-dentro/AutoboxingEnBytecode.java` · 5 líneas de salida y el volcado `javap -c -p`
+completo de los cuatro métodos, ambos en la sección 6. Ejecución:
+`javac --release 25 -d out tema-5/por-dentro/AutoboxingEnBytecode.java && java -Dstdout.encoding=UTF-8 -cp out AutoboxingEnBytecode`.
+
+**Los cuatro errores** · `tema-5/errores/`. Dos revientan al ejecutar y dos no compilan, y **esa es la lección**:
+las trampas de las cajas se reparten entre las dos mitades del ciclo de vida del programa.
+
+```text
+SumaCajaNula.java          -> se imprime "zona Bogota trae null" y luego
+                              java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "<local5>" is null
+                              (line 17; con -g: because "tope" is null)
+TernarioDesempacota.java   -> se imprime "con guia    : 1250" y luego el mismo NPE
+                              (decide, linea 8, llamado desde main, linea 14)
+LongSinEle.java            -> error: incompatible types: int cannot be converted to Long (linea 6)
+BordeDeByte.java           -> error: incompatible types: int cannot be converted to Byte (linea 7)
+```
+
+#### 8. Mini-laboratorio
+
+Escribe los archivos desde cero en `laboratorios/modulo-4/tema-5/`. Antes de ejecutar cada uno, escribe en un
+comentario qué crees que va a imprimir; la diferencia entre lo que escribiste y lo que salió **es** el ejercicio.
+Este tema no se entiende leyéndolo: se entiende prediciendo cuatro números y fallándote en dos.
+
+1. Crea `ComparaCajas.java`: declara `Integer a = 127, b = 127, c = 128, d = 128; int e = 128;` e imprime
+   `a == b`, `c == d`, `c.equals(d)`, `e == c` y `c == (int) e`. Predice las cinco **antes** de ejecutar. Después
+   responde en comentario: ¿por qué dos de las cinco son `true` «por accidente» y una es `true` **siempre**? ¿Cuál
+   de ellas cambiaría con `-XX:AutoBoxCacheMax=5000`? (Pista: solo una de las cinco depende del cajón.)
+2. Crea `CortaLaCache.java`: un bucle que recorra desde 100 hacia arriba y devuelva el primer `v` con
+   `Integer.valueOf(v) != Integer.valueOf(v)`, y otro que baje desde −100. Ejecuta el programa tres veces: normal,
+   con `-Djava.lang.Integer.IntegerCache.high=5000` y con `-XX:AutoBoxCacheMax=5000`. Pega las tres salidas y
+   escribe al lado qué dice `System.getProperty` de la primera propiedad en las tres corridas. (Aquí es donde se ve
+   que «el getter devuelve null» **no** significa «la bandera no hizo nada».)
+3. Crea `SumaQueRevienta.java`: copia la forma de `errores/SumaCajaNula.java` con tus propias claves (dos zonas,
+   una de ellas ausente), ejecuta con `javac --release 25 -g` y otra vez sin `-g`, y pega las dos trazas. Escribe
+   debajo qué cambia entre ellas y qué significa. Remata con las dos reparaciones (`getOrDefault` y `merge`) y
+   demuestra que la suma ya no lanza: `System.out.println` del acumulado y ninguna traza.
+4. Crea `TernarioMixto.java`: tres variables, todas con `boolean` de control. (a) `Object x = cond ? "a" : null;`
+   (b) `Integer y = cond ? 1250 : null;` (c) `int z = cond ? 1250 : y;`. Ejecuta con `cond = false`. Pega la salida
+   de (a) y (b), que corren, y la traza de (c), que no. **Después**, sin borrar nada, cambia la firma de la (c) a
+   `Integer z = ...` y vuelve a ejecutar. Explica en comentario por qué la misma rama `null` era letal en un caso e
+   inofensiva en el otro, citando las dos secciones del JLS que se nombran en la sección 6.
+5. Crea `CuatroMensajes.java`: cuatro líneas, cada una **mal a propósito**, y pega los cuatro mensajes de `javac`:
+   `Long l = 100000;`, `Short s = 40000;`, `Byte b = 128;`, `byte p = 128;`. Ordena los resultados en una tabla con
+   dos columnas: «el destino es primitivo» / «el destino es una caja». Hay un solo mensaje que menciona la palabra
+   *lossy*. Explica por qué.
+6. Crea `BytecodeDeCajas.java`: dos métodos, `static Integer empaca(int v) { return v; }` y
+   `static Integer forzado(int v) { return new Integer(v); }`. Compila, ejecuta `javap -c -p` y pega los dos cuerpos.
+   Cuéntale a un compañero, señalando el volcado, por qué el primero no tiene la palabra `new` y qué instrucción la
+   sustituye. Después agrega un tercer método `static int suma(Integer a, Integer b) { return a + b; }` y cuenta las
+   `invokevirtual` de su cuerpo.
+7. Crea `AusenciaComoDato.java`: una `List<Integer>` de pesos de guía donde un valor ausente **es** información
+   («no se pesó»). Llenar con `null` en dos posiciones, imprimir la lista, y hacer dos lecturas: una con
+   `if (peso == null)` (segura) y una con `total += peso` (no). Pega la traza. Cierra respondiendo por escrito:
+   ¿aquí la caja estaba bien usada o mal usada? (No hay una respuesta única; hay que argumentarla con la salida.)
+
+**Listo cuando** puedas (1) decir de memoria el rango exacto en que `Integer.valueOf` devuelve el mismo objeto y por
+qué es un rango y no una garantía, (2) explicar por qué `int == Integer` da `true` con 890 y `Integer == Integer` da
+`false` con 1000, sin invocar «la caché» para la segunda, (3) escribir la traza del `NullPointerException` de un
+`get` ausente señalando la línea **donde se originó** el `null`, que no es la que aparece en la traza, (4) decir qué
+tipo tiene `cond ? 1250 : null` y qué tipo tiene `cond ? 1250 : cajaInteger`, y cuál de las dos rompe, y (5)
+predecir si `Byte chiquito = 120;` compila y si `Long grande = 120;` compila —y justificar que los dos casos con el
+mismo literal tengan resultados opuestos—.
+
+#### 9. Verificación
+
+```bash
+cd docs/reestructuracion/cursos/java/laboratorios/modulo-4
+javac --release 25 -d /tmp/a tema-5/*.java && javac --release 25 -d /tmp/b tema-5/por-dentro/*.java
+java -Dstdout.encoding=UTF-8 -cp /tmp/a EncajarYDesencajar   # «1000 == 1000 con cajas : false · equals true · compareTo 0»
+java -Dstdout.encoding=UTF-8 -cp /tmp/a CacheDeInteger       # «corte por arriba        : 128 (el primero que ya no)»
+java -Djava.lang.Integer.IntegerCache.high=5000 -Dstdout.encoding=UTF-8 -cp /tmp/a CacheDeInteger  # «corte por arriba        : 5001 (el primero que ya no)»
+java -Dstdout.encoding=UTF-8 -cp /tmp/b AutoboxingEnBytecode # «empaca(128)  es caja   : 128 · misma que valueOf: false»
+javap -c -p -cp /tmp/b AutoboxingEnBytecode | grep 'Integer.valueOf:(I)Ljava/lang/Integer;'
+javap -c -p -cp /tmp/b AutoboxingEnBytecode | grep 'Integer.intValue:()I'
+java -Dstdout.encoding=UTF-8 tema-5/errores/SumaCajaNula.java        # NPE: Cannot invoke "java.lang.Integer.intValue()" (codigo distinto de 0)
+java -Dstdout.encoding=UTF-8 tema-5/errores/TernarioDesempacota.java # mismo NPE en decide():8 (codigo distinto de 0)
+javac --release 25 -d /tmp/e tema-5/errores/LongSinEle.java   # int cannot be converted to Long (codigo distinto de 0)
+javac --release 25 -d /tmp/e tema-5/errores/BordeDeByte.java  # int cannot be converted to Byte (codigo distinto de 0)
+```
+
+Aquí las **29** comprobaciones del tema pasan con Temurin 27 y `--release 25`, y el total del laboratorio sube a
+**188 / 0 fallidas / 0 omitidas** (el reparto medido bloque a bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 29 ·
+T6 22 · Gradle 4). Dentro de las 29 hay 23 de salida ejecutada —nueve de `EncajarYDesencajar`, diez de
+`CacheDeInteger`, una del `javac` deprecado, una de la corrida con `IntegerCache.high=5000` y dos de
+`AutoboxingEnBytecode`—, **2 de bytecode** (`Integer.valueOf:(I)Ljava/lang/Integer;` y `Integer.intValue:()I`, las
+dos parejas del mismo `.class`), 2 que exigen código ≠ 0 **y** el texto de la excepción, y 2 que exigen que el
+`javac` falle con el mensaje del tipo. La comprobación 9 del bloque (`un literal que cabe se estrecha y se encaja`)
+se añadió en esta pasada: sin ella el caso `byte sueltoChico = 120; Byte cajaChica = 120;` quedaba afirmado pero no
+ejecutado, y es el único que demuestra que el estrechamiento de constantes **precede** al encajado.
+
+*Pendiente de reejecución en JDK 25:* los números del cajón (`128`, `-129`, y el `5001` de la corrida con propiedad)
+son política de `IntegerCache` de esta implementación, no del JLS; el texto exacto de los dos mensajes
+(`Cannot invoke "java.lang.Integer.intValue()" because "<local5>" is null` y `because "<local1>" is null`), que lo
+redacta la JVM; el aviso `Note: ... uses or overrides a deprecated API.` y su remate `Recompile with
+-Xlint:deprecation for details.`; los nombres de las dos banderas (`-Djava.lang.Integer.IntegerCache.high` y
+`-XX:AutoBoxCacheMax`) y el hecho de que sigan existiendo; los índices del constante pool (`#7`, `#13`, `#17`) que
+sale en el volcado `javap`, que son numeración interna de esta compilación; y la forma del `incompatible types:
+int cannot be converted to Long/Byte`, que la redacta `javac`.
+
+*Lo que no depende de la versión:* que encajar sea `valueOf` y no `new` (es la regla del lenguaje, no de la
+biblioteca); la existencia del rango −128..127 como identidad garantizada para constant expressions (§5.1.7); que
+desempaquetar `null` lance `NullPointerException` (§5.1.8, sin margen de implementación); que un ternario
+primitivo/caja sea una condicional numérica y un ternario `null`/caja sea de referencia (§15.25.2 y §15.25.3); que
+`Float`/`Double` no tengan caché; y que `long` requiera `L` antes de encajarse.
+
+#### 10. Error común y diagnóstico
+
+**Síntoma 1 — «funciona en los tests y revienta en producción», con `==` en el medio.** El test comparó `Integer`
+con `Integer` usando valores chicos; producción comparó con valores grandes. Medido en la misma corrida:
+`autoboxing 127 == 127 : true` y `autoboxing 128 == 128 : false`. **Arreglo:** `equals` para valor, `compareTo(...) == 0`
+si además quieres el contrato de `Comparable`, y primitivo a la izquierda si lo que tienes es un primitivo.
+**Detección en revisión:** cualquier `==` entre dos expresiones cuyo tipo está declarado como wrapper es un
+comentario de código pendiente. **No arregla esto:** agrandar el cajón con `-XX:AutoBoxCacheMax`. Hace pasar el test
+por la misma razón que lo rompía: sigue siendo identidad, y ahora además depende de un flag de arranque.
+
+**Síntoma 2 — `NullPointerException` en una línea de aritmética sin ninguna llamada.** La traza dice
+`Cannot invoke "java.lang.Integer.intValue()"` y el archivo señala una línea con un `+=`, un `*` o un `==` —nunca
+una línea con un `get`—. Medido: la falla es `SumaCajaNula.java:17` pero el `null` se originó en `:15`
+(`zona Bogota trae null` se imprimió antes). **Arreglo:** decidir el neutro en el punto de lectura: `getOrDefault(k, 0)`
+si es un número, `merge(k, v, Integer::sum)` si estás acumulando (las dos, del tema 4). **Diagnóstico fino:** si el
+mensaje dice `because "<local5>" is null` estás ante una compilación sin `-g`; vuelve a compilar con `-g` y el
+mensaje dirá el nombre real (`because "tope" is null`, medido).
+
+**Síntoma 3 — el mismo bug, pero con el tipo decidido dos líneas antes.** `int peso = hayGuia ? 1250 : caja;`. El
+programa **imprime la rama buena** (`con guia    : 1250`) y revienta en la otra, y como la traza apunta a la línea
+del ternario nadie mira la declaración de `caja`. **Arreglo:** si una rama puede ser `null`, el destino tiene que
+ser la caja y el uso tiene que abrir la caja **dentro de un `if`**, no en la asignación: `Integer peso = hayGuia ?
+1250 : caja;` seguido de `if (peso == null) ...`. **Regla derivada de lo medido:** en un ternario, si los dos
+operandos son cajas o los dos son primitivos, estás en una condicional homogénea y no hay sorpresa; en cuanto los
+mezclas, el tipo lo gana el primitivo y el `null` se convierte en un fallo en tiempo de ejecución.
+
+**Síntoma 4 — «pero si el número entra, ¿por qué no compila?».** `Long gramos = 100000;` → `error: incompatible
+types: int cannot be converted to Long` (medido, línea 6 de `LongSinEle.java`). Es el error de los literales: el
+`100000` escrito sin `L` es un `int`, y `int → Long` no es una conversión que el lenguaje defina. **Arreglo:** la
+`L` antes de encajar —`Long bien = 100000L;`, medido en la misma línea del archivo, que sí compila—; y con `Byte` y
+`Short`, acordarse de que el atajo de estrechamiento solo vale para **constantes que caben**: `Byte cajaChica = 120;`
+sí (medido), `Byte desbordado = 128;` no (medido). **Y ojo con el mensaje del primitivo**, que es otro:
+`byte p = 128;` dice `possible lossy conversion from int to byte` —dos mensajes para el mismo literal, contrastados
+arriba—.
+
+**Síntoma 5 — memoria y CPU inexplicables en un bucle de acumulados.** `suma con cajas : 5540 · clase Integer` es
+correcto y cuesta dos `intValue` + un `valueOf` por vuelta (medido en `sumaDos`). Si el bucle es de 30 000 guías, son
+30 000 objetos que mueren jóvenes. **Arreglo:** `int total = 0;` con `for (Integer peso : lista) total += peso;`
+—la caja se abre y no se vuelve a cerrar—, o un `mapToInt` cuando vienes de streams (M13). **No lo arregles con**
+`Integer.valueOf` «para aprovechar la caché»: 1250 no está en el cajón, y aunque estuviera, la operación que quieres
+evitar no es la asignación de memoria del arreglo, es el objeto nuevo.
+
+**Errores de ejecución reales** (medidos con `--release 25` sobre Temurin 27; los dos primeros **compilan** y
+fallan al correr, los dos siguientes ni compilan):
+
+```text
+java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "<local5>" is null   (SumaCajaNula.java:17)
+java.lang.NullPointerException: Cannot invoke "java.lang.Integer.intValue()" because "<local1>" is null   (TernarioDesempacota.java:8)
+error: incompatible types: int cannot be converted to Long   (LongSinEle.java:6)
+error: incompatible types: int cannot be converted to Byte   (BordeDeByte.java:7)
+```
+
+El de la primera línea es el mismo `NullPointerException` del tema 4 con un **mensaje que sí dice qué método se
+intentó invocar**: eso es el *helpful NullPointerException* de la JVM, y es la razón por la que este bug se diagnostica
+en diez segundos si lees el mensaje entero y en media hora si solo lees la primera palabra.
+
+#### 11. Pregunta con respuesta modelo
+
+**Comprensión.** Tengo `Integer a = 128, b = 128;`. `a == b` da `false`. ¿Es un bug de Java, y qué pasa con
+`a == b` si pongo `-XX:AutoBoxCacheMax=5000`?
+
+**Respuesta modelo:** no es un bug: es el contrato. §5.1.7 garantiza identidad **solo** para constant expressions en
+−128..127 y para `true`/`false` y `'\u0000'`..`'\u007f'`; fuera de eso, «the rule disallows any assumptions about the
+identity of the boxed values on the programmer's part». Con el flag, en esta JVM, la corrida medida dice
+`corte por arriba : 5001`, así que `a == b` pasaría a ser `true` —y esto es exactamente lo que hace el flag peligroso
+como «arreglo»—: el programa cambia de comportamiento según una bandera de arranque, y cualquier código que dependa
+de `==` entre cajas pasa a depender de cómo se levantó la JVM. Lo correcto era `a.equals(b)` (medido: `equals no lo
+nota : true`) o comparar como primitivos. Bonus medido: el cajón de `Integer` es el único que se mueve con esa
+propiedad —`Long`/`Short`/`Character` reportaron lo mismo en las dos corridas—, y `Double` no tiene cajón
+(`Double NO tiene cache: false`).
+
+**Comprensión.** ¿Por qué `int == Integer` con 890 da `true` y `Integer == Integer` con 1000 da `false`, si 890 y
+1000 están ambos fuera del cajón?
+
+**Respuesta modelo:** porque son dos preguntas distintas. Con un lado primitivo, `==` es una comparación numérica: la
+caja se desempaca con `intValue` y se comparan los `int` —la caché no tiene nada que decir, y el §5.1.7 no aplica
+porque no estamos comparando dos cajas—; medido: `int == Integer : true`. Con las dos cajas, `==` compara
+referencias, y `valueOf(1000)` cae fuera del cajón, así que son dos objetos: medido `1000 == 1000 con cajas : false`.
+La trampa práctica es que alguien «arregla» el segundo caso metiendo un cast a `int` en un lado y entonces la
+comparación **sí** se vuelve numérica; pero con `null` en ese lado, el cast lo convierte en el NPE del nivel 2.
+
+**Comprensión.** `Integer caja = cond ? 1250 : null;` compila y corre. `int peso = cond ? 1250 : caja;` revienta con
+`cond = false`. ¿Qué regla se aplicó en cada línea?
+
+**Respuesta modelo:** en la primera, los operandos son `int` y el *null type*: no es una condicional numérica (el
+`null` no es una *numeric expression*), así que cae en §15.25.3 y la regla «if the type of one of the second and
+third operands is the null type, and the type of the other operand is a reference type, then the type of the
+conditional expression is that reference type» → tipo `Integer`, y meter un `null` en una `Integer` no hace nada.
+En la segunda, `1250` y `caja` son ambas *numeric expressions*, así que es condicional numérica, y §15.25.2 dice que
+si un operando es `T` primitivo y el otro es el resultado de encajar `T`, el tipo es `T` = `int`; y el propio JLS
+advierte «numeric promotion may include unboxing conversion (§5.1.8)». Se evalúa la rama `false`, que es la caja
+`null`, se desempaca, y §5.1.8: «If `r` is `null`, unboxing conversion throws a `NullPointerException`». Medido:
+traza en `TernarioDesempacota.java:8` con `con guia : 1250` impreso antes. El detalle didáctico: el tipo de la
+expresión se decide **en compilación**, antes de saber qué rama se ejecuta.
+
+**Entrevista.** «¿Cuándo uso `Integer` en lugar de `int`? Dime un caso en que la caja sea correcta y uno en que sea
+un bug.»
+
+**Respuesta modelo:** la caja es correcta cuando la **ausencia** es un dato que el negocio reconoce: un peso de guía
+que no se pesó, un `Map<String, Integer>` de totales por zona, un campo JSON opcional, y siempre que entre en una
+colección o en un tipo de parámetro —un `List<int>` no existe y el borrado de tipos de M11 convierte cualquier
+`List<T>` en referencias—. Es un bug en tres formas concretas: (1) en un bucle de cálculo, porque cada `+=` sobre una
+caja abre y vuelve a cerrar un objeto (medido el bytecode: dos `intValue`, un `iadd`, un `valueOf`); (2) en una
+comparación con `==`, porque fuera del cajón estás preguntando identidad sin quererlo; (3) en el tipo de retorno de
+un método que se declara `Integer` y se usa como `int` en todas partes: se pone al llamador en la obligación de
+manejar un `null` que nadie pensó, y eso es exactamente el `Cannot invoke "java.lang.Integer.intValue()"` de
+`SumaCajaNula`. La regla que se cita en entrevistas y que este tema verificó de punta a punta: **primitivos para
+calcular, cajas para los datos que pueden no existir**, y nunca `==` entre dos cajas. Bonus de seniority: si ves en un
+`pull request` un `new Integer(x)`, se cambia a `Integer.valueOf(x)` —el constructor está deprecado desde Java 9 con
+la justificación literal de espacio y tiempo, y el compilador lo avisa, medido como `Note: ... uses or overrides a
+deprecated API.`—.
+
+#### 12. Cuándo usarlo y cuándo no
+
+| Úsalo | No lo uses |
+|---|---|
+| `Integer`/`Long` cuando la **ausencia** es información (campo opcional de JSON, clave de mapa sin valor aún, «no se pesó») | `Integer` para acumular o calcular en un bucle: ahí el bytecode paga dos `intValue` y un `valueOf` por vuelta (medido) |
+| `equals` entre dos cajas, `compareTo` si quieres orden, `int` en alguno de los lados si lo que comparas es valor | `==` entre dos cajas fuera del rango −128..127: pregunta identidad y depende de la caché (medido: `128 == 128` es `false`) |
+| `Integer.valueOf(v)` siempre que necesites fabricar una caja a propósito (por ejemplo el `remove(Integer.valueOf(7))` del tema 4) | `new Integer(v)`, deprecado desde Java 9 y con aviso del compilador (medido el `Note:`) |
+| `getOrDefault(k, 0)` / `merge(k, v, Integer::sum)` para que un `get` ausente nunca llegue a desempaquetarse | `+= mapa.get(k)` sin decidir el ausente: medido, el programa imprime `trae null` y revienta dos líneas después |
+| `long`/`int` y **después** encajar (`Long bien = 100000L`), con literales que **quepan** (`Byte cajaChica = 120`) | `Long gramos = 100000;` ni `Byte desbordado = 128;`: `int cannot be converted to Long/Byte`, los dos medidos |
+| La caché como **dato observable** (medir el corte en un experimento, citarlo como «en esta JVM») | La caché como **contrato** en código de producción o en una aserción, y `-XX:AutoBoxCacheMax` como arreglo de un `==` |
+
+**Costo y criterio.** Lo estructural de este tema se midió y se citó como medido: el corte en 128 y en −129, el
+`5001` con las dos banderas, que `Long`/`Short`/`Character` no se muevan, que `Byte` esté entero en su cajón, que
+`Double` no tenga, y los tres textos de error. Lo que sí puedes usar como criterio sin medir es lo que cada camino
+**te obliga a preguntar**: si es `int`, no hay ausencia y hay que definir un centinela; si es `Integer`, hay
+`null` y hay que abrirlo dentro de una guarda; si son dos cajas, `==` no es tu pregunta. De ahí la regla del curso
+para los próximos módulos: **declara primitivo todo lo que calcula; declara caja solo lo que puede faltar; compara
+valor con `equals`/`compareTo` o con un primitivo en alguno de los lados; y si una firma devuelve `Integer`, ese
+`null` es parte del contrato y se documenta o se elimina.** En M5 esto se multiplica: cuando tus clases tengan
+`equals`/`hashCode`, la misma trampa de `==` reaparece pero sin red de seguridad —nada comparable al cajón de
+−128..127—, y el `NullPointerException` por desempaquetar pasa a ser `NullPointerException` por invocar un método
+tuyo sobre una referencia ausente. Y en M12, cuando el `Map<String, Integer>` se use con `merge` y con `get`
+encadenados, la regla del neutro (nivel 2, trampa A) es lo que separa un contador que funciona de uno que tira el
+lote entero.
