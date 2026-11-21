@@ -23,3 +23,4 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las etiqu
 | [021](021-reestructuracion-total-de-la-academia.md) | Reestructuración total: un tema, un lugar, una forma (incluye Floci) | en curso |
 | [022](022-curso-microservicios-spring-boot-fase-1.md) | Curso Microservicios Spring Boot — Fase 1 | en curso |
 | [023](023-fase-2-maven-compose-y-presentacion-spring.md) | Fase 2 Spring, starter Maven/Compose y presentación | en curso |
+| [024](024-migracion-al-estandar-12-puntos.md) | Migración de las 16 rutas a los 12 puntos de la sección 4, una ruta por lote | en curso |

@@ -87,6 +87,15 @@ Abre el `pom.xml` que se creó y localiza el parent de Spring Boot, la dependenc
 
 **Resultado esperado:** Maven termina en `BUILD SUCCESS`; `pom.xml` registra las dependencias que pediste y el Wrapper permite compilar sin instalar Maven globalmente.
 
+**Comparación, solo después de tu build:** el repo guarda un proyecto Maven ya resuelto para la primera
+semana del curso de Microservicios con Spring Boot, en
+`examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml`. Ábrelo junto al `pom.xml` que
+generaste arriba y busca `spring-boot-starter-webmvc`, `spring-boot-starter-data-jpa`,
+`spring-boot-starter-validation`, Flyway y una prueba por capa (dominio y servicio), con Boot 4.1.3 y
+`<java.version>25</java.version>`: así se ve el descriptor cuando el servicio deja de ser una sola ruta web.
+Verificado en esta máquina el 2026-11-21 con Maven 3.10.0 y JDK 27: 5 pruebas, 0 fallos. No lo uses como
+punto de partida; el que cuenta es el que acabas de generar tú.
+
 **Fallo deliberado:** vuelve a la carpeta padre y ejecuta `./mvnw test`. **Diagnóstico:** la terminal no encuentra el wrapper porque vive dentro de `ejemplo-spring-m1`; usa `pwd`, vuelve a esa carpeta y comprueba que allí existen `mvnw` y `pom.xml`.
 
 **3. Entiende**

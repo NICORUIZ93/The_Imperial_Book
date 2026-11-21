@@ -36,7 +36,12 @@ Reemplaza el temario de Microservicios de specs/017 (N4) y la forma de los temas
   10 entregables, el glosario de 120 términos, los 3 ejercicios de «no usar microservicios» y un
   laboratorio por módulo.
   Verificación: `python3 scripts/validate_fichas.py`
-- **M2** `hecho` — Los laboratorios del curso pasan en el Mac del dueño.
+- **M2** `en-curso` — Los laboratorios del curso pasan en el Mac del dueño. Medido el 2026-11-21:
+  `resultados.tsv` conserva dos FAIL —`modulo-15` (Kafka grupo «inventario» sin offsets en las 3
+  particiones, `cobros-dlt` sin 3 particiones, subject `pedidos-avro-value`, «pedidos» no es quorum queue,
+  NATS stream PAGOS) y `modulo-16` (JDK 25, F085 HPA, F086 Helm, F088 GitOps con Argo CD: namespaces
+  «guestbook» not found y el deployment `argocd-redis` excedió su progress deadline)—. Estaba marcado
+  `hecho` sin serlo; se corrigió el estado, no la verificación.
   Verificación: `! grep -h "	FAIL	" verificacion/microservicios/resultados.tsv`
 - **M3** `hecho` — El track generado coincide con los módulos escritos.
   Verificación: `python3 scripts/build_microservices_track.py --check`

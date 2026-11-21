@@ -194,7 +194,7 @@ cloud,5,"Tema 3: Runtimes — Node.js, Python, Java, Go",estandar,no,si,si,si,no
 cloud,5,Tema 4: Payload de entrada y respuesta,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,5,Tema 5: Versionado y alias,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,5,"Tema 6: Integración con S3, DynamoDB Streams y API Gateway",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
-cloud,5,Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+cloud,5,Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,6,"Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,6,"Tema 2: Recursos, métodos y stages",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,6,Tema 3: Integración con Lambda (proxy),estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
@@ -235,7 +235,7 @@ cloud,15,"Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herrami
 cloud,16,Tema 1: State machine y Task states,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,16,"Tema 2: Choice state, Retry y Catch",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,16,"Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-cloud,16,"Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+cloud,16,"Tema 4: Procesamiento por lotes: trabajos independientes, reintentos e idempotencia · Avanzado · 40 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,17,Tema 1: Streams vs colas,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,17,Tema 2: MSK (Kafka gestionado) y consumer groups,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,17,"Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
@@ -248,7 +248,7 @@ cloud,19,"Tema 3: Parquet vs CSV, y partition pruning",estandar,no,si,si,si,si,s
 cloud,20,Tema 1: Bedrock Runtime y respuestas stub deterministas,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,20,Tema 2: Textract y Transcribe,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,20,"Tema 3: Stub vs mock, y qué probar localmente",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-cloud,20,"Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+cloud,20,"Tema 4: Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,21,Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,21,"Tema 2: AMIs, grupos de seguridad y claves SSH",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,21,Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
@@ -288,7 +288,7 @@ cloud,28,Tema 1: Bases de datos de grafos — cuando las relaciones son el dato,
 cloud,28,"Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,28,Tema 3: OpenSearch — modo simulado y modo real,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,28,"Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
-cloud,28,"Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+cloud,28,"Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,29,Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,29,Tema 2: Pricing — catálogo de tarifas de referencia,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 cloud,29,Tema 3: BCM Data Exports — reportes de costo en formato estándar,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
@@ -302,13 +302,13 @@ cloud,31,Tema 1: Arquitectura multi-nube y portabilidad de conocimiento,estandar
 cloud,31,Tema 2: Arquitectura interna de cloud local y su uso en CI/CD,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,31,"Tema 3: Migración desde otros emuladores, y límites de un emulador",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,31,Tema 4: Testcontainers — pruebas de integración automatizadas,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-cloud,31,Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+cloud,31,Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,31,Tema 6: Nube híbrida: conectar el centro de datos con la nube de forma segura y medible · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,32,"Tema 1: Una red segura empieza por flujos, no por subredes",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,32,Tema 2: Una landing zone convierte gobierno en una base repetible,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,32,Tema 3: Disponibilidad y recuperación responden preguntas distintas,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,32,Tema 4: Un backup solo existe operativamente después de restaurarlo,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-cloud,32,Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+cloud,32,Tema 5: Well-Architected: revisar una arquitectura con los seis pilares · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,32,Tema 6: Residencia y soberanía de datos: que los datos personales vivan donde la ley permite · Avanzado · 40 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,33,Tema 1: Terraform avanzado y CI/CD cloud,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,33,"Tema 2: Kubernetes administrado, ECS y Service Mesh",estandar,no,si,si,si,si,si,si,no,si,si,si,si,P1 P8
@@ -316,7 +316,7 @@ cloud,33,"Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados",estandar,no,si,si,si,s
 cloud,33,"Tema 4: Lambda, API Gateway y observabilidad avanzada",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,33,"Tema 5: Seguridad, auditoría y FinOps",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 cloud,33,"Tema 6: Microservicios, Big Data, AI/ML y multi-cloud",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-cloud,33,Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+cloud,33,Tema 7: Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 cloud,34,"Tema 1: Instalación en macOS, Linux y Windows",estandar,no,si,si,no,no,si,si,no,si,si,si,no,P1 P4 P5 P8 P12
 cloud,34,Tema 2: Modelo mental de la plataforma,estandar,no,si,si,no,si,si,si,no,si,si,si,no,P1 P4 P8 P12
 cloud,34,"Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK",estandar,no,si,si,no,no,si,si,no,si,si,si,no,P1 P4 P5 P8 P12
@@ -351,7 +351,7 @@ control-1,6,Tema 3: Regla de Mason,estandar,no,no,si,no,no,si,no,no,no,no,si,no,
 control-1,6,Tema 4: Referencia y perturbación juntas,estandar,no,no,si,no,no,si,no,no,si,no,si,no,P1 P2 P4 P5 P7 P8 P10 P12
 control-1,7,"Tema 1: Impedancias de resistencia, bobina y condensador en s",estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,7,Tema 2: Circuitos pasivos: divisor de voltaje,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
-control-1,7,Tema 3: El op-amp inversor,estandar,no,no,si,no,si,si,no,si,si,no,si,no,P1 P2 P4 P7 P10 P12
+control-1,7,Tema 3: El op-amp inversor,estandar,no,no,si,no,si,si,no,no,si,no,si,no,P1 P2 P4 P7 P8 P10 P12
 control-1,8,Tema 1: Mecánico de traslación,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,8,Tema 2: Mecánico de rotación,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,8,Tema 3: Motor DC (electromecánico),estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
@@ -361,7 +361,7 @@ control-1,9,Tema 1: La idea de la linealización: aproximar con la recta tangent
 control-1,10,Tema 1: La forma de espacio de estados,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,10,Tema 2: De estados a función de transferencia,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,11,Tema 1: Forma estándar de primer orden: K y τ,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
-control-1,11,"Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso",estandar,no,no,si,no,si,si,no,si,no,no,si,no,P1 P2 P4 P7 P9 P10 P12
+control-1,11,"Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso",estandar,no,no,si,no,si,si,no,no,no,no,si,no,P1 P2 P4 P7 P8 P9 P10 P12
 control-1,11,Tema 3: Retardo o tiempo muerto,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,11,Tema 4: Identificación desde una gráfica,estandar,no,no,si,no,no,si,no,no,si,no,si,no,P1 P2 P4 P5 P7 P8 P10 P12
 control-1,12,"Tema 1: Forma estándar de segundo orden: K, ωn y ζ",estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
@@ -369,7 +369,7 @@ control-1,12,Tema 2: Simulador: mueve ζ y ωn,estandar,no,no,si,no,no,si,no,no,
 control-1,12,Tema 3: Los cuatro casos según ζ,estandar,no,no,si,no,si,si,no,no,no,no,si,no,P1 P2 P4 P7 P8 P9 P10 P12
 control-1,12,Tema 4: Fórmulas del caso subamortiguado,estandar,no,no,si,no,no,si,no,no,si,no,si,no,P1 P2 P4 P5 P7 P8 P10 P12
 control-1,12,Tema 5: De las especificaciones a la función de transferencia,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
-control-1,13,Tema 1: Polos dominantes,estandar,no,no,si,no,si,si,no,si,no,no,si,no,P1 P2 P4 P7 P9 P10 P12
+control-1,13,Tema 1: Polos dominantes,estandar,no,no,si,no,si,si,no,no,no,no,si,no,P1 P2 P4 P7 P8 P9 P10 P12
 control-1,13,Tema 2: Efecto de un cero,estandar,no,no,si,no,si,si,no,no,no,no,si,no,P1 P2 P4 P7 P8 P9 P10 P12
 control-1,13,Tema 3: Cero de fase no mínima,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,14,Tema 1: Fórmula general del error en estado estacionario,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
@@ -380,13 +380,13 @@ control-1,15,Tema 3: Casos especiales del arreglo de Routh,estandar,no,no,si,no,
 control-1,15,Tema 4: Rango de K para estabilidad,estandar,no,no,si,no,no,si,no,no,si,no,si,no,P1 P2 P4 P5 P7 P8 P10 P12
 control-1,16,Tema 1: Geometría de un polo en el plano s,estandar,no,no,si,no,si,si,no,no,no,no,si,no,P1 P2 P4 P7 P8 P9 P10 P12
 control-1,16,Tema 2: Estabilidad según la posición de los polos,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
-control-1,16,Tema 3: La zona de diseño,estandar,no,no,si,no,si,si,no,si,si,no,si,no,P1 P2 P4 P7 P10 P12
+control-1,16,Tema 3: La zona de diseño,estandar,no,no,si,no,si,si,no,no,si,no,si,no,P1 P2 P4 P7 P8 P10 P12
 control-1,17,Tema 1: Las dos condiciones del lugar de las raíces,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,17,Tema 2: Reglas de construcción (con su porqué),estandar,no,no,si,no,no,si,no,no,si,no,si,no,P1 P2 P4 P5 P7 P8 P10 P12
 control-1,17,Tema 3: Elegir K desde el lugar de las raíces,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,18,"Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia",estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,18,Tema 2: Error en estado estacionario,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
-control-1,18,"Tema 3: Cada acción, con números",estandar,no,no,si,no,si,si,no,si,no,no,si,no,P1 P2 P4 P7 P9 P10 P12
+control-1,18,"Tema 3: Cada acción, con números",estandar,no,no,si,no,si,si,no,no,no,no,si,no,P1 P2 P4 P7 P8 P9 P10 P12
 control-1,18,Tema 4: Ventajas y desventajas (punto 4 del Parcial 1),estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,18,Tema 5: Sintonía de Ziegler-Nichols,estandar,no,no,si,no,no,si,no,no,si,no,si,no,P1 P2 P4 P5 P7 P8 P10 P12
 control-1,19,Tema 1: Diseño de un adelanto,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
@@ -395,7 +395,7 @@ control-1,19,Tema 3: Implementación con op-amps,estandar,no,no,si,no,no,si,no,n
 control-1,20,Tema 1: Qué es la respuesta en frecuencia,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,20,Tema 2: Decibeles y la escala logarítmica,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,20,Tema 3: Los bloques básicos del diagrama de Bode,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
-control-1,20,Tema 4: Márgenes de estabilidad,estandar,no,no,si,no,si,si,no,si,no,no,si,no,P1 P2 P4 P7 P9 P10 P12
+control-1,20,Tema 4: Márgenes de estabilidad,estandar,no,no,si,no,si,si,no,no,no,no,si,no,P1 P2 P4 P7 P8 P9 P10 P12
 control-1,21,Tema 1: Parcial 1 resuelto paso a paso,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,22,Tema 1: Simulacro con solución,estandar,no,no,si,no,no,si,no,no,no,no,si,no,P1 P2 P4 P5 P7 P8 P9 P10 P12
 control-1,23,Tema 1: Del Bode al diagrama polar · Intermedio · 30 min,estandar,no,no,si,si,si,si,no,no,si,no,no,no,P1 P2 P7 P8 P10 P11 P12
@@ -442,7 +442,7 @@ devops,2,Tema 5: Redes en Docker,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1
 devops,2,"Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 devops,2,"Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes",estandar,no,si,si,si,si,si,si,no,si,si,no,no,P1 P8 P11 P12
 devops,2,"Tema 8: Contenedores sin privilegios: usuario no root, sistema de archivos de solo lectura y capacidades mínimas · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-devops,2,"Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Avanzado · 35 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+devops,2,"Tema 9: Elegir el motor de contenedores local: Docker Desktop, Podman, Colima y Rancher Desktop · Avanzado · 35 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 devops,3,"Tema 1: Servicios, dependencias y healthchecks",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 devops,3,Tema 2: Variables de entorno y .env,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 devops,3,Tema 3: Redes y descubrimiento por nombre de servicio,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
@@ -721,7 +721,7 @@ foundations,7,Tema 2: Arquitectura guiada por atributos de calidad,estandar,no,s
 foundations,7,"Tema 3: Diseño modular, principios, patrones y refactoring",estandar,no,si,si,si,si,si,si,no,si,si,si,si,P1 P8
 foundations,7,"Tema 4: Decisiones, documentación, deuda y evolución",estandar,no,si,si,no,si,no,si,no,no,no,no,no,P1 P4 P6 P8 P9 P10 P11 P12
 foundations,7,Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
-foundations,7,Tema 6: Desarrollo guiado por especificación con agentes de IA,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+foundations,7,Tema 6: Desarrollo guiado por especificación con agentes de IA,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 foundations,7,"Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 foundations,8,Tema 1: El sistema operativo como administrador y frontera,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 foundations,8,Tema 2: Memoria y concurrencia sin magia,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
@@ -896,7 +896,7 @@ java,8,Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramien
 java,9,Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
 java,9,Tema 2: Mockito — aislar dependencias · Intermedio · 40 min,estandar,si,no,si,no,no,si,no,no,si,no,no,no,P2 P4 P5 P7 P8 P10 P11 P12
 java,9,Tema 3: Tests parametrizados y cobertura · Intermedio · 40 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
-java,9,Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+java,9,Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 java,10,Tema 1: module-info.java y encapsulación fuerte · Básico · 40 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
 java,10,Tema 2: Migración incremental y cuándo JPMS aporta valor · Intermedio · 40 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
 java,10,Tema 3: opens para acceso reflexivo controlado de frameworks · Avanzado · 45 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
@@ -917,8 +917,8 @@ java,14,Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45
 java,14,Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 50 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
 java,14,Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
 java,14,Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
-java,14,Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-java,14,Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+java,14,Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
+java,14,Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 java,15,Tema 1: Maven avanzado · Intermedio · 40 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
 java,15,Tema 2: Gradle y builds reproducibles · Avanzado · 45 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
 java,15,Tema 3: Proyectos multi-módulo sin ciclos · Intermedio · 40 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12
@@ -937,7 +937,7 @@ java,17,"Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min",estandar
 java,17,"Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min",estandar,no,si,si,si,no,si,no,no,si,si,si,no,P1 P5 P7 P8 P12
 java,18,"Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 java,18,"Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
-java,18,"Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+java,18,"Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 java,19,Tema 1: Reflexión y anotaciones en tiempo de ejecución · Intermedio · 40 min,estandar,si,si,si,si,si,si,no,no,si,no,si,no,P7 P8 P10 P12
 java,19,Tema 2: Expresiones regulares con Pattern y Matcher · Intermedio · 35 min,estandar,no,si,si,si,si,si,no,no,si,no,si,no,P1 P7 P8 P10 P12
 java,19,Tema 3: Dinero exacto con BigDecimal · Intermedio · 35 min,estandar,si,si,si,si,si,si,no,no,si,no,si,no,P7 P8 P10 P12
@@ -945,8 +945,8 @@ java,19,Tema 4: Assertions y diseño por contrato · Intermedio · 40 min,estand
 java,19,Tema 5: ServiceLoader: plugins sin acoplar implementaciones · Intermedio · 40 min,estandar,si,si,si,si,si,si,no,no,si,si,si,no,P7 P8 P12
 java,19,"Tema 6: Internacionalización: números, monedas, fechas y orden de texto · Intermedio · 40 min",estandar,no,si,si,si,si,si,no,no,si,si,si,no,P1 P7 P8 P12
 java,19,Tema 7: Proxies dinámicos: así funcionan @Transactional y los mocks · Avanzado · 45 min,estandar,no,si,si,si,si,si,no,no,si,si,si,no,P1 P7 P8 P12
-java,19,"Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-java,19,Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+java,19,"Tema 8: Carga de clases: cargadores, delegación y plugins con URLClassLoader · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
+java,19,Tema 9: MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado · Experto · 45 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 java,20,"Tema 1: Las cuatro formas: Predicate, Function, Consumer y Supplier · Básico · 30 min",estandar,si,no,si,no,no,si,no,no,si,no,no,no,P2 P4 P5 P7 P8 P10 P11 P12
 java,20,Tema 2: Function y BiFunction: transformar uno o dos datos · Básico · 35 min,estandar,no,si,si,no,no,si,no,no,si,no,si,no,P1 P4 P5 P7 P8 P10 P12
 java,20,"Tema 3: Componer sin anidar: andThen, compose, negate y reglas encadenadas · Intermedio · 40 min",estandar,no,si,si,si,no,si,no,no,si,no,si,no,P1 P5 P7 P8 P10 P12
@@ -1006,15 +1006,15 @@ javascript,6,Tema 3: fetch API y AbortController · Intermedio · 35 min,estanda
 javascript,6,Tema 4: Reintentos y timeouts manuales · Avanzado · 40 min,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 javascript,6,"Tema 5: Generadores — function*, yield y yield* · Avanzado · 45 min",estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 javascript,6,Tema 6: Proxies y Reflect · Avanzado · 45 min,estandar,si,si,si,si,no,si,si,no,si,si,si,no,P5 P8 P12
-javascript,6,Tema 7: Streams web: leer una respuesta de fetch por partes · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+javascript,6,Tema 7: Streams web: leer una respuesta de fetch por partes · Avanzado · 45 min,estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 javascript,7,Tema 1: ESM frente a CommonJS · Intermedio · 40 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 javascript,7,Tema 2: Tree-shaking y code-splitting · Intermedio · 40 min,estandar,si,si,si,si,si,si,si,no,si,si,si,no,P8 P12
 javascript,7,Tema 3: Vite y esbuild · Intermedio · 40 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 javascript,7,"Tema 4: package.json — exports, type y scripts · Intermedio · 40 min",estandar,si,si,si,si,si,si,si,no,si,si,si,no,P8 P12
 javascript,7,Tema 5: import() dinámico e import.meta · Avanzado · 40 min,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
 javascript,7,"Tema 6: Webpack, Rollup y Babel/SWC · Avanzado · 45 min",estandar,si,si,si,si,si,si,si,no,no,no,no,no,P8 P9 P10 P11 P12
-javascript,7,"Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min",estandar,si,si,si,si,si,si,si,no,si,si,si,no,P8 P12
-javascript,7,"Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
+javascript,7,"Tema 7: Módulos ES a fondo: top-level await, ciclos de importación e import maps · Avanzado · 45 min",estandar,si,si,si,si,si,si,si,si,si,si,si,no,P12
+javascript,7,"Tema 8: Cadena de suministro npm: lockfile, integridad y paquetes alterados · Avanzado · 45 min",estandar,no,si,si,si,si,si,si,si,si,si,si,no,P1 P12
 javascript,8,Tema 1: Selección y manipulación del DOM · Intermedio · 45 min,estandar,no,no,si,si,no,si,no,no,si,no,no,no,P1 P2 P5 P7 P8 P10 P11 P12
 javascript,8,Tema 2: Delegación de eventos · Intermedio · 40 min,estandar,si,si,si,si,si,si,si,no,si,si,si,no,P8 P12
 javascript,8,Tema 3: Formularios y validación nativa · Intermedio · 40 min,estandar,no,si,si,si,no,si,si,no,si,si,si,no,P1 P5 P8 P12
@@ -1324,9 +1324,9 @@ node,1,Tema 4: Scripts de ciclo de vida · Intermedio · 50 min,estandar,no,si,s
 node,1,Tema 5: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min,estandar,no,si,si,si,si,si,no,no,si,no,no,no,P1 P7 P8 P10 P11 P12
 node,1,Tema 6: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min,estandar,no,si,si,si,si,si,no,no,si,no,no,no,P1 P7 P8 P10 P11 P12
 node,2,Tema 1: fs/promises frente a callbacks · Intermedio · 45 min,estandar,no,si,si,si,no,si,no,no,si,si,no,no,P1 P5 P7 P8 P11 P12
-node,2,"Tema 2: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min",estandar,no,no,si,si,si,si,si,no,si,no,si,no,P1 P2 P8 P10 P12
+node,2,"Tema 2: Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador · Intermedio · 40 min",estandar,no,no,si,si,si,si,si,si,si,no,si,no,P1 P2 P10 P12
 node,2,"Tema 3: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min",estandar,no,si,si,si,no,si,no,no,si,si,no,no,P1 P5 P7 P8 P11 P12
-node,2,Tema 4: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min,estandar,no,no,si,si,si,si,si,no,si,no,si,no,P1 P2 P8 P10 P12
+node,2,Tema 4: Compresión con zlib: gzip y Brotli por streams · Intermedio · 35 min,estandar,no,no,si,si,si,si,si,si,si,no,si,no,P1 P2 P10 P12
 node,2,Tema 5: Backpressure: write() y el evento drain · Avanzado · 55 min,estandar,no,si,si,si,si,si,no,no,si,si,no,no,P1 P7 P8 P11 P12
 node,2,Tema 6: pipeline() para componer streams de forma segura · Avanzado · 60 min,estandar,no,si,si,si,si,si,no,no,si,si,no,no,P1 P7 P8 P11 P12
 node,3,Tema 1: El modelo request/response · Básico · 60 min,estandar,si,si,si,si,no,si,no,no,si,si,no,no,P5 P7 P8 P11 P12
@@ -1334,8 +1334,8 @@ node,3,Tema 2: Routing manual · Básico · 75 min,estandar,si,si,si,si,no,si,no
 node,3,Tema 3: Parsing de body y headers · Intermedio · 75 min,estandar,si,si,si,si,no,si,no,no,si,si,no,no,P5 P7 P8 P11 P12
 node,3,Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min,estandar,si,si,si,si,no,si,no,no,si,si,no,no,P5 P7 P8 P11 P12
 node,3,Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min,estandar,si,si,si,si,no,si,no,no,si,si,no,no,P5 P7 P8 P11 P12
-node,3,"Tema 6: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min",estandar,no,no,si,si,si,si,si,no,si,no,si,no,P1 P2 P8 P10 P12
-node,3,"Tema 7: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min",estandar,no,no,si,si,si,si,si,no,si,no,si,no,P1 P2 P8 P10 P12
+node,3,"Tema 6: Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS · Intermedio · 40 min",estandar,no,no,si,si,si,si,si,si,si,no,si,no,P1 P2 P10 P12
+node,3,"Tema 7: HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión · Avanzado · 45 min",estandar,no,no,si,si,si,si,si,si,si,no,si,no,P1 P2 P10 P12
 node,4,Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min,estandar,si,si,si,si,no,si,no,no,si,si,no,no,P5 P7 P8 P11 P12
 node,4,Tema 2: Routers anidados · Básico · 75 min,estandar,si,si,si,si,no,si,no,no,si,si,no,no,P5 P7 P8 P11 P12
 node,4,Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min,estandar,si,si,si,si,no,si,no,no,si,si,no,si,P5 P7 P8 P11
@@ -1354,7 +1354,7 @@ node,6,"Tema 5: Sesiones, cookies seguras y protección CSRF · Intermedio · 10
 node,6,Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Intermedio · 105 min,estandar,si,si,si,si,si,si,no,no,si,si,no,no,P7 P8 P11 P12
 node,7,Tema 1: node:test — test runner nativo sin dependencias · Intermedio · 40 min,estandar,si,si,si,si,si,si,no,no,si,si,no,no,P7 P8 P11 P12
 node,7,"Tema 2: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min",estandar,no,si,si,si,si,si,no,no,si,si,no,no,P1 P7 P8 P11 P12
-node,7,"Tema 3: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min",estandar,no,no,si,si,si,si,si,no,si,no,si,no,P1 P2 P8 P10 P12
+node,7,"Tema 3: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min",estandar,no,no,si,si,si,si,si,si,si,no,si,no,P1 P2 P10 P12
 node,7,Tema 4: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min,estandar,no,si,si,si,no,si,no,no,si,si,no,no,P1 P5 P7 P8 P11 P12
 node,7,Tema 5: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min,estandar,no,si,si,si,si,si,no,no,si,si,no,no,P1 P7 P8 P11 P12
 node,7,Tema 6: Mocks de servicios externos y CI · Intermedio · 50 min,estandar,no,si,si,si,si,si,no,no,si,si,no,no,P1 P7 P8 P11 P12
@@ -1368,14 +1368,14 @@ node,9,Tema 1: Logging estructurado · Intermedio · 45 min,estandar,no,si,si,si
 node,9,Tema 2: Correlation ID por request · Intermedio · 45 min,estandar,no,si,si,si,no,si,no,no,si,si,no,no,P1 P5 P7 P8 P11 P12
 node,9,"Tema 3: REST, GraphQL y gRPC · Intermedio · 55 min",estandar,no,si,si,si,no,si,no,no,si,si,no,no,P1 P5 P7 P8 P11 P12
 node,9,Tema 4: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min,estandar,no,si,si,si,si,si,no,no,si,si,no,no,P1 P7 P8 P11 P12
-node,9,Tema 5: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min,estandar,no,no,si,si,si,si,si,no,si,no,si,no,P1 P2 P8 P10 P12
+node,9,Tema 5: Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel · Avanzado · 45 min,estandar,no,no,si,si,si,si,si,si,si,no,si,no,P1 P2 P10 P12
 node,9,Tema 6: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min,estandar,no,si,si,si,no,si,no,no,si,si,no,no,P1 P5 P7 P8 P11 P12
 node,10,Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min,estandar,no,si,si,si,no,si,no,no,si,no,no,no,P1 P5 P7 P8 P10 P11 P12
 node,10,Tema 2: Rate limiting · Intermedio · 55 min,estandar,no,si,si,si,no,si,no,no,si,no,no,si,P1 P5 P7 P8 P10 P11
 node,10,Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min,estandar,no,si,si,si,no,si,no,no,si,no,no,no,P1 P5 P7 P8 P10 P11 P12
 node,10,Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min,estandar,si,si,si,si,no,si,no,no,si,no,no,no,P5 P7 P8 P10 P11 P12
 node,10,"Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min",estandar,no,si,si,si,no,si,no,no,si,no,no,no,P1 P5 P7 P8 P10 P11 P12
-node,10,"Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min",estandar,no,no,si,si,si,si,si,no,si,no,si,no,P1 P2 P8 P10 P12
+node,10,"Tema 6: Modelo de permisos de Node: limitar archivos, procesos y workers · Avanzado · 35 min",estandar,no,no,si,si,si,si,si,si,si,no,si,no,P1 P2 P10 P12
 node,11,Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min,estandar,no,si,si,si,no,si,no,no,si,si,no,si,P1 P5 P7 P8 P11
 node,11,Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min,estandar,no,si,si,si,si,si,no,no,si,si,no,no,P1 P7 P8 P11 P12
 node,11,"Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min",estandar,no,si,si,si,no,si,no,no,si,si,no,no,P1 P5 P7 P8 P11 P12
@@ -1490,7 +1490,7 @@ spring-boot,0,"Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio �
 spring-boot,0,Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
 spring-boot,0,"Tema 5: Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` · Intermedio · 45 min",estandar,si,no,si,no,si,si,no,no,si,no,no,no,P2 P4 P7 P8 P10 P11 P12
 spring-boot,0,"Tema 6: Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL · Intermedio · 40 min",estandar,si,no,si,no,no,si,no,no,si,no,no,no,P2 P4 P5 P7 P8 P10 P11 P12
-spring-boot,1,Tema 1: Spring Initializr y starters · Básico · 30 min,estandar,no,no,si,no,si,si,no,no,si,no,no,no,P1 P2 P4 P7 P8 P10 P11 P12
+spring-boot,1,Tema 1: Spring Initializr y starters · Básico · 30 min,estandar,no,no,si,no,si,si,no,no,si,no,no,si,P1 P2 P4 P7 P8 P10 P11
 spring-boot,1,Tema 2: application.yml vs application.properties · Básico · 30 min,estandar,no,no,si,no,si,si,no,no,si,no,no,no,P1 P2 P4 P7 P8 P10 P11 P12
 spring-boot,1,Tema 3: Perfiles y estructura por capas · Intermedio · 35 min,estandar,no,no,si,no,si,si,no,no,si,no,no,no,P1 P2 P4 P7 P8 P10 P11 P12
 spring-boot,2,Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 35 min,estandar,no,no,si,no,no,si,no,no,si,no,no,no,P1 P2 P4 P5 P7 P8 P10 P11 P12

@@ -26,14 +26,39 @@ Un documento curricular en `docs/temarios/spring-boot-microservicios-fase-1.md` 
 
 ## 4. Criterios de aceptación del documento
 
-1. Declara explícitamente duración, perfil del estudiante, prerrequisitos, versiones y resultados observables.
-2. Incluye secuencia de cinco semanas y distribución de los 29 temas sin introducir sintaxis básica para principiantes.
-3. Cada bullet de los módulos 1–4 tiene ficha individual con los 15 apartados en el orden indicado.
-4. Cada ficha contiene analogía, Mermaid con texto alternativo, alternativas con trade-offs y criterio de «cuándo no usar».
-5. Cada ficha nombra rutas exactas para construcción y código de referencia o identifica como brecha la ruta todavía inexistente.
-6. Cada práctica cita el Compose, comando de ejecución, script de verificación, salida esperada y modificación guiada; no se afirma que la prueba pasó si no existe evidencia.
-7. Se incluyen al menos tres decisiones/ejercicios con respuesta correcta «no añadir otra dependencia/abstracción o no introducir un patrón»; la prohibición explícita de microservicios se reserva además para las fases posteriores del curso según el temario maestro.
-8. Documenta riesgos de densidad curricular y diferencia entre diseño, código ya existente y código pendiente de desarrollo/verificación.
+Reescritos el 2026-11-21 al formato que parsea `scripts/validate_specs.py` (regla 1 de la constitución:
+criterio numerado + comando). El estado de cada uno no es una opinión: es el resultado de ejecutar su
+`Verificación:` en esta máquina el 2026-11-21 sobre `docs/temarios/spring-boot-microservicios-fase-1.md`
+(907 líneas, 29 fichas).
+
+- **C1** `hecho` — Declara explícitamente duración, perfil del estudiante, prerrequisitos, versiones y
+  resultados observables.
+  Verificación: `python3 -c "import sys,io;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read().lower();sys.exit(0 if all(k in t for k in ['perfil','prerrequisitos','versiones','resultados de aprendizaje','calendario']) else 1)"`
+- **C2** `hecho` — Incluye la secuencia de cinco semanas y la distribución de los 29 temas, sin sintaxis
+  básica para principiantes.
+  Verificación: `python3 -c "import sys,io,re;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read();tl=t.lower();sys.exit(0 if len(re.findall(r'^## Ficha ',t,re.M))==29 and all('semana %d'%s in tl for s in range(1,6)) else 1)"`
+- **C3** `hecho` — Cada bullet de los módulos 1–4 tiene ficha individual con los 15 apartados en el orden
+  indicado.
+  Verificación: `python3 -c "import sys,io,re;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read();b=re.split(chr(10)+'## Ficha ',t)[1:];sys.exit(0 if len(b)==29 and all(len(re.findall(r'^[0-9]+[.] [*]{2}',x,re.M))==15 for x in b) else 1)"`
+- **C4** `pendiente` — Cada ficha contiene analogía, Mermaid con texto alternativo, alternativas con
+  trade-offs y el criterio de «cuándo no usar». Medido: analogía, diagrama, texto alternativo y anti-patrón
+  están en las 29 fichas, pero «trade-off» aparece en 2 de 29 y la frase «cuándo no usar» en ninguna; la
+  sección 2 del documento prometía los cinco en cada una. Falta escribirlos, no relajar el detector.
+  Verificación: `python3 -c "import sys,io,re;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read();b=re.split(chr(10)+'## Ficha ',t)[1:];sys.exit(0 if all(all(k in x.lower() for k in ['analogo','diagrama','texto alternativo','trade-off','cuando no usar','cuándo no usar']) for x in b) else 1)"`
+- **C5** `pendiente` — Cada ficha nombra rutas exactas de construcción y de código de referencia, o
+  identifica como brecha la ruta inexistente. Medido: 12 de las 29 fichas no citan ninguna ruta de
+  `examples/` ni declaran la brecha (S2.02, S2.03, S2.04, S2.05, S2.07, S2.08, entre otras).
+  Verificación: `python3 -c "import sys,io,re;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read();b=re.split(chr(10)+'## Ficha ',t)[1:];sys.exit(0 if all(re.search('examples/|no existe|pendiente|brecha',x,re.I) for x in b) else 1)"`
+- **C6** `pendiente` — Cada práctica cita el Compose, el comando de ejecución, el script de verificación, la
+  salida esperada y la modificación guiada, sin afirmar que la prueba pasó donde no hay evidencia. Medido:
+  Compose en 26 de 29 y verificación/modificación en 29, pero la salida esperada solo en 3 de 29.
+  Verificación: `python3 -c "import sys,io,re;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read();b=re.split(chr(10)+'## Ficha ',t)[1:];sys.exit(0 if all(all(k in x.lower() for k in ['compose','salida','verificaci','modificaci']) for x in b) else 1)"`
+- **C7** `hecho` — Al menos tres decisiones o ejercicios cuya respuesta correcta es «no añadir otra
+  dependencia/abstracción ni introducir un patrón».
+  Verificación: `python3 -c "import sys,io;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read().lower();sys.exit(0 if t.count('no anadir')+t.count('no añadir')>=3 else 1)"`
+- **C8** `hecho` — Documenta los riesgos de densidad curricular y distingue diseño, código existente y código
+  pendiente (secciones 7, 9 y 10 del documento).
+  Verificación: `python3 -c "import sys,io;t=io.open('docs/temarios/spring-boot-microservicios-fase-1.md',encoding='utf-8').read().lower();sys.exit(0 if 'densidad' in t and 'brecha' in t and 'pendiente' in t else 1)"`
 
 ## 5. Fuera de alcance en esta entrega
 

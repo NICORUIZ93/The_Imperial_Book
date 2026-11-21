@@ -81,7 +81,29 @@ FECHA = re.compile(r"20\d\d-\d\d-\d\d|20\d\d")
 ARCHIVO = re.compile(r"(?:[\w.\-]+/)+[\w.\-]+\.[a-zA-Z0-9]+|[\w.\-]+\.[a-zA-Z0-9]{1,10}\b")
 FENCE = re.compile(r"^```(\w*)", re.M)
 HEAD = re.compile(r"^(#{3,6})\s+(.+?)\s*$", re.M)
-IMG = re.compile(r"!\[([^\]]*)\]\([^)]+\)")
+IMG = re.compile(r"!\[([^\]]*)\]\(([^)]+)\)")
+# El punto 8 pide «captura real de la terminal o de la app». Que el alt diga «captura» no lo prueba:
+# lo prueba el archivo incrustado, que render_terminal_capture.py firma con <title>Captura de terminal…
+# CAPTURA acepta también la firma de una captura de pantalla de app o navegador. Una figura dibujada a
+# mano no pasa, y un enlace roto tampoco.
+CAPTURA = re.compile(r"captura de (?:terminal|pantalla|app|navegador)", re.I)
+_firma: dict[str, bool] = {}
+
+
+def es_captura_real(src: str) -> bool:
+    if src in _firma:
+        return _firma[src]
+    ruta = CONTENT / (src[len("content/"):] if src.startswith("content/") else src)
+    ok = False
+    if ruta.is_file():
+        try:
+            ok = bool(CAPTURA.search(ruta.read_text(encoding="utf-8", errors="replace")[:600]))
+        except OSError:
+            ok = False
+    _firma[src] = ok
+    return ok
+
+
 FICHA_1 = re.compile(r"^1\.\s+UBICACI[OÓ]N\b", re.IGNORECASE)
 
 
@@ -161,7 +183,7 @@ def medir(bloque: dict) -> dict:
 
     lenguajes = [g or "sin-lenguaje" for g in FENCE.findall(texto)]
     archivos = bool(ARCHIVO.search(sin_diacriticos(sin_codigo)))
-    capturas = IMG.findall(texto)
+    incrustadas = [(m.group(1), m.group(2)) for m in IMG.finditer(texto)]
     hay_diagrama = "```mermaid" in texto or bool(IMG.search(texto)) or "<svg" in texto
     nivel_ok = bool(NIVEL.search(bloque["titulo"]))
     piezas = {
@@ -172,8 +194,9 @@ def medir(bloque: dict) -> dict:
         "analogia": etiqueta(ANALOGIA),
         "codigo_con_archivo": bool(lenguajes) and archivos,
         "por_bloques": etiqueta(BLOQUES),
-        "captura_con_texto_alternativo": any(alt.strip() for alt in capturas),
-        "salida_en_texto": bool(re.search(r"^\s*(?:\*\*)?(Salida|Resultado)(?:\*\*)?[:·]", texto, re.M | re.I)),
+        "captura_con_texto_alternativo": any(alt.strip() and es_captura_real(src) for alt, src in incrustadas),
+        "salida_en_texto": bool(re.search(
+            r"^\s*\*{0,2}(Salida|Resultado)(?: esperado)?\*{0,2}\s*[:·]", texto, re.M | re.I)),
         "fallo_deliberado": etiqueta(FALLO),
         "ejercicio_guiado": etiqueta(EJERCICIO_GUIADO),
         "ejercicio_independiente": etiqueta(EJERCICIO_INDEP),
