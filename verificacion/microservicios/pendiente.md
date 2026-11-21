@@ -6,12 +6,8 @@ Una línea por bloque que no se pudo ejecutar en este entorno, con archivo:líne
 
 ## Fase 0 · Módulos 0.1–0.5 (modulo-0 … modulo-4, fichas F001–F016)
 
-Todo el código Java se ejecutó aquí con JDK 25.0.5 y todos los laboratorios pasaron (`verificar.sh` de modulo-0 a modulo-4) con **Node 22.23.5**: este entorno no permite instalar Node 26. Falta repetirlos con Node 26.13.1.
+Todo el código Java se ejecutó aquí con JDK 25.0.5 y todos los laboratorios pasaron (`verificar.sh` de modulo-0 a modulo-4) con **Node 22.23.5**: este entorno no permite instalar Node 26. Ya se repitieron en el Mac del dueño con Node 26.13.1 (sección 2026-11-21).
 
-- examples/microservicios/modulo-0/verificar.sh:1 — repetir con Node 26.13.1 (8 tests pasaron con Node 22.23.5).
-- examples/microservicios/modulo-1/verificar.sh:1 — repetir con Node 26.13.1 (11 tests pasaron con Node 22.23.5).
-- examples/microservicios/modulo-2/verificar.sh:1 — repetir con Node 26.13.1 (Node 10 tests y Java 9 comprobaciones pasaron con Node 22.23.5 y JDK 25.0.5).
-- examples/microservicios/modulo-3/verificar.sh:1 — repetir con Node 26.13.1 y Git del Mac (pasó con Node 22.23.5, Git 2.43.0, bash 5.2.21).
 - examples/microservicios/modulo-4/verificar.sh:1 — ejecutar `./verificar.sh --compose`: aquí no hay acceso a Docker Hub, así que no se construyeron `java/Dockerfile` (eclipse-temurin:25-jdk) ni `node/Dockerfile` (node:26-alpine) ni se levantó `docker-compose.yml` (solo se validó con `docker compose config -q`). Las etiquetas existen en Docker Hub (API v2, consultada el 2026-11-19). La parte de Docker básico (ubuntu:24.04) sí pasó.
 - web/public/content/microservices/modulo-4.md:697 — `FROM eclipse-temurin:25-jdk`: construir y comprobar `curl localhost:8080/hola` → `Hola Mundo desde Java`.
 - web/public/content/microservices/modulo-4.md:711 — `FROM node:26-alpine`: construir y comprobar `curl localhost:3000/hola` → `Hola Mundo desde Node.js` (y que `docker compose down` detiene hola-node con código 0 gracias al manejador de SIGTERM).
@@ -33,8 +29,6 @@ Todo el código Java se ejecutó aquí con JDK 25.0.5 y todos los laboratorios p
 
 Maven Central está bloqueado aquí: ningún proyecto con Spring Boot se pudo compilar. Se ejecutó todo lo que no depende de Spring (F017 y F018 completos con JDK 25.0.5 y JUnit 5.10 de Ubuntu, el SQL de F030 y F031 en PostgreSQL 16 y MySQL 8.0.46, los errores de `javac`, de la JVM y de Maven pegados en las fichas) y se validaron los `docker-compose.yml` con `docker compose config -q`. Versiones alineadas con docs/microservicios/08-herramientas-y-versiones.md (Spring Boot 4.1.3; si el repositorio aún no la tiene, 4.1.2).
 
-- web/public/content/microservices/modulo-5.md:416 — F017: `../mvnw test` con Maven Central (Spring Boot 4.1.3 como parent, JUnit Jupiter 6.0.3) → `Tests run: 6`. Aquí los 6 tests pasaron con JDK 25.0.5 y JUnit 5.10 de Ubuntu (consola standalone); el `main` y los dos errores se ejecutaron y se pegó la salida real.
-- web/public/content/microservices/modulo-5.md:769 — F018: `../mvnw test` → `Tests run: 4` con Maven. Aquí pasaron los 4 con JDK 25.0.5 + JUnit 5.10; la salida del `main` y el `OutOfMemoryError: unable to create native thread` (`ulimit -u 2000`) son reales.
 - web/public/content/microservices/modulo-5.md:1156 — F019: compilar con Spring Boot 4.1.3 (Maven Central bloqueado aquí), comprobar las 11 líneas del output esperado (orden del ciclo de vida, `Beans propios: [...]`) y que no aparezcan WARN; `CicloDeVidaTest` → `Tests run: 1`.
 - web/public/content/microservices/modulo-5.md:1261 — F019: texto exacto del FailureAnalyzer con dos `Notificador` (rutas `defined in file [...]` y la línea `Action`), y el de «required a bean of type 'academia.ioc.Notificador' that could not be found» de la pregunta de comprobación.
 - web/public/content/microservices/modulo-5.md:1628 — F020: fragmento exacto del Conditions Evaluation Report para `SaludoAutoConfiguration` (y si la `Condition` propia aparece en Negative matches); `NoSuchBeanDefinitionException` con `--saludo.habilitado=false`; `SaludoAutoConfigurationTest` → `Tests run: 6`.
@@ -386,6 +380,42 @@ Docker Hub, temporal.download ni Maven Central (salvo `maven-metadata.xml` leíd
 - web/public/content/microservices/modulo-36.md:2155 — F184 pista Spring: `./mvnw -f spring/carga/pom.xml gatling:test` con Gatling 3.16.1 y gatling-maven-plugin 4.21.12 (versiones leídas de `maven-metadata.xml`; la página de docs.gatling.io usa `MANUALLY_REPLACE_WITH_LATEST_VERSION`). Confirmar el DSL Java (`listFeeder(...).circular()`, `percentile(99).lt(300)`) y que `-Dtasa=…` llega a la simulación (con el plugin puede hacer falta `-Dgatling.jvmArgs` o `<jvmArgs>`).
 - web/public/content/microservices/modulo-36.md:1782 — F183 paso 1 con `docker compose up -d --wait` y `REDIS_URL=redis://localhost:6379` (aquí se usó `redis-server --port 16379` de Redis 7.0.15; el script Lua usa `TIME` dentro de `EVAL`, permitido desde Redis 5 con replicación de efectos).
 - web/public/content/microservices/modulo-35.md:1311 — F180: las referencias a Adam Tornhill (*Your Code as a Crime Scene*, hotspots e indentación como medida de complejidad) y al cuadrante de deuda técnica de Martin Fowler (deliberada/inadvertida, prudente/imprudente) se escribieron sin abrir la fuente aquí; confirmar títulos y términos. La página de Fowler sobre Strangler Fig (https://martinfowler.com/bliki/StranglerFigApplication.html) no se pudo abrir desde aquí.
+
+## 2026-11-21 · Mac del dueño (Temurin 27.0.1.0.2 + Node 26.13.1 + Docker CLI sin daemon)
+
+Ejecutado aquí, con salida en los artefactos del propio build:
+
+- **Causa del «nada funcional» de los laboratorios Gradle**: los `build.gradle.kts` fijan
+  `JavaLanguageVersion.of(25)` y sin repositorio de toolchains el build moría **en configuración**, antes de
+  cualquier test. Medido: `modulo-5` → `Cannot find a Java installation … {languageVersion=25}` ·
+  `BUILD FAILED in 7s`. Arreglo: `org.gradle.toolchains.foojay-resolver-convention` **1.0.0** (versión vista en
+  plugins.gradle.org) en los 14 `settings.gradle.kts` del curso.
+- `examples/microservicios/modulo-5/verificar.sh` → `RESULTADO: OK · Módulo 1 … verificado` en 46 s. Gradle
+  descargó `OpenJDK25U-jdk_aarch64_mac_hotspot_25.0.5.1_2.tar.gz` a `~/.gradle/jdks/` y los logs de Spring
+  dicen `using Java 25.0.5.1`. Contado sobre `*/build/test-results/test/TEST-*.xml`: **25 tests, 0 fallos,
+  0 errores, 0 omitidos** (f017 6 · f018 4 · f019 1 · f020 6 · f022 5 · f023 1 · f024 2). Con esto se cierran
+  los ítems `modulo-5.md:416` (F017 → `Tests run: 6`) y `modulo-5.md:769` (F018 → `Tests run: 4`).
+- Configuración de los 11 builds con wrapper tras el arreglo (`./gradlew -q help`, código 0): modulo-5, -6, -7,
+  -8, -9, -10, -11, -12, -13, -14, -15. Queda pendiente ejecutar sus tests: todos menos modulo-5 piden Docker.
+- **Fallo real hallado y corregido** en `modulo-36/spring/carga/build.gradle.kts`: `simulation = "…"` dentro de
+  `gatling { }` era una referencia inexistente (`Unresolved reference 'simulation'`, el build entero no
+  configuraba). `javap` sobre `gatling-gradle-plugin-3.16.0.jar` muestra que la extensión solo tiene
+  `gatlingVersion, scalaVersion, jvmArgs, systemProperties, environment, includes, excludes,
+  includeMainOutput, includeTestOutput, enterprise`; la simulación vive en la **tarea**
+  (`GatlingRunTask.setSimulationClassName`). Reescrito a
+  `tasks.named<io.gatling.gradle.GatlingRunTask>("gatlingRun") { simulationClassName = … }`: `./gradlew -q help`
+  → 0 y `./gradlew :carga:gatlingRun --dry-run` → `BUILD SUCCESSFUL` (la ejecución real sigue pendiente:
+  necesita el sistema en marcha).
+- `examples/microservicios/modulo-0` … `modulo-3` con `./verificar.sh` bajo **Node 26.13.1**: 8, 11, 10 y 20
+  tests Node respectivamente, más las suites de Java/Git/Terminal, **0 fallos** en los cuatro (código 0).
+- `examples/microservicios-spring/fase-1/proyecto-maven-tienda`: `mvn -B -ntp test` → **BUILD SUCCESS, 5 tests,
+  0 fallos** en 5,5 s (Boot 4.1.3, `java.version 25`, host con JDK 27); `docker compose config` → 0; el POM es
+  XML bien formado. Su `verify.sh` (ruta Maven-en-contenedor) **no** pudo ejecutarse: el daemon de Docker está
+  caído y el guion sale con código 1, sin fingir éxito.
+
+Sigue pendiente en este entorno: todo lo que necesite `docker compose up` (modulo-4 en adelante, CRaC, GraalVM
+nativo, Toxiproxy, Kafka, Keycloak, Kubernetes) y las salidas literales que este Mac no produce (zsh, PowerShell,
+`lsof`, números de parche de imágenes).
 
 ## Migración de Maven a Gradle (2026-11-20) · modulo-5 … modulo-16 y modulo-36/spring
 
