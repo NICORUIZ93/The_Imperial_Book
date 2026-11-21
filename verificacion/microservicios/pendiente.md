@@ -468,3 +468,102 @@ de Gradle citadas en cada lección:
 - modulo-16
 - modulo-36 (`./verificar.sh --compose`: `(cd spring && ./gradlew -q test)` y `./gradlew :carga:gatlingRun`)
 
+
+## 2026-11-21 · Lote con Docker arriba (modulo-6 … modulo-12) — 7 módulos en verde
+
+Con el daemon de Docker en marcha se ejecutó `bash verificacion/microservicios/run.sh "modulo-N"` para cada módulo;
+`PASS` exige código 0 **y** la línea `RESULTADO: OK` en el log. Contado sobre `*/build/test-results/test/TEST-*.xml`:
+**194 tests en total, 0 fallos, 0 omitidos**. Ojo: `verificacion/microservicios/.gitignore` ignora `logs/`, así que los
+logs completos se quedan en esta máquina; lo que viaja al repositorio es lo citado literalmente abajo y en las lecciones.
+
+| módulo | resultado | tiempo | tests por ficha |
+|---|---|---|---|
+| modulo-5 | PASS (mañana, sin Docker) | 46 s | f017 6 · f018 4 · f019 1 · f020 6 · f022 5 · f023 1 · f024 2 = **25** |
+| modulo-6 | PASS | 32 s | f025 4 · f026 3 · f027 3 · f028 4 · f029 4 · f030-flyway 3 · f030-liquibase 2 · f031 6 = **29** |
+| modulo-7 | PASS | 62 s | f032 11 · f033 3 · f034-consumidor 2 · f034-proveedor 2 · f035 4 · f036 6 = **28** |
+| modulo-8 | PASS | 20 s | f037 3 · f038 3 · f039 4 · f040 22 = **32** (+ 9 tests de Python) |
+| modulo-9 | PASS | 13 s | f041 5 · f042 7 · f043 2 · f044 5 · f045 10 · f046 2 = **31** |
+| modulo-10 | PASS | 27 s | f047 3 · f048 4 · f049 4 · f050 3 · f051 6 = **20** |
+| modulo-11 | PASS | 46 s | f052-consul 1 · f052-eureka 1 · f053 3 · f054 2 · f055 1 · f056 1 = **9** |
+| modulo-12 | PASS | 45 s | f057 5 · f058 3 · f059 4 · f060 1 = **13** |
+
+Salidas literales nuevas que antes no estaban medidas (útiles para las lecciones):
+
+- **modulo-6**: `Container modulo-6-postgres-1 Healthy` y `modulo-6-mysql-1 Healthy` antes de los tests; los logs
+  muestran el `drop table … cascade` de cierre de Hibernate sobre ambos motores.
+- **modulo-7 · F034 con Gradle**: `Publishing 'tienda-web-catalogo.json' ... OK`,
+  `All required verification results are published and successful` y en `canIDeploy`, `Computer says yes \o/`.
+  El plugin `au.com.dius.pact` 4.7.7 funciona sobre Gradle 9.9.2: se cierra el ítem de la línea 440 de arriba.
+  Aviso para el alumno: `ContratoDesdeBrokerManual.java` compila con `uses or overrides a deprecated API`.
+- **modulo-7 · F036 con Gradle**: `RESULTADO SONAR: OK` — el plugin `org.sonarqube` 7.5.0.8588 + JaCoCo 0.8.15
+  analizan con Gradle 9.9.2; se cierra el ítem de la línea 442.
+- **modulo-8**: los 9 simuladores corrieron con **Python 3.15.2** (`Ran 9 tests in 2.498s · OK`), no con la 3.13.18
+  que citan las lecciones y este registro; hay que actualizar la versión declarada o fijar el intérprete.
+- **modulo-11 · demos de JDK puro**: `t=0s instancias de catalogo: {catalogo-1=http://10.0.0.11:8081, catalogo-2=…}`,
+  `[registro] expulsada catalogo-2 (sin latido > 3000 ms)` y en el gateway `404 {"error":"SIN_RUTA","ruta":"/api/pagos/1"}`
+  y `502 {"error":"SERVICIO_NO_RESPONDE"}`.
+- **modulo-12 · demos de JDK puro**: `resultado=TimeoutException tras 518 ms (sin límite habrías esperado 2000 ms)`,
+  `intento 1/2: ErrorDelServidor HTTP 503` → `intento 3: OK {"sku":"7","stock":12}`, y el estado del
+  CircuitBreaker impreso en cada llamada.
+
+**Qué NO prueba este lote**: que el texto de cada lección coincida con la salida. Los ítems por puntero
+(`web/public/content/microservices/modulo-N.md:…`) siguen abiertos hasta pegar la salida real en la ficha, y muchos
+citan formato Maven (`Tests run: 8`) cuando el build ya es Gradle: hay que reescribir esas salidas al formato Gradle.
+
+**Corte por reinicio de la máquina**: `modulo-13` quedó interrumpido a mitad (sin `RESULTADO`); avanzó hasta
+`-- F064 contra Keycloak real` (`GET /pedidos con ana -> 200 · GET /admin/reportes con ana -> 403 · sin token -> 401`),
+el paso de Vault y el encabezado de Trivy. Queda por repetir 13, 14, 15, 16 y 36. El daemon de Docker volvió a caer
+con el reinicio, así que nada de eso puede correrse hasta que se levante.
+
+## 2026-11-21 · Cierres de la tarde (wrapper con checksum, F021, F036 y las advertencias de las lecciones)
+
+- **`distributionSha256Sum` añadido a los 13 `gradle-wrapper.properties`** (`modulo-5`…`modulo-11`, `modulo-13`…`modulo-16/app`,
+  `modulo-36/spring`). Valor: `971fcd7150ca4ba04852c0b2ca0d2d0ab9468e14b03473eab19528809914c76b`, visto en
+  `https://services.gradle.org/distributions/gradle-9.9.2-bin.zip.sha256` y **comprobado por tres vías**: (1) el zip
+  oficial descargado aquí pesa 134.970.550 bytes y su `shasum -a 256` da ese valor; (2) con un `GRADLE_USER_HOME` limpio,
+  `./gradlew --version` descarga, valida y escribe el marcador `.ok` (Gradle 9.9.2, build 2026-11-19 19:52 UTC);
+  (3) prueba negativa: con un suma falsa en una copia fuera del repo, Gradle se niega a arrancar y muestra
+  `Expected checksum: '0000…' · Actual checksum: '971fcd71…c76b'`. Se cierra el ítem de la línea 437 (faltaba la suma).
+- **F021 multi-módulo con Gradle 9.9.2 + plugin de Spring Boot**: `./gradlew :f021-multimodulo:tienda-api:build` → código 0 y
+  aparecen los tres jars que promete la lección: `tienda-dominio-1.0.0.jar` 1.693 B · `tienda-api-1.0.0-plain.jar` 2.171 B ·
+  `tienda-api-1.0.0.jar` 19.992.406 B. Números ya pegados en `modulo-5.md` (paso 4 de F021).
+- **F036 JaCoCo**: `./gradlew :f036-sonarqube:check` → 0 y `f036-sonarqube/build/reports/jacoco/test/` contiene `html/` y
+  `jacocoTestReport.xml`; dentro de `html/`, `index.html`, `jacoco-resources`, `jacoco-sessions.html` y la carpeta de paquete
+  `academia.calidad`. Actualizado el paso correspondiente de `modulo-7.md`.
+- **Barrido de advertencias obsoletas**: 51 menciones a «salida de Gradle pendiente de verificación en el Mac» en
+  `modulo-5`…`modulo-12` se convirtieron en «verificada el 2026-11-21 con Gradle 9.9.2 / Java 25.0.5.1 / Compose v5.7.1»,
+  **después** de cruzar cada cifra prometida (`N líneas PASSED`) contra los `TEST-*.xml` medidos: todas coinciden
+  (p. ej. f017 6, f032 11, f040 22, f045 10). Se conservó la advertencia en los dos pasos que no se han ejecutado:
+  la demo `--docker` de CRaC y la de GraalVM nativo.
+- **Chequeo de reconocimiento, no una puerta aflojada**: el formato `PASSED` por test que enseñan las lecciones es real
+  porque cada `build.gradle.kts` declara `testLogging { events("passed", "skipped", "failed") }`; verificado con
+  `./gradlew :f017-java-moderno:test --rerun-tasks --console=plain` (6 líneas `PASSED` + `BUILD SUCCESSFUL in 1s`).
+
+Correcciones de frescura medidas hoy en `docs/microservicios/08-herramientas-y-versiones.md` (Fase 0):
+
+- **Docker Compose**: la fila decía v5.6.1; `api.github.com/repos/docker/compose/releases/latest` devuelve **v5.8.0**
+  publicado 2026-11-17. La casilla sigue ☐ porque en esta Mac `docker compose version` da **v5.7.1**.
+- **Maven**: 3.10.1 confirmado en `maven.apache.org/download.cgi`; en esta Mac hay **3.10.0** (Homebrew), casilla ☐.
+- **Java, Node, Git, Gradle**: casillas ✔ con el comando y el valor medidos (`v26.13.1`, `2.54.0 Apple Git-157`,
+  27.0.1.0.2 en el host con 25.0.5.1 autoaprovisto en los builds, y el Gradle de arriba). Las lecciones que dicen
+  «Compose v5.6.1 **o posterior**» (`modulo-4`, `modulo-21`, `modulo-22`, `modulo-27`, READMEs) siguen siendo ciertas:
+  es suelo, no pin, así que no se tocaron.
+
+Sigue abierto tras el reinicio de la máquina (daemon de Docker caído): repetir `modulo-13` (se cortó en Trivy),
+`modulo-14`, `modulo-15`, `modulo-16` y `modulo-36`, más `modulo-5 --docker` (CRaC/nativo). Bloqueado mientras no
+vuelva Docker.
+
+## 2026-11-21 · Estado de `./scripts/validate.sh` al commitear este bloque
+
+El pipeline se detiene en `python3 scripts/validate_lesson_labs.py` (rc=1) con un único mensaje:
+`examples/microservicios-spring no lo cita ninguna lección`. Medido con el mismo criterio que el script:
+
+- laboratorios de `examples/` **versionados**: 59 · citados por alguna lección: **59** · huérfanos versionados: **0**.
+- el único directorio sin citar existe solo en disco (creado hoy 11:56, pertenece a la corriente de `specs/022`/`specs/023`,
+  que aún no lo enlaza desde ninguna lección; sus dos archivos de spec tampoco están versionados).
+
+Es decir: **el árbol que se commitea pasa esa puerta**; la puerta falla por un directorio no versionado de otra sesión
+activa. No se tocó ese directorio y no se modificó el detector. Los demás pasos, ejecutados uno a uno, dan rc=0:
+`audit_visual_aids` (avisos informativos de capturas pendientes), `audit_lesson_assets: ok`,
+`build_zero_to_master_report: al día`, `audit_track_master_prompt: al día`, `build_curriculum_catalog: al día (16 cursos)`,
+`validate_fichas: ok` y el recuento de 16 cursos con las cuatro etapas y 0 anclas rotas.
