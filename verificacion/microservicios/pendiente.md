@@ -553,6 +553,83 @@ Sigue abierto tras el reinicio de la máquina (daemon de Docker caído): repetir
 `modulo-14`, `modulo-15`, `modulo-16` y `modulo-36`, más `modulo-5 --docker` (CRaC/nativo). Bloqueado mientras no
 vuelva Docker.
 
+## 2026-11-21 · Lote de la tarde (modulo-13 … modulo-16): dos causas de fallo separadas del laboratorio
+
+Resumen del lote lanzado con `LIMITE_LAB=2400 bash verificacion/microservicios/run.sh "modulo-1[3456]"`, tomado
+literal de `/tmp/ms-lote3.log` y de `verificacion/microservicios/logs/`:
+
+| módulo | resultado | duración | medida |
+| --- | --- | --- | --- |
+| modulo-13 | PASS | 49 s | 39 tests (f061 6 · f062 8 · f063 3 · f064 6 · f065 12 · f066 2 · f068 2); Trivy «antes: exit 1 · después: exit 0» |
+| modulo-14 | PASS | 65 s | 32 tests (f070 2 · f071 1 · f072 2 …); perfiles `-Ptrazas=otel` y `-Ptrazas=zipkin`; cardinalidad medida 1000→8000 series frente a 1003→18 series |
+| modulo-15 | **FAIL rc=1** | 47 s | 1 ✘ de 16 pasos: «JDK 25». ✔ Compose v5.7.1, simulador del particionador, Kafka+RabbitMQ+NATS healthy, Schema Registry, F075–F080, grupo `inventario` en 3 particiones, `cobros-dlt` con 3 particiones, subject `pedidos-avro-value`, quorum queue y stream `PAGOS` |
+| modulo-16 | en curso | — | ✘ en F085 (metrics-server), resto por decidir al cerrar el lote |
+
+**Causa 1 · el chequeo de JDK de modulo-15 miraba el PATH equivocado.** El paso era
+`paso "JDK 25" contiene 'version "25' java -version`, y el `java` del PATH de esta Mac es Temurin 27
+(`openjdk version "27.0.1.0.2" 2026-10-21`), mientras que los builds usan el 25 que aprovisiona Gradle en
+`~/.gradle/jdks/eclipse_adoptium-25-aarch64-os_x.2/jdk-25.0.5.1+2/Contents/Home/bin/java`
+(`openjdk version "25.0.5.1" 2026-11-17 LTS`, medido). El laboratorio sí pasaba: fallaba el reconocimiento.
+Se corrigió en `examples/microservicios/modulo-15/verificar.sh`: `buscar_jdk25` recorre los candidatos
+(carpetas de JDK 25 de `~/.gradle/jdks`, `/Library/Java/JavaVirtualMachines`, `~/Library/Java/JavaVirtualMachines`,
+`JAVA_HOME`) y acepta solo el que **declara 25 en su propio `-version`**; ese binario se usa también en el
+simulador del particionador, que antes corría con el 27 del PATH. No se aflojó el requisito: sigue exigiendo
+`version "25`. Prueba aislada del bloque (13:26): con el HOME real → `OK JDK 25` + `SIMULADOR OK`; con
+`HOME=/nonexistent` → `FALLO JDK 25` y se imprime el 27 del PATH. Nota: `/usr/libexec/java_home -v 25`
+devuelve en esta máquina la ruta de Temurin 27 con rc=0, así que **no** sirve como prueba de que exista un 25;
+por eso la comprobación se hace sobre la salida del propio binario.
+
+**Causa 2 · metrics-server no puede descargar en el nodo kind (entorno, no ficha).** `pruebas/f085-hpa.sh`
+aplica `components.yaml` de la release v0.9.0 y luego espera el rollout; el pod quedó en `ImagePullBackOff` con
+este mensaje literal (medido con `kubectl get pod -o jsonpath` a las 13:23):
+
+```
+failed to pull and unpack image "registry.k8s.io/metrics-server/metrics-server:v0.9.0":
+failed to do request: Head "https://registry.k8s.io/v2/metrics-server/metrics-server/manifests/v0.9.0":
+proxyconnect tcp: dial tcp 127.0.0.1:49153: connect: connection refused
+```
+
+El entorno de esta sesión define `HTTP_PROXY`/`HTTPS_PROXY` apuntando a un proxy local en `127.0.0.1:49153`
+(token de por medio, no se copia aquí); kind propaga esas variables al interior del nodo, y dentro del nodo
+`127.0.0.1` es el propio nodo, donde nadie escucha. Por eso el `apply` (hecho desde el host) funciona y el
+`pull` (hecho por containerd dentro del nodo) no. El host sí tiene salida: `curl -s -o /dev/null -w %{http_code}
+https://registry.k8s.io/v2/` devuelve `401` (llega al registro) y `docker pull registry.k8s.io/metrics-server/metrics-server:v0.9.0`
+terminó bien (`Digest: sha256:d9862115e7c7881280d3d75ca26bda8ffc0fc213315979575bf23ce9826205c0`).
+
+El arreglo **no** es `kind load docker-image`, que es lo primero que se intenta y tampoco funciona aquí:
+
+```
+$ kind load docker-image registry.k8s.io/metrics-server/metrics-server:v0.9.0 --name academia-m12
+ERROR: failed to load image: command "docker exec --privileged -i academia-m12-control-plane ctr
+--namespace=k8s.io images import --all-platforms --digests --snapshotter=overlayfs -" failed with error: exit status 1
+Command Output: ctr: content digest sha256:25d291fde59974547bac6f07fa9d6cf6f5bedd1f19d60c893311c5e741e0a42f: not found
+```
+
+kind v0.33.0 no ofrece `--platforms` en `kind load docker-image` (su `--help` solo lista `-h`, `--name` y
+`--nodes`), y el `ctr images import --all-platforms` que ejecuta exige el contenido de todas las plataformas
+del índice, cuando en el almacén de Docker Desktop solo está la local: `docker image inspect
+-f '{{.Os}}/{{.Architecture}}'` → `linux/arm64`. Lo que sí funcionó, medido a las 13:31:
+
+```
+$ docker save registry.k8s.io/metrics-server/metrics-server:v0.9.0 \
+    | docker exec -i academia-m12-control-plane ctr -n k8s.io images import -
+$ docker exec academia-m12-control-plane crictl images | grep metrics
+registry.k8s.io/metrics-server/metrics-server   v0.9.0   37ceda8805d2e   20.9MB
+```
+
+Con la imagen ya en el nodo basta el `imagePullPolicy: IfNotPresent` del manifiesto oficial: al borrar los pods
+atrapados en `ImagePullBackOff`, el pod nuevo pasó a `1/1 Running` en 66 s y las métricas volvieron
+(`kubectl top nodes` → `academia-m12-control-plane 184m 1% 1748Mi 22%`; `kubectl top pods -n catalogo` → dos
+pods `catalogo-…` a 4m / 150Mi). Ese es el criterio que quedó aplicado en `modulo-16/pruebas/f085-hpa.sh:8-22`
+y en `modulo-27/verificar.sh:118-132` (allí con v0.9.1): mirar primero `crictl images`, y si falta la imagen,
+bajarla en el host e inyectarla con `docker save | docker exec -i "$(kind get nodes --name …)" ctr -n k8s.io
+images import -`.
+
+Pendiente al cerrar el lote: reejecutar modulo-15 y modulo-16 completos (modulo-36 sigue en cola) y registrar
+sus `RESULTADO:` literales. Los dos parches están aplicados y probados por piezas (detector de JDK 25 en
+positivo y en negativo; carga de la imagen en el nodo y métricas de vuelta), pero **ningún módulo se marca como
+verificado** hasta tener su `RESULTADO: OK` entero.
+
 ## 2026-11-21 · Estado de `./scripts/validate.sh` al commitear este bloque
 
 El pipeline se detiene en `python3 scripts/validate_lesson_labs.py` (rc=1) con un único mensaje:
