@@ -11,22 +11,23 @@
 > —que los redacta la herramienta— y nunca la regla de lenguaje que se enseña. Las citas de la JLS y de la JVMS de
 > este módulo se verificaron contra la especificación **Java SE 25** que Oracle sirve hoy como
 > «Specifications Latest» (páginas con `dateModified` 2026-09-15; el propio capítulo 12 remite a _The Java
-> Virtual Machine Specification, Java SE 25 Edition_): §4.12.5, §7.6, §8.1, §8.1.1.4, §8.3, §8.3.2, §8.3.3, §8.4,
-> §8.4.3.2, §8.6, §8.7, §8.8, §8.8.7, §8.8.7.1, §8.8.8, §8.8.9, §8.8.10, §12.4.1, §12.4.2, §12.5, §15.8.3,
-> §15.21.3 y el capítulo 16 (§16.9); JVMS §2.6.1, §2.9.1, §2.9.2.
-> **Estado de escritura:** tema 2 de 7. Los temas 3 a 7 están previstos y aún no escritos; el laboratorio tiene
-> su puerta para los dos temas escritos (**89 comprobaciones, 0 fallidas, 0 omitidas**, de las que 41 son del
-> tema 1 y 48 del tema 2), y esta portada no declara horas del módulo completo hasta que los siete estén medidos.
+> Virtual Machine Specification, Java SE 25 Edition_): §4.12.5, §6.6, §6.6.1, §6.6.2, §6.6.2.1 (con su
+> Ejemplo 6.6.2-1), §7.6, §8.1, §8.1.1.4, §8.2, §8.3, §8.3.2, §8.3.3, §8.4, §8.4.3.2, §8.4.8.1, §8.4.8.3, §8.6,
+> §8.7, §8.8, §8.8.7, §8.8.7.1, §8.8.8, §8.8.9, §8.8.10, §12.4.1, §12.4.2, §12.5, §15.8.3, §15.21.3 y el
+> capítulo 16 (§16.9); JVMS §2.6.1, §2.9.1, §2.9.2, §4.7.28, §4.7.29, §4.10.1.8, §5.4.3 y §5.4.4.
+> **Estado de escritura:** tema 3 de 7. Los temas 4 a 7 están previstos y aún no escritos; el laboratorio tiene
+> su puerta para los tres temas escritos (**140 comprobaciones, 0 fallidas, 0 omitidas**: 41 del tema 1, 48 del
+> tema 2 y 51 del tema 3), y esta portada no declara horas del módulo completo hasta que los siete estén medidos.
 
 ## Cabecera del módulo
 
 | | |
 |---|---|
-| **Objetivo** | Pasar de «datos sueltos en arreglos» a **un tipo propio**: declarar una clase cuyos campos son su estado y cuyos métodos reciben el objeto como primer argumento, entender que `new` crea un objeto y la variable solo lo señala, seguir el `this` hasta el bytecode, saber **en qué orden** se le llenan las casillas —los siete pasos de §12.5, dónde caen los inicializadores y por qué `this(...)` se salta los propios—, y dominar las dos cosas que más programas rompen: que asignar copie la **referencia** (no el objeto) y que `null` sea un valor de referencia, no «un objeto vacío». |
+| **Objetivo** | Pasar de «datos sueltos en arreglos» a **un tipo propio**: declarar una clase cuyos campos son su estado y cuyos métodos reciben el objeto como primer argumento, entender que `new` crea un objeto y la variable solo lo señala, seguir el `this` hasta el bytecode, saber **en qué orden** se le llenan las casillas —los siete pasos de §12.5, dónde caen los inicializadores y por qué `this(...)` se salta los propios—, y dominar las tres cosas que más programas rompen: que asignar copie la **referencia** (no el objeto), que `null` sea un valor de referencia y no «un objeto vacío», y que el nivel de acceso es la única barrera que se comprueba sola —un getter que devuelve la lista viva anula tu invariante con el compilador callado, y un método que repite el nombre de un `private` del padre no se ejecuta **nunca**—. |
 | **Prerrequisitos** | [Módulo 4](modulo-4.md) completo —en especial su tema 1 (`new Punto[2]` deja casillas `null`: aquí eso mismo pasa con objetos que no son arreglos) y su tema 4 (`ArrayList`/`HashMap`, porque el siguiente paso natural es una lista de objetos)— y [Módulo 3](modulo-3.md) completo, sobre todo su tema 4: **al método se le copia la referencia, no el contenido**; esa regla es la que aquí se ve funcionando dentro de un objeto. Del [Módulo 0](modulo-0.md) se sigue usando `javap -c -p`. |
-| **Duración** | Escrito: 80 min (temas 1 y 2, 40 min cada uno). Previstos 7 temas de 40 min · **4 h 40 min** según el temario, cifra que se fija con las cabeceras cuando el módulo esté completo. |
-| **Versiones** | JDK 25 (`--release 25`). Nada de este módulo depende de una función *preview*. Tres cosas que sí dependen del ejecutable y se tratan como tales: el **texto** del `NullPointerException` con mensajes útiles (lo redacta la JVM 27; el fenómeno es de 14+), el **número** que devuelve `System.identityHashCode` (medido: cambia con `-XX:hashCode=` y no es una cifra del lenguaje) y el **número de instrucciones** de cada `<init>` que publica el tema 2 (11 / 6 / 7 con cadena, 11 / 14 / 17 sin ella): es política del generador de código de `javac`, no regla del lenguaje —lo que §12.5 paso 4 sí exige es el **reparto** de los inicializadores (2 / 0 / 0 frente a 2 / 2 / 2), y eso es lo que se enseña. |
-| **Laboratorio** | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) (al publicar: `examples/java/modulo-5/`), con `verificar.sh`: **89 comprobaciones, 0 fallidas, 0 omitidas** ejecutadas aquí (41 del tema 1 y 48 del tema 2). |
+| **Duración** | Escrito: 120 min (temas 1, 2 y 3, 40 min cada uno). Previstos 7 temas de 40 min · **4 h 40 min** según el temario, cifra que se fija con las cabeceras cuando el módulo esté completo. |
+| **Versiones** | JDK 25 (`--release 25`). Nada de este módulo depende de una función *preview*. Cuatro cosas que sí dependen del ejecutable y se tratan como tales: el **texto** del `NullPointerException` con mensajes útiles (lo redacta la JVM 27; el fenómeno es de 14+), el **número** que devuelve `System.identityHashCode` (medido: cambia con `-XX:hashCode=` y no es una cifra del lenguaje), el **número de instrucciones** de cada `<init>` que publica el tema 2 (11 / 6 / 7 con cadena, 11 / 14 / 17 sin ella) —es política del generador de código de `javac`, no regla del lenguaje; lo que §12.5 paso 4 sí exige es el **reparto** de los inicializadores (2 / 0 / 0 frente a 2 / 2 / 2)—, y lo del tema 3: el mismo fuente sale con **`invokespecial`** al llamarse un `private` desde su clase compilando `--release 8` y con **`invokevirtual`** de 11 a 25 (medido release a release), el puente `access$000` solo aparece en el 8, y el nombre interno `ImmutableCollections$List12` que imprime `B2` depende del tamaño de la lista y de la JDK. En los tres casos del tema 3 lo que se enseña es la **regla** (§6.6.2.1, §8.2, §5.4.4 y el rechazo `UnsupportedOperationException`), no el detalle del volcado. |
+| **Laboratorio** | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) (al publicar: `examples/java/modulo-5/`), con `verificar.sh`: **140 comprobaciones, 0 fallidas, 0 omitidas** ejecutadas aquí (41 del tema 1, 48 del tema 2 y 51 del tema 3). |
 | **Proyecto guía** | `rutaflow-nucleo`: la **ficha de carga**. En M4 una guía era un `String` con guiones que se partía con `split`; aquí pasa a ser un objeto `Guia` con `codigo`, `gramos` y `zona`, su método `etiqueta()` y su constructor. Cada tema cierra una parte: la clase y su receptor (T1), cómo se construye y en qué orden (T2), qué se puede tocar desde fuera (T3), qué pertenece a la clase y no al objeto (T4), dónde vive el archivo (T5), cómo se compara e imprime (T6) y cómo se hace inmutable (T7). |
 
 ### Mapa del módulo
@@ -1514,10 +1515,1060 @@ todo esto cuando el objeto no debe cambiar —`record` y sus propios pasos de co
 
 ---
 
+### Tema 3: Encapsulación y modificadores de acceso · Básico · 40 min
+
+#### 1. Ubicación y prerrequisitos
+
+Es el tercero de los siete temas del módulo. El tema 1 te dio los campos y el `this`; el tema 2 te dio el
+constructor como único sitio donde un objeto se llena. Este tema responde la pregunta que esos dos dejan abierta:
+**¿quién puede tocarlos?** Es la puerta de entrada al resto del módulo —el `static` del tema 4 se entiende como
+«algo que no pertenece a ningún objeto y por tanto hay que proteger distinto», y `equals`/`hashCode` del tema 6
+solo tienen sentido sobre un estado que alguien puede modificar—.
+
+Necesitas tener cerrado:
+
+- **Tema 1 de este módulo**: campo, método de instancia y `this`. Aquí se reutiliza literalmente: `gramos()` es un
+  método de instancia que lee un campo del receptor, y la barrera de acceso se aplica sobre ese receptor.
+- **Tema 2 de este módulo**: el constructor como única ruta de entrada. Aquí se le añade la otra mitad: si el
+  invariante vive en el constructor, el campo que lo guarda no puede estar abierto.
+- **Módulo 3, tema 4**: *al método se le copia la referencia, no el contenido*. Sin esa regla no se entiende por
+  qué un getter que devuelve una `List` no devuelve «un dato» sino **tu lista**. Es el corazón del primer fallo de
+  este tema.
+- **Módulo 4, tema 4**: `ArrayList`. Aquí `List.copyOf` y `UnsupportedOperationException` aparecen como mecanismo,
+  no como novedad.
+- **Módulo 0**: `javap -p` y `javap -v`. Este tema es el primero del curso donde el volcado no es un adorno: los
+  cuatro niveles **son** los bits del `.class`.
+
+Una advertencia de orden, porque es real: este tema usa **dos paquetes** (`bodega` y `afuera`) antes de que el
+tema 5 explique los paquetes. No se enseña aquí la regla de empaquetado, solo se la necesita: la barrera de
+acceso de paquete no existe si todo está en un paquete, así que los ejemplos se compilan en dos árboles. Las
+etiquetas `package …;`, la correspondencia directorio-paquete y `import` se tratan en el tema 5.
+
+Laboratorio: [`laboratorios/modulo-5/tema-3/`](laboratorios/modulo-5/tema-3) — `src/bodega/{Envio,Inspectoria,Demo}.java`,
+`src/afuera/{Ruta,Cliente}.java`, seis recortes en `errores/`, `por-dentro/{NivelesEnClass,NidoPrivate}.java` y el
+trío `por-dentro/jvm/` (`Lector.java` más dos versiones de `bodega/Envio.java`).
+
+#### 2. Objetivo
+
+**Enunciado**: dado un miembro de una clase tuya, eliges uno de los cuatro niveles de acceso **diciendo qué se
+rompe si se ve**, y reconoces los dos cambios de acceso que ningún aviso del compilador denuncia.
+
+Al terminar eres capaz de:
+
+1. Escribir los cuatro niveles en una misma clase y decir, para cada uno, quién queda dentro y quién fuera —
+   incluido el caso que la gente no espera: que `private` **no** se relaja porque el vecino esté en tu mismo
+   paquete.
+2. Explicar `protected` con la regla real (§6.6.2.1: el *tipo que califica* la expresión), no con la regla que se
+   repite en las entrevistas («protected = para mis subclases»), y provocar el error que sale cuando la regla
+   falsa se aplica a un objeto ajeno.
+3. Detectar el getter que devuelve el objeto interno vivo **sin que nadie te avise**, demostrándolo con el tipo
+   devuelto, y escribir la versión con copia defensiva.
+4. Detectar el método `private` que un herede vuelve a declarar creyendo que lo sustituye, sabiendo que no se
+   hereda (§8.2), que por tanto no hay sobreescritura (§8.4.8.1) y que `@Override` es la única pieza del lenguaje
+   que convierte ese silencio en un error.
+5. Afirmar con la salida delante que el acceso no es solo una comprobación de `javac`: un `.class` ya compilado
+   contra un campo `public` revienta en tiempo de ejecución con `IllegalAccessError` cuando el `.class` de ese
+   campo pasa a `private`.
+
+#### 3. Por qué importa
+
+La especificación dice para qué existe esto, y lo dice como objetivo, no como estilo:
+
+> *«The Java programming language provides mechanisms for access control, to prevent the users of a package or
+> class from depending on unnecessary details of the implementation of that package or class.»* — JLS §6.6
+
+Y añade una frase que este tema comprueba con `javap` y no de memoria:
+
+> *«Note that accessibility is a static property that can be determined at compile time; it depends only on types
+> and declaration modifiers.»* — JLS §6.6
+
+Esa propiedad estática es la que hace que el `if` de tu validación y el modificador de tu campo sean la misma
+decisión: si un dato modificable está accesible, cualquier código puede dejar al objeto en un estado que tu
+invariante juraba imposible, y **nadie te avisa de que acabas de romperlo**. Aquí «nadie avisa» es una medición, no
+una retórica: el `javac --release 25 -Xlint:all` de los once archivos de este tema imprime **cero bytes** (aserto
+número 1 de `verificar.sh`), y sin embargo dos de sus líneas documentan invariantes rotos.
+
+El temario del módulo etiqueta este tema como «encapsulación y modificadores de acceso (§6.6, EJ 15–16)», y la
+ficha de estado del curso dejó escrito que hacía falta **acceso de paquete, `protected` real y criterio**. Es
+justamente lo que trae: el acceso de paquete como ausencia de bandera, `protected` con su regla de *cualifying
+type*, y un criterio de elección que se puede aplicar sin gustos —«¿qué invariante se rompe si esto se ve?»—.
+
+Dos palabras de honestidad sobre el criterio, para que no cites cosas que no están. Primero: la frase
+«minimiza la accesibilidad todo lo posible» es de Effective Java (ítem 15), **no** de la JLS —busqué en el capítulo
+6 de la edición SE 25 cualquier `minimi…` / `as inaccessible as possible` y no está—; aquí el texto normativo es
+el de arriba, sobre «detalles innecesarios de la implementación». Segundo: el criterio no es «cuanto más privado,
+mejor»; es «el nivel más alto que aún deja romper el invariante solo desde dentro». Bajar un campo a `private`
+obligando a cinco getters que filtran es peaje sin barrera, y el tema 6 lo pagará en verbosidad.
+
+Lo que se ve sin este tema, medido en la propia salida:
+
+- `A8 · afuera metio un hito sin pasar por un metodo : 2 · [creado, MANIPULADO-DESDE-AFUERA]` — el paquete
+  `afuera` escribió dentro del estado de un `Envio` sin invocar un solo método de `Envio`. No hubo error, ni
+  aviso, ni `@SuppressWarnings`. `A9` da la razón en una línea: `java.util.ArrayList`.
+- `B5 · la que correra es la de bodega, y entro : 50000 g` — una subclase declaró la validación «más estricta» y
+  nunca se ejecutó. Contado sobre la salida: la comprobación de `bodega` corre **3** veces y la de `afuera`, **0**.
+
+Y hay una segunda mitad que casi nadie enseña, porque no se ve hasta que un `.class` viejo se encuentra con una
+clase nueva: el control de acceso también se aplica **al enlazar**, dentro de la JVM (JVMS §5.4.4), y allí no
+devuelve un error de compilación sino `IllegalAccessError`. La línea que importa de esa medición es *qué* guardaba
+el llamante: no guardó «el campo era público», guardó `Field bodega/Envio.gramos:I` —el **nombre** completo—.
+
+#### 4. Analogía
+
+Imagina una bodega con mostrador al público, y tres puertas interiores distintas.
+
+- **`public`** es el mostrador: lo que aparece en el cartel de la calle. Quien sea puede leer y, si el cartel dice
+  que ahí se dejan paquetes, puede dejarlos. Un campo `public` es un mostrador **abierto sin cartel**: cualquiera
+  no solo lo ve, lo mueve (medido: `B6 · un campo publico lo pisa quien quiera : PISADO-DESDE-AFUERA`).
+- **`private`** es la sala de la báscula. Su única abertura hacia el mostrador es una ventanilla (`gramos()`), y el
+  único camino hacia la báscula es el procedimiento escrito en la pared (`pesar`). El sello no se abre porque el
+  que llama sea un compañero de oficina: es la puerta, no el pasillo.
+- **Acceso de paquete** —sin escribir nada— es el pasillo interno. Para el personal de la bodega
+  (`Inspectoria`, en `bodega`) ese pasillo está tan abierto como el mostrador: entran y **escriben**
+  `selloDePaquete` sin pedir permiso a nadie (`A1` dice `8`, que es `7 + 1`). Para el que viene de fuera
+  (`afuera`), ese mismo pasillo es una pared, aunque vea la puerta. Y aquí viene el detalle que descoloca: el
+  pasillo no tiene cartel. En el `.class` no hay una «bandera de paquete»; hay **ausencia** de bandera, `flags:
+  (0x0000)`.
+- **`protected`** es el andén de carga. Lo pueden usar dos tipos de gente: el personal de la bodega, y las
+  empresas que *descienden* de ti (tus subclases). Pero la regla del andén no es «si eres mi heredero puedes
+  cargar cualquier cosa»: es «puedes cargar **mientras estés montando un envío tuyo**». Por eso `hitos.add(...)`
+  dentro de `Ruta.sella()` funciona —el tipo que califica es `this`, o sea `Ruta`, que hereda a `Envio`— y por eso
+  `otro.hitos` desde el mismo cuerpo se cae, aunque `otro` sea un `Envio` y tú seas su heredero: ahí el andén está
+  sirviendo un envío de otro.
+- **Devolver la lista viva** es prestar la llave maestra en vez de una fotocopia. La llave abre exactamente la
+  misma puerta que abre tu propio personal, y por eso `afuera` metió un hito. La fotocopia (`List.copyOf`) no es
+  «más educada»: es **otro objeto**, y eso se ve en el tipo que devuelve la llamada.
+- **El `private` que un herede «sustituye»** es el transportista que cuelga en su propia nave un cartel más
+  estricto que el tuyo y se queda tan tranquilo. Cuando un cliente llega a tu bodega y pide un peso imposible, la
+  comprobación que se ejecuta es la de tu pared, y el cartel de la nave de al lado nadie lo lee. `@Override` es el
+  inspector que, en cuanto escribes esa intención de sustituir, te pregunta *a qué cartel de la bodega estás
+  sustituyendo* —y como no hay ninguno, porque el tuyo estaba cerrado por dentro, te corta el paso:
+  `does not override or implement a method from a supertype`.
+
+#### 5. Diagrama
+
+```mermaid
+flowchart TD
+    IN["alguien necesita leer o escribir<br/>un miembro de mi clase"] --> Q1{"lo necesita codigo de<br/>CUALQUIER paquete?"}
+    Q1 -->|"si"| PU["public · flags 0x0001<br/>medido: Cliente pasa solo por gramos()"]
+    Q1 -->|"no"| Q2{"lo necesita una subclase<br/>en OTRO paquete?"}
+    Q2 -->|"si"| PR["protected · flags 0x0004<br/>medido: Ruta.sella con this → 2 hitos"]
+    Q2 -->|"no"| Q3{"lo necesita OTRA clase<br/>del MISMO paquete?"}
+    Q3 -->|"si"| PA["sin palabra · flags 0x0000<br/>medido: Inspectoria ESCRIBE el sello → 8"]
+    Q3 -->|"no"| PV["private · flags 0x0002<br/>aqui vive el invariante<br/>medido: pesar(-50) lanza y sigue en 0"]
+    Q2 -.->|"solo sobre objetos MIOS"| QT{"que tipo califica<br/>la expresion?"}
+    QT -->|"this"| OKP["compila"]
+    QT -->|"un Envio ajeno"| NOP["has protected access in Envio"]
+    PU -->|"si el getter devuelve<br/>la lista VIVA"| F1["FALLO MUDO 1<br/>A8: 2 hitos sin llamar a Envio<br/>A9: java.util.ArrayList"]
+    PU -->|"si un herede repite<br/>el nombre de un private"| F2["FALLO MUDO 2<br/>B4/B5: la de Ruta corre 0 veces<br/>y entran 50000 g"]
+    F1 --> C1["List.copyOf<br/>B1: UnsupportedOperationException<br/>B3: el estado sigue en 2"]
+    F2 --> C2["@Override<br/>does not override or implement<br/>a method from a supertype"]
+    PU -->|"y el campo es mutable"| B6["sin invariante<br/>B6: PISADO-DESDE-AFUERA"]
+    PV -->|"el acceso tambien se<br/>comprueba al enlazar"| JVM["JVMS 5.4.4<br/>IllegalAccessError al enlazar<br/>el .class guardo el NOMBRE"]
+```
+
+**Texto alternativo:** el diagrama es un árbol de **tres preguntas**, no una lista de palabras clave, y se responde
+de fuera hacia dentro: ¿lo necesita cualquier paquete? → `public`. ¿Basta con que lo necesite una subclase mía en
+otro paquete? → `protected`, con la rama punteada que casi nadie dibuja: el nivel solo vale *sobre objetos míos*, y
+eso lo decide el tipo que califica la expresión, no tu parentesco. ¿Basta con otra clase de mi paquete? → no
+escribo nada, y en el `.class` eso es `flags: (0x0000)`, la **ausencia** de bandera. Y si ninguna de las tres,
+`private`, que es el único sitio donde el invariante está cerrado del todo (`pesar(-50)` lanza y el objeto sigue en
+`0`). Las tres aristas que salen de `public` hacia la derecha son las que no producen ningún aviso: la lista viva
+(`A8`/`A9`), el `private` que un herede repite creyendo que sustituye (`B4`/`B5`) y el campo mutable puesto al
+mostrador (`B6`); cada una tiene su corrección dibujada debajo, medida ella también. El último rectángulo es la
+capa que no se ve desde el fuente: el mismo control de acceso lo vuelve a aplicar la JVM al enlazar, y allí el
+`.class` del llamante solo recordaba el **nombre** del campo.
+
+#### 6. Explicación
+
+**Nivel 0 — los cuatro niveles no son cuatro palabras del fuente: son bits del `.class`, y el acceso de paquete es la ausencia de uno de ellos.**
+
+JLS §6.6.1 es la que decide qué palabra significa qué, y sus frases son cortas. Citadas de la edición Java SE 25:
+
+- `public`: *«If the member or constructor is declared `public`, then access is permitted.»* — e inmediatamente
+  debajo, algo que se olvida siempre y que este tema mide: *«All members of interfaces lacking access modifiers are
+  implicitly `public`.»*
+- Sin modificador en un miembro de clase: *«A class member or constructor declared without an access modifier
+  implicitly has package access.»*, y su regla de acceso: *«If the member or constructor is declared with package
+  access, then access is permitted only when the access occurs from within the package in which the class,
+  interface, type parameter, or reference type is declared.»*
+- `private`: *«A `private` class member or constructor is accessible only within the body of the top level class
+  (§7.6) that encloses the declaration of the member or constructor. It is not inherited by subclasses.»* —Ejemplo
+  6.6-5, y su remate: *«the private members `ID`, `masterID`, and `setMasterID` may be used only within the body of
+  class `Point`»*.
+- `protected`: *«access is permitted only when one of the following is true: Access to the member or constructor
+  occurs from within the package containing the class in which the `protected` member or constructor is declared.
+  Access is correct as described in §6.6.2.»* —lése **dos** sitios, no uno: el paquete propio **y** lo que diga
+  §6.6.2. Es la prueba textual de que `protected` no es un `private` ampliando: también cubre a todo el paquete.
+
+Ahora el volcado, que es donde la palabra se convierte en bit. `por-dentro/NivelesEnClass.java` declara los cuatro
+campos seguidos y un método sin modificador; `javap -v -p` sobre ese `.class` (medido con `--release 25`; debajo de
+cada miembro va su línea `flags:` tal cual sale):
+
+```text
+  public int publico;
+    flags: (0x0001) ACC_PUBLIC
+  protected int protegido;
+    flags: (0x0004) ACC_PROTECTED
+  int dePaquete;
+    flags: (0x0000)
+  private int privado;
+    flags: (0x0002) ACC_PRIVATE
+  void llamar();
+    flags: (0x0000)
+```
+
+Mira la tercera: **no existe una bandera de paquete**. `(0x0000)` es el valor con todos los bits sin poner, y por
+eso el acceso de paquete es la **abstracción de la visibilidad**, no un nivel con su propio número. Dos
+consecuencias prácticas, ambas medidas: en el `javap -p` de siempre el miembro sale **desnudo**, `int dePaquete;`,
+porque `javap` no tiene ninguna palabra que imprimir (el arnés lo comprueba con `cero_en` sobre la palabra
+`package` en todo el volcado), y el cuarto campo en cambio sí se llama a sí mismo: `flags: (0x0002) ACC_PRIVATE`,
+exactamente el bit que el fuente escribió como palabra.
+
+Lo mismo en el nivel de clase, medido sobre las dos clases de `src/bodega`:
+
+```text
+bodega.Envio        →   flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+bodega.Inspectoria  →   flags: (0x0020) ACC_SUPER
+```
+
+`Inspectoria` está declarada sin `public` y su único bit es `ACC_SUPER` (el de toda clase que no es un `interface`
+antigua): es una clase de paquete con miembros `public` dentro. O sea que **puedes tener una API de paquete
+completamente `public` y seguir siendo invisible desde fuera**: la barrera de la clase top-level va por delante de
+la de sus miembros.
+
+Y la regla implícita de las interfaces, medida sobre la anidada `interface Tarifa { int calcula(); }` —en el fuente
+no hay ni una palabra de acceso; en el volcado sí hay dos—:
+
+```text
+interface NivelesEnClass$Tarifa {
+  public abstract int calcula();
+}
+```
+
+Un `private` **no** se relaja porque el vecino esté en tu pasillo. §6.6.1 dice *dentro del cuerpo de la clase
+top-level*, y punto. `bodega.Inspectoria` está en `bodega`, es del mismo proyecto, se compiló en la misma orden que
+`Envio` —los dos árboles cayeron en un solo `javac`—, y no puede tocar `Envio.gramos`. La prueba no es un párrafo
+suyo ni mío, es el mensaje del compilador (`errores/PrivadoEnOtraClaseDelPaquete.java`, medido con `-cp` apuntando
+a las clases ya compiladas):
+
+```text
+errores/PrivadoEnOtraClaseDelPaquete.java:8: error: gramos has private access in Envio
+        return e.gramos;
+                ^
+```
+
+**Nivel 1 — `protected` habla del objeto que estás implementando, no de tu parentesco; y la accesibilidad decide qué se hereda y qué se puede sobrescribir.**
+
+La regla de `protected` fuera del paquete está en §6.6.2, y es una frase sobre el *código*, no sobre la clase:
+
+> *«A `protected` member or constructor of an object may be accessed from outside the package in which it is
+> declared only by code that is responsible for the implementation of that object.»*
+
+Y §6.6.2.1 la convierte en una comprobación mecánica sobre **el tipo que califica** la expresión:
+
+> *«… then access to the instance field `Id` is permitted if and only if the qualifying type is S or a subclass of
+> S. The qualifying type is the type of the ExpressionName or Primary, or the type denoted by TypeName.»*
+
+`S` es tu subclase. El *qualifying type* es el tipo de lo que está a la izquierda del punto. Con `this.hitos` dentro
+de `afuera.Ruta`, el qualifying type es `Ruta`, subclase de `Envio` → permitido. Con `otro.hitos` donde `otro` es un
+`Envio`, el qualifying type es `Envio`, que no es `Ruta` ni subclase de `Ruta` → cortado. Medido en
+`errores/ProtegidoConReferenciaDelPadre.java`, y fíjate **dónde** pone el caret, porque ahí está toda la regla:
+
+```text
+errores/ProtegidoConReferenciaDelPadre.java:17: error: hitos has protected access in Envio
+        this.hitos.addAll(otro.hitos);
+                              ^
+```
+
+Una sola línea, los dos accesos son al mismo campo `protected` del mismo padre, desde el mismo cuerpo de la misma
+subclase, y el compilador marca **solo el segundo**. Es exactamente el ejemplo `delta`/`delta3d` de la propia JLS,
+que zanja el porqué sin dejar margen:
+
+> *«A compile-time error occurs in the method `delta` here: it cannot access the `protected` members `x` and `y` of
+> its parameter `p`, because while `Point3d` (the class in which the references to fields `x` and `y` occur) is a
+> subclass of `Point`, it is not involved in the implementation of a `Point` … The method `delta3d` can access the
+> `protected` members of its parameter `q`, because the class `Point3d` is a subclass of `Point` and is involved in
+> the implementation of a `Point3d`.»* — JLS §6.6.2.1, Ejemplo 6.6.2-1
+
+La consecuencia ejecutada de este tema es `A6 · protected con this desde afuera : 2 hitos`: `Ruta.sella()` añadió
+`"sellado"` a la lista `protected` de **su propio** envío, desde otro paquete, sin que nadie le diera permiso
+adicional. Y la consecuencia que hay que aprender de memoria: «`protected` es para mis subclases» es falsa tal cual;
+«`protected` es para mis subclases mientras estén implementando un objeto suyo» es la que se puede compilar.
+
+Los otros dos recortes los fija §6.6 en una frase — *«Accessibility affects inheritance of class members (§8.2),
+including hiding and method overriding (§8.4.8.1).»*— y §8.2 en dos reglas medidas:
+
+- *«Only members of a class that are declared `protected` or `public` are inherited by subclasses declared in a
+  package other than the one in which the class is declared.»* → **ser heredero no abre lo de paquete**. Por eso
+  `errores/HerederoDeOtroPaqueteLeeLoDelPaquete.java` y `errores/PaqueteDesdeOtroPaquete.java` dan **el mismo
+  mensaje**, palabra por palabra, aunque uno sea una subclase directa y el otro un extraño:
+
+```text
+errores/PaqueteDesdeOtroPaquete.java:9: error: selloDePaquete is not public in Envio; cannot be accessed from outside package
+        return e.selloDePaquete;
+                ^
+errores/HerederoDeOtroPaqueteLeeLoDelPaquete.java:15: error: selloDePaquete is not public in Envio; cannot be accessed from outside package
+        return this.selloDePaquete;
+                   ^
+```
+
+  Que los dos salgan idénticos no es un dato de estilo: es un aserto del arnés, y es la demostración más limpia del
+  tema. El heredero ni siquiera gana nada **escribiendo `this`** —el qualifying type de §6.6.2.1 solo ayuda con
+  `protected`, y lo de paquete no tiene esa salida.
+- Los `private` *«are not inherited by subclasses»* (§6.6.1) → un herede no puede sobreescribirlos porque no hay
+  nada que sobreescribir; y la otra mitad la pone §8.4.8.3: *«The access modifier of an overriding or hiding method
+  must provide at least as much access as the overridden or hidden method, as follows: If the overridden or hidden
+  method is `public`, then the overriding or hiding method must be `public`»*. Medido en
+  `errores/ReducirAccesoAlSobreescribir.java`, donde el hijo intenta cerrar el setter del padre:
+
+```text
+errores/ReducirAccesoAlSobreescribir.java:16: error: pesar(int) in ReducirAccesoAlSobreescribir cannot override pesar(int) in Envio
+    private void pesar(int nuevo) {
+                 ^
+  attempting to assign weaker access privileges; was public
+```
+
+Que una sobreescritura no pueda reducir el acceso no es una manía de estilo: si un herede pudiera cerrar lo que su
+padre abrió, un código que tuviera una referencia `Envio` dejaría de compilar según qué objeto hubiera acabado
+dentro de esa referencia —la sustitución del polimorfismo se rompería en el compilador, que es justamente lo que
+§8.4.8.3 evita.
+
+**Nivel 2 — los dos fallos que ningún aviso menciona, y las dos líneas que los cierran.**
+
+*Fallo 1: el getter comodín.* `Envio.hitos()` devuelve el campo tal cual. No hay nada ilegal en ello: es tu propio
+campo, devuelto desde tu propio método, y el compilador no tiene forma de saber qué vas a hacer con esa referencia.
+Por eso `javac --release 25 -Xlint:all` sobre los cinco fuentes de `src/` sacó **cero bytes** de salida —el arnés lo
+llama `vacio`, y el éxito aquí es que el compilador no diga nada—. Y esto es lo que da `java bodega.Demo`
+(después de las 18 líneas, el proceso terminó con código 0):
+
+```text
+A7 · la lista viva, antes de que nadie la toque    : 1 · [creado]
+A8 · afuera metio un hito sin pasar por un metodo   : 2 · [creado, MANIPULADO-DESDE-AFUERA]
+A9 · y la razon cabe en una linea: el tipo devuelto : java.util.ArrayList
+```
+
+Entre `A7` y `A8` no se ejecutó ningún método de `Envio` que añada hitos: `afuera.Cliente.manipula(e)` hizo
+`e.hitos().add("MANIPULADO-DESDE-AFUERA")`. El invariante «los hitos los escribe `Envio`» dejó de existir en el
+instante en que el getter devolvió la lista, no un dato **sobre** la lista. `A9` es el diagnóstico completo en una
+línea: el tipo devuelto es `java.util.ArrayList`, o sea **la misma**. Aquí trabaja el prerequisito del tema 4 del
+módulo 3: al método le copiaron la referencia, la referencia señala tu objeto, y por eso esa copia es tu objeto.
+
+La corrección no es «tener cuidado», es cambiar el tipo devuelto:
+
+```text
+B1 · la copia defensiva si se defiende              : rechazado con UnsupportedOperationException
+B2 · el tipo devuelto esta vez                       : java.util.ImmutableCollections$List12
+B3 · y el estado interno no cambio                    : 2
+```
+
+`B3` con `2` es la línea que importa: `2` son los dos hitos legítimos que ya estaban (`creado` y el `MANIPULADO`
+que entró antes de la copia, cuando no había copia). La lista nueva rechazó la escritura y tu estado interno ni se
+enteró. Y ojo a quién lanza: el `UnsupportedOperationException` **no** lo lanza tu código —lo lanza la lista que
+devolviste, que es otra cosa que tú—. Medido de una vez para que no quede mitología sobre el nombre del tipo: en
+esta JDK, `List.of()` da `java.util.ImmutableCollections$ListN`, `List.copyOf` con 1 o 2 elementos da
+`…$List12` y con 3+ vuelve a `…$ListN`. El nombre depende del tamaño y de la implementación; lo que sostiene la
+especificación de `List` es el rechazo, no el identificador interno.
+
+*Fallo 2: el `private` que un herede vuelve a declarar.* `Envio.comprueba(int)` es `private`; `afuera.Ruta`
+declara `public void comprueba(int nuevo)` con una comprobación **más estricta** (vetar más de 30 000 g). Nada de
+eso está prohibido: son dos métodos **distintos**. §6.6.1/§8.2 dicen que el privado no se hereda, y sin herencia no
+hay sobreescritura (§8.4.8.1). Lo que ocurre al ejecutarlo, medido:
+
+```text
+B4 · Ruta promete vetar mas de 30 000 g; se le pesan 50 000:
+   bodega: la comprobacion de Envio corre
+B5 · la que correra es la de bodega, y entro           : 50000 g
+```
+
+Contado sobre la salida completa por el arnés, no sobre el fragmento: la comprobación de `bodega` corre **3** veces
+en toda la demo y la de `Ruta` **0**; y en la cola que va desde `B4` en adelante, 1 la de `bodega` y 0 la de `Ruta`.
+La red de seguridad del herede jamás se ejecutó y entraron 50 000 gramos en un envío que prometía no pasar de
+30 000, con el proceso terminando bien (código 0) y el compilador callado.
+
+`@Override` es la única pieza del lenguaje que convierte esto en ruido, porque obliga a contestar «¿a qué método de
+un supertipo estás sustituyendo?». Medido en `errores/OverrideDeUnPrivado.java` —el mismo método, anotado, y el
+mismo par padre/hijo en otro paquete—:
+
+```text
+errores/OverrideDeUnPrivado.java:15: error: comprueba(int) in OverrideDeUnPrivado does not override or implement a method from a supertype
+    @Override
+    ^
+```
+
+Y para saber hacia dónde se corrige, el experimento inverse (mutación 5 del laboratorio, ejecutada sobre una copia
+del tema en `/tmp`): pasar `Envio.comprueba` de `private` a `protected` **sin tocar nada más**. Entonces la demo
+mutada llega hasta la línea 16 y muere:
+
+```text
+B4 · Ruta promete vetar mas de 30 000 g; se le pesan 50 000:
+   afuera: la comprobacion mas estricta de Ruta corre
+Exception in thread "main" java.lang.IllegalStateException: peso fuera de contrato: 50000
+	at afuera.Ruta.comprueba(Ruta.java:27)
+	at bodega.Envio.pesar(Envio.java:37)
+	at bodega.Demo.main(Demo.java:51)
+```
+
+La línea que hay que leer es la segunda del *stack trace*: `bodega.Envio.pesar` llamando a `afuera.Ruta.comprueba`.
+El método del padre, ejecutándose dentro del padre, **enlazando con el del hijo** —eso es el dispatch dinámico del
+tema 1 trabajando, y es la razón por la que el gancho de validación se declara `protected` y no `private`. Con esa
+única palabra cambiada, la comprobación de `Ruta` pasa de 0 ejecuciones a 1, `pesar(50_000)` lanza, y el arnés lo
+nota: **14** de sus 140 asertos fallan, y así se reparten, leídos uno a uno sobre la salida del script mutado:
+**7** son `espera` que relanzan la JVM y fallan por el código 1 aunque su texto (`A1`, `A2`, `A3`, `A5`, `A6`, `B1`,
+`B6`) se imprimió bien; **1** es el aserto del propio código de salida, que ahora falla el primero y nombra la
+cascada; **4** son conteos `veces` que se invierten (la de `bodega` pasa de 3 a 2, la de `Ruta` de 0 a 1, y lo mismo
+en la cola desde `B4`); **1** es el valor comparado de `B5`, que ya no existe porque el programa muere antes; y **1**
+es el corte del compilador, `errores/OverrideDeUnPrivado`, que **deja de dar error** —con el padre abierto, ahora
+sí hay a quién sustituir—.
+
+*Tercera cara, la más barata:* `public String codigo` es parte de la interfaz declarada, y un campo `public`
+mutable no tiene invariante aunque tú quieras defenderlo. `B6 · un campo publico lo pisa quien quiera :
+PISADO-DESDE-AFUERA`, escrito desde `afuera.Cliente.pisaCodigo(e)` con un `e.codigo = "…"` corriente, sin abrir
+nada.
+
+**Nivel 3 — el control de acceso también ocurre al enlazar, dentro de la JVM; y allí el `.class` guarda el nombre, no la visibilidad.**
+
+Todo lo anterior es tiempo de compilación, y §6.6 lo dice: *«… accessibility is a static property that can be
+determined at compile time.»*. Pero la máquina lo vuelve a comprobar, y con otro resultado. JVMS §5.4.4 abre así:
+
+> *«Access control is applied during resolution (§5.4.3) to ensure that a reference to a class, interface, field,
+> or method is permitted.»*
+
+Y para campos y métodos da **cuatro** ramas, que son la respuesta en el lado de la JVM a «qué permite cada nivel»
+—las cuatro, literales, medidas sobre los ejemplos de este tema—:
+
+- *«R is `public`.»*
+- *«R is `protected` and is declared in a class C, and D is either a subclass of C or C itself. Furthermore, if R
+  is not `static`, then the symbolic reference to R must contain a symbolic reference to a class T, such that T is
+  either a subclass of D, a superclass of D, or D itself.»* —y añade que ya en la verificación de `D` se exigió que
+  el destino del acceso sea una instancia de `D` o de una subclase (§4.10.1.8). Es la traducción exacta, a bits, del
+  *qualifying type* de §6.6.2.1: la regla del «objeto que estás implementando» existe también dentro de la máquina.
+- *«R is either `protected` or has default access (that is, neither `public` nor `protected` nor `private`), and is
+  declared by a class in the same run-time package as D.»* —fíjate en el paréntesis: la JVM llama *default access* a
+  lo que `javac` llama *package access*, y aquí es donde se ve que «sin bandera» no es «sin regla».
+- *«R is `private` and is declared by a class or interface C that belongs to the same nest as D, according to the
+  nestmate test below.»*
+
+Y el incumplimiento no es un aviso:
+
+> *«If R is not accessible to D, then access control throws an `IllegalAccessError`.»*
+
+`por-dentro/jvm/` monta el experimento con dos versiones de la MISMA clase (`bodega.Envio`, mismo nombre completo) y
+un `Lector` que se compila **solo contra la primera**, donde el campo era `public`:
+
+```text
+mientras el campo es publico, el Lector ya compilado funciona:
+Lector leo gramos: 1250
+
+el mismo Lector.class, SIN recompilar, con la Envio.class de delante poniendo el campo private:
+Exception in thread "main" java.lang.IllegalAccessError: class Lector tried to access private field bodega.Envio.gramos (Lector and bodega.Envio are in unnamed module of loader 'app')
+	at Lector.main(Lector.java:6)
+```
+
+Lo decisivo está en lo que `Lector.class` guardó en su *constant pool* (medido con `javap -c -p` sobre el `Lector`
+compilado contra `v1`):
+
+```text
+        12: getfield      #16                 // Field bodega/Envio.gramos:I
+```
+
+**Nombre completo y descriptor, no visibilidad.** Por eso una biblioteca que cambie un campo `public` a `private` no
+rompe a quien vuelve a compilar —a ese se lo dice `javac`—, rompe a quien **no** recompila, y lo hace en producción
+con un error que no señala la línea culpable de nadie: señala la tuya (`Lector.java:6`). Este es el argumento real
+contra los campos `public` en una API, y no es estético: publicar un campo es prometer que no podrás cerrarlo sin
+romper binarios.
+
+Las dos especificaciones coinciden en permitir el `private` entre *nestmates*, y ahí está la última medición del
+tema, que además justifica una cosa que los temas 1 y 2 ya usaron sin explicarla: **por qué no hay ningún método
+sintético `access$` en los volcados de este módulo**. La definición de §5.4.4:
+
+> *«A *nest* is a set of classes and interfaces that allow mutual access to their `private` members. One of the
+> classes or interfaces is the *nest host*. It enumerates the classes and interfaces which belong to the nest,
+> using the `NestMembers` attribute (§4.7.29). Each of them in turn designates it as the nest host, using the
+> `NestHost` attribute (§4.7.28). A class or interface which lacks a `NestHost` attribute belongs to the nest
+> hosted by itself; if it also lacks a `NestMembers` attribute, then this nest is a singleton consisting only of
+> the class or interface itself.»*
+
+Esa última frase es la que hay que tener delante para no confundir *paquete* con *nest*: `bodega.Envio` y
+`bodega.Inspectoria` están en el mismo paquete y **no** forman un nest —contado sobre sus volcados `-v`: **0**
+apariciones de `NestHost` o `NestMembers`, o sea dos nidos de una sola pieza cada uno—, y por eso `Inspectoria` no
+puede leer `Envio.gramos` (nivel 0). Un nest es una clase top-level **con sus anidadas**, y el contraste se midió
+compilando `por-dentro/NidoPrivate.java` con el mismo `javac` en dos releases:
+
+```text
+--release 8   · javap -p NidoPrivate:
+  private int secreto;
+  static int access$000(NidoPrivate);            ← javac se inventa un puente estatico
+--release 8   · javap -c -p 'NidoPrivate$Visitor', cuerpo de int lee(NidoPrivate):
+  1: invokestatic  #7   // Method NidoPrivate.access$000:(LNidoPrivate;)I
+--release 25  · javap -p NidoPrivate:
+  private int secreto;                            (ningun access$: conteo medido = 0)
+--release 25  · javap -c -p 'NidoPrivate$Visitor', cuerpo de int lee(NidoPrivate):
+  1: getfield      #7   // Field NidoPrivate.secreto:I
+--release 25  · javap -v -p 'NidoPrivate$Visitor':
+  NestHost: class NidoPrivate
+--release 25  · javap -v -p NidoPrivate:
+  NestMembers:
+    NidoPrivate$Visitor
+```
+
+Y las dos versiones, ejecutadas, imprimen el mismo `el visitor lee el privado: 42`. Es un cambio de
+**representación**, no de comportamiento: antes `javac` teaba el acceso en un método estático del dueño del campo;
+desde que existen los nests, el `.class` declara «estos somos nosotros» y la JVM deja leer el campo en directo.
+
+El mismo par de releases cambia otra cosa que este tema creía saber, y por eso se midió: la instrucción con la que
+se llama a un método `private` **desde la propia clase**. Cuerpo de `llamar()` de `NivelesEnClass`, medido:
+
+```text
+--release 8 :   1: invokevirtual #23  // Method visible:()V      ·   5: invokespecial #27  // Method oculto:()V
+--release 25:   1: invokevirtual #23  // Method visible:()V      ·   5: invokevirtual #27  // Method oculto:()V
+```
+
+Con `--release 25`, un método `private` y uno `public` invocados desde dentro de la misma clase salen con **la misma
+instrucción** (`oculto` se ve en el mismo slot, #27, solo que con otro código de operación). Barrido release a
+release con este `javac` —8, 11, 17, 21, 25— el cambio está entre el 8 y el 11, que es donde entran los nest.
+Afirmación honesta de lo que esto **no** demuestra: que las dos cosas (nests y `invokevirtual` en privados) cambiaran
+juntas en el generador de código no prueba que una cause la otra, y `invokespecial` sigue siendo perfectamente
+correcto —lo emiten compiladores distintos, incluido este `javac` cuando el *target* es 8—. Lo que sí queda medido, y
+es lo que importa al leer un volcado: **contar `invokespecial` es una forma pésima de reconocer un método privado en
+bytecode actual**. Con `--release 25` y `javap -c`, este `.class` no distingue los dos niveles por la instrucción;
+los distingue por la **bandera** del método y por la accesibilidad que comprueba el compilador.
+
+#### 7. Código ejecutable
+
+Cuatro archivos en dos paquetes de carpeta son el tema entero: `bodega` declara los cuatro niveles y `afuera`
+intentar pasar por encima de ellos. Pegados tal cual están en
+`laboratorios/modulo-5/tema-3/src/` (solo se quitaron los comentarios de las tres primeras líneas de cada uno); el
+quinto, `bodega/Demo.java`, es el que los ejecuta y cuya salida está más abajo.
+
+```java
+// src/bodega/Envio.java
+package bodega;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class Envio {
+
+    public String codigo;                                   // public: parte de la interfaz
+
+    protected final List<String> hitos = new ArrayList<>(); // protected: lo escriben las subclases
+
+    int selloDePaquete = 7;                                 // paquete: sin modificador, lo ve bodega
+
+    private int gramos;                                     // private: el invariante
+
+    public Envio(String codigo) {
+        this.codigo = codigo;
+        hitos.add("creado");
+    }
+
+    public int gramos() {
+        return gramos;
+    }
+
+    // El unico camino al campo: aqui se rompe el invariante si alguien trae un peso absurdo.
+    public void pesar(int nuevo) {
+        comprueba(nuevo);
+        gramos = nuevo;
+    }
+
+    // Privada: no se hereda (§8.2), asi que quien la llama es SIEMPRE este cuerpo, nunca un herede.
+    private void comprueba(int nuevo) {
+        System.out.println("   bodega: la comprobacion de Envio corre");
+        if (nuevo < 0) {
+            throw new IllegalStateException("gramos no puede ser negativo: " + nuevo);
+        }
+    }
+
+    // Version «comoda» del getter: devuelve la lista VIVA del objeto.
+    public List<String> hitos() {
+        return hitos;
+    }
+
+    // Version con copia: lista inmutable, el llamante no puede tocar lo mio.
+    public List<String> hitosSeguros() {
+        return List.copyOf(hitos);
+    }
+}
+```
+
+```java
+// src/bodega/Inspectoria.java — otra clase del MISMO paquete
+package bodega;
+
+class Inspectoria {
+
+    static String informe(Envio e) {
+        // Lee y ESCRIBE el campo de paquete: el modificador ausente permite las dos cosas dentro de bodega.
+        e.selloDePaquete = e.selloDePaquete + 1;
+        return "sello de paquete leido y escrito desde bodega: " + e.selloDePaquete;
+    }
+
+    static String porFuera(Envio e) {
+        // El privado de Envio NO se ve aqui aunque estemos en el mismo paquete y en el mismo proyecto.
+        // Esta clase solo puede usar la puerta publica: el getter.
+        return "gramos por la puerta publica desde otra clase del paquete: " + e.gramos();
+    }
+}
+```
+
+```java
+// src/afuera/Ruta.java — subclase en OTRO paquete
+package afuera;
+
+import bodega.Envio;
+
+public class Ruta extends Envio {
+
+    public Ruta(String codigo) {
+        super(codigo);
+    }
+
+    // protected + this: el tipo que califica es Ruta, subclase de Envio. §6.6.2.1 lo permite.
+    public void sella() {
+        hitos.add("sellado");
+    }
+
+    public int cuenta() {
+        return hitos.size();
+    }
+
+    // Mismo nombre y misma firma que el metodo privado de Envio. NO lo sobreescribe: los metodos
+    // privados no se heredan (§8.2), asi que esto es un metodo nuevo de Ruta y punto.
+    public void comprueba(int nuevo) {
+        System.out.println("   afuera: la comprobacion mas estricta de Ruta corre");
+        if (nuevo > 30_000) {
+            throw new IllegalStateException("peso fuera de contrato: " + nuevo);
+        }
+    }
+}
+```
+
+```java
+// src/afuera/Cliente.java — un cliente normal de OTRO paquete, sin heredar nada
+package afuera;
+
+import bodega.Envio;
+import java.util.List;
+
+public class Cliente {
+
+    // Escribe el campo publico sin permiso de nadie: por eso un campo publico no tiene invariante.
+    public static String pisaCodigo(Envio e) {
+        e.codigo = "PISADO-DESDE-AFUERA";
+        return e.codigo;
+    }
+
+    // El getter que devuelve la lista viva deja meter un hito sin llamar a ningun metodo de Envio.
+    public static void manipula(Envio e) {
+        List<String> viva = e.hitos();
+        viva.add("MANIPULADO-DESDE-AFUERA");
+    }
+
+    // La copia defensiva, en cambio, si rechaza: el NEGARSE no esta en mi codigo, esta en el tipo de
+    // lista que devuelvo (java.util.ImmutableCollections), y ahi es donde la barrera deja de ser cortesia.
+    public static String conCopia(Envio e) {
+        try {
+            e.hitosSeguros().add("intento");
+            return "la copia acepto la escritura: el estado interno ya no es mio";
+        } catch (UnsupportedOperationException ex) {
+            return "rechazado con " + ex.getClass().getSimpleName();
+        }
+    }
+
+    // Lo unico que este cliente puede leer sin que se lo den hecho: la interfaz publica.
+    public static int porLaPuerta(Envio e) {
+        return e.gramos();
+    }
+}
+```
+
+Compile los cinco **juntos** —es la única forma de que exista un «otro paquete» que intente pasar—:
+
+```bash
+javac --release 25 -encoding UTF-8 -Xlint:all -d out src/bodega/*.java src/afuera/*.java
+java  -Dstdout.encoding=UTF-8 -cp out bodega.Demo
+```
+
+El `-Xlint:all` es parte del ejercicio: en esta máquina su salida fueron **cero bytes**, y todo lo que sigue es lo
+que imprimió la demo esos cero avisos no mencionaron (18 líneas, código de salida 0):
+
+```text
+A1 · paquete, escrito desde otra clase del paquete : sello de paquete leido y escrito desde bodega: 8
+A2 · private, desde otra clase del paquete         : gramos por la puerta publica desde otra clase del paquete: 0
+   bodega: la comprobacion de Envio corre
+A3 · el setter rechaza -50                      : gramos no puede ser negativo: -50
+A4 · y tras el rechazo el objeto sigue             : 0
+   bodega: la comprobacion de Envio corre
+A5 · lo que el cliente de afuera puede leer         : 1250 (solo por el getter)
+A6 · protected con this desde afuera               : 2 hitos
+A7 · la lista viva, antes de que nadie la toque    : 1 · [creado]
+A8 · afuera metio un hito sin pasar por un metodo   : 2 · [creado, MANIPULADO-DESDE-AFUERA]
+A9 · y la razon cabe en una linea: el tipo devuelto : java.util.ArrayList
+B1 · la copia defensiva si se defiende              : rechazado con UnsupportedOperationException
+B2 · el tipo devuelto esta vez                       : java.util.ImmutableCollections$List12
+B3 · y el estado interno no cambio                    : 2
+B4 · Ruta promete vetar mas de 30 000 g; se le pesan 50 000:
+   bodega: la comprobacion de Envio corre
+B5 · la que correra es la de bodega, y entro           : 50000 g
+B6 · un campo publico lo pisa quien quiera            : PISADO-DESDE-AFUERA
+```
+
+Tres lecturas de esas 18 líneas, y las tres son mediciones y no opiniones: `A3` imprime la rama del `catch` y `A4`
+devuelve `0`, o sea que el rechazo dejó el objeto **como estaba** —el invariante funcionó porque el campo estaba
+detrás del setter y no porque nadie tuviera buena voluntad—; `A8` sube el contador de 1 a 2 sin que se ejecute ni
+una línea de `Envio`; y entre `B4` y `B5` se interpone una tercera línea que **no es de `Ruta`**, que es el fallo 2
+entero en un salto de línea.
+
+Y los dos ficheros que no son de `src/` pero sostienen el nivel 3, tal cual están:
+
+```java
+// por-dentro/NidoPrivate.java — el private de una clase leido desde su anidada
+public class NidoPrivate {
+    private int secreto = 42;
+
+    static class Visitor {
+        int lee(NidoPrivate n) {
+            return n.secreto;          // privado, y desde otra clase: solo el nest lo permite
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println("el visitor lee el privado: " + new Visitor().lee(new NidoPrivate()));
+    }
+}
+```
+
+```java
+// por-dentro/jvm/Lector.java — se compila UNA vez, contra la Envio donde el campo era publico
+import bodega.Envio;
+
+public class Lector {
+    public static void main(String[] args) {
+        Envio e = new Envio();
+        System.out.println("Lector leo gramos: " + e.gramos);   // getfield: guarda el nombre, no la visibilidad
+    }
+}
+```
+
+#### 8. Mini-laboratorio
+
+Escribe todo desde cero dentro de `laboratorios/modulo-5/tema-3/`, en dos paquetes de carpeta: `src/mipaq/` y
+`src/otro/`. El ejercicio **no** es copiar los cuatro niveles: es intentar los accesos y quedarte con el mensaje
+exacto de cada rechazo. Si un paso tuyo compila donde el mío no, has escrito otra cosa: vuelve al modificador.
+
+1. **Los cuatro, seguidos.** Crea `src/mipaq/Marca.java` (`public class`) con cuatro campos pegados uno tras otro:
+   `public String visible`, `protected String hereda`, `String dePaquete` y `private String oculto`, más un método
+   `void llamar()` sin modificador que no haga nada. Crea `src/mipaq/Vecina.java` (`class`, sin `public`) que lea
+   los cuatro campos de un `Marca`. Antes de compilar, escribe en comentario cuántas de esas cuatro líneas compilan.
+   `javac --release 25 -d out src/mipaq/*.java`. **Tres**: verás que el `private` es el único cortado y que
+   `Vecina`, siendo de paquete, ve `dePaquete` sin pedir permiso. Si te salió una, pusiste los cuatro `public`; si
+   te salieron cuatro, no has escrito los cuatro niveles seguidos.
+2. **La misma fila desde fuera.** Crea `src/otro/Ajeno.java` que lea los cuatro campos de un `Marca`, y
+   `src/otro/Heredera extends Marca` con dos métodos: uno que lea `this.visible`, `this.hereda` y `this.dePaquete`, y
+   otro que lea exactamente lo mismo sobre un parámetro `Marca otro`. `javac --release 25 -cp out -d out2
+   src/otro/*.java`. Obtendrás **seis** errores, que son solo **tres mensajes** distintos, y el reparto es el tema
+   entero: ante `Ajeno` caen `hereda`, `dePaquete` y `oculto` (un extraño solo ve `public`); ante `Heredera` caen
+   `this.dePaquete`, `otro.hereda` y `otro.dePaquete`. Los dos que hay que comparar, uno a uno: `dePaquete` da
+   **el mismo texto** desde el extraño y desde la subclase, incluso escrito `this.dePaquete` —§8.2, heredar no abre
+   el paquete, y el `this` no es ninguna salida porque la salida se llama `protected`—; y `hereda` se cae **solo en
+   la versión del parámetro**, mientras que `this.hereda` compila en la misma clase y en la misma línea en que su
+   vecino falla (§6.6.2.1, el tipo que califica). Copia los seis mensajes literales, con sus carets, y escribe al
+   lado de cada uno qué aserto del tema te acaba de pagar.
+3. **El invariante.** Añade a `Marca` `private int gramos`, un `public void pesar(int)` que llame a una
+   `private void comprueba(int)` y la lance si el peso es negativo. Escribe un `main` que intente `pesar(-5)` y
+   luego `pesar(10)`, **cada uno dentro de su `try`/`catch`**, e imprima el campo después de cada intento. Si no
+   pones el `try`, el programa muere en el primer intento y no llegas a ver la línea que importa. **Listo cuando**
+   veas que tras el rechazo `gramos` sigue en `0` —no en `-5`, que es lo que el llamante pidió escribir— y que en
+   cambio el `pesar(10)` posterior sí lo deja en `10`.
+4. **El `private` que tu herede no sustituye.** Pon en `Marca` una `private void comprueba(int)` que solo imprima
+   `mipaq: corre la de Marca`, y en `src/otro/Heredera` una `public void comprueba(int)` que imprima
+   `otro: corre la de Heredera` y vete además los pesos mayores de 30 000. Llama `new Heredera().pesar(50_000)` y
+   **predice en comentario cuál de las dos líneas se imprime**. Ejecuta: sale la de `mipaq`. Después pon
+   `@Override` sobre el método de `Heredera` y compila de nuevo:
+   `comprueba(int) in Heredera does not override or implement a method from a supertype`. Guarda ese mensaje con la
+   `@Override` en su línea y el caret debajo. Y ahora el paso que de verdad enseña el precio: cambia en `Marca` el
+   `private` de `comprueba` a `protected` y vuelve a ejecutar sin tocar nada más. La línea que se imprime es la de
+   `Heredera`, `pesar(50_000)` lanza, y el *stack trace* te lo enseña: `mipaq.Marca.pesar` llamando a
+   `otro.Heredera.comprueba`, el método del padre enlazando con el del hijo. **Míralo dos veces antes de darlo por
+   bueno**: en esa misma ejecución, `pesar(-5)` deja `gramos` en `-5`, porque al abrir el gancho la comprobación del
+   padre desapareció —la sustituyó la del hijo, que solo miraba arriba—. Eso es encapsular de verdad: el nivel no es
+   una estética, es decidir **quién** mantiene el invariante.
+5. **La lista viva.** Añade `private final List<String> notas = new ArrayList<>()` con un getter
+   `public List<String> notas()` que devuelva el campo tal cual. Desde `src/otro`, mete un elemento sin llamar a
+   ningún método de `Marca` e imprime tamaño, contenido y `.getClass().getName()`. Cambia **solo** el cuerpo del
+   getter a `return List.copyOf(notas);` y repite las tres impresiones, ahora intentando la escritura dentro de un
+   `try`/`catch`. Escribe en comentario: por qué la corrección está en el tipo devuelto y no en tu buena voluntad;
+   quién lanza el `UnsupportedOperationException`; y con cuántos elementos te salió `…$List12` y con cuántos
+   `…$ListN` en tu JDK.
+6. **Los bits, no las palabras.** `javap -v -p -cp out Marca` y anota la línea `flags:` de los cuatro campos, la del
+   método `llamar()` y la de la propia clase. Busca a mano si existe una bandera que signifique «paquete» y
+   transcribe el número que has encontrado. Compara con `javap -p -cp out Marca`: el campo que no tiene bandera
+   tampoco tiene palabra.
+7. **La frontera de enlace.** Crea `v1/mipaq/Marca.java` con `public int gramos = 1250` y compílalo a `out1`. Crea
+   `Lector.java` que lea ese campo, compílalo con `-cp out1` a `outl` y ejecútalo: funciona. Ahora **sin recompilar
+   `Lector`**, cambia `v1` a `private int gramos`, compílalo a `out2` y ejecuta
+   `java -cp outl:out2 Lector`. Copia el error entero, incluido el final que dice `in unnamed module of loader
+   'app'`. Saca con `javap -c -p -cp outl Lector` qué es exactamente lo que el `.class` del llamante tenía guardado, y
+   escribe por qué eso hace que cerrar un campo `public` sea un cambio **binario** incompatible y no un retoque de
+   estilo.
+8. **El puente que ya no existe.** Compila `NidoPrivate` con `--release 8` en un directorio y con `--release 25` en
+   otro, con el mismo `javac`. Para cada uno: `javap -p` sobre la clase (busca `access$`) y `javap -c -p` sobre la
+   anidada (mira si es `invokestatic` o `getfield`). Ejecuta los dos: el mismo número. Y ejecuta con los dos sobre
+   una clase tuya con un método `private` llamado desde sí misma: `javap -c -p` y compara la instrucción.
+
+**Listo cuando** puedas decir, para cualquier miembro de una clase tuya, qué nivel le toca **y qué invariante se
+rompe exactamente un nivel más arriba**; cuando predigas sin compilar que una clase vecina de paquete ve `dePaquete`
+pero no `oculto`; cuando expliques por qué `this.hitos` compila y `otro.hitos` no con la frase «el tipo que
+califica»; cuando sepas que el método que un herede puso con el nombre de un `private` del padre **no se ejecuta
+nunca** y que `@Override` es lo único que te lo dice antes del incidente; y cuando puedas escribir de memoria el
+`IllegalAccessError` que sale al poner `private` un campo que alguien ya compiló contra `public`, y decir por qué eso
+no es un error de compilación.
+
+#### 9. Verificación
+
+```bash
+cd docs/reestructuracion/cursos/java/laboratorios/modulo-5/tema-3
+
+# 1) los cinco fuentes del tema, juntos, y el compilador callando
+javac --release 25 -encoding UTF-8 -Xlint:all -d out src/bodega/*.java src/afuera/*.java   # 0 bytes de aviso
+java  -Dstdout.encoding=UTF-8 -cp out bodega.Demo                                          # 18 lineas, codigo 0
+
+# 2) los bits de las dos clases de bodega
+javap -v -cp out bodega.Envio        | grep -m1 flags:    # (0x0021) ACC_PUBLIC, ACC_SUPER
+javap -v -cp out bodega.Inspectoria  | grep -m1 flags:    # (0x0020) ACC_SUPER  ← sin ACC_PUBLIC
+javap -v -cp out bodega.Envio        | grep -c 'Nest\(Host\|Members\)'          # 0: nest de uno
+
+# 3) los cuatro niveles como banderas, y la ausencia de una
+javac --release 25 -d outp por-dentro/NivelesEnClass.java
+javap -v -p -cp outp NivelesEnClass | grep -A2 'int dePaquete;'                  # flags: (0x0000)
+javap -p    -cp outp NivelesEnClass | grep -c 'package'                          # 0: no hay palabra
+javap -p    -cp outp 'NivelesEnClass$Tarifa'                                     # public abstract int calcula();
+
+# 4) como se llama a un private desde su propia clase, en dos releases
+javap -c -p -cp outp NivelesEnClass | sed -n '/void llamar();/,/return/p'         # invokevirtual · invokevirtual
+javac --release 8 -d outp8 por-dentro/NivelesEnClass.java 2>/dev/null             # (3 avisos de option obsolete)
+javap -c -p -cp outp8 NivelesEnClass | sed -n '/void llamar();/,/return/p'        # invokevirtual · INVOKESPECIAL
+
+# 5) por que pudo cambiar: access$ frente a NestHost/NestMembers
+javac --release 8  -d outn8  por-dentro/NidoPrivate.java
+javac --release 25 -d outn25 por-dentro/NidoPrivate.java
+javap -p    -cp outn8  NidoPrivate | grep 'access\$'                              # static int access$000(NidoPrivate);
+javap -p    -cp outn25 NidoPrivate | grep -c 'access\$'                           # 0
+javap -c -p -cp outn8  'NidoPrivate$Visitor' | sed -n '/int lee/,/return/p'       # invokestatic … access$000
+javap -c -p -cp outn25 'NidoPrivate$Visitor' | sed -n '/int lee/,/return/p'       # getfield … NidoPrivate.secreto:I
+javap -v -p -cp outn25 'NidoPrivate$Visitor' | grep NestHost                      # NestHost: class NidoPrivate
+javap -v -p -cp outn25 NidoPrivate | grep -A1 NestMembers                         # NestMembers: NidoPrivate$Visitor
+java  -Dstdout.encoding=UTF-8 -cp outn8  NidoPrivate                             # el visitor lee el privado: 42
+java  -Dstdout.encoding=UTF-8 -cp outn25 NidoPrivate                             # el visitor lee el privado: 42
+
+# 6) el acceso tambien se comprueba al enlazar (JVMS 5.4.4)
+cd por-dentro/jvm
+javac --release 25 -d v1out v1/bodega/Envio.java
+javac --release 25 -d v2out v2/bodega/Envio.java
+javac --release 25 -cp v1out -d lout Lector.java
+javap -c -p -cp lout Lector | grep 'getfield'                                     # Field bodega/Envio.gramos:I
+java  -Dstdout.encoding=UTF-8 -cp lout:v1out Lector                               # Lector leo gramos: 1250
+java  -Dstdout.encoding=UTF-8 -cp lout:v2out Lector                               # IllegalAccessError · codigo 1
+
+# 7) los seis cortes del compilador, con su mensaje literal
+cd ../../..
+javac --release 25 -cp out -d err errores/PrivadoEnOtraClaseDelPaquete.java        # gramos has private access in Envio
+javac --release 25 -cp out -d err errores/PaqueteDesdeOtroPaquete.java             # … not public in Envio; …
+javac --release 25 -cp out -d err errores/HerederoDeOtroPaqueteLeeLoDelPaquete.java  # MISMO mensaje que el anterior
+javac --release 25 -cp out -d err errores/ProtegidoConReferenciaDelPadre.java      # hitos has protected access in Envio
+javac --release 25 -cp out -d err errores/ReducirAccesoAlSobreescribir.java        # attempting to assign weaker access…
+javac --release 25 -cp out -d err errores/OverrideDeUnPrivado.java                 # … does not override or implement …
+```
+
+O el laboratorio del módulo entero: `cd .. && ./verificar.sh`. Esas **51** comprobaciones del tema pasan aquí con
+Temurin 27 y `--release 25`, y llevan el módulo a **140** (41 del tema 1, 48 del tema 2 y 51 de esta); con JDK 25 en
+el `PATH` basta `./verificar.sh`. Reparto contado sobre el propio `verificar.sh` y no sumado de memoria: **1** sobre
+la compilación conjunta (`-Xlint:all` vacío, que es la prueba de que el fallo 1 no avisa); **21** sobre
+`bodega.Demo` (7 `espera` que relanzan la JVM, 1 su código de salida, 9 comparaciones de valores ya capturados —7
+`igual`, 1 `cero_en` de que la rama de éxito no aparezca y 1 `distinto` entre los dos tipos devueltos— y 4 conteos
+`veces` de cuál comprobación corre y cuál no); **11** sobre `NivelesEnClass` (5 `bandera` sobre el volcado `-v`, 1
+`cero_en` de la palabra `package`, 1 interface implícitamente pública y 4 `lleva` del `invokevirtual` frente al
+`invokespecial` en dos releases); **9** sobre `NidoPrivate` (2 conteos de `access$`, 6 salidas de volcado y
+ejecución, 1 `cero_en` de que los atributos `Nest` no existan en release 8); **3** sobre el trío `jvm/` y **6**
+fallos de compilación esperados. 1 + 21 + 11 + 9 + 3 + 6 = 51, y por tipo: 16 `espera`, 10 `igual`, 7 `falla_con`, 5
+`bandera`, 4 `veces`, 4 `lleva`, 3 `cero_en`, 1 `vacio`, 1 `distinto` = 51.
+
+Tres guardas existen porque algo salió mal escribiendo el tema; en los tres casos se arregló el reconocimiento, no
+el listón:
+
+- `bandera` corta el volcado `-v` en la **cabecera exacta del miembro** y devuelve la línea `flags:` que la sigue, y
+  compara la línea entera. Sus tres primeras llamadas fallaron al primer intento: había escrito `int publico;`
+  cuando `javap` imprime `public int publico;`. Como está construida con `igual_no_vacio`, un extractor que no
+  encuentra al miembro **no** puede dar ok —la mutación 4 del tema lo demuestra: al pasar `privado` a `public` la
+  cabecera desaparece, el extractor devuelve vacío y el arnés falla con la palabra `texto vacio`—.
+- `lleva` y `cero_en` comprueban sobre texto **ya capturado**, porque el `invokevirtual` de `--release 25` y el
+  `invokespecial` de `--release 8` del mismo fuente hay que **compararlos**, no volver a lanzarlos. Y la de
+  `Nest\(Host\|Members\)` se escribió con el patrón entre escapes a propósito: buscar `Nest` pelado casaba con el
+  nombre del directorio temporal y habría dado un éxito falso.
+- El `igual` sobre el **código de salida** de la demo es el que corta la cascada. Sin él, la mutación 5 producía
+  fallos que culpaban a `A1`, que había impreso perfectamente; ahora ese aserto va el primero y nombra lo que pasó.
+
+*Pendiente de reejecución en JDK 25:* los **textos** —los seis mensajes de `javac` de arriba, el
+`IllegalAccessError` con su paréntesis final `(Lector and bodega.Envio are in unnamed module of loader 'app')`, que
+lo redacta la JVM, y el `IllegalStateException` del *stack trace* de la mutación—; el nombre interno
+`java.util.ImmutableCollections$List12` de `B2`, medido como `List12` con 1 y 2 elementos y `ListN` con 0 y con 3+;
+y la instrucción con la que `javac` llama a un `private` propio (`invokespecial` en `--release 8`, `invokevirtual`
+de 11 a 25), que es política del generador de código y no regla del lenguaje. Tres de esas cuatro cosas pueden
+caducar **por el ejecutable**, no por el lenguaje: si una JDK dejara de aceptar `--release 8`, o si cambiara el
+nombre de la lista inmutable, o si moviera el punto de corte del `invokespecial`, el arnés falla con nombre propio y
+el recuento baja —no se las envuelve en un `|| true`—.
+
+*Lo que no depende de la versión:* los cuatro niveles y que la accesibilidad sea una propiedad estática
+determinable en compilación (§6.6, §6.6.1); que un `private` sea accesible solo dentro del cuerpo de la clase
+top-level y **no** se herede (§6.6.1, §8.2); que un miembro de clase sin modificador sea de paquete y un miembro de
+interface sin modificador sea implícitamente `public` (§6.6.1); la regla del tipo que califica para `protected` fuera
+del paquete (§6.6.2, §6.6.2.1, Ejemplo 6.6.2-1); que fuera del paquete propio solo se hereden `protected` y `public`
+(§8.2); que una sobreescritura pueda ampliar el acceso pero nunca reducirlo (§8.4.8.3); que el control de acceso se
+aplique también durante la resolución y dé `IllegalAccessError` (JVMS §5.4.4, con sus cuatro ramas); la definición de
+nest por `NestHost`/`NestMembers` y el caso del nido de uno (JVMS §5.4.4, §4.7.28, §4.7.29); y el **fenómeno** —no el
+nombre— de que una lista inmutable rechace la escritura con `UnsupportedOperationException`.
+
+#### 10. Error común y diagnóstico
+
+**Síntoma 1 — «puse el getter, ¿por qué mi lista cambia desde fuera?»** El getter devolvió el objeto, no un dato.
+Diagnóstico en una línea: imprime `loQueDevuelvo.getClass().getName()` —medido: `java.util.ArrayList` en la versión
+comodín, `java.util.ImmutableCollections$List12` en la de copia—. Si el tipo devuelto es el de tu campo mutable, la
+barrera no existe: lo que el llamante tiene es **tu referencia**. Y no sirve de nada poner `private` al campo **y**
+devolverlo: el `private` protege el *nombre* del campo, no el objeto que ese nombre señala —`A8` subió el contador de
+1 a 2 con el campo privado, exactamente igual—. La corrección es cambiar el tipo devuelto: `List.copyOf`,
+`Map.copyOf`, `Arrays.copyOf`, un tipo que no admita escritura, o no devolver nada y exponer un método que haga el
+trabajo. Y el detalle fino: la barrera que has instalado no es tuya, es del tipo —el `UnsupportedOperationException`
+de `B1` lo lanza la lista, no tu código—, así que funciona aunque el llamante no tenga la menor intención.
+
+**Síntoma 2 — «en mi subclase reescribí la validación del padre y se aceptan valores imposibles».** Casi seguro
+estás repitiendo el nombre de un método `private` del padre. Diagnóstico: pon `@Override` sobre tu método y compila;
+si sale `does not override or implement a method from a supertype`, no estabas sustituyendo nada (§8.2: los privados
+no se heredan). Medido en la demo: la comprobación del padre corre 3 veces, la del hijo 0, y el peso imposible pasa.
+La corrección tiene dos mitades y las dos están en el fuente: en el padre, el gancho que debe poder sustituirse se
+declara `protected`; en el hijo, se anota. **Pero lee el paso 4 del mini-laboratorio antes de hacerlo**: al abrir el
+gancho, la comprobación del padre deja de correr, y si el hijo no llama a `super.comprueba(...)`, el invariante del
+padre se apaga —medido: `pesar(-5)` acabó con el campo en `-5`—. No es un defecto del mecanismo: es que acabas de
+mover la propiedad del invariante a manos del herede. Y si el padre no es tuyo y no quieres abrirlo, entonces no
+había nada que sustituir: tu método es un método nuevo, y ponle otro nombre para que el siguiente no lo confunda.
+
+**Síntoma 3 — «me sale `X is not public in Y; cannot be accessed from outside package` y yo juré que eso era
+público».** Este tema lo tuvo escribiéndolo, compilando, y no era el campo: eran los **métodos auxiliares** del
+cliente de otro paquete, que quedaron sin modificador —cuatro errores de una vez, uno por método, porque `Demo` vive
+en `bodega` y los llamaba desde `afuera`—. El mensaje vale igual para un campo, un método o una clase, y lo que estás
+viendo es el nivel de paquete. Tres diagnósticos, en este orden: **(a)** mira el fuente de `Y`: si el miembro no
+tiene palabra, es de paquete, y necesitas `public` o meter el llamante en ese paquete; **(b)** si el miembro **sí**
+dice `public`, mira la **clase** `Y`: una clase de paquete con miembros `public` sigue siendo invisible fuera —el
+volcado de `Inspectoria` sale `flags: (0x0020) ACC_SUPER`, sin `ACC_PUBLIC`—; **(c)** si todo es `public` y sigues
+fuera, ya no es un problema de acceso sino de **empaquetado**: el `package` del fuente no coincide con el del
+`.class` que estás cargando (carpetas que no bajan del `src`, un `-cp` que apunta a un `out` viejo). Ahí `javap` de la
+clase cargada te dice el nombre real, y normalmente no es el que creías.
+
+**Síntoma 4 — «funcionaba con la versión anterior de la librería y ahora revienta con `IllegalAccessError`, que ni
+siquiera es un error de compilación».** Alguien bajó la visibilidad de un miembro que tú ya tenías compilado. El
+`.class` viejo guardó el **nombre** (`Field bodega/Envio.gramos:I`), no la visibilidad, y la JVM aplica el control al
+enlazar (JVMS §5.4.4). Diagnóstico: el miembro que nombra el mensaje es el que cambió; compruébalo con `javap -p`
+sobre la clase nueva frente a la referencia que usa tu binario. Dos consecuencias para tu código, y las dos son
+decisiones de este tema: publicar un campo `public` es prometer que nunca podrás cerrarlo sin romper binarios —de ahí
+`B6`—; y si necesitas cerrar, el orden es **añadir** la puerta pública primero (getter), deprecando el campo, y
+bajar el acceso después, en la siguiente *major*, no en un parche.
+
+**Y el error de concepto que los resume:** creer que `protected` es «`private` pero para mis hijos». Es al revés en
+un eje y más estricto en otro. §6.6.1 lo dice en la propia definición de `protected`: el acceso es correcto *«when
+one of the following is true: Access … occurs from within the package containing the class in which the protected
+member … is declared [**or**] Access is correct as described in §6.6.2»* —o sea, `protected` **incluye** a todo el
+paquete y **además** llega a otros paquetes por la herencia, pero allí solo sobre objetos del tipo del herede. Lo que
+no puede ser, y se comprueba en dos líneas del mini-laboratorio, es que `protected` sea más cerrado que el paquete:
+`Ajeno` (extraño) ve menos que `Heredera` (subclase en otro paquete), y `Heredera` ve lo de paquete **cero**.
+
+#### 11. Pregunta con respuesta modelo
+
+**Pregunta.** Tienes `public class Envio` con `private List<String> hitos`, `int selloDePaquete`,
+`protected String transportista` y `private void comprueba(int)`. Responde: **(a)** qué se rompe si
+`selloDePaquete` pasa a `public`; **(b)** por qué `hitos()` devolviendo el campo no está protegido por el `private`;
+**(c)** si una subclase en otro paquete puede hacer `otroEnvio.transportista = "x"`; **(d)** qué pasa si esa subclase
+declara su propio `comprueba(int)` con un `if` más estricto.
+
+**Respuesta modelo.**
+
+**(a)** Se pierde la barrera de colaboración y se gana un cambio binario futuro. Medido: con el modificador ausente,
+`bodega.Inspectoria` **escribe** el campo sin getter y sin setter (`A1` devuelve `8`, que es `7 + 1`) —eso es el
+nivel de paquete, y funciona porque las dos clases están en `bodega` aunque vivan en árboles de carpeta
+distintos—; pero cualquiera de fuera queda cortado con `selloDePaquete is not public in Envio`. Al hacerlo `public`,
+ese mensaje deja de existir para el mundo: ya no puedes garantizar «el sello se pone una vez al salir de bodega», y
+además quedas atado, porque cerrarlo después no rompe al que recompila (eso lo avisa `javac`) sino al que **no**
+recompila, con `IllegalAccessError` al enlazar (JVMS §5.4.4). Un campo `public` es una promesa de API a largo plazo
+escrita en una línea.
+
+**(b)** Porque `private` protege el *nombre* del campo, no el objeto que ese nombre señala. `return hitos;` copia la
+referencia —tema 4 del módulo 3: al método le copiaron el valor, y el valor es una referencia a tu lista— y el
+llamante tiene **la misma** lista: puede añadir sin pasar por ningún método de `Envio`. Medido en tres líneas
+sucesivas: `A7` `1 · [creado]`, `A8` `2 · [creado, MANIPULADO-DESDE-AFUERA]` y `A9`
+`el tipo devuelto : java.util.ArrayList`; y `javac -Xlint:all` sobre todo el tema sacó cero avisos. Con
+`List.copyOf` el mismo intento produce `UnsupportedOperationException` (`B1`) y el estado interno no se entera
+(`B3` sigue en `2`). La diferencia no es de intención ni de estilo: es de **tipo devuelto**, y el tipo se imprime.
+
+**(c)** No. §6.6.2.1: el acceso a un campo de instancia `protected` desde fuera del paquete se permite *«if and only
+if the qualifying type is S or a subclass of S»*, siendo `S` tu subclase. El tipo que califica `otroEnvio` es
+`Envio`, y `Envio` no es `Transporte` ni subclase de `Transporte` → error de compilación. Medido en el caso
+equivalente del laboratorio, y fíjate que la línea tiene los dos accesos y el caret cae solo en el segundo:
+
+```text
+error: hitos has protected access in Envio
+        this.hitos.addAll(otro.hitos);
+                              ^
+```
+
+Sí puede `this.transportista = …`, que es `Ruta.sella()` escribiendo en su propia lista `protected` desde otro
+paquete y dando `A6 · 2 hitos`. Es la regla del ejemplo `delta`/`delta3d` de la JLS: el `protected` lejano es para el
+que está *implementando un objeto suyo*, no para el que mira objetos ajenos.
+
+**(d)** Nada útil, y sin ningún aviso: `comprueba` es `private` en el padre, los privados no se heredan (§6.6.1,
+§8.2), así que el método del hijo **no** sobrescribe nada (§8.4.8.1) y `Envio.pesar` sigue llamando a su propia
+comprobación. Medido: `pesar(50_000)` sobre una `Ruta` imprime `bodega: la comprobacion de Envio corre`, la del hijo
+corre **0** veces en toda la demo y `gramos` acaba en `50000`. Lo detectas solo si anotas `@Override`, que entonces
+sale `comprueba(int) in OverrideDeUnPrivado does not override or implement a method from a supertype`; y si lo que
+quieres es que el hijo amplíe la validación, el gancho se declara `protected` en el padre **asumiendo que el invariante
+del padre pasa a manos del hijo** —eso cuesta que `pesar(-5)` deje de estar vetado si el hijo no llama a
+`super.comprueba`—. Y en cualquier caso, la visibilidad del método sustituto no puede ser menor que la del
+sustituido (§8.4.8.3): `attempting to assign weaker access privileges; was public`.
+
+#### 12. Cuándo usarlo y cuándo no
+
+| Hazlo | No lo hagas |
+|---|---|
+| Empezar cada miembro nuevo en `private` y subirlo un nivel solo cuando tengas un llamante concreto y una razón dicha en voz alta | Decidir el nivel «por si acaso», dejando campos sin modificador en una clase `public`: sin llamante no sabes lo que estás abriendo, y cerrarlo después es un cambio binario incompatible |
+| Devolver copias (`List.copyOf`, `Map.copyOf`, `Arrays.copyOf`) o tipos que no admitan escritura por todo estado interno mutable | Devolver el objeto interno «porque es más rápido» sin haber medido nada, o devolverlo y escribir un comentario pidiendo cuidado: `A8` demostró que el cuidado no es una barrera |
+| Declarar `protected` **solo** el gancho que un herede deba sustituir, anotarlo con `@Override` en el hijo y decir quién se queda el invariante al abrirlo | Confiar en que tu método de la subclase con el nombre de un `private` del padre se ejecuta: no se hereda, no se sobrescribe, y nunca corre |
+| Poner el invariante en un único sitio (`pesar` → `comprueba`) y dejar el campo detrás de esa puerta | Exponer un campo `public` mutable y añadir getters y setters encima: son dos puertas para el mismo estado y ninguna de las dos comprueba |
+| Usar el acceso de paquete para lo que es un secreto de **colaboración** dentro del paquete (aquí, `Inspectoria` escribiendo `selloDePaquete`), sabiendo que es una promesa de compilación y no de diseño | Escribir `protected` donde querías decir «de paquete»: `protected` lo ve también todo tu paquete (§6.6.1) y, además, cualquier subclase del mundo |
+| Aceptar que al sobreescribir se puede ampliar el acceso pero nunca reducirlo (§8.4.8.3) | Bajar de `public` a `private` en una versión nueva fiándote de que «todo el mundo recompila» |
+
+**Costo.** El nivel de acceso cuesta, en tiempo de ejecución, **cero**: es una comprobación estática del compilador
+más una del enlazador, y la diferencia de instrucciones entre llamar a un método `private` y llamar a uno `public`
+desde la misma clase es exactamente **0** con `--release 25`, medido sobre `llamar()`, donde los dos salen
+`invokevirtual` en el mismo slot (#23 y #27) y con el mismo patrón `aload_0` delante. Lo que cuesta es en código y en
+promesas: la copia defensiva copia cada vez que se llama (`List.copyOf` recorre la lista), y un setter que valida es
+dos líneas más que un campo abierto. La decisión económica de verdad es **dónde pagas**: abrir un campo hoy se paga
+en la siguiente versión, con un `IllegalAccessError` en casa de un cliente que no recompiló; cerrarlo hoy se paga en
+veinte segundos de getter.
+
+Lo que este tema **no** resuelve, y no finge resolver: qué pasa cuando lo que se comparte es *de la clase* y no del
+objeto —tema 4, `static`, donde `flags` gana el bit `0x0008` y el inicializador `<clinit>` ya viste en el tema 2 que
+corre una vez—; dónde vive realmente el fuente y qué significa `import module` (tema 5, JEP 511, donde el «paquete»
+de este tema deja de ser una convención entre dos carpetas y pasa a tener nombre en un archivo); cómo se compara y
+cómo se imprime un objeto cerrado sin `toString` (tema 6); y la forma inmutable corta que convierte la copia
+defensiva en el caso por defecto en lugar de una corrección: `record`, tema 7. Y una frontera que aquí solo se rozó:
+cuando hay **módulos** (JPMS), un miembro `public` en un paquete no exportado sigue siendo inaccesible —JVMS §5.4.4
+lo pone como primera rama de cada nivel—, y todo lo de este tema se midió con classpath, que es el caso en el que esa
+quinta pared no existe: de ahí el `unnamed module of loader 'app'` que aparece en el error.
+
+---
+
 ## Temas que faltan de este módulo
 
-Quedan cinco temas del temario: **3** encapsulación y modificadores de acceso (§6.6, EJ 15–16), **4** `static`
-(§8.3, §8.7, §12.4), **5** paquetes e importaciones incluyendo `import module` (JEP 511), **6** los métodos de
-`Object` y **7** objetos inmutables y `record` (§8.10, EJ 17). Cada uno traerá su ejemplo, sus errores
-reproducibles y sus comprobaciones a `verificar.sh`; el `Laboratorio` y la `Duración` de esta portada se
-reescriben con las cifras medidas cuando el módulo esté completo.
+Quedan cuatro temas del temario: **4** `static` (§8.3, §8.7, §12.4), **5** paquetes e importaciones incluyendo
+`import module` (JEP 511), **6** los métodos de `Object` y **7** objetos inmutables y `record` (§8.10, EJ 17). Cada
+uno traerá sus ejemplos, sus errores reproducibles y sus comprobaciones a `verificar.sh`; el `Laboratorio` y la
+`Duración` de esta portada se reescriben con las cifras medidas cuando el módulo esté completo.

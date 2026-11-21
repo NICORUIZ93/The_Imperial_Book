@@ -4253,8 +4253,8 @@ tramo Fundamentos, 7 temas: clases, campos, métodos y `this`; constructores con
 inicialización y su orden exacto; encapsulación y modificadores de acceso; `static`; paquetes e importaciones
 —incluido `import module`, JEP 511, definitivo en JDK 25—; los métodos de `Object` (`toString`, `equals`,
 `hashCode`); y objetos inmutables con `record`. Cuando cerraste este módulo no estaba escrito ninguno; hoy va
-**2 de 7** (los temas 1 y 2, con una puerta de 89 comprobaciones en verde: 41 del primero y 48 del segundo) y
-siguen pendientes los cinco restantes, cuyo
+**3 de 7** (los temas 1, 2 y 3, con una puerta de 140 comprobaciones en verde: 41 del primero, 48 del segundo y
+51 del tercero) y siguen pendientes los cuatro restantes, cuyo
 reparto original no cambia: `static` figura como **falta**, cuatro como **está pero básico** y los de `this` y
 `Object` como **ya está**, pero redactados en M0, M1 y M2 del
 curso antiguo): aquí dejaste
