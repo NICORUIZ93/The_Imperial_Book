@@ -755,7 +755,7 @@ flowchart LR
   S -->|"this.consultar(...)<br/>no vuelve a pasar por el proxy"| S
 ```
 
-#### Subtema X.1 · Construye un proxy a mano con `java.lang.reflect.Proxy` · 10 min
+#### Subtema 5.1 · Construye un proxy a mano con `java.lang.reflect.Proxy` · 10 min
 
 **Contexto:** antes de usar la versión de Spring, conviene ver el mecanismo sin framework. Un proxy es un objeto que implementa la misma interfaz que el real y decide qué hacer en cada llamada.
 
@@ -825,7 +825,7 @@ Es un proxy: true
 
 **Cierra:** guarda la salida y marca la línea que demuestra que la llamada interna no fue interceptada.
 
-#### Subtema X.2 · Mide el servicio con `@Aspect` y `@Around` · 10 min
+#### Subtema 5.2 · Mide el servicio con `@Aspect` y `@Around` · 10 min
 
 **Contexto:** escribir un `InvocationHandler` por cada preocupación transversal (tiempos, auditoría, reintentos) no escala. Spring AOP te deja declarar **dónde** actuar (pointcut) y **qué** hacer (advice), y él crea el proxy.
 
@@ -908,7 +908,7 @@ Ejecuta `./mvnw -q -Dtest=MedicionAspectTest test`.
 
 **Cierra:** conserva el test verde y la línea de log como evidencia.
 
-#### Subtema X.3 · Observa quién crea el proxy: `BeanPostProcessor` · 10 min
+#### Subtema 5.3 · Observa quién crea el proxy: `BeanPostProcessor` · 10 min
 
 **Contexto:** el proxy no aparece por magia: un `BeanPostProcessor` (BPP) recibe cada bean recién inicializado y puede devolver otro objeto en su lugar. El creador de proxies de AOP es un BPP; tú puedes escribir otro para observar el resultado.
 
@@ -938,13 +938,13 @@ Arranca con `./mvnw spring-boot:run` y busca la línea `[BPP]` en el arranque.
 
 **Fallo deliberado:** en `InspectorDeBeans`, devuelve `null` en lugar de `bean` cuando el bean es `ServicioEnvios`. **Error esperado:** el contexto no arranca; el controlador no encuentra un `ServicioEnvios` para inyectar. **Diagnóstico:** lo que devuelve un BPP **reemplaza** al bean. Restaura `return bean;`.
 
-**Entiende:** Spring Boot crea proxies CGLIB (subclases) por defecto (`spring.aop.proxy-target-class=true`), por eso aquí sí puedes inyectar la clase concreta, a diferencia del proxy de JDK del Subtema X.1. Un BPP actúa sobre beans ya creados; un `BeanFactoryPostProcessor` actúa antes, sobre las *definiciones* (así se resuelven los `${...}` de `@Value`). **Límite:** un BPP que inyecta otros beans en su constructor los fuerza a crearse antes que el resto, y Spring avisa con `is not eligible for getting processed by all BeanPostProcessors`; mantén los BPP sin dependencias.
+**Entiende:** Spring Boot crea proxies CGLIB (subclases) por defecto (`spring.aop.proxy-target-class=true`), por eso aquí sí puedes inyectar la clase concreta, a diferencia del proxy de JDK del Subtema 5.1. Un BPP actúa sobre beans ya creados; un `BeanFactoryPostProcessor` actúa antes, sobre las *definiciones* (así se resuelven los `${...}` de `@Value`). **Límite:** un BPP que inyecta otros beans en su constructor los fuerza a crearse antes que el resto, y Spring avisa con `is not eligible for getting processed by all BeanPostProcessors`; mantén los BPP sin dependencias.
 
 **Cierra:** borra `InspectorDeBeans` cuando termines; era un instrumento de observación, no lógica de la aplicación.
 
-#### Subtema X.4 · Reproduce la autoinvocación en Spring · 8 min
+#### Subtema 5.4 · Reproduce la autoinvocación en Spring · 8 min
 
-**Contexto:** el Subtema X.1 mostró que `this` salta el proxy. Comprueba que en Spring ocurre lo mismo, porque es la causa de que `@Transactional` o `@Async` "no hagan nada" (Módulos 3 y 9).
+**Contexto:** el Subtema 5.1 mostró que `this` salta el proxy. Comprueba que en Spring ocurre lo mismo, porque es la causa de que `@Transactional` o `@Async` "no hagan nada" (Módulos 3 y 9).
 
 **Hazlo tú:** añade a `ServicioEnvios`:
 
@@ -1022,7 +1022,7 @@ Al terminar, podrás resolver la ambigüedad cuando dos beans implementan la mis
 
 **Prerrequisitos:** Temas 1–3 de este módulo (inyección por constructor y estereotipos). Usa JDK 25 y Spring Boot 4.1.2.
 
-#### Subtema X.1 · Provoca la ambigüedad y elige un bean por defecto con `@Primary` · 10 min
+#### Subtema 6.1 · Provoca la ambigüedad y elige un bean por defecto con `@Primary` · 10 min
 
 **Contexto:** el cotizador de envíos depende de una interfaz `Tarifador`. Mientras solo exista una implementación, la inyección por constructor funciona sin anotaciones.
 
@@ -1091,7 +1091,7 @@ Marca la urbana como opción por defecto: añade `@Primary` (de `org.springframe
 
 **Cierra:** guarda el mensaje de error completo: el `FailureAnalyzer` de Boot ya te dice qué tipos compiten y qué hacer.
 
-#### Subtema X.2 · Pide una implementación concreta con `@Qualifier` · 8 min
+#### Subtema 6.2 · Pide una implementación concreta con `@Qualifier` · 8 min
 
 **Contexto:** el endpoint de envíos express debe usar siempre la tarifa express, aunque la urbana sea la principal.
 
@@ -1149,7 +1149,7 @@ Ejecuta `./mvnw -q -Dtest=CotizadoresTest test`.
 
 **Cierra:** anota qué clase usa cada estrategia y por qué.
 
-#### Subtema X.3 · Inyecta todas las implementaciones como lista o mapa · 7 min
+#### Subtema 6.3 · Inyecta todas las implementaciones como lista o mapa · 7 min
 
 **Contexto:** la pantalla de comparación muestra todas las tarifas disponibles. No quieres editar el servicio cada vez que aparezca una nueva.
 
@@ -1198,7 +1198,7 @@ void elMapaContieneTodasLasTarifas() {
 
 **Cierra:** agrega mentalmente una `TarifaNocturna`: ¿qué archivo cambiarías? Solo el nuevo.
 
-#### Subtema X.4 · Calcula valores con SpEL: `${...}` frente a `#{...}` · 10 min
+#### Subtema 6.4 · Calcula valores con SpEL: `${...}` frente a `#{...}` · 10 min
 
 **Contexto:** `${...}` es un *placeholder*: copia una propiedad tal cual. `#{...}` es una *expresión*: evalúa código pequeño (aritmética, llamadas a métodos, otros beans). La certificación pide distinguirlos.
 

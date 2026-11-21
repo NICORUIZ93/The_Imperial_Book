@@ -1276,7 +1276,7 @@ Al terminar, podrás serializar y leer los DTO de la API con Jackson 3, el motor
 
 **Prerrequisitos:** Temas 1–2 de este módulo (`TareaDTO`, `CrearTareaRequest`) y records de Java. Usa JDK 25 y Spring Boot 4.1.2.
 
-#### Subtema X.1 · Serializa y lee un DTO con `JsonMapper` · 10 min
+#### Subtema 7.1 · Serializa y lee un DTO con `JsonMapper` · 10 min
 
 **Contexto:** antes de tocar la configuración de Boot, mira el motor solo. Una prueba sin contexto de Spring muestra los valores por defecto de Jackson 3.
 
@@ -1324,7 +1324,7 @@ Ejecuta `./mvnw -q -Dtest=JacksonTresTest test`.
 
 **Cierra:** anota los dos paquetes (`tools.jackson.databind` y `com.fasterxml.jackson.annotation`) y para qué sirve cada uno.
 
-#### Subtema X.2 · Escribe fechas sin módulos extra · 10 min
+#### Subtema 7.2 · Escribe fechas sin módulos extra · 10 min
 
 **Contexto:** el historial de una tarea guarda cuándo cambió. En Jackson 2 necesitabas registrar `jackson-datatype-jsr310`; en Jackson 3 el soporte de `java.time` viene dentro de `jackson-databind`.
 
@@ -1365,7 +1365,7 @@ void fechaConFormatoLocalSeRechaza() {
 
 **Cierra:** guarda el JSON impreso y señala el campo de fecha.
 
-#### Subtema X.3 · Usa el `JsonMapper` que configura Spring Boot · 10 min
+#### Subtema 7.3 · Usa el `JsonMapper` que configura Spring Boot · 10 min
 
 **Contexto:** tus controladores no usan `JsonMapper.builder().build()`, sino el bean que crea Boot con las propiedades `spring.jackson.*`. Las pruebas de integración deben usar ese mismo bean.
 
@@ -1461,7 +1461,7 @@ flowchart LR
   H -->|"3.0"| E["400: versión no soportada"]
 ```
 
-#### Subtema X.1 · Activa el versionado por cabecera · 8 min
+#### Subtema 8.1 · Activa el versionado por cabecera · 8 min
 
 **Contexto:** la versión puede viajar en una cabecera, un parámetro, un parámetro del *media type* o un segmento de la ruta. Para una API consumida por apps propias, la cabecera mantiene las URL estables.
 
@@ -1534,7 +1534,7 @@ curl -s -H 'API-Version: 2.0' http://localhost:8080/api/tareas/1/resumen
 
 **Cierra:** guarda las dos respuestas y señala el campo que cambió entre versiones.
 
-#### Subtema X.2 · Prueba las versiones y el rechazo de una desconocida · 10 min
+#### Subtema 8.2 · Prueba las versiones y el rechazo de una desconocida · 10 min
 
 **Contexto:** lo que no está probado se rompe en el siguiente refactor. La prueba debe cubrir versión por defecto, versión explícita y versión inexistente.
 
@@ -1601,7 +1601,7 @@ Ejecuta `./mvnw -q -Dtest=VersionadoApiTest test`.
 
 **Cierra:** conserva la salida de las tres pruebas.
 
-#### Subtema X.3 · Anuncia la retirada con `Deprecation` y `Sunset` · 10 min
+#### Subtema 8.3 · Anuncia la retirada con `Deprecation` y `Sunset` · 10 min
 
 **Contexto:** la versión 1.0 se retirará. Los clientes deben enterarse por la propia respuesta, no por un correo que nadie lee.
 
@@ -1659,7 +1659,7 @@ void laVersionDosNoLlevaCabeceras() throws Exception {
 
 **Cierra:** registra las tres cabeceras de la respuesta 1.0.
 
-#### Subtema X.4 · Decide la estrategia y su límite · 7 min
+#### Subtema 8.4 · Decide la estrategia y su límite · 7 min
 
 **Contexto:** cabecera, ruta, parámetro y *media type* funcionan; la elección afecta a cachés, documentación y clientes.
 

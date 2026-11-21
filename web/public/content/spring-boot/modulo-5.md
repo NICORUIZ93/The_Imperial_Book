@@ -242,7 +242,7 @@ flowchart LR
   A --> R["Controller"]
 ```
 
-#### Subtema X.1 · Emite y valida un token con `JwtEncoder` y `JwtDecoder` · 10 min
+#### Subtema 2.1 · Emite y valida un token con `JwtEncoder` y `JwtDecoder` · 10 min
 
 **Contexto:** el Tema 1 dejó las rutas privadas con HTTP Basic. Ahora el cliente enviará un token firmado en cada llamada y el servidor no guardará sesión. Para aprender sin un proveedor externo, la misma API emitirá y validará tokens con una clave HMAC de laboratorio.
 
@@ -360,7 +360,7 @@ El test lanza `BadJwtException` (una `JwtException`) porque la firma no correspo
 
 **Cierra:** guarda `JwtService` y comprueba que el valor real de la clave no quedó en archivos versionados.
 
-#### Subtema X.2 · Conecta el resource server a la cadena · 10 min
+#### Subtema 2.2 · Conecta el resource server a la cadena · 10 min
 
 **Contexto:** validar una cadena en un test no protege rutas. La cadena de filtros debe leer el encabezado, validar el token, crear la identidad y traducir el claim `rol` a una autoridad que entienda `@PreAuthorize`.
 
@@ -435,7 +435,7 @@ public class AdminController {
 
 **Cierra:** la cadena compila sin filtro propio y los tests del Tema 1 siguen verdes.
 
-#### Subtema X.3 · Prueba identidad, rol y firma con tokens reales · 10 min
+#### Subtema 2.3 · Prueba identidad, rol y firma con tokens reales · 10 min
 
 **Contexto:** `@WithMockUser` prueba una regla con una identidad inventada, pero no ejercita la validación del token. Esta prueba firma tokens reales con el `JwtService` y los manda por HTTP simulado.
 
@@ -508,7 +508,7 @@ Ejecuta `./mvnw -q -Dtest=JwtSeguridadTest test` y después `./mvnw -q clean tes
 
 **Cierra:** conserva la suite verde y la salida del test de firma alterada.
 
-#### Subtema X.4 · Prueba la regla sin firmar: `jwt()` de `spring-security-test` · 8 min
+#### Subtema 2.4 · Prueba la regla sin firmar: `jwt()` de `spring-security-test` · 8 min
 
 **Contexto:** firmar tokens en cada prueba acopla los tests de autorización a la clave. Para probar solo la regla de un endpoint, `spring-security-test` crea un `Jwt` ya validado.
 

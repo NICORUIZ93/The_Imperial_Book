@@ -114,7 +114,7 @@ Al terminar, podrás reescribir el DAO del Tema 1 con `JdbcClient`, usar paráme
 
 **Prerrequisitos:** Tema 1 de este módulo (`EnvioJdbcRepository`, `EnvioRegistro` y la prueba `@JdbcTest`). Trabaja en `examples/java-jpa-lab` con JDK 25 y Spring Boot 4.1.2.
 
-#### Subtema X.1 · Reescribe la búsqueda con parámetros con nombre · 10 min
+#### Subtema 2.1 · Reescribe la búsqueda con parámetros con nombre · 10 min
 
 **Contexto:** en `EnvioJdbcRepository` cada consulta repite el `RowMapper` y depende del orden de los `?`. Con dos o tres parámetros, cambiar el orden en el SQL sin cambiarlo en Java produce un error silencioso.
 
@@ -217,7 +217,7 @@ Desde `examples/java-jpa-lab`, ejecuta:
 
 **Cierra:** cuenta cuántas líneas de mapeo manual desaparecieron respecto al Tema 1.
 
-#### Subtema X.2 · Mapea una consulta con alias y una proyección distinta · 10 min
+#### Subtema 2.2 · Mapea una consulta con alias y una proyección distinta · 10 min
 
 **Contexto:** el reporte diario solo necesita cuántos envíos hay por estado. Ese resultado no es una entidad: es una proyección que nace en el SQL.
 
@@ -259,7 +259,7 @@ void agrupaPorEstado() {
 
 **Cierra:** escribe qué pasaría si el reporte usara entidades `Envio` y las contara en Java.
 
-#### Subtema X.3 · Decide entre `JdbcClient`, `JdbcTemplate` y JPA · 7 min
+#### Subtema 2.3 · Decide entre `JdbcClient`, `JdbcTemplate` y JPA · 7 min
 
 **Contexto:** las tres APIs conviven en el mismo proyecto; elegir por moda complica el mantenimiento.
 

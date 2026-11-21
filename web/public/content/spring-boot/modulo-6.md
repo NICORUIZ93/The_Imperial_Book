@@ -429,7 +429,7 @@ Al terminar, podrás escribir el flujo del Tema 3 con `RestTestClient`, ejecutar
 
 **Prerrequisitos:** Tema 3 de este módulo (`TareaFlowEndToEndTest`) y el `JwtService` del Módulo 5. Usa JDK 25 y Spring Boot 4.1.2.
 
-#### Subtema X.1 · Escribe el flujo con `RestTestClient` sobre MockMvc · 10 min
+#### Subtema 4.1 · Escribe el flujo con `RestTestClient` sobre MockMvc · 10 min
 
 **Contexto:** con MockMvc encadenas `perform(...).andExpect(...)` y extraes el JSON con `JsonPath` a mano. `RestTestClient` mantiene la misma infraestructura en memoria, pero con una API de cliente HTTP.
 
@@ -500,7 +500,7 @@ Ejecuta `./mvnw -q -Dtest=TareaRestTestClientTest test`.
 
 **Cierra:** compara el número de líneas con `TareaFlowEndToEndTest` y anota qué parte se simplificó.
 
-#### Subtema X.2 · Ejecuta la misma prueba contra un servidor real · 10 min
+#### Subtema 4.2 · Ejecuta la misma prueba contra un servidor real · 10 min
 
 **Contexto:** MockMvc no abre sockets: no prueba el puerto, la compresión ni los filtros que solo existen en el contenedor de servlets. Cambiar a servidor real con `RestTestClient` es cambiar una anotación, no reescribir la prueba.
 
@@ -526,7 +526,7 @@ Ejecuta `./mvnw -q -Dtest=TareaRestTestClientServidorTest test`.
 
 **Cierra:** registra el puerto usado y la diferencia de transacciones entre los dos modos.
 
-#### Subtema X.3 · Reemplaza un `TestRestTemplate` heredado · 8 min
+#### Subtema 4.3 · Reemplaza un `TestRestTemplate` heredado · 8 min
 
 **Contexto:** encontrarás proyectos de Boot 3 con `@Autowired TestRestTemplate`. Al subir a Boot 4 esas pruebas dejan de arrancar.
 

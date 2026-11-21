@@ -493,7 +493,7 @@ Al terminar, podrás reintentar una llamada que falla de forma transitoria y lim
 
 **Prerrequisitos:** Temas 1–3 de este módulo (`@Async`, autoinvocación y `Semaphore`) y el Tema 5 del Módulo 0 (proxies). Usa JDK 25 y Spring Boot 4.1.2.
 
-#### Subtema X.1 · Activa los métodos resilientes y reintenta un fallo transitorio · 10 min
+#### Subtema 4.1 · Activa los métodos resilientes y reintenta un fallo transitorio · 10 min
 
 **Contexto:** RutaFlow cotiza con un proveedor externo que a veces responde "no disponible". Un reintento corto suele bastar.
 
@@ -601,7 +601,7 @@ Ejecuta `./mvnw -q -Dtest=CotizadorConReintentoTest test`.
 
 **Cierra:** guarda la salida y escribe por qué `includes` es parte del diseño, no un detalle.
 
-#### Subtema X.2 · Configura espera exponencial y comprueba qué no se reintenta · 10 min
+#### Subtema 4.2 · Configura espera exponencial y comprueba qué no se reintenta · 10 min
 
 **Contexto:** reintentar inmediatamente contra un proveedor saturado lo satura más. La espera debe crecer y tener un tope, con algo de azar (*jitter*) para que muchas instancias no reintenten a la vez.
 
@@ -634,7 +634,7 @@ Actualiza los `times(3)` de las pruebas anteriores al nuevo total y ejecuta.
 
 **Cierra:** anota qué errores de RutaFlow reintentarías y cuáles no.
 
-#### Subtema X.3 · Limita la concurrencia con `@ConcurrencyLimit` · 10 min
+#### Subtema 4.3 · Limita la concurrencia con `@ConcurrencyLimit` · 10 min
 
 **Contexto:** la impresora de etiquetas acepta dos trabajos a la vez. Con virtual threads, cien peticiones pueden llegar juntas al mismo método.
 
@@ -707,7 +707,7 @@ Ejecuta `./mvnw -q -Dtest=GeneradorEtiquetasTest test`.
 
 **Cierra:** guarda la salida y calcula el máximo global para tus réplicas.
 
-#### Subtema X.4 · Decide entre el núcleo de Spring y Resilience4j · 6 min
+#### Subtema 4.4 · Decide entre el núcleo de Spring y Resilience4j · 6 min
 
 **Contexto:** el Módulo 16 usa Resilience4j para `CircuitBreaker`, `Bulkhead` y `RateLimiter`. No necesitas ambos para todo.
 
@@ -729,7 +729,7 @@ Ejecuta `./mvnw -q -Dtest=GeneradorEtiquetasTest test`.
 
 **Cierra:** enlaza esta tabla desde el ADR de resiliencia del proyecto (Módulo 15).
 
-**Ejercicio:** reescribe el reintento del Subtema X.1 de forma programática con `RetryTemplate`, sin anotaciones, para una llamada que se construye en tiempo de ejecución. Escribe primero qué clase define la política.
+**Ejercicio:** reescribe el reintento del Subtema 4.1 de forma programática con `RetryTemplate`, sin anotaciones, para una llamada que se construye en tiempo de ejecución. Escribe primero qué clase define la política.
 
 <details>
 <summary>Solución</summary>
