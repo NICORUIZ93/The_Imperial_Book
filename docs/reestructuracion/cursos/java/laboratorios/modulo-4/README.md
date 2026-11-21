@@ -124,8 +124,9 @@ otros lanzan una excepción; `verificar.sh` comprueba el mensaje exacto.
   7. «`pesos.remove(1)` quita el valor 1» en una `List<Integer>`: quita la **posición** (queda `[10, 7]`);
      por valor hay que escribir `remove(Integer.valueOf(7))`.
   8. «`(bajo + alto) / 2` no tiene nada que ver con el desbordamiento de `int`»: medido en `OrdenRoto`, con
-     `bajo = Integer.MAX_VALUE - 2` da `-1` y la búsqueda se va por el lado equivocado;
-     `bajo + (alto - bajo) / 2` da `2147483646`.
+     `bajo = Integer.MAX_VALUE - 1` y `alto = Integer.MAX_VALUE` da `-1` —y con `bajo = MAX_VALUE - 2` da `-2`: el
+     valor depende de cuánto se salga la suma—, así que la búsqueda se va por el lado equivocado sin avisar.
+     `bajo + (alto - bajo) / 2` da `2147483646` en los dos casos.
   9. «la covarianza es cosa de la primera fila»: en `Object[][] vista = new String[2][]` la guarda se hace
      contra el **componente**, que es `String[]`, así que `vista[0] = new Integer[1]` también se rechaza —
      medido en `MatrizCovariante`, con mensaje `[Ljava.lang.Integer;` y la casilla 0 en `null` mientras la 1

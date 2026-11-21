@@ -2,8 +2,9 @@
 
 > Curso Java (JDK 25) · tramo **Fundamentos** · 6 temas · formato único (specs/021). Portada del curso:
 > [CURSO.md](CURSO.md). Todo el código de este módulo se compiló con `javac --release 25` y se ejecutó con
-> `java -Dstdout.encoding=UTF-8` sobre OpenJDK Temurin 27.0.1.0.2+1 (macOS, arm64), locale `es_CO`, el
-> 2026-11-20. Las salidas están pegadas tal cual. **Aviso de proveniencia:** en esta máquina no hay JDK 25
+> `java -Dstdout.encoding=UTF-8` sobre OpenJDK Temurin 27.0.1.0.2+1 (macOS, arm64), locale `es_CO`, entre el
+> 2026-11-20 y el 2026-11-21 (el tema 6 se cerró al día siguiente). Las salidas están pegadas tal cual.
+> **Aviso de proveniencia:** en esta máquina no hay JDK 25
 > instalado, así que el *API* es la de la versión 25 (la que comprueba `--release 25`) pero el *ejecutable* es
 > el 27. Ningún tema de este módulo usa funciones *preview*; lo que puede diferir entre los dos ejecutables
 > está marcado en cada tema como «pendiente de reejecución en JDK 25», y en este módulo eso es casi siempre el
@@ -3244,3 +3245,1020 @@ valor con `equals`/`compareTo` o con un primitivo en alguno de los lados; y si u
 tuyo sobre una referencia ausente. Y en M12, cuando el `Map<String, Integer>` se use con `merge` y con `get`
 encadenados, la regla del neutro (nivel 2, trampa A) es lo que separa un contador que funciona de uno que tira el
 lote entero.
+### Tema 6: Algoritmos a mano y coste: búsqueda lineal y binaria, ordenación y notación O · Básico · 40 min
+
+#### 1. Ubicación y prerrequisitos
+
+Curso Java · tramo Fundamentos · módulo 4 · sexto tema y cierre del módulo. Antes:
+[Tema 2](#tema-2-arreglos-multidimensionales-y-la-clase-arrays-ordenar-copiar-comparar-y-buscar) —aquí se ejecuta
+la misma búsqueda sobre el mismo arreglo ordenado, y la cuenta que aquel tema dejó abierta («`binarySearch` sobre un
+arreglo desordenado no es solo ineficiente: es falso», medido allí con `2` para 1250 y `-1` para 890) es exactamente
+la precondición que este tema escribe a mano—, [Tema 1](#tema-1-arreglos-creacion-valores-por-defecto-recorrido-y-arrayindexoutofboundsexception)
+(`v.length` como frontera y el `Index 5 out of bounds for length 5` que aquí reaparece como `Index 4 out of bounds for
+length 4`, esta vez por un `<=` mal puesto), [Tema 4](#tema-4-arraylist-y-hashmap-primer-uso) (todo lo que aquí se
+escribe a mano es lo que `Collections.sort` y un mapa hacen por ti; el `15997` contra `31996000` es la razón por la
+que en M21 se estudia el interior de esas llamadas), [Tema 5](#tema-5-wrappers-y-autoboxing-cache-de-integer-y-el-nullpointerexception-al-desempaquetar)
+(y el contraste deliberado: en este tema **todo es `int`**, porque un contador en un lazo cuadrático con cajas paga
+tres llamadas por vuelta además de las que estás contando) y del [Módulo 3 · tema 3](modulo-3.md) vienes con los
+cuatro lazos —el `for` anidado de la burbuja y el `while` con `break` de la inserción ya los escribiste allí—, del
+[Módulo 3 · tema 4](modulo-3.md) con que Java devuelve **un** valor (por eso el contador de este tema viaja en un
+`int[1]`, medido en `BuscarYOrdenarAMano`), y del [Módulo 1 · tema 1](modulo-1.md) con el desbordamiento silencioso
+de `int` y sus métodos exactos: `Math.multiplyExact(camiones, gramosPorCamion)` dejó allí la salida
+`multiplyExact dice:  integer overflow`, y aquí se reusa sobre `100000 * 99999` (medido en la sección 6). Después:
+el temario es explícito con el techo de este tema —`docs/temarios/java-objetivo.md`, sección de descartes, decisión
+D6—: «Estructuras de datos y algoritmos completos (árboles B, grafos, caminos mínimos, ordenación avanzada) … Java
+enseña el uso y el interior de las colecciones (M4 T6, M21). El curso completo de algoritmos no existe en la
+academia». Así que aquí se para la cuenta: cuatro algoritmos, comparaciones medidas y la notación para hablar de
+ellas; los árboles y los grafos son de otro curso. En M5 tus objetos entran en esas colecciones, en M11 los genéricos
+permiten escribir `binaria` una vez y usarla con cualquier tipo con `Comparable`, y en M21 se abre el `ArrayList` y
+el `HashMap` por dentro con el mismo instrumento que aquí se afina: contar. Versión: JDK 25. Fuentes del temario
+para este tema: CS61B (UC Berkeley) · MOOC de Helsinki parte 12 · roadmap de java-journey. Estado frente al curso
+antiguo, según `docs/temarios/java-objetivo.md`: **falta** —no es un tema «está pero básico»; en el curso viejo la
+notación O se nombraba en una tabla de colecciones sin que nadie contara una comparación, y ningún algoritmo estaba
+escrito—.
+
+#### 2. Objetivo
+
+Al terminar sabes escribir y explicar, con la salida delante, estos cuatro programas y sus números:
+
+- Búsqueda **lineal**: sobre `{7600, 250, 1250, 890, 3400, 45, 18000}` devuelve
+  `lineal 890 : indice 3 · comparaciones 4`, y cuando el dato no está,
+  `lineal 999 : indice -1 · comparaciones 7 (repaso los 7 porque no estaba)`. Es decir: **n** en el peor caso, con
+  `n = 7` medido en la propia línea.
+- Búsqueda **binaria**: sobre el mismo arreglo ya ordenado, `binaria 890: indice 2 · comparaciones 3` y
+  `binaria 999: indice -1 · comparaciones 3` —el mismo coste found y not found, y 3 en lugar de 7—. Y que el
+  resultado coincide con la biblioteca en el caso que acierta
+  (`mismo resultado que Arrays.binarySearch: true`) pero **no** en el que falla: medido en esta sesión, para el 999
+  tu función dice `-1` y `Arrays.binarySearch` dice `-4`, porque la API devuelve `-(punto de inserción + 1)`.
+- Ordenación por **inserción** y por **burbuja** sobre el mismo dato de 7 elementos:
+  `insercion  : [45, 250, 890, 1250, 3400, 7600, 18000] · comparaciones 14` contra
+  `burbuja    : [...] · comparaciones 21`, y `21` es exactamente `7·6/2`.
+- Cómo **crece** cada una, medido en la tabla de `Crecimiento`: al pasar `n` de 1000 a 8000, la lineal pasa de
+  1000 a 8000 (×8), la binaria de 10 a 13 (+1 por cada duplicado) y la columna cuadrática de 499500 a 31996000
+  (×64,06, medido). Y el extrapolo con la misma función del laboratorio: `n = 1 000 000` → 20 comparaciones;
+  `n = 1 000 000 000` → 30.
+- Que dos algoritmos de la **misma familia** no son la misma cosa según el dato: sobre 8000 elementos invertidos
+  empatan exactos (`invertido 8000   : insercion 31996000 · burbuja 31996000`), pero sobre 8000 casi ordenados la
+  inserción hace `15997` y la burbuja sigue haciendo `31996000`; el programa imprime el ratio como
+  `ratio burbuja/insercion en casi ordenado: 2000` —que es una división entera truncada: el valor real es
+  2000,125—. Y sabes por qué `15997` es `2n-3` (medido en 4, 8, 16 y 8000: 5, 13, 29, 15997).
+- Los tres fallos que **no lanzan excepción** (`OrdenRoto`): `[3400, 3400, 890] · perdió el 1250`,
+  `medio peligroso   : -1` frente a `medio seguro      : 2147483646` y `sin rescatar      : [7600, 7600, 7600]`.
+- Que el **contador también es código**: `100000*(99999)/2 : long 4999950000 · int 704982704`, y sabes reconstruir
+  el número malo paso a paso.
+- Y qué cuesta realmente un intercambio de tres líneas: `2 iaload` y `2 iastore` (offsets 2, 8, 9 y 13 del
+  volcado), y dónde queda el `arraylength` según escribas `i < v.length` o `i < n` (offset 6 dentro del lazo contra
+  offset 3 fuera, medidos con `javap -c -p`).
+
+Lo que **no** es objetivo de este tema y lo dejo dicho: no se mide tiempo de ejecución ni se compara
+micro-arquitectura. Todo número de coste que aparece aquí es **comparaciones contadas por el propio programa**, que
+es un entero exacto y repetible; un cronómetro no lo es.
+
+#### 3. Por qué importa
+
+**1. Es el único tema del módulo donde un programa incorrecto imprime un resultado plausible.** En los temas 1 a 5
+el error se anuncia: un índice fuera de rango, un `ArrayStoreException`, un `NullPointerException`. Aquí no.
+`intercambioRoto` compila, corre, no lanza nada y deja `[3400, 3400, 890]`: se perdió el `1250`.
+`insercionSinRescate` compila, corre y devuelve `[7600, 7600, 7600]` en vez de `[250, 1250, 7600]` —y el seguimiento
+casilla a casilla (medido en esta sesión) muestra que el 250 desaparece en `i=1` y el 1250 en `i=2`—. Un manifiesto
+de carga con esa ordenación no revienta: **ordena mal en silencio**, y el error lo paga alguien tres capas más
+lejos. Por eso `verificar.sh` comprueba estas cuatro líneas de texto: son la única evidencia de que el programa
+está roto.
+
+**2. La precondición de la binaria no la vigila nadie.** `Arrays.binarySearch` no comprueba el orden: el tema 2 lo
+midió (devuelve `2` para 1250 en un arreglo desordenado —acierto casual— y `-1` para 890 que sí estaba en el índice
+3). Escribir la binaria a mano una vez es lo que convierte esa trampa en algo que puedes **predecir**: cada vuelta
+descarta la mitad en función del orden, así que con el orden roto lo que descarta es información falsa, no trabajo.
+
+**3. El vocabulario de coste del resto del curso se paga aquí.** Cuando en M21 se lea el crecimiento del hueco de
+`ArrayList` (`0 → 10 → 15 → 22`, medido en el tema 4) o en M12 se justifique un `HashMap` frente a un filtro, la
+frase que se usa es «lineal», «logarítmico» o «cuadrático». Aquí esas palabras tienen detrás una tabla de enteros
+contados por un programa escrito por ti, no una etiqueta copiada. Y el descarte D6 del temario deja claro hasta
+dónde llega la academia con esto: el curso de algoritmos completos no existe; lo que existe es la capacidad de
+contar y de dudar de una cifra que no se midió.
+
+**4. El contador es código con sus propios errores.** `int mal = nGrande * (nGrande - 1) / 2;` en
+`Crecimiento.java:101` produce `704982704` para `n = 100000`. Nadie lanza nada. Si ese contador es un total de
+gramos, un costo o una métrica de negocio, el número malo se publica.
+
+#### 4. Analogía
+
+**El archivador de la central de RutaFlow, un mostrador con la tanda sin ordenar y dos aprendices ordenando.**
+
+- **Lineal = repasar el mostrador con el dedo.** Llegan 7 guías tiradas en cualquier orden y buscas la RF-000890:
+  miras la primera, la segunda… Cuatro miradas y aparece (`comparaciones 4`). Si la guía no está, repasas las 7
+  igual (`repaso los 7 porque no estaba`): el método no sabe cuándo parar antes, porque nada le dice que ya recorrió
+  todo lo posible. Ese es el precio de no tener orden: **cada elemento vale una mirada**.
+- **Binaria = el archivador ordenado doblado por la mitad.** El archivador de 7 cajones está ordenado por peso.
+  Metes el dedo en el del medio (peso 1250, índice 3), dices «890 va antes», y **tiras la mitad derecha entera**.
+  Vuelta 2: rango 0..2, miras el índice 1 (250) → «después». Vuelta 3: rango 2..2, índice 2 (890) → es. Tres
+  miradas en vez de cuatro para el mismo dato, y las mismas tres para una guía que no existe: el archivador doblado
+  se agota en log₂, no en n. **Si alguien metió una guía fuera de lugar, doblar ya no sirve**: el aprendiz tira la
+  mitad equivocada con total seguridad, y eso es lo que el tema 2 midió devolviendo `-1` para un elemento presente.
+- **Inserción = ordenar naipes en la mano.** Tomas el siguiente, lo deslizas hacia atrás hasta encontrar uno más
+  pequeño y lo sueltas. Con la mano casi ordenada, cada naipe nuevo se desliza **dos miradas** (la del vecino grande
+  y la del pequeño que frena el deslizamiento): por eso `15997 = 2n-3` en el dato casi ordenado, medido. Con la mano
+  invertida, cada naipe recorre toda la mano: `31996000`.
+- **Burbuja = pasar el dedo por la hilera comparando vecinos, ida y vuelta, siempre hasta el final.** El aprendiz
+  **no sabe mirar si ya quedó ordenada**, así que hace las `n(n-1)/2` comparaciones con la mano invertida y con la
+  mano casi ordenada: `31996000` en los dos casos, medido. Ese es el punto fino: burbuja e inserción son de la misma
+  familia cuadrática, pero una **responde al dato** y la otra no.
+- **Intercambio sin variable temporal = trasvasar entre dos jarros sin tener un tercero.** Pasas el vino del jarro A
+  al B, y luego «el del B al A» —pero el B ya tiene el vino de A: lo que trasvasiás es la misma cantidad dos veces y
+  el A original se perdió (`[3400, 3400, 890] · perdió el 1250`). El tercer jarro (`int temporal = v[i];`) no es
+  pedantería, es la única forma de que exista el dato que vas a pisar.
+- **El contador en `int` = un odómetro que se da la vuelta.** El camión recorrió 9 999 900 000 unidades y el aparato
+  tiene cinco cifras: muestra 704 982 704 y sigue contando contento.
+
+**Dónde se rompe la analogía.** En el archivo, «mirar un cajón» tiene un coste fijo; en una máquina no: mirar el
+elemento 2 de un arreglo y el 1 000 000 cuesta lo mismo (acceso directo, tema 1), mientras en una lista enlazada
+cada mirada obliga a avanzar desde el principio —que es, precisamente, por lo que la binaria no se aplica a una
+`LinkedList` y sí a un `ArrayList`, tema 4—. Segunda rotura: las miradas de esta analogía son **comparaciones**, y
+el programa real también ejecuta accesos, sumas y saltos; el `javap` del nivel 3 cuenta 4 accesos al arreglo por
+intercambio, que en la analogía serían «agarrar el jarro», y nadie los está contando en la tabla. Tercera: el
+aprendiz puede mirar y decidir parar; la burbuja del laboratorio **no tiene guarda de parada escrita**, y por eso su
+cifra no cambia con el dato —una burbuja con bandera sí la cambiaría, y se deja como ejercicio en la sección 8—.
+
+#### 5. Diagrama
+
+```mermaid
+flowchart TB
+    IN["tanda de guías: 7600, 250, 1250, 890, 3400, 45, 18000"] --> P1{"¿qué necesito?"}
+    P1 -->|"encontrar un valor"| ORD{"¿está ordenado?"}
+    P1 -->|"ordenar la tanda"| DAT{"¿cómo viene el dato?"}
+    ORD -->|"sí"| BIN["binaria<br/>log2(n) · medido 3 para n=7<br/>10 · 11 · 12 · 13 al duplicar"]
+    ORD -->|"no, y busco una sola vez"| LIN["lineal<br/>n en el peor caso<br/>medido 7 para n=7"]
+    ORD -->|"no, y busco muchas"| SORT["ordenar primero (Arrays.sort)<br/>y después binaria<br/>tema 2: buscar sin ordenar MIENTE"]
+    DAT -->|"casi ordenado"| INS["inserción<br/>2n-3 · medido 15997 con n=8000"]
+    DAT -->|"invertido"| AMB["cuadrático de todos modos<br/>medido 31996000 para las dos"]
+    DAT -->|"toda la vida igual"| BUB["burbuja<br/>n(n-1)/2 · 21 con n=7<br/>no mira si ya está ordenado"]
+    BIN -.->|"cada vuelta descarta la mitad"| HAL["rango 0..6 → 0..2 → 2..2"]
+    HAL -.->|"un mal medio mata el lazo"| MED["bajo + (alto - bajo) / 2<br/>(bajo + alto) / 2 → -1 medido"]
+```
+
+**Texto alternativo.** El diagrama es el árbol de decisión real de este tema. Entrada: la misma tanda de 7 pesos.
+Rama de búsqueda: si el arreglo está ordenado, la binaria cuesta 3 miradas con `n = 7`, 10 con 1000, 13 con 8000;
+si no está ordenado y buscas una sola vez, la lineal con `n` miradas es igual de barata que pararse a ordenar; y si
+buscas muchas, ordenas primero —con la advertencia del tema 2, donde `binarySearch` devolvió `-1` para un elemento
+que sí estaba. Rama de ordenación: la inserción responde al dato (2n−3 casi ordenado, cuadrática invertida), la
+burbuja no (n(n−1)/2 siempre). Debajo, la arista que conecta la binaria con `OrdenRoto`: doblar el rango exige un
+punto medio, y `(bajo + alto) / 2` se desborda a `-1` medido, mientras `bajo + (alto - bajo) / 2` da `2147483646`.
+
+#### 6. Explicación
+
+**Nivel 0 — las cuatro funciones y cómo se cuenta sin romper Java.**
+
+Lo primero es un problema de lenguaje, no de algoritmos: una función de búsqueda quiere devolver **dos** cosas, el
+índice y cuántas comparaciones hizo. Java devuelve un valor. En `BuscarYOrdenarAMano.java` se resuelve con un
+arreglo de una casilla que se pasa como parámetro (`tema-6/BuscarYOrdenarAMano.java:8-17`):
+
+```java
+// Lineal: mira uno por uno. El PEOR caso es n comparaciones.
+static int lineal(int[] v, int objetivo, int[] contadas) {
+    contadas[0] = 0;
+    for (int i = 0; i < v.length; i++) {
+        contadas[0]++;
+        if (v[i] == objetivo) {
+            return i;
+        }
+    }
+    return -1;
+}
+```
+
+Es el mismo truco del módulo 3 tema 4: **lo que se copia es la referencia**, así que la función no puede cambiar el
+`int` del llamador pero sí la casilla `contadas[0]` del arreglo que le prestaron. (Alternativas legítimas que se
+mencionan para que no parezca la única: un campo, un `record Resultado(int indice, int comparaciones)` o dos
+funciones. La casilla prestada es la más corta y la que menos ruido hace en un laboratorio.)
+
+La binaria (`:20-35`) es la misma forma con la guarda de la que nadie se acuerda:
+
+```java
+static int binaria(int[] v, int objetivo, int[] contadas) {
+    contadas[0] = 0;
+    int bajo = 0, alto = v.length - 1;
+    while (bajo <= alto) {
+        contadas[0]++;
+        int medio = bajo + (alto - bajo) / 2;       // asi se evita el desbordamiento de (bajo+alto)/2
+        if (v[medio] == objetivo) {
+            return medio;
+        } else if (v[medio] < objetivo) {
+            bajo = medio + 1;
+        } else {
+            alto = medio - 1;
+        }
+    }
+    return -1;
+}
+```
+
+Tres cosas están ahí sin decoración, y las tres se pueden medir. `bajo <= alto`: con `<` se deja de comprobar la
+última casilla —medido en esta sesión con un arreglo de un solo elemento `{890}`, la versión con `<` devuelve `-1` y
+la con `<=` devuelve `0`; y sobre los siete ordenados, buscando el último (`18000`) la versión con `<` también dice
+`-1` contra `6`—. `bajo = medio + 1`: el medio ya se miró, y volver a mirarlo es el bucle infinito del nivel 3. Y
+`bajo + (alto - bajo) / 2`: el desbordamiento del nivel 2. Salida literal:
+
+```text
+arreglo    : [7600, 250, 1250, 890, 3400, 45, 18000]
+lineal 890 : indice 3 · comparaciones 4
+lineal 999 : indice -1 · comparaciones 7 (repaso los 7 porque no estaba)
+ordenado   : [45, 250, 890, 1250, 3400, 7600, 18000]
+binaria 890: indice 2 · comparaciones 3
+binaria 999: indice -1 · comparaciones 3
+mismo resultado que Arrays.binarySearch: true
+insercion  : [45, 250, 890, 1250, 3400, 7600, 18000] · comparaciones 14
+burbuja    : [45, 250, 890, 1250, 3400, 7600, 18000] · comparaciones 21
+```
+
+Lectura, línea a línea:
+
+| Línea | Qué dice el número |
+|---|---|
+| `lineal 890 : indice 3 · comparaciones 4` | El índice es 3 y las miradas 4: se mira la casilla 0, 1, 2 y 3. En la lineal, «encontrarlo» cuesta `índice + 1`. |
+| `lineal 999 : indice -1 · comparaciones 7` | No está. Cuesta **n**, y el programa lo comenta por su cuenta: `repaso los 7 porque no estaba`. Ese es el peor caso que se usa en la tabla del nivel 1. |
+| `binaria 890: indice 2 · comparaciones 3` | Mismo arreglo, ahora ordenado: 3 miradas. La secuencia exacta (medida en esta sesión con la misma función): rango `0..6` → miro `3` (1250) → a la izquierda; rango `0..2` → miro `1` (250) → a la derecha; rango `2..2` → miro `2` (890) → es. |
+| `binaria 999: indice -1 · comparaciones 3` | Y aquí está la diferencia de verdad: **el caso negativo no cuesta más**. Las tres miradas se agotan solas. |
+| `mismo resultado que Arrays.binarySearch: true` | Compara el caso que acierta: ambos `2`. |
+| `insercion … comparaciones 14` / `burbuja … comparaciones 21` | Mismo dato de salida, misma respuesta ordenada, distinto trabajo. `21` es `7·6/2` exacto. |
+
+Sobre esa última pareja hay un detalle que conviene no tragarse sin comprobar: la igualdad con la biblioteca solo
+vale **cuando encuentra**. Medido en esta sesión sobre `[45, 250, 890, 1250, 3400, 7600, 18000]` buscando 999:
+
+```text
+binaria propia 999 = -1 · Arrays.binarySearch 999 = -4
+binaria propia 890 = 2 · Arrays.binarySearch 890 = 2
+```
+
+`-4` no es un `-1` con otro humor: `Arrays.binarySearch` devuelve `-(punto de inserción + 1)`, y el 999 iría en la
+casilla 3 (delante del 1250), así que `-(3+1) = -4`. Tu función devuelve `-1` y está **invertido el contrato**: si
+en el laboratorio de verdad te pidiera «en qué casilla debería estar», tendrías que recorrerla otra vez. Se deja
+como ejercicio 2 de la sección 8 precisamente porque la comprobación del laboratorio (`… true`) no cubre ese caso.
+
+---
+
+**Nivel 1 — cómo crece cada una, en enteros contados.**
+
+`Crecimiento.java` no cronometra: **formula y cuenta**. Las dos funciones de búsqueda se invocan sobre tamaños
+crecientes y las dos ordenaciones corren de verdad sobre 8000 elementos. Salida literal:
+
+```text
+n      lineal  binaria   n*(n-1)/2
+1000   1000    10       499500
+2000   2000    11       1999000
+4000   4000    12       7998000
+8000   8000    13       31996000
+binaria: al duplicar n solo suma 1 comparacion (8 -> 1000, 16 -> 2000)
+invertido 8000   : insercion 31996000 · burbuja 31996000
+casi ordenado 8000: insercion 15997 · burbuja 31996000
+  ratio burbuja/insercion en casi ordenado: 2000
+100000*(99999)/2 : long 4999950000 · int 704982704
+```
+
+Cuatro lecturas:
+
+1. **Columna lineal.** `comparacionesLineal(n)` devuelve `n` (`Crecimiento.java:5-7`) porque el peor caso de la
+   lineal es «el objetivo no está». 1000 → 1000, 8000 → 8000: la relación es ×1, por eso se llama lineal.
+2. **Columna binaria.** `comparacionesBinaria(n)` (`:9-20`) recorre el peor camino posible —siempre a la derecha—
+   y cuenta vueltas hasta que `bajo > alto`. Sale 10, 11, 12, 13. Es ⌊log₂ n⌋ + 1: 2¹⁰ = 1024 ≥ 1000. La línea
+   `al duplicar n solo suma 1 comparacion (8 -> 1000, 16 -> 2000)` es la traducción en prosa de esa columna.
+   Repitiendo el mismo bucle con `n` mayores (medido en esta sesión con la misma función): 1 000 000 → **20**,
+   1 000 000 000 → **30**. Mil millones de elementos y treinta comparaciones: ese es el argumento completo de la
+   binaria, y no hay que creérselo —se puede ejecutar—.
+3. **Cuarta columna, la cuadrática.** `499500`, `1999000`, `7998000`, `31996000` son `n(n-1)/2` literales
+   (`(long) n * (n - 1) / 2`, `:79`). Al multiplicar `n` por 8 (de 1000 a 8000), el coste se multiplica por
+   64,06 —medido: `31996000 / 499500 = 64.056056`—, no por 64 exacto porque la fórmula real tiene el `-1`. Ahí está
+   la diferencia entre «O(n²)» y la fórmula: la notación dice *qué orden de magnitud* crece, la fórmula dice
+   *cuántas*. Y el exceso sobre 64 se encoge solo, que es exactamente lo que la notación declara despreciable
+   (medido, comparando `n` con `8n` en la misma fórmula): `n = 1 000` da `64.056056`, `n = 100 000` da `64.000560`,
+   `n = 10 000 000` da `64.000006`. Dos cifras menos cada vez que `n` gana tres ceros.
+4. **El encabezado y las cifras no están alineadas del todo**, y eso también es observable: `499500` cae en la
+   columna 24 y el texto `n*(n-1)/2` del encabezado empieza en la 25 (medido con `indexOf`). El encabezado es un
+   `System.out.println` escrito a mano; las filas salen de
+   `String.format("%-6d %-7d %-8d %d", …)` (`:78-79`), que no tiene ancho para la última columna. Lección de
+   laboratorio, no de algoritmos: un encabezado tecleado **no garantiza** alineación, y si alguien compara estas
+   filas con un `grep` de espacios, el que falla es el `grep`.
+
+**Qué significa la O y qué no.** `O(f(n))` responde «¿qué término se queda cuando n crece?», y por eso la lineal y
+la binaria están en familias distintas (n vs log n) mientras inserción y burbuja están en la misma (n²). Lo que
+**no** dice la notación: que dos algoritmos de la misma familia den el mismo número en tu dato. Eso se mide, y es el
+nivel 2.
+
+---
+
+**Nivel 2 — el mismo dato, dos destinos: la inserción responde, la burbuja no.**
+
+`Crecimiento.java` genera dos arreglos de 8000: `invertido(n)` (`:56-62`) y `casiOrdenado(n)` (`:64-73`, un arreglo
+ordenado al que se le mueve el último elemento al principio con `System.arraycopy`). Los dos se ordenan con las dos
+funciones y se leen los contadores:
+
+```text
+invertido 8000   : insercion 31996000 · burbuja 31996000
+casi ordenado 8000: insercion 15997 · burbuja 31996000
+  ratio burbuja/insercion en casi ordenado: 2000
+```
+
+- **En el peor caso empatan exactos.** No «más o menos»: los dos `31996000`. Y se entiende sin fe: con el arreglo
+  invertido, la inserción para el elemento `i` recorre las `i` casillas anteriores todas mayores que él, así que suma
+  `1 + 2 + … + 7999 = 7999·8000/2 = 31996000`; la burbuja, como no tiene guarda de parada, suma `1 + 2 + … + 7999`
+  por construcción (`:43-51`). Las dos cuadráticas coinciden en el peor caso porque el peor caso de la inserción
+  **es** la burbuja en número de comparaciones.
+- **En casi ordenado se separan 2000 veces.** La inserción hace `15997`. El porqué se puede ver, no solo citarlo:
+  con `n = 8000` el dato generado es `[7999, 0, 1, 2, …, 7998]`. El primer naipe (valor 0) recorre hasta el fondo
+  porque solo hay un vecino y es mayor → 1 comparación. A partir de ahí, cada valor `k` necesita **dos**: la del
+  7999 que sigue desplazándose y la del vecino pequeño que frena el deslizamiento. Total `1 + 2·7998 = 15997`.
+  Medido con una versión que imprime el conteo por `i` (`i=1 → 1`, `i=2 → 2`, `i=3 → 2`, `i=4 → 2`) y contrastado
+  contra `2n-3` en `n = 4, 8, 16, 8000` → `5, 13, 29, 15997`, clavados. La burbuja, mientras, `31996000` otra vez:
+  **el dato no le llega a entrar**.
+- **El `2000` impreso es una división entera.** `:96` hace `dBub / cCas` con los dos como `long`, así que
+  `31996000 / 15997` da `2000`; el valor real es `2000.1250234418953` (medido). No es un error del laboratorio —es
+  lo que el programa pidió—, pero hay que saber que el ratio de la salida está truncado, porque la frase
+  «2000 veces menos» leída al pie de la letra sugiere exactitud donde hay piso.
+- **Y el contador tiene su propio fallo, que es el más fácil de pasar por alto.** `:99-102`:
+
+```java
+int nGrande = 100000;
+long bien = (long) nGrande * (nGrande - 1) / 2;
+int mal = nGrande * (nGrande - 1) / 2;
+System.out.println("100000*(99999)/2 : long " + bien + " · int " + mal);
+```
+
+```text
+100000*(99999)/2 : long 4999950000 · int 704982704
+```
+
+  El `int` no lanza nada y muestra una cifra **positiva** más pequeña, que es peor que un número raro. La
+  reconstrucción, medida paso a paso en esta sesión: `100000 * 99999` como `int` vale `1409965408` (el producto real
+  es `9999900000`; `9999900000 − 2·2³² = 1409965408`), y al dividir entre 2 sale `704982704`. Es decir: el desbordamiento
+  ocurrió **antes** de la división, que es lo que hace inútil escribir `/ 2` confiado. El JLS lo define, no lo
+  desaprueba —§15.17.1: «If an integer multiplication overflows, then the result is the low-order bits of the
+  mathematical product as represented in some sufficiently large two's-complement format. As a result, if overflow
+  occurs, then the sign of the result may not be the same as the sign of the mathematical product of the two operand
+  values.»— y por eso el cast tiene que estar en el operando (`(long) nGrande * …`), no en el resultado: poner
+  `(long) (nGrande * (nGrande - 1)) / 2` ya no arregla nada, porque lo que se ensancha es el daño. Las dos vías
+  limpias son las del módulo 1: `long` desde el principio, o `Math.multiplyExact`, que **sí** avisa (medido en esta
+  sesión: `multiplyExact(int,int) -> java.lang.ArithmeticException: integer overflow`, y sobre `long` da
+  `9999900000` sin problema; `Math.toIntExact(4999950000L)` también lanza).
+
+**Los tres fallos silenciosos de `OrdenRoto.java`.** Salida literal completa:
+
+```text
+intercambio roto  : [3400, 3400, 890] · perdió el 1250
+intercambio bien  : [3400, 1250, 890]
+medio peligroso   : -1
+medio seguro      : 2147483646
+sin rescatar      : [7600, 7600, 7600] · esperado [250, 1250, 7600]
+con Arrays.sort   : [250, 1250, 7600]
+```
+
+1. **`intercambioRoto` (`:8-11`)**: dos líneas que parecen un intercambio y no lo son.
+
+   ```java
+   v[i] = v[j];
+   v[j] = v[i];                    // mal: v[i] ya vale v[j], así que no se recupera nada
+   ```
+
+   El segundo paso lee `v[i]`, pero el primer paso ya lo pisó. Resultado medido: `[3400, 3400, 890]` con el `1250`
+   fuera. Sin excepción, sin aviso, sin `assert` que lo pille. El arreglo bien hecho, con `int temporal`, sale
+   `[3400, 1250, 890]`. **La variante «inteligente» sin temporal tampoco sirve** (medido en esta sesión sobre
+   `[1250, 3400, 890]`):
+
+   ```text
+   xor con i!=j : [3400, 1250, 890]
+   xor con i==j : [1250, 0, 890]
+   ```
+
+   Con `i != j` el truco `v[i] ^= v[j]; v[j] ^= v[i]; v[i] ^= v[j]` funciona. Con `i == j` —que en burbuja y en
+   inserción **nunca** pasa, pero en un `intercambio(v, i, i)` escrito por un humano o generado por un filtro sí—
+   borra la casilla y deja `0`. El tercer jarro no es folklore: es lo que hace que la función sea segura para
+   cualquier par de índices.
+2. **`puntoMedioPeligroso` (`:20-22`)**: `(bajo + alto) / 2` con `bajo = Integer.MAX_VALUE - 1` y
+   `alto = Integer.MAX_VALUE` imprime `-1`, mientras la resta por el medio (`:24-26`) imprime `2147483646`. Medido
+   el paso intermedio, que es el que explica todo: la suma **como `int`** vale `-3`, y `-3 / 2` es `-1` porque la
+   división entera trunca hacia cero (eso ya estaba en el [Módulo 1 · tema 1](modulo-1.md): `-7 / 2` es −3). Medido
+   también el vecino inmediato, para que se vea que el signo no es broma: con `bajo = Integer.MAX_VALUE - 2` y el
+   mismo `alto`, la suma da `-4` y el cociente `-2`. La consecuencia directa dentro de `binaria` sería `v[-1]`, y eso
+   sí lanza (medido): `java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 3`.
+
+   Hay una **tercera** forma, y es la que usa la biblioteca (leída en el código fuente de esta JDK,
+   `java.base/java/util/Arrays.java:1703-1713`, dentro de `binarySearch0(int[], int, int, int)`):
+
+   ```java
+   while (low <= high) {
+       int mid = (low + high) >>> 1;
+       int midVal = a[mid];
+       if (midVal < key)
+           low = mid + 1;
+       ...
+   }
+   return -(low + 1);  // key not found.
+   ```
+
+   Medido con los mismos dos extremos: `(bajo + alto) >>> 1` da `2147483646`, o sea **lo mismo que la resta por el
+   medio**, aunque la suma siga valiendo `-3`. Funciona porque `>>>` reinterpreta los 32 bits como entero **sin
+   signo**, y para índices de arreglo eso es legítimo: los dos sumandos son no negativos y su suma máxima es
+   `MAX_VALUE + MAX_VALUE = 4294967294`, que es `2³² − 2` (medido) y por tanto **cabe** en la interpretación sin
+   signo. La división con `/` no puede hacer eso porque su tipo es `int` con signo.
+
+   Ahora bien, hay que decirlo con precisión, porque es la anécdota más exagerada de la literatura Java: **ningún
+   arreglo real llega a `Integer.MAX_VALUE` de longitud** —el límite de longitud es `int`, así que un arreglo de
+   2 147 483 647 casillas de `int` necesitaría más de 8 GB de heap, y `alto` solo se acerca a eso cuando el `int`
+   viene de otro sitio: un rango de base de datos, un desplazamiento dentro de un archivo, una cota leída de un
+   fichero de configuración—. Y las dos reparaciones tienen alcances distintos: `(low + high) >>> 1` está bien **mientras los dos
+   extremos sean índices no negativos**, y `bajo + (alto - bajo) / 2` está bien para cualquier par de `int`. El fallo
+   que se enseña no es «tus arreglos se van a desbordar»: es que **la fórmula del medio es un `int` como cualquier
+   otro**, que la versión correcta se escribe en una línea, que la biblioteca eligió la suya por un motivo que se
+   puede leer en el fuente, y que quien escribe `(a + b) / 2` en un *code review* está pidiendo un motivo para
+   creerle.
+3. **`insercionSinRescate` (`:29-38`)**: es la inserción de nivel 0 con el `while` y **sin** la línea final
+   `v[j + 1] = valor;` (el archivo lo marca: `// falta: v[j + 1] = valor;`). Sobre `[7600, 250, 1250]` deja
+   `[7600, 7600, 7600]` contra el esperado `[250, 1250, 7600]`. El seguimiento casilla a casilla, medido con una
+   versión instrumentada:
+
+   ```text
+   i=1 -> [7600, 7600, 1250]
+   i=2 -> [7600, 7600, 7600]
+   ```
+
+   Es decir: el `250` desaparece en la primera vuelta (se desplaza sobre sí mismo y nadie lo devuelve al hueco) y el
+   `1250` en la segunda. Y hay **un segundo bug dentro del mismo método**: la condición del `while` compara contra
+   `v[i]`, que es una casilla que el propio desplazamiento va escribiendo. En el código correcto se rescata el valor
+   en un local **antes** de mover nada (`BuscarYOrdenarAMano.java:41`: `int valor = v[i];`). Ese par de líneas de
+   diferencia es la razón de que este tema se escriba a mano: son los dos fallos que no se ven en la salida de
+   `Arrays.sort`, porque `Arrays.sort` no los tiene.
+
+---
+
+**Nivel 3 — por dentro: qué cuesta cada línea y qué pasa cuando el lazo no cierra.**
+
+`CosteEnBytecode.java` da dos cosas que la analogía de las «miradas» ocultaba. Salida ejecutada:
+
+```text
+intercambio        : [1250, 250, 7600]
+sumaVista/sumaGuardada: 9100 / 9100
+```
+
+(el intercambio de `[7600, 250, 1250]` con índices 0 y 2, y `1250 + 250 + 7600 = 9100` por las dos vías). El
+`javap -c -p` de los tres métodos, extracto textual del volcado tomado en esta sesión:
+
+```text
+static void intercambioDeTresPaso(int[], int, int);
+   0: aload_0
+   1: iload_1
+   2: iaload            <- acceso 1: lee v[i]
+   3: istore_3          <-    el temporal vive en la variable local 3
+   4: aload_0
+   5: iload_1
+   6: aload_0
+   7: iload_2
+   8: iaload            <- acceso 2: lee v[j]
+   9: iastore           <- acceso 3: escribe v[i]
+  10: aload_0
+  11: iload_2
+  12: iload_3
+  13: iastore           <- acceso 4: escribe v[j]
+  14: return
+
+static long sumaVista(int[]);
+   4: iload_3
+   5: aload_0
+   6: arraylength       <- dentro del lazo
+   7: if_icmpge     23
+  10: ... iaload / i2l / ladd
+  17: iinc          3, 1
+  20: goto          4   <- retaguardia: el 6 se vuelve a ejecutar
+
+static long sumaGuardada(int[]);
+   2: aload_0
+   3: arraylength       <- fuera del lazo
+   4: istore_3
+   5: iconst_0
+   6: istore        4
+   8: iload         4
+  10: iload_3
+  11: if_icmpge     28
+  ...
+  22: iinc          4, 1
+  25: goto          8
+```
+
+Tres hechos, y el criterio para no pedir más de los que sostienen:
+
+1. **Tres líneas de intercambio son cuatro accesos al arreglo** (`2 iaload` + `2 iastore`), no tres. Y el
+   `int temporal` no cuesta un acceso extra: cuesta un `istore_3` sobre una variable local, que es más barato que
+   tocar el heap. Por eso el intercambio «en dos líneas» del nivel 2 no es una optimización: es un acceso menos y un
+   dato menos.
+2. **La longitud se lee donde la escribís.** `i < v.length` mete el `arraylength` dentro del cuerpo del lazo
+   (offset 6, con la retaguardia `goto 4` que vuelve a pasar por él); `int n = v.length` lo saca (offset 3, ejecutado
+   una vez). Lo que **no** afirma este tema es que la segunda sea más rápida: no se midió tiempo, y en un lazo tan
+   simple el JIT puede hacer lo que le dé la gana con la primera. La afirmación que sí se sostiene con el volcado es
+   estructural y de legibilidad: el bytecode de `sumaVista` **re-ejecuta la lectura de longitud por vuelta**, y en un
+   arreglo que no cambia eso es información redundante que además enmascara el caso donde sí cambiaría (un lazo sobre
+   una `List` que crece, tema 4). `iinc 3, 1` / `iinc 4, 1` son el `i++`, `goto` es la vuelta de la condición, y con
+   eso el lazo completo está visto: comparación, acceso, suma, incremento, salto.
+3. En el `main` del mismo volcado, los literales `7600`, `250` y `1250` salen como `sipush` (offsets 5, 11 y 17) y
+   el arreglo se crea con `iconst_3` + `newarray int` + tres pares `dup`/`iastore`. Es el mismo `newarray` del tema 1
+   visto desde el otro lado: tres casillas, tres escrituras, en orden.
+
+**Los tres errores reproducibles**, que son la otra mitad del nivel 3 porque enseñan lo que el compilador **sí**
+detiene y lo que solo se ve ejecutando. Salidas literales de esta corrida:
+
+- `errores/BurbujaFueraDeRango.java` — la burbuja correcta con el límite interior `j <= i` (línea 8) en lugar de
+  `j < i`. Primera vuelta con `i = 3`: cuando `j` llega a 3, `pesos[j + 1]` es `pesos[4]` sobre un arreglo de 4:
+
+  ```text
+  Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 4 out of bounds for length 4
+      at BurbujaFueraDeRango.main(BurbujaFueraDeRango.java:9)
+  ```
+
+  Nótese el parentesco con el tema 1 (`Index 5 out of bounds for length 5`): mismo mensaje, y aquí generado por un
+  `<=` en el bucle **anidado**, que es donde la gente lo escribe.
+- `errores/BusquedaQueNoTermina.java` — la binaria con `bajo = medio` (línea 16) en lugar de `medio + 1`. Imprime
+  primero la buena y después se detiene gracias a una guarda que el propio programa se puso:
+
+  ```text
+  bien  : 890 en el indice 1
+  Exception in thread "main" java.lang.IllegalStateException: no converge: 1001 vueltas, sigue en 2..3
+      at BusquedaQueNoTermina.mal(BusquedaQueNoTermina.java:10)
+      at BusquedaQueNoTermina.main(BusquedaQueNoTermina.java:42)
+  ```
+
+  Sobre `[250, 890, 1250, 3400]` buscando 3400, el rango se achica `0..3` → `1..3` → `2..3` y ahí se queda:
+  `medio` calcado sobre `bajo` es `2`, y asignar `bajo = medio` **no descarta nada**. El mensaje lo dice con las
+  dos variables: `sigue en 2..3`. La lección didáctica vale tanto como la del bug: ante la sospecha de que un lazo
+  no cierra, se instrumenta con un tope y un `IllegalStateException` con estado dentro (`++vueltas > 1000`), se
+  ejecuta, y se lee. Sin esa guarda tendrías un proceso clavado y un `jstack`.
+- `errores/ComparaConMenorQue.java` — `<` entre dos `String` (línea 8). No compila:
+
+  ```text
+  errores/ComparaConMenorQue.java:8: error: bad operand types for binary operator '<'
+          if (a < b) {                              // mal: < solo va con numeros
+                ^
+    first type:  String
+    second type: String
+  1 error
+  ```
+
+  Es el error de quien viene de Python o de JS. La reparación está en el propio archivo como comentario:
+  `// bien: if (a.compareTo(b) < 0) ...`, que es `String.compareTo` del módulo 2 y, a la vez, la razón de que el
+  orden de `Arrays.sort` sobre cadenas no sea el de `+`. Y aquí es donde la binaria de este tema se vuelve
+  transferible: `binaria` exige un `<` que signifique «va antes», y con objetos ese `<` es `compareTo` —que en M11
+  se generaliza con `<T extends Comparable<T>>` para escribir la función una sola vez—.
+
+#### 7. Código ejecutable
+
+**Las cuatro funciones con contador** · archivo `tema-6/BuscarYOrdenarAMano.java` · ejecuta
+`javac --release 25 -d out tema-6/BuscarYOrdenarAMano.java && java -Dstdout.encoding=UTF-8 -cp out BuscarYOrdenarAMano`
+
+```java
+// Binaria: divide por la mitad. Requiere el arreglo ORDENADO.
+static int binaria(int[] v, int objetivo, int[] contadas) {
+    contadas[0] = 0;
+    int bajo = 0, alto = v.length - 1;
+    while (bajo <= alto) {
+        contadas[0]++;
+        int medio = bajo + (alto - bajo) / 2;       // asi se evita el desbordamiento de (bajo+alto)/2
+        if (v[medio] == objetivo) {
+            return medio;
+        } else if (v[medio] < objetivo) {
+            bajo = medio + 1;
+        } else {
+            alto = medio - 1;
+        }
+    }
+    return -1;
+}
+
+// Insercion: mete cada elemento en su lugar. Barato en casi-ordenado, caro en invertido.
+static void insercion(int[] v, int[] contadas) {
+    int c = 0;
+    for (int i = 1; i < v.length; i++) {
+        int valor = v[i];
+        int j = i - 1;
+        while (j >= 0) {
+            c++;
+            if (v[j] > valor) {
+                v[j + 1] = v[j];
+                j--;
+            } else {
+                break;
+            }
+        }
+        v[j + 1] = valor;
+    }
+    contadas[0] = c;
+}
+
+// Burbuja: va intercambiando vecinos. Mas comparaciones que insercion en el mismo dato.
+static void burbuja(int[] v, int[] contadas) {
+    int c = 0;
+    for (int i = v.length - 1; i > 0; i--) {
+        for (int j = 0; j < i; j++) {
+            c++;
+            if (v[j] > v[j + 1]) {
+                int temporal = v[j];
+                v[j] = v[j + 1];
+                v[j + 1] = temporal;
+            }
+        }
+    }
+    contadas[0] = c;
+}
+```
+
+Salida completa (9 líneas). Las nueve están citadas tal cual en la sección 6: todas dentro del nivel 0, en el bloque
+de `:215-223`, y cinco de ellas (`lineal 890`, `lineal 999`, `binaria 890`, `binaria 999` y la de
+`Arrays.binarySearch`) vuelven a aparecer fila a fila en la tabla de `:230-234`. Las de `insercion` y `burbuja`
+se retoman en el nivel 2 **por sus cifras** (14 y 21 comparaciones sobre 7 elementos), no por el texto de la línea:
+
+```text
+arreglo    : [7600, 250, 1250, 890, 3400, 45, 18000]
+lineal 890 : indice 3 · comparaciones 4
+lineal 999 : indice -1 · comparaciones 7 (repaso los 7 porque no estaba)
+ordenado   : [45, 250, 890, 1250, 3400, 7600, 18000]
+binaria 890: indice 2 · comparaciones 3
+binaria 999: indice -1 · comparaciones 3
+mismo resultado que Arrays.binarySearch: true
+insercion  : [45, 250, 890, 1250, 3400, 7600, 18000] · comparaciones 14
+burbuja    : [45, 250, 890, 1250, 3400, 7600, 18000] · comparaciones 21
+```
+
+**El crecimiento medido** · `tema-6/Crecimiento.java` · 10 líneas de salida, todas en la sección 6. El bloque que
+hay que escribir a mano y que es el corazón del tema (las otras funciones son las del tema anterior con un contador
+pegado):
+
+```java
+int[] c = casiOrdenado(8000);
+long cCas = insercion(c)[0];
+int[] d = casiOrdenado(8000);
+long dBub = burbuja(d)[0];
+System.out.println("casi ordenado 8000: insercion " + cCas + " · burbuja " + dBub);
+System.out.println("  ratio burbuja/insercion en casi ordenado: " + (dBub / cCas));
+
+int nGrande = 100000;
+long bien = (long) nGrande * (nGrande - 1) / 2;
+int mal = nGrande * (nGrande - 1) / 2;
+System.out.println("100000*(99999)/2 : long " + bien + " · int " + mal);
+```
+
+Obsérvese el `casiOrdenado(8000)` llamado **dos veces**: las dos funciones ordenan el arreglo que reciben, así que
+compartir una sola copia contaminaría la segunda medición con la salida de la primera. Es el mismo «los datos se
+mutan» del tema 1, aplicado al experimento de coste.
+
+**Tres fallos sin excepción** · `tema-6/OrdenRoto.java` · salida de 6 líneas citada entera en el nivel 2:
+
+```text
+intercambio roto  : [3400, 3400, 890] · perdió el 1250
+intercambio bien  : [3400, 1250, 890]
+medio peligroso   : -1
+medio seguro      : 2147483646
+sin rescatar      : [7600, 7600, 7600] · esperado [250, 1250, 7600]
+con Arrays.sort   : [250, 1250, 7600]
+```
+
+**Por dentro** · `tema-6/por-dentro/CosteEnBytecode.java` · 2 líneas de salida y los tres cuerpos del `javap`
+arriba. Compilar y ejecutar:
+`javac --release 25 -d out tema-6/por-dentro/CosteEnBytecode.java && java -Dstdout.encoding=UTF-8 -cp out CosteEnBytecode`;
+volcado de instrucciones: `javap -c -p -cp out CosteEnBytecode`.
+
+**Los tres errores** · `tema-6/errores/`. Dos revientan al ejecutar con mensaje de la biblioteca, uno no compila:
+
+```text
+BurbujaFueraDeRango.java   -> java.lang.ArrayIndexOutOfBoundsException: Index 4 out of bounds for length 4 (linea 9)
+BusquedaQueNoTermina.java  -> imprime "bien  : 890 en el indice 1" y luego
+                              java.lang.IllegalStateException: no converge: 1001 vueltas, sigue en 2..3 (linea 10, llamada desde 42)
+ComparaConMenorQue.java    -> error: bad operand types for binary operator '<' (linea 8, first/second type: String)
+```
+
+#### 8. Mini-laboratorio
+
+Escribe los archivos desde cero en `laboratorios/modulo-4/tema-6/`. La regla del módulo se repite aquí con más
+razón que nunca: **predice el número antes de ejecutar**, y la diferencia entre tu predicción y la salida es el
+ejercicio. En este tema no hay una sola excepción que te avise si te equivocas en el razonamiento; el resultado malo
+se parece mucho al bueno.
+
+1. Crea `MisCuatroFunciones.java`: escribe `lineal`, `binaria`, `insercion` y `burbuja` sin mirar el laboratorio,
+   sobre un arreglo tuyo de **11** elementos. Antes de compilar, escribe en comentarios cuatro números: las
+   comparaciones que crees que hará la lineal para un valor que está en la posición 9, las que hará para uno que no
+   está, las de la binaria para un valor presente y las de la burbuja. Ejecuta y pega la salida al lado. ¿Cuántos
+   de tus cuatro pronósticos eran correctos? ¿Cuál falló y por qué? (La respuesta del cuarto está en
+   `n(n-1)/2` y no depende del dato.)
+2. Crea `ContratoDeBinarySearch.java`: implementa tu binaria devolviendo `-1` cuando no está y otra que devuelva el
+   punto de inserción firmado igual que la biblioteca (`-(punto + 1)`). Mide las dos sobre `[45, 250, 890, 1250,
+   3400, 7600, 18000]` con objetivos 890, 999 y 5. Pega las seis cifras y explica en comentario por qué tu `-1`
+   obliga a un segundo recorrido y el `-4` de la API no. (Medido en la sección 6: `Arrays.binarySearch(…, 999)` =
+   `-4`, punto de inserción 3.)
+3. Crea `OrdenSinOrden.java`: toma el arreglo **desordenado** `int[] v = {1250, 3400, 890, 7600, 250}` y corre tu
+   binaria para cada uno de los cinco valores, sin ordenar. Pega los cinco índices y cuenta cuántos son correctos.
+   Compara con `Arrays.binarySearch` sobre el mismo arreglo y pega lo que devuelva. **No arregles nada**: responde
+   por escrito qué tuvo que pasar para que una búsqueda «rápida» te dijera con seguridad que 890 no estaba.
+4. Crea `CasiOrdenadoAMano.java`: genera el dato `[n-1, 0, 1, …, n-2]` para `n = 4, 8, 16, 64` y para 8000, ejecuta
+   la inserción con contador y pega las cuatro cifras pequeñas y la grande. Comprueba que la fórmula `2n-3` te
+   explica las cuatro primeras antes de citar la quinta. Después agrega una **bandera de parada** a la burbuja
+   (`if (!huboIntercambioEnEstaVuelta) break;`) y vuelve a medir los 8000 casi ordenados: pega las dos burbujas
+   (sin bandera: `31996000`; con bandera: lo que salga) y explica por qué la burbuja del laboratorio no la tiene y
+   qué le cuesta a cambio.
+5. Crea `IntercambioSeguro.java`: implementa el intercambio de tres líneas, el de dos líneas (`OrdenRoto`) y el XOR
+   de tres, y llámalos con `i != j` **y** con `i == j` sobre `[1250, 3400, 890]`. Pega los nueve resultados. ¿Cuál
+   de los tres borra datos en más casos y cómo lo ves sin imprimir el arreglo entero? (Medido aquí: el XOR con
+   `i == j` deja `[1250, 0, 890]`.)
+6. Crea `CuentaQueSeDaVuelta.java`: calcula `n(n-1)/2` para `n = 100000` de cuatro formas: `int`, `long`,
+   `(long) n * (n-1) / 2` y `Math.multiplyExact(n, n-1)`. Pega las cuatro salidas, incluida la traza del
+   `ArithmeticException` (medido: `java.lang.ArithmeticException: integer overflow`). Escribe debajo en qué orden
+   ocurren desbordar y dividir, con la reconstrucción aritmética de `704982704` que aparece en la sección 6.
+7. Crea `InstrumentaElLazo.java`: copia la binaria rota (`bajo = medio`) y ponle la guarda de vueltas tú mismo, con
+   un tope de 20 en lugar de 1000. Ejecuta, pega el mensaje con el rango en el que se quedó, y responde por escrito
+   dos cosas: por qué la condición debe ser `bajo <= alto` y no `bajo < alto` (mídelo con un arreglo de 1 elemento),
+   y qué cambia entre `bajo = medio` y `bajo = medio + 1` dicho en términos del elemento que se descarta.
+8. Crea `MirameElBytecode.java`: escribe dos sumas de arreglo como en `por-dentro/CosteEnBytecode.java` (una con
+   `v.length` en la condición, otra guardado), compila, ejecuta `javap -c -p` y pega los dos cuerpos. Marca con un
+   comentario en el volcado la línea del `arraylength` de cada uno y a qué salta la retaguardia del lazo. Cuéntale a
+   un compañero, señalando el volcado, por qué aquí **no** puedes afirmar que una sea más rápida que la otra.
+
+**Listo cuando** puedas (1) decir, sin calcularlo, cuántas comparaciones hace tu burbuja con `n = 11` y cuántas la
+lineal en el peor caso —y por qué una respuesta no depende del dato y la otra tampoco—, (2) explicar por qué la
+binaria cuesta lo mismo encontrando que no encontrando, con la secuencia de rangos `0..6 → 0..2 → 2..2` en la mano,
+(3) justificar `15997` para 8000 casi ordenados sin invocar «O(n)»: tiene que salirte `2n-3` y el porqué de las dos
+miradas por naipe, (4) escribir de memoria la forma segura del punto medio y decir qué mide exactamente `-1` en
+`medio peligroso`, y (5) reconocer los tres fallos silenciosos en código ajeno: el intercambio de dos líneas, el
+`while` sin rescate final y el contador en `int` de un acumulado que puede crecer.
+
+#### 9. Verificación
+
+```bash
+cd docs/reestructuracion/cursos/java/laboratorios/modulo-4
+javac --release 25 -d /tmp/a tema-6/*.java && javac --release 25 -d /tmp/b tema-6/por-dentro/*.java
+java -Dstdout.encoding=UTF-8 -cp /tmp/a BuscarYOrdenarAMano   # «burbuja    : [...] · comparaciones 21»
+java -Dstdout.encoding=UTF-8 -cp /tmp/a OrdenRoto             # «medio peligroso   : -1»
+java -Dstdout.encoding=UTF-8 -cp /tmp/a Crecimiento           # «casi ordenado 8000: insercion 15997 · burbuja 31996000»
+java -Dstdout.encoding=UTF-8 -cp /tmp/b CosteEnBytecode       # «sumaVista/sumaGuardada: 9100 / 9100»
+javap -c -p -cp /tmp/b CosteEnBytecode | grep -E 'iastore|arraylength|iinc'
+java -Dstdout.encoding=UTF-8 -cp /tmp/e BurbujaFueraDeRango   # ArrayIndexOutOfBoundsException: Index 4 out of bounds for length 4
+java -Dstdout.encoding=UTF-8 -cp /tmp/e BusquedaQueNoTermina  # IllegalStateException: no converge: 1001 vueltas, sigue en 2..3
+javac --release 25 -d /tmp/e tema-6/errores/ComparaConMenorQue.java  # bad operand types for binary operator '<'
+```
+
+Aquí las **22** comprobaciones del tema pasan con Temurin 27 y `--release 25`, y el total del laboratorio del módulo
+es **188 / 0 fallidas / 0 omitidas** (el reparto medido bloque a bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 29 ·
+**T6 22** · Gradle 4). Dentro de las 22: **16** de salida ejecutada —seis de `BuscarYOrdenarAMano`, cuatro de
+`Crecimiento`, cuatro de `OrdenRoto` y dos de `CosteEnBytecode`—, **3 de bytecode** (`iastore`, `arraylength`,
+`iinc`, las tres sobre el mismo `.class`), **2** que exigen código ≠ 0 **y** el texto de la excepción
+(`Index 4 out of bounds for length 4` y `no converge: 1001 vueltas`) y **1** que exige que el `javac` falle con
+`bad operand types for binary operator`. Las cuatro cifras que sostienen el tema —`14`, `21`, `15997`,
+`31996000`— están cada una en su propia comprobación, pero no con la misma fuerza: `14` (inserción sobre los 7
+elementos), `21` (burbuja sobre los mismos 7) e `15997` (inserción sobre los 8000 casi ordenados) aparecen una sola
+vez, mientras que `31996000` aparece en **tres** —la fila `8000` de la tabla, el invertido y el casi-ordenado—, así
+que si alguien cambia un límite de bucle en `Crecimiento.java` se rompen tres puertas en vez de una.
+
+*Pendiente de reejecución en JDK 25:* el **texto** de los tres mensajes (`Index 4 out of bounds for length 4`,
+`no converge: 1001 vueltas, sigue en 2..3` —que lo redacta el propio programa, así que solo el formato es de la
+JVM—, y `bad operand types for binary operator '<'` con `first type: String`, que lo redacta `javac`), la traza
+`java.lang.ArrayIndexOutOfBoundsException: Index -1 out of bounds for length 3` citada en el nivel 2 y
+`java.lang.ArithmeticException: integer overflow` citada en el nivel 3, los **offsets e índices del constante pool**
+del volcado (`2: iaload`, `13: iastore`, `6: arraylength`, `#7`, `#13`), que son numeración interna de esta
+compilación, y el detalle de formato del encabezado de `Crecimiento` (columna 25 contra 24). Nada de eso es una
+regla que se enseñe.
+
+*Lo que no depende de la versión:* que la lineal en el peor caso haga `n` comparaciones y la burbuja
+`n(n-1)/2` **sea cual sea el dato** —es aritmética del lazo, no política de una biblioteca—; que la binaria haga
+⌊log₂ n⌋+1; que `15997 = 2n-3` para el arreglo casi ordenado construido así; que el ordenamiento por inserción sea
+lineal en datos casi ordenados; que `(bajo + alto)` se desborde y `bajo + (alto - bajo)` no —el JLS define el
+recorte de los bits bajos en §15.17.1 sin margen de implementación—; que `Math.multiplyExact` lance
+`ArithmeticException` en lugar de recortar; que el intercambio sin variable temporal pierda un dato; que
+`Arrays.binarySearch` devuelva `-(punto de inserción + 1)` (es contrato publicado de la API); y que `<` entre
+`String` no compile, por la regla de tipos de §15.20.1: «The type of each of the operands of a numerical comparison
+operator must be a type that is convertible (§5.1.8) to a primitive numeric type, or a compile-time error occurs».
+`String` no es convertible a un numérico primitivo, así que el error es la regla y el mensaje de `javac` citado
+arriba es su consecuencia.
+
+#### 10. Error común y diagnóstico
+
+**Síntoma 1 — «ordené la tanda y el reporte sale raro», sin ninguna traza.** El manifiesto se imprimió entero, con
+los pesos en un orden que *casi* cuadra. `sin rescatar      : [7600, 7600, 7600]` es ese bug: dos elementos
+convertidos en dos copias del mayor y uno desaparecido. **Detección:** una ordenación propia tiene que conservar el
+**multiconjunto** de entrada. Escribe la prueba antes que el algoritmo: copia el arreglo, ordénalo y compara las dos
+copias ordenadas de menor a mayor, o suma los valores antes y después (`9100` antes, `9100` después —medido en
+`CosteEnBytecode` que las dos sumas dan igual). Si el total cambió, perdiste o duplicaste un dato. **Arreglo:** la
+línea que falta, `v[j + 1] = valor;`, con el valor rescatado en un local **antes** de desplazar.
+
+**Síntoma 2 — el intercambio de dos líneas.** `[3400, 3400, 890]`. **Diagnóstico rápido:** busca en el método un
+índice que se escriba dos veces y se lea después de la segunda escritura. **Arreglo:** variable temporal. **No
+arregla esto:** el truco XOR (medido: `[1250, 0, 890]` cuando `i == j`), que cambia un fallo obvio por uno que
+depende de si el llamador pasa índices distintos.
+
+**Síntoma 3 — un lazo que no termina y un proceso que hay que matar.** Antes de sospechar de la JVM, instrumenta:
+`if (++vueltas > 1000) throw new IllegalStateException("no converge: " + vueltas + " vueltas, sigue en " + bajo +
+".." + alto);` sale en 200 ms y te dice el estado (`sigue en 2..3`, medido). **Las dos causas típicas de no
+convergencia en binaria** son `bajo = medio` (no descarta el medio, 1001 vueltas) y `bajo < alto` con un rango de
+una casilla que nunca se comprueba. **Regla que se deriva de lo medido:** cada vuelta tiene que **reducir** el rango
+en por lo menos una casilla; `medio + 1` y `medio - 1` lo hacen porque el `medio` ya fue mirado.
+
+**Síntoma 4 — «`binarySearch` me dice que no está, pero está».** No es la biblioteca: es el orden (`Index 4` del
+tema 2: `-1` para un 890 que sí estaba). **Diagnóstico:** pregunta «¿quién garantizó el orden de este arreglo?» Si la
+respuesta es «lo llené yo en el orden en que llegaban los mensajes», la binaria está prohibida. **Tres salidas:**
+lineal si es una consulta suelta, ordenar una vez y buscar muchas, o moverse a un `TreeMap`/estructura que mantenga el
+orden por ti (M21). **Y ojo con la cifra que se cita:** «binaria es más rápida» es cierto en comparación con lineal
+sobre **arreglo ordenado**; si hay que ordenar para cada búsqueda, la comparación correcta es lineal × k contra
+`n(n-1)/2` + k·log n, y ahí el coste de ordenar entra en la cuenta.
+
+**Síntoma 5 — un número de coste que nadie puede repetir.** «Esto es O(n²) así que será lento» no es una medida; y
+«tardó 340 ms» tampoco es repetible en otra máquina. **Arreglo:** contar una operación **elegida por adelantado**
+(comparaciones, accesos, escrituras) y publicar la fórmula con la que se genera el número. Aquí la operación elegida
+son las comparaciones, por eso `burbuja` da 21 y 31996000 sin importar la máquina. **Y cuidado con lo que se cuenta
+en el denominador:** `dBub / cCas` imprimió `2000` cuando el valor real era `2000.125` —división entera truncada—;
+un ratio publicado sin decir si es entero es una cifra a medias.
+
+#### 11. Pregunta con respuesta modelo
+
+**Comprensión.** Sobre 7 elementos, tu lineal hace 4 comparaciones para encontrar un valor y 7 para no encontrarlo.
+Tu binaria hace 3 en los dos casos. ¿Por qué la binaria no «se pone más cara» cuando el elemento no está?
+
+**Respuesta modelo:** porque su coste no depende de encontrar: depende de **cuántas veces se puede doblar el rango**
+hasta que quede vacío. `bajo <= alto` se cumple mientras queden casillas por descartar, y cada vuelta descarta
+mitad, así que el número de vueltas acotado por ⌊log₂ n⌋+1 tanto si aciertas como si no. Medido: `binaria 890:
+indice 2 · comparaciones 3` y `binaria 999: indice -1 · comparaciones 3`, y la traza de sondas de esta sesión es
+`0..6 → 0..2 → 2..2` en ambos casos. La lineal sí depende del dato, porque su única forma de saber que no está es
+haberse comido las `n` casillas: medido `comparaciones 7 (repaso los 7 porque no estaba)`. El detalle que delata al
+que nunca lo escribió: la lineal tiene dos casos (encontrar, no encontrar) y la binaria uno.
+
+**Comprensión.** Burbuja e inserción dan `31996000` las dos con 8000 elementos invertidos, pero con 8000 casi
+ordenados la inserción hace `15997` y la burbuja `31996000`. ¿Qué tiene la burbuja que la hace inmune al dato?
+
+**Respuesta modelo:** que **no mira si ya está ordenado**: sus dos `for` anidados (`:60-61` de la versión con
+contador) recorren todas las parejas `j, j+1` con una sola cuenta regresiva de `i`, así que el número de
+comparaciones es `n(n-1)/2` **por construcción**, ni un `if` que se salte vueltas. La inserción en cambio tiene una
+guarda natural: `while (j >= 0)` con `break` en cuanto encuentra un vecino menor o igual, así que su coste es
+`n − 1 + (desplazamientos)`. Con el dato `[7999, 0, 1, …]` cada elemento después del primero cuesta 2 miradas y sale
+`1 + 2·7998 = 15997` (medido, y verificado contra `2n-3` en `n = 4, 8, 16`). Por eso son «la misma O(n²)» y no «el
+mismo algoritmo»: la notación describe el **peor caso**, y la diferencia entre los dos está en el mejor y el típico.
+Bonus: la burbuja con bandera de parada arregla esto en el casi-ordenado y **no** lo arregla en el invertido.
+
+**Análisis.** `int mal = nGrande * (nGrande - 1) / 2;` con `nGrande = 100000` muestra `704982704`. ¿Dónde está el
+error y por qué poner `(long)` al final no lo arregla?
+
+**Respuesta modelo:** el error está en la multiplicación, no en la división. `100000 * 99999` son `9999900000`, que
+no cabe en `int`; según JLS §15.17.1 el resultado es la parte baja del producto en complemento a dos, y medido eso
+vale `1409965408` (`9999900000 − 2·2³²`). Después `/ 2` da `704982704`, que es exactamente lo impreso. Si ensanchas
+al final —`(long) (nGrande * (nGrande - 1)) / 2`— el daño ya está hecho dentro del paréntesis y el cast solo
+ensancha el número equivocado. Las dos formas correctas, ambas medidas: el cast **en el operando**
+(`(long) nGrande * (nGrande - 1) / 2` → `4999950000`) o declarar el contador `long` desde el principio; y si
+quieres que el programa grite en lugar de mostrar una cifra plausible, `Math.multiplyExact(100000, 99999)` →
+`java.lang.ArithmeticException: integer overflow`. Y el punto de fondo: el número malo es **positivo y verosímil**,
+que es la peor clase de resultado silencioso.
+
+**Entrevista.** «Dime en qué caso usarías inserción en lugar de `Arrays.sort`, y cuándo la lineal en lugar de la
+binaria.»
+
+**Respuesta modelo:** en producción, casi nunca: la inserción solo gana a una ordenación eficiente en datos
+*sustancialmente* casi ordenados y pequeños, y las implementaciones de `Arrays.sort` (dual-pivot para primitivos,
+mergesort estable para objetos) ya tienen entradas baratas para ese caso; pero saber que la inserción hace `2n-3` en
+casi-ordenado frente a los `n(n-1)/2` de una burbuja sin bandera **es lo que te deja leer** por qué una librería
+elige una u otra, y ese análisis es del M21. En la entrevista lo que se evalúa es la segunda parte: la lineal gana
+cuando (a) el arreglo **no** está ordenado y buscas una vez —ordener cuesta cuadrático o `n log n` y una lineal
+cuesta `n`, medido `7`—, (b) el arreglo está ordenado pero es tan chico que el doblar no paga, o (c) la colección no
+es de acceso aleatorio, donde la binaria está prohibida: no puedes «abrir el archivador por la mitad» si para ver la
+mitad tienes que caminar desde el principio. Y el cierre que separa la respuesta senior de la memorizada: cualquier
+elección de coste en Java se justifica **contando una operación definida**, no citando una etiqueta; y si no se puede
+contar, se dice «esto es una estimación» y no se convierte en un requisito.
+
+#### 12. Cuándo usarlo y cuándo no
+
+| Úsalo | No lo uses |
+|---|---|
+| Lineal sobre un arreglo tal como llega, cuando buscas **una vez**: `n` comparaciones, sin precondiciones (medido: 7 con `n = 7`) | Lineal «porque es fácil» dentro de un bucle que itera sobre la misma tanda: eso es `n²` sin decirlo, y la binaria con un `Arrays.sort` previo casi siempre gana |
+| Binaria **sobre arreglo ordenado** y de acceso aleatorio: log₂ medido 3 con 7 elementos, 20 con un millón | Binaria sobre lo que no está ordenado (tema 2: `-1` para un presente) ni sobre una lista enlazada, donde no puedes doblar sin caminar |
+| `Arrays.sort` + `Arrays.binarySearch` en código de trabajo; la versión de contrato firmado `-(punto+1)` si necesitas saber **dónde** iría | Tu `-1` propio como si fuera el de la API: medido, para 999 la biblioteca dice `-4` y la tuya `-1`, y quien lo lea buscará el punto de inserción en el índice −1 |
+| Inserción cuando **sabes** que el dato viene casi ordenado y es chico (`2n-3`, medido) | Burbuja en producción: sin bandera de parada hace `n(n-1)/2` gaste lo que gaste el dato (medido: `31996000` en los dos arreglos de 8000), y con bandera sigue sin ganar a lo que trae la biblioteca |
+| `long` o `Math.multiplyExact` para cualquier contador que pueda crecer con `n` | `int` en `n * (n - 1) / 2` o en un acumulado de lotes: medido, `704982704` y ni una traza |
+
+**Costo y criterio.** Lo medido de este tema es exacto y repetible porque **son conteos, no tiempos**: `4`, `7`,
+`3`, `14`, `21`, `10/11/12/13`, `20`, `30`, `31996000`, `15997` y `704982704` salen de ejecutar el programa, no de
+una tabla; y las tres cosas que dependen de la implementación se marcaron como pendientes (los textos de `javac` y
+de las excepciones, los offsets del `javap` y el truncado del ratio). Lo que se puede usar como criterio sin medir:
+la precondición de cada algoritmo, que es lo que realmente decide. Buscar sin orden ⇒ lineal; buscar con orden
+garantizado ⇒ binaria, y la garantía tiene un **dueño** (quien ordenó o quien mantiene la estructura); ordenar ⇒ la
+biblioteca, y el ejercicio a mano existe para que puedas leer lo que la biblioteca hace; acumular con `n` grande ⇒
+`long` y, si el neutro importa, `*Exact`. Y la regla que cierra el módulo y se cita en M21: **toda afirmación de
+coste que no puedas convertir en una operación contada es una opinión**, y una opinión no entra en un requisito de
+RutaFlow. En el laboratorio de este módulo el manifiesto se resuelve «con arreglos» y «con colecciones» y las dos
+versiones tienen que cuadrar (README del laboratorio); este tema es el que le pone número a la palabra *cuadrar*: `sobreElTope`
+usa `Arrays.sort` + `Arrays.binarySearch` y su coste es `n log n` una vez más `log n` por consulta, no `n` por
+consulta.
+
+---
+
+## Cierre del módulo
+
+### Resumen
+
+- Un arreglo se crea de tres formas y **vacío no significa `null`**: `new int[3]` trae ceros, `new int[3][]` trae
+  **tres filas `null`** (medido: el primer `porFila[i].length` lanza `NullPointerException`), y el inicializador
+  `{1250, 3400}` fija la longitud para siempre. `length` es un campo, no un método: `ConfundeParentesisConLength`
+  no compila, y el recorrido fuera de rango sale en las dos direcciones —`Index 5 out of bounds for length 5` hacia
+  arriba y `Index -1 out of bounds for length 3` hacia abajo, los dos medidos en `tema-1/errores/`—.
+- Una matriz es **un arreglo cuyos elementos son arreglos**: `[[I` es la clase real de un `int[][]` (medido), las
+  filas pueden tener longitudes distintas y la clase `Arrays` es la biblioteca que opera sobre eso —`sort`,
+  `equals`, `toString`, `copyOf`, `fill`, `binarySearch`—. El abuso caro: `binarySearch` sin ordenar **miente**, y se
+  midió (`2` para 1250, `-1` para 890 que sí estaba). Y `Arrays.asList` es una **vista**: `set` muta el arreglo,
+  `add` lanza `UnsupportedOperationException`, y pasarle un `int[]` da una lista de **un** elemento.
+- La covarianza de arreglos sigue viva: `Object[] vista = new String[3]` es legal (misma identidad, sin copia), pero
+  la escritura ilegal deja el arreglo **a medio escribir** con `ArrayStoreException`, el cast de vuelta falla **al
+  leer** con `ClassCastException`, y en `Object[][]` la guarda es contra el componente (`String[]`), así que
+  `vista[0] = new Integer[1]` también se rechaza (medido en `MatrizCovariante`). Las listas no son covariantes y por
+  eso son más seguras: `List<Object>` a partir de `List<String>` no compila.
+- `ArrayList` y `HashMap` son el par que casi siempre se usa en lugar del arreglo: `add`/`get`/`size`, el `put` que
+  devuelve el valor anterior, `merge(k, v, Integer::sum)` para acumular —`put` en un lazo acumulador sobrescribe y no
+  avisa: medido, NORTE pasó de 1950 a 700—, el `remove(1)` que borra la **posición** y no el valor, la
+  `ConcurrentModificationException` con su dependencia del dato, `List.of` inmutable (`UnsupportedOperationException`
+  tardío y en otra capa) y el `HashMap` que **no** garantiza el orden de inserción mientras `LinkedHashMap` sí
+  (medido: `LinkedHashMap si lo conserva: [Medellin, Bogota, Cali]`; con esas cuatro claves el `HashMap` imprimió el
+  mismo orden por accidente del `hashCode` y de su capacidad, no por contrato). El hueco interno medido por reflexión
+  pasa `0 → 10 → 15 → 22`.
+- Los envoltorios son cartón: encajar es `Integer.valueOf`, **no** `new` (medido en el bytecode), y el cajón de
+  identidad −128..127 hace que `127 == 127` sea `true` y `128 == 128` sea `false` —los dos en la misma corrida—. El
+  corte se puede mover con `-Djava.lang.Integer.IntegerCache.high=5000` o `-XX:AutoBoxCacheMax=5000` (medido:
+  `5001`) pero **no** es contrato; `System.getProperty` sigue diciendo `null`. Desencajar `null` lanza
+  `NullPointerException` con mensaje de «a qué método se intentó llamar» y el ternario que mezcla `int` con `Integer`
+  se tipifica como `int`, o sea que desempaca la rama `null`.
+- Y este tema: **cuánto trabajo hace cada cosa, contado por el propio programa**. Lineal `n` (medido 7 con `n = 7`),
+  binaria ⌊log₂ n⌋+1 (medido 3, y 10→13 al duplicar, 20 con un millón, 30 con mil millones), inserción y burbuja
+  `n(n-1)/2` en el peor caso (`31996000` para 8000, las dos empatadas) pero `2n-3` (`15997`) para la inserción con
+  dato casi ordenado, mientras la burbuja sin bandera no se entera. Tres fallos que no lanzan excepción
+  (`[3400, 3400, 890]`, `medio peligroso : -1`, `[7600, 7600, 7600]`), un contador que se desborda en `int`
+  (`704982704`) y un intercambio que cuesta cuatro accesos, no tres.
+
+### Autoevaluación
+
+1. `new int[3][]` y luego leer `porFila[0].length`: ¿qué pasa?
+   **Respuesta:** `NullPointerException`. Las filas hay que crearlas; el arreglo exterior trae tres `null`. Medido en
+   el tema 2 con `tema-2/errores/FilaNula.java`, cuyo mensaje es
+   `Cannot read the array length because "porFila[i]" is null`.
+2. ¿`Arrays.asList(numeros)` donde `numeros` es `int[]` da una lista de enteros?
+   **Respuesta:** da una lista de **un** elemento, y ese elemento es el arreglo (firma `[I`). Con `Integer[]` salen
+   los tres. Medido en el tema 2, y es la diferencia entre el autoboxing de elementos (que no ocurre sobre un
+   primitivo) y el encajado del arreglo entero.
+3. ¿Por qué `ArrayStoreException` no se puede evitar con un `try` bien puesto?
+   **Respuesta:** se puede capturar, pero no se evita: la guarda corre en tiempo de ejecución sobre el **componente**
+   real del arreglo, y lo que deja atrás es un arreglo a medio escribir. Medido dos veces y de dos formas distintas:
+   en `tema-3/por-dentro/MatrizCovariante.java` la escritura ilegal no tocó nada (la casilla 0 «sigue siendo `null`»
+   mientras la fila de al lado sí quedó `[ok]`), y en `tema-3/EscribeEnObject.java` la excepción llegó **después** de
+   cambiar la casilla 0 (`si-es-string`) y dejar las demás con su valor viejo (`RF-0001`, `RF-0002`). No hay dos
+   casos iguales: el tuyo puede quedarse a medias. La respuesta estructural es no abrir la puerta: declara `List`, no
+   `Object[]`.
+4. `pesos.remove(1)` sobre una `List<Integer>` que vale `[10, 1, 7]`: ¿qué queda?
+   **Respuesta:** `[10, 7]`: borra la **posición**. Por valor hay que escribir `remove(Integer.valueOf(7))` —y ahí se
+   ve por qué a veces hay que **fabricar una caja a propósito**, tema 5—.
+5. ¿Por qué `totales.put(zona, g)` dentro de un lazo acumulador no lanza nada y sale mal?
+   **Respuesta:** porque `put` reemplaza. Medido: NORTE pasó de 1950 a 700 al llegar la segunda guía. La operación
+   de acumular es `merge(k, v, Integer::sum)` (o `getOrDefault` + `put`).
+6. `Integer a = 1000, b = 1000; System.out.println(a == b);`. ¿Y con 127?
+   **Respuesta:** `false` con 1000, `true` con 127, ambos medidos en la misma corrida. 1000 cae fuera del cajón de
+   `valueOf` y son dos objetos; 127 está dentro. Con un lado `int`, el resultado es `true` aunque el valor sea 890,
+   porque se desempaca y se comparan números.
+7. ¿Qué línea de la inserción de `OrdenRoto` falta y qué hace que aparezca `[7600, 7600, 7600]`?
+   **Respuesta:** falta `v[j + 1] = valor;` después del `while`. Sin ella, los desplazamientos van escribiendo el
+   mayor sobre las casillas siguientes y nadie devuelve el valor rescatado al hueco. Medido casilla a casilla:
+   `i=1 -> [7600, 7600, 1250]`, `i=2 -> [7600, 7600, 7600]`.
+8. Con 8000 elementos casi ordenados: ¿por qué la inserción hace 15997 comparaciones y la burbuja 31996000?
+   **Respuesta:** porque la inserción tiene guarda de salida (`break` en cuanto el vecino es menor o igual) y el dato
+   hace que cada elemento cueste 2 miradas salvo el primero: `1 + 2·7998 = 15997 = 2n-3`. La burbuja recorre todas
+   las parejas por construcción, con `n(n-1)/2 = 31996000`, y **no** tiene bandera de parada escrita.
+9. ¿Cuántas comparaciones en el peor caso para `n = 1 000 000` con binaria, y cómo lo comprobarías tú?
+   **Respuesta:** 20 (⌊log₂ 10⁶⌋ + 1). No se cita de memoria: se ejecuta el lazo de `comparacionesBinaria` con ese
+   `n` y se lee el contador —medido aquí, y también 30 para mil millones—.
+10. `int mal = 100000 * 99999 / 2;` → `704982704`. ¿Dónde se perdió la información?
+    **Respuesta:** en la multiplicación. El producto real es `9999900000`, y §15.17.1 deja la parte baja de 32 bits:
+    `1409965408` (medido), que entre 2 da `704982704`. El cast al final no salva nada; se ensancha el operando o se
+    declara `long`, o se usa `Math.multiplyExact` y se ve `ArithmeticException: integer overflow`.
+11. ¿Por qué `(bajo + alto) / 2` da `-1` y cuál es la versión correcta?
+    **Respuesta:** porque la suma de los dos `int` más grandes que hay desborda y se vuelve negativa (medido: `-1`
+    con `MAX_VALUE-1` y `MAX_VALUE`; `-2` con `MAX_VALUE-2`). La correcta es `bajo + (alto - bajo) / 2`, que da
+    `2147483646` porque la resta nunca sale del rango. Ningún arreglo real llega tan lejos, pero la fórmula segura
+    cuesta lo mismo escribirla.
+12. En `por-dentro/CosteEnBytecode`, ¿qué diferencia hay entre `sumaVista` y `sumaGuardada` y qué **no** puedes
+    afirmar con esa diferencia?
+    **Respuesta:** en la primera el `arraylength` está dentro del lazo (offset 6, con `goto 4` que vuelve a
+    ejecutarlo); en la segunda está fuera (offset 3, una vez). Lo que no puedes afirmar es que la segunda sea más
+    rápida: no se midió tiempo y el JIT hace lo que quiere con un lazo tan simple. Lo que sí afirmas es qué ejecuta
+    cada vuelta según lo que escribiste.
+13. Un compañero dice «mi búsqueda no encontró 890». Tú sabes que el arreglo no estaba ordenado. ¿Qué le muestras?
+    **Respuesta:** el medido del tema 2 (`binarySearch` devolvió `-1` para 890, que estaba en el índice 3, y `2` para
+    1250 por casualidad) y la traza de sondas de este tema: cada vuelta de la binaria **tira la mitad** basándose en
+    el orden; con el orden roto tira la mitad correcta. La pregunta que hay que hacerle no es «¿por qué falla?» sino
+    «quién garantizó el orden de ese arreglo».
+
+### Siguiente módulo
+
+Módulo 5 · Objetos y clases ([temario en `docs/temarios/java-objetivo.md`](../../../temarios/java-objetivo.md),
+tramo Fundamentos, 7 temas: clases, campos, métodos y `this`; constructores con `this(...)`, bloques de
+inicialización y su orden exacto; encapsulación y modificadores de acceso; `static`; paquetes e importaciones
+—incluido `import module`, JEP 511, definitivo en JDK 25—; los métodos de `Object` (`toString`, `equals`,
+`hashCode`); y objetos inmutables con `record`. Ninguno está escrito todavía: `static` figura como **falta**,
+cuatro como **está pero básico** y los de `this` y `Object` como **ya está**, pero redactados en M0, M1 y M2 del
+curso antiguo): aquí dejaste
+los datos en arreglos y colecciones de `int` y `String`; ahí entran tus propias clases, y tres cosas de este módulo
+vuelven a cobrarse el día uno. La primera es `equals` (Tema 5): cuando tus objetos estén en un `HashMap` como claves,
+la trampa de `==` deja de tener red de seguridad. La segunda es la covarianza (Tema 3): un `Guia[]` dentro de una
+`List<Guia>` se comporta distinto, y hay que saber por qué. La tercera es el conteo de este tema: cuando en M21 se
+abra el `ArrayList` por dentro, la única forma de discutir lo que se ve es contar, y eso ya se practica aquí. En el
+laboratorio el proyecto `rutaflow-nucleo` pasa de `Manifiesto` a un modelo con clases: la tanda de guías deja de ser
+un arreglo de `String` con guiones y pasa a ser un objeto con `peso` y `zona`.
