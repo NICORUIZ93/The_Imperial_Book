@@ -4253,11 +4253,11 @@ tramo Fundamentos, 7 temas: clases, campos, métodos y `this`; constructores con
 inicialización y su orden exacto; encapsulación y modificadores de acceso; `static`; paquetes e importaciones
 —incluido `import module`, JEP 511, definitivo en JDK 25—; los métodos de `Object` (`toString`, `equals`,
 `hashCode`); y objetos inmutables con `record`. Cuando cerraste este módulo no estaba escrito ninguno; hoy va
-**4 de 7** (los temas 1, 2, 3 y 4, con una puerta de 243 comprobaciones en verde: 41 del primero, 48 del segundo,
-51 del tercero y 103 del cuarto) y siguen pendientes los tres restantes —paquetes e importaciones (tema 5), los
-métodos de `Object` (tema 6) y `record` (tema 7)—, que el temario clasifica, en ese orden, como
-**está pero básico**, **ya está** y **está pero básico** frente al curso antiguo; `static`, que era el único
-**falta**, ya está escrito): aquí dejaste los datos en arreglos y colecciones de `int` y `String`; ahí entran tus propias clases, y tres cosas de este módulo
+**5 de 7** (los temas 1 a 5, con una puerta de 417 comprobaciones en verde: 41 del primero, 48 del segundo, 51 del
+tercero, 103 del cuarto y 174 del quinto) y siguen pendientes los dos restantes —los métodos de `Object` (tema 6) y
+`record` (tema 7)—, que el temario clasifica, en ese orden, como
+**ya está** y **está pero básico** frente al curso antiguo; `static`, que era el único
+**falta**, ya está escrito, y paquetes e importaciones —el **está pero básico** que cerró el quinto— también): aquí dejaste los datos en arreglos y colecciones de `int` y `String`; ahí entran tus propias clases, y tres cosas de este módulo
 vuelven a cobrarse el día uno. La primera es `equals` (Tema 5): cuando tus objetos estén en un `HashMap` como claves,
 la trampa de `==` deja de tener red de seguridad. La segunda es la covarianza (Tema 3): un `Guia[]` dentro de una
 `List<Guia>` se comporta distinto, y hay que saber por qué. La tercera es el conteo de este tema: cuando en M21 se

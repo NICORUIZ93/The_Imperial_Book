@@ -5,8 +5,8 @@
 > módulos). **Estado de esta zona de preparación:** escritos el [módulo 0](modulo-0.md), el
 > [módulo 1](modulo-1.md), el [módulo 2](modulo-2.md), el [módulo 3](modulo-3.md) y el
 > [módulo 4](modulo-4.md) completo —los cinco, con sus 32 temas ejecutados y en verde, ver el `README.md` de cada
-> carpeta `laboratorios/modulo-N/`— y el [módulo 5](modulo-5.md) **empezado** (4 de 7 temas, con su propia puerta
-> de 243 comprobaciones en verde); el resto se escribe igual, por tramos completos—.
+> carpeta `laboratorios/modulo-N/`— y el [módulo 5](modulo-5.md) **empezado** (5 de 7 temas, con su propia puerta
+> de 417 comprobaciones en verde); el resto se escribe igual, por tramos completos—.
 
 ## 1. Para quién es
 
@@ -93,7 +93,7 @@ Integración y Experto suman 145 de 279 temas (52 %): se cumple «al menos la mi
 
 | Tramo | Módulos | Temas | Escritos en formato único |
 |---|---|---:|---|
-| Fundamentos | M0–M8 | 57 | **36**: M0 (7) · M1 (7) · M2 (6) · M3 (6) · M4 (6) · M5 (4 de 7) |
+| Fundamentos | M0–M8 | 57 | **37**: M0 (7) · M1 (7) · M2 (6) · M3 (6) · M4 (6) · M5 (5 de 7) |
 | Aplicación | M9–M20 | 77 | — |
 | Integración | M21–M32 | 76 | — |
 | Experto | M33–M43 | 69 | — |
@@ -120,7 +120,7 @@ Lo que ya existe tras el piloto:
 | M2 | `GuiaDeEnvio` (record que parsea `código;destino;peso` y devuelve el **motivo** de rechazo, no una excepción) y `LectorDeGuias` con `IO.readln()`; 12 pruebas | [`laboratorios/modulo-2/`](laboratorios/modulo-2/README.md) |
 | M3 | `Zona` (enum de cinco zonas) y `Despachador`: expresión `switch` con `yield`, ternarios anidados, `break` con etiqueta, `sumaGramos` recursiva con sobrecarga `varargs`; 12 pruebas | [`laboratorios/modulo-3/`](laboratorios/modulo-3/README.md) |
 | M4 | `Manifiesto`: el mismo manifiesto de guías resuelto **dos veces** —con arreglos (`Arrays.sort` + `binarySearch`) y con colecciones (`merge` para los totales por zona y `totalesOrdenados` para imprimirlos siempre igual, ordenando las claves a mano)— y las dos versiones cuadrando; 9 pruebas | [`laboratorios/modulo-4/`](laboratorios/modulo-4/README.md) |
-| M5 | **en escritura (4 de 7 temas).** El tema 1 convierte el `String` con guiones de M4 en una clase `Guia` con `codigo`, `gramos`, `zona`, `etiqueta()` y `conZona()`; el tema 2 le pone los tres constructores encadenados con `this()`, y `por-dentro/` mide dónde caen los inicializadores en el `.class` y qué se duplica si no encadenas; el tema 3 baja los cuatro niveles de acceso al `.class` —`flags: (0x0000)` para lo de paquete, `invokespecial` en `--release 8` frente a `invokevirtual` en `--release 25` para el mismo `private`— y reproduce los dos fallos que no dan ningún aviso: el getter que devuelve la lista viva y el `private` que un herede repite creyendo que sustituye; el tema 4 separa la hoja del objeto de la casilla de la clase y mide las tres cosas que solo se ven en el bytecode: los **5** avisos `[static]` que `javac` guarda sin `-Xlint:static`, el `ldc` con la constante horneada que hace que un `Lector.class` **sin recompilar** dé `5/99` cuando `Config.LIMITE_CONSTANTE` pasa a `99` (§13.1), y el segundo arranque de una clase cuyo `<clinit>` reventó, que ya no repite la causa sino que da `NoClassDefFoundError`. El proyecto Gradle con sus pruebas se monta al cerrar el módulo, como en los anteriores, así que aquí todavía no hay pruebas que contar | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) |
+| M5 | **en escritura (5 de 7 temas).** El tema 1 convierte el `String` con guiones de M4 en una clase `Guia` con `codigo`, `gramos`, `zona`, `etiqueta()` y `conZona()`; el tema 2 le pone los tres constructores encadenados con `this()`, y `por-dentro/` mide dónde caen los inicializadores en el `.class` y qué se duplica si no encadenas; el tema 3 baja los cuatro niveles de acceso al `.class` —`flags: (0x0000)` para lo de paquete, `invokespecial` en `--release 8` frente a `invokevirtual` en `--release 25` para el mismo `private`— y reproduce los dos fallos que no dan ningún aviso: el getter que devuelve la lista viva y el `private` que un herede repite creyendo que sustituye; el tema 4 separa la hoja del objeto de la casilla de la clase y mide las tres cosas que solo se ven en el bytecode: los **5** avisos `[static]` que `javac` guarda sin `-Xlint:static`, el `ldc` con la constante horneada que hace que un `Lector.class` **sin recompilar** dé `5/99` cuando `Config.LIMITE_CONSTANTE` pasa a `99` (§13.1), y el segundo arranque de una clase cuyo `<clinit>` reventó, que ya no repite la causa sino que da `NoClassDefFoundError`. El tema 5 baja el archivo a un **espacio de nombres**: dos árboles de fuente (`src/` y `otros-src/`) que producen un solo paquete de 9 `.class`, los cinco tipos de importación medidos en un mismo fuente, el `package-info.class` que solo existe si el fuente lleva una anotación, el `wrong name: bodega/Envio` que sale de pedir la clase sin su prefijo, el choque real entre `java.util.Date` y `java.sql.Date`, el paquete partido entre dos módulos que JLS §7.4.3 exige *univocamente visible*, y la unidad de compilación compacta del JEP 512 medida en las dos cotas (`--release 24` corta **dos** errores donde `25` corta uno). El proyecto Gradle con sus pruebas se monta al cerrar el módulo, como en los anteriores, así que aquí todavía no hay pruebas que contar | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) |
 
 Cada laboratorio parte del estado final del anterior y su `README.md` dice qué cambia y por qué.
 
@@ -139,9 +139,10 @@ Cada laboratorio parte del estado final del anterior y su `README.md` dice qué 
 
 Medido en lo ya escrito, sumando los minutos declarados por tema (cuadrilla `### Tema` de cada módulo): M0,
 4 h 20 min; M1, 4 h 40 min; M2, 4 h 10 min; M3, 4 h 05 min; M4, 4 h 10 min completos (los seis temas, con el
-tema 6 cerrado el 2026-11-21) y M5, **2 h 40 min** (4 de 7 temas, los cuatro cerrados el 2026-11-21). Suma de temas
-escritos: **24 h 05 min** (1445 min), más una hora de laboratorio por módulo **cerrado** (5 h, de M0 a M4: el
-laboratorio de M5 aún no tiene proyecto Gradle, así que no le cuento hora) → **29 h 05 min** de Tramo 1
+tema 6 cerrado el 2026-11-21) y M5, **3 h 20 min** (5 de 7 temas, los cinco cerrados entre el 2026-11-20 y el
+2026-11-21). Suma de temas
+escritos: **24 h 45 min** (1485 min), más una hora de laboratorio por módulo **cerrado** (5 h, de M0 a M4: el
+laboratorio de M5 aún no tiene proyecto Gradle, así que no le cuento hora) → **29 h 45 min** de Tramo 1
 disponible hoy (el tramo son 8 módulos).
 
 **Versiones fijadas** (fuente: `docs/VERSIONES.md`).
