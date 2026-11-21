@@ -41,6 +41,14 @@ igual() {
     if [ "$2" = "$3" ]; then bien "$1"; else mal "$1 (difieren)" "A: $2
 B: $3"; fi
 }
+# igual_no_vacio <descripción> <a> <b>: como igual(), pero dos vacios NO cuentan como prueba.
+igual_no_vacio() {
+    if [ -z "$2" ] || [ -z "$3" ]; then
+        mal "$1 (texto vacio: la comparacion no prueba nada)" "A: [$2]
+B: [$3]"
+    elif [ "$2" = "$3" ]; then bien "$1"; else mal "$1 (difieren)" "A: $2
+B: $3"; fi
+}
 # distinto <descripción> <salida1> <salida2>: dos textos NO deben coincidir.
 distinto() {
     if [ "$2" != "$3" ]; then bien "$1"; else mal "$1 (son iguales: $2)" ""; fi
@@ -49,10 +57,31 @@ distinto() {
 no_compila() { falla_con "$1" "$2" "$3" javac -d "$TMP/err" "$4"; }
 # bytecode <descripción> <instrucción> <carpeta> <archivo> <clase>
 bytecode() { espera "$1" "$2" "$3" sh -c "javac -d '$TMP/bc' $4 && javap -c -cp '$TMP/bc' $5"; }
-# cuerpo <carpeta> <archivo> <clase> <firma>: las instrucciones (sin desplazamientos) de un método.
+# cuerpo <carpeta> <archivo> <clase> <firma>: las instrucciones de un metodo, con su desplazamiento.
+# El separador de columna se quita con sub(/^ +/), no buscando la firma en la columna 1: javap imprime
+# cada miembro con dos espacios delante, y una condicion ==1 habria devuelto vacio sin decir nada.
 cuerpo() {
     (cd "$RAIZ/$1" && javac -d "$TMP/cuerpo" "$2" && javap -c -p -cp "$TMP/cuerpo" "$3") \
-        | awk -v f="$4" 'index($0,f"(")==1 {dentro=1; next} dentro && /^[^ ]/ {dentro=0} dentro && /^ *[0-9]+:/ {sub(/^ *[0-9]+:/,""); print}'
+        | awk -v f="$4" '{ l=$0; sub(/^ +/, "", l) }
+            index(l, f"(") == 1 { dentro=1; next }
+            dentro && l == "Code:" { next }
+            dentro && l ~ /^[0-9]+:/ { print l; next }
+            dentro { dentro=0 }'
+}
+# constructor <carpeta> <archivo> <clase> <descriptor>: las instrucciones del <init> con ESE descriptor.
+# Un metodo normal no sirve para esto: javap imprime los tres constructores como «Guia(...)», y la unica
+# forma de separarlos es el descriptor que solo aparece en la linea del <init>.
+constructor() {
+    (cd "$RAIZ/$1" && javac --release 25 -d "$TMP/ctor" "$2" && javap -c -p -cp "$TMP/ctor" "$3") \
+        | awk -v f="$4" '{ l=$0; sub(/^ +/, "", l) }
+            index(l, "init)") > 0 && index(l, f) > 0 { dentro=1; next }
+            dentro && l == "Code:" { next }
+            dentro && l ~ /^[0-9]+:/ { print l; next }
+            dentro { dentro=0 }'
+}
+# cuenta <carpeta> <archivo> <clase> <descriptor> <patrón>: veces que aparece un patron en ese constructor.
+cuenta() {
+    constructor "$1" "$2" "$3" "$4" | grep -c "$5"
 }
 
 titulo "Tema 1 · Clases, objetos, campos, metodos y this"
@@ -97,7 +126,9 @@ espera "el constructor encadena hacia Object antes de tocar los campos" 'Method 
 espera "el campo se accede con getfield/putfield, no con una variable" 'Field x:I' tema-1/por-dentro sh -c "javap -c -p -cp '$TMP/bc3' 'CamposEnBytecode\$Punto'"
 espera "el receptor del metodo de instancia es la ranura 0" 'aload_0' tema-1/por-dentro sh -c "javap -c -p -cp '$TMP/bc3' 'CamposEnBytecode\$Punto'"
 espera "los parametros de un metodo de instancia empiezan en la 1" 'iload_1' tema-1/por-dentro sh -c "javap -c -p -cp '$TMP/bc3' 'CamposEnBytecode\$Punto'"
-igual "escribir this. en el fuente no cambia una sola instruccion" "$(cuerpo tema-1/por-dentro CamposEnBytecode.java 'CamposEnBytecode$Punto' 'int conThis')" "$(cuerpo tema-1/por-dentro CamposEnBytecode.java 'CamposEnBytecode$Punto' 'int sinThis')"
+CUERPO_CON=$(cuerpo tema-1/por-dentro CamposEnBytecode.java 'CamposEnBytecode$Punto' 'int conThis')
+CUERPO_SIN=$(cuerpo tema-1/por-dentro CamposEnBytecode.java 'CamposEnBytecode$Punto' 'int sinThis')
+igual_no_vacio "escribir this. en el fuente no cambia una sola instruccion, desplazamientos incluidos" "$CUERPO_CON" "$CUERPO_SIN"
 
 espera "un .java con una clase anidada suelta dos .class" 'ClaseYObjetos$Guia.class' tema-1 sh -c "javac --release 25 -d '$TMP/m5class' ClaseYObjetos.java && ls '$TMP/m5class'"
 espera "un campo sin modificador queda con acceso de paquete, y eso se ve en el .class" 'java.lang.String codigo;' tema-1 sh -c "javap -p -cp '$TMP/m5class' 'ClaseYObjetos\$Guia'"

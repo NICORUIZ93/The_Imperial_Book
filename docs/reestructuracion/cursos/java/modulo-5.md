@@ -281,17 +281,17 @@ por `new` y un nombre de variable.
 en el fuente. Volcado con `javap -c -p` (las instrucciones están tal cual salen):
 
 ```text
-int conThis();
-  Code:
-       0: aload_0
-       1: getfield      #7   // Field x:I
-       4: ireturn
+  int conThis();
+    Code:
+         0: aload_0
+         1: getfield      #7                  // Field x:I
+         4: ireturn
 
-int sinThis();
-  Code:
-       0: aload_0
-       1: getfield      #7   // Field x:I
-       4: ireturn
+  int sinThis();
+    Code:
+         0: aload_0
+         1: getfield      #7                  // Field x:I
+         4: ireturn
 ```
 
 Cuerpo a cuerpo son **la misma secuencia** —el laboratorio lo comprueba comparando las dos, no lo afirma de palabra—: `this`
@@ -299,22 +299,27 @@ no cuesta una instrucción, porque no es una cosa que se consulta, es la ranura 
 escribir:
 
 ```text
-void mover(int, int);
-  Code:
-       0: aload_0        // ranura 0 = receptor
-       1: aload_0        // otra vez el receptor: es el destino del putfield
-       2: getfield      #7   // Field x:I
-       5: iload_1        // dx: el PRIMER parámetro va en la ranura 1
-       6: iadd
-       7: putfield      #7   // Field x:I
-      10: aload_0
-      11: aload_0
-      12: getfield      #13  // Field y:I
-      15: iload_2        // dy en la ranura 2
-      16: iadd
-      17: putfield      #13  // Field y:I
-      20: return
+  void mover(int, int);
+    Code:
+         0: aload_0
+         1: aload_0
+         2: getfield      #7                  // Field x:I
+         5: iload_1
+         6: iadd
+         7: putfield      #7                  // Field x:I
+        10: aload_0
+        11: aload_0
+        12: getfield      #13                 // Field y:I
+        15: iload_2
+        16: iadd
+        17: putfield      #13                 // Field y:I
+        20: return
 ```
+
+Leído ranura a ranura: la 0 es el receptor (`this`, el objeto al que se le mueve el punto), la 1 es `dx` y la 2
+es `dy` —los dos parámetros, desplazados porque la 0 ya está ocupada—; `x` se lee con `getfield` sobre la
+referencia de la ranura 0 y se escribe con `putfield` sobre **esa misma referencia** (dos `aload_0` seguidos: uno
+alimenta la lectura y otro el destino), y `y` hace lo propio con `#13`.
 
 De ahí salen dos reglas que la gente confunde con las que no. En un método de instancia, `aload_0` es **el
 objeto** y los parámetros empiezan en `iload_1`; en un método `static` la ranura 0 ya es el primer parámetro, y
@@ -324,12 +329,12 @@ cosa vista de dos lados.
 Crear el objeto, medido en `Punto.cero()` y en `main`:
 
 ```text
-static CamposEnBytecode$Punto cero();
-  Code:
-       0: new           #8   // class CamposEnBytecode$Punto
-       3: dup
-       4: invokespecial #16  // Method "<init>":()V
-       7: areturn
+  static CamposEnBytecode$Punto cero();
+    Code:
+         0: new           #8                  // class CamposEnBytecode$Punto
+         3: dup
+         4: invokespecial #16                 // Method "<init>":()V
+         7: areturn
 ```
 
 Tres pasos seguidos: `new` reserva y pone la referencia en la pila, `dup` la duplica (una la consume el
@@ -337,11 +342,11 @@ constructor, la otra es el valor de la expresión), `invokespecial` llama al con
 Y el constructor propio de `Punto` no hace más que encadenar hacia arriba, medido:
 
 ```text
-CamposEnBytecode$Punto();
-  Code:
-       0: aload_0
-       1: invokespecial #1   // Method java/lang/Object."<init>":()V
-       4: return
+  CamposEnBytecode$Punto();
+    Code:
+         0: aload_0
+         1: invokespecial #1                  // Method java/lang/Object."<init>":()V
+         4: return
 ```
 
 Nadie escribe `x = 0` en el bytecode del constructor de `Punto` **porque sus campos no tienen inicializador
@@ -352,21 +357,26 @@ y eso es justo el tema 2.
 Cómo se ve la llamada desde fuera, medido en `main` de `CamposEnBytecode`:
 
 ```text
- 0: new      #7   // class CamposEnBytecode$Punto
- 3: dup
- 4: invokespecial #9  // Method CamposEnBytecode$Punto."<init>":()V
- 7: astore_1
- 8: aload_1        // el objeto, primero en la pila
- 9: iconst_3       // 3 -> dx
-10: iconst_4       // 4 -> dy
-11: invokevirtual #10 // Method CamposEnBytecode$Punto.mover:(II)V
-...
-36: invokestatic #37  // Method CamposEnBytecode$Punto.cero:()LCamposEnBytecode$Punto;
+  public static void main(java.lang.String[]);
+    Code:
+         0: new           #7                  // class CamposEnBytecode$Punto
+         3: dup
+         4: invokespecial #9                  // Method CamposEnBytecode$Punto."<init>":()V
+         7: astore_1
+         8: aload_1
+         9: iconst_3
+        10: iconst_4
+        11: invokevirtual #10                 // Method CamposEnBytecode$Punto.mover:(II)V
+        ...
+        36: invokestatic  #37                 // Method CamposEnBytecode$Punto.cero:()LCamposEnBytecode$Punto;
+        39: getfield      #41                 // Field CamposEnBytecode$Punto.x:I
 ```
 
-`mover` se llama con `invokevirtual` (hay receptor: va en la pila antes de los argumentos) y `cero()` con
-`invokestatic` (no hay receptor). El descriptor `(II)V` es la firma que ya viste en M0: dos `int`, devuelve
-`void`.
+`mover` se llama con `invokevirtual` (hay receptor: `aload_1` pone el objeto en la pila **antes** de los dos
+`int`) y `cero()` con `invokestatic` (no hay receptor: se llama por el nombre de la clase). El descriptor
+`(II)V` es la firma que ya viste en M0: dos `int`, devuelve `void`. Y fíjate en `astore_1` a la altura 7: dentro
+de un método `static`, la ranura 0 es el primer parámetro (`args`), así que el punto nuevo se guarda en la 1.
+Esa es la misma geometría que arriba impedía `this`.
 
 Y el puente con el módulo 4, medido en la salida del mismo programa:
 
@@ -509,6 +519,10 @@ campos iguales       : mismo codigo true · misma referencia false · son dos ob
 null no es un objeto sin datos, es ninguna referencia: true
 llamar sobre null   : Cannot invoke "ClaseYObjetos$Guia.etiqueta()" because "<local6>" is null
 ```
+
+Los dos números de las dos primeras líneas son los que devolvió **esta** JVM: repetido cinco veces seguidas dio
+igual, y forzando la estrategia con `-XX:hashCode=2` los dos se vuelven `1`. Se pegan porque son la salida real,
+no porque sean una propiedad del objeto; lo que se enseña es el `true` de `referencia distinta?`, que sí lo es.
 
 **Segundo ejemplo** · `tema-1/por-dentro/CamposEnBytecode.java` · ejecuta
 `javac --release 25 -d out tema-1/por-dentro/CamposEnBytecode.java && java -Dstdout.encoding=UTF-8 -cp out CamposEnBytecode`

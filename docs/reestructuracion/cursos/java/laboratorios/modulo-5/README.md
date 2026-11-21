@@ -44,6 +44,11 @@ El script necesita `javac` y `java` en el `PATH`; compila con `--release 25` y e
 fragmento literal de una salida real (o una comparación entre dos salidas), así que el script falla si el
 documento cita algo que ya no ocurre.
 
+Dos guardas que existen porque fallaron una vez: `igual_no_vacio` se niega a dar por bueno un `igual()` entre dos
+cadenas vacías (el extractor de cuerpos de método buscaba la firma en la columna 1, y `javap` la imprime con dos
+espacios de sangrado: las dos cadenas salían vacías y la comparación pasaba sin comparar nada), y el extractor
+compara ahora **con los desplazamientos incluidos**, no solo con los mnemotécnicos.
+
 Las 41 comprobaciones se reparten así: 16 sobre la salida de `ClaseYObjetos` (dentro van las tres de
 `System.identityHashCode` forzado con `-XX:hashCode=2` y las dos de compilar con `-g` y sin `-g`), 4 de
 `SombraDeCampo`, 3 de `CamposEnBytecode` ejecutado, 6 sobre el volcado `javap -c -p` de su clase anidada `Punto`
