@@ -1576,3 +1576,909 @@ con `Object[]` en la interfaz pública de un módulo convierte un error de tipeo
 parcialmente modificados.
 
 ---
+
+### Tema 4: `ArrayList` y `HashMap`: primer uso · Básico · 45 min
+
+#### 1. Ubicación y prerrequisitos
+
+Curso Java · tramo Fundamentos · módulo 4 · cuarto tema. Antes: [Tema 3](#tema-3-covarianza-de-arreglos-y-arraystoreexception-por-que-las-listas-son-mas-seguras)
+—sin su explicación de por qué `List<String>` no cabe en `List<Object>` aquí no se entiende la frase «la
+protección la pone `javac`, no la JVM»—, [Tema 2](#tema-2-arreglos-multidimensionales-y-la-clase-arrays-ordenar-copiar-comparar-y-buscar)
+(`Arrays.sort` y `Arrays.equals`, que en el mundo de las colecciones se llaman `Collections.sort` y `equals`
+comparando elementos: este tema midió las dos parejas) y
+[Tema 1](#tema-1-arreglos-creacion-valores-por-defecto-recorrido-y-arrayindexoutofboundsexception) (el recorrido
+con índice, que aquí se vuelve contra ti: `length` era un campo y ahora es `size()`). Del
+[Módulo 3 · tema 3](modulo-3.md) vienes con el `ConcurrentModificationException` ya visto una vez —allí se
+diagnosticó **por qué** aparece y por qué parece intermitente; aquí se escribe la alternativa correcta—, y del
+[Módulo 3 · tema 4](modulo-3.md) la firma de métodos. Del [Módulo 2 · tema 6](modulo-2.md) viene el `split` que
+parte una guía; de ahí sale el `String[]` que este tema mete en un `List<String>`. Después: el tema 5 explica por
+qué `remove(1)` y `remove(Integer.valueOf(1))` son dos cosas distintas, el tema 6 mide el coste de `add` y de
+`get`, M5 mete tus propias clases dentro de estas colecciones y M11 desarrolla los genéricos cuyo borrado se ve
+aquí en el bytecode. El temario marca este tema como «está pero básico»: en el curso antiguo se entraba de golpe
+a todas las implementaciones (`LinkedList`, `TreeMap`, `HashSet`, `PriorityQueue`); aquí el primer contacto es
+**solo** `ArrayList` y `HashMap`, y las demás se nombran cuando aportan algo medible. Versión: JDK 25. Fuentes
+del temario para este tema: *Cay Horstmann Java 25* cap. 5 · MOOC p. 8 · OCP 5 · YT-EN · 61B.
+
+#### 2. Objetivo
+
+Al terminar sabes crear y usar las dos colecciones que vas a tocar el 90 % del tiempo, y sabes decir **qué
+garantiza cada operación** en lugar de adivinarlo: `add` al final y `add(i, x)` (desplaza, no sustituye —medido:
+`add(1, ...) : [RF-000123, RF-000123B, RF-000124, RF-000125]`); los **dos** `remove` y su empate letal en
+`List<Integer>` (`pesos.remove(1) : [10, 7] · quito la POSICION`, y para valor hay que empaquetar); que el `get`
+de un mapa **no lanza nada** cuando la clave no está: devuelve `null` en silencio y el error aparece tres líneas
+más tarde al desempaquetar (medido: `desempaquetar el null : NullPointerException`). Sabes elegir entre `put`,
+`putIfAbsent`, `replace`, `merge` y `computeIfAbsent` según la decisión que quieras tomar
+(`merge acumulando : {Cali=1000, Medellin=3000, Bogota=1000}` es un contador en una línea). Sabes que un `HashMap`
+**no** conserva el orden de inserción y un `LinkedHashMap` sí (los dos medidos), que `List.of`/`Map.of` son fijas y
+no admiten `null`, y que el remedio no es pelear con ellas sino **copiarlas** (`new ArrayList<>(fijas)`). Sabes
+las cuatro formas legales de borrar mientras recorres y por qué la quinta revienta. Y sabes qué bytecode hay
+debajo de `for (int p : pesos)` frente a `for (int i = 0; i < pesos.size(); i++)` —`List.iterator:()Ljava/util/Iterator;`
+contra `List.get:(I)Ljava/lang/Object;` más un `checkcast`—, que la misma suma sale por los dos caminos
+(`conIndice / conForEach : 5540 / 5540`) y que las dos rutas no son igual de rápidas sobre cualquier lista
+(`ArrayList es RandomAccess : true`, `LinkedList es RandomAccess: false`).
+
+#### 3. Por qué importa
+
+En el manifiesto de carga del proyecto guía hay un requisito que con arreglos se escribe mal y con mapas se
+escribe bien: «el total de gramos por zona». Con el tema 2 todavía abierto en la cabeza, la versión con arreglos
+necesita dos arreglos paralelos (`zonas[]` y `totales[]`), buscar la zona de cada guía con un recorrido interno,
+y acordarse de cuándo crecer: eso es O(guías × zonas) y tres oportunidades de equivocarse. Con `HashMap` es una
+línea dentro del bucle, y es exactamente lo que está en `src/main/java/rutaflow/nucleo/Manifiesto.java:93`:
+
+```java
+totales.merge(zona, g, Integer::sum);
+```
+
+Ejecutado con el tope por defecto, el reporte del proyecto sale así (medido, sin argumentos):
+
+```text
+  totales por zona      : {CENTRO=2100, NORTE=1950, OCCIDENTE=3400, SUR=890}
+las dos versiones cuadran: true
+```
+
+Y el detalle que justifica el tema entero está en la línea de arriba: `las dos versiones cuadran: true`. La
+cantidad de guías por encima del tope la dan dos algoritmos distintos —`Arrays.sort` + `binarySearch` por un lado
+(tema 2) y un filtro sobre `ArrayList` por otro— y los dos tienen que coincidir. Con un cliente de logística
+delante, la diferencia entre el arreglo y el mapa no es «me gusta más»: es que con el arreglo tuviste que
+inventarte el índice por zona y con el mapa el índice **es el dato**.
+
+El segundo motivo es el fallo que este tema previene. Un servicio que suma topes por zona y usa
+`mapa.get(zona)` sobre una zona que nunca llegó se cae con `NullPointerException` **en la línea de la suma**, sin
+método alguno que señale. Medido en `tema-4/MapaDeZonas.java`: `get de ausente : null · getOrDefault: 0` y
+`desempaquetar el null : NullPointerException`. Ese par de líneas es la diferencia entre un aviso de compilador
+y un incidente a las 3 de la mañana, y es la razón de que el tema enseñe `getOrDefault` y `merge` en el mismo
+bloque que `get`, no como detalle avanzado.
+
+#### 4. Analogía
+
+Un **casillero de consigna** y un **panel de llaves de hotel**.
+
+- El casillero (`ArrayList`) es una fila de huecos numerados. Le entregas el paquete al conserje y él lo mete en
+  el primer hueco libre: por eso «el orden de llegada» se conserva (`tras 3 add : [RF-000123, RF-000124, RF-000125]`).
+  Si pides meter un paquete **en el hueco 1**, no tira el que estaba: lo empuja a la derecha junto con todos los
+  de después —eso es `add(i, x)` y por eso la casilla que ocupaba el 2 ahora guarda otra cosa, medido
+  `que habia en el 2? : RF-000124`—.
+- Pedir la posición 0 de un casillero **vacío** no es «no está»: es «esa puerta no existe». El conserje protesta:
+  `IndexOutOfBoundsException: Index 0 out of bounds for length 0` (medido en `errores/VaciaConIndice.java`).
+- El panel del hotel (`HashMap`) no tiene números: tiene **etiquetas con nombre**. Pides «Cali» y te devuelve la
+  llave; lo que no sabe el conserje es en qué orden las colgó (`HashMap conserva el orden de insercion? false`).
+  Y aquí está la trampa: si pides «Quibd», que no está, el conserje **no protesta**. Te tiende la mano vacía.
+  Eso es `null`. El problema no es la mano vacía: es que tú, sin mirar, intentas abrir la puerta con esa mano
+  vacía —`leido * 2`— y entonces sí, el golpe (`NullPointerException`).
+- `getOrDefault("Quibd", 0)` es la palmadita antes de usar la llave. `merge(zona, 1000, Integer::sum)` es el
+  conserje que, si la casilla estaba vacía, mete el sobre nuevo; y si ya había algo, lo suma. Nunca te pregunta
+  y nunca te deja la mano vacía.
+- `List.of(...)` es una **vitrina sellada**: se ve, no se toca. Meter un paquete produce
+  `UnsupportedOperationException` (medido, con mensaje `null`). El remedio no es forzar el cristal: es pedir un
+  casillero normal y **copiar** el contenido dentro (`copia en ArrayList: [RF-000123, RF-000124, RF-000125]`
+  mientras `original intacta : [RF-000123, RF-000124]`).
+
+**Dónde se rompe la analogía:** un casillero físico tiene un número fijo de huecos; un `ArrayList` no —cuando se
+llena, el conserje construye una fila **más larga y copia todos los paquetes** uno a uno, medido como hueco
+`10 → 15 → 22`—. Esa copia es invisible para el programa y real para el coste (tema 6), y no existe en ningún
+casillero de verdad. Segunda rotura: el panel del hotel tiene una posición física; las entradas de un `HashMap`
+se colocan por el `hashCode` de la clave, así que «la posición 0» no significa nada y no hay `get(0)` que valga.
+
+#### 5. Diagrama
+
+```mermaid
+flowchart TB
+    subgraph AR["ArrayList&lt;String&gt;: posiciones"]
+        ED["elementData (hueco)&lt;br/>medido: 10 → 15 → 22"]
+        SIZE["size = 11 (elementos reales)"]
+        A1["add(&quot;RF-000126&quot;)"] -->|"hueco lleno → copia a mas grande"| ED
+        A2["add(1, x)"] -->|"empuja el resto a la derecha"| ED
+        A3["remove(0)"] -->|"devuelve el elemento y corrije"| ED
+        ED --- SIZE
+    end
+    subgraph HM["HashMap&lt;String, Integer&gt;: claves, sin orden"]
+        C1["put(Cali, 25000)"] -->|"devuelve el 20000 anterior"| B
+        C2["get(Quibd)"] -->|"clave ausente → null, NO lanza"| B
+        C3["merge(zona, 1000, Integer::sum)"] -->|"falta: pone 1000 · existe: suma"| B
+        B["entradas clave→valor repartidas por hash"]
+    end
+    ED -->|"por indice: List.get:(I) + checkcast"| L1["for (int i = 0; ...)"]
+    B -->|"por clave: siempre O(1) esperado"| L2["for (Map.Entry&lt;K,V&gt; e : mapa.entrySet())"]
+```
+
+**Texto alternativo:** a la izquierda, una lista: un arreglo interno (`elementData`) que puede tener más huecos
+que elementos, y un `size` que cuenta los ocupados. El hueco pasa de 10 a 15 y de 15 a 22 —eso se midió por
+reflexión y es un detalle de esta JDK, declarado en la convención del módulo, no una regla del lenguaje—. A la
+derecha, un mapa: no hay posiciones, hay entradas `clave -> valor`, colocadas por el hash de la clave, así que
+`put` devuelve lo que había antes, `get` de una clave ausente devuelve `null` sin avisar, y `merge` decide sola si
+tocaba poner o sumar. Abajo, los dos caminos de lectura: la lista se recorre pidiendo posiciones
+(`List.get:(I)` seguido del `checkcast` que inserta `javac`) o pidiendo un iterador; el mapa se recorre por
+`entrySet()`.
+
+#### 6. Explicación
+
+**Nivel 0 — se declara la interfaz, se instancia la clase.** Medido en `tema-4/ListaDeGuias.java`, primera línea
+del programa:
+
+```java
+List<String> guias = new ArrayList<>();
+System.out.println("vacia                    : size " + guias.size() + " · isEmpty " + guias.isEmpty());
+```
+
+```text
+vacia                    : size 0 · isEmpty true
+tras 3 add               : [RF-000123, RF-000124, RF-000125]
+```
+
+El tipo de la **variable** es `List`, el del **objeto** es `ArrayList`, y el `<>` de la derecha se completa solo
+con el tipo de la izquierda (tema 3 midió qué pasa si intentas `List<Object> v = new ArrayList<String>()`:
+`incompatible types: ArrayList<String> cannot be converted to List<Object>`). Declarar `List` no es un adorno de
+estilo: es lo que te permite cambiar la implementación mañana sin tocar los métodos que reciben la lista, y es la
+que hace que un parámetro diga «no me importa cómo estás guardada». `size 0` y `isEmpty true` son las dos formas
+correctas de preguntar lo mismo; la tercera, `guias == null`, es un error de concepto: una lista vacía **existe**,
+no está ausente.
+
+**Nivel 0 — `add(i, x)` desplaza; el índice que crees conocer ya no apunta a lo que creías.**
+
+```java
+guias.add(1, "RF-000123B");                  // insertar desplaza, no sustituye
+System.out.println("add(1, ...)              : " + guias);
+System.out.println("que habia en el 2?       : " + guias.get(2));
+```
+
+```text
+add(1, ...)              : [RF-000123, RF-000123B, RF-000124, RF-000125]
+que habia en el 2?       : RF-000124
+contiene / indexOf       : true / 3 · ausente -1
+```
+
+Compara con `Map.put`: poner una clave que ya existe **sustituye**; insertar en una posición que ya existe
+**empuja**. Esa es la asimetría que más caro sale en un refactor: si después del `add(1, …)` alguien recorre con
+`get(2)` esperando lo de antes, tiene otra cosa y ninguna excepción le avisa. `indexOf` es la versión de buscar
+por valor: `RF-000125` está en la posición 3 —la lista tiene cuatro elementos después del insertar— y una guía
+que no está devuelve `-1`, nunca un índice raro. Ese `-1` es la misma convención que `binarySearch` del tema 2
+cuando no encuentra, pero invertida: allí el negativo codifica *dónde debería estar*; aquí significa simplemente
+*no está*.
+
+**Nivel 0 — hay dos `remove`, y el compilador no te avisa cuando eliges el malo.** Medido en el mismo archivo:
+
+```java
+String quitada = guias.remove(0);            // remove(int)  -> por posicion
+boolean salio = guias.remove("RF-000124");   // remove(Object) -> por valor
+```
+
+```text
+remove(0) por posicion   : devolvio RF-000123 · queda [RF-000123B, RF-000124, RF-000125]
+remove("RF-000124")     : true · queda [RF-000123B, RF-000125]
+```
+
+Fíjate en los dos **retornos**, que son distintos a propósito: `remove(int)` devuelve **el elemento** (por eso lo
+recoges en un `String`), `remove(Object)` devuelve **un boolean** diciendo si encontró algo (por eso va a un
+`boolean`). Ahora el caso que muerde:
+
+```java
+List<Integer> pesos = new ArrayList<>();
+pesos.add(10); pesos.add(1); pesos.add(7);
+pesos.remove(1);                             // quita el 1 porque esta en la posicion 1
+```
+
+```text
+pesos.remove(1)          : [10, 7] · quito la POSICION
+remove(Integer.valueOf(7)): [10]
+```
+
+Con un `int` literal, `remove(1)` llama a `remove(int)`: borra la **posición** 1, que casualmente contenía el
+valor `1`, y por eso el programa «funciona» en la demo y se cae en producción cuando el 1 esté en otra casilla.
+La sobrecarga de `Object` solo se elige si el argumento **es** un objeto, y con `Integer` eso obliga a escribir
+`Integer.valueOf(7)`. El tema 5 desarrolla por qué se escribe `valueOf` y no `new Integer(7)` —el constructor sigue
+existiendo en la 25 pero `javac --release 25` lo marca con una *Note* de deprecación, medido en
+`tema-5/EncajarYDesencajar.java`— y dónde está la trampa de identidad (`==` entre cajas) que este ejemplo acaba de
+rozar. En un `List<String>` no hay ambigüedad posible: `String` no es
+`int`, así que el bug **solo existe en colecciones de números** —que son las que produce un `parseInt` de M2—.
+
+**Nivel 0 — el mapa no protesta cuando la clave no está, y ahí está el daño.**
+
+```java
+Integer leido = topePorZona.get("Quibd");
+System.out.println("get de ausente           : " + leido + " · getOrDefault: " + topePorZona.getOrDefault("Quibd", 0));
+try {
+    int doble = leido * 2;                   // aqui llega el NullPointerException
+}
+```
+
+```text
+get de ausente           : null · getOrDefault: 0
+desempaquetar el null    : NullPointerException
+```
+
+`leido * 2` no tiene ningún método que pueda fallar: lo que falla es el **desempaquetado automático** (tema 5). El
+`get` de una clave ausente es la única operación de este tema que **no da ninguna señal** —no lanza, no avisa, no
+deja rastro— y por eso merece dos remedios que sí se usan: `getOrDefault(k, 0)` si lo que quieres es un valor
+neutro, y `merge`/`computeIfAbsent` si lo que quieres es *crear si falta*. Diagnosticado en la traza: un
+`NullPointerException` cuya línea es una suma aritmética, sin método en medio, casi siempre es esto.
+
+**Nivel 1 — los cinco verbos del mapa, cada uno con una decisión distinta.** Medido en `tema-4/MapaDeZonas.java`,
+en el orden del programa:
+
+```text
+tres puestas             : {Cali=20000, Medellin=30000, Bogota=50000} · size 3
+put repetido             : devolvio 20000 · queda 25000
+putIfAbsent(Medellin)    : 30000 · sigue 30000
+putIfAbsent(Pereira)     : null · ya esta 15000
+replace de ausente       : null (null = no estaba)
+merge acumulando         : {Cali=1000, Medellin=3000, Bogota=1000}
+merge ordenado           : {Bogota=1000, Cali=1000, Medellin=3000}
+computeIfAbsent          : {Pereira=500, Cali=1000, Medellin=3000, Bogota=1000}
+computeIfAbsent ordenado : {Bogota=1000, Cali=1000, Medellin=3000, Pereira=500}
+```
+
+Cinco lecturas que hay que saber hacer de memoria:
+
+1. `put` **siempre** escribe y **devuelve el valor anterior** (o `null` si la clave no estaba): `devolvio 20000 ·
+   queda 25000`. Ese retorno es el que permite escribir «cambié el tope, guarda el viejo por si hay que
+   deshacerlo» sin una segunda pasada.
+2. `putIfAbsent(k, v)` **no pisa**: si la clave ya valía 30000, devuelve 30000 y deja 30000. Su nombre dice
+   «pongo solo si falta», y su retorno dice qué había.
+3. `replace(k, v)` es el espejo: **solo** escribe si la clave existe; de una clave ausente devuelve `null` y no
+   crea nada (`replace de ausente : null (null = no estaba)`). Es la operación que quieres cuando un `put`
+   escribiría una clave basura a partir de un identificador mal formateado.
+4. `merge(k, v, fn)` decide sola: si falta, asocia `v`; si existe, aplica `fn(antiguo, v)`. El bucle de cinco
+   zonas con 1000 g cada una deja `Medellin=3000` (tres apariciones), `Cali=1000`, `Bogota=1000`: **contador sin
+   preguntar**, que es el reemplazo directo del `if (mapa.get(k) == null)` que casi todo el mundo escribe.
+5. `computeIfAbsent(k, fn)` calcula **solo si falta**, y esto es lo que se comprueba en la salida: la segunda
+   llamada es `computeIfAbsent("Medellin", z -> 999999)` y Medellin sigue en `3000`, no en 999999. La función no
+   se ejecutó. Con `merge` habría sumado 999999; con `computeIfAbsent` no toca lo existente.
+
+Y ahí están las dos líneas `… ordenado`, que no son decoración: son el **filtro del determinismo**. Compare
+`merge acumulando : {Cali=1000, Medellin=3000, Bogota=1000}` con `merge ordenado : {Bogota=1000, Cali=1000,
+Medellin=3000}`: mismo mapa, mismo `toString` en potencia, distinto orden, porque la segunda impresión pasa las
+claves por un `ArrayList` + `Collections.sort` antes de leer el mapa. La convención del módulo dice que el orden
+interno de un `HashMap` **no se cifra** en ninguna comprobación; cuando escribí las dos comprobaciones de este
+bloque las cifré igualmente sin darme cuenta (pedían la cadena `{Cali=1000, Medellin=3000, …}` tal cual sale del
+`HashMap`), así que el laboratorio se corrigió a sí mismo: hoy `verificar.sh` comprueba las dos líneas
+`… ordenado`, que son estables, y las dos líneas crudas siguen imprimiéndose para que veas la diferencia. El
+programa añade ese orden con el mismo patrón del proyecto guía:
+
+```java
+/** Imprime un mapa POR CLAVE ORDENADA: el orden del HashMap nunca entra en una comprobacion. */
+static String porClave(Map<String, Integer> mapa) {
+    java.util.List<String> claves = new java.util.ArrayList<>(mapa.keySet());
+    java.util.Collections.sort(claves);
+    StringBuilder sb = new StringBuilder("{");
+    for (int i = 0; i < claves.size(); i++) {
+        if (i > 0) sb.append(", ");
+        sb.append(claves.get(i)).append('=').append(mapa.get(claves.get(i)));
+    }
+    return sb.append('}').toString();
+}
+```
+
+Otra observación honesta sobre `{Cali=1000, Medellin=3000, Bogota=1000}`: el orden en que salen impresas las
+claves **no** es el de inserción (`Medellin, Bogota, Cali`). El `println` de un mapa imprime en su orden interno,
+así que en la documentación de este curso esa línea se cita por sus **pares** clave→valor y nunca por su
+secuencia —y en `verificar.sh` directamente no está: la puerta compara texto literal, y el texto literal de un
+`HashMap` es justo lo que no se puede prometer—.
+
+**Nivel 1 — orden: `HashMap` no lo garantiza, `LinkedHashMap` sí, y eso se comprueba.**
+
+```text
+HashMap conserva el orden de insercion? false
+LinkedHashMap si lo conserva: [Medellin, Bogota, Cali]
+```
+
+La comprobación está escrita de forma que solo pueda fallar en una dirección: se pregunta si las claves del
+`HashMap` coinciden con la secuencia exacta que se insertó (`[Medellin, Bogota, Cali, Pereira]`) y se exige que la
+respuesta sea `false`. Si alguna futura JDK tuviera la «suerte» de conservar el orden, la comprobación salta y
+obligamos a mirar el tema; mientras tanto no ciframos en qué orden sale, porque ese orden es política de la
+implementación y cambia con el `hashCode` y con la capacidad interna. `LinkedHashMap` sí es una garantía del
+contrato —mantiene una lista enlazada sobre las entradas— y por eso ahí sí se cita la secuencia literal: las tres
+claves del mapa de orden se insertaron en ese orden (`Medellin`, `Bogota`, `Cali`) y salen en ese orden.
+
+Las tres vistas (`keySet()`, `values()`, `entrySet()`) no cambian la regla: cada una recorre el **mismo** mapa
+interno, así que heredan su orden. Las dos líneas de abajo salen del `HashMap`, no del `LinkedHashMap`, y por eso
+**no están en `verificar.sh`**: se imprimen para que las veas, y la puerta comprueba los `… ordenado`.
+
+```text
+claves                   : [Pereira, Cali, Medellin, Bogota]
+valores                  : [15000, 25000, 30000, 50000]
+entrada mayor a 25 kg     : Medellin -> 30000
+entrada mayor a 25 kg     : Bogota -> 50000
+```
+
+Y aquí va la tentación que hay que nombrar porque este corrido la pone delante: los `valores` salieron ordenados
+de menor a mayor, y las `claves` en el orden que hace esa secuencia creciente (Pereira 15 000, Cali 25 000,
+Medellín 30 000, Bogotá 50 000). Es un accidente del `hashCode` de estas cuatro claves con esta capacidad, **no**
+una propiedad de `HashMap`: `HashMap` no ordena ni por clave ni por valor. Por eso el filtro de la sección se
+comprueba por el par `clave -> valor` (`Medellin -> 30000`) y no por la posición que ocupa en la impresión, y por
+eso ninguna de estas cuatro líneas está en la puerta.
+
+**Nivel 1 — `null`: una política para el mapa, otra para la vitrina.** Medido en `MapaDeZonas.java` y
+`FijasYMutables.java`:
+
+```text
+clave null               : sin zona asignada · valor null: null · contiene clave true
+HashMap con null  : null · la clave si esta: true
+List.of + add     : UnsupportedOperationException · mensaje: null
+Map.of + put      : UnsupportedOperationException · mensaje: null
+List.of con null  : NullPointerException · sin mensaje
+```
+
+Un `HashMap` admite **una** clave `null` y cualquier cantidad de valores `null`: `put(null, "sin zona asignada")`
+funciona, `get` de una clave con valor `null` devuelve `null` **y además** `containsKey` dice `true` —las dos cosas
+a la vez es lo que prueba que `null` como valor es distinto de «clave ausente»—. `List.of` y `Map.of` hacen lo
+contrario a propósito: rechazan `null` al construir (NPE) y rechazan cualquier escritura después
+(`UnsupportedOperationException`). No es un capricho: una colección que va a viajar entre módulos sin copia no
+puede tener huecos que alguien confunda con «dato ausente». Dos detalles de la salida que conviene registrar como
+se ven: el mensaje de las dos `UnsupportedOperationException` es literalmente `null` (`mensaje: null`), y por eso
+en el texto se cita la **clase** de la excepción y no su mensaje, y el programa que intenta `List.of("a", null)`
+lo etiqueta como `sin mensaje` en vez de imprimir el objeto.
+
+**Nivel 2 — borrar mientras recorres: el fallo ya lo viste en M3; aquí van las cuatro salidas.** El error
+reproducible `tema-4/errores/IterarYBorrar.java` (medido, con la traza tal cual sale):
+
+```text
+visto: RF-000123
+Exception in thread "main" java.util.ConcurrentModificationException
+	at java.base/java.util.ArrayList$Itr.checkForComodification(ArrayList.java:1104)
+	at java.base/java.util.ArrayList$Itr.next(ArrayList.java:1058)
+	at IterarYBorrar.main(IterarYBorrar.java:10)
+```
+
+La explicación es la del [Módulo 3 · tema 3](modulo-3.md): el iterador lleva la cuenta de modificaciones esperada
+y la compara en cada `next()`; si la lista cambió por fuera, protesta. Y el Javadoc de `ArrayList` lo dice en su
+párrafo de *fail-fast*, que hay que leer entero porque la última frase es la que manda en un diagnóstico:
+
+> «The iterators returned by this class's `iterator` and `listIterator` methods are *fail-fast*: if the list is
+> structurally modified at any time after the iterator is created, in any way except through the iterator's own
+> `remove` or `add` methods, the iterator will throw a `ConcurrentModificationException`. […] Note that the
+> fail-fast behavior of an iterator cannot be guaranteed as it is, generally speaking, impossible to make any hard
+> guarantees in the presence of unsynchronized concurrent modification. Fail-fast iterators throw
+> `ConcurrentModificationException` on a best-effort basis. Therefore, it would be wrong to write a program that
+> depended on this exception for its correctness: *the fail-fast behavior of iterators should be used only to
+> detect bugs.*»
+
+«On a best-effort basis» es exactamente la intermitencia que midió M3, y «only to detect bugs» es la razón de que la
+regla del curso sea **no escribir código que dependa de que lance**: o borras por el iterador, o no borras mientras
+recorres. Dos cosas más de la traza de arriba: el fallo llega en el `next()` **siguiente**, no en el `remove()`
+—por eso viste `visto: RF-000123` antes del golpe—, y las tres líneas `at java.base/...` son del fuente de la JDK:
+**ninguna comprobación de este curso mira esos números de línea**, porque cambian entre versiones de Temurin; lo que
+es tuyo y sí se lee es `IterarYBorrar.java:10`. Las cuatro formas legales, medidas en
+`tema-4/BorrarSinRomper.java` —cada una borra **una guía distinta**, por eso los cuatro resultados difieren y los
+cuatro son correctos—:
+
+```text
+removeIf                 : [RF-000123, RF-000124, RF-000125]
+iterator.remove          : visitados 4 · queda [RF-000123, RF-000125, RF-000900]
+recorrer una copia       : [RF-000123, RF-000124, RF-000900]
+for con indice al reves  : [RF-000124, RF-000125, RF-000900]
+```
+
+La parte de la izquierda dice qué se llevó: `removeIf` quita las que terminan en `900`; `iterator.remove` quita
+`RF-000124` **después** de visitar las cuatro (por eso `visitados 4`); el bucle sobre una copia quita
+`RF-000125`; y el `for` hacia atrás quita `RF-000123`. Que hacia atrás funcione es una consecuencia directa del
+Tema 1: borrar en la posición `i` solo renumera las casillas de **después**, así que descendiendo nunca pisas una
+posición que todavía no has mirado. Hacia adelante con índice sí la pisas, y además **te saltas** el vecino que
+ocupó su lugar —eso no lanza excepción, simplemente se procesa de menos, que es peor—.
+
+**Nivel 2 — qué hay realmente debajo de los dos `for`.** `tema-4/por-dentro/RecorridoEnBytecode.java` escribe la
+misma suma de dos maneras y las ejecuta:
+
+```java
+static long conIndice(List<Integer> pesos) {
+    long s = 0;
+    for (int i = 0; i < pesos.size(); i++) { s += pesos.get(i); }
+    return s;
+}
+static long conForEach(List<Integer> pesos) {
+    long s = 0;
+    for (int p : pesos) { s += p; }
+    return s;
+}
+```
+
+```text
+conIndice / conForEach : 5540 / 5540
+con iterator           : 2 vueltas
+```
+
+`javap -c` sobre el mismo `.class` (generado con `javac --release 25`) muestra la diferencia de forma:
+
+```text
+17: invokeinterface #13,  2   // InterfaceMethod java/util/List.get:(I)Ljava/lang/Object;
+22: checkcast     #17         // class java/lang/Integer
+```
+```text
+ 3: invokeinterface #22,  1   // InterfaceMethod java/util/List.iterator:()Ljava/util/Iterator;
+10: invokeinterface #26,  1   // InterfaceMethod java/util/Iterator.hasNext:()Z
+19: invokeinterface #32,  1   // InterfaceMethod java/util/Iterator.next:()Ljava/lang/Object;
+24: checkcast     #17         // class java/lang/Integer
+```
+
+Cuatro cosas se leen aquí. (1) El `for`-each sobre una `List` **es** un iterador: no hay segunda sintaxis secreta,
+hay `List.iterator()` y luego `hasNext`/`next`. (2) Los dos caminos llevan un `checkcast Integer`: el tipo se
+borró (tema 3) y la reconstrucción de la expectativa la hace `javac` en el punto de uso. (3) La suma sale **igual
+por los dos caminos** (`5540 / 5540`), y eso es el argumento honesto para elegir por legibilidad, no por «creer que
+uno es más rápido». (4) Este ejemplo no se inventó una comparación: son literalmente los dos bucles que el Javadoc
+de `java.util.RandomAccess` (SE 25) usa como regla para decidir si una lista implementa la marca:
+
+> «As a rule of thumb, a `List` implementation should implement this interface if, for typical instances of the
+> class, this loop: `for (int i=0, n=list.size(); i < n; i++) list.get(i);` runs faster than this loop:
+> `for (Iterator i=list.iterator(); i.hasNext(); ) i.next();`»
+
+Y dice por qué la marca existe:
+
+> «Marker interface used by `List` implementations to indicate that they support fast (generally constant time)
+> random access. The primary purpose of this interface is to allow generic algorithms to alter their behavior to
+> provide good performance when applied to either random or sequential access lists. The best algorithms for
+> manipulating random access lists (such as `ArrayList`) can produce quadratic behavior when applied to sequential
+> access lists (such as `LinkedList`).»
+
+Medido en la propia ejecución: `ArrayList es RandomAccess : true`, `LinkedList es RandomAccess: false`. Es una
+**marca vacía** —no aporta ningún método— y lo que informa es que pedir posiciones sueltas en una lista enlazada no
+es gratis. El coste con números lo mide el tema 6; aquí te quedas con la regla de dedo del Javadoc: `for`-each si
+no necesitas la posición, con índice solo sobre una lista que declare la marca.
+
+Dos contrastes más del mismo archivo, que son confusiones reales con código real:
+
+```text
+arreglo.length / lista.size(): 3 / 3
+equals de listas          : true · lista.equals(arreglo): false
+```
+
+`length` es un **campo** del arreglo (tema 1); `size()` es un **método** de la lista. El valor es el mismo; la
+sintaxis no es intercambiable y el error de tipeo más común del primer proyecto es poner `lista.length` (no
+compila: `cannot find symbol`) o `arreglo.size()` (tampoco). Y `equals`: dos listas con los mismos elementos en el
+mismo orden son `equals` (`true`), mientras una lista **jamás** es `equals` a un arreglo con esos mismos números
+(`false`) —los arreglos no redefinen `equals`, tema 2 midió `Arrays.equals` precisamente para eso—.
+
+**Nivel 3 — cómo crece un `ArrayList`, medido por dentro y declarado como excepción.**
+`tema-4/por-dentro/Crecimiento.java` lee el campo privado `elementData` por reflexión, así que exige
+`java --add-opens java.base/java.util=ALL-UNNAMED`. Con la apertura, medido:
+
+```text
+recien creada : size 0 · hueco 0
+tras 1 add    : size 1 · hueco 10
+tras 10       : size 10 · hueco 10
+tras 11       : size 11 · hueco 15
+tras 16       : size 16 · hueco 22
+los saltos    : 5 y 7 · cada salto es hueco viejo + hueco viejo/2
+```
+
+Cuatro hechos: una `ArrayList` recién creada tiene hueco **0** (no reserva los 10 hasta el primer `add`), el primer
+`add` lo lleva a 10, el undécimo a 15 y el decimosexto a 22. La regla que reproduce los dos saltos es
+«hueco viejo + hueco viejo / 2» (`10 + 5`, `15 + 7`). Hay que mirar esos cuatro números con las dos frases del
+Javadoc de `java.util.ArrayList` (SE 25) delante, porque parecen contradicción y no lo son. El constructor sin
+argumentos promete otra cosa de la que se ve por reflexión:
+
+> «`ArrayList()` — Constructs an empty list with an initial capacity of ten.»
+
+y la descripción de la clase dice literalmente:
+
+> «Each `ArrayList` instance has a *capacity*. The capacity is the size of the array used to store the elements in
+> the list. It is always at least as large as the list size. As elements are added to an ArrayList, its capacity
+> grows automatically. **The details of the growth policy are not specified** beyond the fact that adding an element
+> has constant amortized time cost.»
+
+O sea: «capacidad inicial diez» es la capacidad **prometida**, y el arreglo que mide `elementData` tiene **0** hasta
+el primer `add` porque la asignación es perezosa —`size 0 · hueco 0`, medido en la primera línea del ejemplo—; los
+diez se materializan al escribir el primer elemento. Y «the details of the growth policy are not specified» es la
+razón exacta de que en este curso el 10, el 15 y el 22 se citen como **medidos** y no como regla: lo que el contrato
+sí fija es el coste (`add` en *amortized constant time*, o sea «adding n elements requires O(n) time»), no la
+secuencia. El número sale del código de esta JDK; abrí el fuente empaquetado
+(`$JAVA_HOME/lib/src.zip` de Temurin 27) y son `java.util.ArrayList:119` `DEFAULT_CAPACITY = 10`, el comentario de
+`java.util.ArrayList:137` («*will be expanded to DEFAULT_CAPACITY when the first element is added*») y, en el método
+que agranda, `java.util.ArrayList:235`:
+
+```java
+int newCapacity = ArraysSupport.newLength(oldCapacity,
+        minCapacity - oldCapacity, /* minimum growth */
+        oldCapacity >> 1           /* preferred growth */);
+```
+
+`oldCapacity >> 1` es literalmente «la mitad del hueco viejo», y de ahí salen los 5 y los 7 medidos. **Sin la
+apertura el programa no finge**: imprime `sin la apertura no hay medida: InaccessibleObjectException · usa java
+--add-opens java.base/java.util=ALL-UNNAMED` y sale con código **1** (medido). Eso es lo que hace honesta la
+comprobación: o se mide, o el laboratorio falla.
+
+**Nivel 3 — colecciones fijas: la solución es copiar, no pelear.** `tema-4/FijasYMutables.java`:
+
+```java
+List<String> fijas = List.of("RF-000123", "RF-000124");
+Map<String, Integer> fijoMapa = Map.of("Medellin", 30000);
+// La solucion no es pelear con la coleccion fija: es copiarla en una que si crece.
+List<String> mutables = new ArrayList<>(fijas);
+mutables.add("RF-000125");
+```
+
+```text
+copia en ArrayList: [RF-000123, RF-000124, RF-000125]
+original intacta  : [RF-000123, RF-000124]
+recibida por un metodo: 200
+copia de mapa fijo  : size 2 · el original sigue en 1
+```
+
+El constructor de copia es la pieza que une los dos mundos: `new ArrayList<>(cualquierCollection)` y
+`new HashMap<>(cualquierMap)` aceptan fijas y devuelven editables, y el `original intacta`/`el original sigue en 1`
+de las salidas demuestra que la copia es **de la estructura**, no de los elementos: los `String` y los `Integer`
+son compartidos (son inmutables: M2 tema 1 y tema 5). Y `recibida por un metodo: 200` es el premio del diseño:
+`totalDe(List<String>)` puede recibir la vitrina sellada sin miedo a que la modifique, porque no puede. Por eso
+la recomendación del proyecto guía es la que es: **parámetros y valores de retorno como `List.of`/ colecciones no
+editables cuando el llamador no debe tocar nada**, `ArrayList`/`HashMap` cuando sí hay que acumular.
+
+**Qué declara realmente cada tipo (medido con `javap` sobre la propia JDK).**
+
+```text
+public class java.util.ArrayList<E> extends java.util.AbstractList<E> implements java.util.List<E>, java.util.RandomAccess, java.lang.Cloneable, java.io.Serializable {
+public class java.util.HashMap<K, V> extends java.util.AbstractMap<K, V> implements java.util.Map<K, V>, java.lang.Cloneable, java.io.Serializable {
+public class java.util.LinkedHashMap<K, V> extends java.util.HashMap<K, V> implements java.util.SequencedMap<K, V> {
+```
+
+Tres lecturas: `ArrayList` **sí** implementa `RandomAccess` —no es una convención de los programadores, es una
+marca en la clase, y por eso `instanceof RandomAccess` es una pregunta válida en tiempo de ejecución—; `HashMap`
+no la implementa (no tiene sentido: no hay posiciones), y `LinkedHashMap` **extiende** `HashMap` y añade
+`SequencedMap`, que es la interfaz que desde JDK 21 formaliza «hay un primer y un último elemento definidos». Ese
+es el punto donde la garantía de orden deja de ser folklore: no es que «suele salir en orden», es que la clase
+que lo promete está declarada.
+
+#### 7. Código ejecutable
+
+**Ejemplo mínimo** · archivo `tema-4/ListaDeGuias.java` · ejecuta
+`javac --release 25 -d out tema-4/ListaDeGuias.java && java -Dstdout.encoding=UTF-8 -cp out ListaDeGuias`
+
+```java
+import java.util.ArrayList;
+import java.util.List;
+
+public class ListaDeGuias {
+    public static void main(String[] args) {
+        List<String> guias = new ArrayList<>();
+        System.out.println("vacia                    : size " + guias.size() + " · isEmpty " + guias.isEmpty());
+        guias.add("RF-000123");
+        guias.add("RF-000124");
+        guias.add("RF-000125");
+        guias.add(1, "RF-000123B");                  // insertar desplaza, no sustituye
+        String quitada = guias.remove(0);            // remove(int)  -> por posicion
+        boolean salio = guias.remove("RF-000124");   // remove(Object) -> por valor
+        guias.addAll(java.util.List.of("RF-000200", "RF-000201"));
+        guias.clear();
+        System.out.println("clear                    : size " + guias.size() + " · isEmpty " + guias.isEmpty());
+    }
+}
+```
+
+Salida completa (11 líneas; nueve están citadas en la sección 6 y `addAll` y `clear` son las dos que cierran el
+programa):
+
+```text
+vacia                    : size 0 · isEmpty true
+tras 3 add               : [RF-000123, RF-000124, RF-000125]
+add(1, ...)              : [RF-000123, RF-000123B, RF-000124, RF-000125]
+que habia en el 2?       : RF-000124
+contiene / indexOf       : true / 3 · ausente -1
+remove(0) por posicion   : devolvio RF-000123 · queda [RF-000123B, RF-000124, RF-000125]
+remove("RF-000124")     : true · queda [RF-000123B, RF-000125]
+pesos.remove(1)          : [10, 7] · quito la POSICION
+remove(Integer.valueOf(7)): [10]
+addAll                   : size 4 · [RF-000123B, RF-000125, RF-000200, RF-000201]
+clear                    : size 0 · isEmpty true
+```
+
+**El mapa** · `tema-4/MapaDeZonas.java`. El bloque que hay que copiar a mano (y que es el patrón que vas a usar
+en el resto del curso):
+
+```java
+Map<String, Integer> pesosPorZona = new HashMap<>();
+for (String zona : new String[] {"Medellin", "Bogota", "Medellin", "Cali", "Medellin"}) {
+    pesosPorZona.merge(zona, 1000, Integer::sum);            // contador, sin preguntar si existe
+}
+System.out.println("merge acumulando         : " + pesosPorZona);
+System.out.println("merge ordenado           : " + porClave(pesosPorZona));   // el orden SÍ citable
+pesosPorZona.computeIfAbsent("Pereira", z -> 500);           // no estaba: se calcula y entra
+pesosPorZona.computeIfAbsent("Medellin", z -> 999999);       // si estaba: la funcion NO se ejecuta
+```
+
+Salida completa: 18 líneas, **todas citadas en la sección 6**: dos en el nivel 0 (el `get` de la clave ausente y su
+`NullPointerException`) y dieciséis en el nivel 1 (los cinco verbos del mapa con sus dos impresiones ordenadas,
+las dos respuestas de orden, las cuatro líneas de vistas y filtro, y la fila del `null`).
+
+**Borrar sin romper** · `tema-4/BorrarSinRomper.java`, las cuatro pasadas sobre la misma lista base
+`[RF-000123, RF-000124, RF-000125, RF-000900]`:
+
+```java
+List<String> dos = new ArrayList<>(base);
+Iterator<String> it = dos.iterator();
+int visitados = 0;
+while (it.hasNext()) {
+    String guia = it.next();
+    visitados++;
+    if (guia.endsWith("24")) {
+        it.remove();                         // legal: borra lo que el iterador acaba de entregar
+    }
+}
+```
+
+y la variante con índice, que funciona porque va **hacia atrás**:
+
+```java
+for (int i = cuatro.size() - 1; i >= 0; i--) {
+    if (cuatro.get(i).endsWith("23")) { cuatro.remove(i); }
+}
+```
+
+Salida: las cuatro líneas medidas de la sección 6 (nivel 2).
+
+**Por dentro** · `tema-4/por-dentro/RecorridoEnBytecode.java` (los dos `for` y el `javap` pegado arriba) y
+`tema-4/por-dentro/Crecimiento.java` (el hueco por reflexión). El segundo es el único ejemplo del módulo que
+necesita una apertura de módulo; sin ella falla en vez de fingir:
+
+```bash
+javac --release 25 -d out tema-4/por-dentro/Crecimiento.java
+java --add-opens java.base/java.util=ALL-UNNAMED -cp out Crecimiento   # mide
+java -cp out Crecimiento                                               # sin la apertura: codigo 1
+```
+
+**Proyecto guía** · `src/main/java/rutaflow/nucleo/Manifiesto.java` usa las dos colecciones de este tema para la
+mitad del programa: `gramosLista(String[])` devuelve `List<Integer>` construida con `add` (línea 78) y
+`totalesPorZona(String[])` acumula con `merge` (línea 93). La tercera pieza que solo podía salir en colecciones es
+`totalesOrdenados`, que copia las claves en una `ArrayList`, la ordena con `Collections.sort` y **luego** lee el
+mapa por clave —es la forma correcta de imprimir un `HashMap` de manera determinista, y la usan las 9 pruebas del
+proyecto para cuadrar las dos versiones:
+
+```java
+java.util.Map<String, Integer> crudos = totalesPorZona(guias);
+List<String> claves = new ArrayList<>(crudos.keySet());
+java.util.Collections.sort(claves);
+```
+
+Ejecutado sin argumentos (`java -cp out rutaflow.nucleo.Manifiesto`, medido con `javac --release 25`), el contraste
+que demuestra que el orden es una **decisión** y no un accidente:
+
+```text
+  sobre el tope 1000  : [1250, 2100, 3400] · contando con binarySearch: 3
+  sobre el tope 1000  : [1250, 3400, 2100] · cantidad: 3
+```
+
+La versión con arreglos ordena (porque `binarySearch` del tema 2 **exige** orden para valer); la versión con
+colecciones conserva el orden de llegada (porque un filtro sobre `ArrayList` no ordena nada). Los dos conjuntos son
+el mismo y los dos cuentan 3; las secuencias impresas son distintas. Eso es exactamente lo que la prueba
+`lasDosVersionesDelReporteCuadran` no puede comprobar comparando textos, y por eso compara sumas y longitudes.
+
+#### 8. Mini-laboratorio
+
+Escribe los archivos desde cero en `laboratorios/modulo-4/tema-4/`. Antes de ejecutar cada uno, escribe en un
+comentario qué crees que va a imprimir; la diferencia entre lo que escribiste y lo que salió **es** el ejercicio.
+
+1. Crea `MiLista.java`: una `List<String>` de guías declarada con la interfaz, tres `add`, un `add(0, ...)` y
+   luego imprime `size()`, `get(0)`, `get(1)` y `get(2)`. Predice los tres `get` antes de ejecutar. Si predijiste
+   la misma guía dos veces, ya sabes qué hace `add(i, x)`.
+2. Crea `DosRemove.java`: una `List<Integer>` con los valores `10, 1, 7` en ese orden; llama a `remove(1)`,
+   imprime el resultado, y después llama a `remove(Integer.valueOf(1))` e imprime otra vez. Pega las dos salidas y
+   escribe debajo, en comentario, **qué sobrecarga eligió cada línea y por qué el compilador no dijo nada**.
+   Remata con una `List<String>` que intente `remove(0)`: aquí el compilador **sí** protesta, y esa asimetría es la
+   prueba de que el bug anterior solo existe con números.
+3. Crea `ContadorZonas.java`: recibe un `String[]` de guías formato `"RF-000123:1250"` (parte con `split` de M2),
+   devuelve un `Map<String, Integer>` con el total de gramos por zona usando **solo** `merge`, e imprime el mapa.
+   Después cambia `merge` por `totales.put(zona, g)` y vuelve a ejecutar: la segunda guía de una zona **borra** a
+   la primera y el total se cae. Deja las dos salidas pegadas en comentario. (Este es el paso que reproduce el
+   fallo que `verificar.sh` caza en el proyecto guía con `losTotalesPorZonaAcumulan`.)
+4. Crea `NuloAlDesempacar.java`: un `Map<String, Integer>` con dos zonas, y tres líneas que lean una clave
+   ausente: `get` suelto imprimir, `get` dentro de una suma (`int x = mapa.get("Quibd") + 1`) e `int y =
+   mapa.getOrDefault("Quibd", 0) + 1`. Pega la traza del `NullPointerException` y anota **en qué columna** falla.
+5. Crea `BorraYCamina.java`: parte de `["RF-000123", "RF-000124", "RF-000125", "RF-000900"]` y haz **cinco**
+   pasadas: (a) `for`-each con `lista.remove(x)` dentro —pega la traza—, (b) `for` con índice **hacia adelante**
+   borrando, (c) `for` con índice hacia atrás, (d) `iterator.remove()`, (e) `removeIf`. Las salidas de (a) y (b)
+   cuentan la misma historia con dos síntomas distintos: una lanza, la otra **se salta un elemento en silencio**.
+   Demuestra la segunda con un caso de dos coincidencias seguidas, y escribe el por qué en comentario.
+6. Crea `FijaYCopia.java`: `List.of("a", "b")`, un `add` dentro de `try/catch` con el mensaje (verás que es
+   `null`), un `List.of("a", null)` en otro `try/catch`, y la solución con `new ArrayList<>(fija)`. Termina
+   imprimiendo las dos para que quede que la original sigue intacta.
+7. Crea `OrdenDeMapa.java`: mete `"Medellin"`, `"Bogota"`, `"Cali"` en un `HashMap` y en un `LinkedHashMap` e
+   imprime los dos `keySet()`. Después contesta por escrito: ¿cuál de las dos impresiones puedes citar en un test
+   y cuál no, y por qué? (Pista: mira cómo lo resuelve `Manifiesto.totalesOrdenados`.)
+
+**Listo cuando** puedas (1) decir qué devuelve cada una de `add`, `remove(int)`, `remove(Object)`, `put`,
+`putIfAbsent`, `replace`, `merge` y `computeIfAbsent` sin abrir el Javadoc, (2) explicar por qué `pesos.remove(1)`
+no da error de compilación **y** es un bug, (3) escribir de memoria las cuatro formas de borrar mientras recorres,
+y (4) decir qué garantía de orden da `HashMap`, cuál da `LinkedHashMap` y qué hace el proyecto guía para que su
+reporte sea determinista.
+
+#### 9. Verificación
+
+```bash
+cd docs/reestructuracion/cursos/java/laboratorios/modulo-4
+javac --release 25 -d /tmp/a tema-4/*.java && javac --release 25 -d /tmp/b tema-4/por-dentro/*.java
+java -Dstdout.encoding=UTF-8 -cp /tmp/a ListaDeGuias        # «pesos.remove(1)          : [10, 7] · quito la POSICION»
+java -Dstdout.encoding=UTF-8 -cp /tmp/a MapaDeZonas         # «merge ordenado           : {Bogota=1000, Cali=1000, Medellin=3000}»
+java -Dstdout.encoding=UTF-8 -cp /tmp/a BorrarSinRomper     # «iterator.remove          : visitados 4 · queda […]»
+java -Dstdout.encoding=UTF-8 -cp /tmp/a FijasYMutables      # «copia de mapa fijo  : size 2 · el original sigue en 1»
+java -Dstdout.encoding=UTF-8 -cp /tmp/b RecorridoEnBytecode # «conIndice / conForEach : 5540 / 5540»
+java -Dstdout.encoding=UTF-8 --add-opens java.base/java.util=ALL-UNNAMED -cp /tmp/b Crecimiento  # «tras 16       : size 16 · hueco 22»
+java -Dstdout.encoding=UTF-8 -cp /tmp/b Crecimiento; echo "codigo=$?"     # sin la apertura: aviso y codigo 1
+javac -d /tmp/c tema-4/por-dentro/RecorridoEnBytecode.java
+javap -c -cp /tmp/c RecorridoEnBytecode | grep 'List.iterator:()Ljava/util/Iterator;'
+javap -c -cp /tmp/c RecorridoEnBytecode | grep 'List.get:(I)Ljava/lang/Object;'
+javac --release 25 -d /tmp/d tema-4/errores/IterarYBorrar.java
+java -cp /tmp/d IterarYBorrar       # java.util.ConcurrentModificationException  (codigo distinto de 0)
+java -cp /tmp/d VaciaConIndice      # IndexOutOfBoundsException: Index 0 out of bounds for length 0
+java -cp /tmp/d ImmutablesNoCrecen  # java.lang.UnsupportedOperationException
+```
+
+Aquí las **43** comprobaciones del tema pasan con Temurin 27 y `--release 25`, y el total del laboratorio sigue en
+**187 / 0 fallidas / 0 omitidas** (el reparto medido bloque a bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 28 ·
+T6 22 · Gradle 4). Dentro de las 43 hay 38 de salida ejecutada, **2 de bytecode**
+(`List.iterator:()Ljava/util/Iterator;` y `List.get:(I)Ljava/lang/Object;`, las dos parejas del mismo
+`RecorridoEnBytecode`), 3 que exigen código ≠ 0 **y** el texto de la excepción, y 1 que exige el código **1** del
+programa sin `--add-opens`. Las dos comprobaciones del contador por zona pedían antes la cadena tal como la imprime
+un `HashMap`; hoy piden `merge ordenado` y `computeIfAbsent ordenado`, que son estables, así que el tema dejó de
+depender del orden interno del mapa sin perder ni una comprobación.
+
+*Pendiente de reejecución en JDK 25:* los cinco números del hueco (`0, 10, 15, 22` y los saltos `5` y `7`) y la
+cadena `cada salto es hueco viejo + hueco viejo/2` son política de implementación de `java.util.ArrayList`; están
+fijados en `verificar.sh` contra Temurin 27 y hay que volver a registrarlos con el ejecutable 25 (la *regla* salta
+a la vista en la propia salida, así que si el número cambia se ve en la comprobación, no en producción). También es
+pendiente el texto de las tres excepciones (`IndexOutOfBoundsException: Index 0 out of bounds for length 0`, el
+`UnsupportedOperationException` con mensaje `null` y el `ConcurrentModificationException`), que lo redacta la JDK.
+Lo que **no** depende de la versión: la existencia de los dos `remove`, la semántica de `merge`/`computeIfAbsent`,
+que `get` de ausente sea `null`, que `LinkedHashMap` conserve el orden de inserción y que `ArrayList` sea
+`RandomAccess` mientras `LinkedList` no.
+
+#### 10. Error común y diagnóstico
+
+**Síntoma 1 — `NullPointerException` en una línea que solo suma.** El caso `leido * 2`. No hay ningún método en
+esa línea; lo que hubo fue un `get` que devolvió `null` y un desempaquetado automático. Medido:
+
+```text
+get de ausente           : null · getOrDefault: 0
+desempaquetar el null    : NullPointerException
+```
+
+**Arreglo:** decidir **antes** de leer. `getOrDefault(k, 0)` si el neutro es un número; `merge(k, v, Integer::sum)`
+si estás acumulando; `computeIfAbsent(k, ...)` si el valor por defecto es una colección nueva. **No arregla esto:**
+`try/catch (NullPointerException)` alrededor de la suma —eso convierte un contrato mal pensado en un silencio—.
+
+**Síntoma 2 — «borré un elemento y se fue otro».** `pesos.remove(1)` (medido: `[10, 7] · quito la POSICION`). El
+diagnóstico es mirar el **tipo estático del argumento**: `int` → posición; cualquier cosa referencia → valor. Con
+cajas hay que empaquetar a propósito: `remove(Integer.valueOf(7))` deja `[10]`. Un truco de revisión que funciona:
+si ves `remove(` con un literal numérico dentro de una `List<Integer>`, es un candidato a bug y merece un test con
+**tres** valores donde el buscado no esté en su propia posición.
+
+**Síntoma 3 — `ConcurrentModificationException` «a veces».** El caso ya diagnosticado en M3 tema 3, aquí con la
+salida escrita. Medido en `errores/IterarYBorrar.java`:
+
+```text
+Exception in thread "main" java.util.ConcurrentModificationException
+```
+
+con el recorrido partiendo por la mitad (`visto: RF-000123` y nunca llega a `nunca llega aqui`). **Arreglo:** una
+de las cuatro que funcionan (`removeIf`, `iterator.remove()`, copiar y recorrer, índice hacia atrás). **Por qué
+parece intermitente:** el iterador solo protesta si todavía cree que queda una vuelta; borrando la última posición
+el `hasNext()` corta el bucle **sin comprobar** y la lista queda modificada sin ninguna excepción —eso lo midió el
+[Módulo 3 · tema 3](modulo-3.md) con `BorraDetras.java`—. Un fallo que a veces lanza y a veces deja los datos
+tocados es exactamente el que no aparece en las pruebas.
+
+**Síntoma 4 — «mi servicio no crece: `UnsupportedOperationException`».** Medido dos veces:
+`List.of + add : UnsupportedOperationException · mensaje: null` y en la traza de
+`errores/ImmutablesNoCrecen.java`:
+
+```text
+Exception in thread "main" java.lang.UnsupportedOperationException
+	at java.base/java.util.ImmutableCollections.uoe(ImmutableCollections.java:156)
+	at java.base/java.util.ImmutableCollections$AbstractImmutableCollection.add(ImmutableCollections.java:161)
+	at ImmutablesNoCrecen.main(ImmutablesNoCrecen.java:10)
+```
+
+**Causa:** alguien pasó una `List.of` por un parámetro que se usa para acumular. **Arreglo:** decidir en la
+frontera, no dentro del método: si el método **acumula**, pide `List` y crea su propia copia; si el método **lee**,
+recibe la fija sin miedo (medido: `recibida por un metodo: 200`). Y **no** parches el cristal del `List.of` con
+`Collections.unmodifiableList` encima de un `ArrayList` editable que guardas en un campo: eso sigue siendo tuyo.
+
+**Síntoma 5 — «el reporte sale en otro orden y el test falló».** Es `HashMap` cumpliendo su contrato, no
+rompiéndolo. Medido: `HashMap conserva el orden de insercion? false`. **Arreglo:** si el orden es parte del
+resultado, usa `LinkedHashMap` (que sí lo garantiza y cuya salida sí se puede fijar en un test:
+`LinkedHashMap si lo conserva: [Medellin, Bogota, Cali]`) o ordena las claves explícitamente como hace
+`Manifiesto.totalesOrdenados` con `Collections.sort`. Lo que nunca se hace es fijar en un test el orden en que sale
+un `HashMap`: se pasa hoy y rompe mañana sin que hayas cambiado nada.
+
+**Errores de ejecución reales** (medidos con `java` sobre `--release 25`; los tres **compilan**, que es el punto):
+
+```text
+java.util.ConcurrentModificationException                        (IterarYBorrar.java:10)
+java.lang.IndexOutOfBoundsException: Index 0 out of bounds for length 0   (VaciaConIndice.java:11)
+java.lang.UnsupportedOperationException                            (ImmutablesNoCrecen.java:10)
+```
+
+El del medio es el mismo error del tema 1 con otro nombre y otro mensaje: un arreglo dice
+`ArrayIndexOutOfBoundsException` con `Index 5 out of bounds for length 5`; una lista dice
+`IndexOutOfBoundsException` —la clase base— con `Index 0 out of bounds for length 0`. Que el mensaje sea de
+`java.lang` y no de `java.util` es la señal de que vienes de `ArrayList`, que reutiliza las comprobaciones de
+índice de la biblioteca.
+
+#### 11. Pregunta con respuesta modelo
+
+**Comprensión.** ¿Cuántas líneas de salida produce `System.out.println(mapa)` si el mapa tiene tres claves, y qué
+pasa si le pides una cuarta que no existe?
+
+**Respuesta modelo:** una sola línea con las tres entradas, en el orden interno del mapa —que **no** es el de
+inserción, medido como `false`—; por eso el orden de esa línea no se puede usar como aserción. Pedir la cuarta no
+produce ninguna excepción: `get` devuelve `null` y el fallo, si llega, llega después al usar ese `null`
+(medido: `get de ausente : null · getOrDefault: 0` y luego `desempaquetar el null : NullPointerException`). Si lo
+que quieres es el orden garantizado, la clase es `LinkedHashMap`; si lo que quieres es el orden *de mayor a menor
+por clave* con coste de búsqueda logarítmico, la clase es `TreeMap` —ahí sí se cita la secuencia, porque el orden
+por clave es contrato—, y ese mapa se trabaja en M12 · tema 3 (variantes `Hash`, `LinkedHash` y `Tree`, con
+`NavigableMap` y consultas por rango). Si lo que quieres es
+determinismo de impresión sobre un `HashMap`, copias `keySet()` a un `ArrayList`, la ordenas con
+`Collections.sort` y lees el mapa por clave —eso es literalmente `totalesOrdenados` del proyecto guía—.
+
+**Comprensión.** `List<String> fija = List.of("a", "b"); fija.add("c");` — ¿qué falla en qué momento: compilación o ejecución?
+
+**Respuesta modelo:** en **ejecución**, con `UnsupportedOperationException` y mensaje `null` (ambos medidos). La
+compilación no puede protestar porque `add` existe en `List`: la implementación devuelta por `List.of` simplemente
+decide no soportarla, que es lo contrario de un arreglo de referencias con el `add` ausente por diseño —una colección
+fija se parece a `String` más que a un arreglo—. El remedio no es capturar la excepción: es copiar
+(`new ArrayList<>(fija)`), y la prueba de que la copia es superficial es que el original sigue
+`[RF-000123, RF-000124]` mientras la copia llegó a tres.
+
+**Comprensión.** ¿Qué hay escrito en el bytecode de un `for`-each sobre una `List` y qué hay en un `for` con
+índice? ¿Por qué la suma da lo mismo?
+
+**Respuesta modelo:** el `for`-each se compila a `List.iterator:()Ljava/util/Iterator;` y luego
+`Iterator.hasNext:()Z` / `Iterator.next:()Ljava/lang/Object;` con un `checkcast` al tipo declarado; el `for` con
+índice se compila a `List.get:(I)Ljava/lang/Object;` más su `checkcast`, llamado una vez por vuelta. La suma da lo
+mismo (`5540 / 5540`) porque ambas rutas son semánticamente «recorrer en orden de posición»; se diferencian en el
+**coste por vuelta**, que depende de la implementación: `ArrayList` implementa la marca `RandomAccess`, `LinkedList`
+no (las dos respuestas, medidas con `instanceof`). El detalle de tipo importa porque ambos caminos desempaquetan y
+ambos llevan `checkcast`: el borrado de tipos (tema 3) no desaparece por usar colecciones.
+
+**Entrevista.** «¿Declaro `List<String>` o `ArrayList<String>`? ¿Y `Map` o `HashMap`? ¿Qué gana el `merge` frente a
+un `if (get(k) == null)`?»
+
+**Respuesta modelo:** se declara la **interfaz** y se instancia la clase, por tres razones concretas y no
+retóricas: (1) permite cambiar la implementación sin tocar a los llamadores, (2) permite que un parámetro acepte
+cualquiera (`Map<String, Integer> totales` recibe un `LinkedHashMap` sin que nadie reescriba la firma), (3) hace
+que el código dependa de lo que el contrato promete, no de lo que `ArrayList` hace hoy —y «hoy» es justo lo que
+falló al medir el hueco 10/15/22: eso es de la implementación y por eso va citado como medido en Temurin—. Sobre
+`merge`: la versión con `if (mapa.get(k) == null) mapa.put(k, g); else mapa.put(k, mapa.get(k) + g);` hace dos
+`get`, dos búsquedas, y es la que tiene la carrera clásica si alguien la paraleliza; `merge(zona, g, Integer::sum)`
+es una sola operación y no tiene la rama mal escrita (la variante más reproducida en la vida real es
+`put(k, g)` sin el `else`, que **sobrescribe**: medido en el proyecto guía como mutación, `losTotalesPorZonaAcumulan`
+falla y `NORTE` pasa de 1950 a 700, y con ella también `lasDosVersionesDelReporteCuadran`). Bonus: el motivo por el
+que `computeIfAbsent` es seguro con colecciones como valores —`computeIfAbsent(k, x -> new ArrayList<>())`— es que
+la función **no se ejecuta** si la clave existe; medido con `z -> 999999`, Medellin siguió en 3000.
+
+#### 12. Cuándo usarlo y cuándo no
+
+| Úsalo | No lo uses |
+|---|---|
+| `ArrayList` cuando hay que recorrer en orden, añadir al final y, si hace falta, ir borrando por posición | `ArrayList` cuando lo que haces es buscar por un identificador: eso es un mapa (o `indexOf` en O(n) sin que nadie te avise) |
+| `HashMap` cuando la clave **es** un dato (zona, guía, cliente) y el acceso es «dame el de esta clave» | `HashMap` cuando necesitas el orden: ahí es `LinkedHashMap` (orden de inserción) o `TreeMap` (orden por clave) |
+| `merge(k, v, Integer::sum)` para contar o sumar por clave; `computeIfAbsent` cuando el valor ausente es una estructura nueva | `put` dentro de un bucle acumulador: sobrescribe la segunda aparición y no lanza nada |
+| `List.of`/`Map.of` como parámetro de salida y como constante compartida, porque no admiten `null` ni escritura | `List.of` cuando vas a acumular después: el `UnsupportedOperationException` llega tarde y en otra capa |
+| `getOrDefault`/`values`/`entrySet` con el par `clave -> valor` como unidad | Aserciones sobre el orden de impresión de un `HashMap`, y `System.out.println` de un `toString` de matriz (tema 1 y 2) |
+
+**Costo y criterio.** Todo lo estructural de este tema es política de implementación y se citó como medido: el hueco
+`10 → 15 → 22`, la regla `oldCapacity >> 1` (que es el código de `java.util.ArrayList` de esta JDK, no el Javadoc)
+y el hecho de que el hueco de una lista vacía sea 0 hasta el primer `add`. Lo que sí puedes usar como criterio sin
+medir es lo que cada operación **te obliga a preguntar**: sobre un arreglo necesitas saber la posición, sobre una
+lista necesitas un iterador o un índice, sobre un mapa necesitas la clave. De ahí el criterio del curso, que se
+va a repetir en M5 y en todos los servicios: **números en bloque y posiciones → arreglo; colección que crece y se
+recorre → `ArrayList`; relación entre dos datos → `HashMap`; orden que forma parte del resultado → `LinkedHashMap`
+o `TreeMap`; contrato que no se toca → `List.of`/`Map.of`**. Y la regla de tipo que une este tema con el anterior:
+declara la interfaz, instancia la clase, porque la seguridad que ganaste en el tema 3 (el compilador no te deja
+convertir `List<String>` en `List<Object>`) solo se mantiene si la firma dice `List`.
+
+---

@@ -165,8 +165,8 @@ espera "putIfAbsent no toca lo que ya esta" 'putIfAbsent(Medellin)    : 30000 ·
 espera "replace de una clave ausente devuelve null" 'replace de ausente       : null (null = no estaba)' tema-4 $J MapaDeZonas.java
 espera "get de una clave ausente es null en silencio" 'get de ausente           : null · getOrDefault: 0' tema-4 $J MapaDeZonas.java
 espera "y sumar ese null revienta al desempaquetar" 'desempaquetar el null    : NullPointerException' tema-4 $J MapaDeZonas.java
-espera "merge acumula sin preguntar si existe" 'merge acumulando         : {Cali=1000, Medellin=3000, Bogota=1000}' tema-4 $J MapaDeZonas.java
-espera "computeIfAbsent solo calcula si falta" 'computeIfAbsent          : {Pereira=500, Cali=1000, Medellin=3000, Bogota=1000}' tema-4 $J MapaDeZonas.java
+espera "merge acumula sin preguntar si existe" 'merge ordenado           : {Bogota=1000, Cali=1000, Medellin=3000}' tema-4 $J MapaDeZonas.java
+espera "computeIfAbsent solo calcula si falta" 'computeIfAbsent ordenado : {Bogota=1000, Cali=1000, Medellin=3000, Pereira=500}' tema-4 $J MapaDeZonas.java
 espera "HashMap no respeta el orden de insercion" 'HashMap conserva el orden de insercion? false' tema-4 $J MapaDeZonas.java
 espera "LinkedHashMap si lo respeta" 'LinkedHashMap si lo conserva: [Medellin, Bogota, Cali]' tema-4 $J MapaDeZonas.java
 espera "un mapa admite una clave null" 'clave null               : sin zona asignada' tema-4 $J MapaDeZonas.java

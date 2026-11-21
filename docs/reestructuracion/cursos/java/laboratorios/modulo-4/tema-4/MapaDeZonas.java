@@ -39,9 +39,13 @@ public class MapaDeZonas {
             pesosPorZona.merge(zona, 1000, Integer::sum);
         }
         System.out.println("merge acumulando         : " + pesosPorZona);
+        // El orden impreso de un HashMap NO es garante: si el orden importa se ordenan las claves,
+        // que es exactamente lo que hace Manifiesto.totalesOrdenados en el proyecto guia.
+        System.out.println("merge ordenado           : " + porClave(pesosPorZona));
         pesosPorZona.computeIfAbsent("Pereira", z -> 500);            // no estaba: se calcula y entra
         pesosPorZona.computeIfAbsent("Medellin", z -> 999999);        // si estaba: la funcion NO se ejecuta
         System.out.println("computeIfAbsent          : " + pesosPorZona);
+        System.out.println("computeIfAbsent ordenado : " + porClave(pesosPorZona));
 
         // Las tres vistas: keySet, values, entrySet. Ninguna garantiza orden.
         System.out.println("claves                   : " + topePorZona.keySet());
@@ -69,5 +73,17 @@ public class MapaDeZonas {
         observaciones.put("Cali", null);
         System.out.println("clave null               : " + observaciones.get(null) + " · valor null: "
                 + observaciones.get("Cali") + " · contiene clave " + observaciones.containsKey("Cali"));
+    }
+
+    /** Imprime un mapa POR CLAVE ORDENADA: el orden del HashMap nunca entra en una comprobacion. */
+    static String porClave(Map<String, Integer> mapa) {
+        java.util.List<String> claves = new java.util.ArrayList<>(mapa.keySet());
+        java.util.Collections.sort(claves);
+        StringBuilder sb = new StringBuilder("{");
+        for (int i = 0; i < claves.size(); i++) {
+            if (i > 0) sb.append(", ");
+            sb.append(claves.get(i)).append('=').append(mapa.get(claves.get(i)));
+        }
+        return sb.append('}').toString();
     }
 }

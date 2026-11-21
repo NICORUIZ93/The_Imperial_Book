@@ -14,7 +14,8 @@ Parte del proyecto Gradle de los módulos 0 a 3 (mismo wrapper, toolchain y cat�
   el mismo manifiesto de guías **dos veces**: con arreglos (`gramos`, `suma`, `mayor`, `sobreElTope`,
   `mayoresQue`, `sinMalformados`, `primerMayorQue` —los dos últimos con `Arrays.sort` +
   `Arrays.binarySearch`—) y con colecciones (`gramosLista`, `totalesPorZona` con `merge`, `mayoresQueLista`,
-  `zonaDe`, `totalesOrdenados` con `LinkedHashMap`). `main` acepta el tope como `args[0]`.
+  `zonaDe`, `totalesOrdenados` —copia `keySet()` a un `ArrayList`, lo ordena con `Collections.sort` y lee el mapa
+  por clave, que es la forma determinista de imprimir un `HashMap`—). `main` acepta el tope como `args[0]`.
 - Se va `Despachador.java`: era el motor del módulo 3 y aquí no se usa. `Zona.java` se conserva intacto.
 - Pruebas: `ManifiestoTest`, **9 pruebas**. Cada una compara las dos versiones del mismo cálculo —longitud,
   suma ignorando malformadas, mayor sin inventar sobre el manifiesto vacío, corte por tope, filtro contra
@@ -66,13 +67,15 @@ dice (`sin la apertura no hay medida: InaccessibleObjectException`) y sale con c
 de fingir**. Los de `errores/` están hechos para fallar: unos no compilan y
 otros lanzan una excepción; `verificar.sh` comprueba el mensaje exacto.
 
-## Estado de la verificación (2026-11-20, Temurin 27.0.1.0.2+1, macOS arm64, locale `es_CO`)
+## Estado de la verificación (2026-11-21, Temurin 27.0.1.0.2+1, macOS arm64, locale `es_CO`)
 
 - **Ejecutado y comprobado:** `GRADLE="./gradlew --offline -I .herramienta-local.init.gradle.kts"
   ./verificar.sh` termina en `RESULTADO: OK` con **187** comprobaciones, 0 fallidas y 0 omitidas. De esas
   187, 183 son los ejemplos sueltos de los seis temas —todos compilados con `javac --release 25` y ejecutados
   con la JVM 27— y 4 el proyecto Gradle. Reparto por bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 28 · T6 22 ·
-  Gradle 4.
+  Gradle 4. La corrida está **reejecutada hoy** después de mover las dos comprobaciones del contador por zona a
+  las líneas `… ordenado`: el total sigue siendo 187, porque se cambiaron las cadenas esperadas, no el número de
+  comprobaciones.
 - **Sin el script de inicialización** (`GRADLE="./gradlew --offline"`) fallan exactamente las 3 de Gradle
   (`Cannot find a Java installation … matching {languageVersion=25}`) y el total queda en 184 / 3 / 0; la
   comprobación del `build.gradle.kts` no invoca Gradle y sigue en verde.
@@ -88,10 +91,13 @@ otros lanzan una excepción; `verificar.sh` comprueba el mensaje exacto.
   cantidad en `1`. Las dos rutas —arreglos y colecciones— dan la misma suma, el mismo mayor y el mismo
   conjunto filtrado. La distribución 9.8.2 y JUnit 6.0.3 salen de la caché local (`--offline`).
 - **Cosas que dependen de la JVM y no del lenguaje: se comprueban invariantes, no cifras.** El orden de un
-  `HashMap` no es estable: se comprueba que `LinkedHashMap` sí conserva el de inserción
-  (`[Medellin, Bogota, Cali]`) y que el `HashMap` no, sin cifrar en qué orden sale. La caché de `Integer` es
-  configurable: `-Djava.lang.Integer.IntegerCache.high=5000` movió el corte medido de `128` a `5001` en esta
-  misma máquina, así que el documento enseña el corte como algo que **se mide**, no como un 127 perpetuo. El
+  `HashMap` no es estable: `MapaDeZonas.java` imprime el contador dos veces —una cruda (`merge acumulando`) y una
+  ordenada por clave (`merge ordenado`, con el helper `porClave`)— y las dos comprobaciones del contador cifran
+  **la ordenada**. La cruda sigue imprimiéndose para que se vea la diferencia, pero ninguna puerta la compara.
+  Del `HashMap` solo se comprueba el invariante «no conserva el orden de inserción» (`… ? false`); la secuencia
+  literal sí se cita de `LinkedHashMap` (`[Medellin, Bogota, Cali]`), que es garantía de contrato. La caché de
+  `Integer` es configurable: `-Djava.lang.Integer.IntegerCache.high=5000` movió el corte medido de `128` a `5001`
+  en esta misma máquina, así que el documento enseña el corte como algo que **se mide**, no como un 127 perpetuo. El
   número de marcos y los `stack trace` internos (`ArrayList$Itr.checkForComodification(ArrayList.java:1104)`)
   nunca entran en una comprobación; los textos de excepción sí se citan literalmente porque los emite la
   biblioteca (`Index 5 out of bounds for length 5`,
