@@ -70,14 +70,14 @@ otros lanzan una excepción; `verificar.sh` comprueba el mensaje exacto.
 ## Estado de la verificación (2026-11-21, Temurin 27.0.1.0.2+1, macOS arm64, locale `es_CO`)
 
 - **Ejecutado y comprobado:** `GRADLE="./gradlew --offline -I .herramienta-local.init.gradle.kts"
-  ./verificar.sh` termina en `RESULTADO: OK` con **187** comprobaciones, 0 fallidas y 0 omitidas. De esas
-  187, 183 son los ejemplos sueltos de los seis temas —todos compilados con `javac --release 25` y ejecutados
-  con la JVM 27— y 4 el proyecto Gradle. Reparto por bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 28 · T6 22 ·
-  Gradle 4. La corrida está **reejecutada hoy** después de mover las dos comprobaciones del contador por zona a
-  las líneas `… ordenado`: el total sigue siendo 187, porque se cambiaron las cadenas esperadas, no el número de
-  comprobaciones.
+  ./verificar.sh` termina en `RESULTADO: OK` con **188** comprobaciones, 0 fallidas y 0 omitidas. De esas
+  188, 184 son los ejemplos sueltos de los seis temas —todos compilados con `javac --release 25` y ejecutados
+  con la JVM 27— y 4 el proyecto Gradle. Reparto por bloque: T1 25 · T2 35 · T3 30 · T4 43 · T5 29 · T6 22 ·
+  Gradle 4. El total subió de 187 a 188 porque `EncajarYDesencajar.java` ahora imprime el caso del literal que
+  cabe en `byte` y se encaja, y esa línea tiene su comprobación nueva; las dos del contador por zona siguen
+  apuntando a las líneas `… ordenado`.
 - **Sin el script de inicialización** (`GRADLE="./gradlew --offline"`) fallan exactamente las 3 de Gradle
-  (`Cannot find a Java installation … matching {languageVersion=25}`) y el total queda en 184 / 3 / 0; la
+  (`Cannot find a Java installation … matching {languageVersion=25}`) y el total queda en 185 / 3 / 0; la
   comprobación del `build.gradle.kts` no invoca Gradle y sigue en verde.
 - **Dos comprobaciones escritas a mano fallaron en la primera corrida** y se corrigieron mirando la salida,
   no aflojando el filtro: se esperaba una línea `String[][]` que `FormaDeUnArreglo.java` nunca imprime (la

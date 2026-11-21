@@ -54,5 +54,12 @@ public class EncajarYDesencajar {
         Integer a = 1000, b = 1000;
         System.out.println("1000 == 1000 con cajas : " + (a == b) + " · equals " + a.equals(b)
                 + " · compareTo " + a.compareTo(b));
+
+        // Un literal que cabe en el tipo chico se estrecha y despues se encaja; el que no cabe no compila
+        // (eso es exactamente lo que reproducen errores/BordeDeByte.java y errores/LongSinEle.java).
+        byte sueltoChico = 120;
+        Byte cajaChica = 120;
+        System.out.println("constante que cabe     : " + sueltoChico + " / " + cajaChica
+                + " · Byte.valueOf(120) == cajaChica: " + (Byte.valueOf((byte) 120) == cajaChica));
     }
 }

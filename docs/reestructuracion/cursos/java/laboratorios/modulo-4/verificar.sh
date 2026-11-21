@@ -204,6 +204,7 @@ espera "new y valueOf no son el mismo objeto" 'valueOf vs new         : false ·
 espera "parseInt da un int y valueOf una caja" 'parseInt / valueOf     : 890 · 890' tema-5 $J EncajarYDesencajar.java
 espera "int == Integer desempaca la caja" 'int == Integer         : true' tema-5 $J EncajarYDesencajar.java
 espera "entre cajas, == es identidad" '1000 == 1000 con cajas : false · equals true · compareTo 0' tema-5 $J EncajarYDesencajar.java
+espera "un literal que cabe se estrecha y se encaja" 'constante que cabe     : 120 / 120 · Byte.valueOf(120) == cajaChica: true' tema-5 $J EncajarYDesencajar.java
 espera "el javac avisa del constructor deprecado" 'uses or overrides a deprecated API' tema-5 sh -c "javac --release 25 -d '$TMP/t5' EncajarYDesencajar.java 2>&1"
 espera "127 comparte caja, 128 no" 'valueOf(128) misma caja : false' tema-5 $J CacheDeInteger.java
 espera "el corte por arriba se puede medir" 'corte por arriba        : 128 (el primero que ya no)' tema-5 $J CacheDeInteger.java
