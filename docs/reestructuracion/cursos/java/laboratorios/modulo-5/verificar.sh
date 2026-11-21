@@ -567,4 +567,257 @@ lleva "atrapado, el primer contacto se puede leer" 'primer contacto: java.lang.E
 lleva "el reintento da OTRO error: la clase quedo marcada como fallida" 'java.lang.NoClassDefFoundError: Could not initialize class InitQueRevienta$Rompe' "$I2"
 cero_en "y el reintento no vuelve a correr el inicializador: esa linea jamas se imprime" 'segundo contacto:' "$I2"
 
+titulo "Tema 5 · Paquetes, import, import static, import module y los nombres"
+(cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/t5" \
+    src/bodega/package-info.java src/bodega/Envio.java src/bodega/Flete.java src/otra/Sello.java src/Rasgo.java \
+    otros-src/bodega/Balanza.java src/afuera/Cliente.java NombresEnRuntime.java) > "$TMP/t5.log" 2>&1 \
+    || { mal "Compilar el arbol de paquetes del tema 5" "$(cat "$TMP/t5.log")"; exit 1; }
+vacio "ocho fuentes de cuatro carpetas compilan sin decir nada" "$(cat "$TMP/t5.log")"
+T5=$( (cd "$TMP/t5" && find . -name '*.class' | LC_ALL=C sort) )
+lleva "las dos carpetas de fuente (src y otros-src) acaban en la MISMA carpeta de clases" './bodega/Balanza.class' "$T5"
+lleva "y alli son vecinos del mismo paquete" './bodega/Envio.class' "$T5"
+cero_en "la ruta de la fuente no deja rastro del lado de las clases" 'otros-src' "$T5"
+lleva "Rasgo, sin declaracion de paquete, cae en la RAIZ del arbol de clases" './Rasgo.class' "$T5"
+lleva "el tipo anidado se guarda con dolar, no con otra carpeta" './bodega/Envio$Sello.class' "$T5"
+lleva "package-info.class solo existe porque el fuente lleva una anotacion" './bodega/package-info.class' "$T5"
+cero_en "importar un modulo no copia ni un .class de el a nuestro arbol" 'java/sql' "$T5"
+
+# ---- el paquete es un espacio de nombres, no una carpeta ----
+SB=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5" bodega.Balanza) 2>&1 ); CSB=$?
+igual "una clase de paquete, sin public, se puede lanzar desde la consola" "0" "$CSB"
+lleva "Balanza (otros-src) lee FIRMA, que es de paquete en src" 'FIRMA desde otra carpeta : bodega' "$SB"
+lleva "el nombre binario lo declara la linea package, no la ruta" 'nombre binario de Balanza : bodega.Balanza' "$SB"
+lleva "y el vecino sin public del otro arbol tambien es accesible" 'vecino de paquete         : Flete-dentro-de-bodega' "$SB"
+lleva "getPackageName devuelve lo mismo que escribio el fuente" 'paquete de Envio     : bodega' "$SB"
+lleva "getName, el nombre con punto que usa el programador" 'nombre binario       : bodega.Envio' "$SB"
+falla_con "fuera del paquete, la ausencia de public se paga: para afuera no existe" 'Balanza is not public in bodega; cannot be accessed from outside package' "tema-5" javac --release 25 -cp "$TMP/t5" -d "$TMP/err5" errores/BalanzaDesdeAfuera.java
+WN=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5/bodega" Envio) 2>&1 ); CWN=$?
+igual "pedir la clase sin su prefijo se cobra en el cargador, no en el codigo" "1" "$CWN"
+lleva "el .class lleva su paquete escrito: de ahi sale «wrong name»" 'wrong name: bodega/Envio' "$WN"
+
+# ---- los cinco tipos de importacion, en un solo fuente ----
+SC=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5" afuera.Cliente) 2>&1 ); CSC=$?
+igual "el ejemplo de los cinco imports corre entero" "0" "$CSC"
+lleva "1) single-type-import: bodega.Envio se escribe sin prefijo" 'single-type          : bodega.Envio' "$SC"
+lleva "2) type-import-on-demand: entra el nombre, no el paquete" 'on-demand java.time  : SATURDAY' "$SC"
+lleva "2b) un on-demand SI puede terminar en un subpaquete" 'on-demand con punto  : java.util.Random' "$SC"
+lleva "3) single-static-import de una constante" 'constante importada  : 24' "$SC"
+lleva "3b) y de un campo de clase que no es constante" 'campo de clase       : 3' "$SC"
+lleva "3c) un tipo anidado tambien se importa con estatica" 'tipo anidado static  : Sello-RutaFlow' "$SC"
+lleva "4) static-import-on-demand: todos los estaticos de ChronoUnit" 'static-on-demand     : Days · Months' "$SC"
+lleva "5) single-module-import (JEP 511): los tipos exportados por java.sql" 'modulo importado     : java.sql.Driver' "$SC"
+lleva "5b) y los de OTRA exportacion del mismo modulo" 'otra exportacion     : javax.sql.DataSource' "$SC"
+CC=$( (cd "$RAIZ/tema-5" && javap -c -p -cp "$TMP/t5" afuera.Cliente) 2>&1 )
+igual "tres unicas referencias simbolicas a Envio: la clase, el campo y el anidado" "3" "$(printf '%s\n' "$CC" | grep -c 'bodega/Envio')"
+cuenta_en "el single-type deja un ldc de LA CLASE, no de un miembro" "$CC" 'public static void main(java.lang.String[]);' '// class bodega/Envio' '1'
+cuenta_en "el campo de clase se lee con getstatic: la importacion estatica no copia nada" "$CC" 'public static void main(java.lang.String[]);' 'Field bodega/Envio.vivas:I' '1'
+cuenta_en "el tipo anidado se invoca por su nombre interno con dolar" "$CC" 'public static void main(java.lang.String[]);' 'Method bodega/Envio$Sello.pauta' '1'
+cero_en "la constante importada NO deja ninguna referencia: el 24 venia de ConstantValue" 'Field bodega/Envio.LOTE' "$CC"
+lleva "y el numero ya esta horneado dentro del texto que se imprime" 'String constante importada  : 24' "$CC"
+lleva "el estatico de ChronoUnit llega referenciado, no copiado" 'Field java/time/temporal/ChronoUnit.DAYS' "$CC"
+lleva "el import de modulo deja el nombre simbolico de Driver" '// class java/sql/Driver' "$CC"
+lleva "y el de la segunda exportacion del mismo modulo" '// class javax/sql/DataSource' "$CC"
+
+# ---- que guarda el .class del paquete ----
+VE=$( (cd "$RAIZ/tema-5" && javap -v -p -cp "$TMP/t5" bodega.Envio) 2>&1 )
+lleva "dentro del .class el nombre interno va con barras: es la notacion de la VM" '// bodega/Envio' "$VE"
+lleva "y la version de class file es la 69, la de Java 25" 'major version: 69' "$VE"
+flags_de "la constante lleva Public, Static y Final" "$VE" 'public static final int LOTE;' 'flags: (0x0019) ACC_PUBLIC, ACC_STATIC, ACC_FINAL'
+flags_de "FIRMA es de paquete: Static y Final, sin ninguna Public" "$VE" 'static final java.lang.String FIRMA;' 'flags: (0x0018) ACC_STATIC, ACC_FINAL'
+flags_de "gramos, de instancia y de paquete, no lleva ninguna bandera" "$VE" 'int gramos;' 'flags: (0x0000)'
+lleva "LOTE se horneo en el ConstantValue" 'ConstantValue: int 24' "$VE"
+lleva "FIRMA tambien es un ConstantValue, de texto" 'ConstantValue: String bodega' "$VE"
+lleva "el anidado se inscribe en InnerClasses con su dolar" 'Sello=class bodega/Envio$Sello of class bodega/Envio' "$VE"
+PI=$( (cd "$RAIZ/tema-5" && javap -v -p -cp "$TMP/t5" 'bodega.package-info') 2>&1 )
+lleva "el archivo de paquete se compila a una INTERFACE, no a una clase" 'interface bodega.package-info' "$PI"
+lleva "y a una interface SINTETICA: nadie lo escribio como tipo" 'flags: (0x1600) ACC_INTERFACE, ACC_ABSTRACT, ACC_SYNTHETIC' "$PI"
+lleva "su unico contenido son las anotaciones del paquete" 'Ljava/lang/Deprecated;' "$PI"
+lleva "su nombre interno es un miembro mas del paquete" '// bodega/package-info' "$PI"
+SL=$( (cd "$RAIZ/tema-5" && javac --release 25 -Xlint:all -d "$TMP/t5l" src/bodega/package-info.java src/bodega/Envio.java src/bodega/Flete.java) 2>&1 )
+lleva "con -Xlint:all javac avisa de que anotar el paquete no alcanza para sus tipos" '@Deprecated annotation has no effect on this package declaration' "$SL"
+SL2=$( (cd "$RAIZ/tema-5" && javac --release 25 -Xlint:all -cp "$TMP/t5" -d "$TMP/t5l2" src/afuera/Cliente.java) 2>&1 ); CSL2=$?
+igual "usar Envio desde otro paquete compila con codigo 0" "0" "$CSL2"
+cero_en "y no produce ni un solo aviso de deprecacion: el @Deprecated de paquete no llega a los tipos" 'eprecat' "$SL2"
+PV=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/t5pv" errores/paquete-vacio/package-info.java) 2>&1 ); CPV=$?
+igual "un package-info.java sin ninguna anotacion compila" "0" "$CPV"
+vacio "y javac no dice nada al hacerlo" "$PV"
+PVT=$( find "$TMP/t5pv" -name '*.class' 2>/dev/null )
+vacio "pero NO escribe ningun .class: el archivo de paquete existe solo por sus anotaciones" "$PVT"
+
+# ---- los nombres que ve la maquina virtual ----
+SN=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5" NombresEnRuntime) 2>&1 )
+lleva "el paquete sin nombre se ve como corchetes vacios" 'binario=NombresEnRuntime         paquete=[] canonico=NombresEnRuntime' "$SN"
+lleva "el prefijo binario va con punto, igual que el canonico" 'binario=bodega.Envio             paquete=[bodega] canonico=bodega.Envio' "$SN"
+lleva "el anidado: dolar en el binario, punto en el canonico" 'binario=bodega.Envio$Sello       paquete=[bodega] canonico=bodega.Envio.Sello' "$SN"
+lleva "un arreglo pone el corchete y la L DELANTE del prefijo de paquete" 'binario=[Lbodega.Envio;          paquete=[bodega] canonico=bodega.Envio[]' "$SN"
+lleva "String vive en java.lang, el paquete que todo fuente importa sin escribirlo" 'binario=java.lang.String         paquete=[java.lang] canonico=java.lang.String' "$SN"
+lleva "una primitiva no tiene prefijo en el binario, pero la JVM la apunta a java.lang" 'binario=int                      paquete=[java.lang] canonico=int' "$SN"
+
+# ---- paquete y modulo vistos desde el programa ----
+RL=$( (cd "$RAIZ/tema-5" && javac --release 25 -cp "$TMP/t5" -d "$TMP/t5" por-dentro/ReflejoDelPaquete.java) 2>&1 ); CRL=$?
+igual "el reflejo de paquetes compila" "0" "$CRL"
+lleva "Package.getPackage esta deprecado y javac lo recuerda" 'uses or overrides a deprecated API' "$RL"
+RF=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5" reflejo.ReflejoDelPaquete) 2>&1 )
+lleva "un Package se imprime como la palabra package seguida del nombre" 'toString           : package bodega' "$RF"
+lleva "las anotaciones del package-info.java SI se ven en ejecucion" 'esDeprecated       : true' "$RF"
+lleva "y viajan como una instancia real de la anotacion" 'anotaciones        : [@java.lang.Deprecated(forRemoval=false, since="")]' "$RF"
+lleva "un paquete sin package-info.class no tiene anotaciones que leer" 'nombre sin archivo : otra · esDeprecated=false · lista=[]' "$RF"
+lleva "Package.getPackage devuelve la MISMA instancia que getPackage() de una clase" 'getPackage igual   : true' "$RF"
+lleva "un paquete nunca cargado no es un Package vacio: es null" 'nunca cargado      : null' "$RF"
+lleva "el modulo que exporta un tipo si tiene nombre" 'modulo de Driver   : java.sql' "$RF"
+lleva "el de lo nuestro es el anonimo, que no se llama" 'modulo de lo mio   : null' "$RF"
+lleva "y el anonimo lee todos los modulos observables: de ahi que el import de modulo funcione" 'mi modulo lo lee   : true' "$RF"
+lleva "isExported responde por paquete, no por clase" 'exporta java.sql   : true' "$RF"
+lleva "java.sql exporta DOS paquetes y los dos son visibles" 'exporta javax.sql  : true' "$RF"
+lleva "un paquete fuera de la lista de exports no es visible para nadie" 'exporta un invento : false' "$RF"
+
+# ---- a quien gana cada nombre ----
+MP=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/t5p" por-dentro/FechaResuelta.java por-dentro/AmbiguoResuelto.java) 2>&1 )
+vacio "un fuente puede mezclar on-demand, import de modulo y single-type a la vez" "$MP"
+FR=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5p" FechaResuelta) 2>&1 )
+lleva "el single-type-import gana al type-import-on-demand" 'Date resuelto      : java.sql.Date' "$FR"
+lleva "y gana tambien a los nombres que trae un import de modulo" 'List por el modulo : java.util.ArrayList' "$FR"
+AR=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5p" AmbiguoResuelto) 2>&1 )
+lleva "desempatar dos modulos con un import explicito funciona" 'List desempado     : java.util.ImmutableCollections$List12' "$AR"
+AM=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/AmbiguoDeModulos.java) 2>&1 ); CAM=$?
+igual "sin el explicito, el nombre compartido por dos modulos sale con codigo 1" "1" "$CAM"
+lleva "JLS 7.5.3: dos imports de modulo con el mismo nombre simple son ambiguos" 'reference to List is ambiguous' "$AM"
+lleva "y javac enlista los dos candidatos con su paquete" 'both class java.awt.List in java.awt and interface java.util.List in java.util match' "$AM"
+DM=$( (cd "$RAIZ/tema-5" && javac --release 25 -Xlint:all -d "$TMP/t5dm" por-dentro/DosMismos.java) 2>&1 ); CDM=$?
+igual "dos on-demand del MISMO paquete son redundantes, no ambiguos" "0" "$CDM"
+vacio "y -Xlint:all no los menciona" "$DM"
+espera "el programa corre con una sola copia del nombre" 'dos on-demand      : 0' "tema-5" $J -cp "$TMP/t5dm" DosMismos
+no_compila "un on-demand de un paquete inexistente se corta al escribirlo" 'package no.existe does not exist' "tema-5/errores" OnDemandInexistente.java
+
+# ---- la frontera y el modulo que no se lee ----
+R24=$( (cd "$RAIZ/tema-5" && javac --release 24 -cp "$TMP/t5" -d "$TMP/err5" src/afuera/Cliente.java) 2>&1 ); C24=$?
+igual "la frontera del import de modulo esta entre 24 y 25" "1" "$C24"
+lleva "con --release 24 el import de modulo es ilegal" 'module imports are not supported in -source 24' "$R24"
+lleva "y javac dice exactamente lo que hay que subir" '(use -source 25 or higher to enable module imports)' "$R24"
+ML=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/ModuloNoLeido.java) 2>&1 ); CML=$?
+igual "un modulo que existe pero no se lee falla con codigo 1" "1" "$CML"
+lleva "JLS 7.5.5: el modulo anonimo no lee java.se" 'unnamed module does not read: java.se' "$ML"
+MA=$( (cd "$RAIZ/tema-5" && javac --release 25 --add-modules java.se -d "$TMP/t5a" errores/ModuloNoLeido.java) 2>&1 ); CMA=$?
+igual "el MISMO fuente compila en cuanto el modulo entra en el grafo" "0" "$CMA"
+vacio "y no dice nada al hacerlo" "$MA"
+falla_con "un nombre de modulo inexistente no se confunde con un paquete" 'imported module not found: no.existe' "tema-5" javac --release 25 -d "$TMP/err5" errores/ModuloInexistente.java
+
+# ---- la unidad de compilacion compacta (JEP 512) ----
+CM=$( (cd "$RAIZ/tema-5" && $J por-dentro/Compacta.java) 2>&1 ); CCM=$?
+igual "la forma compacta corre sin una linea de import" "0" "$CCM"
+lleva "los nombres de java.base llegan implicitamente" 'compacta             : [compacta, sin una linea de import]' "$CM"
+lleva "la clase implicita se llama como el archivo" 'clase que me cargo    : Compacta' "$CM"
+lleva "y cae en el paquete sin nombre" 'paquete donde caigo   : []' "$CM"
+CD=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/t5c" por-dentro/Compacta.java) 2>&1 ); CCD=$?
+igual "javac tambien acepta la forma compacta a nivel 25" "0" "$CCD"
+CG=$( (cd "$RAIZ/tema-5" && javap -p -cp "$TMP/t5c" Compacta) 2>&1 )
+lleva "la clase implicita sale FINAL y sin public" 'final class Compacta' "$CG"
+lleva "su main es de instancia, sin argumentos" 'void main();' "$CG"
+cero_en "el .class no lleva adaptador estatico: quien instancia y llama es el lanzador" 'static void main' "$CG"
+C24b=$( (cd "$RAIZ/tema-5" && javac --release 24 -d "$TMP/err5" por-dentro/Compacta.java) 2>&1 )
+lleva "la clase implicita tambien nacio en el 25: con 24 es ilegal" 'implicitly declared classes are not supported in -source 24' "$C24b"
+falla_con "una compacta no puede declarar paquete: la gramatica no lo admite" 'compact source file should not have package declaration' "tema-5/errores" javac --release 25 -d "$TMP/err5" CompactaConPaquete.java
+falla_con "y una compacta sin main no es compacta" 'compact source file does not have main method in the form of void main()' "tema-5/errores" javac --release 25 -d "$TMP/err5" CompactaSinMetodo.java
+C24CP=$( (cd "$RAIZ/tema-5" && javac --release 24 -d "$TMP/err5" errores/CompactaConPaquete.java) 2>&1 ); CC24CP=$?
+igual "el ilegal de paquete, medido en la cota vieja, tambien cae" "1" "$CC24CP"
+veces "pero en 24 corta DOS veces: a la regla de forma se le suma la de las clases implicitas" "$C24CP" 'error:' 2
+lleva "y el error anadido es justo el que en 25 no existe" 'implicitly declared classes are not supported in -source 24' "$C24CP"
+C24CS=$( (cd "$RAIZ/tema-5" && javac --release 24 -d "$TMP/err5" errores/CompactaSinMetodo.java) 2>&1 )
+cero_en "en cambio la regla del main NO llega a decirse en 24: ahi solo cae la de las implicitas" 'does not have main method' "$C24CS"
+C24SE=$( (cd "$RAIZ/tema-5" && javac --release 24 -d "$TMP/err5" errores/SoloEnunciados.java) 2>&1 )
+lleva "y hasta la lista de tokens del mismo error cambia de una cota a otra" 'class, interface, enum, or record expected' "$C24SE"
+falla_con "el archivo de SOLO enunciados tampoco: la gramatica pide al menos un metodo" 'class, interface, annotation type, enum, record, method or field expected' "tema-5/errores" javac --release 25 -d "$TMP/err5" SoloEnunciados.java
+SE=$( (cd "$RAIZ/tema-5" && $J errores/SoloEnunciados.java) 2>&1 ); CSE=$?
+igual "y el lanzador lo rechaza antes aun que javac" "1" "$CSE"
+lleva "con su propio mensaje, que no es el de javac" 'error: no class declared in source file' "$SE"
+
+# ---- un paquete partido entre dos modulos ----
+MS=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/t5m" --module-source-path por-dentro/modulos $(find por-dentro/modulos -name '*.java' | LC_ALL=C sort)) 2>&1 ); CMS=$?
+igual "el paquete partido con un lector comun corta la compilacion" "1" "$CMS"
+lleva "JLS 7.4.3: un tipo tiene que ser univocamente visible" 'module ambos reads package bodega from both uno and dos' "$MS"
+lleva "y el senalado es el module-info del lector, no los dos paquetes" 'por-dentro/modulos/ambos/module-info.java' "$MS"
+MS2=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/t5m2" --module-source-path por-dentro/modulos $(find por-dentro/modulos -name '*.java' -not -path '*ambos*' | LC_ALL=C sort)) 2>&1 ); CMS2=$?
+igual "los dos modulos partidos compilan solos: el error lo comete quien los lee juntos" "0" "$CMS2"
+MT=$( (cd "$TMP/t5m2" && find . -name '*.class' | LC_ALL=C sort) )
+lleva "cada modulo guarda su mitad del paquete en su carpeta" './uno/bodega/A.class' "$MT"
+lleva "y el otro la suya" './dos/bodega/B.class' "$MT"
+cero_en "y ninguna de las dos mitades queda suelta en la raiz" '^\./bodega' "$MT"
+
+# ---- donde mira javac las fuentes que no le diste ----
+PS=$( (cd "$RAIZ/tema-5" && javac --release 25 -sourcepath arbol/bien -d "$TMP/t5s" arbol/bien/usa/Usa.java) 2>&1 ); CPS=$?
+igual "javac encuentra la fuente que no esta en la linea de ordenes" "0" "$CPS"
+PT=$( (cd "$TMP/t5s" && find . -name '*.class' | LC_ALL=C sort) )
+lleva "y la compila implicitamente: A.class aparece sin haberlo pedido" './bodega/A.class' "$PT"
+espera "el programa corre con la clase que javac encontro solo" 'fuente encontrada    : A-de-bodega' "tema-5" $J -cp "$TMP/t5s" usa.Usa
+PN=$( (cd "$RAIZ/tema-5" && javac --release 25 -sourcepath arbol/bien -implicit:none -d "$TMP/t5sn" arbol/bien/usa/Usa.java) 2>&1 ); CPN=$?
+igual "-implicit:none compila igual de bien" "0" "$CPN"
+PNT=$( (cd "$TMP/t5sn" && find . -name '*.class' | LC_ALL=C sort) )
+lleva "Usa.class si esta" './usa/Usa.class' "$PNT"
+cero_en "A.class no: javac la analizo pero no la escribio" './bodega/A.class' "$PNT"
+PSN=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5sn" usa.Usa) 2>&1 ); CPSN=$?
+igual "y al correr, la clase que falta se cobra con codigo 1" "1" "$CPSN"
+lleva "el fallo es NoClassDefFoundError, no un error del programa" 'java.lang.NoClassDefFoundError: bodega/A' "$PSN"
+lleva "con su causa, que usa el nombre con punto" 'Caused by: java.lang.ClassNotFoundException: bodega.A' "$PSN"
+PM=$( (cd "$RAIZ/tema-5" && javac --release 25 -sourcepath arbol/mal -d "$TMP/t5sm" arbol/mal/Usa.java) 2>&1 ); CPM=$?
+igual "el mismo fuente, con el arbol de fuentes mal apuntado, no compila" "1" "$CPM"
+lleva "y el mensaje culpa al paquete, no al archivo" 'package bodega does not exist' "$PM"
+
+# ---- los errores del capitulo 7, uno por uno ----
+PJ=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/t5pj" errores/PackageJavaReservado.java) 2>&1 ); CPJ=$?
+igual "un paquete bajo java.* SI compila" "0" "$CPJ"
+vacio "y javac no avisa de nada" "$PJ"
+lleva "el .class cae en la carpeta que anuncia el paquete" 'java/mio/PackageJavaReservado.class' "$( (cd "$TMP/t5pj" && find . -name '*.class') )"
+PR=$( (cd "$RAIZ/tema-5" && $J -cp "$TMP/t5pj" java.mio.PackageJavaReservado) 2>&1 ); CPR=$?
+igual "pero el paquete java.* esta reservado: al cargar, codigo 1" "1" "$CPR"
+lleva "el cargador lo rechaza con SecurityException" 'java.lang.SecurityException: Prohibited package name: java.mio' "$PR"
+DD=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/DosDeclaracionesDePaquete.java) 2>&1 ); CDD=$?
+igual "dos declaraciones de paquete: codigo 1" "1" "$CDD"
+lleva "la segunda declaracion package deja de ser palabra clave" 'class, interface, enum, or record expected' "$DD"
+lleva "y el senalado es el renglon de la segunda" 'DosDeclaracionesDePaquete.java:4' "$DD"
+PD=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/PackageDespuesDeImport.java) 2>&1 ); CPD=$?
+igual "package despues de un import: codigo 1" "1" "$CPD"
+lleva "el analizador ya estaba dentro del cuerpo de la clase implicita" 'class, interface, annotation type, enum, record, method or field expected' "$PD"
+no_compila "un tipo publico debe vivir en el archivo de su nombre" 'class Guia is public, should be declared in a file named Guia.java' "tema-5/errores" ArchivoMalNombrado.java
+DP=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/DosPublicas.java) 2>&1 ); CDP=$?
+igual "y no puede haber dos: la regla del nombre implica UNA por archivo" "1" "$CDP"
+lleva "los dos renglones salen cortados, no solo el segundo" '2 errors' "$DP"
+PC=$( (cd "$RAIZ/tema-5" && javac --release 25 -Xlint:all -d "$TMP/t5pc" por-dentro/SoloPuntoComa.java) 2>&1 ); CPC=$?
+igual "los punto y coma sueltos entre clases son inocuos: compilan sin avisar" "0" "$CPC"
+vacio "con -Xlint:all tampoco dicen nada" "$PC"
+PCT=$( (cd "$TMP/t5pc" && find . -name '*.class' | LC_ALL=C sort) )
+lleva "y las dos clases del MISMO archivo salen igual" './puntocoma/Otra.class' "$PCT"
+lleva "una" './puntocoma/Una.class' "$PCT"
+DU=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/duplicado-uno/Guia.java errores/duplicado-dos/Guia.java) 2>&1 ); CDU=$?
+igual "dos miembros homonimos en el mismo paquete: codigo 1" "1" "$CDU"
+lleva "JLS 7.1: un paquete no puede tener dos miembros con el mismo nombre simple" 'duplicate class: bodega.Guia' "$DU"
+lleva "y la carpeta no salva a ninguno: el paquete es el mismo" 'errores/duplicado-dos/Guia.java' "$DU"
+no_compila "un tipo de nivel superior no puede ser static" 'modifier static not allowed here' "tema-5/errores" TopLevelStatic.java
+no_compila "ni protected: nadie hereda un tipo de paquete fuera de el" 'modifier protected not allowed here' "tema-5/errores" TopLevelProtected.java
+no_compila "import java.util no es un alias del paquete" 'symbol:   class util' "tema-5/errores" ImportDeSubpaquete.java
+no_compila "y el error apunta al paquete java, que no tiene un miembro util como tipo" 'location: package java' "tema-5/errores" ImportDeSubpaquete.java
+no_compila "el paquete sin nombre no se puede importar" "'.' expected" "tema-5/errores" PaqueteSinNombreImportado.java
+no_compila "ni siquiera se puede nombrar desde un paquete con nombre" 'symbol:   class Rasgo' "tema-5/errores" PaqueteSinNombreReferido.java
+no_compila "dos single-type-import del mismo nombre: el segundo es error al escribirse" 'a type with the same simple name is already defined by the single-type-import of Date' "tema-5/errores" DosFechasExplicitas.java
+FA=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/FechaAmbigua.java) 2>&1 ); CFA=$?
+igual "dos on-demand homonimos conviven hasta que se usa el nombre" "1" "$CFA"
+lleva "ahi la ambiguedad se declara en el uso" 'reference to Date is ambiguous' "$FA"
+lleva "y javac enumera a los dos" 'both class java.sql.Date in java.sql and class java.util.Date in java.util match' "$FA"
+falla_con "import static de un campo de instancia: no hay una casilla unica que importar" 'symbol:   static gramos' "tema-5" javac --release 25 -cp "$TMP/t5" -d "$TMP/err5" errores/StaticDeCampoDeInstancia.java
+falla_con "y el miembro tiene que existir, no solo el paquete" 'symbol:   static noExiste' "tema-5" javac --release 25 -cp "$TMP/t5" -d "$TMP/err5" errores/StaticDeMiembroInexistente.java
+falla_con "un nombre estatico y un single-type chocan: la estatica pierde" 'a type with the same simple name is already defined by the static single-type-import of Sello' "tema-5" javac --release 25 -cp "$TMP/t5" -d "$TMP/err5" errores/ChoqueDeNombreExplicito.java
+LS=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/ListaSinImport.java) 2>&1 ); CLS=$?
+igual "una unidad ordinaria no importa java.base: solo la compacta" "1" "$CLS"
+lleva "List no se ve" 'symbol:   class List' "$LS"
+lleva "y es el UNICO error: ArrayList, que si esta importado, se ve" '1 error' "$LS"
+VI=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/vecinos/ConImport.java errores/vecinos/SinImport.java) 2>&1 ); CVI=$?
+igual "el import de un vecino del MISMO paquete no llega al otro archivo" "1" "$CVI"
+lleva "el error es de quien NO escribio el import" 'location: class SinImport' "$VI"
+veces "y son DOS, no uno: la misma linea falla dos veces porque el nombre se busca dos veces" "$VI" 'location: class SinImport' 2
+cero_en "y el vecino que si lo escribio no da ningun error" 'class ConImport' "$VI"
+VS=$( (cd "$RAIZ/tema-5" && javac --release 25 -d "$TMP/err5" errores/vecinos/ConImport.java errores/vecinos/SinImportEstatico.java) 2>&1 ); CVS=$?
+igual "por la puerta estatica tampoco llega: Date no es un miembro del vecino" "1" "$CVS"
+lleva "los dos errores siguen siendo del que importa estaticos" 'location: class SinImportEstatico' "$VS"
+veces "y aca tambien son DOS, con lo que el conteo no dependio de la forma del import" "$VS" 'location: class SinImportEstatico' 2
+cero_en "y ConImport vuelve a salir limpio" 'class ConImport' "$VS"
+
 resultado

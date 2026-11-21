@@ -4,9 +4,9 @@ Código de los ejemplos de [modulo-5.md](../../modulo-5.md). Al cerrar el módul
 `rutaflow-nucleo` pasa a escribirse aquí como proyecto Gradle (mismo wrapper y toolchain que los módulos 0 a 4)
 y esta carpeta irá a `examples/java/modulo-5/`.
 
-**Estado real: tema 4 de 7 escrito.** `tema-1/`, `tema-2/`, `tema-3/` y `tema-4/` tienen ejemplos y `verificar.sh`
-comprueba esos cuatro temas (**243 comprobaciones**). Los temas 5 a 7 no tienen carpeta todavía: no es que estén sin
-documentar, es que no existe nada que ejecutar.
+**Estado real: tema 5 de 7 escrito.** `tema-1/`, `tema-2/`, `tema-3/`, `tema-4/` y `tema-5/` tienen ejemplos y
+`verificar.sh` comprueba esos cinco temas (**417 comprobaciones**). Los temas 6 y 7 no tienen carpeta todavía: no es
+que estén sin documentar, es que no existe nada que ejecutar.
 
 ## Qué hay
 
@@ -16,17 +16,17 @@ documentar, es que no existe nada que ejecutar.
 | `tema-2/` | constructores, `this(...)`, bloques y orden de inicialización | `ConstructoresYOrden`, `EncadenamientoSilencioso` | `ThisAntesDeTiempo`, `CampoAntesDeSuper`, `ConstructorRecursivo`, `FinalSinAsignar`, `ReferenciaAdelantada`, `SinConstructorPorDefecto` | `OrdenEnBytecode`, `SinEncadenar` |
 | `tema-3/` | encapsulación y modificadores de acceso | `src/bodega/{Envio,Inspectoria,Demo}`, `src/afuera/{Ruta,Cliente}` (dos paquetes, a propósito) | `PrivadoEnOtraClaseDelPaquete`, `PaqueteDesdeOtroPaquete`, `HerederoDeOtroPaqueteLeeLoDelPaquete`, `ProtegidoConReferenciaDelPadre`, `ReducirAccesoAlSobreescribir`, `OverrideDeUnPrivado` | `NivelesEnClass`, `NidoPrivate`, `jvm/` (el `IllegalAccessError` de un `.class` ya compilado) |
 | `tema-4/` | `static`: campos de clase, métodos de clase, constantes e inicialización de la clase | `CamposEstaticos`, `InicializacionBajoDemanda`, `ContadorCompartido` | `CampoDeInstanciaDesdeStatic`, `CaseNoConstante`, `FinalEstaticoEnBlanco`, `FinalEstaticoNuncaAsignado`, `InstanceOverrideDeStatic`, `OverrideDeUnStatic`, `StaticEnClaseInterna`, `InitQueRevienta` | `FlagsEstaticos`, `constante/{Lector, v1/Config, v2/Config}` (el `Lector` **sin recompilar** contra dos `Config`) |
-| — | `tema-5/` paquetes e importaciones | pendiente | | |
+| `tema-5/` | paquetes, `import`, `import static`, `import module` y los nombres | `src/{bodega/Envio, bodega/Flete, bodega/package-info, otra/Sello, afuera/Cliente, Rasgo}` + `otros-src/bodega/Balanza` + `NombresEnRuntime` (dos árboles de fuente que producen **un** paquete) | **30** archivos, entre ellos `BalanzaDesdeAfuera`, `FechaAmbigua`, `DosFechasExplicitas`, `ChoqueDeNombreExplicito`, `ImportDeSubpaquete`, `StaticDeCampoDeInstancia`, `TopLevelStatic`, `ArchivoMalNombrado`, `DosPublicas`, `PackageJavaReservado`, `SoloEnunciados`, `CompactaConPaquete`, `ModuloNoLeido`, `ModuloInexistente`, `duplicado-{uno,dos}/Guia` y `vecinos/{ConImport,SinImport,SinImportEstatico}` | `Compacta`, `FechaResuelta`, `AmbiguoResuelto`, `DosMismos`, `SoloPuntoComa`, `ReflejoDelPaquete`, `modulos/{uno,dos,ambos}` (el paquete partido) y `arbol/{bien,mal}` (`-sourcepath` e `-implicit:none`) |
 | — | `tema-6/` `toString`, `equals` y `hashCode` | pendiente | | |
 | — | `tema-7/` inmutables y `record` | pendiente | | |
 
-Los tres nombres de los temas pendientes son el mapa de
+Los dos nombres de los temas pendientes son el mapa de
 [modulo-5.md](../../modulo-5.md), no una promesa de contenido: cada uno se abre con su carpeta, sus ejemplos
 ejecutados y sus comprobaciones dentro de `verificar.sh`.
 
 ## Versiones
 
-Lo que sigue es lo que se ejecutó para escribir los temas 1 a 4: **Temurin 27.0.1.0.2+1** en macOS arm64,
+Lo que sigue es lo que se ejecutó para escribir los temas 1 a 5: **Temurin 27.0.1.0.2+1** en macOS arm64,
 compilando con `javac --release 25`. El curso enseña Java 25, así que toda salida citada en el documento viene de
 un compilador que fija el lenguaje en 25 y de una JVM 27. Queda **pendiente reejecutar con JDK 25 real**; lo que
 cambia con eso son los mensajes de texto de `javac` y del `NullPointerException` y, en el tema 2, el **número de
@@ -48,6 +48,26 @@ mide en las dos direcciones porque buscar el error nuevo sin buscar el viejo pro
 futura dejara de aceptar `--release 15`, el `grep -c` de esos dos errores saca `0`, la guarda `igual` falla con nombre
 propio y el recuento baja: no se omite nada.
 
+El tema 5 usa el contraste de `--release` en las **dos direcciones** y sobre las dos funciones del JDK 25, y sacó una
+asimetría que no era la que se esperaba. `src/afuera/Cliente.java` (que lleva `import module java.sql;`) y
+`por-dentro/Compacta.java` se compilan con 24 y con 25: el 24 corta el primero con
+`module imports are not supported in -source 24` y el segundo con `implicitly declared classes are not supported in
+-source 24`, cada uno con su nota `(use -source 25 or higher to enable …)`, y el 25 compila los dos limpio. Pero las
+unidades compactas **ilegales** no se portan igual: `errores/CompactaConPaquete.java` da **2** errores con 24 —el de
+las clases implícitas (línea 6) **más** el de la regla de forma (línea 4)— y **1** solo con 25;
+`errores/CompactaSinMetodo.java` con 24 da **únicamente** el de las clases implícitas y **no** dice el
+`does not have main method in the form of void main() or void main(String[] args)` que el tema cita; y
+`errores/SoloEnunciados.java` cambia hasta la lista de tokens entre cotas (`class, interface, enum, or record expected`
+en 24 frente a `class, interface, annotation type, enum, record, method or field expected` en 25). La consecuencia
+metodológica es la que hay que entender: **el texto de un error depende del `--release`**, así que las guardas de la
+regla de forma se hacen con `--release 25` explícito y las dos cotas se comparan **como dato**, no como sinónimo. Y un
+detalle que hay que no leer mal: las **9** guardas
+`no_compila` del tema invocan `javac` **sin** `--release` —viene así desde el tema 1—, y eso solo es admisible porque
+lo que comprueban son reglas que no cambiaron en el 25 (`should be declared in a file named`, `'.' expected`,
+`duplicate class`…); las reglas que **sí** son del 25 están comprobadas con `falla_con`/`igual` explícitos y con la
+cota medida. Si una JDK futura dejara de aceptar `--release 24`, el `igual` sobre el código de salida cambia de valor y
+la guarda cae con nombre propio: no hay ningún paso que se salte en silencio.
+
 Y una salida del tema 3 que **no es una regla del lenguaje**: `java.util.ImmutableCollections$List12` es el nombre
 interno de la JDK para la lista que devuelve `List.copyOf` con uno o dos elementos. Con tres elementos sale `ListN`,
 y con otra implementación de JDK puede salir otro nombre. Lo que se sostiene con especificación es que la copia es
@@ -59,7 +79,7 @@ declarará cuando exista el manifiesto de carga.
 ## Verificar
 
 ```bash
-./verificar.sh                       # 243 comprobaciones (41 t1 + 48 t2 + 51 t3 + 103 t4), 0 fallidas, 0 omitidas
+./verificar.sh                       # 417 comprobaciones (41 t1 + 48 t2 + 51 t3 + 103 t4 + 174 t5), 0 fallidas, 0 omitidas
 ```
 
 El script necesita `javac` y `java` en el `PATH`; compila con `--release 25` y ejecuta con
@@ -67,15 +87,17 @@ El script necesita `javac` y `java` en el `PATH`; compila con `--release 25` y e
 fragmento literal de una salida real (o una comparación entre dos salidas), así que el script falla si el
 documento cita algo que ya no ocurre.
 
-Cuatro guardas que existen porque algo falló una vez. `igual_no_vacio` se niega a dar por bueno un `igual()` entre
-dos cadenas vacías (el extractor de cuerpos de método buscaba la firma en la columna 1, y `javap` la imprime con
-dos espacios de sangrado: las dos cadenas salían vacías y la comparación pasaba sin comparar nada), y el extractor
-compara ahora **con los desplazamientos incluidos**, no solo con los mnemotécnicos. `cero` es la misma trampa en
-su forma «debe salir 0»: un `0` sacado de un volcado vacío parecía un éxito, así que ahora exige que el miembro
-exista en el corte y falla si no. `vacio` hace lo contrario que `espera` —aquí el éxito es que el compilador no
-diga nada, y se comprueba que realmente no dijo nada—. Y `veces` / `antes` miden **conteos y orden** sobre la
-salida de un programa en lugar de citar una línea, porque «el `static` corre una vez y los inicializadores tres»
-no se puede afirmar mirando un `grep`.
+Cinco helpers propios, y **cuatro** de ellos existen porque algo falló una vez. `igual_no_vacio` se niega a dar por
+bueno un `igual()` entre dos cadenas vacías (el extractor de cuerpos de método buscaba la firma en la columna 1, y
+`javap` la imprime con dos espacios de sangrado: las dos cadenas salían vacías y la comparación pasaba sin comparar
+nada), y el extractor compara ahora **con los desplazamientos incluidos**, no solo con los mnemotécnicos. `cero` es la
+misma trampa en su forma «debe salir 0»: un `0` sacado de un volcado vacío parecía un éxito, así que ahora exige que el
+miembro exista en el corte y falla si no. `veces` y `antes` miden **conteos y orden** sobre la salida de un programa en
+lugar de citar una línea, porque «el `static` corre una vez y los inicializadores tres» no se puede afirmar mirando un
+`grep`. El quinto, `vacio`, es el único que no nació de un fallo: es el reverso de `espera` —aquí el éxito es que el
+compilador no diga nada, y se comprueba que realmente no dijo nada—. Más abajo, en las notas de los temas 3 y 4, están
+los tres helpers que sí trajo cada uno (`bandera`, `cero_en`/`lleva`, `flags_de`, `cuenta_en`, `no_entre`) y el error
+concreto que los obligó a existir.
 
 El tema 3 trajo cuatro guardas más, y las tres primeras existen por fallos que se dieron escribiéndolo. `bandera`
 lee la línea `flags:` que sigue a la cabecera exacta de un miembro, y compara la línea entera: buscar `ACC_PUBLIC`
@@ -171,6 +193,36 @@ revienta (1 `igual` del código de salida 1, 5 `lleva` repartidas entre las dos 
 Por tipo: 50 `lleva`, 11 `igual`, 8 `flags_de`, 6 `cuenta_en`, 6 `cero_en`, 5 `vacio`, 5 `no_compila`, 4 `veces`,
 4 `antes`, 3 `no_entre`, 1 `igual_no_vacio` = 103.
 
+Las 174 del tema 5, contadas sobre las líneas 570 a 822 de este mismo `verificar.sh` y agrupadas por las cabeceras
+`# ----` del propio guion: **8** de apertura (5 `lleva` · 2 `cero_en` · 1 `vacio`), que son las ocho fuentes compilando
+mudas y los **9** `.class` que salen en **cuatro** carpetas —la raíz con `Rasgo` y `NombresEnRuntime`, `bodega/`,
+`otra/` y `afuera/`—, con `otros-src/bodega/Balanza` cayendo en la **misma** carpeta que los `src/bodega/*`; **9** de
+que el paquete es un espacio de nombres y no una carpeta (6 `lleva` · 2 `igual` · 1 `falla_con`); **19** de los cinco
+tipos de importación en un solo fuente (13 `lleva` · 3 `cuenta_en` · 2 `igual` · 1 `cero_en`); **18** de lo que guarda
+el `.class` del paquete (10 `lleva` · 3 `flags_de` · 2 `igual` · 2 `vacio` · 1 `cero_en`); **6** de los nombres que ve
+la máquina virtual (6 `lleva`); **14** de paquete y módulo vistos desde el programa (13 `lleva` · 1 `igual`); **11** de
+a quién gana cada nombre (5 `lleva` · 2 `vacio` · 2 `igual` · 1 `espera` · 1 `no_compila`); **8** de la frontera
+24↔25 y el módulo que no se lee (3 `igual` · 3 `lleva` · 1 `vacio` · 1 `falla_con`); **19** de la unidad de
+compilación compacta del JEP 512 (9 `lleva` · 4 `igual` · 3 `falla_con` · 2 `cero_en` · 1 `veces`); **7** del paquete
+partido entre dos módulos (4 `lleva` · 2 `igual` · 1 `cero_en`); **11** de dónde mira `javac` las fuentes que no le
+diste (5 `lleva` · 4 `igual` · 1 `espera` · 1 `cero_en`); y **44** de los errores del capítulo 7, uno por uno
+(16 `lleva` · 11 `igual` · 8 `no_compila` · 3 `falla_con` · 2 `vacio` · 2 `cero_en` · 2 `veces`). 8+9+19+18+6+14+11+8+
+19+7+11+44 = 174, y por tipo 95 `lleva`, 33 `igual`, 10 `cero_en`, 9 `no_compila`, 8 `vacio`, 8 `falla_con`,
+3 `cuenta_en`, 3 `flags_de`, 3 `veces`, 2 `espera` = 174.
+
+Estas 174 no son las 167 con las que el tema se cerró la primera vez, y la diferencia entera es una corrección de
+reconocimiento, no una relajación de la puerta. Tres guardas afirmaban que `--release 24` no decía nada de las clases
+implícitas ni del paquete en una unidad compacta; se habían escrito desde una salida que recorté con `head -3`. La
+puerta cayó con **412 correctas y 1 fallida** (sobre 413) porque `compact source file should not have package
+declaration` aparecía **1** vez donde el guion juraba que 0, y la salida completa enseñó tres cosas que el recorte
+tapaba: en 24 ese mismo fuente corta **dos** veces —la regla de las clases implícitas y la del paquete—, la regla del
+`main` **no llega a decirse** en 24 (ahí solo cae la de las implícitas) y hasta la lista de tokens del error de
+`SoloEnunciados` cambia de cota a cota. Las tres guardas falsas se sustituyeron por **cinco** que afirman la
+asimetría ejecutándola en las dos cotas, y hoy hay **tres** `veces` en el tema: el conteo de los dos `error:` en 24
+(«corta dos veces, no una» es una afirmación de conteo, no de texto) y los dos conteos de los vecinos del mismo
+paquete, que afirman que `location: class SinImport` y `location: class SinImportEstatico` salen **2** veces cada una. Se reescribió también el documento (§6, §10 y
+§12 del tema), porque lo que estaba mal era lo escrito, no lo comprobado.
+
 ## Qué hay que mirar de este tema, en dos minutos
 
 1. `tema-1/SombraDeCampo.java` — es el ejemplo cuyo bug **no produce ningún mensaje**. Compílalo con
@@ -217,3 +269,30 @@ Por tipo: 50 `lleva`, 11 `igual`, 8 `flags_de`, 6 `cuenta_en`, 6 `cero_en`, 5 `v
 14. `tema-4/errores/InitQueRevienta.java` — ejecútalo dos veces, con y sin argumento: la primera da
     `ExceptionInInitializerError` **con** la causa y un frame `<clinit>`; la segunda da `NoClassDefFoundError:
     Could not initialize class …` y ya no imprime la causa. Ahí se ve por qué se busca el primer error del log.
+15. `tema-5/src/` junto con `tema-5/otros-src/` — dos árboles de fuente que producen **un** paquete. Compílalos en la
+    misma orden y mira la salida de `find`: 9 `.class` en 4 carpetas, con `Balanza` (que vive en `otros-src`) leyendo
+    `FIRMA`, un campo declarado en `src/bodega/Envio.java` **sin** la palabra `public` (`static final String FIRMA =
+    "bodega";`) y con el archivo lector **sin** una sola línea de `import`. Después borra el rastro: en el árbol de
+    clases no aparece `otros-src`, y `Rasgo` —que no declaró paquete— cae en la raíz.
+    Eso es que el paquete lo escribe la línea `package`, no la ruta.
+16. `tema-5/errores/PackageJavaReservado.java` — el único del módulo que **compila bien y muere al cargar**:
+    `javac --release 25 -d /tmp/err errores/PackageJavaReservado.java` no dice nada y sale 0;
+    `java -cp /tmp/err java.mio.PackageJavaReservado` lanza `SecurityException: Prohibited package name: java.mio`
+    desde `ClassLoader.preDefineClass`. La barrera aquí no la pone el compilador.
+17. `tema-5/errores/vecinos/` — el alcance real de un `import`. Pasa los dos archivos juntos
+    (`javac --release 25 errores/vecinos/ConImport.java errores/vecinos/SinImport.java`): salen **dos** errores y los
+    dos señalan `location: class SinImport`. Que tu vecino del mismo paquete haya importado `Date` no te lo presta; el
+    import vive en el archivo, no en el paquete.
+18. `tema-5/por-dentro/Compacta.java` — la unidad de compilación compacta del JEP 512 sin IDE y sin `javac` previo:
+    `java por-dentro/Compacta.java` corre (exit 0) sin `class`, sin `public static void main(String[])` y sin una
+    línea de `import`. Mírala por dentro con `javap -p`: `final class Compacta` (final y **no** pública),
+    `void main();` y **cero** adaptadores `static void main` —quien instancia y llama es el lanzador—. Y el contraste
+    que hay que ver con los propios ojos: `errores/CompactaConPaquete.java` da **1** error con `--release 25` y **2**
+    con `--release 24`; `errores/CompactaSinMetodo.java` en 24 **nunca** llega a decir lo del `main`;
+    `errores/SoloEnunciados.java` cambia hasta la lista de tokens del mensaje de una cota a la otra, y el lanzador lo
+    rechaza con un texto distinto al de `javac` (`error: no class declared in source file`).
+19. `tema-5/por-dentro/arbol/bien` contra `arbol/mal` — dónde mira `javac` las fuentes que no le diste. Con
+    `-sourcepath arbol/bien` y solo `usa/Usa.java` en la orden, compila y **además** escribe `bodega/A.class` sin que
+    se lo pidieras; repítelo con `-implicit:none` y el `.class` de `A` no aparece, así que al ejecutar sale
+    `NoClassDefFoundError: bodega/A` con código 1. Con el árbol mal apuntado ni siquiera compila, y el mensaje culpa al
+    paquete (`package bodega does not exist`), no al archivo que no encontró.

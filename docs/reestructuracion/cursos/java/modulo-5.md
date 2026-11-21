@@ -11,17 +11,19 @@
 > —que los redacta la herramienta— y nunca la regla de lenguaje que se enseña. Las citas de la JLS y de la JVMS de
 > este módulo se verificaron contra la especificación **Java SE 25** que Oracle sirve hoy como
 > «Specifications Latest» (páginas con `dateModified` 2026-09-15; el propio capítulo 12 remite a _The Java
-> Virtual Machine Specification, Java SE 25 Edition_). JLS: §4.12.4, §4.12.5, §6.4.1, §6.6, §6.6.1, §6.6.2,
-> §6.6.2.1 (con su Ejemplo 6.6.2-1), §7.6, §8.1, §8.1.1.4, §8.1.3, §8.2, §8.3, §8.3.1.1, §8.3.2, §8.3.3, §8.4,
+> Virtual Machine Specification, Java SE 25 Edition_). JLS: §4.12.4, §4.12.5, §6.1, §6.3, §6.4.1, §6.6, §6.6.1,
+> §6.6.2, §6.6.2.1 (con su Ejemplo 6.6.2-1), §6.7, §7.1, §7.2, §7.3, §7.4, §7.4.1, §7.4.2, §7.4.3, §7.5, §7.5.1,
+> §7.5.2, §7.5.3, §7.5.5, §7.6, §7.7.5, §8.1, §8.1.1.4, §8.1.3, §8.1.8, §8.2, §8.3, §8.3.1.1, §8.3.2, §8.3.3, §8.4,
 > §8.4.3.2, §8.4.8.1, §8.4.8.2 (con su Ejemplo 8.4.8.2-1 «Goodnight, Dick»), §8.4.8.3, §8.6, §8.7, §8.8, §8.8.7,
 > §8.8.7.1, §8.8.8, §8.8.9, §8.8.10, §8.10, §9.3, §9.3.1, §9.6.4.4, §12.4.1, §12.4.2, §12.5, §12.6, §12.7, §13.1,
 > §13.4.9, §14.22, §15.8.3, §15.11.1, §15.12.4, §15.12.4.1, §15.21.3, §15.29 y el capítulo 16 (§16.1.1 y §16.9).
 > JVMS: §2.6.1, §2.9.1, §2.9.2, §4.7.2, §4.7.28, §4.7.29, §4.10.1.8, §5.3.2, §5.4.3, §5.4.4 y §5.5. JEP: 358 (los
-> mensajes del `NullPointerException`), 395 (miembros `static` en clases internas) y 511 (imports de módulo, tema 5).
-> **Estado de escritura:** tema 4 de 7. Los temas 5 a 7 están previstos y aún no escritos; el laboratorio tiene
-> su puerta para los cuatro temas escritos (**243 comprobaciones, 0 fallidas, 0 omitidas**: 41 del tema 1, 48 del
-> tema 2, 51 del tema 3 y 103 del tema 4), y esta portada no declara horas del módulo completo hasta que los siete
-> estén medidos.
+> mensajes del `NullPointerException`), 395 (miembros `static` en clases internas), 511 (imports de módulo) y 512
+> (unidad de compilación compacta y método `main` de instancia) —los dos, del tema 5—.
+> **Estado de escritura:** tema 5 de 7. Los temas 6 y 7 están previstos y aún no escritos; el laboratorio tiene
+> su puerta para los cinco temas escritos (**417 comprobaciones, 0 fallidas, 0 omitidas**: 41 del tema 1, 48 del
+> tema 2, 51 del tema 3, 103 del tema 4 y 174 del tema 5), y esta portada no declara horas del módulo completo hasta
+> que los siete estén medidos.
 
 ## Cabecera del módulo
 
@@ -29,9 +31,15 @@
 |---|---|
 | **Objetivo** | Pasar de «datos sueltos en arreglos» a **un tipo propio**: declarar una clase cuyos campos son su estado y cuyos métodos reciben el objeto como primer argumento, entender que `new` crea un objeto y la variable solo lo señala, seguir el `this` hasta el bytecode, saber **en qué orden** se le llenan las casillas —los siete pasos de §12.5, dónde caen los inicializadores y por qué `this(...)` se salta los propios—, y dominar las tres cosas que más programas rompen: que asignar copie la **referencia** (no el objeto), que `null` sea un valor de referencia y no «un objeto vacío», y que el nivel de acceso es la única barrera que se comprueba sola —un getter que devuelve la lista viva anula tu invariante con el compilador callado, y un método que repite el nombre de un `private` del padre no se ejecuta **nunca**—, y que hay casillas que no viven en el objeto sino en la **clase**: una sola encarnación aunque ya no quede ningún objeto, un método de clase que se escoge por el tipo del fuente y no por el objeto, y una constante que se hornea dentro del archivo que la lee y por eso no ve el valor nuevo aunque se recompile quien la declara. |
 | **Prerrequisitos** | [Módulo 4](modulo-4.md) completo —en especial su tema 1 (`new Punto[2]` deja casillas `null`: aquí eso mismo pasa con objetos que no son arreglos) y su tema 4 (`ArrayList`/`HashMap`, porque el siguiente paso natural es una lista de objetos)— y [Módulo 3](modulo-3.md) completo, sobre todo su tema 4: **al método se le copia la referencia, no el contenido**; esa regla es la que aquí se ve funcionando dentro de un objeto. Del [Módulo 0](modulo-0.md) se sigue usando `javap -c -p`. |
-| **Duración** | Escrito: 160 min (temas 1, 2, 3 y 4, 40 min cada uno). Previstos 7 temas de 40 min · **4 h 40 min** según el temario, cifra que se fija con las cabeceras cuando el módulo esté completo. |
-| **Versiones** | JDK 25 (`--release 25`). Nada de este módulo depende de una función *preview*. Cinco cosas que sí dependen del ejecutable y se tratan como tales: el **texto** del `NullPointerException` con mensajes útiles (lo redacta la JVM 27; el fenómeno es de 14+), el **número** que devuelve `System.identityHashCode` (medido: cambia con `-XX:hashCode=` y no es una cifra del lenguaje), el **número de instrucciones** de cada `<init>` que publica el tema 2 (11 / 6 / 7 con cadena, 11 / 14 / 17 sin ella) —es política del generador de código de `javac`, no regla del lenguaje; lo que §12.5 paso 4 sí exige es el **reparto** de los inicializadores (2 / 0 / 0 frente a 2 / 2 / 2)—, y lo del tema 3: el mismo fuente sale con **`invokespecial`** al llamarse un `private` desde su clase compilando `--release 8` y con **`invokevirtual`** de 11 a 25 (medido release a release), el puente `access$000` solo aparece en el 8, y el nombre interno `ImmutableCollections$List12` que imprime `B2` depende del tamaño de la lista y de la JDK; y las del tema 4: la redacción de los cinco avisos `[static]` y de los seis cortes de `javac`, el nombre de ranura `<local4>` que la JVM escoge para el `NullPointerException`, los conteos de instrucciones del `.class` (5 `getstatic` de `creadas`, 0 `getfield`, 2 `invokevirtual` de `describe`, 0 `aload_0` en `sumar`) y la cota del JEP 395, que para medirse necesita que la JDK todavía acepte `--release 15`. En los tres casos del tema 3 lo que se enseña es la **regla** (§6.6.2.1, §8.2, §5.4.4 y el rechazo `UnsupportedOperationException`), no el detalle del volcado. |
-| **Laboratorio** | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) (al publicar: `examples/java/modulo-5/`), con `verificar.sh`: **243 comprobaciones, 0 fallidas, 0 omitidas** ejecutadas aquí (41 del tema 1, 48 del tema 2, 51 del tema 3 y 103 del tema 4). |
+| **Duración** | Escrito: 200 min (temas 1 a 5, 40 min cada uno). Previstos 7 temas de 40 min · **4 h 40 min** según el temario, cifra que se fija con las cabeceras cuando el módulo esté completo. |
+| **Versiones** | JDK 25 (`--release 25`). Nada de este módulo depende de una función *preview*. Cinco cosas que sí dependen del ejecutable y se tratan como tales: el **texto** del `NullPointerException` con mensajes útiles (lo redacta la JVM 27; el fenómeno es de 14+), el **número** que devuelve `System.identityHashCode` (medido: cambia con `-XX:hashCode=` y no es una cifra del lenguaje), el **número de instrucciones** de cada `<init>` que publica el tema 2 (11 / 6 / 7 con cadena, 11 / 14 / 17 sin ella) —es política del generador de código de `javac`, no regla del lenguaje; lo que §12.5 paso 4 sí exige es el **reparto** de los inicializadores (2 / 0 / 0 frente a 2 / 2 / 2)—, y lo del tema 3: el mismo fuente sale con **`invokespecial`** al llamarse un `private` desde su clase compilando `--release 8` y con **`invokevirtual`** de 11 a 25 (medido release a release), el puente `access$000` solo aparece en el 8, y el nombre interno `ImmutableCollections$List12` que imprime `B2` depende del tamaño de la lista y de la JDK; y las del tema 4: la redacción de los cinco avisos `[static]` y de los seis cortes de `javac`, el nombre de ranura `<local4>` que la JVM escoge para el `NullPointerException`, los conteos de instrucciones del `.class` (5 `getstatic` de `creadas`, 0 `getfield`, 2 `invokevirtual` de `describe`, 0 `aload_0` en `sumar`) y la cota del JEP 395, que para medirse necesita que la JDK todavía acepte `--release 15`; y las del tema 5: la
+redacción literal de los errores del capítulo 7 que comprueba el guion (los escribe `javac`), y el hecho de que la
+frontera 24↔25 **no es simétrica** —el mismo fuente ilegal da dos errores en `--release 24` y uno en `25`, y hasta
+cambia la lista de tokens del mensaje—, por lo que esas cinco comprobaciones se afirmaron ejecutándolas en las dos
+cotas y no deducándolas de una. En los tres casos del tema 3 lo que se enseña es la **regla** (§6.6.2.1, §8.2, §5.4.4
+y el rechazo `UnsupportedOperationException`), no el detalle del volcado; en el tema 5 lo mismo: la regla es de la JLS
+(§7.4, §7.5, §7.6, §7.7) y lo que se reejecuta es el texto. |
+| **Laboratorio** | [`laboratorios/modulo-5/`](laboratorios/modulo-5/README.md) (al publicar: `examples/java/modulo-5/`), con `verificar.sh`: **417 comprobaciones, 0 fallidas, 0 omitidas** ejecutadas aquí (41 del tema 1, 48 del tema 2, 51 del tema 3, 103 del tema 4 y 174 del tema 5). |
 | **Proyecto guía** | `rutaflow-nucleo`: la **ficha de carga**. En M4 una guía era un `String` con guiones que se partía con `split`; aquí pasa a ser un objeto `Guia` con `codigo`, `gramos` y `zona`, su método `etiqueta()` y su constructor. Cada tema cierra una parte: la clase y su receptor (T1), cómo se construye y en qué orden (T2), qué se puede tocar desde fuera (T3), qué pertenece a la clase y no al objeto (T4), dónde vive el archivo (T5), cómo se compara e imprime (T6) y cómo se hace inmutable (T7). |
 
 ### Mapa del módulo
@@ -3729,9 +3737,1613 @@ objeto o una por clase? ¿horneada o viva? ¿y quién la escribe?**
 
 ---
 
+### Tema 5: Paquetes, `import`, `import static`, `import module` y los nombres · Básico · 40 min
+
+#### 1. Ubicación y prerrequisitos
+
+Es el quinto de los siete temas. Los cuatro anteriores hablaban de **dentro** del objeto: su molde (T1), su nacimiento
+(T2), quién puede tocarlo (T3) y qué pertenece a la clase y no al objeto (T4). Este tema habla de **fuera del archivo**:
+en qué espacio de nombres vive tu tipo, qué nombres tienes a mano sin escribir el prefijo, qué gana cuando dos se
+llaman igual, y qué tres capas distintas te pueden decir «no lo encuentro» con mensajes que no se parecen entre sí.
+
+Necesitas tener cerrado:
+
+- **Tema 3 de este módulo**: los cuatro niveles de acceso. Ese tema dice *qué* significa «acceso de paquete»; este
+  dice *dónde está el paquete*. Las dos mitades se ven en el mismo bit: `FIRMA` sale con `flags: (0x0018)` —sin
+  `ACC_PUBLIC`— y aun así la lee `Balanza`, que está en otra carpeta.
+- **Tema 4 de este módulo**: `ConstantValue` y el enlace en compilación. Aquí lo reutilizamos sin explicarlo otra
+  vez: `import static bodega.Envio.LOTE;` **no** deja ninguna referencia a `LOTE` dentro de `Cliente.class` (medido:
+  `grep -c 'Field bodega/Envio.LOTE'` sobre el volcado da **0**), porque el 24 ya venía horneado.
+- **Temas 1 y 2**: los tipos anidados y su nombre con `$`. `import static bodega.Envio.Sello;` importa un **tipo**, y
+  en el `.class` se ve como `bodega/Envio$Sello`.
+- **Módulos 1 y 2 del curso**: tus primeros programas no tenían línea `package`. No eran un paquete «vacío»: eran el
+  **paquete sin nombre** (§7.4.2), y este tema pone nombre a esa situación —incluido el motivo por el que desde un
+  paquete con nombre no puedes alcanzarlos (medido: `cannot find symbol` con `symbol: class Rasgo`).
+- **Módulo 0**: `javap -c -p` para ver las referencias simbólicas y `javap -v -p` para las banderas y el `InnerClasses`.
+
+Dos avisos de orden, porque son reales. Primero: este tema **no** enseña el sistema de módulos. Los tres
+`module-info.java` de `por-dentro/modulos/` son un banco de pruebas para una sola frase de la especificación —qué pasa
+cuando un paquete lo exportan dos módulos— y nada más; `requires`, `opens`, `provides` y el empaquetado en JAR se
+quedan fuera. Segundo: `ReflejoDelPaquete.java` usa `Class.getPackage()`, `Module.canRead()` y `isExported()`. Eso no
+es un tema de reflexión: son las **únicas** palancas que tiene un programa para leer el paquete y el módulo que el
+compilador ya usó, y las usamos para comprobar desde fuera lo que `javap` comprueba desde el archivo.
+
+Laboratorio: [`laboratorios/modulo-5/tema-5/`](laboratorios/modulo-5/tema-5) — **52 fuentes**, contadas así:
+**6** en `src/` (cuatro carpetas que producen **un** paquete: `src/bodega/` con `Envio`, `Flete` y `package-info`,
+más `src/otra/Sello.java`, `src/afuera/Cliente.java` y `src/Rasgo.java` sin paquete), **1** en `otros-src/bodega/`,
+**1** en la raíz (`NombresEnRuntime.java`), **6** en `por-dentro/` (resolución de nombres, la compacta y la
+observación del paquete), **5** en `por-dentro/modulos/` (`uno`, `dos` y el lector `ambos`), **3** en `arbol/` (los
+dos `-sourcepath`) y **30** en `errores/`, cada uno con su mensaje literal. Reparto medido: **20** compilan limpias,
+**28** las rechaza `javac` y **4** están escritas para salir en exit 0 a propósito. De las 28, **25** fallan
+aisladas —así las ejecuté una por una con `javac --release 25`—, `errores/duplicado-dos/Guia.java` solo al juntarse con
+su gemela, y `arbol/mal/Usa.java` y `por-dentro/modulos/ambos/module-info.java` caen fuera de `errores/`. Las cuatro
+que no fallan al compilar son la lección más cara del tema: `PackageJavaReservado` compila y la JVM la rechaza **al
+cargarla**, `errores/paquete-vacio/package-info.java` compila y **no escribe ni un `.class`**, y
+`errores/duplicado-uno/Guia.java` con `errores/vecinos/ConImport.java` son el andamio que existe para que la otra
+mitad del par sí falle.
+
+#### 2. Objetivo
+
+**Enunciado**: dado un archivo nuevo, decides su paquete y su nombre de archivo sabiendo quién obliga a qué; y ante
+un fallo de nombre —`package does not exist`, `cannot find symbol`, `reference to X is ambiguous`, `wrong name`,
+`Prohibited package name`, `module ... does not read`— sabes en qué capa está producido, qué regla del lenguaje lo
+produce y cuál es el arreglo mínimo.
+
+Al terminar eres capaz de:
+
+1. Escribir las **tres formas de unidad de compilación** de §7.3 (ordinaria, compacta y modular) y decir, mirando el
+   fuente, en qué paquete cae su tipo y con qué nombre lo verá la máquina virtual.
+2. Predecir el árbol de clases: dos carpetas de fuente que declaran `package bodega;` acaban en **una** carpeta
+   `bodega/` con `Envio.class`, `Flete.class`, `Balanza.class` y `package-info.class` juntas, un tipo anidado sale con
+   `$` y no con otra carpeta, y un fuente sin `package` sale en la raíz (los cuatro casos, medidos).
+3. Escribir y **diferenciar en el bytecode** los cinco tipos de import de §7.5: `single-type` deja
+   `ldc // class bodega/Envio`, `import static` de un campo deja `getstatic Field bodega/Envio.vivas:I`, `import
+   static` de una constante **no deja nada**, `import module` deja `ldc // class java/sql/Driver` y no copia ni un
+   `.class`.
+4. Decidir **quién gana** un nombre simple: el `single-type-import` sobre el `on-demand` y sobre los nombres que trae
+   un `import module` (medido: `Date resuelto : java.sql.Date`), dos `on-demand` que conviven hasta que usas el nombre
+   (medido: `reference to Date is ambiguous`, y el error aparece en el **uso**, no en el import), y dos `import module`
+   con el mismo nombre simple, que sí se cortan.
+5. Explicar el `import module` (JEP 511) con sus dos condiciones medidas: se importa en **cualquier** fuente, sin
+   declarar módulo, y falla si el módulo no se **lee** —`unnamed module does not read: java.se` con
+   `--release 25`, y el mismo fuente compila en cuanto añades `--add-modules java.se`—.
+6. Diagnosticar un fallo de nombre por su **capa**: gramática (el `package` fuera de su puesto), regla del host (el
+   nombre del archivo), enlace del compilador (el paquete no existe), visibilidad del módulo (dos exportadores), o
+   cargador (`wrong name`, `Prohibited package name`) — y saber que las dos últimas no se pueden arreglar con `import`.
+
+#### 3. Por qué importa
+
+La primera frase del capítulo pone el marco entero:
+
+> *«Programs are organized as sets of packages. The members of a package are classes and interfaces, which are
+> declared in compilation units of the package, and subpackages, which may contain compilation units and subpackages of
+> their own.»* — JLS §7.1
+
+Y dos reglas de ese mismo párrafo deciden lo que el tema 3 ya usaba sin definir:
+
+> *«Code in a compilation unit automatically has access to all classes and interfaces declared in its package and
+> also automatically imports all of the `public` classes and interfaces declared in the predefined package
+> `java.lang`.»* — JLS §7.1
+
+> *«A top level class or interface is accessible outside the package that declares it only if the class or interface
+> is declared `public`. A top level class or interface is accessible outside the module that declares it only if the
+> class or interface is declared `public` and is a member of an exported package.»* — JLS §7.1
+
+Esa segunda frase es la razón de que en 2026 un curso de Java tenga que hablar de paquetes y de módulos en el mismo
+tema: **el acceso tiene dos puertas**, y la de módulo la decide la lista `exports`, no tu palabra `public`.
+
+La carpeta **no** es el paquete, y la especificación lo dice dos veces con una claridad que merece leerse literal. La
+correspondencia con el sistema de archivos es una decisión del *host* (§7.2):
+
+> *«Under this simple organization of packages, an implementation of the Java SE Platform would transform a package
+> name into a pathname by concatenating the components of the package name, placing a file name separator (directory
+> indicator) between adjacent components.»* — JLS §7.2
+
+y la jerarquía de nombres no da derechos de acceso (§7.1):
+
+> *«It is however possible for members of different packages to have the same simple name.»* …
+> *«The hierarchical naming structure for packages is intended to be convenient for organizing related packages in a
+> conventional manner, but has no significance in itself other than the prohibition against a package having a
+> subpackage with the same simple name as a top level class or interface declared in that package.»* …
+> *«For example, there is no special access relationship between a package named `oliver` and another package named
+> `oliver.twist`, or between packages named `evelyn.wood` and `evelyn.waugh`.»* — JLS §7.1
+
+Lo mismo con el nombre del archivo, que es lo que la gente cree que es una regla del lenguaje:
+
+> *«If and only if packages are stored in a file system, the host system **may choose to enforce** the restriction
+> that it is a compile-time error if a class or interface is not found in a file under a name composed of the class or
+> interface name plus an extension (such as `.java` or `.jav`) if either of the following is true: The class or
+> interface is referred to by code in other ordinary compilation units of the package in which the class or interface
+> is declared. / The class or interface is declared `public`.»* — JLS §7.6
+
+Fíjate en «**only if** packages are stored in a file system» y «**may choose**». Un host con base de datos no puede
+imponerla —§7.2: *«If a host system stores packages and compilation units in a database, then the database must not
+impose the optional restrictions (§7.6)»*—, así que `class Guia is public, should be declared in a file named
+Guia.java` es **javac** hablando, no Java.
+
+Los `import` tienen una regla que casi nadie enuncia y que este tema mide con dos vecinos del mismo paquete (§6.3):
+
+> *«The scope of a class or interface imported by a single-type-import declaration, a type-import-on-demand
+> declaration, or a single-module-import declaration is the module declaration and all the class and interface
+> declarations of the **compilation unit** in which the `import` declaration appears, as well as any annotations on the
+> module declaration or package declaration of the compilation unit.»* — JLS §6.3
+
+> *«An `import` declaration makes classes, interfaces, or members available by their simple names **only within the
+> compilation unit** that actually contains the `import` declaration.»* — JLS §7.5
+
+El `import module` es la puerta nueva, y la especificación deja claro para qué se abrió (§7.5.5):
+
+> *«A single-module-import declaration imports, on demand, all the `public` top level classes and interfaces in the
+> following packages: 1. The packages exported by the module _ModuleName_ to the current module. 2. The packages
+> exported by the modules that are read by the current module due to reading the module _ModuleName_.»* … *«It is a
+> compile-time error if the module _ModuleName_ is not read by the current module.»* … *«A single-module-import
+> declaration **can be used in any source file**. It is not required for the source file to be part of a module.»* —
+> JLS §7.5.5
+
+y el JEP que la finalizó, **JEP 511 (Module Import Declarations)**, mide aquí su frontera exacta: el mismo fuente pasa
+de `module imports are not supported in -source 24` a compilar con `-source 25` (comprobado en las dos direcciones).
+
+Por último, los nombres del paquete tienen una convención **y una reserva**, y las dos están en §6.1:
+
+> *«You form a unique package name by first having (or belonging to an organization that has) an Internet domain name,
+> such as `oracle.com`. You then reverse this name, component by component, to obtain, in this example, `com.oracle`,
+> and use this as a prefix for your package names.»* — JLS §6.1
+
+> *«The first component of a package or module name must not be the identifier `java`. Package and module names that
+> start with the identifier `java` are reserved for packages and modules of the Java SE Platform.»* — JLS §6.1
+
+Esta segunda es la única vez en todo el tema donde una regla del fuente (compila) y una regla de la JVM (no carga) se
+contradicen en la práctica: `javac --release 25` lo acepta mudo y `java` lo rechaza al definir la clase.
+
+#### 4. Analogía
+
+Piensa en la dirección postal de un edificio y en la agenda de contactos de un mostrador.
+
+- **El paquete es el barrio**, no la calle. Dos edificios en calles distintas pueden estar los dos en el barrio
+  `bodega`: `Envio.java` está en `src/bodega/` y `Balanza.java` en `otros-src/bodega/`, y medido son **vecinos de
+  paquete** —`Balanza` lee el campo de paquete `Envio.FIRMA` y construye `Flete`, otro edificio sin cartel de «abierto
+  al público» (`public`)—. Lo que declara el barrio es la línea `package`, no la ruta.
+- **La carpeta es la calle**: le importa al cartero (el `host`) y a nadie más. Por eso en el árbol de clases
+  desaparece: medido, `otros-src` no deja ni un rastro, y `Balanza.class` se guarda al lado de `Envio.class`.
+- **El `package` mal puesto es un timo de dirección**. `java -cp out/bodega Envio` encuentra el `.class`, lo abre, y
+  dentro está escrito el barrio; la JVM contesta con lo que ve, no con lo que tú pediste:
+  `Caused by: java.lang.NoClassDefFoundError: Envio (wrong name: bodega/Envio)`. El cartel está en el archivo.
+- **Los tipos de nivel superior sin `public` son edificios sin cartel**: los vecinos los ven, el resto de la ciudad
+  no puede ni nombrarlos —`Balanza is not public in bodega; cannot be accessed from outside package`—.
+- **El `import` es tu agenda, y es por mostrador**. Apuntar `java.util.Date` en tu agenda no le da la dirección al
+  compañero del mismo barrio que está en su propio mostrador: medido, en un paquete con dos archivos, al que no
+  escribe el import le salen sus **dos** errores y al vecino que sí lo escribió, ninguno.
+- **`import static` es copiar un teléfono concreto**, no el libro entero. Y funciona con tres cosas que la gente no
+  espera: una constante, un campo de clase y **un tipo anidado** (`import static bodega.Envio.Sello;` importa una
+  clase, no un método).
+- **`import module` es «apunta todos los teléfonos publicados por el departamento `java.sql`»**. La lista de teléfonos
+  la decide el departamento (`exports`), no tú: medido, `java.sql` publica dos paquetes y los dos llegaron al mismo
+  fuente (`java.sql.Driver` y `javax.sql.DataSource`). Y no vale marcar «el ayuntamiento entero» si el ayuntamiento no
+  te admite dentro: `unnamed module does not read: java.se`.
+- **La agenda puede tener dos entradas con el mismo apellido**. Si las dos las escribiste a mano, el compilador te lo
+  corta al escribir la segunda; si llegaron dos listas «por nombre» (`import java.util.*` e `import java.sql.*`),
+  conviven y el problema sale el día que usas el apellido. Los dos mensajes están medidos y no se parecen.
+- **El paquete sin nombre es una nave sin dirección postal**: puedes trabajar dentro, pero nadie puede escribirte una
+  carta (no se puede importar), y su «dirección» en la máquina virtual son dos corchetes vacíos: `paquete=[]`.
+- **El `java.*` es una calle reservada al organismo**: el plano la dibuja sin quejarse y la oficina de correos se niega
+  a entregar —`java.lang.SecurityException: Prohibited package name: java.mio`—.
+- **`package-info.java` es el cartel del barrio, y solo existe si dice algo.** Sin anotación, `javac` no escribe ni un
+  `.class` (medido: cero archivos). Con `@Deprecated`, el cartel se ve desde el programa
+  (`anotaciones : [@java.lang.Deprecated(forRemoval=false, since="")]`) pero **no** se propaga a los edificios: usar
+  `Envio` desde otro paquete no produjo ni un aviso.
+- **El `$` de `Envio$Sello` es un piso dentro del mismo edificio**, no un barrio nuevo: mismo prefijo de paquete
+  (`paquete=[bodega]`) y dos notaciones distintas, `bodega.Envio$Sello` para el cartero y
+  `bodega.Envio.Sello` para el programador.
+
+#### 5. Diagrama
+
+```mermaid
+flowchart TD
+    F["mi archivo nuevo"] --> Q1{"declaro paquete?"}
+    Q1 -->|"no"| AN["paquete SIN NOMBRE §7.4.2<br/>queda en la RAIZ del arbol de clases<br/>nadie puede importarlo"]
+    Q1 -->|"si: package bodega;" --> Q2{"que forma de unidad? §7.3"}
+    Q2 -->|"ordinaria: clases e interfaces"| ORD["puede llevar import y tipos<br/>java.lang implicito en TODOS"]
+    Q2 -->|"compacta: al menos un metodo"| COM["clase implicita FINAL sin public<br/>NO admite paquete · paquete=[]<br/>java.base importado implicito §7.3"]
+    Q2 -->|"modular: module-info.java"| MOD["module M { exports p; }<br/>el unico sitio donde NACE la lista exports"]
+    ORD --> N{"¿que nombre necesito<br/>sin escribir el prefijo?"}
+    N -->|"un tipo"| I1["import bodega.Envio;<br/>ldc // class bodega/Envio"]
+    N -->|"todos los de un paquete"| I2["import java.util.*;<br/>gana solo si NO hay explicito"]
+    N -->|"un miembro de clase"| I3["import static Envio.vivas;<br/>getstatic Field bodega/Envio.vivas:I"]
+    N -->|"un miembro de clase"| I3b["import static Envio.LOTE;<br/>NO deja referencia: 24 horneado"]
+    N -->|"un tipo anidado"| I3c["import static Envio.Sello;<br/>Method bodega/Envio$Sello.pauta"]
+    N -->|"todo un departamento"| I4["import module java.sql;<br/>+1 puerta: necesita LEER el modulo §7.5.5<br/>--release 24 = ilegal"]
+    I2 --> C{"choque de nombres?"}
+    I3 --> C
+    I4 --> C
+    C -->|"dos a mano"| E1["error AL ESCRIBIR el segundo import<br/>a type with the same simple name is already defined"]
+    C -->|"dos por lista"| E2["error AL USAR el nombre<br/>reference to Date is ambiguous<br/>both class java.sql.Date ... match"]
+    C -->|"dos modulos exportan el paquete"| E3["module ambos reads package bodega<br/>from both uno and dos §7.4.3"]
+    I1 --> R{"¿donde falla al ejecutar?"}
+    R -->|"el prefijo no coincide"| W["NoClassDefFoundError<br/>Envio (wrong name: bodega/Envio)"]
+    R -->|"java. de prefijo"| P["SecurityException<br/>Prohibited package name: java.mio"]
+    R -->|"una fuente no escrita"| S["package bodega does not exist<br/>con -sourcepath mal apuntado"]
+```
+
+**Texto alternativo:** el diagrama empieza por **dos preguntas de fuente**, no por los imports. ¿Declaro paquete? Si
+no, caes en el paquete sin nombre: raíz del árbol de clases (`Rasgo.class`) y nada ni nadie puede importarlo. ¿Qué
+forma de unidad escribo? La ordinaria es la única que admite `package` e imports por igual; la compacta (§7.3, JEP 512)
+es un `void main()` sin clase escrita, no admite `package` y trae `java.base` dentro; la modular es la única que
+**crea** la lista `exports`. La segunda mitad del diagrama son las cinco puertas de nombre, y su clave es qué deja
+cada una en el `.class`: un `ldc` al tipo, un `getstatic` al campo, **nada** si era una constante, y un `ldc // class
+java/sql/Driver` en el caso del módulo. Las tres salidas de choque son tres momentos distintos y por eso se diagnostican
+distinto: dos imports escritos a mano se cortan al escribir el segundo, dos listas `on-demand` se cortan al usar el
+nombre, y un paquete exportado por dos módulos se corta en el `module-info.java` **del lector**. Abajo están los tres
+fallos que no son del compilador y que por eso no se arreglan con un `import`: el nombre que no coincide con el que
+declara el archivo, el prefijo `java.` y la fuente que `javac` no encontró por `-sourcepath`.
+
+#### 6. Explicación
+
+**Nivel 0 — Un archivo Java no es «una clase»: son tres gramáticas distintas, y la que elijas decide el paquete por ti.**
+
+§7.3 define `CompilationUnit` con tres producciones y son literales:
+
+```
+OrdinaryCompilationUnit:
+    [PackageDeclaration] {ImportDeclaration} {TopLevelClassOrInterfaceDeclaration}
+
+CompactCompilationUnit:
+    {ImportDeclaration} {ClassMemberDeclarationNoMethod} MethodDeclaration {ClassMemberDeclaration}
+
+ModularCompilationUnit:
+    {ImportDeclaration} ModuleDeclaration
+```
+
+Cuenta los corchetes: **`PackageDeclaration` solo existe en la forma ordinaria**. La compacta no tiene ese hueco en la
+gramática —no es que «no se recomiende» ponerlo—, y la modular tampoco. Y la compacta exige un `MethodDeclaration`
+suelto, no opcional; §7.3 lo dice con esa frase: *«A compact compilation unit consists of a non-empty sequence of
+class member declarations, at least one of which must be a method declaration, optionally preceded by `import`
+declarations.»*
+
+La ordinaria es la que llevas cuatro temas escribiendo (`src/bodega/Envio.java`):
+
+```java
+package bodega;                              // ← el único sitio donde esta línea es legal
+
+public class Envio {
+    public static final int LOTE = 24;
+    public static int vivas = 3;
+    static final String FIRMA = "bodega";
+    int gramos = 1250;
+
+    public static class Sello {
+        public static String pauta() { return "Sello-RutaFlow"; }
+    }
+}
+```
+
+La compacta es `por-dentro/Compacta.java` entero —nueve líneas, sin `class` escrito—:
+
+```java
+void main() {
+    var nombres = new ArrayList<String>();
+    nombres.add("compacta");
+    nombres.add("sin una linea de import");
+    System.out.println("compacta             : " + nombres);
+    System.out.println("clase que me cargo    : " + getClass().getName());
+    System.out.println("paquete donde caigo   : [" + getClass().getPackageName() + "]");
+}
+```
+
+```
+$ java -Dstdout.encoding=UTF-8 por-dentro/Compacta.java
+compacta             : [compacta, sin una linea de import]
+clase que me cargo    : Compacta
+paquete donde caigo   : []
+```
+
+Y esto es lo que sale dentro del `.class` cuando la compilas con `javac` normal, medido con `javap -p`:
+
+```
+Compiled from "Compacta.java"
+final class Compacta {
+  Compacta();
+  void main();
+}
+```
+
+Tres cosas ahí dentro: la clase es `final` **y no es `public`** (§8.1.8), el `main` es `void main()` **de instancia**
+sin argumentos, y no hay ningún `static void main(String[])` —el volcado no lo muestra porque no existe; lo que
+instancia el objeto y llama es el lanzador (§8.1.8)—. Además, §6.3 remata: *«The scope of the implicit declaration of
+a top level class in a compact compilation unit is empty; the class is never in scope.»* Es decir: la clase está, se
+ejecuta, y **no la puedes nombrar** desde otro archivo.
+
+Las dos reglas de implícitos de §7.3 son las que explican por qué `ArrayList` aparece sin import:
+
+> *«Every compilation unit implicitly imports every `public` class or interface declared in the predefined package
+> `java.lang`, as if the declaration `import java.lang.*;` appeared at the beginning of each compilation unit
+> immediately after any `package` declaration.»* — JLS §7.3
+
+> *«Every compact compilation unit implicitly imports all the `public` top level classes and interfaces of the
+> packages exported by the module `java.base`, as if the declaration `import module java.base;` appeared at the
+> beginning of each compact compilation unit.»* — JLS §7.3
+
+El `java.lang.*` es para **todas** las unidades; el `import module java.base` es **solo** para la compacta. Medido el
+contraste con `errores/ListaSinImport.java`, que es ordinaria y usa `List` sin importarlo:
+
+```
+errores/ListaSinImport.java:9: error: cannot find symbol
+    List<String> v = new ArrayList<>();
+    ^
+  symbol:   class List
+  location: class ListaSinImport
+1 error
+```
+
+Fíjate en el `1 error` final: `ArrayList` **sí** se ve porque está importado a mano, y `List` no. Una unidad ordinaria
+no recibe `java.base` por la puerta de módulo; el `java.lang` que sí recibe en cambio no incluye `List`.
+
+Y las tres formas fallidas de compacta, cada una con su mensaje distinto (los tres medidos, renglón incluido):
+
+```
+$ javac --release 25 -d out errores/CompactaConPaquete.java
+errores/CompactaConPaquete.java:4: error: compact source file should not have package declaration
+package bodega;
+^
+$ javac --release 25 -d out errores/CompactaSinMetodo.java     # solo un campo, sin metodo
+errores/CompactaSinMetodo.java:4: error: compact source file does not have main method in the form of void main() or void main(String[] args)
+int x = 1;
+^
+$ javac --release 25 -d out errores/SoloEnunciados.java        # solo println, sin metodo
+errores/SoloEnunciados.java:4: error: class, interface, annotation type, enum, record, method or field expected
+System.out.println("solo enunciados");
+^
+$ java errores/SoloEnunciados.java                             # el lanzador, antes que javac
+error: no class declared in source file
+```
+
+Ese último par es el que corrigió una creencia extendida: **«un archivo Java puede ser solo sentencias»**. No. Lo que
+finalizó el JDK 25 con JEP 512 fue la clase implícita *con al menos un método*; un fuente de puros enunciados lo
+rechaza `javac` con «method or field expected» y lo rechaza **antes** el lanzador, con un mensaje que no es de `javac`
+(`error: no class declared in source file`, código de salida 1).
+
+Y la misma verificación con la cota vieja **no da los mismos textos**, medido renglón por renglón:
+
+```
+$ javac --release 24 -d out errores/CompactaConPaquete.java
+errores/CompactaConPaquete.java:6: error: implicitly declared classes are not supported in -source 24
+void main() { }
+^
+  (use -source 25 or higher to enable implicitly declared classes)
+errores/CompactaConPaquete.java:4: error: compact source file should not have package declaration
+package bodega;
+^
+2 errors
+$ javac --release 24 -d out errores/CompactaSinMetodo.java
+errores/CompactaSinMetodo.java:4: error: implicitly declared classes are not supported in -source 24
+int x = 1;
+^
+  (use -source 25 or higher to enable implicitly declared classes)
+1 error
+$ javac --release 24 -d out errores/SoloEnunciados.java
+errores/SoloEnunciados.java:4: error: class, interface, enum, or record expected
+System.out.println("solo enunciados");
+^
+1 error
+```
+
+Tres lecturas, y ninguna es cosmética. Que el primero salga con **2 errores en 24 y 1 en 25** significa que la regla de
+forma del `package` **no es nueva del 25**: ya se denunciaba, solo que en 24 llega a ella enterrada bajo un error que
+en 25 no existe. Que el segundo **no mencione el `main`** en 24 significa que el mensaje que el tema cita como seña del
+JEP 512 no lo va a ver nunca un build fijado en 24, ni parecido. Y el tercero cambia **la lista de tokens** del mismo
+error, así que ni el texto del «no es una unidad de compilación válida» es estable entre cotas. La consecuencia
+operativa es la que usa este laboratorio: las guardas de la regla de forma se corren con `--release 25` explícito y las
+dos cotas se comparan **como dato** (cinco comprobaciones en `verificar.sh`: el código de salida, un conteo de los **2**
+errores de 24, los dos textos que sí salen y el del `main` que en 24 no sale).
+
+La modular es la que menos se parece a lo demás: `module-info.java` no declara tipos, declara **relaciones**
+(`exports bodega;`). Es la única forma donde nace la lista que después decide si tu `public` sirve de algo, y por eso
+el banco de `por-dentro/modulos/` existe: tres archivos, un paquete partido en dos y un lector que se queda sin
+visibilidad unívoca (nivel 3).
+
+| Forma | Admite `package` | Admite `import` | Qué tipo declara | Paquete del tipo |
+|---|---|---|---|---|
+| ordinaria | sí, como primer elemento | sí | los que tú escribas | el que escribas (o el sin nombre) |
+| compacta | **no** (no hay hueco en la gramática) | sí | una clase implícita, `final`, sin `public`, de alcance vacío | **siempre** el paquete sin nombre |
+| modular | no | sí | ningún tipo: directivas de módulo | no aplica |
+
+**Nivel 1 — El paquete es un espacio de nombres; la carpeta es una cortesía del *host*.**
+
+El experimento central son dos carpetas de fuente que declaran el mismo paquete. `src/bodega/Envio.java` y
+`otros-src/bodega/Balanza.java` **no están en la misma carpeta**, y las dos escriben `package bodega;`:
+
+```
+$ javac --release 25 -d out src/bodega/package-info.java src/bodega/Envio.java src/bodega/Flete.java \
+      src/otra/Sello.java src/Rasgo.java otros-src/bodega/Balanza.java src/afuera/Cliente.java NombresEnRuntime.java
+$ find out -name '*.class' | LC_ALL=C sort
+./NombresEnRuntime.class
+./Rasgo.class
+./afuera/Cliente.class
+./bodega/Balanza.class
+./bodega/Envio$Sello.class
+./bodega/Envio.class
+./bodega/Flete.class
+./bodega/package-info.class
+./otra/Sello.class
+```
+
+Cuatro lecturas de estas nueve líneas, y las cuatro son medidas:
+
+1. `Balanza.class` está **al lado** de `Envio.class`. La ruta de su fuente (`otros-src/`) desapareció: buscar
+   `otros-src` en el árbol de clases da **cero** resultados. §7.2: la correspondencia carpeta↔paquete la hace el host,
+   no el lenguaje.
+2. `Rasgo.class` está en la **raíz**, sin carpeta: `src/Rasgo.java` no tiene línea `package`, así que es un miembro
+   del **paquete sin nombre** (§7.4.2).
+3. `Envio$Sello.class` es un archivo con `$`, no una carpeta `Envio/Sello`: el anidado **pertenece al paquete de su
+   externalizante** (§7.1 y la tabla de §6.7).
+4. `package-info.class` existe **porque el fuente lleva una anotación**; sin ella, javac no escribe nada (nivel 2).
+
+Y el hecho que hace que todo lo anterior valga la pena —`Balanza` tocando lo que no es `public`—, ejecutado:
+
+```
+$ java -Dstdout.encoding=UTF-8 -cp out bodega.Balanza
+FIRMA desde otra carpeta : bodega
+nombre binario de Balanza : bodega.Balanza
+vecino de paquete         : Flete-dentro-de-bodega
+paquete de Envio     : bodega
+nombre binario       : bodega.Envio
+```
+
+`FIRMA` es `static final String` **sin `public`** y lo lee una clase que vive en otra carpeta del disco: son de
+paquete, y «de paquete» se decide por la línea `package`, no por la ruta. `Flete` ni siquiera es `public` y `Balanza`
+la construye. El código de salida es 0 lanzando `bodega.Balanza`, aunque la clase no sea pública: **el lanzador no es
+otro paquete**, no le aplica la barrera de acceso.
+
+Lo que pasa cuando sí vienes de otro paquete es el inverso exacto (`errores/BalanzaDesdeAfuera.java`):
+
+```
+errores/BalanzaDesdeAfuera.java:8: error: Balanza is not public in bodega; cannot be accessed from outside package
+        bodega.Balanza.mira();
+              ^
+1 error
+```
+
+La frase «is not public in bodega» es §7.1 aplicado a T3: el tipo existe, el miembro es accesible *dentro*, y desde
+fuera **no puedes ni nombrarlo**. Y el nombre completo funciona —el error no es del prefijo—: lo que falta es
+`public`.
+
+Dentro del `.class`, el paquete se guarda como nombre interno con barras, medido sobre `bodega.Envio`:
+
+```
+public class bodega.Envio
+  minor version: 0
+  major version: 69
+  flags: (0x0021) ACC_PUBLIC, ACC_SUPER
+  this_class: #8                          // bodega/Envio
+  super_class: #2                         // java/lang/Object
+  interfaces: 0, fields: 4, methods: 3, attributes: 4
+```
+
+Tres notaciones del mismo tipo, y `NombresEnRuntime.java` las imprime para seis casos:
+
+```
+binario=NombresEnRuntime         paquete=[] canonico=NombresEnRuntime
+binario=bodega.Envio             paquete=[bodega] canonico=bodega.Envio
+binario=bodega.Envio$Sello       paquete=[bodega] canonico=bodega.Envio.Sello
+binario=[Lbodega.Envio;          paquete=[bodega] canonico=bodega.Envio[]
+binario=java.lang.String         paquete=[java.lang] canonico=java.lang.String
+binario=int                      paquete=[java.lang] canonico=int
+```
+
+Las cuatro rarezas de esas seis líneas: el paquete sin nombre se ve como `[]` (no como `null`); el arreglo pone el
+`[L` **delante** del prefijo de paquete, no al final; un anidado es `$` en binario y `.` en canónico; y `int.class`,
+que no es un tipo de referencia ni vive en ningún paquete, reporta `paquete=[java.lang]` igualmente.
+
+Ahora las cuatro reglas de **dónde** se escribe el paquete y el tipo, todas cortadas por `javac` o admitidas sin
+aviso:
+
+```
+$ javac --release 25 -d out errores/DosDeclaracionesDePaquete.java
+errores/DosDeclaracionesDePaquete.java:4: error: class, interface, enum, or record expected
+package afuera;
+$ javac --release 25 -d out errores/PackageDespuesDeImport.java
+errores/PackageDespuesDeImport.java:5: error: class, interface, annotation type, enum, record, method or field expected
+package bodega;
+```
+
+Los dos son `package` fuera de su puesto, y los dos mensajes piden listas de tokens **distintas**: el primero pide una
+declaración de tipo (§7.6: class/interface/enum/record), el segundo pide un **miembro** (`method or field`, `annotation
+type`). §7.4 pone la primera regla: el `package` va **antes** de los imports y no puede haber dos.
+
+La regla del nombre del archivo es la más mal citada del capítulo. §7.6, literal:
+
+> *«If and only if packages are stored in a file system, the host system **may choose to enforce** the restriction
+> that it is a compile-time error if a class or interface is not found in a file under a name composed of the class or
+> interface name plus an extension… This restriction implies that there must be at most one such class or interface
+> per compilation unit.»* — JLS §7.6
+
+Medida en las dos mitades:
+
+```
+$ javac --release 25 -d out errores/ArchivoMalNombrado.java      # public class Guia en ArchivoMalNombrado.java
+errores/ArchivoMalNombrado.java:6: error: class Guia is public, should be declared in a file named Guia.java
+public class Guia {}
+       ^
+1 error
+$ javac --release 25 -d out errores/DosPublicas.java
+errores/DosPublicas.java:6: error: class UnaPublica is public, should be declared in a file named UnaPublica.java
+public class UnaPublica {}
+       ^
+errores/DosPublicas.java:8: error: class OtraPublica is public, should be declared in a file named OtraPublica.java
+public class OtraPublica {}
+       ^
+2 errors
+```
+
+El detalle útil del segundo caso: no es «el segundo `public` sobra», son **dos errores**, uno por clase. El `at most
+one` de §7.6 se corta así, nombrando a las dos. Y nótese la condición de §7.6: la regla solo se aplica si el tipo es
+`public` **o** si otro archivo del paquete lo referencia —por eso `class Flete {}` en `Flete.java` con un nombre
+distinto no te va a dar este error—.
+
+Los modificadores de un tipo de nivel superior también tienen su lista, y dos palabras están prohibidas:
+
+```
+$ javac --release 25 -d out errores/TopLevelStatic.java
+errores/TopLevelStatic.java:6: error: modifier static not allowed here
+$ javac --release 25 -d out errores/TopLevelProtected.java
+errores/TopLevelProtected.java:6: error: modifier protected not allowed here
+```
+
+`static` en nivel superior no tiene significado (no hay externalizante), y `protected` presupone una relación de
+herencia que desde fuera del paquete ya cubre `public`: por eso un tipo de nivel superior elige entre **público** y
+**de paquete**, y nada más. Es el mismo bit que leíste en T3, ahora con la restricción de sintaxis.
+
+Dos permisos que la gente cree prohibidos, y ambos medidos como **inocuos**:
+
+```
+$ javac --release 25 -Xlint:all -d out por-dentro/SoloPuntoComa.java
+$ echo $?
+0
+$ find out -name '*.class' | LC_ALL=C sort
+./puntocoma/Otra.class
+./puntocoma/Una.class
+```
+
+El fuente tiene un `;` suelto entre `class Una {}` y `class Otra {…}`. §7.6 lo permite con una frase que merece leerse
+entera: *«Extra "`;`" tokens appearing at the level of class and interface declarations in a compilation unit have no
+effect on the meaning of the compilation unit. Stray semicolons are permitted in the Java programming language solely
+as a concession to C++ programmers who are used to placing "`;`" after a class declaration. **They should not be used
+in new Java code.**»* Prohibido no está; inútil sí. Y `java.util.*` dos veces tampoco es error:
+
+```
+$ javac --release 25 -Xlint:all -d out por-dentro/DosMismos.java     # import java.util.*; x2
+$ echo $?
+0
+$ java -Dstdout.encoding=UTF-8 -cp out DosMismos
+dos on-demand      : 0
+```
+
+§7.5.2: *«Two or more type-import-on-demand declarations in the same compilation unit may name the same package,
+class, or interface. All but one of these declarations are considered redundant; the effect is as if that type was
+imported only once.»* Ni error ni aviso con `-Xlint:all`.
+
+El caso espejo —dos miembros homónimos en el mismo paquete— sí es error, y es **la única** consecuencia jerárquica que
+§7.1 concede: *«…the prohibition against a package having a subpackage with the same simple name as a top level class
+or interface declared in that package»* más la regla de nombres únicos. Medido con dos carpetas distintas que
+declaran `package bodega;` y ambas `class Guia {}`:
+
+```
+$ javac --release 25 -d out errores/duplicado-uno/Guia.java errores/duplicado-dos/Guia.java
+errores/duplicado-dos/Guia.java:4: error: duplicate class: bodega.Guia
+class Guia {}
+^
+1 error
+```
+
+El señalado es el **segundo** archivo: el primero entró, el segundo chocó. Y la carpeta no salva a ninguno —el
+paquete es el mismo—, que es justo la prueba de que el paquete no es una carpeta.
+
+Por último en este nivel, la convención y la reserva de §6.1, con su caso límite:
+
+```
+$ javac --release 25 -d out errores/PackageJavaReservado.java      # package java.mio;
+$ echo $?
+0
+$ find out -name '*.class'
+./java/mio/PackageJavaReservado.class
+$ java -cp out java.mio.PackageJavaReservado
+Error: A JNI error has occurred, please check your installation and try again
+Exception in thread "main" java.lang.SecurityException: Prohibited package name: java.mio
+	at java.base/java.lang.ClassLoader.preDefineClass(ClassLoader.java:859)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:972)
+```
+
+`javac` no dice nada: **compila** y escribe el `.class` donde el paquete manda. Es la máquina virtual, al definir la
+clase, la que lo rechaza —y el trazo lo dice con nombre y línea: `ClassLoader.preDefineClass`, la guarda del prefijo
+`java.` reservado por §6.1—. Dos capas, dos momentos, y el más caro es el segundo: el fallo aparece en ejecución.
+
+**Nivel 2 — Las cinco importaciones: qué escribe cada una en el `.class` y hasta dónde llega.**
+
+`src/afuera/Cliente.java` declara las cinco formas en un solo archivo:
+
+```java
+package afuera;
+
+import bodega.Envio;                                    // (1) single-type-import
+import java.time.LocalDate;                             // (1) explicito: gana sobre el on-demand
+import java.time.*;                                     // (2) type-import-on-demand
+import java.util.*;                                     // (2) y aqui SI se puede escribir el punto
+import static bodega.Envio.LOTE;                        // (3) single-static-import: una constante
+import static bodega.Envio.vivas;                       // (3) un campo de clase
+import static bodega.Envio.Sello;                       // (3) ¡un TIPO anidado se importa con static!
+import static java.time.temporal.ChronoUnit.*;          // (4) static-import-on-demand
+import module java.sql;                                 // (5) single-module-import (JEP 511)
+
+public class Cliente {
+
+    public static void main(String[] args) {
+        System.out.println("single-type          : " + Envio.class.getName());
+        System.out.println("on-demand java.time  : " + LocalDate.of(2026, 11, 21).getDayOfWeek());
+        System.out.println("on-demand con punto  : " + Random.class.getName());
+        System.out.println("constante importada  : " + LOTE);
+        System.out.println("campo de clase       : " + vivas);
+        System.out.println("tipo anidado static  : " + Sello.pauta());
+        System.out.println("static-on-demand     : " + DAYS + " · " + MONTHS);
+        System.out.println("modulo importado     : " + Driver.class.getName());
+        System.out.println("otra exportacion     : " + DataSource.class.getName());
+    }
+}
+```
+
+```
+$ javac --release 25 -d out … src/afuera/Cliente.java
+$ java -Dstdout.encoding=UTF-8 -cp out afuera.Cliente
+single-type          : bodega.Envio
+on-demand java.time  : SATURDAY
+on-demand con punto  : java.util.Random
+constante importada  : 24
+campo de clase       : 3
+tipo anidado static  : Sello-RutaFlow
+static-on-demand     : Days · Months
+modulo importado     : java.sql.Driver
+otra exportacion     : javax.sql.DataSource
+```
+
+Nueve renglones, código 0. Lo interesante no es que corra, es **qué dejó cada import dentro del bytecode**. `javap -c
+-p` sobre el `main` de ese mismo `.class`:
+
+```
+         3: ldc           #1                  // class bodega/Envio
+        70: getstatic     #53                 // Field bodega/Envio.vivas:I
+        84: invokestatic  #60                 // Method bodega/Envio$Sello.pauta:()Ljava/lang/String;
+        62: ldc           #51                 // String constante importada  : 24
+        98: getstatic     #66                 // Field java/time/temporal/ChronoUnit.DAYS:Ljava/time/temporal/ChronoUnit;
+       121: ldc           #78                 // class java/sql/Driver
+       137: ldc           #81                 // class javax/sql/DataSource
+```
+
+- **(1) single-type-import** deja `ldc // class bodega/Envio`: el nombre llega al fuente, el enlace viaja en una
+  referencia simbólica.
+- **(2) on-demand** deja la misma forma (`// class java/util/Random` en el `ldc #48`): el `*` es una licencia para
+  escribir el nombre simple, **no** una importación masiva.
+- **(3) `import static` de un campo** deja `getstatic Field bodega/Envio.vivas:I`: se lee la casilla de la clase, como
+  si hubieras escrito el prefijo.
+- **(3) `import static` de una constante** no deja **nada**. `grep -c 'Field bodega/Envio.LOTE'` sobre el volcado da
+  **0**, y el 24 aparece dentro del `ldc` del texto ya horneado: `String constante importada  : 24`. Es T4 aplicado a
+  los nombres: el import se resolvió en compilación y el enlace desapareció.
+- **(3) `import static` de un tipo anidado** deja `Method bodega/Envio$Sello.pauta`, con su `$`: un **tipo** importado
+  por la puerta de los estáticos, porque §7.5.3 importa «miembros», y un anidado es miembro.
+- **(4) `static` on-demand** referencia `Field java/time/temporal/ChronoUnit.DAYS` —los enum constants no se hornean,
+  son casillas—.
+- **(5) `import module`** deja dos `ldc` de dos paquetes distintos (`java/sql/Driver`, `javax/sql/DataSource`) **sin
+  copiar ni un `.class`**: buscar `java/sql` en nuestro árbol de clases da 0 resultados.
+
+Un recuento cruzado, medido con `grep -c 'bodega/Envio'` sobre el volcado: **3**. Las tres referencias posibles al
+tipo (la clase, el campo, el anidado) están; la cuarta (la constante) no está porque no hace falta.
+
+El alcance. §7.5 y §6.3 lo enuncian dos veces, y la prueba son dos archivos **del mismo paquete**:
+
+```java
+// errores/vecinos/ConImport.java        // errores/vecinos/SinImport.java
+package vecinos;                          package vecinos;
+import java.util.Date;                    // <— sin import
+public class ConImport {                  public class SinImport {
+    Date cuando = new Date(0);                Date cuando = new Date(0);
+}                                         }
+```
+
+```
+$ javac --release 25 -d out errores/vecinos/ConImport.java errores/vecinos/SinImport.java
+errores/vecinos/SinImport.java:6: error: cannot find symbol
+    Date cuando = new Date(0);
+    ^
+  symbol:   class Date
+  location: class SinImport
+errores/vecinos/SinImport.java:6: error: cannot find symbol
+    Date cuando = new Date(0);
+                      ^
+  symbol:   class Date
+  location: class SinImport
+2 errors
+```
+
+Dos errores, los dos de `SinImport`, y ninguno de `ConImport` —compiló limpio dentro del mismo comando y del mismo
+paquete—. El `import` es **por unidad de compilación**: ser vecino de paquete no comparte la agenda. Y son dos porque
+`Date` aparece dos veces en la línea (`Date cuando` y `new Date(0)`). La variante medida en
+`errores/vecinos/SinImportEstatico.java` descarta la salida creativa: escribir `import static vecinos.ConImport.*;` en
+el archivo que falla da **los mismos dos errores** (ahora en su línea 9, con `location: class SinImportEstatico`) y
+`ConImport` vuelve a salir limpio, porque `Date` es un tipo de nivel superior de `java.util`, no un miembro del
+vecino: por la puerta de los estáticos no entra.
+
+Lo que el import **no** es, medido en tres intentos frecuentes:
+
+```
+$ javac --release 25 -d out errores/ImportDeSubpaquete.java      # import java.util;  … util.Random
+errores/ImportDeSubpaquete.java:6: error: cannot find symbol
+import java.util;
+           ^
+  symbol:   class util
+  location: package java
+$ javac --release 25 -d out errores/PaqueteSinNombreImportado.java
+errores/PaqueteSinNombreImportado.java:6: error: '.' expected
+import Rasgo;
+            ^
+$ javac --release 25 -cp out -d out errores/PaqueteSinNombreReferido.java
+errores/PaqueteSinNombreReferido.java:7: error: cannot find symbol
+    Rasgo r;
+    ^
+  symbol:   class Rasgo
+  location: class PaqueteSinNombreReferido
+```
+
+- `import java.util;` **no es un alias** del paquete: la gramática pide un *tipo*, y por eso el error dice
+  `symbol: class util` dentro de `location: package java`. §6.3 lo remata: *«The declaration of a subpackage is
+  never in scope.»* (y sí, al revés: `import java.util.*;` **sí** puede terminar en un subpaquete, porque ahí el
+  nombre que resuelve es el del paquete de la derecha —medido con `Random`—).
+- El paquete sin nombre **no se puede importar** (`'.' expected`: un `import` necesita un nombre cualificado) y
+  **ni siquiera se puede nombrar** desde un archivo con `package`: `Rasgo` es inalcanzable desde `prueba`. Eso es lo
+  que pasaba en M1-M2: tus programas sin `package` se veían entre sí, y nada con `package` los ve.
+- `import static` de un campo **de instancia** no tiene casilla que importar:
+
+```
+errores/StaticDeCampoDeInstancia.java:6: error: cannot find symbol
+import static bodega.Envio.gramos;
+^
+  symbol:   static gramos
+  location: class Envio
+```
+
+  Compara con el de un miembro que no existe (`symbol: static noExiste`, mismo `location: class Envio`): la forma del
+  mensaje es idéntica, y lo único que cambia es que aquí el campo **sí está en la clase** pero no es `static`. Son los
+  dos modos de «está ahí pero no por esta puerta».
+
+Y la pieza del paquete que casi nadie escribe: `package-info.java`. §7.4.1, literal:
+
+> *«At most one annotated `package` declaration is permitted for a given package… The following scheme is strongly
+> recommended for file-system-based implementations: The sole annotated `package` declaration, if it exists, is placed
+> in a source file called `package-info.java`… This file does not contain the source for a class called
+> `package-info`; indeed it would be illegal for it to do so, as `package-info` is not a legal identifier.»* — JLS
+> §7.4.1
+
+`src/bodega/package-info.java` son dos líneas:
+
+```java
+@Deprecated
+package bodega;
+```
+
+Su `.class`, medido con `javap -v -p`:
+
+```
+interface bodega.package-info
+  minor version: 0
+  major version: 69
+  flags: (0x1600) ACC_INTERFACE, ACC_ABSTRACT, ACC_SYNTHETIC
+  this_class: #1                          // bodega/package-info
+SourceFile: "package-info.java"
+RuntimeVisibleAnnotations:
+  0: #8()
+    java.lang.Deprecated
+```
+
+Es una **interface sintética** (`0x1600`), de 177 bytes, con un cuerpo vacío `{ }` y su único contenido en
+`RuntimeVisibleAnnotations`. Nadie escribió ese tipo: es el contenedor que javac fabrica para colgar las anotaciones.
+
+El `package-info.java` **sin anotación** —`errores/paquete-vacio/package-info.java`, que solo lleva
+`package silencioso;`— es un caso aparte y medido: compila con código 0, javac no dice nada, y **no escribe ningún
+`.class`** (`find` sobre la salida devuelve vacío). El archivo de paquete existe para transportar metadatos; sin
+metadatos, no hay nada que transportar.
+
+Lo que **no** hace la anotación, medido en dos direcciones:
+
+```
+$ javac --release 25 -Xlint:all -d out src/bodega/package-info.java src/bodega/Envio.java src/bodega/Flete.java
+src/bodega/package-info.java:5: warning: [deprecation] @Deprecated annotation has no effect on this package declaration
+package bodega;
+        ^
+1 warning
+$ javac --release 25 -Xlint:all -cp out -d out2 src/afuera/Cliente.java    # usa Envio desde afuera
+$ echo $?
+0
+```
+
+Con `-Xlint:all`, javac avisa **en el propio `package-info.java`** de que anotar el paquete no alcanza para sus tipos,
+y al usar `Envio` desde otro paquete no produce **ni un solo** aviso de deprecación. El `@Deprecated` de paquete es
+metadato legible en tiempo de ejecución (nivel 3 lo comprueba), no una orden para el compilador de los consumidores.
+
+**Nivel 3 — Precedencia, ambigüedad y las cinco capas del «no lo encuentro».**
+
+El nombre simple se resuelve con un orden que §7.5.1/§7.5.2/§7.5.5 enuncian en tres frases distintas, y las tres están
+medidas aquí. Empecemos por la más antigua y la que todo el mundo confunde: dos `import` **escritos a mano** del mismo
+nombre simple.
+
+> *«If two single-type-import declarations in the same compilation unit attempt to import classes or interfaces with
+> the same simple name, then a compile-time error occurs, unless the two classes or interface are the same, in which
+> case the duplicate declaration is ignored.»* — JLS §7.5.1
+
+```
+$ javac --release 25 -d out errores/DosFechasExplicitas.java
+errores/DosFechasExplicitas.java:7: error: a type with the same simple name is already defined by the single-type-import of Date
+import java.sql.Date;
+^
+1 error
+```
+
+El error está **en la línea del import** (7), no en el uso. Y el «unless… the same» explica por qué `import
+java.util.*;` dos veces no molesta pero `import java.util.Date;` repetido sí: dos single-type del **mismo** tipo se
+ignoran; dos de tipos homónimos distintos se cortan.
+
+La precedencia sobre el `on-demand`, medida con `por-dentro/FechaResuelta.java` —que mezcla un `on-demand`, dos
+`import module` y un `single-type`—:
+
+```java
+import java.util.*;         // Date = java.util.Date
+import module java.base;    // java.util.List, java.util.ArrayList…
+import module java.sql;     // java.sql.Date
+import java.sql.Date;       // explicito
+```
+
+```
+$ java -Dstdout.encoding=UTF-8 -cp out FechaResuelta
+Date resuelto      : java.sql.Date
+List por el modulo : java.util.ArrayList
+```
+
+`Date` se resuelve a `java.sql.Date` aunque `java.util.*` esté más arriba: §7.5.2 dice que la declaración on-demand
+*«might be shadowed by a single-type-import declaration of a class or interface whose simple name is `Vector`»* (en
+nuestro caso, `Date`). El explicito gana **sin importar el orden**. Y `List` llega por la puerta de módulo y
+`ArrayList` también, con un solo `import module java.base`.
+
+El mismo archivo, con la competencia al revés —estático explícito contra tipo explícito—, es
+`errores/ChoqueDeNombreExplicito.java`:
+
+```
+errores/ChoqueDeNombreExplicito.java:8: error: a type with the same simple name is already defined by the static single-type-import of Sello
+import otra.Sello;
+^
+```
+
+`import static bodega.Envio.Sello;` (un **tipo anidado**, recordemos) escribió el nombre `Sello` primero, y el
+`import otra.Sello;` de la línea 8 es el que muere. El mensaje lo dice con la categoría gramatical exacta: «static
+single-type-import». Un estático que trae un tipo ocupa el mismo hueco de nombre que un tipo.
+
+Ahora el `on-demand` doble, que es **el mismo choque** pero en otro momento:
+
+```
+$ javac --release 25 -d out errores/FechaAmbigua.java        # import java.util.*; import java.sql.*;  … Date cuando;
+errores/FechaAmbigua.java:10: error: reference to Date is ambiguous
+    Date cuando;
+    ^
+  both class java.sql.Date in java.sql and class java.util.Date in java.util match
+1 error
+```
+
+Compara renglón con renglón con `DosFechasExplicitas`: allí el error estaba en la **línea 7 del import**; aquí está en
+la **línea 10 del uso**, y javac añade la lista de candidatos (`both … match`). La regla de §7.5.2 es «ninguno gana,
+así que no pasa nada hasta que alguien pide el nombre». Es la diferencia práctica entre los dos estilos: el explícito
+te avisa cuando escribes el import, el `on-demand` te avisa cuando escribes el código, potencialmente mucho después y
+en otro archivo mental.
+
+Con dos `import module` pasa lo mismo, y es lo que enseña JEP 511 de verdad:
+
+```
+$ javac --release 25 -d out errores/AmbiguoDeModulos.java     # import module java.base; + java.desktop;  … List.of("x")
+errores/AmbiguoDeModulos.java:9: error: reference to List is ambiguous
+        System.out.println(List.of("x"));
+                           ^
+  both class java.awt.List in java.awt and interface java.util.List in java.util match
+1 error
+```
+
+`java.awt.List` **como tal no se usa hace años**, y aun así te gana la partida: un `import module java.desktop` trae
+`java.awt.*` on-demand, y el nombre `List` pasa de ambiguo. El desempate es la regla de precedencia del principio,
+aplicada a la inversa —`por-dentro/AmbiguoResuelto.java` añade `import java.util.List;` por encima de los dos
+módulos—:
+
+```
+$ java -Dstdout.encoding=UTF-8 -cp out AmbiguoResuelto
+List desempado     : java.util.ImmutableCollections$List12
+```
+
+Y fíjate en el nombre que imprime: `ImmutableCollections$List12`, con `$`, porque `List.of(...)` devuelve la clase
+interna de `java.util.ImmutableCollections`. El desempate no solo elige el tipo de referencia: decide qué
+implementación se ejecuta, y eso solo lo ves ejecutando.
+
+Las dos condiciones del `import module` (JEP 511) medidas en las dos direcciones, y la cota del lenguaje:
+
+```
+$ javac --release 24 -cp out -d out24 src/afuera/Cliente.java
+src/afuera/Cliente.java:14: error: module imports are not supported in -source 24
+import module java.sql;
+       ^
+  (use -source 25 or higher to enable module imports)
+1 error
+$ javac --release 25 -d out errores/ModuloNoLeido.java
+errores/ModuloNoLeido.java:6: error: unnamed module does not read: java.se
+import module java.se;
+^
+1 error
+$ javac --release 25 --add-modules java.se -d out2 errores/ModuloNoLeido.java
+$ echo $?
+0
+```
+
+El segundo par es el raro y tiene su explicación en §7.5.5, que vale la pena leerla entera porque dice dos cosas de
+una:
+
+> *«It is a compile-time error if the module _ModuleName_ is not read by the current module… A single-module-import
+> declaration **can be used in any source file**. It is not required for the source file to be part of a module… It is
+> sometimes useful to import a module that does not export any packages. This is because the module may transitively
+> require other modules that do export packages. For example, the `java.se` module does not export any packages, but
+> it requires a number of modules transitively.»* — JLS §7.5.5
+
+O sea: `import module java.se;` es legal en un fuente suelto, `java.se` **exporta cero paquetes** (es un agregado), y
+lo que te falta no es el nombre del módulo sino la **relación de lectura**: §7.7.5 dice que *«An unnamed module reads
+every observable module»*, y `java.se` —que no exporta nada y no lo requiere ningún otro módulo— no entra en el grafo
+por sí solo. `--add-modules java.se` es lo que lo raíz: pasa a ser leído, y el mismo fuente compila con código 0 sin
+un solo aviso. Un nombre bien escrito y una condición de grafo fallida: por eso el mensaje no menciona ningún tipo.
+
+Y el caso en que el nombre está bien y el módulo no existe, para que no se confunda con un paquete:
+
+```
+$ javac --release 25 -d out errores/ModuloInexistente.java
+errores/ModuloInexistente.java:5: error: imported module not found: no.existe
+import module no.existe;
+^
+```
+
+Frente a `import no.existe.*;`, que da `package no.existe does not exist` (también cortado **al escribirlo**, porque
+un on-demand de paquete inexistente no puede esperar a un uso: no hay nombres que traer). Dos fallos de una misma
+línea mal escrita, con dos sustantivos distintos —`module` contra `package`— que te dicen qué palabra buscar en la
+documentación.
+
+La cota de JEP 512, medida igual en las dos direcciones sobre la forma compacta:
+
+```
+$ javac --release 24 -d out24 por-dentro/Compacta.java
+por-dentro/Compacta.java:6: error: implicitly declared classes are not supported in -source 24
+void main() {
+^
+  (use -source 25 or higher to enable implicitly declared classes)
+1 error
+```
+
+Así que la frontera de **las dos novedades del 25** que tocan este tema está exactamente ahí: con `--release 24` son
+ilegales el `import module` y la clase implícita; con `25` son legales, y con `25` sigue sin ser obligatorio declarar
+módulo para usarlas.
+
+La última capa de nombre del lenguaje, y la que no aparece en ningún `import`: la visibilidad unívoca de §7.4.3. El
+banco de `por-dentro/modulos/` tiene `uno` y `dos`, los dos con `exports bodega;` y un `bodega/A.java` o
+`bodega/B.java` cada uno, más `ambos` que los `requires` a los dos:
+
+```
+$ javac --release 25 --module-source-path por-dentro/modulos -d out $(find por-dentro/modulos -name '*.java')
+por-dentro/modulos/ambos/module-info.java:4: error: module ambos reads package bodega from both uno and dos
+module ambos {
+^
+1 error
+```
+
+Tres lecturas: el §7.4.3 que lo produce (*«A package is **uniquely visible** to a module M if and only if… M reads
+exactly one other module that exports the package to M»*); el señalado es el `module-info.java` **del lector**, no
+ninguno de los dos exportadores (el paquete partido está bien; lo que está mal es leerlo partido); y si quitas el
+lector, los dos exportadores compilan solos con código 0 y cada mitad se guarda en su carpeta —`./uno/bodega/A.class`
+y `./dos/bodega/B.class`, ninguna suelta en la raíz—, que es lo que pasa de verdad cuando dos artefactos distintos
+publican `com.misma.base`.
+
+Quedan las tres capas que ya no son del compilador, y las tres están medidas. El `-sourcepath`, que es **dónde javac
+busca fuentes que no le diste**:
+
+```
+$ javac --release 25 -sourcepath arbol/bien -d out arbol/bien/usa/Usa.java
+$ find out -name '*.class' | LC_ALL=C sort
+./bodega/A.class
+./usa/Usa.class
+$ java -cp out usa.Usa
+fuente encontrada    : A-de-bodega
+```
+
+Con `-implicit:none`, la compilación es igual de exitosa pero el árbol cambia:
+
+```
+$ javac --release 25 -sourcepath arbol/bien -implicit:none -d out2 arbol/bien/usa/Usa.java
+$ echo $?
+0
+$ find out2 -name '*.class'
+./usa/Usa.class
+$ java -cp out2 usa.Usa
+Exception in thread "main" java.lang.NoClassDefFoundError: bodega/A
+	at usa.Usa.main(Usa.java:9)
+Caused by: java.lang.ClassNotFoundException: bodega.A
+```
+
+Y con el mismo fuente y el `-sourcepath` apuntando a la carpeta equivocada:
+
+```
+$ javac --release 25 -sourcepath arbol/mal -d out3 arbol/mal/Usa.java
+arbol/mal/Usa.java:5: error: package bodega does not exist
+import bodega.A;
+             ^
+```
+
+Los tres son el **mismo fuente** y el mismo paquete; lo que cambió fue la configuración del host. Y el del medio es la
+trampa cara: compilación en verde, ejecución en rojo, con `NoClassDefFoundError` cuyo *cause* usa el nombre **con
+punto** (`ClassNotFoundException: bodega.A`) mientras el primero usa barras. Y el `Error: Could not find or load main
+class Envio` de la ruta equivocada (`java -cp out/bodega Envio`) ya lo leímos en nivel 1: `wrong name: bodega/Envio`,
+el prefijo que declara el archivo frente al que tú pediste. Reunidas, las cinco capas del «no lo encuentro»:
+
+| Mensaje | Capa que lo produce | Dónde se arregla |
+|---|---|---|
+| `class, interface, … expected` en la línea del `package` | gramática §7.3/§7.4 | mueve la línea: el paquete va primero y hay uno solo |
+| `class Guia is public, should be declared in a file named Guia.java` | **opción del host** §7.6 | renombras el archivo; no es una regla de la JVM |
+| `package bodega does not exist` / `cannot find symbol` | enlace del compilador (§7.5, §6.3) | `-cp` / `-sourcepath` / escribe el import: el nombre existe o no según **este** archivo |
+| `module ambos reads package bodega from both uno and dos` | visibilidad §7.4.3 | en el grafo de módulos, no en el fuente |
+| `wrong name: bodega/Envio` / `SecurityException: Prohibited package name` | cargador (`ClassLoader.preDefineClass`) | en el `.class` y en la ruta: ningún `import` lo toca |
+
+Y la comprobación final, hecha desde un programa en vez de desde el volcado
+(`por-dentro/ReflejoDelPaquete.java`, 13 líneas de salida):
+
+```
+nombre anotado     : bodega
+toString           : package bodega
+esDeprecated       : true
+anotaciones        : [@java.lang.Deprecated(forRemoval=false, since="")]
+nombre sin archivo : otra · esDeprecated=false · lista=[]
+getPackage igual   : true
+nunca cargado      : null
+modulo de Driver   : java.sql
+modulo de lo mio   : null
+mi modulo lo lee   : true
+exporta java.sql   : true
+exporta javax.sql  : true
+exporta un invento : false
+```
+
+Cuatro cosas que cierran el tema: `Package.toString()` es literalmente la palabra `package` más el nombre (por eso en
+un log se ve `package bodega` y no un objeto raro); las anotaciones del `package-info.java` **sí** se leen en
+ejecución, justo lo que el compilador de los consumidores ignora; `Package.getPackage("nunca.cargado")` devuelve
+`null` —no un `Package` vacío—, así que un paquete no cargado no es un paquete con cero anotaciones, es la ausencia
+de objeto; y `modulo de lo mio : null` con `mi modulo lo lee : true` es el módulo **anónimo** de §7.7.5, que no tiene
+nombre pero lee todos los observables —la razón de que un fuente sin `module-info.java` pueda escribir `import module
+java.sql;` (§7.5.5: *«can be used in any source file»*)—.
+
+```
+$ javac --release 25 -cp out -d out por-dentro/ReflejoDelPaquete.java
+Note: por-dentro/ReflejoDelPaquete.java uses or overrides a deprecated API.
+Note: Recompile with -Xlint:deprecation for details.
+```
+
+Ese aviso es `Package.getPackage(String)`, deprecado, y lo dejamos a propósito: es la **única** forma de conseguir un
+`Package` por su nombre desde fuera de una clase, y la usamos para demostrar que `getPackage("otra")` devuelve la
+misma instancia que `Sello.class.getPackage()` (`getPackage igual : true`).
+
+#### 7. Código ejecutable
+
+**20** fuentes del laboratorio compilan limpias y se ejecutan; **28** las rechaza `javac` y **4** están escritas para
+compilar en exit 0 y enseñar otra cosa: `PackageJavaReservado` la rechaza la JVM **al cargarla**
+(`SecurityException: Prohibited package name: java.mio`), `errores/paquete-vacio/package-info.java` no escribe **ni un
+`.class`**, y `errores/duplicado-uno/Guia.java` más `errores/vecinos/ConImport.java` son el andamio que existe para que
+su gemela del par falle —`duplicate class: bodega.Guia` y los dos `cannot find symbol` de `Date` respectivamente—. Pegadas tal cual están en
+[`laboratorios/modulo-5/tema-5/`](laboratorios/modulo-5/tema-5) —solo se quitaron de arriba las líneas de
+comentario—; `src/afuera/Cliente.java` está entero en el nivel 2 y `por-dentro/Compacta.java` en el nivel 0, así que
+aquí van las piezas que faltan.
+
+La pareja que demuestra que el paquete no es la carpeta —dos archivos en **dos árboles de fuente distintos**—:
+
+```java
+// otros-src/bodega/Balanza.java                     (el MISMO paquete que src/bodega/Envio.java)
+package bodega;
+
+class Balanza {                                      // sin public: solo la ven sus vecinos de paquete
+
+    public static void mira() {
+        System.out.println("FIRMA desde otra carpeta : " + Envio.FIRMA);       // campo de paquete, otra carpeta
+        System.out.println("nombre binario de Balanza : " + Balanza.class.getName());
+        System.out.println("vecino de paquete         : " + new Flete().rota()); // Flete tampoco es public
+    }
+
+    public static void main(String[] args) {
+        mira();
+        Envio.dicePaquete();
+    }
+}
+```
+
+El programa que lee el paquete desde dentro, `NombresEnRuntime.java` (raíz del laboratorio, **sin** línea `package`,
+luego es del paquete sin nombre):
+
+```java
+import bodega.Envio;
+
+public class NombresEnRuntime {
+
+    public static void main(String[] args) {
+        Class<?>[] cs = { NombresEnRuntime.class, Envio.class, Envio.Sello.class,
+                          Envio[].class, String.class, int.class };
+        for (Class<?> c : cs) {
+            System.out.printf("binario=%-24s paquete=[%s] canonico=%s%n",
+                    c.getName(), c.getPackageName(), c.getCanonicalName());
+        }
+    }
+}
+```
+
+La tabla de precedencias hecha archivo, `por-dentro/FechaResuelta.java`:
+
+```java
+import java.util.*;         // Date podria ser java.util.Date
+import module java.base;
+import module java.sql;     // Date podria ser java.sql.Date
+import java.sql.Date;       // explicito: gana a los dos de arriba
+
+public class FechaResuelta {
+
+    public static void main(String[] args) {
+        System.out.println("Date resuelto      : " + Date.class.getName());
+        System.out.println("List por el modulo : " + ArrayList.class.getName());
+    }
+}
+```
+
+El banco del paquete partido, tres `module-info.java` y dos tipos homónimos de paquete:
+
+```java
+// por-dentro/modulos/uno/module-info.java   // dos/module-info.java        // ambos/module-info.java
+module uno {                                  module dos {                   module ambos {
+    exports bodega;                               exports bodega;                 requires uno;
+}                                             }                                requires dos;
+                                                                            }
+```
+
+```java
+// por-dentro/modulos/uno/bodega/A.java  →  package bodega; public class A {}
+// por-dentro/modulos/dos/bodega/B.java  →  package bodega; public class B {}
+```
+
+El banco del `-sourcepath`, donde el fuente ejecutado y el fuente hallado están en carpetas distintas:
+
+```java
+// arbol/bien/usa/Usa.java                        // arbol/bien/bodega/A.java
+package usa;                                      package bodega;
+
+import bodega.A;                                  public class A {
+                                                      public static String dime() { return "A-de-bodega"; }
+public class Usa {                                }
+    public static void main(String[] args) {
+        System.out.println("fuente encontrada    : " + A.dime());
+    }
+}
+```
+
+`arbol/mal/Usa.java` es **el mismo fuente** copiado en otra ruta, sin el `bodega/` debajo del camino que se le pasa a
+`javac`: así se ve que el mensaje `package bodega does not exist` habla de la configuración, no del código.
+
+Cómo se construye y se ejecuta todo (estas son las líneas del arnés, con el árbol de clases en `/tmp/t5`):
+
+```bash
+cd docs/reestructuracion/cursos/java/laboratorios/modulo-5/tema-5
+
+javac --release 25 -d /tmp/t5 src/bodega/package-info.java src/bodega/Envio.java src/bodega/Flete.java \
+      src/otra/Sello.java src/Rasgo.java otros-src/bodega/Balanza.java src/afuera/Cliente.java NombresEnRuntime.java
+
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5 bodega.Balanza      # 5 lineas, codigo 0
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5 afuera.Cliente      # 9 lineas, codigo 0
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5 NombresEnRuntime    # 6 lineas, codigo 0
+java -Dstdout.encoding=UTF-8 por-dentro/Compacta.java        # 3 lineas, codigo 0, sin compilar nada
+```
+
+#### 8. Mini-laboratorio
+
+Todo desde cero en una carpeta vacía `laboratorios/modulo-5/tema-5-ejercicio/`. El ejercicio no es escribir
+`package` ni `import`: es **predecir antes de ejecutar** en qué capa va a fallar un nombre, y que la salida te lleve
+la contraria. Si algún paso tuyo imprime lo que yo imprimo a la primera, has copiado en vez de deducir: vuelve al
+paso.
+
+1. **Un paquete, dos carpetas.** Crea `a/bodega/Pesar.java` con `package bodega;`, una `class PESO` de paquete (sin
+   `public`) con un método `String etiqueta()` que devuelva una cadena a tu gusto, y `c/bodega/Registrar.java` con
+   `package bodega;` y un `main` que construya `Pesar` y le imprima `Pesar.class.getName()` y
+   `Pesar.class.getPackageName()`. Compila los **dos** juntos: `javac --release 25 -d out a/bodega/Pesar.java
+   c/bodega/Registrar.java`. **Predice antes de ejecutar**: ¿cuántas carpetas `bodega` va a haber dentro de `out`, y
+   dónde caerán las dos fuentes? Ejecuta `find out -name '*.class' | LC_ALL=C sort`. Medido en el tema: **una**
+   carpeta con **cinco** rutas hermanas dentro de `bodega/` —`Balanza.class` junto a `Envio.class`, `Envio$Sello.class`,
+   `Flete.class` y `package-info.class`—, viniendo de dos árboles de fuente distintos, y las rutas `a/` y `c/` **sin
+   rastro** en el árbol de clases.
+2. **El vecino que no te ve.** Deja `Registrar.java` como está y crea `afuera/Factura.java` (`package afuera;`) que
+   declare `bodega.Pesar p;` y llame `p.etiqueta()`. Compila con `-cp out`. **Predice** el mensaje exacto. Medido:
+   `Pesar is not public in bodega; cannot be accessed from outside package` —fíjate en que el error **usa el prefijo
+   completo**, así que no es un problema de import—. Añade `public` a `Pesar`, recompila el paquete y vuelve a
+   compilar el de afuera: ahora el error (si lo hay) será de otro tipo. Y remata con `import static` para llamar
+   `etiqueta()` sin prefijo: te dará `symbol: static etiqueta`, porque un método **de instancia** no se importa así.
+3. **Las cinco puertas en un `.class`.** En `afuera/Factura.java` escribe los cinco tipos de import contra tus propias
+   clases de `bodega`: un tipo, un `on-demand`, un `import static` de una constante (`static final int LOTE = 24;`),
+   un `import static` de un campo **no** constante (`static int vivas = 3;`) y un `import module java.sql;`. Compila y
+   ejecuta. Después `javap -c -p -cp out afuera.Factura | grep -c 'bodega/Pesar'` y
+   `… | grep 'Field bodega/Pesar'`. **Predice cuántas referencias simbólicas va a dejar cada import**. Medido en el
+   ejemplo del tema: la constante **no deja ninguna** (el 24 viaja dentro del `ldc` del texto), el campo vivo deja
+   `getstatic Field …:I`, el tipo deja `ldc // class …` y el módulo deja `ldc // class java/sql/Driver` sin copiar ni
+   un `.class`.
+4. **Fecha, dos puertas distintas.** Crea `Choque.java` con `import java.util.*;` e `import java.sql.*;` y un campo
+   `Date cuando;`. Compila. **Predice en qué línea** sale el error. Medido: en la del **uso** (línea 10 en el
+   ejemplo), con la lista `both class java.sql.Date … and class java.util.Date … match`. Ahora cámbialo por
+   `import java.util.Date;` e `import java.sql.Date;` y vuelve a compilar: el error se **mueve a la línea del segundo
+   import** y dice `a type with the same simple name is already defined by the single-type-import of Date`. Ese salto
+   de línea es la lección: los explícitos se cortan al escribirlos, los `on-demand` al usarlos.
+5. **La frontera de las dos novedades.** Crea `sueltos.java` con solo `void main() { System.out.println(new
+   java.util.ArrayList<String>()); }` (sin clase, sin `package`) y ejecútalo con `java sueltos.java`. Después
+   `javac --release 24 -d o24 sueltos.java` y `javac --release 25 -d o25 sueltos.java`, y compara. Luego prueba las
+   tres degradaciones y **predice cuál va a fallar primero**: añadir `package bodega;` arriba, borrar el `void main()`
+   dejando un `int x = 1;`, y dejar solo un `System.out.println(...)` sin método. Medido: los tres fallan, con tres
+   mensajes distintos, y el del lanzador (`error: no class declared in source file`) aparece **antes** de `javac`.
+6. **El paquete que la JVM no deja cargar.** Crea `java/mio/Prohibido.java` con `package java.mio;`, una clase con
+   `main`, y compila con `--release 25`. **Predice** si `javac` va a quejarse. Medido: código 0, cero avisos, y el
+   `.class` cae en `java/mio/`. Ejecuta `java -cp out java.mio.Prohibido`. Medido: `SecurityException: Prohibited
+   package name: java.mio` con su trazo en `ClassLoader.preDefineClass(ClassLoader.java:859)`. Escribe en una línea
+   por qué el fallo no pudo ocurrir antes.
+7. **El `-sourcepath` que te deja compilar y correr mal.** Construye `arbol2/usa/Llama.java` (`package usa;`, importa
+   `bodega.Dato` y lo imprime) y `arbol2/bodega/Dato.java`. Compila **solo** el llamante con
+   `javac --release 25 -sourcepath arbol2 -d out arbol2/usa/Llama.java`, mira el árbol, y repite con
+   `-implicit:none` en otro directorio de salida. **Predice** la salida de `java -cp <ese directorio> usa.Llama` en
+   el segundo caso. Medido en el tema: el primero escribe `bodega/A.class` sin que se lo pidieras y corre; el segundo
+   sale con código 0, no escribe esa clase, y revienta en tiempo de ejecución con `NoClassDefFoundError: bodega/A` y
+   `Caused by: ClassNotFoundException: bodega.A` (barras arriba, punto abajo).
+8. **El cartel del barrio.** Crea `bodega/package-info.java` con **solo** `package bodega;` y compílalo. Medido en el
+   laboratorio: código 0 y **cero** `.class` escritos. Añádele `@Deprecated` encima y repite: ahora sí hay
+   `package-info.class`, y `javap -v -p` lo muestra como `interface` con `flags: (0x1600)` y sus anotaciones en
+   `RuntimeVisibleAnnotations`. Ejecuta `-Xlint:all` sobre el paquete completo y lee el aviso: anotar el paquete **no**
+   deprecó tus tipos.
+
+#### 9. Verificación
+
+```bash
+cd docs/reestructuracion/cursos/java/laboratorios/modulo-5/tema-5
+
+# 1) el arbol de clases: dos carpetas de fuente, UN paquete
+javac --release 25 -d /tmp/t5 src/bodega/package-info.java src/bodega/Envio.java src/bodega/Flete.java \
+      src/otra/Sello.java src/Rasgo.java otros-src/bodega/Balanza.java src/afuera/Cliente.java NombresEnRuntime.java
+find /tmp/t5 -name '*.class' | LC_ALL=C sort                     # 9 lineas · Balanza junto a Envio · Rasgo en la raiz
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5 bodega.Balanza          # FIRMA leida desde otra carpeta · codigo 0
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5/bodega Envio            # wrong name: bodega/Envio · codigo 1
+
+# 2) los cinco imports y lo que cada uno deja dentro del .class
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5 afuera.Cliente          # 9 lineas, codigo 0
+javap -c -p -cp /tmp/t5 afuera.Cliente | grep -c 'bodega/Envio'  # 3
+javap -c -p -cp /tmp/t5 afuera.Cliente | grep 'LOTE'             # NADA: el 24 ya esta horneado en el ldc del texto
+javap -c -p -cp /tmp/t5 afuera.Cliente | grep -E 'ChronoUnit.DAYS|java/sql/Driver|javax/sql/DataSource'
+
+# 3) que guarda el .class del paquete
+javap -v -p -cp /tmp/t5 bodega.Envio | grep -E 'major version|flags:|ConstantValue|Sello=class'
+javap -v -p -cp /tmp/t5 bodega.package-info                     # interface · 0x1600 · RuntimeVisibleAnnotations
+javac --release 25 -Xlint:all -d /tmp/t5l src/bodega/package-info.java src/bodega/Envio.java src/bodega/Flete.java
+javac --release 25 -Xlint:all -cp /tmp/t5 -d /tmp/t5l2 src/afuera/Cliente.java   # 0 avisos de deprecacion
+javac --release 25 -d /tmp/t5pv errores/paquete-vacio/package-info.java          # codigo 0 y CERO .class
+
+# 4) los nombres que ve la maquina virtual
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5 NombresEnRuntime        # 6 lineas: [] · $ · [L · java.lang
+javac --release 25 -cp /tmp/t5 -d /tmp/t5 por-dentro/ReflejoDelPaquete.java      # aviso de API deprecada
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5 reflejo.ReflejoDelPaquete               # 13 lineas, codigo 0
+
+# 5) quien gana cada nombre
+javac --release 25 -d /tmp/t5p por-dentro/FechaResuelta.java por-dentro/AmbiguoResuelto.java
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5p FechaResuelta          # Date resuelto : java.sql.Date
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5p AmbiguoResuelto        # List desempado     : java.util.ImmutableCollections$List12
+javac --release 25 -d /tmp/err errores/FechaAmbigua.java         # reference to Date is ambiguous · en el USO
+javac --release 25 -d /tmp/err errores/DosFechasExplicitas.java  # a type with the same simple name… · en el IMPORT
+javac --release 25 -d /tmp/err errores/ChoqueDeNombreExplicito.java
+javac --release 25 -Xlint:all -d /tmp/t5dm por-dentro/DosMismos.java             # codigo 0, ni un aviso
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5dm DosMismos
+
+# 6) la cota de JEP 511 y JEP 512, medida en las dos direcciones
+javac --release 24 -cp /tmp/t5 -d /tmp/err24 src/afuera/Cliente.java    # module imports are not supported in -source 24
+javac --release 24 -d /tmp/err24 por-dentro/Compacta.java               # implicitly declared classes are not supported
+javac --release 25 -d /tmp/err errores/ModuloNoLeido.java               # unnamed module does not read: java.se
+javac --release 25 --add-modules java.se -d /tmp/t5a errores/ModuloNoLeido.java   # mismo fuente: codigo 0
+javac --release 25 -d /tmp/err errores/ModuloInexistente.java           # imported module not found: no.existe
+
+# 7) la unidad compacta, por dentro
+java -Dstdout.encoding=UTF-8 por-dentro/Compacta.java                    # 3 lineas, paquete []
+javac --release 25 -d /tmp/t5c por-dentro/Compacta.java
+javap -p -cp /tmp/t5c Compacta                                          # final class Compacta · void main();
+javac --release 25 -d /tmp/err errores/CompactaConPaquete.java          # should not have package declaration
+javac --release 25 -d /tmp/err errores/CompactaSinMetodo.java           # does not have main method
+javac --release 25 -d /tmp/err errores/SoloEnunciados.java              # class, interface, … method or field expected
+java errores/SoloEnunciados.java                                        # error: no class declared in source file
+
+# 8) un paquete partido entre dos modulos
+javac --release 25 --module-source-path por-dentro/modulos -d /tmp/t5m \
+      $(find por-dentro/modulos -name '*.java' | LC_ALL=C sort)         # module ambos reads package bodega from both uno and dos
+javac --release 25 --module-source-path por-dentro/modulos -d /tmp/t5m2 \
+      $(find por-dentro/modulos -name '*.java' -not -path '*ambos*' | LC_ALL=C sort)   # codigo 0
+find /tmp/t5m2 -name '*.class' | LC_ALL=C sort                          # ./uno/bodega/A.class · ./dos/bodega/B.class
+
+# 9) donde mira javac las fuentes que no le diste
+javac --release 25 -sourcepath arbol/bien -d /tmp/t5s arbol/bien/usa/Usa.java          # codigo 0
+find /tmp/t5s -name '*.class' | LC_ALL=C sort                                          # A.class aparece solo
+javac --release 25 -sourcepath arbol/bien -implicit:none -d /tmp/t5sn arbol/bien/usa/Usa.java
+java -Dstdout.encoding=UTF-8 -cp /tmp/t5sn usa.Usa                        # NoClassDefFoundError + ClassNotFoundException
+javac --release 25 -sourcepath arbol/mal -d /tmp/t5sm arbol/mal/Usa.java  # package bodega does not exist
+
+# 10) los errores que solo existen cuando hay DOS archivos en la misma orden
+javac --release 25 -d /tmp/err errores/PackageJavaReservado.java && java -cp /tmp/err java.mio.PackageJavaReservado
+javac --release 25 -d /tmp/err errores/DosPublicas.java                    # 2 errors, uno por clase
+javac --release 25 -d /tmp/err errores/duplicado-uno/Guia.java errores/duplicado-dos/Guia.java   # duplicate class: bodega.Guia
+javac --release 25 -d /tmp/err errores/vecinos/ConImport.java errores/vecinos/SinImport.java     # 2 errors, los dos en SinImport.java:6
+javac --release 25 -d /tmp/err errores/vecinos/ConImport.java errores/vecinos/SinImportEstatico.java   # 2 errors, los dos en SinImportEstatico.java:9
+```
+
+O el laboratorio del módulo entero: `cd .. && ./verificar.sh`. Esas **174** comprobaciones del tema pasan aquí con
+Temurin 27 y `--release 25`, y llevan el módulo a **417** (41 del tema 1, 48 del tema 2, 51 del tema 3, 103 del tema 4
+y 174 de esta); con JDK 25 en el `PATH` basta `./verificar.sh`. Reparto contado sobre el propio `verificar.sh` y no
+sumado de memoria, leyendo los bloques del propio guion. Son **doce** grupos, y de cada uno doy su total y las
+guardas que lo forman, exactamente como salen del archivo: **8** de apertura (1 `vacio` · 5 `lleva` · 2 `cero_en`) son
+la compilación muda de las ocho fuentes y el árbol de 9 `.class`; **9** de que el paquete es un espacio de nombres, no
+una carpeta (6 `lleva` · 2 `igual` · 1 `falla_con`); **19** de los cinco tipos de importación en un solo fuente (13
+`lleva` · 2 `igual` · 3 `cuenta_en` · 1 `cero_en`); **18** de lo que guarda el `.class` del paquete (10 `lleva` · 3
+`flags_de` · 2 `igual` · 2 `vacio` · 1 `cero_en`); **6** de los nombres que ve la máquina virtual (6 `lleva`); **14** de
+paquete y módulo vistos desde el programa (13 `lleva` · 1 `igual`); **11** de a quién gana cada nombre (5 `lleva` · 2
+`igual` · 2 `vacio` · 1 `espera` · 1 `no_compila`); **8** de la frontera y el módulo que no se lee (3 `igual` · 3
+`lleva` · 1 `vacio` · 1 `falla_con`); **19** de la unidad de compilación compacta (9 `lleva` · 4 `igual` · 3
+`falla_con` · 2 `cero_en` · 1 `veces`); **7** del paquete partido entre dos módulos (4 `lleva` · 2 `igual` · 1
+`cero_en`); **11** de dónde mira `javac` las fuentes que no le diste (5 `lleva` · 4 `igual` · 1 `espera` · 1
+`cero_en`); y **44** de los errores del capítulo 7, uno por uno (16 `lleva` · 11 `igual` · 8 `no_compila` · 3
+`falla_con` · 2 `cero_en` · 2 `vacio` · 2 `veces`).
+8 + 9 + 19 + 18 + 6 + 14 + 11 + 8 + 19 + 7 + 11 + 44 = 174; sumadas por tipo dan 95 `lleva`, 33 `igual`, 10
+`cero_en`, 9 `no_compila`, 8 `vacio`, 8 `falla_con`, 3 `cuenta_en`, 3 `flags_de`, 3 `veces`, 2 `espera` = 174. Los dos
+conteos coinciden en el mismo 174, y esa coincidencia es la guarda: si un grupo estuviera mal repartido, las sumas
+cruzarían y no cuadran.
+
+Cuatro cosas de este bloque se escribieron dos veces, y las cuatro por el mismo motivo: un cero mal obtenido no prueba
+nada.
+
+- La comprobación de los vecinos del mismo paquete **empezó contando con `grep -c` dentro de la propia descripción**.
+  Pasaba, y no por buen camino: si el volcado anterior había salido vacío, el conteo daba 0 y el 0 se leía como
+  «ningún error en el vecino». Se reescribió en aserciones separadas —el código de salida en `igual`, un `lleva` de que
+  el error nombra a `SinImport` y un `cero_en` de que `class ConImport` no aparece—, leyendo las dos sobre la **misma**
+  captura que ya se había hecho en su paso. Y como el documento afirma **«son dos errores»**, ahora hay un `veces` que
+  lo mide: `location: class SinImport` aparece **2** veces (la declaración y el `new`, línea 6 las dos). La variante
+  estática, `vecinos/SinImportEstatico.java`, repite las cuatro aserciones con su propio nombre y da **los mismos 2**
+  errores, en su línea 9: el conteo no dependió de la forma del import.
+- `cero_en` recibe **expresión regular**, no cadena fija (a diferencia de `lleva`, que usa `grep -F`). Eso hace
+  **más estricta**, no más floja, cada comprobación de ausencia: el patrón `'./bodega/A.class'` con el punto sin
+  escapar también aceptaría `x/ybodega-A-class`, y al no aparecer nada de eso la afirmación fuerte sigue en pie. No se
+  escapó el patrón para que pasara; se dejó el ancho y pasó igual.
+- Los **9 `no_compila`** del tema sí llaman a `javac` **sin** `--release` (así está definida la guarda desde el tema
+  1: `falla_con … javac -d "$TMP/err" archivo`). Es una prueba que conviene leer al derecho: los nueve mensajes
+  (`should be declared in a file named`, `modifier static not allowed here`, `package no.existe does not exist`,
+  `'.' expected`, `duplicate class`…) pertenecen a reglas que no cambiaron en 25, así que su paso **no** depende del
+  release. Las reglas que **sí** son del 25 están comprobadas con `falla_con`/`igual` explícitos y con la cota medida
+  en las dos direcciones (`--release 24` falla, `25` pasa).
+- La cota vieja del JEP 512 **se escribió primero desde una salida recortada**, y esa es la razón por la que este
+  tema tiene 174 comprobaciones y no 167. Tres guardas afirmaban que `--release 24` no decía nada de las clases
+  implícitas ni del `package` de una compacta; se habían redactado después de mirar el error con `head -3`. La puerta
+  cayó con **412 correctas y 1 fallida**: un `cero_en` juraba que `compact source file should not have package
+  declaration` aparecía **0** veces en esa salida y la salida contestaba que **1**. Leerla completa enseñó tres cosas
+  que el recorte tapaba —en 24 ese fuente corta **dos** errores (uno por la regla de las clases implícitas y otro por
+  la del paquete), la regla del `main` en 24 **no llega a decirse** (ahí el archivo solo tropieza con las implícitas)
+  y hasta la lista de tokens del mismo mensaje cambia de cota a cota: 24 dice
+  `class, interface, enum, or record expected` y 25, `class, interface, annotation type, enum, record, method or field
+  expected`—. Las tres guardas falsas se sustituyeron por **cinco** ciertas, cada una ejecutada en la cota que
+  afirma, y el único `veces` del tema es justamente el conteo de los dos `error:` en 24. No se movió ningún umbral ni
+  se borró ninguna comprobación: se corrigió lo escrito, y por eso el recuento subió en vez de bajar. Las dos
+comprobaciones que faltaron después para llegar a 174 son de la misma familia: el documento afirma «son **dos**
+errores» en los vecinos del mismo paquete, y hoy `verificar.sh` lo cuenta renglón a renglón en las dos variantes.
+
+*Pendiente de reejecución en JDK 25:* los **textos** de `javac` y de la JVM, que los redacta la herramienta —los
+treinta mensajes de error de `errores/`, los dos avisos (`[deprecation] @Deprecated annotation has no effect…` y
+`uses or overrides a deprecated API`), el `Error: A JNI error has occurred`, el `error: no class declared in source
+file` del lanzador y las rutas y números de línea del trazo de `SecurityException` (`ClassLoader.preDefineClass`,
+línea 859) en `src.zip` del JDK 27—. Las **cifras** sí son de API 25: el `major version: 69`, los `flags:` leídos con
+`javap -v -p`, el `grep -c 'bodega/Envio'` = 3, los 9 `.class` del árbol y el tamaño de 177 bytes del
+`package-info.class`. Ejecutado hoy (2026-11-21) sobre Temurin 27.0.1.0.2+1, macOS arm64, `javac --release 25` y
+`java -Dstdout.encoding=UTF-8`, locale `es_CO`.
+
+#### 10. Error común y diagnóstico
+
+**Síntoma 1 — «moví la clase a otra carpeta y ahora no la encuentra nadie», o su gemelo «el `jar` está en el classpath
+y sin embargo `NoClassDefFoundError: Envio (wrong name: bodega/Envio)`».** Aquí el instinto es tocar el `import`, y
+tocar el `import` no hace nada: el error no lo produce `javac`, lo produce el **cargador**. Medido con
+`java -cp out/bodega Envio`: la ruta le enseña a la JVM un archivo llamado `Envio.class`, lo abre, y dentro el archivo
+dice `bodega/Envio`; la JVM contesta con lo que ve, no con lo que tú pediste, y sale
+`Caused by: java.lang.NoClassDefFoundError: Envio (wrong name: bodega/Envio)`. El cartel está escrito en el `.class`,
+así que el diagnóstico es de una línea y no necesita leer el código: `javap -v -p` sobre ese archivo y mirar
+`this_class: #8 // bodega/Envio`. La corrección es la **ruta** (`-cp out`, y `bodega.Envio` como nombre), no el fuente.
+Y la trampa simétrica: `otros-src/bodega/Balanza.java` está en otra carpeta que `src/bodega/Envio.java` y aun así son
+vecinos —medido, `Balanza` lee `Envio.FIRMA` (campo de paquete, `flags: (0x0018)`, sin `ACC_PUBLIC`) y construye
+`Flete`—, porque el paquete lo declara la línea `package` y en el árbol de clases `otros-src` **no deja rastro**. Dos
+carpetas distintas pueden ser el mismo barrio; un barrio no puede vivir en la ruta equivocada.
+
+**Síntoma 2 — «le puse el `import` al archivo del vecino y el mío sigue dando `cannot find symbol»`.** El alcance de un
+`import` es **la unidad de compilación**, no el paquete ni la carpeta. Medido en `errores/vecinos/`, compilando los dos
+juntos: los **dos** errores son de `SinImport` —`symbol: class Date` y `symbol: class Date` en la línea 6, con
+`location: class SinImport` las dos veces— y `ConImport`, que es quien escribió el import, no aparece en la salida. La
+prueba dura es la segunda mitad del par: `errores/vecinos/SinImportEstatico.java` intenta recibir el `Date` por la
+puerta de los estáticos (`import static vecinos.ConImport.*;`) y da **exit 1** con dos errores del mismo sitio. Un
+`import` no es una declaración compartida; si `Date` lo necesitas, lo escribes tú.
+
+**Síntoma 3 — «añadí `import java.awt.*;` y mi `List.of(...)` dejó de compilar sin que tocara `List»`.** Dos
+`on-demand` que contienen el mismo nombre simple **no eligen por ti**: `reference to List is ambiguous` con la línea
+que lo explica —`both class java.awt.List in java.awt and interface java.util.List in java.util match`— (medido en
+`errores/AmbiguoDeModulos.java:9`). Y el caso hermano, que se confunde en el log: si los dos son **explícitos** no hay
+ambigüedad posible, hay veto directo en la línea del segundo import —`a type with the same simple name is already
+defined by the single-type-import of Date`, `errores/DosFechasExplicitas.java:7`—. La diferencia entre los dos mensajes
+te dice cuántos imports tocar. Para arreglarlo tienes tres puertas, medidas las tres: un single-type (`import
+java.util.List;`, gana sobre cualquier `on-demand`, y `por-dentro/AmbiguoResuelto` lo demuestra:
+`List desempado     : java.util.ImmutableCollections$List12`), el nombre canónico escrito entero, o **dejar de importar** y
+consumir el paquete por su prefijo. Nota el precio de la comodín: `errores/FechaAmbigua.java:10` falla en el **uso**,
+ocho líneas después de la causa.
+
+**Síntoma 4 — «en mi máquina compila y en el pipeline no»: el mismo fuente, distinta cota de release.** Los dos
+mensajes que delatan que no es un problema de dependencias sino de versión de *lenguaje*:
+`error: module imports are not supported in -source 24` con la nota `(use -source 25 or higher to enable module
+imports)` (medido sobre `src/afuera/Cliente.java` con `--release 24`, en su línea 14, la del `import module
+java.sql;`) y `error: implicitly declared classes are not supported in -source 24`, que es lo que corta
+`por-dentro/Compacta.java` en su línea 6. Y aquí va la trampa de diagnóstico, medida en las dos cotas sobre los tres
+ilegales del laboratorio: **el texto del error depende del `--release`, no de la regla que violaste**.
+`errores/CompactaConPaquete.java` da **2** errores con 24 (`implicitly declared classes…` **más** `compact source file
+should not have package declaration`) y **1** con 25; `errores/CompactaSinMetodo.java` con 24 **no** menciona el `main`
+en absoluto, solo las clases implícitas; y `errores/SoloEnunciados.java` cambia hasta la lista de tokens
+(`class, interface, enum, or record expected` en 24 frente a `class, interface, annotation type, enum, record, method or
+field expected` en 25). Antes de buscar el mensaje, mira la cota del build. Otro detalle con lectura falsa muy cómoda:
+«a mí siempre me han funcionado los `package`». Funcionan en una unidad de compilación **ordinaria**; en una compacta
+(JEP 512) la gramática no tiene hueco para `PackageDeclaration`. Y hay un tercer caso que no es de release
+sino de grafo: `error: unnamed module does not read: java.se` —el módulo anónimo lee todos los **observables**, pero un
+`import module` exige la arista de lectura—; se arregla con `--add-modules java.se`, medido en exit 0, no con otro
+import. Antes de tocar el fuente, lee la cota: `javac --version` y el `-source`/`--release` del build.
+
+**Síntoma 5 — «compila limpio, así que está bien».** Cuatro fallos del tema **no** ocurren al compilar, y son los que
+te van a aparecer en runtime con un mensaje que no menciona el paquete:
+
+- `errores/PackageJavaReservado.java` compila y escribe `java/mio/PackageJavaReservado.class` sin decir nada; la JVM la
+  rechaza al **cargarla**: `Error: A JNI error has occurred…` y debajo `java.lang.SecurityException: Prohibited
+  package name: java.mio`, con el trazo diciendo `ClassLoader.preDefineClass(ClassLoader.java:859)`. Ningún `import`
+  arregla esto; el nombre del paquete es inválido y punto.
+- `arbol/bien/usa/Usa.java` con `-implicit:none` compila en **exit 0** y al ejecutar sale
+  `java.lang.NoClassDefFoundError: bodega/A` / `Caused by: java.lang.ClassNotFoundException: bodega.A`, porque el
+  compilador encontró `bodega/A` **por `-sourcepath`** y, con `-implicit:none`, decidió no escribir su `.class`: el
+  árbol de clases queda con `./usa/Usa.class` y nada de `./bodega/`. Sin la bandera, el mismo comando escribe los dos y
+  corre.
+- `errores/paquete-vacio/package-info.java` compila con exit 0 y no escribe **ni un `.class`** (medido: `find` sobre el
+  directorio de salida devuelve cero rutas). `package-info.java` solo genera archivo si el fuente lleva una anotación;
+  `src/bodega/package-info.java`, que sí lleva `@Deprecated`, genera uno de **177 bytes** con
+  `flags: (0x1600) ACC_INTERFACE, ACC_ABSTRACT, ACC_SYNTHETIC`.
+- `errores/SoloEnunciados.java`: con `javac` da `class, interface, annotation type, enum, record, method or field
+  expected`, pero si usas el lanzador de fuentes, el mensaje cambia a `error: no class declared in source file` con
+  `exit=1`. Mismo fuente, dos herramientas, dos frases: si copias la primera en un buscador con la segunda en mano no
+  encuentras nada.
+
+**Y el error de concepto que los resume:** tratar el paquete como una carpeta y el `import` como una configuración. La
+especificación reparte esto en cuatro planos distintos y cada fallo te avisa **en el suyo**: la `package` declara un
+espacio de nombres (§7.4), la ruta la mira el cargador, el `import` solo vive en tu unidad de compilación (§7.5), y la
+visibilidad de un miembro depende del `public`/paquete del tema 3, no de que tú lo hayas importado. De los cinco
+mensajes de arriba, tres (`wrong name`, `Prohibited package name`, `NoClassDefFoundError` con `-implicit:none`) **no se
+pueden arreglar con un `import`**, y esa es la pregunta que hay que hacerse antes de teclear: ¿esto lo cortó `javac`,
+lo cortó la JVM al cargar, o lo cortó el grafo de dependencias del build?
+
+#### 11. Pregunta con respuesta modelo
+
+**Pregunta.** Un proyecto tiene `bodega/Envio.java` (`public class Envio` con un campo de paquete
+`static final String FIRMA = "bodega";`) en `src/bodega/`, y `bodega/Balanza.java` (`class Balanza`, sin `public`) en
+`otros-src/bodega/`. Un tercero escribe `afuera/Factura.java` con `import bodega.Envio;`, en la misma carpeta deja
+`FacturaUtils.java` que usa `Date` sin importarlo, y el pipeline ejecuta `javac --release 24` sobre todo. Responde:
+**(a)** por qué `Balanza` puede leer `Envio.FIRMA` estando en otra carpeta, y qué dos cosas tendrían que fallar para
+que no pudiera; **(b)** `Factura.java` compila pero `FacturaUtils.java` da `cannot find symbol` sobre `Date`: ¿qué
+cambio en `Factura.java` arregla el segundo archivo?, ¿y un `import static bodega.Envio.gramos;` te daría el campo de
+instancia `gramos`?; **(c)** si en el mismo fuente escribes `import java.util.*;` e `import java.sql.*;` y luego usas
+`Date`, ¿qué mensaje sale y en qué línea aparece? ¿y si en vez de dos comodines es `import java.util.Date;` más
+`import java.sql.Date;`?; **(d)** dos fallos que te llegan **después** de un `javac` limpio, uno al cargar y otro al
+ejecutar, con sus nombres de excepción y en qué se arreglan cada uno.
+
+**Respuesta modelo.**
+
+**(a)** Porque el paquete **no es la carpeta**: lo declara la línea `package` (§7.4) y en el árbol de clases la ruta de
+la fuente desaparece. Medido con las ocho fuentes del laboratorio: `find` devuelve `./bodega/Balanza.class` y
+`./bodega/Envio.class` **en la misma carpeta**, y buscar `otros-src` en ese árbol da **0** coincidencias. Por eso `FIRMA`
+se ve desde `Balanza` aunque viva en otro árbol de fuentes: `Balanza` es miembro de `bodega` y `FIRMA` es accesible de
+paquete —medido en el volcado del campo: `static final java.lang.String FIRMA;` con `descriptor: Ljava/lang/String;`,
+`flags: (0x0018) ACC_STATIC, ACC_FINAL` y `ConstantValue: String bodega`, es decir **sin** `ACC_PUBLIC`, y así y todo
+la lectura sale: `FIRMA desde otra carpeta : bodega`. Las dos cosas que lo
+romperían: que cualquiera de los dos cambiara su `package` (dejan de ser vecinos, y aparece
+`package bodega does not exist` o `cannot find symbol`), o que `FIRMA` se declarara `private` (ahí sí falla el acceso,
+aunque sigan en el mismo barrio). Y ojo con la simetría: `Balanza` **no** es accesible desde `afuera` —
+`Balanza is not public in bodega; cannot be accessed from outside package`—, así que «de paquete» significa «los
+vecinos sí, el resto ni los nombra».
+
+**(b)** **Ninguno.** El alcance de un `import` es la unidad de compilación (§7.5, y el capítulo 6 lo remata: lo
+importado no es una declaración del paquete). Medido en `errores/vecinos/` compilando el par junto: los dos errores
+siguen siendo de `SinImport` (`location: class SinImport` en ambos) y `ConImport` no aparece en la salida; y la variante
+estática (`import static vecinos.ConImport.*;`) tampoco lo salva, **exit 1** con los dos errores en el mismo sitio. La
+única corrección real es escribir `import java.util.Date;` **en** `FacturaUtils.java`. Sobre `gramos`: no. Un
+`import static` exige un miembro **de clase**, y `gramos` es de instancia —medido en el `.class`: `int gramos;` con
+`flags: (0x0000)`, sin `ACC_STATIC`—, así que `import static bodega.Envio.gramos;` da `cannot find symbol` con
+`symbol: static gramos` y `location: class Envio`. Lo mismo con un método de instancia: `symbol: static etiqueta`. Lo
+que sí se importa así son tres cosas que la gente no espera: una constante, un campo `static` y **un tipo anidado**
+(`import static bodega.Envio.Sello;` importa una clase, y en el `.class` se ve como `bodega/Envio$Sello`).
+
+**(c)** Con los dos comodines no hay elección posible: `reference to Date is ambiguous` en
+`errores/FechaAmbigua.java:10`, con la explicación justo debajo —`both class java.sql.Date in java.sql and class
+java.util.Date in java.util match`— y fíjate en el número: **la línea
+10**, ocho líneas después de la causa. Un `on-demand` solo pone nombres a disposición **en el punto de uso**, así que
+el error se declara donde usas el nombre y no donde lo importas. Con los dos single-type es un veto inmediato y en la
+línea del import culpable: `a type with the same simple name is already defined by the single-type-import of Date` en
+`errores/DosFechasExplicitas.java:7` (§7.5.1: dos single-type-import del mismo nombre simple son error **a menos que**
+sean el mismo tipo). Y si los dos importan literalmente el mismo tipo, no hay error: `por-dentro/DosMismos.java`
+compila en exit 0 e imprime `dos on-demand      : 0`. La jerarquía completa, medida, es: nombre declarado en el paquete
+gana a todo; un single-type gana a cualquier comodín (`FechaResuelta` resuelve
+`Date resuelto      : java.sql.Date` aunque el comodín de `java.util` esté escrito antes); entre comodines que empatan,
+ambigüedad; y un `import module` se comporta como un comodín por paquete exportado, que es justo la fuente de
+`reference to List is ambiguous` cuando se cruza con `java.awt.*`.
+
+**(d)** El que aparece al **cargar**: un paquete que empieza por `java.` pasa `javac` sin queja y escribe su `.class`
+(`java/mio/PackageJavaReservado.class`), y es la JVM quien la rechaza con `SecurityException: Prohibited package name:
+java.mio`, en `ClassLoader.preDefineClass`. No se arregla ni con `import`, ni con classpath, ni con `-source`: hay que
+**renombrar el paquete**. El que aparece al **ejecutar**: compilando con `-implicit:none` y `-sourcepath` el mismo
+`Usa.java` sale exit 0, y al correr `java.lang.NoClassDefFoundError: bodega/A` con
+`Caused by: java.lang.ClassNotFoundException: bodega.A`, porque el árbol de clases solo contiene `./usa/Usa.class` —la
+fuente de `bodega.A` la *encontró* el compilador pero decidió no compilarla implícitamente—. Se arregla quitando
+`-implicit:none` (medido: sin ella el mismo comando escribe `./bodega/A.class` y `./usa/Usa.class` y corre), o llevando
+`A` explícitamente en la lista de fuentes; **no** se arregla con un import. Los dos comparten diagnóstico de fondo: el
+único de los cinco planos que **no** es de `javac` no te va a dar un mensaje de `javac`, y `compilar limpio` significa
+«resolví los nombres», nunca «esto arranca».
+
+#### 12. Cuándo usarlo y cuándo no
+
+| Situación | Decisión y por qué |
+|---|---|
+| Dos árboles de fuente (`src/` y `otros-src/`) que aportan tipos al mismo paquete | **Válido, y es el diseño normal de un generador de código**: el paquete lo declara la línea `package`. Medido: `Balanza` (en `otros-src`) lee `Envio.FIRMA` y construye `Flete` sin `public`. Lo que **no** puedes hacer es confiar en la ruta para el acceso ni para el `classpath`: `-cp out/bodega Envio` encuentra el archivo y lo rechaza el cargador (`wrong name: bodega/Envio`). |
+| Una clase que van a consumir otros paquetes | **`public` + paquete con nombre.** Un tipo de paquete sin `public` es invisible desde fuera —`Balanza is not public in bodega; cannot be accessed from outside package`— y el paquete sin nombre es inalcanzable desde un paquete con nombre: `src/Rasgo.java` no tiene `package`, y desde `afuera` da `cannot find symbol` / `symbol: class Rasgo` (`PaqueteSinNombreReferido`). |
+| Un archivo que usa cuatro tipos de `java.util` | **`import java.util.List;` explícitos** para lo que expone tu API y comodín solo para lo local. Un `on-demand` pone el error en el **punto de uso** (`FechaAmbigua`, línea 10) en vez de en el import, y si otro comodín trae el mismo nombre simple no hay desempate: `reference to List is ambiguous`. |
+| Dos candidatos reales para el mismo nombre (`java.util.Date` / `java.sql.Date`) | **Single-type o nombre canónico, y un solo de los dos.** El single-type gana al comodín (`Date resuelto : java.sql.Date` con el `java.util.*` escrito antes); dos single-type distintos ni lo intentan: veto en la línea del segundo (`DosFechasExplicitas.java:7`). |
+| Constantes y utilidades estáticas muy repetidas (`Integer.MAX_VALUE`, `Math.abs`, un `LOTES` propio) | **`import static` de miembro concreto**, no del tipo entero: el nombre queda desnudo en el llamante y el conflicto se busca después sin prefijo que te ayude. Con `LOTES` (constante horneada) el costo en runtime es **cero** —medido sobre `Cliente.class`: `grep -c 'Field bodega/Envio.LOTE'` da **0**— pero heredas el contrato de §13.1 del tema 4. Con un método (`Envio.dicePaquete`) sí queda el enlace `invokestatic`. |
+| Un fuente de una sola clase que se ejecuta con `java Archivo.java` (scripts, ejemplos, docs) | **Unidad de compilación compacta** (JEP 512), que además es el único caso donde la JVM te añade `import module java.base;` implícitamente. A cambio: sin `package`, sin `public`, con `void main()` o `void main(String[] args)` —medido, las tres violaciones dan `compact source file should not have package declaration`, `… does not have main method…` y `class, interface, annotation type, enum, record, method or field expected`; la clase queda `final class Compacta` con `void main();`—, y exige `--release 25`. |
+| `import module java.sql;` en el fuente de una librería | **No.** Son una conveniencia de escritura: meten **todos** los tipos exportados por todos los paquetes del módulo como si fueran comodines, amplían el conjunto de empates posibles, y exigen la arista de lectura (`unnamed module does not read: java.se`, que solo se arregla con `--add-modules java.se`). Y `java.se` **no exporta paquetes** (§7.5.5), así que importarlo entero no te da nada directo. |
+| Anotaciones que pertenecen al paquete entero (`@Deprecated`, `@NonNullApi`, metadata del proveedor) | **`package-info.java` con la anotación.** Sin anotación no hay artefacto: medido, el archivo vacío compila exit 0 y escribe **0 `.class`**; con `@Deprecated` escribe uno de 177 bytes, `interface bodega.package-info`, `flags: (0x1600)`. Y el aviso `[deprecation] @Deprecated annotation has no effect on this package declaration` es real: `@Deprecated` sobre `package` no hace deprecado el paquete. |
+
+**Costo.** Los `import` cuestan **cero en tiempo de ejecución**: son nombres del fuente, no bytes del binario —lo
+mismo que el tema 4 midió con `grep -c 'bodega/Envio'` = 3 referencias simbólicas vivas frente a la constante horneada
+que no deja ninguna—. Lo que cuesta es el mantenimiento: un comodín amplía el conjunto de nombres que pueden empatar
+en el futuro (`reference to List is ambiguous` aparece sin que nadie toque tu línea), un `import module` añade el
+entero de un módulo, y una `package` que no coincide con la ruta no se nota al compilar y se nota al cargar. En el
+build hay dos costos medidos: `-implicit:none` **acelera** la compilación y te entrega
+`NoClassDefFoundError: bodega/A` al ejecutar, y `--release 24` contra las features del 25 te corta con una frase que no
+dice «versión» sino «source» (`module imports are not supported in -source 24`). Y la cota vieja **te mentía a medias**,
+medido en las dos direcciones sobre los tres ilegales: `errores/CompactaConPaquete.java` da **2** errores en 24 y **1**
+en 25 (en el 24 se le añade `implicitly declared classes are not supported in -source 24`, que en 25 no existe);
+`errores/CompactaSinMetodo.java` en 24 da **solo** ese error de las implícitas y **nunca** el `does not have main
+method…` que el tema cita; y hasta la lista de tokens del `SoloEnunciados` cambia de cota a cota —`class, interface,
+enum, or record expected` en 24 frente a `class, interface, annotation type, enum, record, method or field expected` en
+25—. Es decir: el texto que te da tu build depende del `--release` del build, no de la regla que violaste, y si copias
+ese texto esperando encontrar el JEP 512 puedes no encontrarlo. Las cinco guardas nuevas del arnés (`igual` del código
+de salida, un `veces` sobre los **2** errores de la cota vieja, dos `lleva` de los dos textos y un `cero_en` de que el
+`does not have main method` no se diga en 24) están precisamente para que esta frase no se caiga sola. El costo de la
+compacta es además de visibilidad futura: su clase queda
+`final class Compacta` en el paquete sin nombre con `void main();`, que no es una clase que otro paquete pueda nombrar.
+
+**Qué no resuelve este tema.** No enseña el **sistema de módulos**: los tres `module-info.java` de
+`por-dentro/modulos/` son un banco para una sola frase (§7.5.5, qué pasa cuando dos módulos exportan el mismo paquete —
+`module ambos reads package bodega from both uno and dos`—), y `requires`, `exports`, `opens`, `provides`/`uses`, el
+empaquetado en JAR y `jlink` quedan fuera. No decide **convenciones de nombre** (qué paquete le pongo a qué capa de mi
+aplicación), ni cargadores, ni `URLClassLoader`, ni el aislamiento de plugins. Tampoco toca lo que hay **dentro** del
+nombre resuelto: los cuatro niveles de acceso son el tema 3, la constante horneada y el enlace simbólico son el tema 4,
+y `equals`/`hashCode`/`toString` de la clase que ya sabes nombrar es el tema 6. Y un aviso explícito: **compilar exit 0
+no es que funcione**; cuatro fuentes de este laboratorio demuestran la frase con datos, y la lista de verificación del
+tema no se cierra con `javac`, se cierra con `java` y con `find out -name '*.class'`.
+
 ## Temas que faltan de este módulo
 
-Quedan tres temas del temario: **5** paquetes, `import` e imports de módulo (JEP 511), **6** los métodos de `Object`
-(`equals`, `hashCode`, `toString`, clones y finalización, §8.1–§8.2, EJ 10–12) y **7** objetos inmutables y `record`
-(§8.10, EJ 17). Cada uno traerá sus ejemplos, sus errores reproducibles y sus comprobaciones a `verificar.sh`; el
-`Laboratorio` y la `Duración` de esta portada se reescriben con las cifras medidas cuando el módulo esté completo.
+Quedan dos temas del temario: **6** los métodos de `Object` (`equals`, `hashCode`, `toString`, clones y finalización,
+§8.1–§8.2, EJ 10–12) y **7** objetos inmutables y `record` (§8.10, EJ 17). Cada uno traerá sus ejemplos, sus errores
+reproducibles y sus comprobaciones a `verificar.sh`; el `Laboratorio` y la `Duración` de esta portada se reescriben con
+las cifras medidas cuando el módulo esté completo.
