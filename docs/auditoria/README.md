@@ -39,6 +39,15 @@ elementos; varios auditores comprobaron falsos positivos en «solución» y fals
 3. Plantilla obligatoria + validador (spec 013 P5), soluciones en todos los ejercicios.
 4. Reescritura por curso con la plantilla, empezando por Fundamentos (la puerta de entrada).
 
+## Ronda del 21 nov 2026 — consistencia entre cursos
+
+[consistencia-entre-cursos.md](consistencia-entre-cursos.md) cambia el foco: no mide si un tema cumple una
+plantilla, sino si **los 16 cursos usan la misma**, sobre el universo actual de 1608 temas y 324 capítulos
+(las cifras de arriba son de la ronda del 18 nov, con 291 módulos y 1432 temas). Medidor:
+[`scripts/audit_consistencia_entre_cursos.py`](../../scripts/audit_consistencia_entre_cursos.py); datos por
+tema en [consistencia-entre-cursos.csv](consistencia-entre-cursos.csv). Resultado: 8 metodologías
+conviviendo, 9 cursos con más de una y 21 capítulos con dos estructuras a la vez.
+
 ## Límites de la auditoría
 
 No se pudo ejecutar: Swift/iOS, Flutter/Dart, SDK de Android, builds Maven/Gradle (Maven Central bloqueado),
