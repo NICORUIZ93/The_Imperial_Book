@@ -66,6 +66,7 @@ examples/**/target/
 # Gradle de los laboratorios: conservar wrappers y fuentes
 examples/**/.gradle/
 examples/**/build/
+examples/**/.sonar/
 !examples/**/gradle/wrapper/gradle-wrapper.jar
 
 # Artefactos pesados generados / huérfanos — se conservan en disco local pero no se versionan.
