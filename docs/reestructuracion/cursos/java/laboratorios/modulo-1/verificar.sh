@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Java · M1 · Datos: tipos, variables y operadores — verificación del laboratorio.
 # Ejecuta cada ejemplo del módulo y comprueba su salida. Sigue ante fallos y termina en «RESULTADO: OK».
-# Uso: ./verificar.sh            (necesita JDK 25 en PATH; la calculadora necesita el wrapper de Gradle con red)
+# Uso: ./verificar.sh            (necesita JDK 25 en PATH; la calculadora usa el wrapper de Gradle)
 #      GRADLE="gradle --offline" ./verificar.sh   (usa un Gradle ya instalado)
+#      GRADLE="./gradlew --offline -I .herramienta-local.init.gradle.kts" ./verificar.sh   (máquina sin JDK 25: presta el toolchain 27)
 #      EXIGIR_GRADLE=1 ./verificar.sh             (falla si Gradle no arranca, en vez de omitirlo)
 # --- funciones comunes (bash 3.2: sin arreglos asociativos, sin mapfile) ---
 cd "$(dirname "$0")" || exit 1

@@ -31,7 +31,12 @@ JDK 25 (toolchain) · Gradle 9.8.2 (wrapper) · JUnit 6.0.3 (`gradle/libs.versio
 ./verificar.sh                                # todo el módulo; termina en «RESULTADO: OK»
 EXIGIR_GRADLE=1 ./verificar.sh                # falla si el wrapper no puede arrancar (úsalo en el Mac)
 GRADLE="gradle --offline" ./verificar.sh      # con un Gradle ya instalado, sin red
+GRADLE="./gradlew --offline -I .herramienta-local.init.gradle.kts" ./verificar.sh
 ```
+
+El último mando es para una máquina **sin JDK 25 instalado**: `.herramienta-local.init.gradle.kts` no forma
+parte del curso, es un script de inicialización de Gradle que presta el toolchain 27 para que `test` y `run`
+se ejecuten aquí. Con JDK 25 en PATH no hace falta: basta `./gradlew test`.
 
 ## Qué hay
 
@@ -53,11 +58,21 @@ de `por-dentro/` se miran con `javac -d out Archivo.java && javap -c -cp out Cla
 Algunos ejemplos terminan a propósito con una excepción (`EtiquetaDeEnvio`, `ConvertirPeso`,
 `ReglasDeDespacho`): es el error que el tema enseña a leer.
 
-## Estado de la verificación (2026-11-20, OpenJDK 25.0.5, Ubuntu x86-64)
+## Estado de la verificación (2026-11-20, Temurin 27.0.1.0.2+1, macOS arm64, locale `es_CO`)
 
-- **Ejecutado y comprobado:** todos los ejemplos, errores y bytecode de los temas 1 a 7 (65 comprobaciones
-  de `verificar.sh`).
-- **Proyecto Gradle, ejecutado con otra versión de la herramienta:** igual que en el módulo 0, el wrapper no
-  pudo descargar Gradle 9.8.2 ni JUnit 6.0.3 (red bloqueada). El mismo build se ejecutó con Gradle 8.14.3
-  local, sin conexión, con JUnit 5.10.1 y toolchain JDK 25: las 11 pruebas pasan y `run` liquida un envío.
-- **Pendiente en el Mac del dueño:** `EXIGIR_GRADLE=1 ./verificar.sh` con el wrapper.
+- **Ejecutado y comprobado aquí:** `GRADLE="./gradlew --offline -I .herramienta-local.init.gradle.kts"
+  ./verificar.sh` termina en `RESULTADO: OK` con **67** comprobaciones, 0 fallidas y 0 omitidas. De esas 67,
+  64 son los ejemplos, errores y bytecode de los temas 1 a 7, y 3 el proyecto Gradle: que el `build` esté
+  escrito en Kotlin DSL con toolchain y catálogo, `gradlew test` con las 11 pruebas y `gradlew run
+  --args="2500"` liquidando el envío (`Total con IVA: $13566.00`).
+- **Qué se prestó:** la distribución Gradle 9.8.2 y JUnit 6.0.3 salen de la caché local (`--offline`), así
+  que el wrapper sí arranca. Lo único que falta en esta máquina es el JDK 25: sin el script de inicialización
+  las dos comprobaciones de Gradle fallan con `Cannot find a Java installation … matching
+  {languageVersion=25}`, y con él se compila y se ejecuta con el 27 instalado.
+- **Corrección de una nota anterior (Ubuntu x86-64, OpenJDK 25.0.5, mismo día):** allí se escribió que el
+  wrapper no podía descargar Gradle 9.8.2 ni JUnit 6.0.3 y que el build se había hecho con Gradle 8.14.3 y
+  JUnit 5.10.1. En esta máquina esa limitación no se reproduce: el wrapper y el JUnit 6.0.3 funcionan. La
+  cuenta cuadra: descontando aquí las dos comprobaciones que ejecutan Gradle quedan 65, las mismas 65
+  (64 de ejemplos más la del `build` en Kotlin DSL).
+- **Pendiente en el Mac del dueño:** `./verificar.sh` con JDK 25 en PATH y sin el script de inicialización,
+  más `EXIGIR_GRADLE=1 ./verificar.sh`.

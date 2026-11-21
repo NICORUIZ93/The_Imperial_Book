@@ -29,6 +29,8 @@ application {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+    // `release` fija contra qué API se compila y qué formato de clase sale, pase lo que pase con el toolchain.
+    options.release = libs.versions.java.get().toInt()
 }
 
 tasks.named<JavaExec>("run") {
