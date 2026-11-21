@@ -22,8 +22,8 @@
       "incidencias": 5
     },
     "C4": {
-      "temas_con_incidencia": 266,
-      "incidencias": 367
+      "temas_con_incidencia": 263,
+      "incidencias": 359
     },
     "C5": {
       "temas_con_incidencia": 4,
@@ -34,7 +34,7 @@
       "incidencias": 30
     }
   },
-  "temas_sin_incidencia": 1272,
+  "temas_sin_incidencia": 1275,
   "por_curso": {
     "android": {
       "C1": 0,
@@ -88,7 +88,7 @@
       "C1": 2,
       "C2": 0,
       "C3": 0,
-      "C4": 46,
+      "C4": 38,
       "C5": 0,
       "C6": 0
     },

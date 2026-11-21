@@ -697,11 +697,11 @@ foundations,0,"Tema 3: Archivos, carpetas y rutas sin perderse · Básico · 45 
 foundations,0,Tema 4: Cómo leer un comando antes de ejecutarlo · Básico · 45 min,estandar,si,si,si,si,si,si,si,si,si,si,si,si,
 foundations,0,"Tema 5: Primer programa, primer error y primera evidencia · Básico · 60 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
 foundations,0,"Tema 6: VS Code, comandos y atajos comprobables · Básico · 45 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
-foundations,1,Tema 1: Del problema al algoritmo y a los casos de prueba,estandar,no,si,si,si,si,si,si,no,si,si,si,si,P1 P8
-foundations,1,"Tema 2: Variables, tipos, expresiones y cambios de estado",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-foundations,1,"Tema 3: Decisiones, repeticiones y trazado de ejecución",estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-foundations,1,Tema 4: Funciones y descomposición de problemas,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12
-foundations,1,"Tema 5: Cómo la computadora representa los datos — binario, texto y decimales",estandar,no,si,si,si,no,si,si,no,si,si,si,si,P1 P5 P8
+foundations,1,Tema 1: Del problema al algoritmo y a los casos de prueba · Básico · 30 min,estandar,si,si,si,si,si,si,si,si,si,si,si,si,
+foundations,1,"Tema 2: Variables, tipos, expresiones y cambios de estado · Básico · 30 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
+foundations,1,"Tema 3: Decisiones, repeticiones y trazado de ejecución · Básico · 35 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
+foundations,1,Tema 4: Funciones y descomposición de problemas · Básico · 35 min,estandar,si,si,si,si,si,si,si,no,si,si,si,si,P8
+foundations,1,"Tema 5: Cómo la computadora representa los datos — binario, texto y decimales · Básico · 40 min",estandar,si,si,si,si,si,si,si,si,si,si,si,si,
 foundations,1,"Tema 6: Clases y objetos: atributos, métodos e `__init__` · Básico · 35 min",estandar,si,no,si,no,no,si,no,no,si,no,no,si,P2 P4 P5 P7 P8 P10 P11
 foundations,1,"Tema 7: Herencia, composición y clases abstractas con `abc` · Intermedio · 40 min",estandar,si,no,si,no,no,si,no,no,si,no,no,si,P2 P4 P5 P7 P8 P10 P11
 foundations,2,Tema 1: Elegir estructuras según las operaciones,estandar,no,si,si,si,si,si,si,no,si,si,si,no,P1 P8 P12

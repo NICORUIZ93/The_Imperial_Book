@@ -4,13 +4,13 @@
   "curso": "todos",
   "temas": {
     "con_region": 772,
-    "con_fecha": 6,
-    "sin_fecha": 696,
+    "con_fecha": 9,
+    "sin_fecha": 693,
     "sin_enlace": 5,
     "caducos": 0,
     "total": 1608,
     "locales": 0,
-    "porcentaje_sin_fecha": 43.6
+    "porcentaje_sin_fecha": 43.4
   },
   "urls_distintas": 1181,
   "urls_sin_comprobar": 0,
@@ -2471,6 +2471,11 @@
       "final": "https://docs.python.org/3/using/cmdline.html",
       "comprobada": "2026-11-21"
     },
+    "https://docs.python.org/es/3/builtins/stdtypes.html": {
+      "estado": 200,
+      "final": "https://docs.python.org/es/3/builtins/stdtypes.html",
+      "comprobada": "2026-11-21"
+    },
     "https://docs.python.org/es/3/howto/logging.html": {
       "estado": 200,
       "final": "https://docs.python.org/es/3/howto/logging.html",
@@ -2499,11 +2504,6 @@
     "https://docs.python.org/es/3/library/sqlite3.html": {
       "estado": 200,
       "final": "https://docs.python.org/es/3/library/sqlite3.html",
-      "comprobada": "2026-11-21"
-    },
-    "https://docs.python.org/es/3/library/stdtypes.html": {
-      "estado": 200,
-      "final": "https://docs.python.org/es/3/builtins/stdtypes.html",
       "comprobada": "2026-11-21"
     },
     "https://docs.python.org/es/3/library/stdtypes.html#dict": {

@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 604 351" width="604" height="351" role="img" aria-label="Captura de terminal: Tema 3 · el limite del bucle">
+<title>Captura de terminal: Tema 3 · el limite del bucle</title>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-21. Comandos en orden: python3.14 src/vencidas.py ; python3.14 src/vencidas-uno-de-menos.py ; python3.14 src/vencidas-while.py ; echo "codigo_de_salida=$?". Código de salida final: 0.</desc>
+<rect width="604" height="351" rx="8" fill="#1e1f24"/>
+<rect width="604" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="604" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
+<text x="302.0" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">Tema 3 · el limite del bucle</text>
+<g font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="13" xml:space="preserve" style="white-space: pre">
+<text x="18" y="61" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">python3.14 src/vencidas.py</tspan></text>
+<text x="18" y="80" style="white-space: pre" fill="#e6e6e6">VENCIDA: pagar luz</text>
+<text x="18" y="99" style="white-space: pre" fill="#e6e6e6">VENCIDA: llamar al dentista</text>
+<text x="18" y="118" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">python3.14 src/vencidas-uno-de-menos.py</tspan></text>
+<text x="18" y="137" style="white-space: pre" fill="#e6e6e6">VENCIDA: pagar luz</text>
+<text x="18" y="156" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">python3.14 src/vencidas-while.py</tspan></text>
+<text x="18" y="175" style="white-space: pre" fill="#e6e6e6">VENCIDA: pagar luz</text>
+<text x="18" y="194" style="white-space: pre" fill="#e6e6e6">VENCIDA: llamar al dentista</text>
+<text x="18" y="213" style="white-space: pre" fill="#e6e6e6">Traceback (most recent call last):</text>
+<text x="18" y="232" style="white-space: pre" fill="#e6e6e6">  File "/private/tmp/f1m1/t3/src/vencidas-while.py", line 9, in &lt;module&gt;</text>
+<text x="18" y="251" style="white-space: pre" fill="#e6e6e6">    tarea = tareas[i]</text>
+<text x="18" y="270" style="white-space: pre" fill="#e6e6e6">            ~~~~~~^^^</text>
+<text x="18" y="289" style="white-space: pre" fill="#e6e6e6">IndexError: list index out of range</text>
+<text x="18" y="308" style="white-space: pre"><tspan fill="#7dd3a8">$ </tspan><tspan fill="#e6e6e6">echo "codigo_de_salida=$?"</tspan></text>
+<text x="18" y="327" style="white-space: pre" fill="#e6e6e6">codigo_de_salida=1</text>
+</g>
+</svg>

@@ -16,7 +16,7 @@
   },
   "resumen": {
     "P1": {
-      "cumplen": 355,
+      "cumplen": 360,
       "total": 1608,
       "porcentaje": 22
     },
@@ -36,7 +36,7 @@
       "porcentaje": 80
     },
     "P5": {
-      "cumplen": 944,
+      "cumplen": 945,
       "total": 1608,
       "porcentaje": 59
     },
@@ -51,7 +51,7 @@
       "porcentaje": 76
     },
     "P8": {
-      "cumplen": 34,
+      "cumplen": 38,
       "total": 1608,
       "porcentaje": 2
     },
@@ -71,7 +71,7 @@
       "porcentaje": 80
     },
     "P12": {
-      "cumplen": 79,
+      "cumplen": 82,
       "total": 1608,
       "porcentaje": 5
     }
@@ -162,18 +162,18 @@
       "P12": 1
     },
     "foundations": {
-      "P1": 8,
+      "P1": 13,
       "P2": 86,
       "P3": 88,
       "P4": 85,
-      "P5": 79,
+      "P5": 80,
       "P6": 87,
       "P7": 86,
-      "P8": 9,
+      "P8": 13,
       "P9": 87,
       "P10": 85,
       "P11": 70,
-      "P12": 21
+      "P12": 24
     },
     "ios": {
       "P1": 57,

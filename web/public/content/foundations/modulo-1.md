@@ -1,14 +1,14 @@
 # Módulo 1: Pensamiento computacional y programación
 
-**Entorno comprobado para esta revisión:** Python 3.14.6 en Linux (2026-11-18), la línea de referencia del curso. Los ejemplos no requieren paquetes externos. Las instrucciones para PowerShell y macOS no se ejecutaron en esos sistemas.
+**Entorno comprobado para esta edición (2026-11-21):** Python 3.14.10 en macOS 27.2 arm64, la línea de referencia del curso (`docs/VERSIONES.md`). Las cinco capturas de los temas 1 a 5 se generaron con `python3.14` ejecutado aquí y las transcripciones son literales de esa ejecución. Los ejemplos no requieren paquetes externos. El registro anterior (2026-11-18) decía 3.14.6 en Linux: se conserva como historial, pero los números de las transcripciones son las de hoy. Las instrucciones para Windows y PowerShell siguen contrastadas solo contra la documentación: **no se ejecutaron en esos sistemas**.
 
 
 ## Aprende construyendo
 
-### Tema 1: Del problema al algoritmo y a los casos de prueba
+### Tema 1: Del problema al algoritmo y a los casos de prueba · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a convertir un problema informal ("¿cuántas tareas están pendientes?") en un algoritmo explícito, implementarlo en Python y diseñar casos que incluyan una lista vacía y un estado no admitido. **Prerrequisitos:** Python instalado; comprueba `python3 --version` (o `py --version` en Windows).
+Al finalizar vas a convertir un problema informal ("¿cuántas tareas están pendientes?") en un algoritmo explícito, implementarlo en Python y diseñar casos que incluyan una lista vacía y un estado no admitido. **Prerrequisitos:** Python instalado y el Tema 4 de Fundamentos módulo 0 (leer un comando antes de ejecutarlo); comprueba `python3.14 --version` (o `py -3.14 --version` en Windows).
 
 #### Paso 2 · Contexto y caso real
 El gestor de tareas CLI (proyecto integrador Fundamentos) que vas a construir módulo a módulo necesita, desde el día uno, contestar una pregunta simple: de todas las tareas guardadas, ¿cuántas están pendientes? Parece trivial, pero si no defines el algoritmo antes de escribir código —¿qué devuelve si no hay ninguna tarea todavía?— vas a terminar adivinando el comportamiento en vez de poder explicarlo.
@@ -144,18 +144,82 @@ tareas = [
 print(contar_pendientes(tareas))
 print(contar_pendientes([]))
 ```
+
+**Explicación por bloques:** el primer bloque es la función. Recorre `tareas` con `enumerate(..., start=1)`
+para que el mensaje de error diga «Tarea 2» y no «Tarea 1» (los índices de Python empiezan en cero, la
+numeración para una persona empieza en uno). Dentro del bucle hay dos decisiones en un orden que importa:
+primero se rechaza lo que el contrato no admite (`raise ValueError`), y solo después se cuenta lo pendiente.
+El segundo bloque son los datos: tres diccionarios, dos de ellos con `"estado": "pendiente"`. La última
+parte son las dos llamadas: la primera debe dar `2` y la segunda, con la lista vacía, `0`. `raise` no
+imprime un texto y sigue de largo: detiene el proceso entero, y por eso el `codigo_de_salida` de esa
+ejecución es `1` y no `0`.
+
 ```bash
-python3 src/pendientes.py
+python3.14 src/pendientes.py
 ```
-En Windows usa `py src/pendientes.py`.
-**Resultado esperado:** `2` y luego `0`; la lista vacía nunca entra al `for`, así que el contador queda en cero sin necesitar ningún caso especial. **Fallo deliberado:** agrega al final del archivo esta segunda función, que calcula qué porcentaje de las tareas están pendientes sin pensar en la lista vacía:
+En Windows sustituye `python3.14` por `py -3.14`.
+
+![Captura de terminal: src/pendientes.py responde 2 y 0; la copia pendientes-con-porcentaje.py termina en ZeroDivisionError con código 1; pendientes-con-porcentaje-corregido.py devuelve 0.0; pendientes-estado-archivada.py termina en ValueError: Tarea 2: estado no admitido: archivada con código 1](content/figures/foundations/algoritmo-casos-de-prueba.svg)
+
+**Resultado esperado:** `2` y luego `0`; la lista vacía nunca entra al `for`, así que el contador queda en
+cero sin necesitar ningún caso especial. Salida literal de las cuatro ejecuciones de la captura, tomadas en
+esta máquina (macOS 27.2, arm64) el 2026-11-21 con `scripts/render_terminal_capture.py` dentro de la carpeta
+`ejemplo-algoritmo`:
+
+```text
+$ python3.14 src/pendientes.py
+2
+0
+$ python3.14 src/pendientes-con-porcentaje.py
+2
+0
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t1/src/pendientes-con-porcentaje.py", line 23, in <module>
+    print(porcentaje_pendientes([]))
+          ~~~~~~~~~~~~~~~~~~~~~^^^^
+  File "/private/tmp/f1m1/t1/src/pendientes-con-porcentaje.py", line 21, in porcentaje_pendiente
+s
+    return contar_pendientes(tareas) / len(tareas) * 100
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~
+ZeroDivisionError: division by zero
+$ echo "codigo_de_salida=$?"
+codigo_de_salida=1
+$ python3.14 src/pendientes-con-porcentaje-corregido.py
+2
+0
+0.0
+$ python3.14 src/pendientes-estado-archivada.py
+2
+0
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t1/src/pendientes-estado-archivada.py", line 24, in <module>
+    print(contar_pendientes(tareas))
+          ~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "/private/tmp/f1m1/t1/src/pendientes-estado-archivada.py", line 7, in contar_pendientes
+    raise ValueError(f"Tarea {numero}: estado no admitido: {estado}")
+ValueError: Tarea 2: estado no admitido: archivada
+$ echo "codigo_de_salida=$?"
+codigo_de_salida=1
+```
+
+Los renglones `/private/tmp/f1m1/t1/...` son la carpeta absoluta de esta máquina: en la tuya el `File` del
+traceback muestra la ruta de tu `ejemplo-algoritmo`, y el resto del mensaje es idéntico. Los renglones
+partidos (`porcentaje_pendiente` / `s`) son el corte a 96 columnas de la ventana, no dos errores distintos.
+
+**Fallo deliberado:** guardá una copia de `src/pendientes.py` como `src/pendientes-con-porcentaje.py` y
+agregale al final esta segunda función, que calcula qué porcentaje de las tareas están pendientes sin pensar
+en la lista vacía:
 ```python
 def porcentaje_pendientes(tareas):
     return contar_pendientes(tareas) / len(tareas) * 100
 
 print(porcentaje_pendientes([]))
 ```
-Python lanza `ZeroDivisionError: division by zero`: el conteo sobrevivió a la lista vacía, pero el porcentaje no, porque divide por `len(tareas)` sin comprobar que sea distinto de cero. Corrígelo reemplazando la función por esta versión, que comprueba la lista vacía antes de dividir (`if not tareas:` es verdadero cuando la lista no tiene elementos):
+Ejecutala con `python3.14 src/pendientes-con-porcentaje.py`. Python lanza
+`ZeroDivisionError: division by zero`: el conteo sobrevivió a la lista vacía, pero el porcentaje no, porque
+divide por `len(tareas)` sin comprobar que sea distinto de cero. Corrígelo guardando `src/pendientes-con-porcentaje-corregido.py`
+con esta versión, que comprueba la lista vacía antes de dividir (`if not tareas:` es verdadero cuando la lista
+no tiene elementos):
 ```python
 def porcentaje_pendientes(tareas):
     if not tareas:
@@ -164,10 +228,11 @@ def porcentaje_pendientes(tareas):
 
 print(porcentaje_pendientes([]))
 ```
-Ahora el resultado es `0.0`: la función define qué significa el porcentaje cuando no hay tareas antes de dividir.
+Ahora el resultado es `0.0`: la función define qué significa el porcentaje cuando no hay tareas antes de
+dividir.
 
 #### Paso 5 · Práctica guiada
-Antes de escribir cualquier función sobre una lista de tareas, preguntate qué debería devolver con cero tareas; si no podés responder en una frase, todavía no terminaste de diseñar el algoritmo. Para comprobar el otro límite del contrato, cambia `"hecho"` por `"archivada"` en una tarea y vuelve a ejecutar: debe detenerse con `ValueError` e identificar su posición y estado. Si tu proyecto necesita más estados, agrégalos explícitamente a `estados_admitidos`.
+Antes de escribir cualquier función sobre una lista de tareas, preguntate qué debería devolver con cero tareas; si no podés responder en una frase, todavía no terminaste de diseñar el algoritmo. Para comprobar el otro límite del contrato, guardá otra copia como `src/pendientes-estado-archivada.py`, cambiá `"hecho"` por `"archivada"` en una tarea y volvé a ejecutar con `python3.14 src/pendientes-estado-archivada.py`: el programa se detiene con `ValueError: Tarea 2: estado no admitido: archivada`, tal como sale en la captura del Paso 4, y el código de salida es `1`. Si tu proyecto necesita más estados, agrégalos explícitamente a `estados_admitidos`.
 
 #### Paso 6 · Práctica independiente
 Escribí la tabla de casos de prueba para `contar_pendientes` ANTES de tocar el código:
@@ -185,10 +250,10 @@ Para cada fila anotá la entrada concreta y la salida o error esperado, y despu�
 Entregá el algoritmo en pseudocódigo del Paso 3, la tabla de casos del Paso 6, el código de `contar_pendientes` y `porcentaje_pendientes`, y ambos fallos reproducidos: `ValueError` por estado inesperado y `ZeroDivisionError` por porcentaje de una lista vacía. Corrige el caso vacío antes de volver a ejecutar. Como siguiente paso, en el Tema 2 vas a ver qué pasa cuando esos mismos datos —por ejemplo, una prioridad escrita por el usuario— llegan con el tipo equivocado. Errores comunes: probar solo el caso feliz; dividir o indexar sin comprobar que la colección no esté vacía; contar silenciosamente un estado que el contrato no reconoce; escribir código antes de tener la tabla de casos. Fuentes oficiales consultadas el 2026-11-01: [control de flujo](https://docs.python.org/3/tutorial/controlflow.html) y [pruebas unitarias](https://docs.python.org/3/library/unittest.html).
 **Implicación práctica:** El conteo de pendientes funcionó a la primera con datos de ejemplo, y ese falso éxito es exactamente lo que oculta el bug hasta que un usuario real se queda sin tareas.
 
-### Tema 2: Variables, tipos, expresiones y cambios de estado
+### Tema 2: Variables, tipos, expresiones y cambios de estado · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a ver cómo Python distingue tipos en tiempo de ejecución, y vas a reproducir un bug silencioso —sin ningún error ni traceback— que aparece al comparar dos textos como si fueran números. **Prerrequisitos:** Tema 1 de este módulo.
+Al finalizar vas a ver cómo Python distingue tipos en tiempo de ejecución, y vas a reproducir un bug silencioso —sin ningún error ni traceback— que aparece al comparar dos textos como si fueran números. **Prerrequisitos:** el Tema 1 de este módulo y el Tema 2 de Fundamentos módulo 0 (del archivo fuente al programa en ejecución); comprueba `python3.14 --version` (o `py -3.14 --version` en Windows).
 
 #### Paso 2 · Contexto y caso real
 El gestor de tareas CLI va a leer la prioridad de una tarea desde la terminal con `input()`, por ejemplo para decidir cuál tarea atender primero. El problema: `input()` devuelve SIEMPRE texto, nunca un número, aunque el usuario haya tecleado solamente dígitos.
@@ -202,6 +267,8 @@ En Python cada valor tiene un tipo (`int`, `float`, `str`, `bool`, `list`...) y 
 
 Un valor es información concreta, como `25`, `3.14`, `"Ana"` o `True`. Una variable asocia un nombre con un valor para poder usarlo posteriormente. El tipo determina qué representa el valor y qué operaciones tienen sentido: sumar números es distinto de concatenar textos.
 
+Guardá el cálculo en `src/factura.py`:
+
 ```python
 precio = 25.50
 cantidad = 3
@@ -209,16 +276,26 @@ subtotal = precio * cantidad
 print(subtotal)
 ```
 
-Línea por línea: `precio` recibe un decimal; `cantidad`, un entero; la tercera línea evalúa la expresión de multiplicación y guarda `76.5`; la cuarta envía ese valor a salida. El signo `=` significa asignación, no afirmación matemática permanente. Si luego escribimos `cantidad = 4`, el estado cambia.
+Línea por línea: `precio` recibe un decimal; `cantidad`, un entero; la tercera línea evalúa la expresión de
+multiplicación y guarda `76.5`; la cuarta envía ese valor a salida. Ejecutado con
+`python3.14 src/factura.py`, el programa imprime `76.5`. El signo `=` significa asignación, no afirmación
+matemática permanente. Si luego escribimos `cantidad = 4`, el estado cambia y la misma ejecución pasa a dar
+`102.0`.
 
-La entrada de `input()` siempre es texto. Para operar numéricamente hay que convertirla:
+La entrada de `input()` siempre es texto. Para operar numéricamente hay que convertirla. Guardá la conversión
+en `src/cantidad.py`:
 
 ```python
 texto = input("Cantidad: ")
 cantidad = int(texto)
+print("cantidad leida:", cantidad)
 ```
 
-`int` puede fallar si el texto no representa un entero. Esa posibilidad forma parte del requisito; no debe ocultarse. Usa nombres que expresen significado (`precio_unitario`) y no posiciones accidentales (`x`).
+Ejecutado con `python3.14 src/cantidad.py`, teclear `3` responde `Cantidad: cantidad leida: 3`. Si en vez de
+`3` tecleás `abc`, el programa se detiene con
+`ValueError: invalid literal for int() with base 10: 'abc'` y código de salida `1`. `int` puede fallar si el
+texto no representa un entero. Esa posibilidad forma parte del requisito; no debe ocultarse. Usa nombres que
+expresen significado (`precio_unitario`) y no posiciones accidentales (`x`).
 
 Haz un trazado manual con columnas `línea`, `precio`, `cantidad`, `subtotal`. Actualiza la tabla después de cada instrucción. Este ejercicio parece lento, pero enseña a observar estado y prepara para usar un debugger.
 
@@ -283,12 +360,13 @@ Ruta segura: float() o Decimal() antes de int()? _________
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Representa título, prioridad y estado de una tarea con tipos coherentes. Traza sus valores antes y después de completarla y prueba que un texto vacío no se interpreta como una tarea válida.
 
 #### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/prioridad.py`:
+Parte de una carpeta vacía:
 ```bash
 mkdir ejemplo-variables
 cd ejemplo-variables
 mkdir src
 ```
+Escribí en `src/prioridad.py`:
 ```python
 def tarea_mas_urgente(prioridad_a, prioridad_b):
     return "a" if prioridad_a > prioridad_b else "b"
@@ -297,32 +375,73 @@ prioridad_a = int("9")
 prioridad_b = int("10")
 print(tarea_mas_urgente(prioridad_a, prioridad_b))
 ```
+**Explicación por bloques:** el primer bloque define la función y contiene una sola decisión escrita como
+`"a" if … else "b"`: compara los dos argumentos y devuelve una letra. Los `>` no saben de números ni de
+textos; lo que compara es **el tipo del valor que recibe**, y por eso el segundo bloque (`int("9")` y
+`int("10")`) es parte del ejemplo y no un adorno: convierte el texto en entero antes de llamar. La tercera
+línea imprime el resultado de la comparación.
+
 ```bash
-python3 src/prioridad.py
+python3.14 src/prioridad.py
 ```
-En Windows usa `py src/prioridad.py`.
-**Resultado esperado:** `b`; la tarea con prioridad 10 es la más urgente, como corresponde numéricamente. **Fallo deliberado:** quitá los dos `int(...)` y dejá las prioridades como las entrega `input()`, es decir como texto:
+En Windows sustituye `python3.14` por `py -3.14`.
+
+![Captura de terminal: src/prioridad.py responde b; la copia prioridad-como-texto.py responde a; prioridad-100.py imprime False y True](content/figures/foundations/prioridad-numero-o-texto.svg)
+
+**Resultado esperado:** `b`; la tarea con prioridad 10 es la más urgente, como corresponde numéricamente.
+Salida literal de las tres ejecuciones de la captura, tomadas en esta máquina (macOS 27.2, arm64) el
+2026-11-21 con `scripts/render_terminal_capture.py` dentro de la carpeta `ejemplo-variables`:
+
+```text
+$ python3.14 src/prioridad.py
+b
+$ python3.14 src/prioridad-como-texto.py
+a
+$ python3.14 src/prioridad-100.py
+False
+True
+```
+
+**Fallo deliberado:** guardá una copia como `src/prioridad-como-texto.py`, quitá los dos `int(...)` y dejá
+las prioridades como las entrega `input()`, es decir como texto:
 ```python
 prioridad_a = "9"
 prioridad_b = "10"
 print(tarea_mas_urgente(prioridad_a, prioridad_b))
 ```
-Esto imprime `a`. Python no lanza ningún error, porque comparar dos strings con `>` es válido: compara carácter por carácter, y `"9" > "1"` es cierto, así que `"9" > "10"` también lo es. El resultado es numéricamente incorrecto —10 es mayor que 9— pero no hay ningún traceback que lo delate. Corregilo convirtiendo ambas prioridades con `int(...)` antes de compararlas.
+Ejecutala con `python3.14 src/prioridad-como-texto.py`. Esto imprime `a`. Python no lanza ningún error, porque
+comparar dos strings con `>` es válido: compara carácter por carácter, y `"9" > "1"` es cierto, así que
+`"9" > "10"` también lo es. El resultado es numéricamente incorrecto —10 es mayor que 9— pero no hay ningún
+traceback que lo delate. Corregilo convirtiendo ambas prioridades con `int(...)` antes de compararlas.
 
 #### Paso 5 · Práctica guiada
-Pista: cuando algo se ejecuta sin ningún error pero el resultado está mal, sospechá primero de los tipos; imprimí `type(prioridad_a)` y `type(prioridad_b)` antes de comparar, no asumas que porque "se ven como números" Python los está tratando como números.
+Pista: cuando algo se ejecuta sin ningún error pero el resultado está mal, sospechá primero de los tipos;
+agregá esta línea a `src/prioridad-como-texto.py` justo antes del `print` y volvé a ejecutarlo:
+```python
+print(type(prioridad_a), type(prioridad_b))
+```
+Con las prioridades como texto la salida es `<class 'str'> <class 'str'>`, y con `int(...)` es
+`<class 'int'> <class 'int'>`. En la misma prueba, `"9" > "10"` da `True` y `int("9") > int("10")` da
+`False`: mismo programa, mismo `>`, dos respuestas opuestas según el tipo.
 
 #### Paso 6 · Práctica independiente
-Agregá una tercera prioridad `"100"` y predecí, ANTES de ejecutar, si `"100" > "9"` da `True` o `False` tratándolas como texto; después comprobalo y escribí en una línea por qué la comparación de textos puede contradecir la comparación numérica incluso con más de un dígito de diferencia.
+Guardá `src/prioridad-100.py` con estas dos líneas y predecí, ANTES de ejecutar, qué va a imprimir cada una:
+```python
+print("100" > "9")
+print(int("100") > int("9"))
+```
+Después comprobalo con `python3.14 src/prioridad-100.py` —la captura del Paso 4 ya trae esa ejecución:
+`False` y `True`— y escribí en una línea por qué la comparación de textos contradice a la numérica incluso
+cuando el primer operando tiene más dígitos que el segundo.
 
 #### Paso 7 · Cierre
-Entregá la versión correcta con `int(...)` del Paso 4, la comparación de strings que da `a` en vez de `b`, y la predicción escrita del Paso 6 sobre `"100" > "9"`; explicá por qué un programa sin errores ni advertencias puede estar devolviendo una respuesta incorrecta. Como siguiente paso, en el Tema 3 vas a recorrer todas las tareas con un bucle, donde este mismo descuido se puede repetir en cada vuelta sin que lo notes. Errores comunes: comparar o calcular con un valor que todavía es texto porque vino de `input()`; asumir que "no hay error" significa "el resultado es correcto". Fuentes oficiales: https://docs.python.org/es/3/library/stdtypes.html y https://docs.python.org/es/3/reference/expressions.html.
+Entregá la versión correcta con `int(...)` del Paso 4, la comparación de strings que da `a` en vez de `b`, y la predicción escrita del Paso 6 sobre `"100" > "9"`; explicá por qué un programa sin errores ni advertencias puede estar devolviendo una respuesta incorrecta. Como siguiente paso, en el Tema 3 vas a recorrer todas las tareas con un bucle, donde este mismo descuido se puede repetir en cada vuelta sin que lo notes. Errores comunes: comparar o calcular con un valor que todavía es texto porque vino de `input()`; asumir que "no hay error" significa "el resultado es correcto". Fuentes oficiales consultadas el 2026-11-21: [tipos estándar de Python](https://docs.python.org/es/3/builtins/stdtypes.html) —la dirección anterior, `library/stdtypes.html`, responde ahora una redirección a `builtins/stdtypes.html`— y [expresiones](https://docs.python.org/es/3/reference/expressions.html).
 **Implicación práctica:** `"9" > "10"` se ejecuta sin ninguna queja de Python: el intérprete no sabe que vos querías comparar números, y un programa que falla en silencio es más peligroso que uno que explota con un traceback.
 
-### Tema 3: Decisiones, repeticiones y trazado de ejecución
+### Tema 3: Decisiones, repeticiones y trazado de ejecución · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a recorrer una lista de tareas con un bucle y una condición para detectar cuáles están vencidas, y vas a trazar a mano la ejecución para encontrar un error de "uno de más, uno de menos" que deja afuera la última tarea sin que se note a simple vista. **Prerrequisitos:** Tema 2 de este módulo.
+Al finalizar vas a recorrer una lista de tareas con un bucle y una condición para detectar cuáles están vencidas, y vas a trazar a mano la ejecución para encontrar un error de "uno de más, uno de menos" que deja afuera la última tarea sin que se note a simple vista. **Prerrequisitos:** el Tema 2 de este módulo (tipos) y el Tema 3 de Fundamentos módulo 0 (moverse por carpetas sin perderse).
 
 #### Paso 2 · Contexto y caso real
 El gestor de tareas CLI necesita recorrer todas las tareas guardadas para marcar cuáles están vencidas (por ejemplo, con más de 3 días pendientes) y avisarle al usuario. Si el bucle que las recorre tiene un límite mal calculado, el programa no se cae ni avisa nada: simplemente deja una tarea sin revisar, y nadie lo nota hasta que esa tarea vencida se le escapó al usuario.
@@ -334,6 +453,7 @@ Una condición (`if`) elige un camino según si una expresión es `True` o `Fals
 
 Una condición produce `True` o `False`. `if` selecciona una rama; `for` o `while` repite trabajo. Estas herramientas son suficientes para expresar gran cantidad de algoritmos, pero también permiten bucles infinitos y ramas imposibles si no se razona con cuidado.
 
+El acumulador vive en `src/suma.py`:
 ```python
 total = 0
 for numero in [12, 8, 5]:
@@ -341,9 +461,11 @@ for numero in [12, 8, 5]:
 print(total)
 ```
 
-Antes del bucle, `total` vale cero. En cada iteración mantiene la suma de los elementos ya visitados: esa propiedad es un **invariante**. Después de 12 vale 12; después de 8 vale 20; después de 5 vale 25. Trazar una tabla permite predecir la salida sin ejecutar.
+Antes del bucle, `total` vale cero. En cada iteración mantiene la suma de los elementos ya visitados: esa propiedad es un **invariante**. Después de 12 vale 12; después de 8 vale 20; después de 5 vale 25. Ejecutado con `python3.14 src/suma.py`, el programa imprime `25`, que es el valor que predice la tabla. Trazar una tabla permite predecir la salida sin ejecutar.
 
+Las tres ramas del descuento viven en `src/descuento.py`, y `subtotal` se asigna arriba para que el archivo corra tal cual:
 ```python
+subtotal = 100
 if subtotal < 0:
     print("El subtotal no puede ser negativo")
 elif subtotal >= 100:
@@ -352,9 +474,15 @@ else:
     print(subtotal)
 ```
 
-El orden importa. Primero se rechaza lo inválido; luego se evalúa descuento; finalmente queda el caso ordinario. Para probarlo, elige valores a ambos lados de cada frontera: `-1`, `0`, `99.99`, `100` y `100.01`.
+El orden importa. Primero se rechaza lo inválido; luego se evalúa descuento; finalmente queda el caso
+ordinario. Con `subtotal = 100`, `python3.14 src/descuento.py` imprime `90.0`: la segunda rama, porque `100`
+sí cumple `>= 100`. Para probarlo, elegí valores a ambos lados de cada frontera: `-1`, `0`, `99.99`, `100` y
+`100.01`.
 
-**Error deliberado:** cambia `>= 100` por `> 100`. El caso `100` descubrirá la regresión. Esta práctica enseña que una prueba debe ser capaz de fallar cuando el comportamiento se rompe.
+**Error deliberado:** cambiá `>= 100` por `> 100` en `src/descuento.py` y volvé a ejecutarlo con
+`subtotal = 100`. Ahora imprime `100` en vez de `90.0`: la frontera quedó fuera de la rama del descuento. El
+caso `100` descubre la regresión. Esta práctica enseña que una prueba debe ser capaz de fallar cuando el
+comportamiento se rompe.
 
 **Analogía:** una condición es una bifurcación; un bucle es recorrer estaciones hasta cumplir un criterio. El trazado es el registro del viaje, no una suposición sobre dónde terminaste.
 
@@ -422,12 +550,13 @@ for i in range(0): entra _________ vez(ces)
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** Recorre tareas y selecciona las pendientes de prioridad alta. Construye una tabla de casos con lista vacía, ninguna coincidencia y varias coincidencias, prediciendo el resultado antes de ejecutar.
 
 #### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/vencidas.py`:
+Parte de una carpeta vacía:
 ```bash
 mkdir ejemplo-control-flujo
 cd ejemplo-control-flujo
 mkdir src
 ```
+Escribí en `src/vencidas.py`:
 ```python
 tareas = [
     {"descripcion": "comprar pan", "dias_pendiente": 1},
@@ -440,26 +569,70 @@ for i in range(len(tareas)):
     if tarea["dias_pendiente"] > 3:
         print(f"VENCIDA: {tarea['descripcion']}")
 ```
+**Explicación por bloques:** el primer bloque son los datos: tres listas de diccionarios, cada tarea con sus
+días pendiente. El segundo bloque es el bucle, y tiene tres piezas que hacen trabajos distintos.
+`range(len(tareas))` produce los índices —con tres tareas, `0, 1, 2`—; `tareas[i]` es la única línea que
+puede fallar con `IndexError`, porque pide una posición; el `if` decide si esa tarea se imprime. El límite
+está en el `range`, no en el `if`: si el `range` entrega un índice menos, el cuerpo nunca ve la última tarea
+y no hay forma de que el programa se queje.
+
 ```bash
-python3 src/vencidas.py
+python3.14 src/vencidas.py
 ```
-En Windows usa `py src/vencidas.py`.
-**Resultado esperado:** imprime `VENCIDA: pagar luz` y `VENCIDA: llamar al dentista`: dos tareas vencidas sobre tres. **Fallo deliberado:** cambiá `range(len(tareas))` por `range(len(tareas) - 1)`. Ahora solo imprime `VENCIDA: pagar luz`; "llamar al dentista", que es el último elemento (índice 2), nunca se revisa, porque con 3 tareas `range(len(tareas) - 1)` genera `0, 1` y se detiene antes de llegar a `2`. No hay ningún error: la tarea vencida simplemente queda sin alertar. Corregilo devolviendo el límite a `range(len(tareas))`.
+En Windows sustituye `python3.14` por `py -3.14`.
+
+![Captura de terminal: src/vencidas.py imprime dos tareas vencidas; la copia vencidas-uno-de-menos.py imprime solo pagar luz; vencidas-while.py termina en IndexError: list index out of range con código 1](content/figures/foundations/bucle-uno-de-menos.svg)
+
+**Resultado esperado:** imprime `VENCIDA: pagar luz` y `VENCIDA: llamar al dentista`: dos tareas vencidas
+sobre tres. Salida literal de las tres ejecuciones de la captura, tomadas en esta máquina (macOS 27.2, arm64)
+el 2026-11-21 con `scripts/render_terminal_capture.py` dentro de la carpeta `ejemplo-control-flujo`; el
+prefijo `/private/tmp/f1m1/t3` es la carpeta absoluta de esta máquina y en la tuya aparece la ruta de tu
+carpeta:
+
+```text
+$ python3.14 src/vencidas.py
+VENCIDA: pagar luz
+VENCIDA: llamar al dentista
+$ python3.14 src/vencidas-uno-de-menos.py
+VENCIDA: pagar luz
+$ python3.14 src/vencidas-while.py
+VENCIDA: pagar luz
+VENCIDA: llamar al dentista
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t3/src/vencidas-while.py", line 9, in <module>
+    tarea = tareas[i]
+            ~~~~~~^^^
+IndexError: list index out of range
+$ echo "codigo_de_salida=$?"
+codigo_de_salida=1
+```
+
+**Fallo deliberado:** guardá una copia como `src/vencidas-uno-de-menos.py` y cambiá `range(len(tareas))` por
+`range(len(tareas) - 1)`. Al ejecutarla con `python3.14 src/vencidas-uno-de-menos.py` solo imprime
+`VENCIDA: pagar luz`; "llamar al dentista", que es el último elemento (índice 2), nunca se revisa, porque con
+3 tareas `range(len(tareas) - 1)` genera `0, 1` y se detiene antes de llegar a `2`. No hay ningún error: la
+tarea vencida simplemente queda sin alertar. Corregilo devolviendo el límite a `range(len(tareas))`.
 
 #### Paso 5 · Práctica guiada
 Pista: antes de ejecutar, armá una tabla con columnas `i`, `tarea` y `¿se revisó?` y completala a mano siguiendo `range(len(tareas) - 1)` paso por paso; vas a ver en la tabla, antes de correr el código, que el índice 2 nunca aparece.
 
 #### Paso 6 · Práctica independiente
-Reescribí el bucle como un `while` con contador manual (`i = 0`, `i += 1` dentro del bucle) que logre el mismo resultado correcto que el `for` del Paso 4, y después rompelo cambiando la condición de corte de `i < len(tareas)` a `i <= len(tareas)`; tracealo a mano y explicá en una línea qué error concreto produce esta vez.
+Reescribí el bucle como un `while` con contador manual, en un archivo nuevo `src/vencidas-while.py`: `i = 0`
+antes del bucle, `tarea = tareas[i]` adentro y `i += 1` al final del cuerpo. Con la condición de corte
+`i < len(tareas)` tenés que obtener las mismas dos líneas que el `for` del Paso 4. Después rompelo cambiando
+esa condición por `i <= len(tareas)` y ejecutalo con `python3.14 src/vencidas-while.py`: esta vez el programa
+sí se detiene, con `IndexError: list index out of range` y código de salida `1` —es la tercera ejecución de la
+captura del Paso 4—. Tracealo a mano y explicá en una línea por qué el mismo error de cálculo que antes pasó
+desapercibido ahora explota: con `<` el índice fuera de rango nunca se pide, con `<=` sí.
 
 #### Paso 7 · Cierre
-Entregá el recorrido correcto del Paso 4, la versión con `range(len(tareas) - 1)` que se saltea la última tarea vencida, y la versión `while` con `i <= len(tareas)` del Paso 6 junto con el error que produce; explicá por qué un bucle con el límite mal puesto no avisa nada: simplemente procesa de menos o se pasa un paso más allá del final. Como siguiente paso, en el Tema 4 vas a dividir este mismo recorrido en funciones más chicas para que cada una se pueda probar por separado. Errores comunes: calcular el límite de un bucle sumando o restando uno sin verificarlo contra una tabla trazada a mano; confundir "no hay error" con "recorrió todo". Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/library/stdtypes.html.
+Entregá el recorrido correcto del Paso 4, la versión con `range(len(tareas) - 1)` que se saltea la última tarea vencida, y la versión `while` con `i <= len(tareas)` del Paso 6 junto con el error que produce; explicá por qué un bucle con el límite mal puesto no avisa nada: simplemente procesa de menos o se pasa un paso más allá del final. Como siguiente paso, en el Tema 4 vas a dividir este mismo recorrido en funciones más chicas para que cada una se pueda probar por separado. Errores comunes: calcular el límite de un bucle sumando o restando uno sin verificarlo contra una tabla trazada a mano; confundir "no hay error" con "recorrió todo". Fuentes oficiales consultadas el 2026-11-21: [control de flujo](https://docs.python.org/es/3/tutorial/controlflow.html) y [tipos estándar de Python](https://docs.python.org/es/3/builtins/stdtypes.html).
 **Implicación práctica:** `range(len(tareas) - 1)` no lanza ningún error ni advertencia: el programa corre, imprime algo razonable, y la única pista de que algo falta es contar a mano cuántas tareas vencidas había en realidad.
 
-### Tema 4: Funciones y descomposición de problemas
+### Tema 4: Funciones y descomposición de problemas · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar vas a dividir el problema de "contar tareas pendientes" en varias funciones chicas, cada una con una sola responsabilidad, y vas a descubrir por qué una función que hace más de lo que su nombre promete puede sorprender a quien la usa. **Prerrequisitos:** Tema 3 de este módulo.
+Al finalizar vas a dividir el problema de "contar tareas pendientes" en varias funciones chicas, cada una con una sola responsabilidad, y vas a descubrir por qué una función que hace más de lo que su nombre promete puede sorprender a quien la usa. **Prerrequisitos:** el Tema 3 de este módulo (bucles y `if`) y el Tema 1 (la función `contar_pendientes` que aquí se desarma).
 
 #### Paso 2 · Contexto y caso real
 El gestor de tareas CLI va a crecer: cargar tareas desde un archivo, filtrarlas, contarlas, mostrarlas, guardarlas. Si todo ese trabajo vive en una sola función gigante, cualquier cambio chico —por ejemplo, cambiar cómo se guarda una tarea— obliga a releer y entender todo el bloque, incluso la parte que no tiene nada que ver con el cambio.
@@ -471,6 +644,7 @@ Una función con una sola responsabilidad hace una cosa, la hace bien, y su nomb
 
 Una función nombra una operación y permite utilizarla con datos distintos. Sus parámetros son entradas; `return` produce una salida. Una función pequeña puede comprobarse de manera aislada.
 
+La regla de negocio vive en `src/total.py`:
 ```python
 def calcular_total(subtotal):
     if subtotal < 0:
@@ -480,9 +654,26 @@ def calcular_total(subtotal):
     return subtotal
 ```
 
-`def` declara la función. `subtotal` solo existe dentro de ella: tiene alcance local. La validación establece parte de su contrato. `raise` no imprime silenciosamente un valor inventado; informa que el contrato fue violado. Cada `return` termina la función y entrega un resultado.
-
+`def` declara la función. `subtotal` solo existe dentro de ella: tiene alcance local. La validación establece parte de su contrato. `raise` no imprime silenciosamente un valor inventado; informa que el contrato fue violado. Cada `return` termina la función y entrega un resultado. Para comprobar las tres salidas, agregá estas tres líneas al mismo `src/total.py` y ejecutalo con `python3.14 src/total.py`:
 ```python
+print(calcular_total(50))
+print(calcular_total(100))
+print(calcular_total(100.01))
+```
+La salida literal es `50`, `90.0` y `90.009`: la primera llamada toma el `return` del final, las otras dos el
+del descuento. Notá el tercer número: `100.01 * 0.90` no da un valor de dos decimales, y eso es lo que el
+Tema 5 explica con punto flotante.
+
+Ahora entrada, negocio y presentación separadas, en `src/presentacion.py`; la función `calcular_total` se
+copia arriba para que el archivo corra solo:
+```python
+def calcular_total(subtotal):
+    if subtotal < 0:
+        raise ValueError("El subtotal no puede ser negativo")
+    if subtotal >= 100:
+        return subtotal * 0.90
+    return subtotal
+
 def leer_subtotal():
     return float(input("Subtotal: "))
 
@@ -494,7 +685,10 @@ total = calcular_total(subtotal)
 mostrar_total(total)
 ```
 
-Ahora entrada, negocio y presentación están separadas. `calcular_total` no conoce la terminal y puede probarse directamente con `calcular_total(100)`. Evita funciones que lean, calculen, guarden y muestren todo a la vez.
+Ejecutado con `python3.14 src/presentacion.py`, teclear `250` imprime `Total: 225.00` (el prompt `Subtotal:`
+y el resultado salen en el mismo renglón de la terminal porque `input` no cambia de línea).
+`calcular_total` no conoce la terminal y puede probarse directamente con `calcular_total(100)`. Evita funciones
+que lean, calculen, guarden y muestren todo a la vez.
 
 **Analogía:** una función es una máquina con conectores de entrada y salida. Si además obliga a introducir la mano, pintar el producto y enviarlo por correo, tiene demasiadas responsabilidades.
 
@@ -557,12 +751,13 @@ Función más fácil de testear: _________ (¿por qué?)
 **¿Por qué es importante?** Porque `contar_pendientes` devolvió el número correcto: el bug no está en el resultado que mirás, sino en el efecto secundario que nadie pidió y que solo se nota revisando la lista después.
 
 #### Paso 4 · Demostración guiada desde cero
-Parte de una carpeta vacía y crea `src/descomposicion.py`:
+Parte de una carpeta vacía:
 ```bash
 mkdir ejemplo-funciones
 cd ejemplo-funciones
 mkdir src
 ```
+Escribí en `src/descomposicion.py`:
 ```python
 def filtrar_pendientes(tareas):
     return [tarea for tarea in tareas if tarea["estado"] == "pendiente"]
@@ -577,11 +772,34 @@ tareas = [
 pendientes = filtrar_pendientes(tareas)
 print(contar(pendientes))
 ```
+**Explicación por bloques:** `filtrar_pendientes` recorre y devuelve **una lista nueva** (`[... for ... if ...]`),
+así que no toca la que recibió. `contar` es una sola línea: `len(tareas)`. Las cuatro líneas finales son el
+programa: arman los datos, filtran, cuentan e imprimen. Fijate en lo que NO hacen las dos funciones: ninguna
+tiene un `print` adentro, ninguna escribe a disco y ninguna modifica `tareas`. Por eso `contar` se puede
+probar pasando una lista escrita a mano, sin necesidad de la función de al lado.
+
 ```bash
-python3 src/descomposicion.py
+python3.14 src/descomposicion.py
 ```
-En Windows usa `py src/descomposicion.py`.
-**Resultado esperado:** `1`. Cada función hace una sola cosa —`filtrar_pendientes` filtra, `contar` cuenta— y ninguna imprime ni modifica la lista original: `tareas` sigue teniendo sus 2 elementos después de llamarlas. **Fallo deliberado:** reemplazá `contar` por esta versión que "de paso" también vacía la lista:
+En Windows sustituye `python3.14` por `py -3.14`.
+
+![Captura de terminal: src/descomposicion.py responde 1; src/efecto-oculto.py imprime Hay 1 pendientes y después la lista vacia []](content/figures/foundations/efecto-secundario-oculto.svg)
+
+**Resultado esperado:** `1`. Cada función hace una sola cosa —`filtrar_pendientes` filtra, `contar` cuenta— y
+ninguna imprime ni modifica la lista original: `tareas` sigue teniendo sus 2 elementos después de llamarlas.
+Salida literal de las dos ejecuciones de la captura, tomadas en esta máquina (macOS 27.2, arm64) el
+2026-11-21 con `scripts/render_terminal_capture.py` dentro de la carpeta `ejemplo-funciones`:
+
+```text
+$ python3.14 src/descomposicion.py
+1
+$ python3.14 src/efecto-oculto.py
+Hay 1 pendientes
+[]
+```
+
+**Fallo deliberado:** guardá una copia como `src/efecto-oculto.py` y reemplazá `contar` por esta versión que
+"de paso" también vacía la lista:
 ```python
 def contar_pendientes(tareas):
     print(f"Hay {len(tareas)} pendientes")
@@ -593,7 +811,11 @@ pendientes = filtrar_pendientes(tareas)
 total = contar_pendientes(pendientes)
 print(pendientes)
 ```
-`total` da el valor correcto, pero la última línea imprime `[]`: `contar_pendientes` vació la lista que recibió, aunque su nombre solo prometía contar. Quien la llamó no tenía forma de adivinar, por el nombre, que `pendientes` iba a quedar vacía después. Corregilo quitando el `print` y el `.clear()`, dejándola pura: recibe una lista y devuelve un número, sin tocar nada más.
+Al ejecutarla con `python3.14 src/efecto-oculto.py`, `total` da el valor correcto, pero la última línea
+imprime `[]`: `contar_pendientes` vació la lista que recibió, aunque su nombre solo prometía contar. Quien la
+llamó no tenía forma de adivinar, por el nombre, que `pendientes` iba a quedar vacía después. Corregilo
+quitando el `print` y el `.clear()`, dejándola pura: recibe una lista y devuelve un número, sin tocar nada
+más.
 
 #### Paso 5 · Práctica guiada
 Pista: para confirmar que una función es pura, llamala dos veces seguidas con el mismo argumento; si `contar_pendientes(pendientes)` cambia lo que devuelve la segunda vez —o la lista misma cambió—, algo además de "contar" está pasando ahí adentro.
@@ -602,12 +824,12 @@ Pista: para confirmar que una función es pura, llamala dos veces seguidas con e
 Escribí `cargar_tareas()` que devuelva una lista fija en memoria (simulando un archivo), sin filtrar ni contar nada adentro; después encadená `cargar_tareas() → filtrar_pendientes() → contar()` y confirmá que podés probar cada una por separado, pasándole datos armados a mano, sin necesitar las otras dos.
 
 #### Paso 7 · Cierre
-Entregá las tres funciones puras (`cargar_tareas`, `filtrar_pendientes`, `contar`) de los Pasos 4 y 6, la versión con el efecto secundario oculto que vacía la lista, y la explicación de por qué el nombre de una función es una promesa que el código debe cumplir sin sorpresas. Con esto cerrás el Módulo 1; como siguiente paso, en el Módulo 2 (Estructuras de datos, algoritmos y complejidad) vas a usar estas mismas funciones chicas sobre listas, diccionarios, pilas y colas más grandes. Errores comunes: una función que calcula y además imprime o guarda; nombrar una función con un verbo que no describe todo lo que hace. Fuentes oficiales: https://docs.python.org/es/3/tutorial/controlflow.html y https://docs.python.org/es/3/reference/compound_stmts.html.
+Entregá las tres funciones puras (`cargar_tareas`, `filtrar_pendientes`, `contar`) de los Pasos 4 y 6, la versión con el efecto secundario oculto que vacía la lista, y la explicación de por qué el nombre de una función es una promesa que el código debe cumplir sin sorpresas. Con esto cerrás el Módulo 1; como siguiente paso, en el Módulo 2 (Estructuras de datos, algoritmos y complejidad) vas a usar estas mismas funciones chicas sobre listas, diccionarios, pilas y colas más grandes. Errores comunes: una función que calcula y además imprime o guarda; nombrar una función con un verbo que no describe todo lo que hace. Fuentes oficiales consultadas el 2026-11-21: [control de flujo](https://docs.python.org/es/3/tutorial/controlflow.html) y [sentencias compuestas](https://docs.python.org/es/3/reference/compound_stmts.html).
 
-### Tema 5: Cómo la computadora representa los datos — binario, texto y decimales
+### Tema 5: Cómo la computadora representa los datos — binario, texto y decimales · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
-Al finalizar podrás explicar cómo un número, una letra y un decimal se guardan realmente como ceros y unos, convertir entre binario y decimal, y entender por qué `0.1 + 0.2` no da exactamente `0.3`. Prerrequisitos: Temas 1-2 de este módulo (variables y tipos).
+Al finalizar podrás explicar cómo un número, una letra y un decimal se guardan realmente como ceros y unos, convertir entre binario y decimal, y entender por qué `0.1 + 0.2` no da exactamente `0.3`. **Prerrequisitos:** los Temas 1 y 2 de este módulo (variables y tipos); comprueba `python3.14 --version` (o `py -3.14 --version` en Windows).
 
 #### Paso 2 · Contexto y caso real
 Un día el gestor de tareas muestra un total de `0.30000000000000004` en vez de `0.3`, o un nombre con acento aparece como `JosÃ©`. No son bugs misteriosos: son consecuencias directas de cómo la máquina representa números y texto. Entender la representación te ahorra horas de confusión y es la base de todo lo demás.
@@ -619,6 +841,20 @@ La computadora almacena información como **bits** (0 o 1). El entero `11` puede
 
 **Conceptos clave:** bit, binario/decimal, code point, codificación UTF-8, punto flotante y error de redondeo.
 **Cuándo no usarlo:** no necesitas convertir binario a mano en el día a día, pero sí entender por qué los decimales fallan: para dinero usa enteros (centavos) o `Decimal`, nunca `float`.
+
+**Diagrama:**
+
+```mermaid
+flowchart LR
+    ENTERO["11"] -->|posiciones base 2| BIN["1011"]
+    LETRA["é"] -->|punto de código| CP["U+00E9"]
+    CP -->|codificado| BY["c3 a9 · 2 bytes"]
+    DEC["0.1"] -->|fracción en base 2| FP["0.1000000000000000055511151"]
+```
+
+Los cuatro rótulos son reproducibles en la terminal: `bin(11)` da `0b1011`, `hex(ord("é"))` da `0xe9`,
+`"é".encode("utf-8").hex()` da `c3a9` y `f"{0.1:.25f}"` da `0.1000000000000000055511151`: el `0.1` que Python
+muestra por defecto es una versión corta de ese número, no el valor guardado.
 
 **Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** si el gestor maneja importes o presupuestos, guárdalos en centavos (enteros) y demuestra con una prueba que sumar `0.1 + 0.2` como `float` produce un total incorrecto frente a la versión en centavos.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
@@ -653,15 +889,28 @@ print("¿Es igual a 0.3?", resultado == 0.3)   # False
 print("¿Casi igual?", abs(resultado - 0.3) < 1e-9)   # True
 ```
 
+**Explicación por bloques:** el primer bloque usa dos notaciones del mismo entero: `bin(11)` devuelve el
+texto `0b1011` y `0b1011` en el código es un literal que Python ya convierte a `11`. El segundo bloque separa
+las dos caras de un carácter: `ord("A")` pregunta el punto de código (65) y `.encode("utf-8")` pregunta cómo
+se escribe ese punto de código en bytes; la respuesta no ocupa lo mismo para `é` (2 bytes) que para 🚚 (4).
+El tercer bloque calcula una vez (`resultado = 0.1 + 0.2`) y lo compara de dos maneras: con `==`, que exige
+igualdad exacta y da `False`, y con una tolerancia (`abs(resultado - 0.3) < 1e-9`), que da `True`.
+
 **Ejecuta el ejemplo:**
 
 ```bash
-python3 representacion.py
+python3.14 representacion.py
 ```
-En Windows usa `py representacion.py`.
+En Windows sustituye `python3.14` por `py -3.14`.
 
-Salida esperada:
+![Captura de terminal: representacion.py imprime 0b1011, 11, 65, los bytes de é y del emoji, 0.30000000000000004, False y True](content/figures/foundations/binario-utf8-flotante.svg)
+
+**Resultado esperado:** `11 en binario: 0b1011`, el acento `é` ocupa 2 bytes y el emoji 🚚 ocupa 4, y
+`0.1 + 0.2` da `0.30000000000000004` (distinto de `0.3`). Salida literal de la captura, tomada en esta máquina
+(macOS 27.2, arm64) el 2026-11-21 con `scripts/render_terminal_capture.py` dentro de la carpeta `ejemplo`:
+
 ```text
+$ python3.14 representacion.py
 11 en binario: 0b1011
 0b1011 en decimal: 11
 Código de 'A': 65
@@ -672,13 +921,29 @@ Código de 'A': 65
 ¿Casi igual? True
 ```
 
-**Resultado esperado:** `11 en binario: 0b1011`, el acento `é` ocupa 2 bytes y el emoji 🚚 ocupa 4, y `0.1 + 0.2` da `0.30000000000000004` (distinto de `0.3`). **Fallo deliberado:** el ejemplo ya calcula `resultado = 0.1 + 0.2`; comprueba que `resultado == 0.3` es `False` y que una rama `if resultado == 0.3:` no se ejecutaría. No hay excepción: es un resultado incorrecto para una regla que esperaba igualdad exacta. Para dinero usa centavos enteros o `Decimal`; compara floats con tolerancia solo cuando el problema admite aproximación.
+**Fallo deliberado:** creá `comparacion.py` con la comparación exacta puesta donde iría una regla de negocio,
+y ejecutalo con `python3.14 comparacion.py`:
+```python
+resultado = 0.1 + 0.2
+
+if resultado == 0.3:
+    print("descuento aplicado")
+```
+La rama no se ejecuta y el archivo no imprime nada, con código de salida `0`, aunque matemáticamente 0,1 más
+0,2 sea 0,3. No hay excepción: es un resultado incorrecto para una regla que esperaba igualdad exacta. Para
+dinero usa centavos enteros o `Decimal`; compara floats con tolerancia solo cuando el problema admite
+aproximación.
 
 #### Paso 5 · Práctica guiada
-Convierte a mano (y luego verifica con `bin()`) el número 42 a binario, y el binario `110100` a decimal. Pista: suma las potencias de 2 donde hay un 1.
+Convierte a mano (y luego verifica con `bin()` y `int(..., 2)`) el número 42 a binario, y el binario `110100`
+a decimal. Pista: suma las potencias de 2 donde hay un 1. Comprobado en esta máquina con
+`python3.14 -c "print(bin(42), int('110100', 2))"`: `0b101010` y `52`.
 
 #### Paso 6 · Práctica independiente
-Escribe una función que reciba un texto y devuelva cuántos **bytes** ocupa en UTF-8 (no cuántos caracteres), y pruébala con "hola", "ñandú" y "café ☕". Explica por qué bytes y caracteres no coinciden.
+Escribe en `bytes.py` una función que reciba un texto y devuelva cuántos **bytes** ocupa en UTF-8 (no cuántos
+caracteres), y pruébala con "hola", "ñandú" y "café ☕". La ejecución de referencia en esta máquina da
+`4 caracteres / 4 bytes`, `5 / 7` y `6 / 9`: si tus números no coinciden, revisá si estás contando `len(texto)`
+en vez de `len(texto.encode("utf-8"))`. Explicá por qué bytes y caracteres no coinciden.
 
 #### Paso 7 · Cierre
 Entrega las conversiones binario↔decimal, el conteo de bytes UTF-8 y el fallo de comparación de decimales. **¿Por qué es importante?** Casi todo principiante tropieza con el resultado visible de `0.1 + 0.2` y con el texto mal decodificado. Entender binario, UTF-8 y punto flotante ayuda a diagnosticar datos en archivos, bases de datos y redes. **Fuentes primarias consultadas el 2026-11-01:** [función `bin`](https://docs.python.org/3/library/functions.html#bin), [Unicode en Python](https://docs.python.org/3/howto/unicode.html), [aritmética de punto flotante](https://docs.python.org/3/tutorial/floatingpoint.html) y [aritmética decimal](https://docs.python.org/3/library/decimal.html).
