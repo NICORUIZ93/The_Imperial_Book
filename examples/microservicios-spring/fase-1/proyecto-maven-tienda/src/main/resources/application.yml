@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: tienda-maven
+  datasource:
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/tienda}
+    username: ${DATABASE_USER:tienda}
+    password: ${DATABASE_PASSWORD:tienda-local}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+
+server:
+  port: ${SERVER_PORT:8080}

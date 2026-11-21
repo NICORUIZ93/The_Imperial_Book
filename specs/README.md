@@ -21,3 +21,5 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las etiqu
 | [019](019-verificacion-en-mac-y-navegador.md) | Verificación real en el Mac del dueño y en navegador | en curso |
 | [020](020-reestructuracion-de-temarios.md) | Reestructuración de temarios aprobada por el dueño | en curso |
 | [021](021-reestructuracion-total-de-la-academia.md) | Reestructuración total: un tema, un lugar, una forma (incluye Floci) | en curso |
+| [022](022-curso-microservicios-spring-boot-fase-1.md) | Curso Microservicios Spring Boot — Fase 1 | en curso |
+| [023](023-fase-2-maven-compose-y-presentacion-spring.md) | Fase 2 Spring, starter Maven/Compose y presentación | en curso |

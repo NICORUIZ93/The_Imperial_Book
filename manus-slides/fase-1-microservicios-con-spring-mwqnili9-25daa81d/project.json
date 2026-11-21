@@ -1,0 +1,74 @@
+{
+  "id": "fase-1-microservicios-con-spring-mwqnili9-25daa81d",
+  "title": "Fase 1 · Microservicios con Spring Boot desde Cero",
+  "designType": "deck",
+  "resourceUri": "manus-resource://manus-slides/deck/fase-1-microservicios-con-spring-mwqnili9-25daa81d",
+  "widgetUri": "manus-widget://manus-slides/studio/deck/fase-1-microservicios-con-spring-mwqnili9-25daa81d",
+  "versionId": "v-mwqnillm-db58824b",
+  "projectDir": "/Users/nicolasruiz/Documents/GitHub/Academia_Floci/manus-slides/fase-1-microservicios-con-spring-mwqnili9-25daa81d",
+  "activeFile": "portada.xml",
+  "files": [],
+  "scaffolds": [],
+  "viewState": {
+    "mode": "preview",
+    "zoom": 1,
+    "slide_ids": [
+      "portada",
+      "resultado",
+      "sistema",
+      "calendario",
+      "metodo",
+      "modulos",
+      "brechas"
+    ],
+    "outline": [
+      {
+        "id": "portada",
+        "title": "Microservicios con Spring Boot desde Cero",
+        "summary": "Fase 1 · Fundamentos del stack y primer microservicio. Curso A independiente, diseño curricular de trabajo. 5 semanas · 75 horas. [portada, título y una línea de subtítulo]",
+        "state": "edit_pending"
+      },
+      {
+        "id": "resultado",
+        "title": "De programador a constructor de servicios",
+        "summary": "El estudiante ya sabe programar y usar terminal, Git y editor; parte sin experiencia en Spring/distribuidos. Resultado: construir, probar y diagnosticar una API REST con persistencia y caché. [2 columnas de perfil inicial y resultado]",
+        "state": "edit_pending"
+      },
+      {
+        "id": "sistema",
+        "title": "Una Tienda crece por capas",
+        "summary": "Mostrar el mismo proyecto guía que avanza Java/build → contenedor Spring → API → persistencia → calidad → caché; la decisión final es separar solo con razón. [flujo de 6 pasos]",
+        "state": "edit_pending"
+      },
+      {
+        "id": "calendario",
+        "title": "Cinco semanas, un sistema",
+        "summary": "Semana 1 Java/build; 2 Spring/IoC/config; 3 API/JPA; 4 queries/migraciones/testing; 5 calidad/caché/concurrencia. Mostrar evidencia al final de cada semana. [5 filas con objetivo y evidencia]",
+        "state": "edit_pending"
+      },
+      {
+        "id": "metodo",
+        "title": "Cada tema se domina construyéndolo",
+        "summary": "Explicar los nueve criterios: concepto/cuándo no; analogía/diagrama; escribir cada archivo desde cero; referencia completa al final; línea por línea; Compose/lab; verificación; modificación guiada; error/diagnóstico. [9 pasos numerados]",
+        "state": "edit_pending"
+      },
+      {
+        "id": "modulos",
+        "title": "Cuatro módulos, una progresión técnica",
+        "summary": "Módulo 1 Java moderno y Spring; 2 REST y persistencia; 3 pruebas y calidad; 4 Redis, rendimiento y concurrencia. Resaltar trade-offs y pruebas como hilo transversal. [4 bloques conectados]",
+        "state": "edit_pending"
+      },
+      {
+        "id": "brechas",
+        "title": "Diseño riguroso; ejecución pendiente",
+        "summary": "El documento Fase 1 no se declara listo: 29 fichas diseñadas, starter Maven/Compose inicial creado en esta entrega, pero ejecución Docker no comprobada; continúan pendientes la construcción incremental común de los 29 temas, Compose-first universal y evidencia integral. Cierre: construir, medir y validar en Mac antes de publicar. [3 estados con distinción diseño/código/prueba]",
+        "state": "edit_pending"
+      }
+    ],
+    "generate_mode": "pptx",
+    "isPptxSlides": true,
+    "deck_topic": "education"
+  },
+  "createdAt": "2026-11-21T16:57:44.289Z",
+  "updatedAt": "2026-11-21T16:57:44.678Z"
+}
