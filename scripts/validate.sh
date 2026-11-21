@@ -59,6 +59,11 @@ echo "== Auditoría de los 12 puntos de la definición de terminado (MASTER-PROM
 # cuando el criterio exista en todos, si no se legaliza la deuda que hay hoy.
 python3 scripts/audit_master_prompt_items.py --check
 
+echo "== Coherencia material del código de cada tema (rutas usadas que ningún tema crea)"
+# Solo frescura del informe, no el número: mientras queden temas con C1 sin revisar no hay umbral que
+# gatear, y fijar uno ahora legalizaría la deuda. La puerta de umbral se pondrá sobre el 90 %.
+python3 scripts/audit_code_coherence.py --check
+
 echo "== Specs"
 echo "== Formato único (specs/021)"
 python3 scripts/validate_formato.py --check > /tmp/validate_formato.out || { tail -1 /tmp/validate_formato.out; exit 1; }
