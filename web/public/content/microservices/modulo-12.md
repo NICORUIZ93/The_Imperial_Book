@@ -1166,7 +1166,7 @@ class PatronesTest {
 cd f057-resilience4j && ../gradlew test
 ```
 
-**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** con `sliding-window-size: 4`, `minimum-number-of-calls: 4`, `failure-rate-threshold: 50`
 y `max-attempts: 3`, el inventario falla siempre. ¿Cuántas peticiones HTTP llegan al inventario en las dos primeras
@@ -1844,7 +1844,7 @@ class PresupuestoTest {
 cd f058-presupuesto && ../gradlew test
 ```
 
-**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** el gateway tiene `response-timeout: 2s`, el BFF llama a pedidos con 3 intentos de
 800 ms y pedidos llama al inventario con timeout de 1 s. ¿Qué está mal y cómo lo corriges con un presupuesto de 1,5 s?
@@ -2483,7 +2483,7 @@ class FallbacksTest {
 cd f059-fallbacks && ../gradlew test
 ```
 
-**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** el servicio de permisos no responde y tu endpoint `GET /facturas/{id}` debe comprobar si
 el usuario puede verla. Tienes en caché que hace 2 horas sí podía. ¿Qué respondes?
@@ -3206,7 +3206,7 @@ class ExperimentoCaosTest {
 cd f060-caos && ../gradlew test         # Docker encendido
 ```
 
-**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. Si alguien quita el timeout
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. Si alguien quita el timeout
 de `ProductoApp`, este test falla con `hipótesis: p95 < 300 ms` en el mensaje: la resiliencia queda protegida en cada
 build.
 

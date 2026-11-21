@@ -515,7 +515,7 @@ class EvaluadorDeArquitecturaTest {
 }
 ```
 
-**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. **Pregunta de
 comprobación:** una empresa de 120 desarrolladores en 12 equipos no tiene CI/CD ni monitoreo. ¿Qué recomienda el
 evaluador y por qué? *(Monolito modular: sin plataforma operativa, cada servicio nuevo multiplica los incidentes; lo
 primero es construir la plataforma.)*
@@ -1172,7 +1172,7 @@ class FlujoEntreContextosTest {
 }
 ```
 
-**Output esperado:** 7 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (5 de `PedidoTest`, 1 de
+**Output esperado:** 7 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)* (5 de `PedidoTest`, 1 de
 `PlanificadorDeEnviosTest` y 1 de `FlujoEntreContextosTest`). **Pregunta de comprobación:** ¿por qué `Envio` no tiene
 un campo de tipo `Pedido`? *(Porque pertenece a otro contexto: depende solo del evento publicado; si tuviera `Pedido`,
 cualquier cambio interno de Ventas rompería Envíos.)*
@@ -1519,7 +1519,7 @@ public class Inventario {
 - Paso 1: dos bloques que empiezan por `# ` con el nombre del módulo, cada uno con `> Logical name: pedidos` (o
   `inventario`), `> Base package: academia.modulith.pedidos` (o `...inventario`), `> Excluded packages: none`,
   `> Direct module dependencies:` (inventario muestra a pedidos; pedidos, `none`) y `> Spring beans:` con sus beans.
-  Termina con 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+  Termina con 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 - Paso 3: en el log, `Reservadas 3 unidades de CAFE-500G para P-1`, y 1 línea `PASSED`.
 
 Paso 2: el test falla con `org.springframework.modulith.core.Violations` y un mensaje que empieza por
@@ -1591,7 +1591,7 @@ class InventarioTest {
 }
 ```
 
-**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. **Pregunta de
 comprobación:** si `Pedidos.completar` lanza una excepción después de `publishEvent`, ¿inventario reserva stock? *(No:
 `@ApplicationModuleListener` es transaccional y solo recibe el evento si la transacción se confirma.)*
 
@@ -2068,7 +2068,7 @@ class RevisorDeConfiguracionTest {
 }
 ```
 
-**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. **Pregunta de
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. **Pregunta de
 comprobación:** ¿qué factor violas si guardas el carrito de compras en un `HashMap` del controlador y tienes dos
 réplicas? *(El VI: cada réplica tiene un carrito distinto y un reinicio lo borra; el estado debe ir a un servicio de
 respaldo como Redis o la base de datos.)*
@@ -2732,7 +2732,7 @@ class FachadaStranglerTest {
 }
 ```
 
-**Output esperado:** 10 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (5 + 2 + 3). **Pregunta de
+**Output esperado:** 10 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)* (5 + 2 + 3). **Pregunta de
 comprobación:** ¿qué regla agregas para que `/cotizaciones/masivas` siga en el monolito mientras el resto de
 `/cotizaciones` va al servicio nuevo, y por qué funciona? *(`/cotizaciones/masivas->monolito`: gana el prefijo más
 largo.)*
@@ -3152,7 +3152,7 @@ class BdPorServicioTest {
 }
 ```
 
-**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. El mensaje que comprueba el
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. El mensaje que comprueba el
 segundo test es el del driver JDBC (salida real con el driver 42.7.2 sobre PostgreSQL 16.15):
 `FATAL: permission denied for database "envios_db"` seguido de `Detail: User does not have CONNECT privilege.` (código
 SQLState `42501`). `./verificar.sh` además ejecuta los tres guiones y exige que los dos primeros fallen y el tercero

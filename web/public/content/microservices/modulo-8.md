@@ -31,8 +31,10 @@ PostgreSQL en 5432) y trabaja cada tema en su carpeta con `../gradlew test`. La 
 programas en Python que hablan con **los mismos Redis** usando un cliente mínimo de menos de 60 líneas (`resp.py`), para que
 veas cada comando (`SET NX PX`, `EVAL`, `INCR`, `XADD`…) sin capas intermedias. Las salidas de los simuladores de
 esta lección son **reales** (se ejecutaron con Python 3.13.18 contra Redis 7.0.15, que tiene los mismos comandos que
-8.10.2); las salidas de Gradle quedan pendientes de confirmar en el Mac del dueño
-(`verificacion/microservicios/pendiente.md`), porque en el entorno donde se escribió no hay acceso a Maven Central.
+8.10.2, y volvieron a pasar el 2026-11-21 con Python 3.15.2: `Ran 9 tests in 2.498s · OK`). Las salidas de Gradle
+se confirmaron en el Mac del dueño el 2026-11-21: `bash ./verificar.sh --compose` terminó en `RESULTADO: OK ·
+Módulo 4 (Caching y rendimiento) verificado` en 20 s, con **32 tests y 0 fallos** repartidos en f037 3 · f038 3 ·
+f039 4 · f040 22, contados sobre los `TEST-*.xml` que genera el propio build.
 
 `docker-compose.yml` del módulo:
 
@@ -730,7 +732,7 @@ cd examples/microservicios/modulo-8/f037-cache-redis
 ../gradlew test
 ```
 
-**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. El test del TTL tarda
+**Output esperado:** 3 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*. El test del TTL tarda
 unos 2,5 s a propósito.
 
 **Pregunta de comprobación:** añades en `ProductoServicio` un método `buscarDos(long a, long b)` que hace
@@ -1503,7 +1505,7 @@ cd examples/microservicios/modulo-8
 (cd f038-patrones-cache && ../gradlew test)
 ```
 
-**Output esperado:** `Ran 3 tests … OK` (real, ejecutado aquí) y 3 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** `Ran 3 tests … OK` (real, ejecutado aquí) y 3 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 `simuladores/test_simuladores.py`:
 
@@ -2342,7 +2344,7 @@ cd examples/microservicios/modulo-8
 (cd f039-redlock-fencing && ../gradlew test)
 ```
 
-**Output esperado:** `Ran 3 tests … OK` (real) y 4 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** `Ran 3 tests … OK` (real) y 4 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** si el almacén comprobara `token >= último` en vez de `token > último`, ¿qué fallaría?
 
@@ -2969,7 +2971,7 @@ cd examples/microservicios/modulo-8
 (cd f040-cache-stampede && ../gradlew test)
 ```
 
-**Output esperado:** `Ran 3 tests … OK` (real) y 22 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** `Ran 3 tests … OK` (real) y 22 líneas `PASSED` con `BUILD SUCCESSFUL` en Gradle *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** en `CargadorConCandado`, ¿qué pasaría si quitaras la segunda llamada a
 `redis.opsForValue().get(clave)` (la doble comprobación) dentro del bloque del ganador?

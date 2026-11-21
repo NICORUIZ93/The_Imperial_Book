@@ -161,7 +161,12 @@ versión de JUnit Jupiter 6.0.3. El código no depende de Spring y corre tal cua
 `java src/main/java/academia/java/JavaModerno.java` (lanzador de un solo archivo, desde Java 11).
 
 > **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
-> mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
+> mediante el wrapper `./gradlew` (no instalas Gradle). `gradle/wrapper/gradle-wrapper.properties` fija también el
+> `distributionSha256Sum` del zip oficial (`971fcd71…c76b`), así que si alguien te sustituye la URL por una
+> distribución manipulada el wrapper se niega a arrancar en vez de ejecutarla: `Downloading … gradle-9.9.2-bin.zip`
+> seguido de `Confirm that the 'distributionSha256Sum' property … is correct`. Es el mismo principio que aplicarás a
+> las imágenes base en el Módulo 12 (`modulo-16`): **no se ejecuta nada de lo que no se pueda verificar**.
+> `settings.gradle.kts` lista los subproyectos (en Maven,
 > `<modules>` del POM agregador), cada carpeta tiene su `build.gradle.kts` (su `pom.xml`) y
 > `gradle/libs.versions.toml` es el **catálogo de versiones** (las `<properties>` y el `dependencyManagement`): por eso
 > las dependencias se escriben `libs.…`. Equivalencias: `./mvnw test` → `./gradlew test` ·
@@ -503,7 +508,7 @@ class JavaModernoTest {
 ../gradlew test
 ```
 
-**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** ¿por qué `skusCaros` no modifica la lista `lineas` aunque la ordene?
 
@@ -863,7 +868,7 @@ class HilosVirtualesTest {
 ../gradlew test
 ```
 
-**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** si tu servicio usa hilos virtuales y su pool de conexiones a PostgreSQL tiene 10
 conexiones, ¿cuántas consultas simultáneas llegan como máximo a la base de datos?
@@ -1326,7 +1331,7 @@ class CicloDeVidaTest {
 ../gradlew test
 ```
 
-**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** si quitas `@Component` de `NotificadorCorreo`, ¿qué fase deja de ocurrir primero y por
 qué?
@@ -1810,7 +1815,7 @@ class SaludoAutoConfigurationTest {
 ../gradlew test
 ```
 
-**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+**Output esperado:** 6 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** si borras el archivo `AutoConfiguration.imports`, ¿qué tests fallan y cuáles siguen
 pasando?
@@ -2214,7 +2219,11 @@ curl -s "localhost:8080/descuentos?total=250000" | jq .descuento
 
 4. Compara los dos jars: `ls -l tienda-dominio/build/libs/*.jar tienda-api/build/libs/*.jar`. El de la API pesa megas (lleva
    Spring y Tomcat dentro); el del dominio, kilobytes. Junto al de la API verás `tienda-api-1.0.0-plain.jar`: el jar
-   normal, sin dependencias, que Gradle conserva con el clasificador `plain`.
+   normal, sin dependencias, que Gradle conserva con el clasificador `plain`. Medido el 2026-11-21 con Gradle 9.9.2 y
+   el plugin de Spring Boot (`./gradlew :f021-multimodulo:tienda-api:build`): `tienda-dominio-1.0.0.jar` 1.693 bytes ·
+   `tienda-api-1.0.0-plain.jar` 2.171 bytes · `tienda-api-1.0.0.jar` **19.992.406 bytes** (≈19 MB). Ese factor de
+   ~11.800× entre el jar gordo y el del dominio es justo lo que hace que un módulo de dominio se pueda reutilizar sin
+   arrastrar un servidor web.
 
 5. **Fallo deliberado:** en `tienda-dominio/build.gradle.kts`, dentro de `dependencies { }`, añade
    `implementation(project(":tienda-api"))` y ejecuta `../gradlew build`. Lee el error (paso 12) y elimina la
@@ -2279,7 +2288,7 @@ class DescuentoControllerTest {
 ```
 
 **Output esperado:** 3 líneas `PASSED` (una por test) en `tienda-dominio`, 1 línea `PASSED` en `tienda-api` y
-`BUILD SUCCESSFUL` al final *(salida de Gradle pendiente de verificación en el Mac)*.
+`BUILD SUCCESSFUL` al final *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 **Pregunta de comprobación:** ¿qué comando usarías para recompilar y probar todo lo que se ve afectado por un cambio en
 `PoliticaDescuento`?
@@ -2296,7 +2305,8 @@ API). En Maven era `-pl tienda-dominio -amd test`.
 **Síntoma:** alguien necesita «solo un detalle» de la API dentro del dominio, agrega la dependencia y nada compila.
 
 **Cómo se ve** (salida real de Gradle 8.14.3 con los dos módulos reducidos a Java puro; con Gradle 9.9.2 y el plugin
-de Spring Boot, pendiente de verificación en el Mac):
+de Spring Boot el detalle del texto puede variar —con esa combinación se ha reproducido el build correcto y la
+aparición de `tienda-api-1.0.0-plain.jar`, pero no este fallo en concreto—):
 
 ```text
 FAILURE: Build failed with an exception.
@@ -2669,7 +2679,7 @@ class PerfilesTest {
 ../gradlew test
 ```
 
-**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (si tienes `TIENDA_BD_URL`
+**Output esperado:** 5 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)* (si tienes `TIENDA_BD_URL`
 exportada en la terminal verás `Skipped: 1`: ejecuta `unset TIENDA_BD_URL`).
 
 **Pregunta de comprobación:** en Kubernetes defines `TIENDA_DESCUENTOMAXIMO=8` en el `Deployment` y el contenedor
@@ -3085,7 +3095,7 @@ class CicloCheckpointTest {
 cd f023-crac && ../gradlew test
 ```
 
-**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. Verificación completa en
+**Output esperado:** 1 línea `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle verificada el 2026-11-21; la demo con `--docker` de este paso sigue pendiente en el Mac, ver `verificacion/microservicios/pendiente.md`)*. Verificación completa en
 Docker: `./verificar.sh --docker` desde `modulo-5` debe terminar con `RESULTADO: OK`.
 
 **Pregunta de comprobación:** ¿por qué en el modo automático (`onRefresh`) la respuesta dice `"aperturas": 1` y no 2?
@@ -3473,7 +3483,7 @@ class NativoTest {
 cd f024-graalvm-native && ../gradlew test
 ```
 
-**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*. Verificación completa con el
+**Output esperado:** 2 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada el 2026-11-21; la demo con `--docker` de este paso sigue pendiente en el Mac, ver `verificacion/microservicios/pendiente.md`)*. Verificación completa con el
 binario: `./verificar.sh --docker` desde `modulo-5`.
 
 **Pregunta de comprobación:** ¿por qué el primer test pasa aunque borres `ImpuestosHints`, y qué test añadiste para que

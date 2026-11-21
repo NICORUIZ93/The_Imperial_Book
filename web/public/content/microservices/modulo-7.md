@@ -41,9 +41,11 @@ https://docs.junit.org/6.0.0/release-notes/
 **Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-7` y comprueba `java -version` (debe decir
 `25`) y `docker version`. Cada tema tiene su carpeta (`f032-…` a `f036-…`); dentro usa `../gradlew` (el wrapper del
 módulo descarga Gradle 9.9.2 la primera vez). La primera compilación descarga dependencias de Maven Central y tarda unos
-minutos. Las salidas de Gradle y de los contenedores de este módulo están pendientes de confirmar en el Mac del
-dueño (`verificacion/microservicios/pendiente.md`): en el entorno donde se escribió no hay acceso a Maven Central ni
-a Docker Hub, así que los mensajes de error que ves se tomaron del código fuente de cada herramienta (con su URL).
+minutos. Este módulo **se ejecutó completo en el Mac del dueño el 2026-11-21** con Docker arriba:
+`bash ./verificar.sh` terminó en `RESULTADO: OK · Módulo 3 (Testing y calidad) verificado` en 62 s, con 28 tests
+y 0 fallos (f032 11 · f033 3 · f034 2+2 · f035 4 · f036 6), incluido el ciclo completo de Pact Broker y el análisis de
+SonarQube con su Quality Gate. Lo que sigue tomado del código fuente de cada herramienta (con su URL) son los
+**mensajes de error** que se reproducen a propósito, no las salidas de éxito.
 
 | Herramienta | Versión | Quién la fija |
 |---|---|---|
@@ -688,7 +690,7 @@ Execution failed for task ':f032-junit-mockito-mockmvc:test'.
 #### 11. VERIFICACIÓN
 
 Test que debe pasar: `../gradlew test` en `f032-junit-mockito-mockmvc` con 11 líneas `PASSED`, ninguna `FAILED`, y
-`BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+`BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 Reto: añade a `CatalogoServicioTest` un test `reservarTodoElStockDejaCero` que reserve 5 de 5 y compruebe con
 `ArgumentCaptor` que se guarda `stock() == 0`. Debe pasar sin tocar el código de producción:
@@ -1138,7 +1140,9 @@ postgres:18.7  0.0.0.0:55012->5432/tcp
 testcontainers/ryuk:…  0.0.0.0:55011->8080/tcp
 ```
 
-   y al final de Gradle, tras 3 líneas `PASSED` (pendiente de verificación en el Mac):
+   y al final de Gradle, tras 3 líneas `PASSED` *(el conteo está verificado en el Mac del dueño el 2026-11-21: f033 da
+   3 tests y 0 fallos; las dos líneas de `docker ps` de arriba son ilustrativas —los puertos son aleatorios y la etiqueta
+   exacta de la imagen de Ryuk sigue sin capturar—)*:
 
 ```text
 BUILD SUCCESSFUL in …s
@@ -1157,7 +1161,7 @@ BUILD SUCCESSFUL in …s
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar: `../gradlew test` en `f033-testcontainers` → 3 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+Test que debe pasar: `../gradlew test` en `f033-testcontainers` → 3 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 Reto: añade a `ClienteRepositorioTest` un test que registre `"Carla"` y compruebe que `buscarPorNombre("arl")`
 devuelve un solo cliente con `visitas() == 1`:
@@ -1833,7 +1837,11 @@ python3 -m json.tool f034-pact-consumidor/build/pacts/tienda-web-catalogo.json |
 ./gradlew :f034-pact-proveedor:test
 ```
 
-   **Output esperado** (reportero de consola de Pact y final de Gradle; pendiente de verificación en el Mac):
+   **Output esperado** (reportero de consola de Pact y final de Gradle). El ciclo con broker **sí se ejecutó** en el Mac
+   del dueño el 2026-11-21 y dejó estas líneas literales: `Publishing 'tienda-web-catalogo.json' ... OK`,
+   `All required verification results are published and successful` y, en `canIDeploy`, `Computer says yes \o/`.
+   El bloque por interacción que sigue no se capturó (el `verificar.sh` corre Gradle en modo silencioso), así que trátalo
+   como formato esperado, no como copia de una terminal:
 
 ```text
 Verifying a pact between tienda-web and catalogo
@@ -1872,7 +1880,7 @@ docker compose up -d --wait pact-broker
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar (desde `examples/microservicios/modulo-7`): 2 líneas `PASSED` en cada módulo y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*;
+Test que debe pasar (desde `examples/microservicios/modulo-7`): 2 líneas `PASSED` en cada módulo y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*;
 con el broker encendido, `canIDeploy` también debe terminar en `BUILD SUCCESSFUL`.
 
 ```bash
@@ -2258,7 +2266,7 @@ cd examples/microservicios/modulo-7/f035-archunit
 ../gradlew test
 ```
 
-   **Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)* (una ejecución por
+   **Output esperado:** 4 líneas `PASSED` (una por test) y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)* (una ejecución por
    cada campo `@ArchTest`).
 
 2. **Sáltate una capa.** En `PedidoController` cambia el constructor para que reciba también el repositorio:
@@ -2300,7 +2308,7 @@ java.lang.AssertionError: Architecture Violation [Priority: MEDIUM] - Rule 'no c
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar: `../gradlew test` en `f035-archunit` → 4 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle pendiente de verificación en el Mac)*.
+Test que debe pasar: `../gradlew test` en `f035-archunit` → 4 líneas `PASSED` y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*.
 
 Reto: añade una quinta regla que prohíba que el paquete `modelo` dependa de Spring, ejecútala (debe pasar) y luego
 anota `Pedido` con `@org.springframework.stereotype.Component` para verla fallar:
@@ -2677,8 +2685,9 @@ cd examples/microservicios/modulo-7/f036-sonarqube
 ls build/reports/jacoco/test/ build/reports/jacoco/test/html/
 ```
 
-   **Output esperado** (pendiente de verificación en el Mac): 6 líneas `PASSED` (una por test), `BUILD SUCCESSFUL` y, en
-   las carpetas, `jacocoTestReport.xml` y, dentro de `html/`, `index.html` y una carpeta por paquete. Abre
+   **Output esperado** (verificado en el Mac del dueño el 2026-11-21 con Gradle 9.9.2): 6 líneas `PASSED` (una por test),
+   `BUILD SUCCESSFUL` y, en las carpetas, `jacocoTestReport.xml` y `html/`; dentro de `html/`, `index.html`,
+   `jacoco-resources`, `jacoco-sessions.html` y una carpeta por paquete —aquí salió exactamente `academia.calidad`—. Abre
    `build/reports/jacoco/test/html/index.html`: la
    clase `CalculadoraEnvio` aparece con sus líneas en verde (ejecutadas) y, si existiera alguna rama sin probar, en
    amarillo.
