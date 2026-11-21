@@ -64,6 +64,11 @@ echo "== Coherencia material del código de cada tema (rutas usadas que ningún 
 # gatear, y fijar uno ahora legalizaría la deuda. La puerta de umbral se pondrá sobre el 90 %.
 python3 scripts/audit_code_coherence.py --check
 
+echo "== Fuentes oficiales: fecha de consulta y enlace vivo (MASTER-PROMPT sección 1.3)"
+# Se gatea que el registro refleje el contenido de hoy, no que todas las fuentes estén fechadas: la fecha
+# la declaran 7 de 1608 temas y un umbral ahora legalizaría esa deuda. El número se lee en el artefacto.
+python3 scripts/validate_official_sources.py --check
+
 echo "== Specs"
 echo "== Formato único (specs/021)"
 python3 scripts/validate_formato.py --check > /tmp/validate_formato.out || { tail -1 /tmp/validate_formato.out; exit 1; }

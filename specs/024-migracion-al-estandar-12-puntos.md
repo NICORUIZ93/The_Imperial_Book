@@ -69,6 +69,14 @@ literal. Ningún criterio se marca `hecho` si su comando no pasó en esta máqui
   de ejecutar sus 5 pruebas en esta máquina). Queda `en-curso` porque el criterio es para los 324 capítulos
   de la campaña, no para el primer paso.
   Verificación: `python3 scripts/validate.sh`
+- **C7** `hecho` — La regla 1.3 del prompt («las fuentes caducan a los 120 días y se vuelven a verificar»)
+  tiene herramienta: hasta el 2026-11-21 el apuntador `scripts/validate_official_sources.py` no existía y
+  nadie podía comprobar una fecha de consulta. Ahora lee la sección de fuentes de cada tema, separa lo que
+  es cita de lo que es enlace de ejemplo dentro del código, consulta cada URL por red y versiona el
+  resultado. Medido hoy sobre los 1608 temas: 770 declaran fuentes, 1177 URLs oficiales distintas (39 no
+  responden), 698 con enlace pero **sin fecha de consulta**, 7 con fecha, 0 caducadas. La deuda de P12 es
+  de fecha, no de enlace.
+  Verificación: `python3 scripts/validate_official_sources.py --check`
 
 ## 3. Lotes
 

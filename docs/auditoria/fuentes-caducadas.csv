@@ -1,0 +1,14 @@
+curso,todos
+medido,2026-11-21
+temas_medidos,1608
+temas_declaran_fuentes,770
+temas_con_fecha_y_url,7
+temas_con_url_sin_fecha,698
+temas_sin_url,5
+temas_caducos,0
+enlaces_ejemplo_descartados,0
+urls_distintas,1177
+urls_sin_comprobar,0
+urls_rotas,39
+
+ruta,archivo,tema,fecha_mas_vieja,urls
