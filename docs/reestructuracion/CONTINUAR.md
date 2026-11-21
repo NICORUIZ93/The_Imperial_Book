@@ -134,22 +134,38 @@ La tabla viva es `ESTADO-DE-TEMAS.md`; esta copia puede quedar vieja.
 
 ### 4.4 Qué está a medias
 
-1. **Piloto de Java, módulos 0 y 1: escrito y registrado, pero NO verificado.** En
-   `docs/reestructuracion/cursos/java/` (`CURSO.md`, `modulo-0.md`, `modulo-1.md`,
-   `laboratorios/modulo-0` y `modulo-1`): 7 temas por módulo, los 14 pasan las 12 secciones del formato y
-   están dados de alta en `temas-escritos.txt` (`java/M0/T1` … `java/M1/T7`, **sin** `;verificado`, como
-   exige la regla 12). La carpeta sí está en `main` (102 archivos con `git ls-files
-   docs/reestructuracion/cursos/java`), así que el piloto no se perdió.
-   El 2026-11-20 se ejecutaron los dos `verificar.sh` con Gradle real en el Mac del dueño
-   (`~/Downloads/imperial-verificacion/logs/gradle-resumen.txt`):
-   - `modulo-1` → **OK** (67 comprobaciones correctas, 0 fallidas).
-   - `modulo-0` → **FALLO** (46 correctas, 2 fallidas). Las dos son aserciones del propio
-     `verificar.sh` que no reconocen el mensaje real del JDK en español, no fallos del contenido enseñado:
-     «classpath equivocado» y «sin método main (clase compilada)». El log muestra lo que imprime la JVM
-     (`Error: no se ha encontrado o cargado la clase principal Despacho` y
-     `Error: el método principal no es SinMain en la clase javafx.application.Application, defina el método
-     principal del siguiente modo:`). Hay que corregir **el reconocimiento de esas dos cadenas** (sin bajar
-     el listón de la comprobación) y volver a ejecutar; solo entonces se añade `;verificado` a los 14.
+> **Aviso del 2026-11-20, 17:12 (medido):** la carpeta `~/Downloads/imperial-verificacion/` —los scripts
+> `.command` y los registros `logs/gradle-resumen.txt` y `logs/gradle-java-m0.log` que probaban los resultados
+> de los puntos 1 y 2 de esta sección— **ya no existe en esta máquina**; `~/Downloads` quedó vacío (solo
+> `.DS_Store`) y también desapareció `~/Downloads/Libros`. No hay volumen externo montado, Spotlight no los
+> encuentra y la papelera no es legible. Los resultados del punto 2 se citan tal como se registraron esa
+> tarde y no vuelven a comprobarse aquí hasta volver a ejecutarlos. **El punto 1 ya no depende de ese
+> registro**: los tres laboratorios de Java se volvieron a ejecutar en el repositorio el mismo 2026-11-20, con
+> el resultado escrito ahí.
+
+1. **Piloto de Java, módulos 0, 1 y 2: escrito y ejecutado aquí; falta la corrida con JDK 25.** En
+   `docs/reestructuracion/cursos/java/` (`CURSO.md`, `modulo-0.md`, `modulo-1.md`, `modulo-2.md` y
+   `laboratorios/modulo-0`, `modulo-1`, `modulo-2`): 7 temas en M0, 7 en M1 y 6 en M2, todos con las 12
+   secciones del formato y dados de alta en `temas-escritos.txt` (`java/M0/T1` … `java/M2/T6`, **sin**
+   `;verificado`, como exige la regla 12). Los tres módulos están en `main` (M0 y M1 en `a87d9b62`, M2 en
+   `fb70b49e`), así que no se perdió nada.
+   **Reejecutado el 2026-11-20 en esta máquina** (macOS arm64, Temurin 27.0.1.0.2+1, locale `es_CO`), con el
+   wrapper offline y el init script que presta el toolchain 27 (no forma parte del curso):
+   - `modulo-0` → **OK**: 47 correctas, 0 fallidas, 1 omitida. La omitida es «java es la entrega 25», que
+     depende del runtime instalado; con `EXIGIR_JDK25=1` se vuelve fallo.
+   - `modulo-1` → **OK**: 67 correctas, 0 fallidas, 0 omitidas (64 ejemplos + 3 del proyecto Gradle).
+   - `modulo-2` → **OK**: 77 correctas, 0 fallidas, 2 omitidas.
+   - Las dos aserciones que el 2026-11-20 por la mañana daban `rc=1` en `modulo-0` estaban mal formuladas:
+     dependían de la **frase** del lanzador. El parche de esa tarde añadió un helper `falla_con_idioma` que
+     aceptaba dos redacciones en español **no reproducibles** (su registro se fue con
+     `~/Downloads/imperial-verificacion/`). Medido aquí: con el sistema y la JVM en `es_CO` el lanzador
+     imprime en inglés, y `-Duser.language=es -Duser.country=CO` no cambia nada. Se **eliminó** ese helper y
+     las dos cadenas sin probar; ahora exigen código distinto de cero más lo que escribe la propia JVM
+     (`java.lang.ClassNotFoundException: Despacho`, `public static void main(String[] args)`). Puerta más
+     estricta, no más floja. Detalle completo en `docs/cambios-2026-11-20.md`.
+   - **No se añadió `;verificado` todavía**: queda la corrida en el Mac del dueño con JDK 25 en PATH, sin el
+     init script y con `EXIGIR_GRADLE=1 EXIGIR_JDK25=1 ./verificar.sh` en los tres módulos. Solo entonces los
+     20 temas (`java/M0/T1` … `java/M2/T6`) pasan a verificado.
 2. **Laboratorios de Spring de Microservicios ya compilados en Gradle.** Son
    `examples/microservicios/modulo-5` a `modulo-16` y `modulo-36/spring`. El 2026-11-20 se ejecutaron con
    Gradle real en el Mac del dueño (log `~/Downloads/imperial-verificacion/logs/gradle-resumen.txt`,
@@ -290,6 +306,11 @@ de hoy («antes-de-actualizar-20261120-141747», 28 archivos modificados).
 Lecciones de ese Mac: bash es 3.2 (cuidado con `${var}` pegado a letras con tilde); `node --test` necesita
 `--test-force-exit`; Trivy puede recibir 429 de Maven Central; RabbitMQ 4 no admite colas transitorias no
 exclusivas; el SDK de Azure Key Vault exige https.
+
+**Medido el 2026-11-20 a las 17:12:** en esta máquina `~/Downloads/imperial-verificacion/` **ya no está**
+(tampoco `~/Downloads/Libros`; `~/Downloads` quedó con solo `.DS_Store` y sin volúmenes externos montados).
+Esta tabla describe lo que había esa tarde; antes de volver a ejecutar nada, comprueba si la carpeta sigue
+ahí o pregúntale al dueño dónde la puso. No borres ni restaures nada de `~/Downloads` por tu cuenta.
 
 ## 10. Cómo informar al dueño
 
