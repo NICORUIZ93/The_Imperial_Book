@@ -3,9 +3,9 @@
 > Portada del curso según el [formato único](../../FORMATO-UNICO.md) (specs/021). Temario aprobado por el
 > dueño el 2026-11-20: [`docs/temarios/java-objetivo.md`](../../../temarios/java-objetivo.md) (279 temas, 44
 > módulos). **Estado de esta zona de preparación:** escritos el [módulo 0](modulo-0.md), el
-> [módulo 1](modulo-1.md) y el [módulo 2](modulo-2.md) —los tres con su laboratorio ejecutado y en verde,
-> ver el `README.md` de cada carpeta `laboratorios/modulo-N/`; el resto se escribe igual, por tramos
-> completos.
+> [módulo 1](modulo-1.md), el [módulo 2](modulo-2.md) y el [módulo 3](modulo-3.md) —los cuatro con su
+> laboratorio ejecutado y en verde, ver el `README.md` de cada carpeta `laboratorios/modulo-N/`; el resto se
+> escribe igual, por tramos completos.
 
 ## 1. Para quién es
 
@@ -132,7 +132,9 @@ Cada laboratorio parte del estado final del anterior y su `README.md` dice qué 
 | Proyecto final | — | ≈ 20 h |
 | **Total** | **279** | **≈ 206 h** |
 
-Medido en lo ya escrito: M0, 4 h 20 min; M1, 4 h 40 min; más una hora de laboratorio por módulo.
+Medido en lo ya escrito, sumando los minutos declarados por tema (cuadrilla `### Tema` de cada módulo): M0,
+4 h 20 min; M1, 4 h 40 min; M2, 4 h 10 min; M3, 4 h 05 min. Total de temas escritos: **17 h 15 min**, más una
+hora de laboratorio por módulo (4 h) → **21 h 15 min** de Tramo 1 disponible hoy (el tramo son 8 módulos).
 
 **Versiones fijadas** (fuente: `docs/VERSIONES.md`).
 

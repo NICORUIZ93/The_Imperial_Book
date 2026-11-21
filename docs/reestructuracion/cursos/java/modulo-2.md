@@ -3386,7 +3386,10 @@ compara el motivo contra `null`, que es lo que sabes hacer desde el tema 1.
 
 ### Siguiente módulo
 
-Módulo 3 · Control de flujo y métodos (6 temas): `if`/`switch` con `yield`, los tres bucles sobre arreglo y
-sobre `lines()`, y cómo partir el lector de guías en métodos para que el lazo del tema 6 deje de ser uno solo.
-(Pendiente de escribir; temario en `docs/temarios/java-objetivo.md`.)
+[Módulo 3 · Control de flujo y métodos](modulo-3.md): las dos formas de decidir (`if`/ternario y `switch` de
+sentencia y de expresión con `yield`), los cuatro lazos con `break`, `continue` y etiquetas, la firma de los
+métodos (paso por valor, sobrecarga y `varargs`), hasta dónde llega una recursión antes de desbordar la pila y
+cómo se lee una traza para encontrar el dato culpable. Seis temas, 4 h 05 min, con el parseo de `GuiaDeEnvio`
+ya convertido en decisiones y en `sumaGramos`, y su propio proyecto Gradle con 12 pruebas de `DespachadorTest`
+en verde.
 
