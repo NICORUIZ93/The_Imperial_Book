@@ -105,6 +105,35 @@ antes() {
 }
 # vacio <descripción> <texto>: un comando que no debe decir NADA. Es la comprobacion del aviso que falta.
 vacio() { if [ -z "$2" ]; then bien "$1"; else mal "$1 (si dijo algo)" "$2"; fi; }
+# lleva <descripción> <texto> <variable>: el texto debe estar en lo YA capturado, sin repetir el comando.
+lleva() { if printf '%s\n' "$3" | grep -F -q -- "$2"; then bien "$1"; else mal "$1 (no esta en lo capturado: «$2»)" "$3"; fi; }
+# cero_en <descripción> <patrón> <variable>: el patron no aparece NI UNA VEZ en lo capturado. Hace falta
+# porque un grep -c sobre un volcado vacio tambien da cero: aqui el volcado se capturo antes, en su propio
+# paso, y si ese paso fallo el script ya paro.
+cero_en() {
+    n=$(printf '%s\n' "$3" | grep -c "$2")
+    if [ "$n" = "0" ]; then bien "$1"; else mal "$1 (aparece $n veces)" "$3"; fi
+}
+# bandera <descripción> <cabecera del miembro> <línea flags esperada>: la bandera real del .class.
+# Se compara la linea ENTERA, no el numero: «ACC_PUBLIC» tambien sale en la clase, y buscarlo suelto
+# daria ok aunque el miembro estuviera privado.
+bandera() {
+    v=$( (cd "$RAIZ/tema-3/por-dentro" && javap -v -p -cp "$TMP/t3p" NivelesEnClass) \
+        | awk -v h="$2" '{ l=$0; sub(/^ +/, "", l) }
+            l == h { dentro=1; next }
+            dentro && l ~ /^flags:/ { print l; exit }')
+    igual_no_vacio "$1" "$3" "$v"
+}
+# cuerpo_llamar <release>: el metodo llamar() de NivelesEnClass compilado con ESE release.
+cuerpo_llamar() {
+    rel=$1; out="$TMP/t3ll$rel"
+    (cd "$RAIZ/tema-3/por-dentro" && javac --release "$rel" -d "$out" NivelesEnClass.java) > /dev/null 2>&1 \
+        || { mal "Compilar NivelesEnClass con --release $rel" ""; return; }
+    javap -c -p -cp "$out" NivelesEnClass | awk '{ l=$0; sub(/^ +/, "", l) }
+        l == "void llamar();" { dentro=1; next }
+        dentro && l ~ /^[0-9]+:/ { print l; next }
+        dentro && l != "Code:" { dentro=0 }'
+}
 
 titulo "Tema 1 · Clases, objetos, campos, metodos y this"
 (cd "$RAIZ/tema-1" && javac --release 25 -d "$TMP/t1" ClaseYObjetos.java) > "$TMP/t1.log" 2>&1 \
@@ -240,5 +269,101 @@ no_compila "this() llamandose a si mismo" 'recursive constructor invocation' tem
 no_compila "un final que el constructor no asigna" 'variable codigo might not have been initialized' tema-2 errores/FinalSinAsignar.java
 no_compila "un inicializador que lee un campo mas abajo" 'illegal forward reference' tema-2 errores/ReferenciaAdelantada.java
 no_compila "poner un constructor es borrar el que venia gratis" 'constructor Guia in class Guia cannot be applied to given types' tema-2 errores/SinConstructorPorDefecto.java
+
+titulo "Tema 3 · Encapsulacion y modificadores de acceso"
+# bodega y afuera se compilan JUNTAS: la barrera de paquete solo existe si las dos mitades estan delante.
+(cd "$RAIZ/tema-3" && javac --release 25 -Xlint:all -d "$TMP/t3" src/bodega/*.java src/afuera/*.java) > "$TMP/t3aviso.log" 2>&1 \
+    || { mal "Compilar tema-3 (bodega y afuera juntos)" "$(cat "$TMP/t3aviso.log")"; exit 1; }
+vacio "los cuatro niveles y los dos fallos silenciosos compilan con -Xlint:all SIN decir una sola palabra" "$(cat "$TMP/t3aviso.log")"
+(cd "$RAIZ/tema-3/por-dentro" && javac --release 25 -d "$TMP/t3p" NivelesEnClass.java) > "$TMP/t3p.log" 2>&1 \
+    || { mal "Compilar tema-3/por-dentro/NivelesEnClass.java" "$(cat "$TMP/t3p.log")"; exit 1; }
+(cd "$RAIZ/tema-3/por-dentro/jvm" && javac --release 25 -d "$TMP/t3j1" v1/bodega/Envio.java \
+    && javac --release 25 -d "$TMP/t3j2" v2/bodega/Envio.java \
+    && javac --release 25 -cp "$TMP/t3j1" -d "$TMP/t3jl" Lector.java) > "$TMP/t3j.log" 2>&1 \
+    || { mal "Compilar el trio del IllegalAccessError (v1, v2 y Lector contra v1)" "$(cat "$TMP/t3j.log")"; exit 1; }
+SAL3=$( (cd "$RAIZ/tema-3" && $J -cp "$TMP/t3" bodega.Demo) ); COD3=$?
+# Sin esta linea, una demo que revienta al final (por ejemplo al mutar comprueba a protected, donde la red
+# de Ruta si entra y lanza) cascada en once fallos que culpan a A1, que salio bien. El codigo se comprueba
+# primero y la culpa recae donde esta.
+igual "la demo de los cuatro niveles se termina sola, sin que ninguna linea lance" "0" "$COD3"
+
+# ---- nivel de paquete: sin escribir nada, se ve y se escribe desde OTRA clase del mismo paquete ----
+espera "un campo sin modificador lo escribe otra clase del paquete, sin getter ni setter" 'sello de paquete leido y escrito desde bodega: 8' tema-3 $J -cp "$TMP/t3" bodega.Demo
+# ---- private: ni el vecino del mismo paquete pasa por el campo ----
+espera "y ese mismo vecino, ante el privado, ya necesita la puerta publica" 'gramos por la puerta publica desde otra clase del paquete: 0' tema-3 $J -cp "$TMP/t3" bodega.Demo
+# ---- el invariante detras del setter ----
+espera "el setter rechaza el peso negativo con su mensaje" 'gramos no puede ser negativo: -50' tema-3 $J -cp "$TMP/t3" bodega.Demo
+cero_en "la rama que se imprimiria si el setter aceptara el -50 no se imprime" 'EL SETTER NO TENIA QUE ACEPTAR' "$SAL3"
+igual "tras el rechazo el objeto conserva el valor de antes, no el intentado" "0" "$(printf '%s\n' "$SAL3" | sed -n 's/^A4 .* : //p')"
+espera "afuera solo puede leer el privado por el getter" '1250 (solo por el getter)' tema-3 $J -cp "$TMP/t3" bodega.Demo
+
+# ---- protected: la subclase de OTRO paquete escribe el campo con this ----
+espera "una subclase en otro paquete anade al protected propio con this" '2 hitos' tema-3 $J -cp "$TMP/t3" bodega.Demo
+
+# ---- FALLO SILENCIOSO 1: el getter que devuelve la lista viva ----
+igual "antes de que nadie la toque, la lista del envio tiene un hito" "1 · [creado]" "$(printf '%s\n' "$SAL3" | sed -n 's/^A7 .* : //p')"
+igual "y despues del ataque desde afuera tiene DOS, sin haber llamado a ningun metodo de Envio" "2 · [creado, MANIPULADO-DESDE-AFUERA]" "$(printf '%s\n' "$SAL3" | sed -n 's/^A8 .* : //p')"
+igual "el motivo cabe en el tipo devuelto: es la lista de dentro, no una copia" "java.util.ArrayList" "$(printf '%s\n' "$SAL3" | sed -n 's/^A9 .* : //p')"
+# ---- la misma clase con copia defensiva ----
+espera "con copia, el mismo intento de afuera revienta contra la lista" 'rechazado con UnsupportedOperationException' tema-3 $J -cp "$TMP/t3" bodega.Demo
+igual "el tipo devuelto ahora es una lista inmutable" "java.util.ImmutableCollections\$List12" "$(printf '%s\n' "$SAL3" | sed -n 's/^B2 .* : //p')"
+igual "y el estado interno de Envio no se entero del intento" "2" "$(printf '%s\n' "$SAL3" | sed -n 's/^B3 .* : //p')"
+distinto "los dos tipos devueltos no son el mismo: ahi estaba la diferencia, no en la buena voluntad" \
+    "$(printf '%s\n' "$SAL3" | sed -n 's/^A9 .* : //p')" \
+    "$(printf '%s\n' "$SAL3" | sed -n 's/^B2 .* : //p')"
+
+# ---- FALLO SILENCIOSO 2: el herede que «redefine» un private y no sustituye nada ----
+igual "Ruta promete vetar mas de 30 000 g y el peso de 50 000 entra igual" "50000 g" "$(printf '%s\n' "$SAL3" | sed -n 's/^B5 .* : //p')"
+veces "la comprobacion de bodega corre tres veces en toda la demo" "$SAL3" 'bodega: la comprobacion de Envio corre' 3
+veces "la de Ruta, que es la mas estricta, no corre ninguna" "$SAL3" 'afuera: la comprobacion mas estricta de Ruta corre' 0
+COLA3=$(printf '%s\n' "$SAL3" | sed -n '/^B4 ·/,$p')
+veces "justo despues de la promesa de Ruta, quien habla es bodega" "$COLA3" 'bodega: la comprobacion de Envio corre' 1
+veces "y la red de seguridad de Ruta sigue callada justo ahi" "$COLA3" 'afuera: la comprobacion' 0
+espera "un campo publico lo pisa quien quiera, sin pasar por nada" 'PISADO-DESDE-AFUERA' tema-3 $J -cp "$TMP/t3" bodega.Demo
+
+# ---- los cuatro niveles como bits del .class, no como palabras del fuente ----
+JP3=$( (cd "$RAIZ/tema-3/por-dentro" && javap -p -cp "$TMP/t3p" NivelesEnClass) )
+# Las cabeceras van CON la palabra del modificador porque javap la imprime; lo de paquete es la unica
+# que va desnuda. Un header equivocado da vacio, y aqui un vacio NO puede pasar como ok: eso es igual_no_vacio.
+bandera "public sale con su bandera exacta" 'public int publico;' 'flags: (0x0001) ACC_PUBLIC'
+bandera "protected sale con la suya" 'protected int protegido;' 'flags: (0x0004) ACC_PROTECTED'
+bandera "private sale con la suya" 'private int privado;' 'flags: (0x0002) ACC_PRIVATE'
+bandera "y el acceso de paquete es la AUSENCIA de bandera, no una bandera nueva" 'int dePaquete;' 'flags: (0x0000)'
+bandera "un metodo sin modificador, lo mismo: cero banderas" 'void llamar();' 'flags: (0x0000)'
+cero_en "por eso javap no tiene ninguna palabra que escribir ante lo de paquete" 'package' "$JP3"
+espera "pero una interface SIN modificador si es publica, y el .class lo dice" 'public abstract int calcula();' tema-3/por-dentro sh -c "javap -p -cp '$TMP/t3p' 'NivelesEnClass\$Tarifa'"
+L25=$(cuerpo_llamar 25); L8=$(cuerpo_llamar 8)
+lleva "con --release 25 el publico se llama con invokevirtual" 'invokevirtual' "$(printf '%s\n' "$L25" | grep -F 'visible:()V')"
+lleva "y el private, desde la misma clase, tambien" 'invokevirtual' "$(printf '%s\n' "$L25" | grep -F 'oculto:()V')"
+lleva "con --release 8 el publico no cambio" 'invokevirtual' "$(printf '%s\n' "$L8" | grep -F 'visible:()V')"
+lleva "el que cambio fue el private: antes iba con invokespecial" 'invokespecial' "$(printf '%s\n' "$L8" | grep -F 'oculto:()V')"
+
+# ---- por que pudo cambiar: los nest de JDK 11 ----
+(cd "$RAIZ/tema-3/por-dentro" && javac --release 8 -d "$TMP/t3n8" NidoPrivate.java) > /dev/null 2>&1 \
+    || { mal "Compilar NidoPrivate con --release 8" ""; exit 1; }
+(cd "$RAIZ/tema-3/por-dentro" && javac --release 25 -d "$TMP/t3n25" NidoPrivate.java) > /dev/null 2>&1 \
+    || { mal "Compilar NidoPrivate con --release 25" ""; exit 1; }
+igual "en release 8, javac se inventa un metodo estatico de acceso al privado" "1" "$( (cd "$RAIZ/tema-3/por-dentro" && javap -p -cp "$TMP/t3n8" NidoPrivate) | grep -c 'access\$' )"
+igual "en release 25 no inventa nada" "0" "$( (cd "$RAIZ/tema-3/por-dentro" && javap -p -cp "$TMP/t3n25" NidoPrivate) | grep -c 'access\$' )"
+espera "y el puente ese se llamaba con invokestatic, no con un acceso a campo" 'invokestatic' tema-3/por-dentro sh -c "javap -c -p -cp '$TMP/t3n8' 'NidoPrivate\$Visitor'"
+espera "sin puente, el acceso es un getfield directo al campo privado" 'getfield' tema-3/por-dentro sh -c "javap -c -p -cp '$TMP/t3n25' 'NidoPrivate\$Visitor'"
+espera "lo que autoriza ese acceso directo es el anfitrion declarado en la anidada" 'NestHost: class NidoPrivate' tema-3/por-dentro sh -c "javap -v -p -cp '$TMP/t3n25' 'NidoPrivate\$Visitor'"
+espera "y el anfitrion declara quien compone el nest" 'NestMembers' tema-3/por-dentro sh -c "javap -v -p -cp '$TMP/t3n25' NidoPrivate"
+cero_en "en release 8 esos dos atributos no existen: el nest es de JDK 11" 'Nest\(Host\|Members\)' "$( (cd "$RAIZ/tema-3/por-dentro" && javap -v -p -cp "$TMP/t3n8" NidoPrivate 'NidoPrivate$Visitor') )"
+espera "las dos versiones dan el mismo 42: esto es un cambio de bytecode, no de comportamiento" 'el visitor lee el privado: 42' tema-3/por-dentro sh -c "java -Dstdout.encoding=UTF-8 -cp '$TMP/t3n8' NidoPrivate"
+espera "y la de release 25 tambien" 'el visitor lee el privado: 42' tema-3/por-dentro sh -c "java -Dstdout.encoding=UTF-8 -cp '$TMP/t3n25' NidoPrivate"
+
+# ---- el acceso tambien se comprueba al ENLACE, en tiempo de ejecucion (JVMS 5.4.4) ----
+espera "mientras el campo es publico, el Lector ya compilado funciona" 'Lector leo gramos: 1250' tema-3/por-dentro/jvm $J -cp "$TMP/t3jl:$TMP/t3j1" Lector
+espera "el Lector no guardo la visibilidad, guardo el nombre completo del campo" 'Field bodega/Envio.gramos:I' tema-3/por-dentro/jvm sh -c "javap -c -p -cp '$TMP/t3jl' Lector"
+falla_con "cambiar el campo a private rompe, SIN RECOMPILAR al Lector, en tiempo de ejecucion" 'java.lang.IllegalAccessError: class Lector tried to access private field bodega.Envio.gramos' tema-3/por-dentro/jvm $J -cp "$TMP/t3jl:$TMP/t3j2" Lector
+
+# ---- los seis cortes del compilador ----
+falla_con "el private NO se relaja por estar en el mismo paquete" 'gramos has private access in Envio' tema-3 javac --release 25 -cp "$TMP/t3" -d "$TMP/t3err" errores/PrivadoEnOtraClaseDelPaquete.java
+falla_con "sin modificador no es «publicito»: es de paquete y la barrera es real" 'selloDePaquete is not public in Envio; cannot be accessed from outside package' tema-3 javac --release 25 -cp "$TMP/t3" -d "$TMP/t3err" errores/PaqueteDesdeOtroPaquete.java
+falla_con "heredar desde otro paquete tampoco abre lo de paquete" 'selloDePaquete is not public in Envio; cannot be accessed from outside package' tema-3 javac --release 25 -cp "$TMP/t3" -d "$TMP/t3err" errores/HerederoDeOtroPaqueteLeeLoDelPaquete.java
+falla_con "protected exige que la expresion que califica sea la propia subclase" 'hitos has protected access in Envio' tema-3 javac --release 25 -cp "$TMP/t3" -d "$TMP/t3err" errores/ProtegidoConReferenciaDelPadre.java
+falla_con "al sobreescribir se puede ampliar el acceso, nunca reducirlo" 'attempting to assign weaker access privileges; was public' tema-3 javac --release 25 -cp "$TMP/t3" -d "$TMP/t3err" errores/ReducirAccesoAlSobreescribir.java
+falla_con "y @Override es lo unico que avisa de que un private no se puede sobrescribir" 'comprueba(int) in OverrideDeUnPrivado does not override or implement a method from a supertype' tema-3 javac --release 25 -cp "$TMP/t3" -d "$TMP/t3err" errores/OverrideDeUnPrivado.java
 
 resultado
