@@ -2205,7 +2205,7 @@ spec:
           wait
 ```
 
-La prueba de la ficha (instala metrics-server si falta):
+La prueba de la ficha (asegura la imagen en el nodo e instala metrics-server si falta):
 
 `pruebas/f085-hpa.sh`:
 
@@ -2217,6 +2217,21 @@ cd "$(dirname "$0")/.." || exit 1
 . pruebas/comun.sh
 fallos=0
 METRICS=https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.9.0/components.yaml
+IMG=registry.k8s.io/metrics-server/metrics-server:v0.9.0
+NODO=$(kind get nodes --name "$CLUSTER" | head -1)
+# El nodo kind no descarga solo cuando el host trabaja con proxy: dentro del nodo 127.0.0.1 es el propio
+# nodo y allí el proxy no escucha (ErrImagePull · proxyconnect tcp · connection refused). La imagen se
+# baja en el host y se inyecta en el nodo. No se usa «kind load docker-image»: con el almacén containerd
+# de Docker Desktop ejecuta «ctr images import --all-platforms» y falla (ctr: content digest
+# sha256:25d291fd…: not found) porque el host solo tiene la plataforma local, linux/arm64.
+if docker exec "$NODO" crictl images 2>/dev/null | grep -q "metrics-server *${IMG##*:}"; then
+  ok "metrics-server ya está en el nodo $NODO"
+elif docker pull "$IMG" > logs/metrics-pull.log 2>&1 &&
+     docker save "$IMG" | docker exec -i "$NODO" ctr -n k8s.io images import - >> logs/metrics-pull.log 2>&1; then
+  ok "metrics-server cargado en el nodo $NODO desde el host"
+else
+  fallos=$((fallos + 1)); mal "no se pudo cargar $IMG en el nodo $NODO (mira logs/metrics-pull.log)"
+fi
 if ! $K -n kube-system get deployment metrics-server >/dev/null 2>&1; then
   $K apply -f "$METRICS"
   # kind usa certificados autofirmados en el kubelet: metrics-server debe aceptarlos (solo en laboratorio).
@@ -2244,9 +2259,13 @@ $K -n catalogo scale deployment catalogo --replicas=2
 
 #### 10. MINI-LABORATORIO
 
-1. Instala metrics-server y espera a que haya métricas:
+1. Asegura la imagen de metrics-server **dentro del nodo** (el nodo no la baja si el host trabaja con proxy) y después instala y espera las métricas:
 
 ```bash
+NODO=$(kind get nodes --name academia-m12 | head -1)
+docker pull registry.k8s.io/metrics-server/metrics-server:v0.9.0
+docker save registry.k8s.io/metrics-server/metrics-server:v0.9.0 | docker exec -i "$NODO" ctr -n k8s.io images import -
+docker exec "$NODO" crictl images | grep metrics
 kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.9.0/components.yaml
 kubectl -n kube-system patch deployment metrics-server --type=json \
   -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]'
@@ -2254,15 +2273,20 @@ kubectl -n kube-system rollout status deployment/metrics-server
 kubectl -n catalogo top pods
 ```
 
-   **Output esperado** (tras 30–60 s; los valores varían):
+   **Output esperado** (verificado el 2026-11-21 en el clúster `academia-m12`, Kubernetes 1.37.0; los valores varían):
 
 ```text
+registry.k8s.io/metrics-server/metrics-server   v0.9.0   37ceda8805d2e   20.9MB
 NAME                        CPU(cores)   MEMORY(bytes)
-catalogo-5d8f7c9b6d-7xk2p   3m           180Mi
-catalogo-5d8f7c9b6d-q9m4t   2m           175Mi
+catalogo-8cd8f47dc-djjdk   4m           150Mi
+catalogo-8cd8f47dc-fpmcv   4m           149Mi
 ```
 
-   Si sale `error: Metrics API not available`, espera un poco más.
+   Si sale `error: Metrics API not available`, espera: el pod tarda unos 60 s en servir `metrics.k8s.io` (medido:
+   `1/1 Running` a los 66 s). Si se queda en `ImagePullBackOff` con
+   `proxyconnect tcp: dial tcp 127.0.0.1:…: connect: connection refused`, el que no puede descargar es el nodo:
+   aplica el `docker save | … ctr images import -` de arriba y borra los pods viejos
+   (`kubectl -n kube-system delete pod -l k8s-app=metrics-server`).
 
 2. Crea el HPA y la carga, y observa:
 
@@ -2349,11 +2373,17 @@ y en `kubectl describe hpa catalogo`, eventos `FailedGetResourceMetric` / `Faile
 que indica que no hay métricas de recursos (`unable to get metrics for resource cpu`) o que faltan las `requests`.
 
 **Diagnóstico visual:** sigue la tubería del diagrama de izquierda a derecha y busca dónde se corta: ¿`kubectl top
-pods` responde? (si no: metrics-server ausente o, en kind, sin `--kubelet-insecure-tls`). ¿El contenedor tiene
+pods` responde? (si no: metrics-server ausente, en kind sin `--kubelet-insecure-tls`, o el pod de metrics-server sin
+poder descargar su imagen). ¿El contenedor tiene
 `requests.cpu`? ¿El nombre en `scaleTargetRef` es el del Deployment?
 
 **Arreglo:** instala metrics-server (con el parámetro en kind), declara `requests.cpu` en **todos** los contenedores
-del pod y corrige `scaleTargetRef`.
+del pod y corrige `scaleTargetRef`. Un corte que solo aparece en máquinas con proxy: si el pod se queda en
+`ImagePullBackOff` con `proxyconnect tcp: dial tcp 127.0.0.1:…: connect: connection refused`, el nodo está
+intentando usar el proxy del host, que dentro del nodo no existe. Baja la imagen en el host y inyéctala
+(`docker save … | docker exec -i "$(kind get nodes --name academia-m12)" ctr -n k8s.io images import -`, paso 1 del
+mini-laboratorio) y borra el pod atrapado. Medido el 2026-11-21: con la imagen en el nodo, `kubectl top nodes` devolvió
+`academia-m12-control-plane 184m 1% 1748Mi 22%` y `kubectl top pods -n catalogo`, dos pods a 4m / ~150Mi.
 
 #### 13. PREGUNTA DE ENTREVISTA
 

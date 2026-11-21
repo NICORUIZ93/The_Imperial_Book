@@ -116,6 +116,20 @@ if [ "${1:-}" = "--compose" ]; then
       esperar http://127.0.0.1:18081/salud/lista "port-forward a svc/pedidos" && { curl -s http://127.0.0.1:18081/version; echo; }
       kubectl get endpointslices -n tienda -l kubernetes.io/service-name=pedidos -o wide > logs/endpoints.log 2>&1; cat logs/endpoints.log
       echo "   metrics-server v0.9.1 (con --kubelet-insecure-tls, solo para kind)"
+      # El nodo kind no descarga solo si el host trabaja con proxy: dentro del nodo 127.0.0.1 es el propio
+      # nodo y allí el proxy no escucha (ErrImagePull · proxyconnect tcp · connection refused). La imagen se
+      # baja en el host y se inyecta con ctr; «kind load docker-image» no vale aquí porque importa con
+      # --all-platforms y el host solo tiene la plataforma local (ctr: content digest …: not found).
+      MSNODO=$(kind get nodes --name curso | head -1)
+      MSIMG=registry.k8s.io/metrics-server/metrics-server:v0.9.1
+      if docker exec "$MSNODO" crictl images 2>/dev/null | grep -q "metrics-server *v0.9.1"; then
+        echo "✔ metrics-server ya está en el nodo $MSNODO"
+      elif docker pull "$MSIMG" > logs/metrics-pull.log 2>&1 &&
+           docker save "$MSIMG" | docker exec -i "$MSNODO" ctr -n k8s.io images import - >> logs/metrics-pull.log 2>&1; then
+        echo "✔ metrics-server cargado en el nodo $MSNODO desde el host"
+      else
+        falla "no se pudo cargar $MSIMG en el nodo $MSNODO (mira logs/metrics-pull.log)"
+      fi
       kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.9.1/components.yaml > logs/metrics-server.log 2>&1
       kubectl -n kube-system patch deployment metrics-server --type=json -p '[{"op":"add","path":"/spec/template/spec/containers/0/args/-","value":"--kubelet-insecure-tls"}]' >> logs/metrics-server.log 2>&1
       kubectl -n kube-system rollout status deployment/metrics-server --timeout=180s >> logs/metrics-server.log 2>&1 || falla "metrics-server no arrancó (mira logs/metrics-server.log)"
