@@ -10,11 +10,11 @@
 > ilustrativo. C1, C2, C5 y C6 son las que cita literalmente el prompt maestro y las que hay
 > que bajar. La lista de trabajo está en el CSV, con la ruta concreta de cada incidencia.
 
-Temas sin ninguna incidencia: **1266/1608** (79 %).
+Temas sin ninguna incidencia: **1272/1608** (79 %).
 
 | Comprobación | Qué significa | Temas con incidencia | Incidencias |
 |---|---|---:|---:|
-| C1 | ruta usada que ningún tema del curso crea y que no existe en el repo | 46/1608 | 70 |
+| C1 | ruta usada que ningún tema del curso crea y que no existe en el repo | 39/1608 | 63 |
 | C2 | la carpeta que crean los comandos no es donde vive el código | 22/1608 | 22 |
 | C3 | estructura de archivos dibujada que el tema no crea | 2/1608 | 5 |
 | C4 | bloque de código largo sin declarar su archivo | 266/1608 | 367 |
@@ -29,7 +29,7 @@ Temas sin ninguna incidencia: **1266/1608** (79 %).
 | angular | 78 | 4 | 0 | 1 | 32 | 0 | 0 | 47/78 |
 | cloud | 168 | 3 | 0 | 0 | 10 | 0 | 0 | 158/168 |
 | control-1 | 88 | 0 | 0 | 0 | 0 | 0 | 0 | 88/88 |
-| devops | 139 | 13 | 1 | 0 | 5 | 0 | 3 | 122/139 |
+| devops | 139 | 6 | 1 | 0 | 5 | 0 | 3 | 128/139 |
 | flutter | 119 | 1 | 2 | 0 | 3 | 0 | 0 | 114/119 |
 | foundations | 105 | 2 | 0 | 0 | 46 | 0 | 0 | 76/105 |
 | ios | 69 | 7 | 0 | 4 | 63 | 0 | 0 | 34/69 |

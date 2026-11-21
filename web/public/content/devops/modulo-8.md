@@ -673,13 +673,7 @@ output "sensor" {
 }
 ```
 
-**Ejecuta el ejemplo** (desde una terminal con las herramientas instaladas):
-
-```bash
-bash ejemplo.sh
-```
-Verifica la salida y el estado de los recursos creados.
-
+Corre el ciclo completo sobre esa carpeta:
 
 ```bash
 mkdir -p academia-tofu
