@@ -2833,6 +2833,6 @@ cuatro fallos como material de estudio, 11 pruebas y un `Liquidador` de consola.
 
 ### Siguiente módulo
 
-Módulo 2 · Texto y entrada/salida de consola: `String` por dentro, Unicode de verdad, formato de salida y
-lectura de datos por consola, para que el lector de guías de `rutaflow-nucleo` no rompa acentos ni emojis.
-(Pendiente de escribir; temario en `docs/temarios/java-objetivo.md`.)
+[Módulo 2 · Texto y entrada/salida de consola](modulo-2.md): `String` por dentro, Unicode de verdad, formato
+de salida y lectura de datos por consola, para que el lector de guías de `rutaflow-nucleo` no rompa acentos
+ni emojis. Seis temas, con el parseo ya convertido en `GuiaDeEnvio` y 12 pruebas.

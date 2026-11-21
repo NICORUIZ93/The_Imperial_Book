@@ -2,8 +2,10 @@
 
 > Portada del curso según el [formato único](../../FORMATO-UNICO.md) (specs/021). Temario aprobado por el
 > dueño el 2026-11-20: [`docs/temarios/java-objetivo.md`](../../../temarios/java-objetivo.md) (279 temas, 44
-> módulos). **Estado de esta zona de preparación:** escritos el [módulo 0](modulo-0.md) y el
-> [módulo 1](modulo-1.md) como piloto que fija el patrón; el resto se escribe igual, por tramos completos.
+> módulos). **Estado de esta zona de preparación:** escritos el [módulo 0](modulo-0.md), el
+> [módulo 1](modulo-1.md) y el [módulo 2](modulo-2.md) —los tres con su laboratorio ejecutado y en verde,
+> ver el `README.md` de cada carpeta `laboratorios/modulo-N/`; el resto se escribe igual, por tramos
+> completos.
 
 ## 1. Para quién es
 
