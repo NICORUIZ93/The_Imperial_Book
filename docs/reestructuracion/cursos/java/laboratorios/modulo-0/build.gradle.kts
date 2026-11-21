@@ -29,6 +29,10 @@ application {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+    // El toolchain decide con qué JDK se compila; `release` fija contra qué API y con qué formato de clase
+    // sale el .class. Sin esta línea, en una máquina con JDK 27 el proyecto compilado aquí daría formato 71
+    // y el módulo promete 69. Con ella, el número 69 no depende de qué JDK esté instalado.
+    options.release = libs.versions.java.get().toInt()
 }
 
 tasks.named<JavaExec>("run") {

@@ -140,6 +140,14 @@ Las especificaciones oficiales son dos documentos: la JLS (el lenguaje) y la JVM
 
 #### 7. Código ejecutable
 
+> **Sobre los números de estas dos salidas.** `25.0.5.0.3` y `25.0.5.0.3+1-3-24.04.1-Ubuntu` son lo que
+> imprimió una JDK 25 de verdad (la construcción de Ubuntu, medida el 2026-11-20). No copies el número: lo que
+> sale en tu máquina es el runtime que tienes instalado. En la máquina donde se verificó este laboratorio —macOS
+> arm64 con Temurin 27— los mismos comandos imprimen `27.0.1.0.2`, y por eso `verificar.sh` no da por buena
+> cualquier cifra: deja la comprobación «java es la entrega 25» como **omitida** mientras el runtime no sea el
+> 25, y `EXIGIR_JDK25=1 ./verificar.sh` la convierte en fallo. Lo que sí se comprobó aquí con el JDK 27
+> instalado es el formato de clase, compilando con `javac --release 25`: `major version: 69`.
+
 **Lo primero: preguntar a la plataforma** · comando `java -version`
 
 Salida:
@@ -953,6 +961,15 @@ Error: Could not find or load main class Despacho
 Caused by: java.lang.ClassNotFoundException: Despacho
 ```
 
+Esa primera línea la escribe el **lanzador**, un programa nativo aparte de la JVM, y no es fiable como texto
+a comprobar: no sigue el locale de tu programa. Comprobado el 2026-11-20 en macOS arm64 con Temurin 27 y
+sistema en español: dentro de la JVM `user.language=es` y `user.country=CO`, pero el lanzador imprimió
+`Error: Could not find or load main class Despacho` en inglés, y repetir la orden con
+`-Duser.language=es -Duser.country=CO` no cambió nada. Lo que sí se repite igual en cualquier máquina es la
+línea del `Caused by`, que ya viene de la JVM. Si escribes un script que comprueba este error, busca
+`java.lang.ClassNotFoundException: Despacho` y exige código de salida distinto de cero; no dependes así de la
+frase del lanzador.
+
 **Causa:** el classpath apunta a `src`, donde solo hay `.java`. La clase principal no se encontró y el
 programa no llegó a empezar. También ocurre si escribes `java Despacho.class` o `java out/Despacho`: a
 `java` se le da un nombre de clase, no una ruta.
@@ -1347,6 +1364,15 @@ Error: Main method not found in class SinMain, please define the main method as:
    public static void main(String[] args)
 or a JavaFX application class must extend javafx.application.Application
 ```
+
+Lo que no puedes dar por supuesto es la **primera línea**: la escribe el lanzador nativo y no respeta el
+idioma de tu programa. Comprobado el 2026-11-20 en esta misma máquina: el sistema está en español (dentro de
+la JVM `Locale.getDefault()` da `es_CO`) y aun así el lanzador imprimió el texto de arriba, en inglés; repetir
+la orden con `-Duser.language=es -Duser.country=CO` no cambió ni un carácter. Como el formato de esa frase
+también cambia entre entregas del JDK, `verificar.sh` no la compara: exige lo que imprime la propia JVM —el
+nombre de la clase (`SinMain`) y la firma `public static void main(String[] args)`— y código de salida
+distinto de cero. En la variante desde el fuente, `java SinMain.java`, lo que sale es otra cosa, más estable:
+`error: can't find main(String[]) or main() method in class: SinMain`, también con código 1.
 
 El mismo archivo lanzado desde el fuente (`java SinMain.java`):
 
@@ -2397,9 +2423,13 @@ Las pruebas se estudian a fondo en el módulo 17; desde aquí todos los laborato
   `compileTestJava`, que depende de `classes`. `./gradlew build --dry-run` lo lista sin ejecutar nada
   (salida abajo). Gradle recorre solo lo necesario para la tarea pedida.
 - **`UP-TO-DATE`.** Gradle guarda una huella de las entradas y salidas de cada tarea; si no cambiaron, no la
-  repite. Por eso el segundo `test` tarda 2 s y el primero 36 (salida abajo).
+  repite. Por eso la segunda corrida de `test` sale entera `UP-TO-DATE` y baja de 642 ms a 303 ms (salidas
+  abajo, con el demonio de Gradle ya arrancado: los segundos son de la máquina, lo que se enseña es la
+  etiqueta).
 - **La toolchain** (`languageVersion = 25`) hace que se compile y se pruebe con JDK 25 aunque Gradle esté
-  corriendo con otro JDK. Se comprueba con `javap`: el formato de las clases generadas es 69 (JVMS §4.1).
+  corriendo con otro JDK. Se comprueba con `javap`: el formato de las clases generadas es 69 (JVMS §4.1). Y
+  se re-confirma con `options.release = 25`, que fija ese formato incluso cuando la toolchain tiene que
+  apoyarse en otro JDK instalado: sin esa línea, un build hecho con JDK 27 dejaría clases formato 71.
 - **El JAR** es un archivo ZIP con los `.class` y un manifiesto. Como el build declara `Main-Class`, se
   ejecuta con `java -jar`. Un JAR así no incluye las bibliotecas de las que dependa la aplicación; cómo
   distribuirlas se ve en el módulo 16.
@@ -2408,12 +2438,15 @@ Las pruebas se estudian a fondo en el módulo 17; desde aquí todos los laborato
 
 #### 7. Código ejecutable
 
-> **Cómo se obtuvieron estas salidas.** La red de la máquina de verificación bloquea `services.gradle.org`
-> y Maven Central, así que el wrapper no pudo descargar Gradle 9.8.2 ni JUnit 6.0.3. Las salidas de abajo
-> son reales, pero se obtuvieron con el **mismo `build.gradle.kts`** ejecutado por un Gradle 8.14.3 ya
-> instalado, en modo sin conexión, con JUnit 5.10.1 de un repositorio local y JDK 25 como toolchain. Donde
-> pone `./gradlew`, la orden ejecutada fue `gradle --offline`. La ejecución con el wrapper y las versiones
-> fijadas queda pendiente para el Mac del dueño (`EXIGIR_GRADLE=1 ./verificar.sh`).
+> **Cómo se obtuvieron estas salidas.** Se volvieron a medir el 2026-11-20 en un macOS arm64 con Temurin 27,
+> ejecutándolas con `--offline` (sin pedir nada a la red): la distribución Gradle 9.8.2 ya estaba en la caché
+> del wrapper y JUnit 6.0.3 en la caché de dependencias, así que `./gradlew --offline` levanta el build tal
+> cual está escrito aquí. La única trampa fue la toolchain: en esa máquina no hay JDK 25, y Gradle responde
+> `Cannot find a Java installation … {languageVersion=25}`, así que las salidas se sacaron prestando el JDK 27
+> con un script de inicialización (`GRADLE="./gradlew --offline -I .herramienta-local.init.gradle.kts"`, que
+> no forma parte del curso). Con JDK 25 en PATH basta `./gradlew test`. Que el `release` del build esté
+> fijado en 25 es lo que hace que las clases salgan otra vez en formato 69, comprobado con `javap` sobre
+> `build/classes` y sobre el JAR.
 
 **Ejemplo mínimo** · archivos `settings.gradle.kts`, `gradle/libs.versions.toml` y `build.gradle.kts`
 
@@ -2466,6 +2499,10 @@ application {
 
 tasks.withType<JavaCompile>().configureEach {
     options.encoding = "UTF-8"
+    // El toolchain decide con qué JDK se compila; `release` fija contra qué API y con qué formato de clase
+    // sale el .class. Sin esta línea, en una máquina con JDK 27 el proyecto compilado aquí daría formato 71
+    // y el módulo promete 69. Con ella, el número 69 no depende de qué JDK esté instalado.
+    options.release = libs.versions.java.get().toInt()
 }
 
 tasks.named<JavaExec>("run") {
@@ -2562,7 +2599,6 @@ class TarifaTest {
 Salida (primera ejecución):
 
 ```text
-Starting a Gradle Daemon, 4 incompatible and 1 stopped Daemons could not be reused, use --status for details
 > Task :compileJava
 > Task :processResources NO-SOURCE
 > Task :classes
@@ -2578,8 +2614,9 @@ TarifaTest > unKiloEmpezadoSeCobraEntero() PASSED
 
 TarifaTest > unKiloExactoPagaBaseMasUnKilo() PASSED
 
-BUILD SUCCESSFUL in 36s
+BUILD SUCCESSFUL in 642ms
 3 actionable tasks: 3 executed
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.2/userguide/configuration_cache_enabling.html
 ```
 
 Salida (segunda ejecución, sin cambiar nada):
@@ -2593,8 +2630,9 @@ Salida (segunda ejecución, sin cambiar nada):
 > Task :testClasses UP-TO-DATE
 > Task :test UP-TO-DATE
 
-BUILD SUCCESSFUL in 2s
+BUILD SUCCESSFUL in 303ms
 3 actionable tasks: 3 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.2/userguide/configuration_cache_enabling.html
 ```
 
 **Ejecutar** · ejecuta `./gradlew --console=plain run --args='Bogotá Medellín 2500'`
@@ -2611,8 +2649,9 @@ Ruta: Bogotá → Medellín
 Peso: 2500 g
 Tarifa: $11400
 
-BUILD SUCCESSFUL in 1s
+BUILD SUCCESSFUL in 387ms
 2 actionable tasks: 1 executed, 1 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.2/userguide/configuration_cache_enabling.html
 ```
 
 **Empaquetar** · ejecuta `./gradlew --console=plain build && ls build/libs build/distributions`
@@ -2635,8 +2674,9 @@ Salida:
 > Task :check UP-TO-DATE
 > Task :build
 
-BUILD SUCCESSFUL in 3s
+BUILD SUCCESSFUL in 334ms
 7 actionable tasks: 4 executed, 3 up-to-date
+Consider enabling configuration cache to speed up this build: https://docs.gradle.org/9.8.2/userguide/configuration_cache_enabling.html
 build/distributions:
 rutaflow-nucleo-0.1.0.tar
 rutaflow-nucleo-0.1.0.zip

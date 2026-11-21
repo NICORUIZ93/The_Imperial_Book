@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # Java · M0 · Plataforma, herramientas y primer programa — verificación del laboratorio.
 # Ejecuta cada ejemplo del módulo y comprueba su salida. Sigue ante fallos y termina en «RESULTADO: OK».
-# Uso: ./verificar.sh            (necesita JDK 25 en PATH; el tema 7 necesita el wrapper de Gradle con red)
+# Uso: ./verificar.sh            (necesita JDK 25 en PATH; el tema 7 usa el wrapper de Gradle)
 #      GRADLE="gradle --offline" ./verificar.sh   (usa un Gradle ya instalado)
+#      GRADLE="./gradlew --offline -I .herramienta-local.init.gradle.kts" ./verificar.sh
+#                                 (máquina sin JDK 25: el init script presta el toolchain instalado)
 #      EXIGIR_GRADLE=1 ./verificar.sh             (falla si Gradle no arranca, en vez de omitirlo)
+#      EXIGIR_JDK25=1 ./verificar.sh              (falla si el runtime de esta máquina no es el 25)
 # --- funciones comunes (bash 3.2: sin arreglos asociativos, sin mapfile) ---
 cd "$(dirname "$0")" || exit 1
 RAIZ=$(pwd)
@@ -29,6 +32,12 @@ falla_con() {
     if [ $codigo -ne 0 ] && printf '%s\n' "$salida" | grep -F -q -- "$texto"; then bien "$desc"; else mal "$desc (código $codigo; se esperaba un fallo con «$texto»)" "$salida"; fi
 }
 titulo() { echo; echo "== $1 =="; }
+# La frase que imprime el lanzador `java` cuando algo sale mal NO es comprobable: cambia de plataforma y de
+# idioma. Comprobado en macOS arm64 con Temurin 27 y locale es_CO: aunque el programa dentro de la JVM ve
+# `user.language=es`, el lanzador imprime `Error: Could not find or load main class …` en inglés, y repetir
+# la corrida con -Duser.language=es -Duser.country=CO no lo traduce. Las comprobaciones de abajo exigen, por
+# eso, lo que imprime la propia JVM (el nombre de la excepción, la firma que pide) y código de salida
+# distinto de cero, nunca la frase del lanzador.
 
 resultado() {
     echo
@@ -50,10 +59,19 @@ gradle_disponible() {
 }
 
 titulo "Tema 1 · Qué es Java hoy"
-espera "java es la entrega 25" 'Número de entrega (feature): 25' tema-1 $J VersionDeJava.java
+# «java es la entrega 25» habla del runtime, no del compilador: con otra JVM en PATH da otro número.
+# Se omite (no se afloja: no se acepta cualquier valor) y EXIGIR_JDK25=1 lo convierte en fallo.
+ENTREGA=$(java -XshowSettings:properties -version 2>&1 | sed -n 's/.*java\.version = \([0-9]*\).*/\1/p')
+if [ "$ENTREGA" = "25" ]; then
+    espera "java es la entrega 25" 'Número de entrega (feature): 25' tema-1 $J VersionDeJava.java
+elif [ "${EXIGIR_JDK25:-0}" = "1" ]; then
+    mal "java es la entrega 25 (esta JVM es la $ENTREGA)"
+else
+    omitido "java es la entrega 25: en esta máquina ejecuta la $ENTREGA; el número lo da el runtime, así que hay que repetirlo con JDK 25 en PATH"
+fi
 espera "informe de entorno válido" 'RESULTADO: plataforma válida para rutaflow-nucleo' tema-1 $J InformeDeEntorno.java
 espera "el JDK trae javac, javap, jshell y jdb" 'jdb' . sh -c 'for h in javac javap jshell jdb jar; do command -v $h > /dev/null || exit 1; done; echo jdb'
-espera "el formato de clase de JDK 25 es el 69" 'major version: 69' tema-1 sh -c "javac -d '$TMP/t1' VersionDeJava.java && javap -v -cp '$TMP/t1' VersionDeJava"
+espera "el formato de clase de la entrega 25 es el 69" 'major version: 69' tema-1 sh -c "javac --release 25 -d '$TMP/t1' VersionDeJava.java && javap -v -cp '$TMP/t1' VersionDeJava"
 
 titulo "Tema 2 · Instalar JDK 25 y convivir con varias versiones"
 espera "java.home apunta a un JDK" 'java.home = ' tema-2 $J DondeEstaJava.java
@@ -69,7 +87,7 @@ espera "javac crea Arranque.class y java lo ejecuta" 'rutaflow-nucleo en marcha'
 espera "javap muestra la llamada a println" 'invokevirtual' tema-3 javap -c -cp "$TMP/t3" Arranque
 espera "dos fuentes, dos .class, una ejecución" 'de 2500 g: $11400' tema-3 sh -c "javac -d '$TMP/t3' src/Despacho.java src/Tarifa.java && $J -cp '$TMP/t3' Despacho"
 espera "-sourcepath encuentra Tarifa.java sin nombrarlo" 'Tarifa.class' tema-3 sh -c "javac -d '$TMP/t3b' -sourcepath src src/Despacho.java && ls '$TMP/t3b'"
-falla_con "classpath equivocado: no encuentra la clase principal" 'Could not find or load main class Despacho' tema-3 java -cp src Despacho
+falla_con "classpath equivocado: la JVM no encontró la clase" 'java.lang.ClassNotFoundException: Despacho' tema-3 java -cp src Despacho
 falla_con "dependencia borrada: NoClassDefFoundError" 'java.lang.NoClassDefFoundError: Tarifa' tema-3 sh -c "rm '$TMP/t3/Tarifa.class' && java -cp '$TMP/t3' Despacho"
 falla_con "archivo con otro nombre que su clase pública" 'should be declared in a file named Arranque.java' tema-3 sh -c "cp src/Arranque.java '$TMP/arranque.java' && javac -d '$TMP/t3c' '$TMP/arranque.java'"
 
@@ -82,7 +100,7 @@ espera "con dos main gana main(String[])" 'elegido: static main(String[] args)' 
 espera "main de instancia: primero el constructor" '2. y después llama a main() sobre ese objeto' tema-4 $J SoloInstancia.java
 espera "un archivo compacto importa java.base" 'tarifa: 11400.00' tema-4 $J ImportImplicito.java
 espera "el archivo compacto es una clase final con main de instancia" 'final class Etiqueta' tema-4 sh -c "javac -d '$TMP/t4' Etiqueta.java && javap -p -cp '$TMP/t4' Etiqueta"
-falla_con "sin método main (clase compilada)" 'Main method not found in class SinMain' tema-4 sh -c "javac -d '$TMP/t4' SinMain.java && java -cp '$TMP/t4' SinMain"
+falla_con "sin método main (clase compilada): la JVM dice la firma que espera" 'public static void main(String[] args)' tema-4 sh -c "javac -d '$TMP/t4' SinMain.java && java -cp '$TMP/t4' SinMain"
 falla_con "sin método main (desde el fuente)" "can't find main(String[]) or main() method in class: SinMain" tema-4 java SinMain.java
 falla_con "main privado no cuenta" "can't find main(String[]) or main() method in class: MainPrivado" tema-4 java MainPrivado.java
 falla_con "archivo compacto con --release 21" 'implicitly declared classes are not supported in -source 21' tema-4 javac --release 21 -d "$TMP/t4b" Etiqueta.java
