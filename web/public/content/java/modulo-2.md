@@ -12,6 +12,7 @@ Cuando un programa maneja más de unos pocos valores, los arreglos se quedan cor
 | 4 | Escribir clases y métodos genéricos con wildcards |
 | 5 | Ordenar con `Comparable` y `Comparator` |
 | 6 | Usar colas, pilas y colas de prioridad |
+| 7 | Aplicar colecciones en un pequeño repositorio de guías |
 
 ## Aprende construyendo
 
@@ -21,19 +22,13 @@ Cuando un programa maneja más de unos pocos valores, los arreglos se quedan cor
 
 Estás construyendo un pequeño registro de envíos. Necesitas mantener el orden de llegada, evitar IDs duplicados y buscar rápidamente un envío por su código. Un solo tipo de colección no resuelve bien los tres casos.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-| Interfaz | Qué garantiza | Implementaciones comunes | Cuándo usarla |
-|---|---|---|---|
-| `List` | Orden e índices; permite duplicados | `ArrayList`, `LinkedList` | Cuando importa la posición o el orden de inserción |
-| `Set` | No permite duplicados (según igualdad) | `HashSet`, `LinkedHashSet`, `TreeSet` | Cuando importa la pertenencia/únicidad |
-| `Map` | Pares clave → valor; clave única | `HashMap`, `LinkedHashMap`, `TreeMap` | Cuando buscas por clave |
+**Definición formal.** El Java Collections Framework define interfaces, implementaciones y algoritmos para colecciones. `List<E>` es una secuencia ordenada que permite duplicados y acceso posicional. `Set<E>` es una colección que no permite elementos duplicados según el contrato de igualdad. `Map<K,V>` es una asociación de claves únicas a valores.
 
-Regla rápida:
+**Contrato / invariantes / reglas.** La elección de implementación determina complejidad y garantías: `ArrayList` ofrece acceso por índice O(1) amortizado y crecimiento dinámico; `HashSet`/`HashMap` ofrecen operaciones básicas promedio O(1) si `hashCode` dispersa bien, pero no garantizan orden; `LinkedHashMap` conserva orden de inserción; `TreeSet`/`TreeMap` mantienen orden ordenado con operaciones O(log n). Las colecciones genéricas imponen tipos en compilación (con borrado en runtime).
 
-- ¿Necesitas índice o duplicados? `List`.
-- ¿Necesitas saber si ya existe? `Set`.
-- ¿Necesitas buscar por clave? `Map`.
+**Modelo mental.** `List` es una fila numerada; `Set` es una bolsa donde no se admiten repetidos; `Map` es un casillero etiquetado por clave.
 
 **Implementación desde cero**
 
@@ -66,10 +61,10 @@ public class ColeccionesBasicas {
 
 **Desglose del código**
 
-- `ArrayList` conserva el orden de inserción y acepta duplicados: por eso `ENV-003` aparece dos veces.
-- `HashSet` elimina duplicados según `equals/hashCode`. El orden no está garantizado.
-- `HashMap.put` con una clave existente reemplaza el valor. Por eso `ENV-001` termina en `ENTREGADO`.
-- Programar contra la interfaz (`List`, `Set`, `Map`) permite cambiar la implementación sin reescribir todo el código cliente.
+- `ArrayList` conserva el orden de inserción y acepta duplicados.
+- `HashSet` elimina duplicados según `equals/hashCode`; no garantiza orden.
+- `HashMap.put` con una clave existente reemplaza el valor.
+- Programar contra la interfaz (`List`, `Set`, `Map`) desacopla el código de la implementación.
 
 **Ejecución y salida real**
 
@@ -101,7 +96,7 @@ Mapa: {ENV-003=EN_RUTA, ENV-001=ENTREGADO}
 javac ColeccionesBasicas.java && java ColeccionesBasicas
 ```
 
-Cambia `HashSet` por `TreeSet` y observa que los IDs quedan ordenados. Cambia `HashMap` por `LinkedHashMap` si necesitas conservar orden de inserción.
+Cambia `HashSet` por `TreeSet` y observa que los IDs quedan ordenados.
 
 ### Tema 2: El contrato de equals y hashCode · Intermedio · 45 min
 
@@ -109,14 +104,13 @@ Cambia `HashSet` por `TreeSet` y observa que los IDs quedan ordenados. Cambia `H
 
 `HashSet` y `HashMap` no adivinan si dos objetos “son el mismo”. Usan `equals()` y `hashCode()`. Si implementas uno mal, o solo uno de los dos, las colecciones basadas en hash se comportan de forma incorrecta: duplicados aparentes, búsquedas que no encuentran, elementos imposibles de localizar.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Contrato esencial:
+**Definición formal.** `equals(Object)` define la relación de igualdad lógica; `hashCode()` devuelve un entero usado por estructuras hash para bucketizar elementos. Ambas son parte del contrato de `java.lang.Object`.
 
-1. Si `a.equals(b)` es `true`, entonces `a.hashCode() == b.hashCode()` debe ser `true`.
-2. Si dos objetos tienen el mismo `hashCode`, **no** significa necesariamente que sean iguales (puede haber colisión).
-3. `equals` debe ser reflexivo, simétrico, transitivo, consistente y devolver `false` ante `null`.
-4. Los campos usados en `equals/hashCode` deberían ser los que definen la identidad lógica del objeto.
+**Contrato / invariantes / reglas.** Para `x,y,z` no nulos: `equals` debe ser reflexivo, simétrico, transitivo, consistente y `x.equals(null)` debe ser `false`. Si `x.equals(y)` entonces `x.hashCode() == y.hashCode()`. La inversa no aplica: hash iguales no implican igualdad. Los campos usados en `equals` deben ser los mismos que determinan `hashCode`; preferiblemente inmutables mientras el objeto viva en estructuras hash.
+
+**Modelo mental.** `hashCode` elige el cajón; `equals` confirma la identidad dentro del cajón.
 
 **Implementación desde cero**
 
@@ -145,9 +139,7 @@ public class Cliente {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(dni);
-    }
+    public int hashCode() { return Objects.hash(dni); }
 
     @Override
     public String toString() {
@@ -178,10 +170,10 @@ public class DemoEqualsHash {
 
 **Desglose del código**
 
-- `equals` define identidad lógica por `dni`. Dos clientes con el mismo DNI se consideran el mismo cliente.
-- `hashCode` usa el mismo campo (`dni`). Esto cumple el contrato.
-- `HashSet` usa primero `hashCode` para ubicar el bucket y luego `equals` para confirmar. Si el hash es inconsistente, el objeto “se pierde”.
-- `toString` no forma parte del contrato, pero facilita depurar.
+- `equals` define identidad lógica por `dni`.
+- `hashCode` usa el mismo campo (`dni`), cumpliendo el contrato.
+- `HashSet` usa `hashCode` para ubicar bucket y `equals` para confirmar.
+- `toString` facilita depuración.
 
 **Ejecución y salida real**
 
@@ -220,15 +212,13 @@ Comenta temporalmente `hashCode()` y vuelve a ejecutar: verás por qué el contr
 
 Guardas pedidos en un `HashMap` usando un objeto como clave. Luego modificas un campo de esa clave. Cuando buscas el pedido, el mapa parece “olvidarlo”, aunque al iterar sigue allí. Este bug es real y difícil de ver si no entiendes cómo funcionan los hashes.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-`HashMap` calcula el bucket de una clave usando `hashCode()` en el momento de insertar/buscar. Si mutas un campo que participa en `hashCode/equals` después de insertar:
+**Definición formal.** Una *clave mutable* en una estructura hash es un objeto cuyo estado usado por `equals/hashCode` puede cambiar después de su inserción. Esto viola la precondición implícita de estabilidad de identidad hash.
 
-- el objeto sigue dentro del mapa;
-- pero el mapa lo busca en otro bucket;
-- `get` devuelve `null` o no lo encuentra.
+**Contrato / invariantes / reglas.** `HashMap` calcula bucket por `hashCode()` al insertar y al buscar. Si el hash cambia, la búsqueda consulta otro bucket y puede no hallar la entrada. La especificación de `Map` advierte que el comportamiento es indefinido si el valor de una clave cambia de forma que afecte comparaciones. La invariante práctica: las claves de `HashMap`/`HashSet` deben ser inmutables respecto a los campos que participan en `equals/hashCode`.
 
-Regla: las claves de `HashMap`/elementos de `HashSet` deben ser efectivamente inmutables respecto de su identidad hash.
+**Modelo mental.** Es como cambiar la etiqueta de un archivador después de guardarlo: el documento sigue adentro, pero lo buscas en el cajón equivocado.
 
 **Implementación desde cero**
 
@@ -239,11 +229,7 @@ import java.util.Objects;
 
 public class ClaveMutable {
     private String codigo;
-
-    public ClaveMutable(String codigo) {
-        this.codigo = codigo;
-    }
-
+    public ClaveMutable(String codigo) { this.codigo = codigo; }
     public String getCodigo() { return codigo; }
     public void setCodigo(String codigo) { this.codigo = codigo; }
 
@@ -255,14 +241,10 @@ public class ClaveMutable {
     }
 
     @Override
-    public int hashCode() {
-        return Objects.hash(codigo);
-    }
+    public int hashCode() { return Objects.hash(codigo); }
 
     @Override
-    public String toString() {
-        return "ClaveMutable{codigo='" + codigo + "'}";
-    }
+    public String toString() { return "ClaveMutable{codigo='" + codigo + "'}"; }
 }
 ```
 
@@ -279,7 +261,6 @@ public class DemoMapaPerdido {
         pedidos.put(clave, "Pedido-Ada");
 
         System.out.println("Antes: " + pedidos.get(clave));
-
         clave.setCodigo("B2"); // mutación peligrosa
         System.out.println("Después get(clave): " + pedidos.get(clave));
         System.out.println("Después get(new A1): " + pedidos.get(new ClaveMutable("A1")));
@@ -291,9 +272,9 @@ public class DemoMapaPerdido {
 **Desglose del código**
 
 - Al insertar, `HashMap` usa el hash de `"A1"`.
-- `clave.setCodigo("B2")` cambia el campo que alimenta `hashCode()`.
-- El mapa sigue buscando con el nuevo hash; la entrada quedó ubicada según el hash viejo.
-- Iterar el mapa puede mostrar la entrada, pero el acceso por clave está roto.
+- `setCodigo("B2")` cambia el campo que alimenta `hashCode()`.
+- El mapa busca con el nuevo hash; la entrada quedó en el bucket del hash viejo.
+- Iterar puede mostrar la entrada, pero el acceso por clave está roto.
 
 **Ejecución y salida real**
 
@@ -315,7 +296,7 @@ Contenido real: {ClaveMutable{codigo='B2'}=Pedido-Ada}
 |---|---|---|
 | `get` devuelve `null` pero el elemento aparece al iterar | Mutaste una clave usada en hash | No mutes campos de identidad; usa claves inmutables |
 | Duplicados o pérdidas en `HashSet` | Mutaste el objeto tras insertarlo | Elimina, modifica fuera de la estructura, vuelve a insertar |
-| Usas entidad JPA mutable como clave | Identidad/ciclo de vida complejo | Prefiere ID inmutable o clave de negocio estable |
+| Usas entidad mutable como clave | Identidad/ciclo de vida complejo | Prefiere ID inmutable o clave de negocio estable |
 
 **Verificación rápida**
 
@@ -331,12 +312,13 @@ La corrección de diseño es hacer `codigo` `final` y eliminar el setter. Si la 
 
 Quieres una caja que almacene un valor de cualquier tipo sin perder seguridad en compilación. También quieres un método que pueda imprimir una lista de números, ya sean `Integer` o `Double`. Los genéricos resuelven esto sin caer en `Object` y casts por todas partes.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-- **Genérico**: parametriza tipos (`Caja<T>`). El compilador verifica el tipo.
-- **Wildcard `? extends T`**: acepta `T` o subtipos. Útil para leer (productor).
-- **Wildcard `? super T`**: acepta `T` o supertipos. Útil para escribir (consumidor).
-- **Type erasure**: en runtime, los genéricos se borran en gran parte. `List<String>` y `List<Integer>` son `List` en bytecode; la seguridad se aplica principalmente en compilación.
+**Definición formal.** Los *genéricos* permiten parametrizar tipos y métodos con variables de tipo (`T`, `E`, `K`, `V`). Un *wildcard* (`?`) representa un tipo desconocido con límite superior (`? extends T`) o inferior (`? super T`). *Type erasure* es el proceso por el cual el compilador elimina información genérica en bytecode, insertando casts/comprobaciones necesarias.
+
+**Contrato / invariantes / reglas.** La seguridad de tipos genéricos se garantiza principalmente en compilación. Por erasure, no se puede hacer `new T()`, `new List<String>[...]`, ni `instanceof List<String>`. PECS: *Producer Extends, Consumer Super* — usa `? extends T` cuando lees de la estructura, `? super T` cuando escribes en ella. La invariancia de genéricos implica que `List<Integer>` no es subtipo de `List<Number>`.
+
+**Modelo mental.** Un genérico es un molde con parámetro de tipo; el compilador verifica que uses el molde correcto antes de hornear. En runtime, la etiqueta del molde se borra y queda la forma general.
 
 **Implementación desde cero**
 
@@ -345,11 +327,7 @@ Crea `Caja.java`:
 ```java
 public class Caja<T> {
     private T valor;
-
-    public Caja(T valor) {
-        this.valor = valor;
-    }
-
+    public Caja(T valor) { this.valor = valor; }
     public T getValor() { return valor; }
     public void setValor(T valor) { this.valor = valor; }
 }
@@ -379,26 +357,22 @@ public class DemoGenericos {
 
     static double suma(List<? extends Number> numeros) {
         double total = 0;
-        for (Number n : numeros) {
-            total += n.doubleValue();
-        }
+        for (Number n : numeros) total += n.doubleValue();
         return total;
     }
 
     static void agregarUnoADiez(List<? super Integer> destino) {
-        for (int i = 1; i <= 3; i++) {
-            destino.add(i);
-        }
+        for (int i = 1; i <= 3; i++) destino.add(i);
     }
 }
 ```
 
 **Desglose del código**
 
-- `Caja<T>` permite reutilizar la misma clase con tipos distintos, manteniendo chequeo en compilación.
-- `List<? extends Number>` acepta listas de `Integer`, `Double`, etc. Puedes leer elementos como `Number`, pero no puedes agregar cualquier `Number` porque el tipo concreto exacto es desconocido.
-- `List<? super Integer>` acepta `List<Integer>`, `List<Number>` o `List<Object>`. Puedes agregar `Integer`, pero al leer obtienes `Object`.
-- El borrado de tipos explica por qué no puedes hacer `new T()` o `instanceof List<String>` directamente.
+- `Caja<T>` parametriza el tipo contenido, con chequeo en compilación.
+- `List<? extends Number>` es un productor: puedes leer como `Number`, pero no insertar un subtipo arbitrario.
+- `List<? super Integer>` es un consumidor: puedes insertar `Integer`, pero al leer obtienes `Object`.
+- El borrado de tipos explica las restricciones de runtime.
 
 **Ejecución y salida real**
 
@@ -429,7 +403,7 @@ Hola
 javac Caja.java DemoGenericos.java && java DemoGenericos
 ```
 
-Intenta agregar un `Double` a `List<? extends Number>` dentro de `suma`: el compilador debe rechazarlo. Ese error es el genérico protegiéndote.
+Intenta agregar un `Double` a `List<? extends Number>` dentro de `suma`: el compilador debe rechazarlo.
 
 ### Tema 5: Comparable vs Comparator, e iteración · Intermedio · 40 min
 
@@ -437,16 +411,13 @@ Intenta agregar un `Double` a `List<? extends Number>` dentro de `suma`: el comp
 
 Tienes personas que normalmente se ordenan por edad, pero en una pantalla quieres ordenarlas por nombre. No puedes tener un solo “orden natural” para todos los casos. Necesitas separar el orden natural del orden contextual.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-| Interfaz | Dónde se implementa | Propósito | Ejemplo |
-|---|---|---|---|
-| `Comparable<T>` | Dentro de la clase | Orden natural | Persona por edad |
-| `Comparator<T>` | Clase/objeto externo | Orden alternativo | Persona por nombre |
+**Definición formal.** `Comparable<T>` define el *orden natural* de un tipo mediante `int compareTo(T o)`. `Comparator<T>` define un orden externo mediante `int compare(T a, T b)`. El contrato de comparación espera un signo consistente: negativo si menor, cero si igual, positivo si mayor.
 
-- `compareTo` devuelve negativo, cero o positivo.
-- `Comparator.comparing(...)` crea comparadores legibles.
-- Iteración: `for-each`, `Iterator`, `forEach`. Usa `Iterator.remove()` si necesitas eliminar mientras iteras.
+**Contrato / invariantes / reglas.** `compareTo`/`compare` deben ser consistentes con transitividad y, idealmente, consistentes con `equals` (si `compareTo` devuelve 0, `equals` debería ser true; si no, documentarlo). `Comparator.comparing` y `thenComparing` permiten composición declarativa. Al iterar, modificar la colección estructuralmente fuera del iterador puede lanzar `ConcurrentModificationException` en colecciones fail-fast.
+
+**Modelo mental.** `Comparable` es cómo el objeto se ordena “por defecto”; `Comparator` es la regla de orden que eliges para una ocasión.
 
 **Implementación desde cero**
 
@@ -457,23 +428,15 @@ public class Persona implements Comparable<Persona> {
     private final String nombre;
     private final int edad;
 
-    public Persona(String nombre, int edad) {
-        this.nombre = nombre;
-        this.edad = edad;
-    }
-
+    public Persona(String nombre, int edad) { this.nombre = nombre; this.edad = edad; }
     public String getNombre() { return nombre; }
     public int getEdad() { return edad; }
 
     @Override
-    public int compareTo(Persona otra) {
-        return Integer.compare(this.edad, otra.edad);
-    }
+    public int compareTo(Persona otra) { return Integer.compare(this.edad, otra.edad); }
 
     @Override
-    public String toString() {
-        return nombre + "(" + edad + ")";
-    }
+    public String toString() { return nombre + "(" + edad + ")"; }
 }
 ```
 
@@ -509,9 +472,9 @@ public class DemoOrden {
 **Desglose del código**
 
 - `Comparable` define el orden natural en la propia clase.
-- `Collections.sort(personas)` usa `compareTo`.
-- `personas.sort(Comparator.comparing(Persona::getNombre))` aplica un orden alternativo sin modificar la clase.
-- `entrySet()` es la forma eficiente de recorrer clave y valor en un `Map`.
+- `Collections.sort` usa `compareTo`.
+- `Comparator.comparing(Persona::getNombre)` aplica un orden alternativo.
+- `entrySet()` recorre clave y valor eficientemente.
 
 **Ejecución y salida real**
 
@@ -551,15 +514,13 @@ Agrega `.reversed()` al comparador por nombre y confirma que el orden se inviert
 
 En un sistema de atención, algunos tickets entran por orden normal y otros por prioridad. Además, necesitas deshacer la última acción. Una lista sola puede hacerlo, pero una cola/pila expresa mejor la intención y evita errores.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-| Estructura | Comportamiento | Implementación típica | Uso |
-|---|---|---|---|
-| Cola (`Queue`) | FIFO: primero en entrar, primero en salir | `ArrayDeque`, `LinkedList` | Tareas en orden |
-| Pila (`Deque` como stack) | LIFO: último en entrar, primero en salir | `ArrayDeque` | Deshacer/retroceso |
-| Cola de prioridad | Sale el elemento “más importante” | `PriorityQueue` | Tickets urgentes, scheduling |
+**Definición formal.** `Queue<E>` modela una colección diseñada para retención temporal antes de procesamiento, típicamente FIFO. `Deque<E>` soporta inserción/extracción en ambos extremos, permitiendo FIFO o LIFO. `PriorityQueue<E>` es una cola basada en heap donde la cabeza es el elemento de menor/mayor prioridad según `Comparator` u orden natural.
 
-`ArrayDeque` es generalmente preferible a `Stack` y suele ser mejor que `LinkedList` para pila/cola.
+**Contrato / invariantes / reglas.** `offer/poll/peek` manejan fallo/caso vacío con retorno especial; `add/remove/element` pueden lanzar excepción. `PriorityQueue` no garantiza orden de iteración total, solo que `poll()` extrae según prioridad. `ArrayDeque` no permite `null` y es generalmente más eficiente que `Stack`/`LinkedList` para pila/cola.
+
+**Modelo mental.** Cola: fila de supermercado. Pila: platos apilados. Cola de prioridad: sala de urgencias, no importa quién llegó primero sino la prioridad.
 
 **Implementación desde cero**
 
@@ -600,8 +561,8 @@ public class ColasYPilas {
 
 - `Queue` con `add/poll/peek`: inserta, extrae cabeza, inspecciona cabeza.
 - `Deque` como pila con `push/pop`: LIFO.
-- `PriorityQueue` no garantiza orden al iterar; garantiza que `poll()` entrega el menor elemento según el orden natural o comparador.
-- `poll()` devuelve `null` si la estructura está vacía; `remove/pop` pueden lanzar excepción según el caso.
+- `PriorityQueue` garantiza extracción por prioridad con `poll()`, no orden al iterar.
+- `poll()` devuelve `null` si está vacía.
 
 **Ejecución y salida real**
 
@@ -637,21 +598,19 @@ javac ColasYPilas.java && java ColasYPilas
 
 Extrae todos los elementos de `PriorityQueue` con `while (!prioridad.isEmpty()) System.out.println(prioridad.poll());` para ver el orden real.
 
-## Cierre del módulo
-
-Ya sabes elegir la colección según el problema, implementar identidad lógica con `equals/hashCode`, evitar claves mutables en mapas, usar genéricos para seguridad de tipos y aplicar colas/pilas/prioridades. El siguiente módulo trata un problema transversal: qué hacer cuando algo falla, cómo modelar errores y cómo liberar recursos correctamente.
-
 ### Tema 7: Incremento del proyecto: preparar guías asignables · Intermedio · 25 min
 
 **Caso guía**
 
 En el proyecto integrador de la ruta Java, las guías llegan con datos sueltos y necesitas guardarlas, evitar duplicados por ID y consultarlas rápido por código. Este incremento conecta colecciones con un dominio pequeño y real.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-- Usa `List` cuando el orden de llegada importa.
-- Usa `Set` o un `Map` con clave por ID cuando la identidad debe ser única.
-- Encapsula la colección dentro de una clase de repositorio; no expongas la lista mutable directamente.
+**Definición formal.** Un *repositorio en memoria* es una abstracción que encapsula almacenamiento y consulta de entidades, ocultando la estructura de datos subyacente. El uso de `Map<K,V>` por clave de identidad provee búsqueda promedio O(1).
+
+**Contrato / invariantes / reglas.** La identidad de entidad debe ser estable y coherente con `equals/hashCode` si se usa en colecciones hash. Exponer colecciones internas mutables rompe encapsulación; `List.copyOf` crea una copia inmutable. `Optional<T>` expresa ausencia explícita en el tipo de retorno.
+
+**Modelo mental.** El repositorio es el mostrador: tú pides por ID; no entras al depósito a mover cajas directamente.
 
 **Implementación desde cero**
 
@@ -755,3 +714,7 @@ java DemoRepoGuias
 ```
 
 Prueba agregar dos guías con el mismo ID: debe lanzar `IllegalArgumentException`.
+
+## Cierre del módulo
+
+Ya sabes elegir la colección según el problema, implementar identidad lógica con `equals/hashCode`, evitar claves mutables en mapas, usar genéricos para seguridad de tipos y aplicar colas/pilas/prioridades. El siguiente módulo trata un problema transversal: qué hacer cuando algo falla, cómo modelar errores y cómo liberar recursos correctamente.
