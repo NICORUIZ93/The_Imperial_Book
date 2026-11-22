@@ -5431,23 +5431,23 @@
     "10": [
       {
         "title": "REST síncrono: RestTemplate, WebClient, OpenFeign",
-        "fragment": "rest-sincrono-resttemplate-webclient-openfeign"
+        "fragment": "tema-1-rest-sincrono-resttemplate-webclient-openfeign"
       },
       {
         "title": "gRPC: Protocol Buffers, servicios, streaming",
-        "fragment": "grpc-protocol-buffers-servicios-streaming"
+        "fragment": "tema-2-grpc-protocol-buffers-servicios-streaming"
       },
       {
         "title": "GraphQL con Spring for GraphQL",
-        "fragment": "graphql-con-spring-for-graphql"
+        "fragment": "tema-3-graphql-con-spring-for-graphql"
       },
       {
         "title": "Mensajería asíncrona: RabbitMQ y Kafka (introducción)",
-        "fragment": "mensajeria-asincrona-rabbitmq-y-kafka-introduccion"
+        "fragment": "tema-4-mensajeria-asincrona-rabbitmq-y-kafka-introduccion"
       },
       {
         "title": "Sync vs async: criterios de decisión",
-        "fragment": "sync-vs-async-criterios-de-decision"
+        "fragment": "tema-5-sync-vs-async-criterios-de-decision"
       }
     ],
     "11": [
