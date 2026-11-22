@@ -5,8 +5,10 @@ Estado inicial antes de remediación "desde cero" solicitada por el usuario.
 ## Resumen
 - Java: 23 módulos, 122 temas.
 - Spring Boot: 21 módulos, 123 temas.
-- Módulos con compresión/tabla-sustituto detectada: 18.
-- Ningún módulo cumple D+formal completo según checklist (Capa 1+2+fundamento+desglose+ejecución+errores+verificación por tema con cobertura por concepto).
+- Spring microservicios: 16 módulos, 68 temas. M0-M3 reescritos al estándar libro vivo; M4-M15 creados/reescritos a cero-a-experto con mínimos ejecutables Java/Node y notas honestas donde falta infraestructura (Spring Cloud/Kafka/K8s/OTel/IdP).
+- Node microservicios: 16 módulos, 61 temas (lote previo, verificado con Node 24.18.0).
+- Módulos con compresión/tabla-sustituto detectada: 18 (auditoría inicial; Java/Spring Boot remediados, microservicios split/remediado).
+- Estado actual repo: 17 tracks, 319 módulos, 1679 temas.
 
 ## Matriz
 

@@ -7126,6 +7126,114 @@
         "fragment": "tema-7-postgresql-y-mysql"
       }
     ],
+    "10": [
+      {
+        "title": "Kafka, particiones y consumer groups",
+        "fragment": "tema-1-kafka-particiones-y-consumer-groups"
+      },
+      {
+        "title": "RabbitMQ, acks y DLQ",
+        "fragment": "tema-2-rabbitmq-acks-y-dlq"
+      },
+      {
+        "title": "Schema Registry y evolución",
+        "fragment": "tema-3-schema-registry-y-evolucion"
+      },
+      {
+        "title": "Idempotencia en consumidores",
+        "fragment": "tema-4-idempotencia-en-consumidores"
+      }
+    ],
+    "11": [
+      {
+        "title": "Outbox y CDC con Debezium",
+        "fragment": "tema-1-outbox-y-cdc-con-debezium"
+      },
+      {
+        "title": "Sagas orquestadas/coreografiadas",
+        "fragment": "tema-2-sagas-orquestadas-coreografiadas"
+      },
+      {
+        "title": "Idempotencia real y exactly-once práctico",
+        "fragment": "tema-3-idempotencia-real-y-exactly-once-practico"
+      },
+      {
+        "title": "Por qué evitar 2PC",
+        "fragment": "tema-4-por-que-evitar-2pc"
+      }
+    ],
+    "12": [
+      {
+        "title": "Dockerfile multi-stage y runtime Java",
+        "fragment": "tema-1-dockerfile-multi-stage-y-runtime-java"
+      },
+      {
+        "title": "Kubernetes Deployments, Services, ConfigMaps, Secrets, probes",
+        "fragment": "tema-2-kubernetes-deployments-services-configmaps-secrets-probes"
+      },
+      {
+        "title": "HPA, Helm y despliegues progresivos",
+        "fragment": "tema-3-hpa-helm-y-despliegues-progresivos"
+      },
+      {
+        "title": "GitOps con ArgoCD",
+        "fragment": "tema-4-gitops-con-argocd"
+      }
+    ],
+    "13": [
+      {
+        "title": "ADRs y C4",
+        "fragment": "tema-1-adrs-y-c4"
+      },
+      {
+        "title": "Fitness functions y ATAM ligero",
+        "fragment": "tema-2-fitness-functions-y-atam-ligero"
+      },
+      {
+        "title": "FinOps: costo, right-sizing y observability tax",
+        "fragment": "tema-3-finops-costo-right-sizing-y-observability-tax"
+      },
+      {
+        "title": "Ley de Conway y Team Topologies",
+        "fragment": "tema-4-ley-de-conway-y-team-topologies"
+      }
+    ],
+    "14": [
+      {
+        "title": "Monolito distribuido y sobre-descomposición",
+        "fragment": "tema-1-monolito-distribuido-y-sobre-descomposicion"
+      },
+      {
+        "title": "Sagas innecesarias y acoplamiento temporal",
+        "fragment": "tema-2-sagas-innecesarias-y-acoplamiento-temporal"
+      },
+      {
+        "title": "Strangler Fig y coexistencia de datos",
+        "fragment": "tema-3-strangler-fig-y-coexistencia-de-datos"
+      },
+      {
+        "title": "Métricas DORA y deuda técnica",
+        "fragment": "tema-4-metricas-dora-y-deuda-tecnica"
+      }
+    ],
+    "15": [
+      {
+        "title": "Diseño del sistema y límites",
+        "fragment": "tema-1-diseno-del-sistema-y-limites"
+      },
+      {
+        "title": "Contratos, idempotencia y saga/outbox",
+        "fragment": "tema-2-contratos-idempotencia-y-saga-outbox"
+      },
+      {
+        "title": "Observabilidad, seguridad y despliegue",
+        "fragment": "tema-3-observabilidad-seguridad-y-despliegue"
+      },
+      {
+        "title": "Carga, restricción sobrevenida y defensa ARB",
+        "fragment": "tema-4-carga-restriccion-sobrevenida-y-defensa-arb"
+      }
+    ],
     "2": [
       {
         "title": "JUnit 5, Mockito y MockMvc",
@@ -7240,6 +7348,42 @@
       {
         "title": "Chaos engineering",
         "fragment": "tema-4-chaos-engineering"
+      }
+    ],
+    "8": [
+      {
+        "title": "Spring Security filter chain",
+        "fragment": "tema-1-spring-security-filter-chain"
+      },
+      {
+        "title": "JWT y OAuth2/OIDC",
+        "fragment": "tema-2-jwt-y-oauth2-oidc"
+      },
+      {
+        "title": "RBAC, scopes y mTLS",
+        "fragment": "tema-3-rbac-scopes-y-mtls"
+      },
+      {
+        "title": "Vault, gestión de secretos y CVE scanning",
+        "fragment": "tema-4-vault-gestion-de-secretos-y-cve-scanning"
+      }
+    ],
+    "9": [
+      {
+        "title": "Micrometer y Prometheus",
+        "fragment": "tema-1-micrometer-y-prometheus"
+      },
+      {
+        "title": "OpenTelemetry y trazas",
+        "fragment": "tema-2-opentelemetry-y-trazas"
+      },
+      {
+        "title": "Logs estructurados y correlación",
+        "fragment": "tema-3-logs-estructurados-y-correlacion"
+      },
+      {
+        "title": "SLO, p99 y alerting",
+        "fragment": "tema-4-slo-p99-y-alerting"
       }
     ]
   }
