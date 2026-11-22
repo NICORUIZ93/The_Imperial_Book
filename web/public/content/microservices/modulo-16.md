@@ -1,264 +1,120 @@
-# Módulo 12 · Contenedores y orquestación
+# Módulo 2.8 · Contenedores y Kubernetes
 
-**Entorno de referencia (2026-05-22):** Docker 29.9.3, Node.js v24.18.0. Se verifican Dockerfile/Compose localmente. Kubernetes, Helm, ArgoCD, Blue-Green/Canary en cluster requieren cluster/infra; **Nota de verificación** honesta.
+Los microservicios se empaquetan como contenedores y suelen orquestarse con Kubernetes. Este módulo cubre imágenes, Compose, objetos K8s básicos, probes, HPA, Helm, despliegues progresivos y GitOps.
+
+**Entorno de referencia verificado (2026-05-22):** Docker 29.9.3. Kubernetes/Helm/ArgoCD se describen con labs reproducibles; no se finge cluster en ejecución.
 
 ## Aprende construyendo
 
 ### Tema 1: Dockerfile multi-stage, distroless · Intermedio · 120 min
 
-#### Multi-stage build
+Caso guía: imagen pequeña y con menos superficie de ataque.
 
-**Definición formal.** Dockerfile con múltiples etapas donde artefactos se copian desde etapas de build a una imagen final más pequeña.
+#### Multi-stage
 
-**Para qué sirve.** Reduce tamaño y superficie de ataque.
+**Definición formal.** Dockerfile con varias etapas: build en una, runtime mínimo en otra.
 
-**Cuándo usarlo y cuándo no.** Úsalo en builds compilados. No copies toolchains al runtime.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/ms16-ms && cd /tmp/ms16-ms
-cat > Dockerfile << 'DOCKER'
-FROM node:24-alpine AS build
-WORKDIR /app
-COPY app.mjs .
-FROM node:24-alpine
-WORKDIR /app
-COPY --from=build /app/app.mjs .
-CMD ["node","app.mjs"]
-DOCKER
-cat > app.mjs << 'JS'
-console.log('ok')
-JS
-docker build -t ms16-ms:1 . >/dev/null && docker run --rm ms16-ms:1
-```
-
-**Caso de uso real.** Build Maven luego runtime JRE.
-
-**Error común.** Copiar todo el contexto. Corrección: `.dockerignore`.
-
-**Verificación (Docker 29.9.3, 2026-05-22).** Salida: `ok`.
-
-#### Distroless
-
-**Definición formal.** Imágenes que contienen la app y runtime, sin shell/package manager habitual.
-
-**Para qué sirve.** Menor superficie de ataque.
-
-**Cuándo usarlo y cuándo no.** Úsalo en producción madura. No si necesitas depurar con shell dentro (usa debug variant).
-
-**Ejemplo mínimo enfocado (conceptual).**
+**Ejemplo mínimo.**
 
 ```dockerfile
-FROM gcr.io/distroless/java21-debian12
-COPY app.jar /app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY . .
+RUN npm ci --omit=dev
+FROM gcr.io/distroless/nodejs24-debian12
+WORKDIR /app
+COPY --from=build /app /app
+CMD ["server.js"]
 ```
 
-**Caso de uso real.** Runtime Java mínimo.
-
-**Error común.** Esperar `sh` en distroless. Corrección: imagen debug o ephemeral debug container.
-
-**Verificación.** **Nota de verificación:** requiere imagen base y app; conceptual.
+**Error común.** Imagen de build en producción. Corrección: multi-stage.
 
 ### Tema 2: Docker Compose · Básico · 90 min
 
+Caso guía: app + db local.
+
 #### Compose
 
-**Definición formal.** Herramienta para definir y ejecutar apps multi-contenedor con YAML.
+**Definición formal.** Declaración YAML de servicios locales interconectados.
 
-**Para qué sirve.** Entorno local reproducible.
-
-**Cuándo usarlo y cuándo no.** Dev/test local. No orquestación de producción a gran escala.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/ms16-compose && cd /tmp/ms16-compose
-cat > compose.yml << 'Y'
-services:
-  app:
-    image: node:24-alpine
-    command: ["node","-e","console.log('up')"]
-Y
-docker compose -f compose.yml run --rm app
-```
-
-**Caso de uso real.** App + DB + Redis.
-
-**Error común.** Depender de orden sin healthcheck. Corrección: healthchecks.
-
-**Verificación (Docker 29.9.3, 2026-05-22).** Salida: `up`.
+**Error común.** Usar Compose para prod sin entender límites. Corrección: dev/integration.
 
 ### Tema 3: Kubernetes: Deployments, Services, ConfigMaps, Secrets · Avanzado · 180 min
 
-#### Deployment y Service
+Caso guía: desplegar servicio con config y secreto.
 
-**Definición formal.** Deployment gestiona ReplicaSets/Pods declarativamente; Service expone Pods con una IP/DNS estable.
+#### Objetos básicos
 
-**Para qué sirve.** Despliegue y descubrimiento interno.
+**Definición formal.** Deployment gestiona replicas; Service expone; ConfigMap configura; Secret guarda material sensible (codificado, no cifrado por defecto).
 
-**Cuándo usarlo y cuándo no.** Úsalo en cluster K8s. No edites Pods manualmente como práctica habitual.
-
-**Ejemplo mínimo enfocado (manifiesto).**
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata: {name: app}
-spec:
-  replicas: 2
-  selector: {matchLabels: {app: app}}
-  template:
-    metadata: {labels: {app: app}}
-    spec:
-      containers: [{name: app, image: app:1.0.0}]
+```mermaid
+flowchart LR
+  D[Deployment] --> P1[Pod]
+  D --> P2[Pod]
+  S[Service] --> P1
+  S --> P2
 ```
 
-**Caso de uso real.** 2 réplicas detrás de Service.
-
-**Error común.** Sin requests/limits. Corrección: definir recursos.
-
-**Verificación.** **Nota de verificación:** requiere cluster Kubernetes (`kubectl apply --dry-run=client` validable).
-
-#### ConfigMap y Secret
-
-**Definición formal.** ConfigMap almacena config no sensible; Secret almacena datos sensibles codificados/base64 en el objeto K8s.
-
-**Para qué sirve.** Separar config de imagen.
-
-**Cuándo usarlo y cuándo no.** Úsalo siempre. No metas secretos en ConfigMap ni en imagen.
-
-**Ejemplo mínimo enfocado (ejecutable, simulación base64).**
-
-```bash
-node -e "console.log(Buffer.from('s3cr3t').toString('base64'))"
-```
-
-**Caso de uso real.** `DATABASE_URL` en Secret.
-
-**Error común.** Creer que base64 es cifrado. Corrección: cifrado en reposo, RBAC, secret manager.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `czNjcjN0`.
+**Error común.** Meter secretos en ConfigMap. Corrección: Secret + cifrado/gestión externa.
 
 ### Tema 4: Readiness/Liveness Probes · Intermedio · 90 min
 
+Caso guía: no enviar tráfico antes de estar listo.
+
 #### Probes
 
-**Definición formal.** Liveness indica si el proceso debe reiniciarse; readiness indica si puede recibir tráfico.
+**Definición formal.** Liveness detecta proceso irrecuperable; readiness detecta si puede recibir tráfico.
 
-**Para qué sirve.** Auto-recuperación y despliegues seguros.
-
-**Cuándo usarlo y cuándo no.** Siempre en K8s. No uses liveness que dependa de dependencias externas frágiles.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-node -e "const ready=true, live=true; console.log(ready?200:503, live?200:500)"
-```
-
-**Caso de uso real.** `/healthz` y `/readyz`.
-
-**Error común.** Liveness falla por DB down y causa restart loop. Corrección: separar liveness de readiness.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `200 200`.
+**Error común.** Liveness consultando DB. Corrección: readiness para dependencias.
 
 ### Tema 5: HPA · Intermedio · 90 min
 
-#### Horizontal Pod Autoscaler
+Caso guía: escalar por CPU/latencia.
 
-**Definición formal.** HPA escala el número de réplicas según métricas (CPU, custom metrics).
+#### HPA
 
-**Para qué sirve.** Ajustar capacidad a carga.
+**Definición formal.** Horizontal Pod Autoscaler ajusta réplicas según métricas.
 
-**Cuándo usarlo y cuándo no.** Úsalo con métricas representativas. No sin requests de CPU/métricas configuradas.
-
-**Ejemplo mínimo enfocado (regla simulada).**
-
-```bash
-node -e "const cpu=80,target=60,replicas=2; console.log(Math.ceil(replicas*(cpu/target)))"
-```
-
-**Caso de uso real.** Escala de 2 a 3 pods.
-
-**Error común.** Escalar por CPU cuando el cuello es DB. Corrección: métricas adecuadas.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `3`.
+**Error común.** Autoscalar sin límites/recursos definidos. Corrección: requests/limits y métricas adecuadas.
 
 ### Tema 6: Helm · Intermedio · 90 min
 
-#### Helm chart
+Caso guía: empaquetar manifests reutilizables.
 
-**Definición formal.** Helm es un gestor de paquetes para Kubernetes que templatiza manifiestos en charts.
+#### Helm
 
-**Para qué sirve.** Reutilización y parametrización.
+**Definición formal.** Gestor de paquetes para Kubernetes; charts parametrizan manifests.
 
-**Cuándo usarlo y cuándo no.** Úsalo para despliegues repetibles. No abuses de templates complejos.
-
-**Ejemplo mínimo enfocado (snippet).**
-
-```yaml
-# values.yaml
-replicaCount: 2
-image:
-  repository: app
-  tag: "1.0.0"
-```
-
-**Caso de uso real.** `helm upgrade --install`.
-
-**Error común.** Lógica compleja en templates. Corrección: mantener charts simples.
-
-**Verificación.** **Nota de verificación:** requiere Helm y cluster.
+**Error común.** Templates Helm demasiado complejos. Corrección: valores claros, charts simples.
 
 ### Tema 7: Blue-Green y Canary · Avanzado · 120 min
 
+Caso guía: liberar sin tumbar a todos.
+
 #### Estrategias de despliegue
 
-**Definición formal.** Blue-Green mantiene dos entornos y conmuta tráfico; Canary libera gradualmente a un subconjunto.
+**Definición formal.** Blue-green mantiene dos entornos y cambia tráfico; canary libera a un subconjunto gradual.
 
-**Para qué sirve.** Reduce riesgo de release.
-
-**Cuándo usarlo y cuándo no.** Úsalo cuando puedes observar y revertir. No sin métricas/rollback.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-node -e "function route(canaryPct,user){ return (user%100)<canaryPct?'canary':'stable'} console.log(route(10,5), route(10,15));"
-```
-
-**Caso de uso real.** 10% tráfico a v2.
-
-**Error común.** No tener rollback automático. Corrección: métricas de error/latencia + rollback.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `canary stable`.
+**Error común.** Canary sin métricas de rollback. Corrección: SLOs y rollback automático/manual definido.
 
 ### Tema 8: GitOps con ArgoCD · Avanzado · 90 min
 
+Caso guía: estado del cluster desde Git.
+
 #### GitOps
 
-**Definición formal.** Práctica donde el estado deseado se declara en Git y un controlador lo reconcilia en el cluster.
+**Definición formal.** Git como fuente de verdad declarativa; un controlador reconcilia el cluster al estado deseado.
 
-**Para qué sirve.** Auditoría, reproducibilidad y rollback por Git.
+**Error común.** Cambios manuales en cluster fuera de Git. Corrección: reconciliación y disciplina de PRs.
 
-**Cuándo usarlo y cuándo no.** Úsalo con madurez K8s. No edites cluster manualmente fuera del flujo.
+## Cierre
 
-**Ejemplo mínimo enfocado (conceptual).**
+Kubernetes no es requisito inicial, pero es el lenguaje común de operación para microservicios a escala. Aprende los objetos básicos antes de la magia.
 
-```yaml
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-spec:
-  source: {repoURL: 'https://git/app', path: k8s}
-  destination: {server: 'https://kubernetes.default.svc', namespace: app}
-```
+## Checklist
 
-**Caso de uso real.** ArgoCD sincroniza manifiestos.
-
-**Error común.** Drift manual no detectado. Corrección: sync automático/prune controlado.
-
-**Verificación.** **Nota de verificación:** requiere ArgoCD y cluster.
-
-## Cierre del módulo
-
-Contenedores empaquetan, Kubernetes orquesta, y GitOps/estrategias de release controlan el cambio. La automatización sin observabilidad y límites de recursos solo acelera fallos.
+- Imágenes pequeñas y reproducibles.
+- Probes correctas.
+- Config/Secret separados.
+- Despliegue progresivo con métricas.
+- GitOps para estado declarativo.

@@ -1,149 +1,77 @@
-# Módulo 10 · Observabilidad
+# Módulo 2.6 · Observabilidad
 
-**Entorno de referencia (2026-05-22):** Node.js v24.18.0. Se verifican formatos de métricas, logs estructurados y reglas de alertas con ejemplos ejecutables. Prometheus, Grafana, OpenTelemetry, Zipkin/Jaeger, Micrometer requieren stack/infra; **Nota de verificación** honesta.
+Un microservicio sin observabilidad es una caja negra distribuida. Observabilidad combina métricas, logs y traces para responder por qué algo falló, dónde y con qué impacto.
+
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Spring Boot 3.5.0, Docker 29.9.3.
 
 ## Aprende construyendo
 
 ### Tema 1: Micrometer + Prometheus · Intermedio · 150 min
 
-Caso guía: exponer latencia y conteo de requests.
+Caso guía: medir tasa de errores y latencia por endpoint.
 
-#### Métricas con Micrometer
+#### Métricas
 
-**Definición formal.** Micrometer es una fachada de métricas para JVM que integra contadores, timers, gauges con backends como Prometheus.
+**Definición formal.** Medidas numéricas agregadas en el tiempo (counter, gauge, timer/histogram). Micrometer es fachada; Prometheus scrapea y almacena.
 
-**Para qué sirve.** Instrumentación portable.
+**Regla.** Tags de baja cardinalidad. `userId` en tag destruye el TSDB.
 
-**Cuándo usarlo y cuándo no.** Úsalo en apps JVM. No instrumentes todo sin propósito; evita alta cardinalidad.
-
-**Ejemplo mínimo enfocado (formato Prometheus ejecutable).**
-
-```bash
-node -e "console.log('# TYPE http_requests_total counter'); console.log('http_requests_total{path=\"/ok\"} 5')"
-```
-
-**Caso de uso real.** `/actuator/prometheus`.
-
-**Error común.** Labels con alta cardinalidad (`userId`). Corrección: labels acotados.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: líneas de formato Prometheus. **Nota:** Micrometer/Prometheus real requiere app y scraper.
-
-#### Prometheus
-
-**Definición formal.** Prometheus es un sistema de monitoreo pull-based que almacena series temporales y permite consultas PromQL.
-
-**Para qué sirve.** Alertas y diagnóstico de comportamiento.
-
-**Cuándo usarlo y cuándo no.** Úsalo para métricas numéricas. No para logs detallados o traces.
-
-**Ejemplo mínimo enfocado (PromQL conceptual).**
-
-```promql
-histogram_quantile(0.99, sum(rate(http_server_requests_seconds_bucket[5m])) by (le))
-```
-
-**Caso de uso real.** Alertar por p99 alto.
-
-**Error común.** Alertar por promedio ocultando cola. Corrección: percentiles.
-
-**Verificación.** **Nota de verificación:** requiere Prometheus server.
+**Error común.** Medir solo CPU/memoria. Corrección: métricas RED/USE y de negocio.
 
 ### Tema 2: OpenTelemetry + Zipkin/Jaeger · Avanzado · 150 min
 
-Caso guía: rastrear request cross-service.
+Caso guía: request lenta cruzando 4 servicios.
 
-#### Trazas distribuidas
+#### Tracing distribuido
 
-**Definición formal.** Una traza representa una transacción distribuida como spans relacionados por trace/span IDs.
+**Definición formal.** Trace es una cadena de spans con `traceId`; cada span representa una operación. OTel estandariza instrumentación/export.
 
-**Para qué sirve.** Diagnostica latencia y fallos entre servicios.
-
-**Cuándo usarlo y cuándo no.** Úsalo en sistemas distribuidos. No muestrees 100% en alto volumen sin control de costo.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-node -e "const trace='t1', span='s1'; console.log(JSON.stringify({traceId:trace,spanId:span,op:'GET /orders'}))"
+```mermaid
+flowchart LR
+  A[API Gateway] --> B[Servicio pedidos]
+  B --> C[Servicio pagos]
+  B --> D[DB]
 ```
 
-**Caso de uso real.** OpenTelemetry exporta a Jaeger.
-
-**Error común.** No propagar headers de contexto. Corrección: W3C tracecontext.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida JSON con traceId/spanId. **Nota:** OTel/Jaeger real requiere agente/collector.
+**Error común.** No propagar headers de trace. Corrección: instrumentación OTel y propagación W3C.
 
 ### Tema 3: Logging estructurado · Intermedio · 90 min
 
-Caso guía: logs consultables por `orderId`.
+Caso guía: buscar todos los errores de un `orderId`.
 
-#### Log estructurado
+#### Logs estructurados
 
-**Definición formal.** Log emitido en formato estructurado (JSON) con campos consistentes.
+**Definición formal.** Logs con campos clave/valor (JSON) y contexto de correlación.
 
-**Para qué sirve.** Consulta, agregación y correlación.
-
-**Cuándo usarlo y cuándo no.** Úsalo en producción. No loguees secretos/PII.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-node -e "console.log(JSON.stringify({level:'info',msg:'order created',orderId:'O1',traceId:'t1'}))"
-```
-
-**Caso de uso real.** Loki/ELK indexa campos.
-
-**Error común.** Mensajes no estructurados con datos embebidos. Corrección: campos separados.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida JSON.
+**Error común.** Loguear texto libre sin IDs. Corrección: `traceId`, `spanId`, `orderId` como campos.
 
 ### Tema 4: Grafana: dashboards · Intermedio · 90 min
 
-Caso guía: tablero de latencia, errores y saturación.
+Caso guía: tablero de salud del servicio.
 
 #### Dashboard
 
-**Definición formal.** Visualización de métricas/logs/trazas para observar estado del sistema.
+**Definición formal.** Visualización de métricas/logs/traces para operación. Debe responder preguntas concretas.
 
-**Para qué sirve.** Diagnóstico rápido y comunicación operativa.
-
-**Cuándo usarlo y cuándo no.** Úsalo para señales clave. No hagas dashboards sin dueño/SLO.
-
-**Ejemplo mínimo enfocado (conceptual).**
-
-```text
-Panels: RPS, error rate, p99 latency, saturation
-```
-
-**Caso de uso real.** Grafana dashboard por servicio.
-
-**Error común.** Dashboard bonito pero sin alertas accionables. Corrección: SLOs y alertas.
-
-**Verificación.** **Nota de verificación:** requiere Grafana + datasource.
+**Error común.** Dashboard bonito pero inútil. Corrección: RED (Rate, Errors, Duration), saturación, y SLOs.
 
 ### Tema 5: Alerting basado en p99 · Intermedio · 90 min
 
-Caso guía: alertar cuando la cola de latencia crece.
+Caso guía: p99 sube pero promedio parece bien.
 
-#### Alerta por percentil
+#### Alertas por percentiles
 
-**Definición formal.** Alerta basada en percentiles (p95/p99) para capturar experiencia de cola, no solo promedio.
+**Definición formal.** p99 es la latencia bajo la cual cae el 99% de requests; captura cola de latencia que el promedio oculta.
 
-**Para qué sirve.** Detecta degradación percibida por usuarios.
+**Error común.** Alertar por promedio. Corrección: percentiles, burn rate, y síntomas orientados al usuario.
 
-**Cuándo usarlo y cuándo no.** Úsalo en latencia. No solo promedio.
+## Cierre
 
-**Ejemplo mínimo enfocado (ejecutable).**
+Métricas dicen “qué”, logs dicen “qué pasó” y traces dicen “dónde”. Necesitas los tres, correlacionados.
 
-```bash
-node -e "const p99=820; const threshold=500; console.log(p99>threshold?'ALERT':'OK')"
-```
+## Checklist
 
-**Caso de uso real.** Prometheus alert rule sobre p99.
-
-**Error común.** Umbral sin ventana/histéresis. Corrección: `for:` y evaluación adecuada.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `ALERT`.
-
-## Cierre del módulo
-
-Observabilidad combina métricas, logs y trazas. Los percentiles, la estructura de logs y la propagación de contexto permiten operar microservicios con evidencia.
+- Métricas RED/USE.
+- Traces con propagación.
+- Logs JSON con correlation IDs.
+- Alertas por síntomas/p99/SLO.
