@@ -4290,18 +4290,6 @@
       {
         "title": "Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps",
         "fragment": "tema-6-migrar-entre-versiones-lts-de-17-a-21-y-25-con-jdeprscan-y-jdeps"
-      },
-      {
-        "title": "Java LTS frente a entregas semestrales",
-        "fragment": "java-lts-frente-a-entregas-semestrales"
-      },
-      {
-        "title": "Proyecto: endurecimiento medible del procesador concurrente",
-        "fragment": "proyecto-endurecimiento-medible-del-procesador-concurrente"
-      },
-      {
-        "title": "Método de estudio y proyecto de ampliación",
-        "fragment": "metodo-de-estudio-y-proyecto-de-ampliacion"
       }
     ],
     "15": [

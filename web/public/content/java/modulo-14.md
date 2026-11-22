@@ -1,77 +1,44 @@
 # Módulo 14: Java en producción — memoria, benchmarks y runtime seguro
 
-El proyecto anterior usa concurrencia y produce un artefacto reproducible. Para operarlo profesionalmente todavía debes demostrar que los hilos observan estado válido, que las optimizaciones no engañan tus mediciones, que datos hostiles no construyen objetos arbitrarios y que el runtime puede actualizarse y diagnosticarse. Este módulo trabaja esas fronteras con experimentos.
+El proyecto integrador ya funciona; en producción aparecen otras fronteras: visibilidad de memoria entre hilos, mediciones engañosas por optimizaciones del JIT, deserialización insegura, y el runtime como parte del artefacto. Este módulo trabaja estas fronteras con evidencia.
 
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Explicar happens-before y corregir errores de visibilidad/publicación |
+| 2 | Medir rendimiento con criterio y evitar cronómetros ingenuos |
+| 3 | Tratar deserialización como frontera de confianza |
+| 4 | Empaquetar y operar un runtime con ciclo de vida |
+| 5 | Usar CDS/AOT cache para mejorar arranque cuando aplica |
+| 6 | Planear migraciones LTS con `jdeprscan` y `jdeps` |
 
 ## Aprende construyendo
 
-
 ### Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por compartir memoria requiere orden y visibilidad con foco en comprensión antes de implementación.
+Un hilo reserva inventario y otro lo lee. Sin sincronización, el segundo puede ver estado parcialmente actualizado o no ver la actualización. El bug no aparece siempre.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender compartir memoria requiere orden y visibilidad te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** El *Java Memory Model* (JMM) define qué valores puede observar una lectura de memoria compartida. Una relación *happens-before* entre acciones garantiza visibilidad y ordenamiento de efectos para esas acciones. La *publicación segura* es hacer visible un objeto a otros hilos sin exponer estado incompletamente construido.
 
-#### ► LA ANALOGÍA
-Piensa en compartir memoria requiere orden y visibilidad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** `synchronized`, `volatile`, inicio/fin de hilos, `final` correctamente publicados y utilidades concurrentes establecen happens-before según el JMM. `volatile` da visibilidad y ordenamiento, pero no atomicidad de operaciones compuestas como `count++`. El acceso no sincronizado a estado mutable compartido crea data races/condiciones de carrera. Los objetos inmutables correctamente publicados son seguros para compartir.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que compartir memoria requiere orden y visibilidad resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** Sin sincronización, cada hilo puede trabajar con una fotocopia vieja de la pizarra; happens-before es el protocolo que obliga a actualizar la pizarra antes de que otro la lea.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Compartir memoria requiere orden y visibilidad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Compartir memoria requiere orden y visibilidad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses compartir memoria requiere orden y visibilidad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: compartir memoria requiere orden y visibilidad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Compartir memoria requiere orden y visibilidad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve compartir memoria requiere orden y visibilidad en tu contexto?
-2. ¿Cómo sabrías que compartir memoria requiere orden y visibilidad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar compartir memoria requiere orden y visibilidad?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/Inventario.java
 public class Inventario {
     private int disponibles;
     private int reservados;
+
+    public Inventario(int disponibles) {
+        this.disponibles = disponibles;
+    }
 
     public synchronized boolean reservar() {
         if (disponibles <= 0) return false;
@@ -79,662 +46,386 @@ public class Inventario {
         reservados++;
         return true;
     }
+
+    public synchronized int getDisponibles() { return disponibles; }
+    public synchronized int getReservados() { return reservados; }
 }
-```
 
-```bash
-javac -d out src/Inventario.java
-java -cp out Inventario
-```
-
-</details>
-
-### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por la jvm optimiza y puede invalidar un cronómetro ingenuo con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender la jvm optimiza y puede invalidar un cronómetro ingenuo te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en la jvm optimiza y puede invalidar un cronómetro ingenuo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que la jvm optimiza y puede invalidar un cronómetro ingenuo resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| La JVM optimiza y puede invalidar un cronómetro ingenuo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar La JVM optimiza y puede invalidar un cronómetro ingenuo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses la jvm optimiza y puede invalidar un cronómetro ingenuo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: la jvm optimiza y puede invalidar un cronómetro ingenuo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- La JVM optimiza y puede invalidar un cronómetro ingenuo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve la jvm optimiza y puede invalidar un cronómetro ingenuo en tu contexto?
-2. ¿Cómo sabrías que la jvm optimiza y puede invalidar un cronómetro ingenuo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar la jvm optimiza y puede invalidar un cronómetro ingenuo?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-// src/main/java/BusquedaBenchmark.java
-@State(Scope.Thread)
-public class BusquedaBenchmark {
-    private int[] datos;
-
-    @Setup
-    public void preparar() { datos = /* arreglo ordenado preparado */ new int[0]; }
-
-    @Benchmark
-    public int busquedaBinaria(Blackhole bh) {
-        int indice = Arrays.binarySearch(datos, 42);
-        bh.consume(indice);
-        return indice;
+class DemoInventario {
+    public static void main(String[] args) throws Exception {
+        Inventario inv = new Inventario(1000);
+        Thread t1 = new Thread(() -> { for (int i = 0; i < 500; i++) inv.reservar(); });
+        Thread t2 = new Thread(() -> { for (int i = 0; i < 500; i++) inv.reservar(); });
+        t1.start(); t2.start();
+        t1.join(); t2.join();
+        System.out.println(inv.getDisponibles());
+        System.out.println(inv.getReservados());
     }
 }
 ```
 
-```bash
-mvn clean verify
-java -jar target/benchmarks.jar -wi 2 -i 3 -f 1
-```
+**Desglose del código**
 
-</details>
+- `synchronized` en `reservar` crea exclusión mutua y happens-before entre liberación y adquisición del monitor.
+- El invariante `disponibles + reservados` se preserva bajo concurrencia.
+- `join()` también establece happens-before: el main ve los efectos de los hilos terminados.
+- Si quitas `synchronized`, el resultado puede ser inconsistente.
 
-### Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por deserializar es permitir construcción y comportamiento con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender deserializar es permitir construcción y comportamiento te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en deserializar es permitir construcción y comportamiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que deserializar es permitir construcción y comportamiento resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Deserializar es permitir construcción y comportamiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Deserializar es permitir construcción y comportamiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses deserializar es permitir construcción y comportamiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: deserializar es permitir construcción y comportamiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Deserializar es permitir construcción y comportamiento existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve deserializar es permitir construcción y comportamiento en tu contexto?
-2. ¿Cómo sabrías que deserializar es permitir construcción y comportamiento no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar deserializar es permitir construcción y comportamiento?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-// src/EntradaJson.java
-public record Registro(String guia, String estado) {}
-
-// Jackson con un esquema cerrado: rechaza campos no declarados
-ObjectMapper mapper = JsonMapper.builder()
-    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true)
-    .build();
-```
+**Ejecución y salida real**
 
 ```bash
-mvn test
-```
-
-</details>
-
-### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por el runtime es parte del artefacto y necesita ciclo de vida con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender el runtime es parte del artefacto y necesita ciclo de vida te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en el runtime es parte del artefacto y necesita ciclo de vida como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que el runtime es parte del artefacto y necesita ciclo de vida resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| El runtime es parte del artefacto y necesita ciclo de vida se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar El runtime es parte del artefacto y necesita ciclo de vida | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses el runtime es parte del artefacto y necesita ciclo de vida por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: el runtime es parte del artefacto y necesita ciclo de vida funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- El runtime es parte del artefacto y necesita ciclo de vida existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve el runtime es parte del artefacto y necesita ciclo de vida en tu contexto?
-2. ¿Cómo sabrías que el runtime es parte del artefacto y necesita ciclo de vida no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar el runtime es parte del artefacto y necesita ciclo de vida?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-jdeps --multi-release 25 --print-module-deps target/rutas.jar
-jlink --add-modules academia.rutas --module-path "$JAVA_HOME/jmods:out" --output runtime-rutas
-cd runtime-rutas/bin && java -m academia.rutas/academia.rutas.app.Main
-```
-
-</details>
-
-### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Usa JDK 21 o superior para CDS. Para la caché AOT necesitas JDK 24 o superior. Crea la carpeta academia-labs/java/arranque.
-
-#### ► LA IDEA EN UNA FRASE
-**Usa JDK 21 o superior para CDS.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-**Conceptos clave:** CDS (*Class Data Sharing*), archivo compartido, `-XX:ArchiveClassesAtExit`, `-XX:SharedArchiveFile`, `-Xlog:class+load`, caché AOT, ejecución de entrenamiento.
-
-Al arrancar, la JVM lee cada clase, la verifica y crea sus estructuras internas. **CDS** guarda ese resultado en un archivo que se mapea en memoria en el siguiente arranque.
-
-- El JDK ya trae un archivo CDS para sus propias clases.
-- Con `-XX:ArchiveClassesAtExit=app.jsa`, la JVM guarda al terminar **también las clases de tu aplicación** (deben venir de un JAR).
-- Con `-XX:SharedArchiveFile=app.jsa` la usas en los siguientes arranques.
-
-**Caché AOT (JDK 24 y 25):** va más allá: guarda clases ya cargadas y enlazadas, y en JDK 25 también perfiles de métodos. En JDK 25 basta una ejecución de entrenamiento con `-XX:AOTCacheOutput=app.aot` y luego `-XX:AOTCache=app.aot`.
-
-**Analogía:** CDS es dejar la mesa puesta desde la noche anterior: por la mañana solo te sientas. La analogía falla en que, si cambias el menú (la versión de la aplicación o del JDK), la mesa puesta ya no sirve y hay que volver a ponerla.
-
-**Límite de uso:** el archivo depende de la versión exacta del JDK y del classpath: si cambian, la JVM lo ignora con un aviso. Regenéralo en cada build. No acelera el código que ya está corriendo, solo el arranque.
-
-```mermaid
-flowchart LR
-    E["Ejecución de entrenamiento<br/>-XX:ArchiveClassesAtExit"] --> A["app.jsa"]
-    A --> R["Arranques siguientes<br/>-XX:SharedArchiveFile"]
-    R --> M["clases mapeadas desde el archivo"]
-```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    E["Ejecución de entrenamiento<br/>-XX:ArchiveClassesAtExit"] --> A["app.jsa"]
-    A --> R["Arranques siguientes<br/>-XX:SharedArchiveFile"]
-    R --> M["clases mapeadas desde el archivo"]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Arranque más rápido: archivos CDS y la caché AOT se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Arranque más rápido: archivos CDS y la caché AOT | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses arranque más rápido: archivos cds y la caché aot por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: arranque más rápido: archivos cds y la caché aot funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Arranque más rápido: archivos CDS y la caché AOT existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve arranque más rápido: archivos cds y la caché aot en tu contexto?
-2. ¿Cómo sabrías que arranque más rápido: archivos cds y la caché aot no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar arranque más rápido: archivos cds y la caché aot?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    E["Ejecución de entrenamiento<br/>-XX:ArchiveClassesAtExit"] --> A["app.jsa"]
-    A --> R["Arranques siguientes<br/>-XX:SharedArchiveFile"]
-    R --> M["clases mapeadas desde el archivo"]
-```
-
-```java
-import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class Arranque {
-    public static void main(String[] args) {
-        var paradas = List.of("Bodega", "Calle 26", "Cliente");
-        System.out.println(paradas.stream().collect(Collectors.joining(" -> ")) + " · " + LocalDate.of(2026, 11, 18));
-    }
-}
-```
-
-```bash
-cd academia-labs/java/arranque
-javac Arranque.java && jar --create --file app.jar Arranque.class
-java -XX:ArchiveClassesAtExit=app.jsa -cp app.jar Arranque          # entrenamiento: crea app.jsa
-java -Xshare:off -Xlog:class+load:file=sin.log -cp app.jar Arranque  # sin CDS
-java -XX:SharedArchiveFile=app.jsa -Xlog:class+load:file=con.log -cp app.jar Arranque
-grep -c "shared objects file" sin.log con.log
+javac Inventario.java
+java DemoInventario
 ```
 
 ```text
-Bodega -> Calle 26 -> Cliente · 2026-11-18
-sin.log:0
-con.log:652
+0
+1000
 ```
 
-</details>
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Estado inconsistente intermitente | Data race | Sincroniza o usa estructuras concurrentes |
+| `volatile` no arregla `count++` | Operación compuesta no atómica | Usa `AtomicInteger` o lock |
+| Deadlock | Orden de locks inconsistente | Define orden global y reduce sección crítica |
+
+**Verificación rápida**
+
+Ejecuta varias veces; con `synchronized` el resultado debe ser estable. Quita `synchronized` en un experimento y observa la posible inconsistencia.
+
+### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
+
+**Caso guía**
+
+Mides dos algoritmos con `System.nanoTime()` en un bucle simple y concluyes que uno es 10x más rápido. Luego en producción no ves la diferencia. El benchmark estaba mal.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** Un *microbenchmark* es una medición de un fragmento pequeño de código. El JIT puede aplicar inlining, dead-code elimination, constant folding y otras optimizaciones que invalidan mediciones ingenuas. JMH (Java Microbenchmark Harness) es la herramienta estándar para microbenchmarks en la JVM.
+
+**Contrato / invariantes / reglas.** Un resultado de benchmark solo es válido si el trabajo medido no es eliminado por el optimizador y si el entorno de medición controla warm-up, GC, forking y estado. `Blackhole.consume`/retorno de valor evita eliminación de código muerto. `System.nanoTime()` mide tiempo de pared de alta resolución, no tiempo CPU aislado; su uso aislado no corrige sesgos de JIT. Comparar algoritmos requiere misma entrada, misma máquina, warm-up y repetición.
+
+**Modelo mental.** Medir con un cronómetro ingenuo es cronometrar a un corredor mientras el juez le permite tomar atajos invisibles. JMH pone reglas al circuito.
+
+**Implementación desde cero**
+
+Ejemplo conceptual con JMH (requiere dependencias `org.openjdk.jmh:jmh-core` y `jmh-generator-annprocess`):
+
+```java
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
+import java.util.concurrent.TimeUnit;
+
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@State(Scope.Thread)
+class SumaBenchmark {
+    private int n = 1000;
+
+    @Benchmark
+    public void loop(Blackhole bh) {
+        long s = 0;
+        for (int i = 0; i < n; i++) s += i;
+        bh.consume(s);
+    }
+}
+```
+
+Ejemplo ilustrativo de cronómetro ingenuo (no usar para conclusiones):
+
+```java
+public class CronometroIngenuo {
+    public static void main(String[] args) {
+        long t1 = System.nanoTime();
+        long s = 0;
+        for (int i = 0; i < 1_000_000; i++) s += i;
+        long t2 = System.nanoTime();
+        System.out.println("suma=" + s);
+        System.out.println("ns=" + (t2 - t1));
+    }
+}
+```
+
+**Desglose del código**
+
+- `@BenchmarkMode` y `@OutputTimeUnit` declaran qué se mide.
+- `Blackhole.consume` evita que el JIT elimine el cálculo.
+- El cronómetro ingenuo no controla warm-up ni optimizaciones; sirve solo como demostración de riesgo.
+- JMH ejecuta forks, warm-up e iteraciones para estabilizar mediciones.
+
+**Ejecución y salida real**
+
+Cronómetro ingenuo (compilable sin dependencias externas):
+
+```bash
+javac CronometroIngenuo.java
+java CronometroIngenuo
+```
+
+```text
+suma=499999500000
+ns=1234567
+```
+
+El tiempo varía; no lo uses como evidencia de rendimiento comparativo.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Benchmark “demasiado rápido” | JIT eliminó trabajo muerto | Usa JMH y `Blackhole` |
+| Resultados inestables | Sin warm-up/forks | Usa JMH con configuración adecuada |
+| Conclusión desde una corrida | Ruido de sistema | Repite, controla entorno, reporta distribución |
+
+**Verificación rápida**
+
+```bash
+javac CronometroIngenuo.java && java CronometroIngenuo
+```
+
+Ejecuta varias veces: verás variación. Para decisiones reales, migra la medición a JMH.
+
+### Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min
+
+**Caso guía**
+
+Tu servicio recibe JSON. Si aceptas cualquier estructura o usas deserialización Java nativa sobre datos no confiables, puedes terminar instanciando tipos inesperados o aceptando estado inválido.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** La *deserialización* es reconstruir objetos desde una representación externa. En contextos no confiables, es una frontera de seguridad: el input puede forzar construcción, asignación de estado o, en mecanismos vulnerables, ejecución de gadget chains.
+
+**Contrato / invariantes / reglas.** Nunca deserializar datos no confiables con Java serialization nativa sin controles estrictos; la recomendación moderna es evitarla. Con Jackson/JSON, restringir esquema, validar tipos, deshabilitar características peligrosas, y no habilitar polimorfismo por defecto (`default typing`) en entradas no confiables. Los DTO/records deben validar invariantes tras deserializar. Un objeto deserializado no es confiable por “haber sido parseado”.
+
+**Modelo mental.** Deserializar es dejar entrar a alguien con un formulario: aceptar el formulario no significa que el contenido sea verdadero ni seguro.
+
+**Implementación desde cero**
+
+Ejemplo con Jackson (requiere `jackson-databind`):
+
+```java
+import com.fasterxml.jackson.databind.*;
+
+class EntradaJson {
+    record Registro(String guia, String estado) {
+        Registro {
+            if (guia == null || guia.isBlank()) throw new IllegalArgumentException("guia requerida");
+            if (estado == null || estado.isBlank()) throw new IllegalArgumentException("estado requerido");
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        ObjectMapper mapper = new ObjectMapper()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
+        Registro r = mapper.readValue("{\"guia\":\"G-1\",\"estado\":\"OK\"}", Registro.class);
+        System.out.println(r.guia());
+        System.out.println(r.estado());
+    }
+}
+```
+
+**Desglose del código**
+
+- El record valida invariantes en el constructor compacto: el parseo no es suficiente.
+- `FAIL_ON_UNKNOWN_PROPERTIES` endurece el esquema para entradas inesperadas.
+- El tipo destino es explícito (`Registro.class`); evita mapeos polimórficos abiertos.
+- La validación de negocio debe ocurrir después o durante la construcción.
+
+**Ejecución y salida real**
+
+Con Jackson en classpath:
+
+```text
+G-1
+OK
+```
+
+Si llega `{"guia":"G-1","estado":"OK","extra":1}`, falla por propiedad desconocida.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Aceptas datos basura | Sin validación post-deserialización | Valida invariantes en el DTO/record |
+| Vulnerabilidad por deserialización Java | `ObjectInputStream` con datos no confiables | Evita Java serialization en fronteras no confiables |
+| Polimorfismo inseguro en JSON | Default typing habilitado | Usa tipos explícitos y allowlists |
+
+**Verificación rápida**
+
+Prueba un JSON con campo faltante o extra y verifica que se rechaza.
+
+### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min
+
+**Caso guía**
+
+Tu app funciona con un JDK completo instalado en la máquina. En despliegue, quieres un runtime más pequeño y controlado, y saber qué módulos necesita realmente.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** Un *runtime image* personalizada es una distribución de JVM construida con `jlink` que incluye solo módulos requeridos. `jdeps` analiza dependencias de clases/JARs y puede sugerir módulos. El *ciclo de vida* del runtime incluye construcción, verificación, despliegue, observabilidad y actualización.
+
+**Contrato / invariantes / reglas.** `jlink` trabaja con módulos (JPMS). La lista de módulos debe cubrir dependencias reales y servicios usados por reflexión/carga dinámica. Un runtime mínimo reduce superficie y tamaño, pero puede romper si faltan módulos dinámicos. La imagen se reconstruye ante actualizaciones de JDK o cambios de dependencia. Observabilidad (logs, métricas, JFR) debe planearse como parte del artefacto operativo.
+
+**Modelo mental.** Entregar un JDK completo es enviar todo el taller; `jlink` es armar una caja de herramientas con solo lo necesario para ese trabajo.
+
+**Implementación desde cero**
+
+```bash
+# Analizar dependencias de módulos
+jdeps --print-module-deps --ignore-missing-deps app.jar
+
+# Crear runtime mínimo (ejemplo)
+jlink --add-modules java.base,java.logging \
+      --output runtime-min \
+      --strip-debug --no-header-files --no-man-pages
+
+# Ejecutar con el runtime generado
+./runtime-min/bin/java -version
+```
+
+**Desglose del código**
+
+- `jdeps --print-module-deps` sugiere módulos para un artefacto.
+- `jlink` genera la imagen con módulos seleccionados.
+- `--strip-debug --no-header-files --no-man-pages` reduce tamaño.
+- El runtime generado debe probarse como artefacto, no asumirse correcto.
+
+**Ejecución y salida real**
+
+`./runtime-min/bin/java -version` debe mostrar la versión del JDK usado para construir la imagen.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `Module not found` en runtime generado | Faltó un módulo | Ajusta `--add-modules` según `jdeps` y pruebas |
+| Imagen funciona en pruebas pero falla en prod | Dependencia dinámica no detectada | Prueba escenarios reales; agrega módulos/servicios |
+| Nunca actualizas runtime | Riesgo de seguridad | Incluye actualización de imagen en el ciclo de release |
+
+**Verificación rápida**
+
+Construye una imagen mínima con `java.base` y verifica `java -version` desde `./runtime-min/bin/java`.
+
+### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min
+
+**Caso guía**
+
+Tu servicio arranca lento en escalado automático. Parte del costo es carga/enlace de clases y warm-up. CDS/AOT cache pueden reducir ese tiempo de arranque en escenarios adecuados.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** *Class Data Sharing (CDS)* permite almacenar metadatos de clases preprocesadas para acelerar arranque. La *AOT cache* (Java moderno, evolutiva según versión) extiende la idea almacenando artefactos precomputados para mejorar startup/warm-up. Son optimizaciones de arranque, no cambios de semántica del programa.
+
+**Contrato / invariantes / reglas.** La caché debe generarse con la misma configuración relevante (JDK, classpath/module path, opciones) que la ejecución. Si cambia el classpath/JDK, la caché puede invalidarse o no usarse. La mejora depende del tipo de app; no garantiza beneficio en todos los casos. Medir antes/después con el mismo escenario es obligatorio.
+
+**Modelo mental.** CDS/AOT cache es dejar parte del trabajo de preparación hecho antes de abrir la tienda, no cambiar el producto que vendes.
+
+**Implementación desde cero**
+
+Ejemplo CDS clásico (AppCDS, depende de versión/configuración):
+
+```bash
+# 1. Crear lista de clases
+java -Xshare:off -XX:DumpLoadedClassList=app.classlist -jar app.jar --dry-run
+
+# 2. Crear archivo compartido
+java -Xshare:dump -XX:SharedClassListFile=app.classlist -XX:SharedArchiveFile=app.jsa -jar app.jar
+
+# 3. Ejecutar usando el archivo
+java -Xshare:on -XX:SharedArchiveFile=app.jsa -jar app.jar
+```
+
+**Desglose del código**
+
+- El primer paso observa qué clases se cargan.
+- El segundo genera el archivo compartido.
+- El tercero intenta usarlo al arrancar.
+- Siempre compara tiempos de arranque antes y después.
+
+**Ejecución y salida real**
+
+La salida exacta depende de la app/JDK. Busca mensajes o métricas que indiquen uso de archivo compartido y compara startup.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| No hay mejora | App no limitada por carga de clases | Mide; no fuerces CDS/AOT |
+| Cache no se usa | JDK/classpath/opciones distintas | Regenera con la misma configuración |
+| Asumes mejora en throughput | CDS/AOT apunta a arranque/warm-up | Mide el objetivo correcto |
+
+**Verificación rápida**
+
+Mide `time`/startup con y sin cache en el mismo entorno y compara.
 
 ### Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Usa el JDK de destino (21 o superior); jdeprscan y jdeps vienen incluidos. Crea la carpeta academia-labs/java/migracion con una subcarpeta legado/.
+Tu aplicación corre en Java 17 y quieres migrar a 21/25. No puedes “cambiar el número y rezar”: necesitas detectar APIs obsoletas, dependencias internas y problemas de módulos/reflexión.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa el JDK de destino (21 o superior); jdeprscan y jdeps vienen incluidos.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** La migración entre LTS es el proceso controlado de actualizar runtime, compilador, dependencias y configuración para mantener compatibilidad funcional y operativa. `jdeprscan` detecta usos de APIs deprecated/removidas; `jdeps` analiza dependencias entre clases y módulos, incluyendo usos internos del JDK.
 
-#### ► LA ANALOGÍA
-Piensa en migrar entre versiones lts: de 17 a 21 y 25 con jdeprscan y jdeps como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** Migrar implica compilar, testear y ejecutar en el JDK objetivo; pasar compilación no garantiza ausencia de regresiones. Las APIs `forRemoval=true` son deuda prioritaria. Dependencias de `sun.*`/APIs internas son frágiles. El classpath/module path, flags de GC, y comportamiento de seguridad pueden cambiar entre versiones. La migración segura es incremental, con CI, pruebas y rollback.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    A["Java 17 en producción"] --> B["build con JDK 21<br/>--release 17"]
-    B --> C["jdeprscan + jdeps"]
-    C --> D["corregir usos"]
-    D --> E["--release 21 + pruebas"]
-    E --> F["imagen nueva + regenerar CDS"]
-```
+**Modelo mental.** Cambiar de LTS es cambiar el motor y la normativa del vehículo: puede andar mejor, pero debes revisar compatibilidad pieza por pieza.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+```bash
+# Compilar con target del JDK objetivo (ejemplo)
+javac --release 21 -d out src/**/*.java
 
-#### ► CUÁNDO NO USAR ESTO
-No uses migrar entre versiones lts: de 17 a 21 y 25 con jdeprscan y jdeps por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+# Buscar deprecaciones relevantes
+jdeprscan --release 21 --class-path out
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: migrar entre versiones lts: de 17 a 21 y 25 con jdeprscan y jdeps funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve migrar entre versiones lts: de 17 a 21 y 25 con jdeprscan y jdeps en tu contexto?
-2. ¿Cómo sabrías que migrar entre versiones lts: de 17 a 21 y 25 con jdeprscan y jdeps no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar migrar entre versiones lts: de 17 a 21 y 25 con jdeprscan y jdeps?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    A["Java 17 en producción"] --> B["build con JDK 21<br/>--release 17"]
-    B --> C["jdeprscan + jdeps"]
-    C --> D["corregir usos"]
-    D --> E["--release 21 + pruebas"]
-    E --> F["imagen nueva + regenerar CDS"]
+# Analizar dependencias y uso de APIs internas
+jdeps --jdk-internals --class-path out -R out
 ```
 
 ```java
 import java.util.Date;
 
 public class Legado {
-    public static void main(String[] args) throws Exception {
-        Integer peso = new Integer(5);              // obsoleto desde Java 9, marcado para eliminar
-        Date fecha = new Date(2026 - 1900, 10, 18); // constructor obsoleto desde Java 1.1
-        Runtime.getRuntime().runFinalization();     // marcado para eliminar desde Java 18
-        System.out.println("peso " + peso + ", año " + (fecha.getYear() + 1900));
+    public static void main(String[] args) {
+        Date fecha = new Date(); // API antigua: revisar si conviene migrar a java.time
+        System.out.println(fecha.getTime());
     }
 }
 ```
 
+**Desglose del código**
+
+- `javac --release 21` ayuda a detectar incompatibilidades de compilación/lenguaje/API objetivo.
+- `jdeprscan` identifica uso de APIs obsoletas; prioriza `forRemoval`.
+- `jdeps --jdk-internals` detecta dependencias a APIs internas del JDK.
+- La migración termina en verde solo con pruebas funcionales, de integración y operativas.
+
+**Ejecución y salida real**
+
 ```bash
-cd academia-labs/java/migracion
-javac -d legado/out legado/Legado.java
-jdeprscan --release 21 --class-path legado/out Legado
-jdeps --jdk-internals legado/out
+javac Legado.java
+jdeprscan --class-path . Legado
 ```
 
-```text
-class Legado uses deprecated method java/lang/Integer::<init>(I)V (forRemoval=true)
-class Legado uses deprecated method java/util/Date::<init>(III)V
-class Legado uses deprecated method java/lang/Runtime::runFinalization()V (forRemoval=true)
-class Legado uses deprecated method java/util/Date::getYear()I
-```
+La salida de `jdeprscan` puede ser vacía si no hay usos deprecated en ese alcance; la evidencia importante es el reporte combinado con tests.
 
-</details>
+**Errores comunes y cómo resolverlos**
 
-### Java LTS frente a entregas semestrales
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por java lts frente a entregas semestrales con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender java lts frente a entregas semestrales te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en java lts frente a entregas semestrales como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que java lts frente a entregas semestrales resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Java LTS frente a entregas semestrales se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| “Compila, luego falla en prod” | Diferencia de runtime/flags/deps | Ejecuta test suite completa en JDK objetivo |
+| Dependencias rotas | Librería no compatible | Actualiza librerías antes/durante migración |
+| Uso de APIs internas | Deuda técnica oculta | Reemplaza por APIs soportadas |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Java LTS frente a entregas semestrales | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Verificación rápida**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses java lts frente a entregas semestrales por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+Ejecuta `javac --release 21`, `jdeprscan` y tu suite de tests sobre el JDK objetivo antes de promover la migración.
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: java lts frente a entregas semestrales funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+## Cierre del módulo
 
-#### ► LO QUE DEBES RECORDAR
-- Java LTS frente a entregas semestrales existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve java lts frente a entregas semestrales en tu contexto?
-2. ¿Cómo sabrías que java lts frente a entregas semestrales no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar java lts frente a entregas semestrales?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar java lts frente a entregas semestrales.
-
-</details>
-
-### Proyecto: endurecimiento medible del procesador concurrente
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por proyecto: endurecimiento medible del procesador concurrente con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyecto: endurecimiento medible del procesador concurrente te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyecto: endurecimiento medible del procesador concurrente como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyecto: endurecimiento medible del procesador concurrente resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyecto: endurecimiento medible del procesador concurrente se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyecto: endurecimiento medible del procesador concurrente | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyecto: endurecimiento medible del procesador concurrente por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyecto: endurecimiento medible del procesador concurrente funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyecto: endurecimiento medible del procesador concurrente existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyecto: endurecimiento medible del procesador concurrente en tu contexto?
-2. ¿Cómo sabrías que proyecto: endurecimiento medible del procesador concurrente no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyecto: endurecimiento medible del procesador concurrente?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar proyecto: endurecimiento medible del procesador concurrente.
-
-</details>
-
-### Método de estudio y proyecto de ampliación
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por método de estudio y proyecto de ampliación con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender método de estudio y proyecto de ampliación te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en método de estudio y proyecto de ampliación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que método de estudio y proyecto de ampliación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Método de estudio y proyecto de ampliación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Método de estudio y proyecto de ampliación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses método de estudio y proyecto de ampliación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: método de estudio y proyecto de ampliación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Método de estudio y proyecto de ampliación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve método de estudio y proyecto de ampliación en tu contexto?
-2. ¿Cómo sabrías que método de estudio y proyecto de ampliación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar método de estudio y proyecto de ampliación?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar método de estudio y proyecto de ampliación.
-
-</details>
+Producción exige evidencia: visibilidad de memoria correcta, benchmarks fiables, deserialización defensiva, runtime empaquetado y migraciones planificadas. Con estas bases, el siguiente módulo lleva Java al backend con Spring Boot.
