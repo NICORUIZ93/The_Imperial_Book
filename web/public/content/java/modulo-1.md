@@ -1,182 +1,204 @@
 # Módulo 1: Programación orientada a objetos
 
-En el Módulo 0 trabajamos con variables, condiciones, bucles, arreglos y métodos. Eso permite resolver problemas pequeños, pero cuando el programa crece aparece una dificultad nueva: los datos y las reglas que los gobiernan quedan dispersos. La programación orientada a objetos propone organizar el código alrededor de tipos que representan conceptos del dominio. Cada objeto agrupa estado y comportamiento, y expone operaciones que protegen sus invariantes.
+Cuando un programa crece, variables sueltas y funciones dispersas dejan de ser suficientes: los datos quedan separados de las reglas que los protegen y cualquier parte del sistema puede romper invariantes. La Programación Orientada a Objetos (POO) organiza el código alrededor de tipos que modelan conceptos del dominio, combinan estado y comportamiento, y exponen contratos claros. Este módulo va desde clases/objetos hasta records y constructores flexibles de Java moderno, con el enfoque de cero a experto: primero el modelo mental, luego el contrato, luego código ejecutable y diagnóstico.
 
-**Entorno de referencia verificado en esta máquina (2026-05-22):**
-
-```bash
-java -version
-javac -version
-```
-
-```text
-openjdk version "27.0.1.0.2" 2026-09-15
-javac 27.0.1.0.2
-```
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, `javac 27.0.1.0.2`, macOS/Linux shell compatible. Los ejemplos son Java puro, sin Maven/Gradle.
 
 ## Aprende construyendo
 
 ### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
 
-Supongamos que necesitamos modelar una cuenta bancaria. No alcanza con guardar un número en una variable `double saldo`: también hay que saber quién es el titular, permitir depósitos y retiros, y evitar que el saldo quede en un estado inválido. El problema exige agrupar datos y comportamiento, y controlar cómo se modifica el estado.
+Caso guía: modelar una cuenta bancaria. Un `double saldo` suelto no basta: hay titular, saldo, depósitos, retiros y reglas que impiden estados inválidos. Si cualquiera puede escribir `cuenta.saldo = -999`, el modelo ya no representa el dominio.
 
 #### Clases
 
-**Definición formal.** Una clase es un tipo de referencia que define estructura (campos) y comportamiento (métodos/constructores) de sus instancias.
+**Definición formal.** Una clase es un tipo de referencia que define la estructura (campos) y el comportamiento (métodos/constructores) de sus instancias.
 
-**Para qué sirve.** Modela conceptos del dominio con estado y reglas en un mismo tipo.
+**Cómo funciona por dentro.** La clase es la plantilla/tipo en tiempo de compilación y de carga. Define qué campos tendrá cada objeto, qué métodos puede invocar y qué invariantes debe preservar. La JVM usa la definición cargada para crear instancias con el layout esperado.
 
-**Cuándo usarla y cuándo no.** Úsala cuando datos y comportamiento estén cohesionados. No la uses como “clase Dios” con responsabilidades no relacionadas.
+```mermaid
+classDiagram
+  class Cuenta {
+    -String titular
+    -double saldo
+    +depositar(monto)
+    +retirar(monto)
+    +getSaldo() double
+  }
+```
+
+**Cuándo usarla / cuándo no.** Úsala cuando datos y reglas estén cohesionados. No crees clases “Dios” con responsabilidades no relacionadas.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
-```java
-class CuentaMin { double saldo; void depositar(double m){ saldo += m; } }
-public class DemoClase { public static void main(String[] args){ CuentaMin c=new CuentaMin(); c.depositar(10); System.out.println(c.saldo); } }
+```bash
+mkdir -p /tmp/j1-clase && cd /tmp/j1-clase
+cat > DemoClase.java << 'JAVA'
+class CuentaMin {
+  double saldo;
+  void depositar(double m) { saldo += m; }
+}
+public class DemoClase {
+  public static void main(String[] args) {
+    CuentaMin c = new CuentaMin();
+    c.depositar(10);
+    System.out.println(c.saldo);
+  }
+}
+JAVA
+javac DemoClase.java && java DemoClase
 ```
 
-**Caso de uso real.** `Cuenta`, `Pedido`, `Usuario`.
+**Caso de uso real.** `Cuenta`, `Pedido`, `Reserva`, `Factura`.
 
-**Error común.** Clase con demasiadas responsabilidades. Síntoma: cambios pequeños rompen áreas no relacionadas. Corrección: separar por responsabilidad.
+**Error común.** Clase con demasiadas responsabilidades. Síntoma: cambiar un requisito rompe otro. Causa: baja cohesión. Corrección: separar responsabilidades por tipo.
 
-**Verificación (JDK 27, 2026-05-22).** Compila y ejecuta: salida `10.0`.
+**Verificación (JDK 27, 2026-05-22).** Salida: `10.0`.
 
 #### Objetos
 
 **Definición formal.** Un objeto es una instancia concreta de una clase, creada con `new`, con identidad, estado y comportamiento.
 
-**Para qué sirve.** Representa entidades concretas del dominio en ejecución.
+**Cómo funciona por dentro.** `new` asigna memoria para la instancia, inicializa campos, ejecuta el constructor y devuelve una referencia. Dos objetos de la misma clase pueden tener el mismo estado pero distinta identidad.
 
-**Cuándo usarlo y cuándo no.** Úsalo cuando necesitas una instancia con estado propio. No uses campos `static` para estado que debe ser por instancia.
+```mermaid
+flowchart LR
+  C[Clase Cuenta] -->|new| O1[Objeto A\nsaldo=100]
+  C -->|new| O2[Objeto B\nsaldo=50]
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
-```java
-class Caja { int v; Caja(int v){ this.v=v; } }
-public class DemoObj { public static void main(String[] args){ Caja a=new Caja(1); Caja b=new Caja(2); System.out.println(a.v+" "+b.v); } }
+```bash
+mkdir -p /tmp/j1-obj && cd /tmp/j1-obj
+cat > DemoObj.java << 'JAVA'
+class Caja { int v; Caja(int v){ this.v = v; } }
+public class DemoObj {
+  public static void main(String[] args) {
+    Caja a = new Caja(1);
+    Caja b = new Caja(2);
+    System.out.println(a == b);
+    System.out.println(a.v + " " + b.v);
+  }
+}
+JAVA
+javac DemoObj.java && java DemoObj
 ```
 
-**Caso de uso real.** Dos cuentas distintas con saldos distintos.
+**Error común.** Confundir clase con objeto. Síntoma: esperar estado compartido o usar campos de instancia como si fueran globales. Corrección: instanciar con `new`; usar `static` solo para estado/comportamiento verdaderamente de clase.
 
-**Error común.** Confundir clase con objeto. Síntoma: esperar estado en la clase. Corrección: crear instancias con `new`.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `1 2`.
+**Verificación (JDK 27, 2026-05-22).** Salida: `false`, `1 2`.
 
 #### Constructores
 
-**Definición formal.** Un constructor es una rutina especial con el nombre de la clase, sin tipo de retorno, que inicializa una instancia durante `new`.
+**Definición formal.** Un constructor es una rutina especial con el nombre de la clase, sin tipo de retorno, que inicializa una instancia durante la creación.
 
-**Para qué sirve.** Establece invariantes y deja el objeto en estado válido.
-
-**Cuándo usarlo y cuándo no.** Úsalo para datos obligatorios y validación inicial. No hagas I/O pesado o lógica ajena a la inicialización.
+**Contrato/reglas.** Debe dejar el objeto en estado válido. Puede validar argumentos, asignar campos y delegar con `this(...)` o `super(...)`. No debe hacer I/O pesado innecesario.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
-```java
-class CuentaC { final String titular; CuentaC(String t){ if(t==null||t.isBlank()) throw new IllegalArgumentException("titular"); this.titular=t; } }
-public class DemoCtor { public static void main(String[] args){ System.out.println(new CuentaC("Ada").titular); } }
+```bash
+mkdir -p /tmp/j1-ctor && cd /tmp/j1-ctor
+cat > DemoCtor.java << 'JAVA'
+class CuentaC {
+  final String titular;
+  CuentaC(String titular) {
+    if (titular == null || titular.isBlank()) throw new IllegalArgumentException("titular");
+    this.titular = titular;
+  }
+}
+public class DemoCtor {
+  public static void main(String[] args) {
+    System.out.println(new CuentaC("Ada").titular);
+    try { new CuentaC(""); } catch (IllegalArgumentException e) { System.out.println("error"); }
+  }
+}
+JAVA
+javac DemoCtor.java && java DemoCtor
 ```
 
-**Caso de uso real.** Impedir crear cuenta sin titular.
+**Error común.** Permitir objetos inválidos al nacer. Síntoma: fallos tardíos alejados de la causa. Corrección: validar invariantes en el constructor.
 
-**Error común.** Objeto inválido tras constructor. Síntoma: errores tardíos. Corrección: validar invariantes al construir.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `Ada`; `new CuentaC("")` lanza `IllegalArgumentException`.
+**Verificación (JDK 27, 2026-05-22).** Salida: `Ada`, `error`.
 
 #### Encapsulación
 
 **Definición formal.** Encapsulación es ocultar la representación interna (`private`) y exponer operaciones controladas que preservan invariantes.
 
-**Para qué sirve.** Protege estado y reduce acoplamiento.
-
-**Cuándo usarla y cuándo no.** Úsala cuando el estado puede cambiar. No generes getters/setters ciegos para todo.
+**Cómo funciona por dentro.** Los campos privados no son accesibles desde fuera de la clase. Los métodos públicos actúan como frontera: validan entradas y cambian estado de forma coherente. Esto permite cambiar la representación interna sin romper clientes.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
-```java
-class CajaE { private int v; void set(int v){ if(v<0) throw new IllegalArgumentException(); this.v=v; } int get(){ return v; } }
-public class DemoEnc { public static void main(String[] args){ CajaE c=new CajaE(); c.set(5); System.out.println(c.get()); } }
+```bash
+mkdir -p /tmp/j1-enc && cd /tmp/j1-enc
+cat > DemoEnc.java << 'JAVA'
+class CajaE {
+  private int v;
+  void set(int v) { if (v < 0) throw new IllegalArgumentException("negativo"); this.v = v; }
+  int get() { return v; }
+}
+public class DemoEnc {
+  public static void main(String[] args) {
+    CajaE c = new CajaE();
+    c.set(5);
+    System.out.println(c.get());
+    try { c.set(-1); } catch (IllegalArgumentException e) { System.out.println("bloqueado"); }
+  }
+}
+JAVA
+javac DemoEnc.java && java DemoEnc
 ```
 
-**Caso de uso real.** Saldo de cuenta solo modificable por `depositar/retirar`.
+**Error común.** Getters/setters ciegos para todo. Síntoma: encapsulación nominal, estado inválido posible. Corrección: exponer operaciones de dominio (`depositar`, `retirar`) y validar invariantes.
 
-**Error común.** Campo público mutable. Síntoma: estado inválido. Corrección: `private` + métodos con validación.
+**Verificación (JDK 27, 2026-05-22).** Salida: `5`, `bloqueado`.
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `5`; `set(-1)` lanza excepción.
-
-#### Ejemplo integrado desde cero
+#### Ejemplo integrado: Cuenta
 
 ```bash
 mkdir -p /tmp/java-m1-t1 && cd /tmp/java-m1-t1
-```
-
-Creamos `Cuenta.java`:
-
-```java
+cat > Cuenta.java << 'JAVA'
 public class Cuenta {
-    private String titular;
-    private double saldo;
+  private final String titular;
+  private double saldo;
 
-    public Cuenta(String titular, double saldoInicial) {
-        if (titular == null || titular.isBlank()) {
-            throw new IllegalArgumentException("Titular inválido");
-        }
-        if (saldoInicial < 0) {
-            throw new IllegalArgumentException("Saldo inicial inválido");
-        }
-        this.titular = titular;
-        this.saldo = saldoInicial;
-    }
+  public Cuenta(String titular, double saldoInicial) {
+    if (titular == null || titular.isBlank()) throw new IllegalArgumentException("Titular inválido");
+    if (saldoInicial < 0) throw new IllegalArgumentException("Saldo inicial inválido");
+    this.titular = titular;
+    this.saldo = saldoInicial;
+  }
 
-    public String getTitular() { return titular; }
-    public double getSaldo() { return saldo; }
+  public String getTitular() { return titular; }
+  public double getSaldo() { return saldo; }
 
-    public void depositar(double monto) {
-        if (monto <= 0) {
-            throw new IllegalArgumentException("Monto inválido");
-        }
-        saldo += monto;
-    }
+  public void depositar(double monto) {
+    if (monto <= 0) throw new IllegalArgumentException("Monto inválido");
+    saldo += monto;
+  }
 
-    public void retirar(double monto) {
-        if (monto <= 0) {
-            throw new IllegalArgumentException("Monto inválido");
-        }
-        if (monto > saldo) {
-            throw new IllegalStateException("Saldo insuficiente");
-        }
-        saldo -= monto;
-    }
+  public void retirar(double monto) {
+    if (monto <= 0) throw new IllegalArgumentException("Monto inválido");
+    if (monto > saldo) throw new IllegalStateException("Saldo insuficiente");
+    saldo -= monto;
+  }
 
-    public static void main(String[] args) {
-        Cuenta c = new Cuenta("Ada", 100);
-        c.depositar(50);
-        c.retirar(30);
-        System.out.println(c.getTitular());
-        System.out.println(c.getSaldo());
-        try {
-            c.retirar(500);
-        } catch (IllegalStateException e) {
-            System.out.println(e.getMessage());
-        }
-    }
+  public static void main(String[] args) {
+    Cuenta c = new Cuenta("Ada", 100);
+    c.depositar(50);
+    c.retirar(30);
+    System.out.println(c.getTitular());
+    System.out.println(c.getSaldo());
+    try { c.retirar(500); } catch (IllegalStateException e) { System.out.println(e.getMessage()); }
+  }
 }
+JAVA
+javac Cuenta.java && java Cuenta
 ```
 
-#### Recorrido del código
+**Recorrido.** `titular` y `saldo` son privados; no hay escritura directa. El constructor establece invariantes iniciales. `depositar` y `retirar` validan entrada y estado. `IllegalArgumentException` señala dato inválido; `IllegalStateException` señala operación inválida para el estado actual.
 
-La clase `Cuenta` define el tipo. La línea `new Cuenta("Ada", 100)` crea un objeto concreto con estado inicial. El constructor valida las invariantes antes de asignar: rechaza titular inválido y saldo inicial negativo. La palabra `this` distingue el campo del parámetro.
-
-Los campos `titular` y `saldo` son `private`, por lo que el estado no puede modificarse directamente desde fuera. Los métodos `depositar` y `retirar` son la interfaz controlada de modificación. Usan `IllegalArgumentException` cuando el dato recibido es inválido, y `IllegalStateException` cuando la operación no es válida para el estado actual, como retirar más de lo disponible.
-
-#### Ejecución y salida real
-
-```bash
-javac Cuenta.java
-java Cuenta
-```
-
-Salida real observada (JDK 27, 2026-05-22):
+**Verificación (JDK 27, 2026-05-22).**
 
 ```text
 Ada
@@ -184,1112 +206,436 @@ Ada
 Saldo insuficiente
 ```
 
-#### Errores frecuentes
-
-Si los campos son públicos, cualquier código puede romper el estado del objeto. La corrección es hacerlos privados y exponer operaciones que validen reglas.
-
-Si el constructor no valida, el objeto puede nacer inválido. Es preferible fallar temprano en la construcción que propagar un estado corrupto.
-
-Si se usa `IllegalArgumentException` y `IllegalStateException` indistintamente, se pierde precisión diagnóstica. El primero indica un problema en el dato recibido; el segundo, un problema en el estado actual del objeto.
-
-#### Verificación
-
-La verificación mínima es ejecutar el programa y confirmar el saldo final `120.0` y el mensaje `Saldo insuficiente`. Como prueba adicional, se puede intentar `new Cuenta("Ada", -1)` y confirmar que el constructor rechaza el estado inválido.
-
-
 ### Tema 2: Herencia y sobreescritura · Básico · 40 min
 
-Una empresa tiene empleados fijos y empleados por hora. Ambos comparten datos y comportamientos, como el nombre y la capacidad de calcular un salario mensual, pero el cálculo concreto cambia según el tipo. Copiar y pegar la clase y modificar algunos métodos funcionaría al principio, pero duplicaría reglas y haría difícil mantener el sistema.
+Caso guía: empleados fijos y por hora comparten identidad y API común, pero calculan salario distinto. Copiar/pegar duplica reglas; herencia y sobreescritura permiten compartir contrato base y especializar comportamiento.
 
 #### Herencia
 
 **Definición formal.** Herencia es el mecanismo por el cual una subclase (`extends`) reutiliza y especializa miembros accesibles de una superclase, modelando una relación “es un”.
 
-**Para qué sirve.** Comparte estado/comportamiento común y permite especialización.
+**Cómo funciona por dentro.** La subclase contiene la parte de la superclase y su propia especialización. La JVM resuelve métodos sobrescritos por dispatch dinámico según el objeto real.
 
-**Cuándo usarla y cuándo no.** Úsala con relación “es un” real. Si solo buscas reutilizar código, prefiere composición.
+```mermaid
+classDiagram
+  class Empleado {
+    +salarioMensual() double
+  }
+  class EmpleadoFijo
+  class EmpleadoPorHora
+  Empleado <|-- EmpleadoFijo
+  Empleado <|-- EmpleadoPorHora
+```
+
+**Cuándo usarla / cuándo no.** Úsala solo si la relación es realmente “es un”. Si solo quieres reutilizar código, prefiere composición.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
-```java
+```bash
+mkdir -p /tmp/j1-her && cd /tmp/j1-her
+cat > DemoHer.java << 'JAVA'
 class Animal { String tipo(){ return "animal"; } }
 class Perro extends Animal { String ladrar(){ return "guau"; } }
-public class DemoHerencia { public static void main(String[] args){ System.out.println(new Perro().tipo()); } }
+public class DemoHer {
+  public static void main(String[] args){ System.out.println(new Perro().tipo()); }
+}
+JAVA
+javac DemoHer.java && java DemoHer
 ```
 
-**Caso de uso real.** `EmpleadoFijo` es un `Empleado`.
+**Error común.** Heredar por conveniencia. Síntoma: subclase recibe comportamiento que no tiene sentido. Corrección: composición/delegación.
 
-**Error común.** Jerarquía rígida por heredar sin “es un”. Síntoma: subclases con comportamiento forzado. Corrección: composición.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `animal`.
+**Verificación (JDK 27, 2026-05-22).** `animal`.
 
 #### Sobreescritura
 
 **Definición formal.** Sobreescritura es redefinir en una subclase un método con la misma firma y contrato compatible que uno visible de la superclase.
 
-**Para qué sirve.** Especializa comportamiento manteniendo el contrato común.
-
-**Cuándo usarla y cuándo no.** Úsala cuando el subtipo cambia la implementación pero no el significado del contrato. Usa `@Override` siempre.
+**Contrato/reglas.** Usa `@Override`. Misma firma; tipo de retorno covariante permitido; no puedes reducir visibilidad; no debes romper el contrato del método base.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
-```java
+```bash
+mkdir -p /tmp/j1-ov && cd /tmp/j1-ov
+cat > DemoOv.java << 'JAVA'
 class A { String f(){ return "A"; } }
 class B extends A { @Override String f(){ return "B"; } }
-public class DemoOverride { public static void main(String[] args){ A x=new B(); System.out.println(x.f()); } }
+public class DemoOv {
+  public static void main(String[] args){ A x = new B(); System.out.println(x.f()); }
+}
+JAVA
+javac DemoOv.java && java DemoOv
 ```
 
-**Caso de uso real.** `salarioMensual()` distinto en empleado fijo y por hora.
+**Error común.** Cambiar firma y creer que sobrescribiste. Síntoma: se ejecuta el método base. Corrección: `@Override` hace fallar compilación si no hay override real.
 
-**Error común.** Firma distinta sin `@Override`. Síntoma: se sobrecarga en vez de sobrescribir. Corrección: agregar `@Override`.
+**Verificación (JDK 27, 2026-05-22).** `B`.
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `B`.
-
-#### Ejemplo integrado desde cero
+#### Ejemplo integrado
 
 ```bash
-mkdir -p /tmp/java-m1-t2 && cd /tmp/java-m1-t2
-```
-
-Creamos `Herencia.java`:
-
-```java
+mkdir -p /tmp/j1-t2 && cd /tmp/j1-t2
+cat > Herencia.java << 'JAVA'
 class Empleado {
-    protected final String nombre;
-
-    Empleado(String nombre) {
-        this.nombre = nombre;
-    }
-
-    double salarioMensual() {
-        return 0;
-    }
-
-    String descripcion() {
-        return nombre + ": " + salarioMensual();
-    }
+  protected final String nombre;
+  Empleado(String nombre) { this.nombre = nombre; }
+  double salarioMensual() { return 0; }
+  String descripcion() { return nombre + ": " + salarioMensual(); }
 }
-
 class EmpleadoFijo extends Empleado {
-    private final double mensual;
-
-    EmpleadoFijo(String nombre, double mensual) {
-        super(nombre);
-        this.mensual = mensual;
-    }
-
-    @Override
-    double salarioMensual() {
-        return mensual;
-    }
+  private final double mensual;
+  EmpleadoFijo(String nombre, double mensual) { super(nombre); this.mensual = mensual; }
+  @Override double salarioMensual() { return mensual; }
 }
-
 class EmpleadoPorHora extends Empleado {
-    private final double horas;
-    private final double tarifa;
-
-    EmpleadoPorHora(String nombre, double horas, double tarifa) {
-        super(nombre);
-        this.horas = horas;
-        this.tarifa = tarifa;
-    }
-
-    @Override
-    double salarioMensual() {
-        return horas * tarifa;
-    }
+  private final double horas;
+  private final double tarifa;
+  EmpleadoPorHora(String nombre, double horas, double tarifa) { super(nombre); this.horas = horas; this.tarifa = tarifa; }
+  @Override double salarioMensual() { return horas * tarifa; }
 }
-
 public class Herencia {
-    public static void main(String[] args) {
-        Empleado e1 = new EmpleadoFijo("Ada", 2000);
-        Empleado e2 = new EmpleadoPorHora("Grace", 80, 20);
-        System.out.println(e1.descripcion());
-        System.out.println(e2.descripcion());
-    }
+  public static void main(String[] args) {
+    Empleado e1 = new EmpleadoFijo("Ada", 2000);
+    Empleado e2 = new EmpleadoPorHora("Grace", 80, 20);
+    System.out.println(e1.descripcion());
+    System.out.println(e2.descripcion());
+  }
 }
+JAVA
+javac Herencia.java && java Herencia
 ```
 
-#### Recorrido del código
-
-`Empleado` es la superclase. Define el estado común `nombre` y el método `descripcion()`, que depende de `salarioMensual()`. Ese diseño deja un punto de extensión: las subclases pueden especializar el cálculo sin reescribir la descripción.
-
-`EmpleadoFijo` y `EmpleadoPorHora` heredan de `Empleado`. Ambas llaman a `super(nombre)` para inicializar la parte base. Cada una agrega sus propios campos y sobreescribe `salarioMensual()`. La anotación `@Override` asegura que la firma coincide con el método base.
-
-En `main`, las variables son de tipo `Empleado`, pero los objetos reales son de tipos concretos distintos. Al invocar `descripcion()`, Java ejecuta el método definido en `Empleado`, pero la llamada interna a `salarioMensual()` se resuelve según el objeto real. Ese despacho dinámico es el efecto observable de la sobreescritura.
-
-#### Ejecución y salida real
-
-```bash
-javac Herencia.java
-java Herencia
-```
-
-Salida real observada (JDK 27, 2026-05-22):
+**Verificación (JDK 27, 2026-05-22).**
 
 ```text
 Ada: 2000.0
 Grace: 1600.0
 ```
 
-#### Errores frecuentes
-
-Usar herencia cuando no hay relación “es un” crea acoplamiento innecesario. Si solo se quiere reutilizar código, conviene evaluar composición.
-
-Olvidar `super(...)` cuando la superclase no tiene constructor vacío impide compilar. La subclase debe inicializar explícitamente la base.
-
-Cambiar accidentalmente la firma de un método que se quería sobreescribir genera un método nuevo. Con `@Override`, el compilador detecta el problema.
-
-#### Verificación
-
-La verificación consiste en ejecutar el ejemplo y confirmar que cada empleado calcula su salario con su propia regla, aunque se invoque desde el tipo `Empleado`.
-
-
 ### Tema 3: Interfaces, clases abstractas y polimorfismo · Intermedio · 45 min
 
-Un sistema de cobros puede recibir facturas, recibos y más adelante notas de crédito. Si el código que cobra conoce cada clase concreta, cada nuevo documento obliga a modificar el cobrador. Además, algunas clases comparten datos y comportamiento, pero no tiene sentido instanciarlas por sí mismas: “documento genérico” no es un objeto de negocio válido. Este tema separa tres conceptos que se apoyan entre sí: interfaz como contrato, clase abstracta como base incompleta y polimorfismo como uso uniforme de implementaciones distintas.
+Caso guía: un sistema de cobros procesa facturas, recibos y notas de crédito. El cobrador no debe conocer cada clase concreta; y algunos documentos comparten estado común, pero “documento genérico” no debe instanciarse.
 
 #### Interfaz
 
-**Definición formal.** Una interfaz es un tipo de referencia que declara un contrato de comportamiento. En Java se define con `interface` y una clase la implementa con `implements`. La interfaz indica qué métodos debe ofrecer un tipo; las clases implementadoras proveen el comportamiento concreto, o quedan abstractas si no lo hacen.
+**Definición formal.** Una interfaz declara un contrato de comportamiento (`interface`); las clases lo implementan con `implements`.
 
-**Para qué sirve.** Sirve para desacoplar al código cliente de las implementaciones concretas. El cliente depende de la capacidad declarada —por ejemplo, “puede calcular su total”— y no de la clase específica. Esto permite agregar nuevas implementaciones sin cambiar el código que usa el contrato.
+**Cómo funciona por dentro.** El cliente depende del tipo contrato, no de la implementación. La JVM despacha al método de la implementación real en tiempo de ejecución.
 
-**Cuándo usarla y cuándo no.** Se usa cuando varios tipos, incluso sin relación de herencia, deben poder tratarse de forma uniforme. No es la mejor opción cuando lo que se necesita es compartir estado o implementación común en una jerarquía “es un”; en ese caso puede convenir una clase abstracta, o una combinación de interfaz y clase abstracta.
+```mermaid
+flowchart LR
+  C[Cobrador] -->|depende de| I[Pagable.total]
+  F[Factura] -->|implements| I
+  R[Recibo] -->|implements| I
+```
+
+**Cuándo usarla / cuándo no.** Úsala para capacidades transversales o desacoplar clientes. No fuerces interfaz si lo que necesitas es compartir estado/base común fuerte.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t3-interfaz && cd /tmp/java-m1-t3-interfaz
-```
-
-```java
-interface Pagable {
-    double total();
+mkdir -p /tmp/j1-int && cd /tmp/j1-int
+cat > DemoInt.java << 'JAVA'
+interface Pagable { double total(); }
+class Factura implements Pagable { public double total(){ return 121.0; } }
+public class DemoInt {
+  static void cobrar(Pagable p){ System.out.println(p.total()); }
+  public static void main(String[] args){ cobrar(new Factura()); }
 }
-
-class FacturaSimple implements Pagable {
-    private final double monto;
-    FacturaSimple(double monto) { this.monto = monto; }
-    @Override public double total() { return monto * 1.21; }
-}
-
-public class DemoInterfaz {
-    static void cobrar(Pagable p) { System.out.println(p.total()); }
-    public static void main(String[] args) {
-        cobrar(new FacturaSimple(100));
-    }
-}
+JAVA
+javac DemoInt.java && java DemoInt
 ```
 
-El contrato `Pagable` declara `total()`. `FacturaSimple` lo implementa. El método `cobrar` depende del contrato, no de la clase concreta.
+**Error común.** Programar contra la clase concreta. Síntoma: cada nuevo tipo obliga a modificar el cliente. Corrección: depender de la interfaz.
 
-**Caso de uso real.** Un servicio de cobranza recibe `Pagable` y registra el total, sin depender de si el origen es factura, recibo o nota de crédito.
-
-**Error común.** Programar contra la clase concreta: `void cobrar(FacturaSimple f)`. El síntoma es que agregar `Recibo` obliga a duplicar o modificar métodos. La corrección es recibir el contrato: `void cobrar(Pagable p)`.
-
-**Verificación (JDK 27, 2026-05-22).**
-
-```bash
-javac DemoInterfaz.java
-java DemoInterfaz
-```
-
-```text
-121.0
-```
+**Verificación (JDK 27, 2026-05-22).** `121.0`.
 
 #### Clase abstracta
 
-**Definición formal.** Una clase abstracta es una clase declarada con `abstract` que no puede instanciarse directamente. Puede contener métodos abstractos, sin implementación, y métodos concretos, con implementación. También puede tener campos, constructores y estado.
+**Definición formal.** Clase declarada `abstract` que no puede instanciarse; puede tener estado, métodos concretos y métodos abstractos.
 
-**Para qué sirve.** Sirve para compartir una base común en una jerarquía “es un” cuando parte del comportamiento es común y parte debe ser definido por las subclases. Evita duplicar estado y lógica común, pero obliga a las subclases concretas a completar los métodos abstractos.
-
-**Cuándo usarla y cuándo no.** Se usa cuando hay relación “es un” y existe estado o implementación común real. No se usa cuando solo se necesita un contrato sin estado común; para eso la interfaz es más flexible. Tampoco conviene si la base crece hasta obligar a las subclases a heredar comportamiento que no necesitan.
+**Cuándo usarla.** Cuando hay relación “es un” y base común real con partes incompletas.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t3-abstracta && cd /tmp/java-m1-t3-abstracta
-```
-
-```java
+mkdir -p /tmp/j1-abs && cd /tmp/j1-abs
+cat > DemoAbs.java << 'JAVA'
 abstract class Documento {
-    protected final String id;
-    Documento(String id) { this.id = id; }
-    abstract double total();
-    String etiqueta() { return id + ":" + total(); }
+  protected final String id;
+  Documento(String id){ this.id = id; }
+  abstract double total();
+  String etiqueta(){ return id + ":" + total(); }
 }
-
 class Recibo extends Documento {
-    private final double monto;
-    Recibo(String id, double monto) { super(id); this.monto = monto; }
-    @Override double total() { return monto; }
+  private final double monto;
+  Recibo(String id, double monto){ super(id); this.monto = monto; }
+  @Override double total(){ return monto; }
 }
-
-public class DemoAbstracta {
-    public static void main(String[] args) {
-        Documento d = new Recibo("R1", 100);
-        System.out.println(d.etiqueta());
-        // new Documento("X"); // error de compilación: clase abstracta
-    }
+public class DemoAbs {
+  public static void main(String[] args){ System.out.println(new Recibo("R1",100).etiqueta()); }
 }
+JAVA
+javac DemoAbs.java && java DemoAbs
 ```
 
-`Documento` comparte `id` y `etiqueta()`, pero deja `total()` a las subclases. No se puede instanciar directamente.
+**Error común.** Base abstracta gigante. Síntoma: subclases heredan basura. Corrección: mantener solo lo común estable.
 
-**Caso de uso real.** En facturación, `Documento` puede contener id, fecha y validaciones comunes, mientras `Factura` y `Recibo` definen el cálculo de total.
-
-**Error común.** Convertir la clase abstracta en un contenedor gigante. El síntoma es que subclases heredan campos o métodos irrelevantes. La corrección es mantener en la base solo lo común y estable.
-
-**Verificación (JDK 27, 2026-05-22).**
-
-```bash
-javac DemoAbstracta.java
-java DemoAbstracta
-```
-
-```text
-R1:100.0
-```
-
-Si se descomenta `new Documento("X")`, `javac` falla: una clase abstracta no es instanciable.
+**Verificación (JDK 27, 2026-05-22).** `R1:100.0`.
 
 #### Polimorfismo
 
-**Definición formal.** El polimorfismo es la capacidad de tratar objetos de distintos tipos concretos a través de un tipo común y ejecutar, en tiempo de ejecución, la implementación correspondiente al objeto real. En Java, esto ocurre cuando se invoca un método sobreescrito a través de una referencia de superclase o interfaz.
+**Definición formal.** Capacidad de tratar objetos de tipos concretos distintos a través de un tipo común, ejecutando la implementación real en runtime.
 
-**Para qué sirve.** Reduce el acoplamiento y permite extender el sistema. El código cliente opera sobre el contrato común y no necesita una rama por cada tipo concreto. Agregar una nueva implementación no requiere modificar el cliente, siempre que se respete el contrato.
+**Cómo funciona por dentro.** La variable es de tipo base/interfaz, el objeto real es concreto. La llamada a método virtual se resuelve por el tipo real del objeto.
 
-**Cuándo usarlo y cuándo no.** Se usa en parámetros, colecciones, servicios y pipelines que operan sobre abstracciones. No aporta valor cuando el código termina preguntando por el tipo concreto con `instanceof` en cada paso; eso indica que el comportamiento no quedó en el lugar correcto. Tampoco debe confundirse con herencia: la herencia es un mecanismo; el polimorfismo es el efecto observable.
+```mermaid
+sequenceDiagram
+  participant C as Cliente
+  participant P as Pagable (ref)
+  participant F as Factura (obj real)
+  C->>P: total()
+  P->>F: dispatch dinámico
+  F-->>C: 121.0
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t3-polimorfismo && cd /tmp/java-m1-t3-polimorfismo
-```
-
-```java
+mkdir -p /tmp/j1-poly && cd /tmp/j1-poly
+cat > DemoPoly.java << 'JAVA'
 interface PagableP { double total(); }
-class FacturaP implements PagableP { public double total() { return 121.0; } }
-class ReciboP implements PagableP { public double total() { return 100.0; } }
-
-public class DemoPolimorfismo {
-    static void imprimir(PagableP p) { System.out.println(p.total()); }
-    public static void main(String[] args) {
-        PagableP p = new FacturaP();
-        imprimir(p);
-        imprimir(new ReciboP());
-    }
+class FacturaP implements PagableP { public double total(){ return 121.0; } }
+class ReciboP implements PagableP { public double total(){ return 100.0; } }
+public class DemoPoly {
+  static void imprimir(PagableP p){ System.out.println(p.total()); }
+  public static void main(String[] args){ imprimir(new FacturaP()); imprimir(new ReciboP()); }
 }
+JAVA
+javac DemoPoly.java && java DemoPoly
 ```
 
-El método `imprimir` depende de `PagableP`. La implementación ejecutada depende del objeto real.
+**Error común.** Cadena de `instanceof` en el cliente. Síntoma: cada nuevo tipo rompe el cliente. Corrección: mover comportamiento al contrato polimórfico.
 
-**Caso de uso real.** Un proceso de cierre diario itera `List<Pagable>` y suma totales sin conocer cada tipo concreto.
+**Verificación (JDK 27, 2026-05-22).** `121.0`, `100.0`.
 
-**Error común.** Usar `instanceof` para decidir la lógica en el cliente. El síntoma es un bloque creciente de condiciones por tipo. La corrección es mover el comportamiento al método polimórfico del contrato.
-
-**Verificación (JDK 27, 2026-05-22).**
+#### Ejemplo integrado
 
 ```bash
-javac DemoPolimorfismo.java
-java DemoPolimorfismo
-```
-
-```text
-121.0
-100.0
-```
-
-#### Ejemplo integrado desde cero
-
-Los tres conceptos se combinan en un caso pequeño: `Pagable` es el contrato, `Documento` es la base abstracta con estado común, y `imprimir` usa polimorfismo sobre el tipo común.
-
-```bash
-mkdir -p /tmp/java-m1-t3 && cd /tmp/java-m1-t3
-```
-
-Creamos `Polimorfismo.java`:
-
-```java
-interface Pagable {
-    double total();
-}
-
+mkdir -p /tmp/j1-t3 && cd /tmp/j1-t3
+cat > Polimorfismo.java << 'JAVA'
+interface Pagable { double total(); }
 abstract class Documento implements Pagable {
-    protected final String id;
-
-    Documento(String id) {
-        this.id = id;
-    }
-
-    String id() {
-        return id;
-    }
+  protected final String id;
+  Documento(String id){ this.id = id; }
+  String etiqueta(){ return id + ":" + total(); }
 }
-
 class Factura extends Documento {
-    private final double monto;
-
-    Factura(String id, double monto) {
-        super(id);
-        this.monto = monto;
-    }
-
-    @Override
-    public double total() {
-        return monto * 1.21;
-    }
+  private final double base;
+  Factura(String id, double base){ super(id); this.base = base; }
+  @Override public double total(){ return base * 1.21; }
 }
-
 class Recibo extends Documento {
-    private final double monto;
-
-    Recibo(String id, double monto) {
-        super(id);
-        this.monto = monto;
-    }
-
-    @Override
-    public double total() {
-        return monto;
-    }
+  private final double monto;
+  Recibo(String id, double monto){ super(id); this.monto = monto; }
+  @Override public double total(){ return monto; }
 }
-
 public class Polimorfismo {
-    static void imprimir(Pagable p) {
-        System.out.println(p.total());
-    }
-
-    public static void main(String[] args) {
-        imprimir(new Factura("F1", 100));
-        imprimir(new Recibo("R1", 100));
-    }
+  static void imprimir(Pagable p){ System.out.println(p.total()); }
+  public static void main(String[] args) {
+    Documento f = new Factura("F1", 100);
+    Documento r = new Recibo("R1", 100);
+    imprimir(f);
+    imprimir(r);
+    System.out.println(f.etiqueta());
+  }
 }
+JAVA
+javac Polimorfismo.java && java Polimorfismo
 ```
 
-#### Recorrido del código
-
-`Pagable` define el contrato `total()`. `Documento` es abstracta porque aporta `id` y constructor, pero no define el cálculo completo para todo documento; además implementa `Pagable`, obligando a las subclases concretas a implementar `total()`. `Factura` y `Recibo` heredan el estado común y especializan el cálculo. El método `imprimir` recibe `Pagable`, por lo que funciona con cualquier implementación actual o futura.
-
-#### Ejecución y salida real
-
-```bash
-javac Polimorfismo.java
-java Polimorfismo
-```
-
-Salida real observada (JDK 27, 2026-05-22):
-
-```text
-121.0
-100.0
-```
-
-#### Errores frecuentes
-
-Usar una clase abstracta cuando no hay estado ni comportamiento común fuerza herencia innecesaria. Si solo se necesita capacidad, una interfaz es más simple.
-
-Depender de clases concretas en el cliente elimina la extensibilidad del polimorfismo. Si el cliente solo necesita `total()`, el parámetro debe ser `Pagable`.
-
-Respetar la firma pero no el contrato semántico crea bugs silenciosos. El compilador garantiza la forma del método, no el significado.
-
-#### Verificación
-
-La verificación mínima es ejecutar el integrado y confirmar `121.0` y `100.0`. Una prueba adicional es crear `class NotaCredito implements Pagable { public double total() { return 50; } }` y pasarla a `imprimir` sin modificar el método.
+**Verificación (JDK 27, 2026-05-22).** `121.0`, `100.0`, `F1:121.0`.
 
 ### Tema 4: Sobrecarga, sobreescritura y modificadores de acceso · Intermedio · 35 min
 
-Los términos sobrecarga y sobreescritura se parecen, pero describen mecanismos distintos. Confundirlos lleva a errores comunes: creer que se está sobreescribiendo un método cuando en realidad se creó otro, o esperar que Java decida por tipo real lo que en realidad decide por firma en compilación. Los modificadores de acceso completan el cuadro, porque determinan qué miembros pueden verse y, por lo tanto, qué puede invocarse, heredarse o sobreescribirse.
+Caso guía: una API necesita variantes de `pagar` con distintos parámetros, subclases que especializan comportamiento, y control estricto de visibilidad para no exponer estado interno.
 
 #### Sobrecarga
 
-**Definición formal.** La sobrecarga (overloading) ocurre cuando una misma clase define varios métodos con el mismo nombre pero distinta lista de parámetros. El tipo de retorno no forma parte de la firma para distinguir sobrecargas.
+**Definición formal.** Sobrecarga (overload) es definir varios métodos con el mismo nombre pero distinta lista de parámetros en el mismo ámbito.
 
-**Para qué sirve.** Permite expresar la misma operación conceptual con distintas formas de entrada, manteniendo una API legible. El llamador usa el mismo nombre cuando la intención es la misma.
-
-**Cuándo usarla y cuándo no.** Se usa cuando el significado conceptual es el mismo, como `sumar(int,int)` y `sumar(double,double)`. No se usa cuando las variantes hacen cosas conceptualmente distintas; en ese caso, nombres distintos evitan ambigüedad. La resolución se hace en compilación, según tipos y cantidad de argumentos.
+**Contrato.** Se resuelve en compilación por tipos/aritidad. No se diferencia solo por tipo de retorno.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t4-sobrecarga && cd /tmp/java-m1-t4-sobrecarga
-```
-
-```java
-class Calculadora {
-    int sumar(int a, int b) { return a + b; }
-    double sumar(double a, double b) { return a + b; }
+mkdir -p /tmp/j1-over && cd /tmp/j1-over
+cat > DemoOver.java << 'JAVA'
+class Calc {
+  int sum(int a,int b){ return a+b; }
+  double sum(double a,double b){ return a+b; }
 }
-
-public class DemoSobrecarga {
-    public static void main(String[] args) {
-        Calculadora c = new Calculadora();
-        System.out.println(c.sumar(1, 2));
-        System.out.println(c.sumar(1.5, 2.5));
-    }
+public class DemoOver {
+  public static void main(String[] args){ Calc c=new Calc(); System.out.println(c.sum(1,2)); System.out.println(c.sum(1.5,2.5)); }
 }
+JAVA
+javac DemoOver.java && java DemoOver
 ```
 
-**Caso de uso real.** Una API de logging puede ofrecer `log(String)` y `log(String, Throwable)`; misma intención, distinta información de entrada.
+**Error común.** Sobrecargas ambiguas/confusas. Corrección: nombres o parámetros claros.
 
-**Error común.** Cambiar solo el tipo de retorno esperando una sobrecarga válida. El síntoma es error de compilación o diseño confuso. La corrección es cambiar la lista de parámetros.
-
-**Verificación.** Ejecutado en `/tmp/java-m1-t4-pilot` (JDK 27, 2026-05-22):
-
-```bash
-javac DemoSobrecarga.java
-java DemoSobrecarga
-```
-
-```text
-3
-4.0
-```
+**Verificación (JDK 27, 2026-05-22).** `3`, `4.0`.
 
 #### Sobreescritura
 
-**Definición formal.** La sobreescritura (overriding) ocurre cuando una subclase define un método con la misma firma que un método visible y no final de su superclase. La implementación ejecutada se resuelve en tiempo de ejecución según el tipo real del objeto.
-
-**Para qué sirve.** Permite especializar comportamiento manteniendo el contrato del tipo base. El código que usa la superclase o interfaz puede funcionar con distintas implementaciones concretas.
-
-**Cuándo usarla y cuándo no.** Se usa cuando una subclase debe cambiar la implementación de una operación manteniendo su significado. No se usa si se quiere solo agregar una variante por parámetros; eso es sobrecarga. No se puede reducir la visibilidad al sobreescribir, y `@Override` debe usarse para que el compilador verifique la firma.
+**Definición formal.** Sobreescritura (override) redefine en runtime el comportamiento de un método heredado con la misma firma.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t4-override && cd /tmp/java-m1-t4-override
+mkdir -p /tmp/j1-overr && cd /tmp/j1-overr
+cat > DemoOverr.java << 'JAVA'
+class Base { String who(){ return "base"; } }
+class Sub extends Base { @Override String who(){ return "sub"; } }
+public class DemoOverr { public static void main(String[] args){ Base b=new Sub(); System.out.println(b.who()); } }
+JAVA
+javac DemoOverr.java && java DemoOverr
 ```
 
-```java
-class Base { String tipo() { return "base"; } }
-class Derivada extends Base { @Override String tipo() { return "derivada"; } }
+**Error común.** Olvidar `@Override`. Corrección: anotarlo siempre.
 
-public class DemoSobreescritura {
-    public static void main(String[] args) {
-        Base b = new Derivada();
-        System.out.println(b.tipo());
-    }
-}
-```
-
-**Caso de uso real.** `Documento.total()` puede tener implementaciones distintas en `Factura` y `Recibo`, mientras el servicio de cobro invoca el mismo método sobre el tipo base.
-
-**Error común.** Cambiar la firma sin darse cuenta y creer que se sobreescribió. El síntoma es que se ejecuta el método de la base. La corrección es agregar `@Override`; el compilador avisará si no hay método a sobreescribir.
-
-**Verificación.** Ejecutado en `/tmp/java-m1-t4-pilot` (JDK 27, 2026-05-22):
-
-```bash
-javac DemoSobreescritura.java
-java DemoSobreescritura
-```
-
-```text
-derivada
-```
+**Verificación (JDK 27, 2026-05-22).** `sub`.
 
 #### Modificadores de acceso
 
-**Definición formal.** Los modificadores de acceso controlan la visibilidad de clases, campos, constructores y métodos. Java define `private`, package-private (sin modificador), `protected` y `public`.
+**Definición formal.** `private`, package-private (sin modificador), `protected`, `public` controlan visibilidad de miembros/tipos.
 
-**Para qué sirve.** Protegen invariantes, reducen acoplamiento y definen la API pública de un tipo. Permiten exponer solo lo necesario y ocultar detalles internos.
+**Cómo funciona.** `private`: solo clase. package-private: mismo paquete. `protected`: paquete y subclases. `public`: todos.
 
-**Cuándo usarlo y cuándo no.** Se usa como parte del diseño de encapsulación: empezar con la visibilidad más restrictiva y ampliar solo con justificación. No conviene hacer todo `public` por comodidad, ni exponer campos mutables. `protected` debe usarse con cuidado porque amplía la superficie visible a subclases y al paquete.
+```mermaid
+flowchart TB
+  P[private\nclase] --> PK[package-private\npaquete]
+  PK --> PR[protected\npaquete + subclases]
+  PR --> PU[public\ntodos]
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t4-acceso/acceso && cd /tmp/java-m1-t4-acceso
+mkdir -p /tmp/j1-mod && cd /tmp/j1-mod
+cat > DemoMod.java << 'JAVA'
+class BaseM { private int x=1; protected int y=2; public int z=3; int p=4; int sum(){ return x+y+z+p; } }
+public class DemoMod { public static void main(String[] args){ System.out.println(new BaseM().sum()); } }
+JAVA
+javac DemoMod.java && java DemoMod
 ```
 
-`acceso/Caja.java`:
+**Error común.** Hacer todo `public`. Síntoma: acoplamiento y ruptura de invariantes. Corrección: mínima visibilidad necesaria.
 
-```java
-package acceso;
-public class Caja {
-    private int secreto = 1;
-    int interno = 2;        // package-private
-    protected int protegido = 3;
-    public int abierto = 4;
-    public int verSecreto() { return secreto; }
-}
-```
-
-`acceso/DemoAcceso.java`:
-
-```java
-package acceso;
-public class DemoAcceso {
-    public static void main(String[] args) {
-        Caja c = new Caja();
-        // c.secreto; // no compila: private
-        System.out.println(c.interno);
-        System.out.println(c.protegido);
-        System.out.println(c.abierto);
-        System.out.println(c.verSecreto());
-    }
-}
-```
-
-Desde el mismo paquete se accede a `interno`, `protegido` y `abierto`; `secreto` solo desde dentro de `Caja`.
-
-**Caso de uso real.** Un dominio mantiene `saldo` como `private` y expone `depositar/retirar`, evitando que cualquier código externo deje el objeto inválido.
-
-**Error común.** Usar `protected` creyendo que es accesible solo por subclases. El síntoma es acceso inesperado desde clases del mismo paquete. La corrección es entender que `protected` incluye el paquete y considerar package-private o `private` según el caso.
-
-**Verificación.** Ejecutado en `/tmp/java-m1-t4-pilot` (JDK 27, 2026-05-22):
-
-```bash
-javac -d . acceso/Caja.java acceso/DemoAcceso.java
-java acceso.DemoAcceso
-```
-
-```text
-2
-3
-4
-1
-```
-
-`secreto` no es accesible directamente; `verSecreto()` muestra su valor mediante un método público controlado.
-
-#### Ejemplo integrado desde cero
-
-```bash
-mkdir -p /tmp/java-m1-t4 && cd /tmp/java-m1-t4
-```
-
-Creamos `Sobrecarga.java`:
-
-```java
-class Calculadora {
-    int sumar(int a, int b) { return a + b; }
-    double sumar(double a, double b) { return a + b; }
-    int sumar(int a, int b, int c) { return a + b + c; }
-}
-
-class Base {
-    protected String tipo() { return "base"; }
-}
-
-class Derivada extends Base {
-    @Override
-    public String tipo() { return "derivada"; }
-}
-
-public class Sobrecarga {
-    public static void main(String[] args) {
-        Calculadora c = new Calculadora();
-        System.out.println(c.sumar(1, 2));
-        System.out.println(c.sumar(1.5, 2.5));
-        System.out.println(c.sumar(1, 2, 3));
-
-        Base b = new Derivada();
-        System.out.println(b.tipo());
-    }
-}
-```
-
-#### Recorrido del código
-
-`Calculadora` muestra sobrecarga: tres firmas distintas, resueltas por el compilador según los argumentos. `Base` y `Derivada` muestran sobreescritura y modificadores de acceso: `tipo()` es `protected` en la base y `public` en la subclase, una ampliación permitida. La variable `b` es de tipo `Base`, pero apunta a `Derivada`; por eso `b.tipo()` se resuelve en ejecución a la implementación de la subclase.
-
-#### Ejecución y salida real
-
-```bash
-javac Sobrecarga.java
-java Sobrecarga
-```
-
-Salida real observada (JDK 27, 2026-05-22):
-
-```text
-3
-4.0
-6
-derivada
-```
-
-#### Errores frecuentes
-
-Confundir sobrecarga con sobreescritura lleva a esperar el mecanismo equivocado. La sobrecarga se resuelve en compilación por firma; la sobreescritura, en ejecución por tipo real.
-
-Omitir `@Override` permite que un error de firma pase como método nuevo. La corrección es anotar siempre los métodos sobreescritos.
-
-Exponer campos como `public` para evitar escribir métodos rompe encapsulación. La corrección es exponer comportamiento controlado y mantener el estado privado.
-
-#### Verificación
-
-La verificación mínima es ejecutar el integrado y confirmar `3`, `4.0`, `6`, `derivada`. Como prueba adicional, cambiar `tipo()` en `Derivada` a `private` debe producir error de compilación por reducir visibilidad.
+**Verificación (JDK 27, 2026-05-22).** `10`.
 
 ### Tema 5: `record` — modelos inmutables sin boilerplate · Intermedio · 35 min
 
-En muchos programas aparecen clases cuyo propósito principal es transportar datos: un punto con coordenadas, una respuesta DTO, una clave compuesta, un resultado de consulta. Antes de los records, ese tipo de clase requería constructor, accesores, `equals`, `hashCode` y `toString`, o dependencias externas. El código era correcto, pero repetitivo y propenso a inconsistencias. Los records reducen ese ruido, pero exigen entender qué garantizan y qué no garantizan.
+Caso guía: necesitas transportar datos de respuesta (`id`, `codigo`) sin lógica mutable. Con clases tradicionales escribes constructor, getters, `equals`, `hashCode`, `toString`; un record lo declara de forma compacta.
 
 #### Record
 
-**Definición formal.** Un record es un tipo especial de clase, introducido como característica final en Java 16, diseñado para modelar datos como valores. Declara componentes; el compilador genera constructor canónico, accesores, `equals`, `hashCode` y `toString` basados en esos componentes.
+**Definición formal.** Un `record` es una clase especial para portadores de datos inmutables cuyos componentes definen su API y estado.
 
-**Para qué sirve.** Reduce boilerplate y hace explícita la intención de “objeto de valor”. Es ideal cuando la identidad del objeto está dada por sus datos.
-
-**Cuándo usarlo y cuándo no.** Se usa para DTOs, valores, respuestas y claves compuestas. No se usa cuando el objeto tiene identidad mutable, ciclo de vida complejo o necesita heredar de otra clase, porque todo record extiende implícitamente `java.lang.Record`. Puede implementar interfaces.
+**Cómo funciona por dentro.** El compilador genera constructor canónico, accesores, `equals`, `hashCode` y `toString` basados en componentes.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t5-record && cd /tmp/java-m1-t5-record
-```
-
-```java
+mkdir -p /tmp/j1-rec && cd /tmp/j1-rec
+cat > DemoRec.java << 'JAVA'
 record Punto(int x, int y) {}
-
-public class DemoRecord {
-    public static void main(String[] args) {
-        Punto p = new Punto(2, 3);
-        System.out.println(p.x());
-        System.out.println(p);
-    }
-}
+public class DemoRec { public static void main(String[] args){ System.out.println(new Punto(1,2)); } }
+JAVA
+javac DemoRec.java && java DemoRec
 ```
 
-**Caso de uso real.** Un endpoint devuelve `record UsuarioDto(String id, String email)`; el contrato de datos es claro y la igualdad por componentes es útil en tests.
+**Cuándo usarlo / cuándo no.** Úsalo para DTOs/value objects inmutables. No para entidades JPA mutables o con identidad compleja.
 
-**Error común.** Esperar getters estilo JavaBean (`getX()`). El síntoma es error de compilación. La corrección es usar el accesor generado: `x()`.
+**Error común.** Intentar mutar componentes. Corrección: crear nuevo record.
 
-**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
-
-```bash
-javac DemoRecord.java
-java DemoRecord
-```
-
-```text
-2
-Punto[x=2, y=3]
-```
-
-#### Modelo inmutable y componentes
-
-**Definición formal.** Los componentes de un record son la base de su estado y de los métodos generados. Los campos correspondientes son finales. La inmutabilidad es superficial: el record no puede reasignar sus componentes, pero si un componente referencia un objeto mutable, ese objeto interno puede cambiar.
-
-**Para qué sirve.** Da previsibilidad para objetos de valor: después de construido, el record no cambia sus componentes. Esto simplifica razonamiento, pruebas y uso como clave.
-
-**Cuándo usarlo y cuándo no.** Se usa cuando los componentes son inmutables o se protegen con copia defensiva. No se debe asumir inmutabilidad profunda si hay `List`, `Date` u otros objetos mutables dentro.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m1-t5-inmutable && cd /tmp/java-m1-t5-inmutable
-```
-
-```java
-import java.util.*;
-record Caja(List<String> items) {
-    Caja { items = List.copyOf(items); }
-}
-
-public class DemoInmutable {
-    public static void main(String[] args) {
-        List<String> base = new ArrayList<>(List.of("a"));
-        Caja c = new Caja(base);
-        base.add("b");
-        System.out.println(c.items());
-    }
-}
-```
-
-`List.copyOf` evita que cambios externos afecten el estado interno del record.
-
-**Caso de uso real.** Un DTO con lista de permisos debe exponer una copia inmodificable para que consumidores no alteren el estado por accidente.
-
-**Error común.** Guardar una lista mutable tal cual. El síntoma es que el “record inmutable” cambia por fuera. La corrección es copiar defensivamente y exponer colecciones inmutables.
-
-**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
-
-```bash
-javac DemoInmutable.java
-java DemoInmutable
-```
-
-```text
-[a]
-```
-
-La lista original se modificó, pero el record conservó `[a]`.
+**Verificación (JDK 27, 2026-05-22).** `Punto[x=1, y=2]`.
 
 #### Constructor compacto y validación
 
-**Definición formal.** El constructor canónico recibe todos los componentes. El constructor compacto es una forma concisa de declarar ese constructor para validar o normalizar datos; no repite la lista de parámetros y Java asigna los componentes al final.
-
-**Para qué sirve.** Protege invariantes del record sin escribir boilerplate. Permite rechazar estados inválidos antes de que el objeto exista.
-
-**Cuándo usarlo y cuándo no.** Se usa para validaciones y normalizaciones simples. No conviene colocar lógica pesada, I/O o efectos secundarios en constructores.
+**Definición formal.** El constructor compacto permite validar/normalizar componentes sin reescribir la asignación canónica.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m1-t5-compacto && cd /tmp/java-m1-t5-compacto
-```
-
-```java
-record PuntoC(int x, int y) {
-    public PuntoC {
-        if (x < 0 || y < 0) throw new IllegalArgumentException("Coordenada inválida");
-    }
+mkdir -p /tmp/j1-recv && cd /tmp/j1-recv
+cat > DemoRecV.java << 'JAVA'
+record Email(String value) {
+  Email { if (value == null || !value.contains("@")) throw new IllegalArgumentException("email"); }
 }
-
-public class DemoCompacto {
-    public static void main(String[] args) {
-        try { new PuntoC(-1, 0); }
-        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
-    }
+public class DemoRecV {
+  public static void main(String[] args) {
+    System.out.println(new Email("a@b.com").value());
+    try { new Email("bad"); } catch (IllegalArgumentException e) { System.out.println("error"); }
+  }
 }
+JAVA
+javac DemoRecV.java && java DemoRecV
 ```
 
-**Caso de uso real.** Un `record Email(String value)` puede normalizar a minúsculas y rechazar formatos inválidos en su constructor compacto.
-
-**Error común.** Aceptar datos inválidos para “validar después”. El síntoma es objetos de valor inválidos circulando por el sistema. La corrección es validar en la construcción.
-
-**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
-
-```bash
-javac DemoCompacto.java
-java DemoCompacto
-```
-
-```text
-Coordenada inválida
-```
-
-#### Comportamiento adicional
-
-**Definición formal.** Un record puede declarar métodos de instancia, métodos estáticos, constructores alternativos y constantes. También puede implementar interfaces. No puede extender otra clase ni declarar campos de instancia mutables adicionales.
-
-**Para qué sirve.** Permite agregar comportamiento coherente con el valor, como cálculos derivados o fábricas, sin perder la naturaleza compacta del record.
-
-**Cuándo usarlo y cuándo no.** Se usa para lógica simple relacionada con el valor. No se usa para convertir el record en una entidad con mutación, identidad compleja o dependencias.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m1-t5-comportamiento && cd /tmp/java-m1-t5-comportamiento
-```
-
-```java
-record PuntoM(int x, int y) {
-    public int suma() { return x + y; }
-}
-
-public class DemoComportamiento {
-    public static void main(String[] args) {
-        System.out.println(new PuntoM(2, 3).suma());
-    }
-}
-```
-
-**Caso de uso real.** Un `record Money(BigDecimal amount, String currency)` puede exponer `add` devolviendo otro `Money`, preservando inmutabilidad.
-
-**Error común.** Agregar métodos que simulan setters o mutan estado externo como parte central del diseño. El síntoma es perder la claridad del modelo de valor. La corrección es devolver nuevos valores o usar una clase normal si hay mutación real.
-
-**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
-
-```bash
-javac DemoComportamiento.java
-java DemoComportamiento
-```
-
-```text
-5
-```
-
-#### Ejemplo integrado desde cero
-
-```bash
-mkdir -p /tmp/java-m1-t5 && cd /tmp/java-m1-t5
-```
-
-Creamos `Punto.java`:
-
-```java
-public record Punto(int x, int y) {
-    public Punto {
-        if (x < 0 || y < 0) {
-            throw new IllegalArgumentException("Coordenada inválida");
-        }
-    }
-
-    public int suma() {
-        return x + y;
-    }
-
-    public static void main(String[] args) {
-        Punto p = new Punto(2, 3);
-        System.out.println(p.x());
-        System.out.println(p.y());
-        System.out.println(p.suma());
-        System.out.println(p);
-        try {
-            new Punto(-1, 0);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-}
-```
-
-#### Recorrido del código
-
-El record declara componentes `x` e `y`, generando accesores, `equals`, `hashCode` y `toString`. El constructor compacto valida el invariante de no negatividad antes de aceptar el estado. El método `suma()` agrega comportamiento derivado sin mutar el valor.
-
-#### Ejecución y salida real
-
-```bash
-javac Punto.java
-java Punto
-```
-
-Salida real observada (JDK 27, 2026-05-22):
-
-```text
-2
-3
-5
-Punto[x=2, y=3]
-Coordenada inválida
-```
-
-#### Errores frecuentes
-
-Usar record para entidades mutables o con identidad compleja genera fricción. Si el objeto debe cambiar con el tiempo, una clase normal suele ser mejor.
-
-Asumir inmutabilidad profunda cuando hay componentes mutables es peligroso. Se debe copiar defensivamente.
-
-Poner lógica pesada en el constructor compacto oscurece la creación del valor. El constructor debe centrarse en invariantes.
-
-#### Verificación
-
-La verificación mínima es ejecutar el integrado y confirmar accesores, cálculo, `toString` y rechazo de coordenada inválida.
+**Verificación (JDK 27, 2026-05-22).** `a@b.com`, `error`.
 
 ### Tema 6: Constructores flexibles (Java 25) · Avanzado · 30 min
 
-Los constructores deben dejar el objeto en un estado válido. En versiones clásicas de Java, una subclase debía llamar a `super(...)` o `this(...)` como primera sentencia del constructor. Esa regla protegía el orden de inicialización, pero dificultaba validar o normalizar argumentos antes de delegar. Java 25 introduce constructores flexibles para permitir esa lógica temprana con reglas de seguridad.
+Caso guía: antes de llamar a `super(...)` quieres normalizar/validar argumentos. Históricamente Java obligaba a que `super(...)`/`this(...)` fuera la primera sentencia.
 
 #### Regla clásica de `super(...)` / `this(...)`
 
-**Definición formal.** Antes de los constructores flexibles, la primera sentencia de un constructor debía ser una invocación explícita o implícita a `super(...)` o `this(...)`. El compilador inserta `super()` si la superclase tiene constructor sin argumentos.
+**Definición formal.** Antes de constructores flexibles, la invocación a otro constructor debía ser la primera sentencia del constructor.
 
-**Para qué sirve.** Garantiza un orden de inicialización predecible: la parte heredada se inicializa antes de que la subclase use el estado del objeto.
+**Error común.** Poner validación antes de `super(...)` en versiones/estilos antiguos causa error de compilación.
 
-**Cuándo usarla y cuándo no.** Es el modelo mental base que sigue vigente. No es conveniente cuando necesitas validar/normalizar parámetros antes de pasarlos a `super(...)`; en Java clásico requería métodos estáticos auxiliares o duplicación.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m1-t6-clasica && cd /tmp/java-m1-t6-clasica
-```
-
-```java
-class Base {
-    final String nombre;
-    Base(String nombre) { this.nombre = nombre; }
-}
-
-class Sub extends Base {
-    final int puntos;
-    Sub(String nombre, int puntos) {
-        super(validar(nombre)); // en Java clásico se usa auxiliar estático
-        this.puntos = puntos;
-    }
-    static String validar(String n) { return n.trim(); }
-}
-
-public class DemoClasica {
-    public static void main(String[] args) {
-        System.out.println(new Sub(" Ada ", 10).nombre);
-    }
-}
-```
-
-**Caso de uso real.** Jerarquías donde la superclase exige parámetros ya normalizados; antes de Java 25 la normalización se movía a métodos estáticos.
-
-**Error común.** Olvidar que la superclase sin constructor vacío exige `super(...)` explícito. El síntoma es error de compilación. La corrección es invocar el constructor base adecuado.
-
-**Verificación.** Ejecutado en `/tmp/java-m1-t6-pilot` con `javac --release 25` (JDK 27, 2026-05-22):
-
-```bash
-javac --release 25 DemoClasica.java
-java DemoClasica
-```
-
-```text
-Ada
-```
+**Verificación.** El ejemplo siguiente demuestra el enfoque moderno.
 
 #### Constructores flexibles
 
-**Definición formal.** En Java 25, un constructor puede ejecutar sentencias antes de `super(...)` o `this(...)` en una fase inicial controlada, siempre que respete las reglas de inicialización segura: no usar el objeto en construcción de forma indebida antes de delegar.
+**Definición formal.** Java permite prologar con lógica antes de `super(...)`/`this(...)` en el modelo de constructores flexibles (JEP 513, Java 25), con reglas que preservan inicialización segura.
 
-**Para qué sirve.** Permite validar, normalizar o calcular argumentos en el lugar natural antes de construir la parte base.
-
-**Cuándo usarlo y cuándo no.** Se usa cuando la validación afecta directamente los argumentos de `super(...)`. No se usa para lógica pesada, I/O, acceso a red o efectos secundarios. El constructor sigue siendo inicialización.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo enfocado (ejecutable, JDK 27).**
 
 ```bash
-mkdir -p /tmp/java-m1-t6-flexible && cd /tmp/java-m1-t6-flexible
-```
-
-```java
-class BaseF {
-    final String nombre;
-    BaseF(String nombre) { this.nombre = nombre; }
+mkdir -p /tmp/j1-flex && cd /tmp/j1-flex
+cat > DemoFlex.java << 'JAVA'
+class Base {
+  final String id;
+  Base(String id){ this.id = id; }
 }
-
-class SubF extends BaseF {
-    final int puntos;
-    SubF(String nombre, int puntos) {
-        if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
-        super(nombre.trim());
-        this.puntos = puntos;
-    }
+class User extends Base {
+  User(String raw) {
+    String normalizado = raw == null ? "" : raw.trim().toUpperCase();
+    if (normalizado.isBlank()) throw new IllegalArgumentException("id");
+    super(normalizado);
+  }
 }
-
-public class DemoFlexible {
-    public static void main(String[] args) {
-        System.out.println(new SubF(" Ada ", 10).nombre);
-        try { new SubF("Ada", -1); }
-        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
-    }
+public class DemoFlex {
+  public static void main(String[] args) { System.out.println(new User(" ab ").id); }
 }
+JAVA
+javac DemoFlex.java && java DemoFlex
 ```
 
-**Caso de uso real.** Una subclase `CuentaPremium` valida puntos o límites antes de delegar al constructor de `Cuenta`, manteniendo la regla cerca del dato.
+**Error común.** Usar `this` antes de inicializar la superclase. Corrección: respetar reglas de inicialización segura; hacer solo validación/normalización local.
 
-**Error común.** Tratar la flexibilidad como permiso para hacer cualquier cosa antes de `super(...)`. El síntoma es constructores difíciles de razonar o errores por inicialización insegura. La corrección es limitar la fase previa a validación/preparación de argumentos.
+**Verificación (JDK 27, 2026-05-22).** Salida: `AB`.
 
-**Verificación.** Ejecutado en `/tmp/java-m1-t6-pilot` (JDK 27, 2026-05-22):
+## Cierre
 
-```bash
-javac --release 25 DemoFlexible.java
-java DemoFlexible
-```
+POO en Java no es solo sintaxis: es diseño de invariantes, contratos y colaboración entre objetos. Usar clases/encapsulación protege estado; herencia/polimorfismo habilita extensibilidad cuando hay relación real; records simplifican datos inmutables; constructores flexibles permiten validación temprana limpia.
 
-```text
-Ada
-Puntos inválidos
-```
+## Checklist
 
-#### Validación temprana e invariantes
-
-**Definición formal.** La validación temprana es la comprobación de precondiciones e invariantes antes de completar la construcción del objeto. En constructores flexibles, puede ocurrir antes de `super(...)` cuando se trata de preparar argumentos válidos.
-
-**Para qué sirve.** Falla rápido y evita objetos inválidos o parcialmente válidos. Hace visible la regla de negocio en el punto de construcción.
-
-**Cuándo usarla y cuándo no.** Se usa para rangos, nulls, formatos y precondiciones locales del objeto. No reemplaza validaciones de negocio de capa de servicio o de persistencia; el constructor debe proteger invariantes del objeto.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m1-t6-validacion && cd /tmp/java-m1-t6-validacion
-```
-
-```java
-class BaseV { final String nombre; BaseV(String nombre) { this.nombre = nombre; } }
-class SubV extends BaseV {
-    SubV(String nombre, int puntos) {
-        if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
-        super(nombre.trim());
-    }
-}
-public class DemoValidacion {
-    public static void main(String[] args) {
-        try { new SubV("Ada", -1); }
-        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
-    }
-}
-```
-
-**Caso de uso real.** Antes de crear una entidad de dominio, se rechaza un valor fuera de rango, evitando propagar datos inválidos a capas superiores.
-
-**Error común.** Duplicar validaciones inconsistentes entre subclase y superclase. El síntoma es comportamiento distinto según el constructor usado. La corrección es definir claramente qué invariante protege cada nivel.
-
-**Verificación.** La salida `Puntos inválidos` del ejemplo flexible confirma el rechazo temprano. El caso válido devuelve `Ada`, confirmando la normalización antes de delegar.
-
-#### Ejemplo integrado desde cero
-
-```bash
-mkdir -p /tmp/java-m1-t6 && cd /tmp/java-m1-t6
-```
-
-Creamos `ConstructoresFlexibles.java`:
-
-```java
-class Cuenta {
-    protected final String titular;
-
-    Cuenta(String titular) {
-        if (titular == null || titular.isBlank()) {
-            throw new IllegalArgumentException("Titular inválido");
-        }
-        this.titular = titular;
-    }
-}
-
-class CuentaPremium extends Cuenta {
-    private final int puntos;
-
-    CuentaPremium(String titular, int puntos) {
-        if (puntos < 0) {
-            throw new IllegalArgumentException("Puntos inválidos");
-        }
-        super(titular.trim());
-        this.puntos = puntos;
-    }
-
-    String resumen() {
-        return titular + ":" + puntos;
-    }
-}
-
-public class ConstructoresFlexibles {
-    public static void main(String[] args) {
-        System.out.println(new CuentaPremium(" Ada ", 10).resumen());
-        try {
-            new CuentaPremium("Ada", -1);
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-}
-```
-
-#### Recorrido del código
-
-`Cuenta` protege el invariante de titular válido. `CuentaPremium` valida `puntos` antes de `super(...)`, algo natural con constructores flexibles. Luego normaliza `titular` con `trim()` al delegar. El objeto solo queda construido si ambas validaciones pasan.
-
-#### Ejecución y salida real
-
-```bash
-javac --release 25 ConstructoresFlexibles.java
-java ConstructoresFlexibles
-```
-
-Salida real observada (JDK 27, 2026-05-22):
-
-```text
-Ada:10
-Puntos inválidos
-```
-
-#### Errores frecuentes
-
-Poner lógica pesada antes de `super(...)` vuelve opaco el constructor. La fase previa debe ser breve y defensiva.
-
-Asumir que Java 25 elimina la necesidad de `super(...)` es incorrecto; la delegación sigue siendo necesaria, solo cambia cuándo puede ocurrir.
-
-Dejar la validación solo en la subclase puede olvidar invariantes de la superclase. Cada nivel debe proteger sus propias reglas.
-
-#### Verificación
-
-La verificación mínima es compilar con `--release 25`, ejecutar y confirmar `Ada:10` y `Puntos inválidos`. Como prueba adicional, pasar titular en blanco debe fallar por la validación de `Cuenta`.
+- Puedo modelar una clase con invariantes y encapsulación real.
+- Distingo overload de override y uso `@Override`.
+- Elijo interfaz vs clase abstracta por contrato vs base común.
+- Uso records para DTO/value objects inmutables.
+- Conozco la regla moderna de constructores y valido antes de `super(...)` cuando corresponde.
