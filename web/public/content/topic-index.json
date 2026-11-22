@@ -5453,23 +5453,23 @@
     "11": [
       {
         "title": "Service Discovery: Eureka, Consul",
-        "fragment": "service-discovery-eureka-consul"
+        "fragment": "tema-1-service-discovery-eureka-consul"
       },
       {
         "title": "API Gateway: Spring Cloud Gateway",
-        "fragment": "api-gateway-spring-cloud-gateway"
+        "fragment": "tema-2-api-gateway-spring-cloud-gateway"
       },
       {
         "title": "Config Server: configuración centralizada",
-        "fragment": "config-server-configuracion-centralizada"
+        "fragment": "tema-3-config-server-configuracion-centralizada"
       },
       {
         "title": "Load Balancing: Spring Cloud LoadBalancer",
-        "fragment": "load-balancing-spring-cloud-loadbalancer"
+        "fragment": "tema-4-load-balancing-spring-cloud-loadbalancer"
       },
       {
         "title": "BFF pattern",
-        "fragment": "bff-pattern"
+        "fragment": "tema-5-bff-pattern"
       }
     ],
     "12": [
