@@ -40,7 +40,7 @@ flowchart LR
    - Por qué: prueba real del runtime activo. Output: archivo creado.
 3. **Compilar y ejecutar**
    - Comando: `javac -d out src/CheckJava.java && java -cp out CheckJava`
-   - Por qué: confirma JDK + JVM. Output: `JAVA_VERSION=...` y `JAVA_HOME=OK`.
+   - Por qué: confirma JDK + JVM. Output: `JAVA_VERSION=<versión instalada>` y `JAVA_HOME=OK`.
 4. **Crear `verify.sh`**
    - Verifica comandos y salida. Output: `RESULTADO: OK`.
 

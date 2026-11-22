@@ -49,7 +49,7 @@ public class Main { public static void main(String[] args){ System.out.println(S
 ```
 
 ### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- `javac -d out ...`: coloca bytecode en `out`.
+- `javac -d out src/HolaCompilacion.java`: coloca bytecode en `out`.
 - `java -cp out Main`: define classpath y clase principal.
 
 ### 10. LABORATORIO PASO A PASO

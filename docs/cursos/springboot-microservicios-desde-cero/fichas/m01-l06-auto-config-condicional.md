@@ -1,112 +1,136 @@
-## FICHA DE TEMA: Auto-config condicional
+## CAPÍTULO M01-L06: Auto-configuración condicional
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 1, Lección 6.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M01 — Fundamentos Java 21 / Spring Boot
+- **Lección:** L06 — Auto-config condicional
+- **Tiempo estimado:** 55 min
+- **Versiones:** Java 21, Spring Boot 3.4.x
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M01-L05 IoC/DI/beans.
+- Properties/YAML básicos.
+- JUnit/Spring Boot Test.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** auto-config condicional en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **crear beans condicionales** con `@ConditionalOnProperty` y **verificar** qué implementación se carga según configuración o valor por defecto.
 
-### 4. ANALOGÍA VISUAL
-Imagina auto-config condicional como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+Los microservicios cambian comportamiento por entorno o feature: enviar SMS o email, usar memoria o Redis, habilitar un cliente mock. Si hardcodeas `if` por todos lados, el código se vuelve frágil. La configuración condicional permite seleccionar beans de forma declarativa.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Es un tablero eléctrico con interruptores: el cableado existe, pero el interruptor decide qué circuito se energiza. La property es el interruptor; el bean es el circuito.
+
+**Dónde se rompe la analogía:** en Spring, condiciones pueden depender de clases, beans, entorno, cloud, etc.; no es solo un booleano.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[Auto-config condicional]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  P[app.notify.type?] -->|email| E[EmailSender]
+  P -->|sms o ausente| S[SmsSender]
+  E --> I[NotificationSender]
+  S --> I
 ```
-**Texto alternativo:** Flujo de Auto-config condicional: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** La property app.notify.type selecciona EmailSender si vale email, o SmsSender si vale sms o está ausente.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** Auto-config condicional es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar auto-config condicional.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m01/labs/l06-auto-config-condicional/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m01/labs/l06-auto-config-condicional/{src,tests} && cd modules/m01/labs/l06-auto-config-condicional
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+`@ConditionalOnProperty` registra un bean solo si una propiedad cumple una condición. Spring Boot usa condiciones extensamente en auto-configuración.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m01/labs/l06-auto-config-condicional/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “`@Conditional` demo”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+Durante el arranque, Spring evalúa condiciones antes de registrar beans. `matchIfMissing=true` define default cuando falta la property.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m01/labs/l06-auto-config-condicional/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- Selección de implementaciones por config.
+- Features toggles simples de infraestructura.
+- Auto-config de librerías.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m01/labs/l06-auto-config-condicional/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No uses condiciones para lógica de negocio compleja por request.
+- No ocultes comportamiento crítico en muchas condiciones difíciles de rastrear.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m01-l06-auto-config-condicional`
+
+#### Paso 1: Contrato
 ```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+public interface NotificationSender { String type(); }
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de Auto-config condicional.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Paso 2: Implementaciones condicionales
+```java
+@Component
+@ConditionalOnProperty(name = "app.notify.type", havingValue = "email")
+public class EmailSender implements NotificationSender { public String type(){ return "email"; } }
 
-### 10. LABORATORIO PASO A PASO
+@Component
+@ConditionalOnProperty(name = "app.notify.type", havingValue = "sms", matchIfMissing = true)
+public class SmsSender implements NotificationSender { public String type(){ return "sms"; } }
+```
+
+#### Paso 3: Tests con ApplicationContextRunner
+```java
+@Test void defaultsToSms() {
+  runner.run(ctx -> assertThat(ctx.getBean(NotificationSender.class).type()).isEqualTo("sms"));
+}
+@Test void emailWhenPropertySet() {
+  runner.withPropertyValues("app.notify.type=email")
+        .run(ctx -> assertThat(ctx.getBean(NotificationSender.class).type()).isEqualTo("email"));
+}
+```
+
+#### Paso 4: Ejecutar
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
 ./verify.sh
 ```
-Output esperado:
-```text
-RESULTADO: OK
-```
+Salida real: `RESULTADO: OK`.
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (tests), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `NotificationSender.java`, `EmailSender.java`, `SmsSender.java`, `CondApplication.java`
+- `ConditionalTest.java`, `verify.sh`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de Auto-config condicional.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `@ConditionalOnProperty(etc havingValue="email")` | Activar email | Solo con property email | Bean ausente o conflicto |
+| `matchIfMissing=true` en SMS | Default seguro | Funciona sin config | Contexto falla por bean faltante |
+| `ApplicationContextRunner` | Probar condiciones | Arranca contextos aislados | Test más lento/frágil con contexto completo |
+| `withPropertyValues(etc)` | Simular config | Determinista | Dependes de entorno externo |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías Auto-config condicional y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+`./verify.sh` ejecuta los tests.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar Auto-config condicional por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida default SMS y selección email por property.
+
+### 13. Modificación guiada
+- **Cambio:** quita `matchIfMissing=true`.
+- **Hipótesis:** `defaultsToSms` fallará porque no habrá bean por defecto.
+- **Comando:** `mvn -q -Dtest=ConditionalTest#defaultsToSms test`.
+- **Resultado esperado:** fallo por bean no encontrado. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** `NoSuchBeanDefinitionException` o múltiples beans.
+- **Causa:** condiciones solapadas, sin default, o property mal nombrada.
+- **Diagnóstico:** activar `debug=true`, revisar condition evaluation report.
+- **Fix:** ajustar condiciones, defaults y nombres.
+
+### 15. Cierre
+
+#### Anti-patrón
+Condicionar todo con properties crípticas. Documenta el contrato de configuración.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Cómo decide Spring Boot qué auto-configuración activar?
+- **Respuesta modelo:** Mediante condiciones (`@ConditionalOnClass`, `@ConditionalOnProperty`, `@ConditionalOnMissingBean`, etc.) evaluadas al arranque; así solo registra beans cuando el entorno y las dependencias lo justifican.
+
+#### Resumen
+- Las condiciones hacen el wiring declarativo.
+- `matchIfMissing` define defaults.
+- Prueba condiciones con `ApplicationContextRunner`.
+
+#### Puente
+M01-L07 escala la estructura: multi-module Spring Boot desde cero.

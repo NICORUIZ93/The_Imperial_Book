@@ -9,7 +9,13 @@ COURSES = [
     ROOT/'docs/cursos/springboot-microservicios-desde-cero',
     ROOT/'docs/cursos/node-microservicios-desde-cero',
 ]
-REQUIRED = [f"### {i}. " for i in range(1,16)] + ["## FICHA DE TEMA:"]
+REQUIRED_SECTIONS = [f"### {i}. " for i in range(1,16)]
+HEADINGS_OK = ["## FICHA DE TEMA:", "## CAPÍTULO "]
+STUBS = [
+  "Crear lab base", "Configurar mecanismo", "Ver comportamiento esperado",
+  "scaffold generado automáticamente", "Pendiente implementación/verificación real",
+  "RESULTADO: PENDIENTE", "Requiere implementación y ejecución real para marcarse cubierto",
+]
 PLACEHOLDERS = ['[nombre exacto]', '[Verbo Bloom]', '...', 'Pendiente', 'TODO']
 
 
@@ -27,13 +33,18 @@ def check_fichas(strict_all=False):
         errs.append('no fichas found')
     for f in fs:
         t=f.read_text(encoding='utf-8')
-        for req in REQUIRED:
+        if not any(h in t for h in HEADINGS_OK):
+            errs.append(f'{f.relative_to(ROOT)}: falta heading de capítulo/ficha')
+        for req in REQUIRED_SECTIONS:
             if req not in t:
                 errs.append(f'{f.relative_to(ROOT)}: falta {req.strip()}')
         for ph in PLACEHOLDERS:
             if ph in t:
                 errs.append(f'{f.relative_to(ROOT)}: placeholder {ph}')
-        if 'Cuándo NO usarlo' not in t and 'Cuándo NO usar' not in t:
+        for stub in STUBS:
+            if stub.lower() in t.lower():
+                errs.append(f'{f.relative_to(ROOT)}: stub {stub}')
+        if 'Cuándo NO usarlo' not in t and 'Cuándo NO usar' not in t and 'Cuándo no usar' not in t:
             errs.append(f'{f.relative_to(ROOT)}: falta cuando NO usarlo')
     if strict_all:
         # heuristic: master matrix has many rows; strict-all requires explicit marker file

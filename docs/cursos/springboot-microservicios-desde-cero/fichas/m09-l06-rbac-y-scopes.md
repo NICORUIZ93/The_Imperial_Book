@@ -1,112 +1,131 @@
-## FICHA DE TEMA: RBAC y Scopes
+## CAPÍTULO M09-L06: RBAC y Scopes
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 9, Lección 6.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M09 — Seguridad
+- **Lección:** L06 — RBAC y Scopes
+- **Tiempo estimado:** 55 min
+- **Versiones:** Java 21, Spring Boot 3.4.5, OAuth2 Resource Server
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M09-L02: autenticación vs autorización.
+- M09-L04: Resource Server JWT.
+- Entender claims de token.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** rbac y scopes en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **proteger endpoints por scopes OAuth2** (`SCOPE_read`, `SCOPE_write`) y verificar con MockMvc que un token con scope `read` no puede escribir.
 
-### 4. ANALOGÍA VISUAL
-Imagina rbac y scopes como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+No todo acceso autenticado es igual. Un cliente puede tener permiso para leer pero no para modificar. Si autorizas solo por “está autenticado”, cualquier token válido puede ejecutar operaciones destructivas. Los scopes permiten delegación de permisos acotados.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Un pase de visita puede permitir “entrar al lobby” (read) pero no “abrir sala de servidores” (write). Es el mismo visitante autenticado, distinto permiso.
+
+**Dónde se rompe la analogía:** en OAuth2 los scopes los otorga el flujo de autorización y pueden combinarse, expirar o ser delegados entre servicios.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[RBAC y Scopes]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  T[JWT scope=read] --> RS[Resource Server]
+  RS -->|GET /read| OK[200]
+  RS -->|GET /write| F[403]
+  T2[JWT scope=write] --> RS
+  RS -->|GET /write| OK2[200]
 ```
-**Texto alternativo:** Flujo de RBAC y Scopes: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** Un token con scope read accede a /read pero recibe 403 en /write. Un token con scope write accede a /write.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** RBAC y Scopes es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar rbac y scopes.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m09/labs/l06-rbac-y-scopes/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m09/labs/l06-rbac-y-scopes/{src,tests} && cd modules/m09/labs/l06-rbac-y-scopes
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+- **RBAC:** control de acceso basado en roles.
+- **Scopes:** permisos delegados en OAuth2, típicamente por cliente/aplicación/consentimiento.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m09/labs/l06-rbac-y-scopes/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “autorización”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+Spring Security convierte scopes JWT en authorities `SCOPE_<name>`. La regla `hasAuthority("SCOPE_read")` evalúa esa authority.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m09/labs/l06-rbac-y-scopes/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- Scopes para permisos de API delegados por OAuth2.
+- Roles para funciones organizacionales internas.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m09/labs/l06-rbac-y-scopes/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No mezcles scopes y roles sin convención clara.
+- No des por defecto scopes amplios (`admin`, `*`).
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m09-l06-rbac-y-scopes`
+
+#### Código clave
 ```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+@Bean SecurityFilterChain chain(HttpSecurity http) throws Exception {
+  http.authorizeHttpRequests(a -> a.requestMatchers("/read").hasAuthority("SCOPE_read")
+      .requestMatchers("/write").hasAuthority("SCOPE_write")
+      .anyRequest().authenticated())
+      .oauth2ResourceServer(o -> o.jwt(withDefaults()));
+  return http.build();
+}
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de RBAC y Scopes.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Tests
+```java
+@Test void readScopeAllowsRead() throws Exception { mvc.perform(get("/read").with(jwt().jwt(j->j.claim("scope","read")))).andExpect(status().isOk()); }
+@Test void readScopeDeniesWrite() throws Exception { mvc.perform(get("/write").with(jwt().jwt(j->j.claim("scope","read")))).andExpect(status().isForbidden()); }
+```
 
-### 10. LABORATORIO PASO A PASO
+#### Ejecución real
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
 ./verify.sh
 ```
-Output esperado:
 ```text
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (tests), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `pom.xml`
+- `src/main/java/com/academia/rbac/RbacApp.java`
+- `src/test/java/com/academia/rbac/RbacAppTest.java`
+- `verify.sh`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de RBAC y Scopes.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `hasAuthority("SCOPE_read")` | Requiere scope read | Protege lectura por permiso | Si usas `authenticated()`, cualquiera entra |
+| `hasAuthority("SCOPE_write")` | Requiere scope write | Separa escritura | Token read podría escribir |
+| `claim("scope","read")` | Simula token con scope | Prueba caso real | Sin claim, falla autorización |
+| `isForbidden()` | Espera 403 | Confirma falta de permiso | 401 indicaría problema distinto |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías RBAC y Scopes y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+`./verify.sh` ejecuta Maven tests con MockMvc y JwtDecoder mockeado.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar RBAC y Scopes por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida permiso positivo (read) y negativo (read no puede write). Pass/fail por JUnit.
+
+### 13. Modificación guiada
+- **Cambio:** da a `/write` `hasAuthority("SCOPE_read")`.
+- **Hipótesis:** `readScopeDeniesWrite` fallará porque ahora read podrá escribir.
+- **Comando:** `mvn -q -Dtest=RbacAppTest#readScopeDeniesWrite test`.
+- **Resultado esperado:** status 200 en vez de 403. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** 403 con token aparentemente válido.
+- **Causa:** claim `scope` vs `scp`, prefijo `SCOPE_`, o authority mapping.
+- **Diagnóstico:** inspeccionar authorities en `Authentication`.
+- **Fix:** alinear claim y convención de mapping.
+
+### 15. Cierre
+
+#### Anti-patrón
+Dar scope `write` o `admin` a todos los clientes por comodidad. Viola mínimo privilegio.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Diferencia entre role y scope?
+- **Respuesta modelo:** Un rol suele representar función del usuario dentro del sistema; un scope representa permiso delegado en OAuth2 para una aplicación/cliente sobre un recurso. En Spring Security, scopes suelen mapearse a authorities `SCOPE_*`.
+
+#### Resumen
+- Scopes permiten mínimo privilegio.
+- Spring mapea scopes a `SCOPE_*`.
+- Prueba casos permitidos y denegados.
+
+#### Puente
+M09-L07 aborda Token Exchange (RFC 8693) para delegación entre servicios.

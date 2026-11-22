@@ -1,112 +1,140 @@
-## FICHA DE TEMA: mTLS con Service Mesh
+## CAPÍTULO M09-L08: mTLS con Service Mesh
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 9, Lección 8.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M09 — Seguridad
+- **Lección:** L08 — mTLS con Service Mesh
+- **Tiempo estimado:** 50 min
+- **Versiones:** Istio PeerAuthentication v1beta1 (manifiesto), concepto aplicable a Istio/Linkerd
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M09-L03: criptografía asimétrica/certificados a nivel conceptual.
+- Conceptos Kubernetes básicos: namespace, manifiesto YAML.
+- Entender HTTP y comunicación service-to-service.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** mtls con service mesh en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **explicar mTLS entre servicios**, **leer un manifiesto `PeerAuthentication` STRICT de Istio** y **decidir cuándo NO usar un service mesh**.
 
-### 4. ANALOGÍA VISUAL
-Imagina mtls con service mesh como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+Dentro de un cluster, el tráfico entre servicios suele viajar por red interna. Si asumes “la red interna es confiable”, un atacante con acceso a la red puede espiar o suplantar servicios. mTLS (mutual TLS) cifra el transporte y autentica ambas partes: cliente y servidor presentan certificados.
 
-### 5. DIAGRAMA TÉCNICO
+El problema es que gestionar certificados manualmente para decenas de servicios es operativo y propenso a errores. Un service mesh automatiza identidad de workloads y rotación.
+
+### 5. Analogía y modelo mental
+TLS normal es como mostrar tu DNI al banco: tú verificas al banco. mTLS es cuando ambos se piden DNI: el banco verifica al cliente y el cliente verifica al banco.
+
+**Dónde se rompe la analogía:** en service mesh, los “DNI” son certificados X.509 de corta vida emitidos para identidades de workload (SPIFFE/SVID), rotados automáticamente por el control plane.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[mTLS con Service Mesh]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  A[Servicio A + sidecar/proxy] -->|mTLS cert A| B[Servicio B + sidecar/proxy]
+  B -->|mTLS cert B| A
+  CP[Control Plane Mesh] -->|emite/rota certs| A
+  CP -->|emite/rota certs| B
 ```
-**Texto alternativo:** Flujo de mTLS con Service Mesh: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** Dos servicios con sidecar proxy establecen mTLS. Cada uno presenta su certificado. El control plane del mesh emite y rota certificados.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** mTLS con Service Mesh es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar mtls con service mesh.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m09/labs/l08-mtls-con-service-mesh/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m09/labs/l08-mtls-con-service-mesh/{src,tests} && cd modules/m09/labs/l08-mtls-con-service-mesh
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+- **mTLS:** TLS mutuo; autenticación bidireccional en capa de transporte.
+- **Service mesh:** capa de infraestructura (Istio, Linkerd) que gestiona tráfico, observabilidad y seguridad entre servicios, usualmente con sidecars.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m09/labs/l08-mtls-con-service-mesh/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “identidad servicio”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+El control plane emite identidades/certificados a los proxies. El proxy intercepta tráfico saliente/entrante y negocia mTLS transparente a la aplicación.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m09/labs/l08-mtls-con-service-mesh/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- Muchos servicios, requisitos de zero-trust interno, cumplimiento, rotación automática.
+- Cuando necesitas políticas consistentes de tráfico/seguridad.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m09/labs/l08-mtls-con-service-mesh/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar service mesh
+- Pocos servicios: la complejidad operativa no se justifica.
+- Equipo sin capacidad de operar mesh, depurar sidecars y actualizaciones.
+- Latencia/recursos muy ajustados sin medir overhead.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
-```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m09-l08-mtls-con-service-mesh`
+
+#### Paso 1: Manifiesto PeerAuthentication
+`peer-authentication.yaml`:
+
+```yaml
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: demo
+spec:
+  mtls:
+    mode: STRICT
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de mTLS con Service Mesh.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+**Qué significa:** en el namespace `demo`, el modo STRICT exige mTLS para tráfico entrante a workloads. Conexiones plaintext serán rechazadas.
 
-### 10. LABORATORIO PASO A PASO
+#### Paso 2: Verificación
+`verify.sh` valida que el manifiesto y documentación contengan los conceptos clave:
+
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
+grep -q "mTLS" README.md
+grep -q "Cuándo NO usar service mesh" README.md
+grep -q "STRICT" peer-authentication.yaml
+echo "RESULTADO: OK"
+```
+
+#### Ejecución real
+```bash
 ./verify.sh
 ```
-Output esperado:
 ```text
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (verify.sh), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `peer-authentication.yaml`
+- `README.md`
+- `verify.sh`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de mTLS con Service Mesh.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `kind: PeerAuthentication` | Política de mTLS Istio | Define cómo aceptar tráfico peer | Otro recurso no aplica esta política |
+| `namespace: demo` | Alcance | Afecta namespace demo | Namespace equivocado = política no aplica |
+| `mode: STRICT` | Exigir mTLS | Rechaza plaintext | `PERMISSIVE` permite ambos; útil en migración, no como estado final deseado |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías mTLS con Service Mesh y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+Este lab es conceptual-operativo: no requiere cluster Istio para la verificación mínima. En entorno real aplicarías `kubectl apply -f peer-authentication.yaml` sobre un cluster con Istio.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar mTLS con Service Mesh por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida presencia de conceptos y modo STRICT. Pass/fail por grep + `set -e`.
+
+### 13. Modificación guiada
+- **Cambio:** cambia `STRICT` a `PERMISSIVE`.
+- **Hipótesis:** `verify.sh` fallará porque busca `STRICT`.
+- **Comando:** `./verify.sh`.
+- **Resultado esperado:** salida no OK / exit 1. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** servicios dejan de comunicarse tras activar STRICT.
+- **Causa:** algún workload no tiene sidecar/certificado o hay tráfico legacy plaintext.
+- **Diagnóstico:** revisar sidecar injection, logs del proxy, métricas mTLS.
+- **Fix:** migrar con PERMISSIVE, asegurar sidecars, luego pasar a STRICT.
+
+### 15. Cierre
+
+#### Anti-patrón
+Activar service mesh “porque es moderno” sin capacidad operativa. El mesh agrega control pero también complejidad.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Qué diferencia hay entre TLS y mTLS?
+- **Respuesta modelo:** TLS autentica normalmente al servidor ante el cliente; mTLS autentica a ambos lados. En microservicios, mTLS da identidad de workload en ambos extremos del canal.
+
+#### Resumen
+- mTLS = cifrado + autenticación mutua.
+- Service mesh automatiza certificados/políticas.
+- STRICT exige mTLS; usar con plan de migración.
+
+#### Puente
+M09-L09 mueve el foco a secretos: HashiCorp Vault para evitar credenciales hardcodeadas.

@@ -1,112 +1,152 @@
-## FICHA DE TEMA: Keycloak
+## CAPÍTULO M09-L05: Keycloak como Identity Provider
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 9, Lección 5.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M09 — Seguridad
+- **Lección:** L05 — Keycloak
+- **Tiempo estimado:** 60 min
+- **Versiones:** Keycloak 26.0 (imagen `quay.io/keycloak/keycloak:26.0`), Docker Compose
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M09-L04: OAuth2/OIDC, roles de IdP y Resource Server.
+- Docker y Docker Compose funcionando.
+- Conocer puertos, variables de entorno y endpoints HTTP.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** keycloak en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **levantar Keycloak con Docker Compose**, verificar su endpoint OIDC de descubrimiento y **explicar qué responsabilidades delegas en un IdP**.
 
-### 4. ANALOGÍA VISUAL
-Imagina keycloak como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+Implementar login, emisión de tokens, MFA, recuperación de contraseña, federation y gestión de usuarios desde cero es costoso y riesgoso. Keycloak es un IdP que implementa OAuth2/OIDC/SAML y centraliza identidad. El problema real no es “levantar un contenedor”, sino entender qué contrato ofrece: realms, clients, usuarios, roles y endpoints de descubrimiento.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Keycloak es como la oficina de pasaportes de tu plataforma: no es la tienda, ni el avión, ni el hotel; emite identidades confiables que otros sistemas validan.
+
+**Dónde se rompe la analogía:** un IdP también maneja flujos, consentimientos, scopes, rotación de claves, sesiones y eventos de auditoría.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[Keycloak]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  Admin[Admin] -->|configura realm/client| KC[Keycloak]
+  App[Cliente/App] -->|OIDC login| KC
+  KC -->|tokens| App
+  App -->|Bearer token| API[Resource Server]
+  API -->|JWKS/discovery| KC
 ```
-**Texto alternativo:** Flujo de Keycloak: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** El administrador configura Keycloak. Las apps obtienen tokens por OIDC. Las APIs validan tokens consultando metadata/JWKS del IdP.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** Keycloak es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar keycloak.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m09/labs/l05-keycloak/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m09/labs/l05-keycloak/{src,tests} && cd modules/m09/labs/l05-keycloak
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+**Keycloak** es un Identity and Access Management (IAM) open source. Soporta OAuth2, OIDC, SAML, usuarios, roles, grupos, federation y social login.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m09/labs/l05-keycloak/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “realm/client/roles”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+- **Realm:** dominio aislado de usuarios/clients/config.
+- **Client:** aplicación que pide tokens.
+- **User/Role:** identidad y permisos.
+- **Discovery endpoint:** `/.well-known/openid-configuration` expone metadata OIDC.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m09/labs/l05-keycloak/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- Necesitas SSO, múltiples apps, administración de usuarios, estándares OIDC.
+- Quieres delegar identidad a un producto maduro.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m09/labs/l05-keycloak/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No lo uses como “caja negra” sin entender tokens/claims/expiración.
+- No expongas Keycloak dev mode en producción.
+- No uses credenciales admin por defecto fuera de lab.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
-```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m09-l05-keycloak`
+
+#### Paso 1: Docker Compose
+`docker-compose.yml`:
+
+```yaml
+services:
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    command: start-dev --http-port=8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports: ["8089:8080"]
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de Keycloak.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Paso 2: Levantar y esperar discovery
+`verify.sh` levanta el servicio, espera el endpoint OIDC y hace cleanup:
 
-### 10. LABORATORIO PASO A PASO
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
+docker compose up -d
+for i in $(seq 1 90); do
+  if curl -sf http://localhost:8089/realms/master/.well-known/openid-configuration >/dev/null; then
+    echo "RESULTADO: OK"; exit 0
+  fi
+  sleep 3
+done
+```
+
+#### Paso 3: Ejecutar
+```bash
+cd docs/cursos/springboot-microservicios-desde-cero/labs/m09-l05-keycloak
 ./verify.sh
 ```
-Output esperado:
+
+Salida real observada:
 ```text
+ Container m09-l05-keycloak-keycloak-1 Started 
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (compose verify), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `docker-compose.yml`
+- `verify.sh`
+- `README.md`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de Keycloak.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `start-dev --http-port=8080` | Modo desarrollo | Arranque simple para lab | En prod se usa configuración hardened |
+| `KEYCLOAK_ADMIN/PASSWORD` | Bootstrap admin | Puedes entrar a consola | Credenciales débiles en prod = incidente |
+| `8089:8080` | Evitar conflicto local | Keycloak accesible en host 8089 | Puerto ocupado rompe lab |
+| `/.well-known/openid-configuration` | Discovery OIDC | Confirma que OIDC está vivo | Sin esto solo sabes que “el contenedor arrancó” |
+| `trap cleanup EXIT` | Limpieza | Evita contenedores huérfanos | Deja recursos corriendo |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías Keycloak y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+```bash
+./verify.sh
+```
+Requiere Docker. El script hace `docker compose down -v` al salir.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar Keycloak por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+**Valida:** el contenedor arranca y responde discovery OIDC del realm `master`.  
+**Pass/fail:** obtiene 200 en discovery antes de 90 intentos; si no, imprime logs y sale 1.
+
+### 13. Modificación guiada
+- **Cambio:** cambia el puerto host a `8090:8080` pero deja el curl a `8089`.
+- **Hipótesis:** verify fallará por timeout/curl.
+- **Comando:** `./verify.sh`.
+- **Resultado esperado:** falla al no alcanzar discovery. Revierte puerto/curl.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** verify falla tras 90 intentos.
+- **Causa:** Docker sin recursos, imagen no descargada, puerto ocupado, Keycloak aún arrancando.
+- **Diagnóstico:** `docker compose logs --tail=40`.
+- **Fix:** liberar puerto, esperar más, revisar Docker.
+
+### 15. Cierre
+
+#### Anti-patrón
+Usar `start-dev` y credenciales admin/admin como si fuera configuración de producción.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Qué es el endpoint OIDC discovery y para qué sirve?
+- **Respuesta modelo:** Es `/.well-known/openid-configuration`; publica metadata del proveedor OIDC (issuer, authorization endpoint, token endpoint, JWKS URI, etc.), permitiendo que clientes y resource servers se configuren dinámicamente.
+
+#### Resumen
+- Keycloak centraliza identidad.
+- Discovery OIDC es la prueba mínima de vida del IdP.
+- Dev mode es para lab, no prod.
+
+#### Puente
+M09-L06 usa tokens/claims para autorización fina: RBAC y scopes.

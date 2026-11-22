@@ -49,7 +49,7 @@ public class HolaRuta {
 
 ### 9. EXPLICACIÓN LÍNEA POR LÍNEA
 - `args.length > 0 ? args[0] : "mundo"`: usa argumento o valor por defecto.
-- `System.out.println(...)`: salida observable para humanos y scripts.
+- `System.out.println("Hola Java")`: salida observable para humanos y scripts.
 
 ### 10. LABORATORIO PASO A PASO
 ```bash

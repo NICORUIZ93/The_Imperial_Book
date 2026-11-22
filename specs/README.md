@@ -29,3 +29,5 @@ Las specs 001 a 010 y todo lo que se retiró del repositorio están en las etiqu
 | [027](027-libro-sin-laboratorios.md) | Libro sin laboratorios: del código descargable al libro virtual | en curso |
 | [028](028-diseno-3-cursos-independientes.md) | Diseño instruccional de 3 cursos independientes (Java, Spring Boot, Node.js) | en curso |
 | [029](029-estandar-editorial-plataforma.md) | Estándar editorial único de plataforma (Capa 1/Capa 2) aplicado a todos los cursos | en curso |
+| [030](030-informe-del-estado-de-la-academia.md) | Informe del estado real de la academia | en curso |
+| [031](031-cursos-como-libros.md) | Cursos como libros técnicos: capítulos didácticos, piloto C2 M09-L01 | en curso |

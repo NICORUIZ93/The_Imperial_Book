@@ -1,112 +1,142 @@
-## FICHA DE TEMA: Trivy/Snyk
+## CAPÍTULO M09-L10: Escaneo de vulnerabilidades con Trivy (y Snyk)
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 9, Lección 10.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M09 — Seguridad
+- **Lección:** L10 — Trivy/Snyk
+- **Tiempo estimado:** 50 min
+- **Versiones:** Trivy 0.57.1 (contenedor), Docker
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- Docker instalado.
+- Saber qué es una imagen de contenedor y un CVE.
+- M09 completo: seguridad no es solo auth, también supply chain.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** trivy/snyk en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **ejecutar un escaneo Trivy sobre una imagen local**, interpretar la salida a alto nivel, y **explicar el rol de Snyk/escáneres** sin confundir “escaneo limpio” con “sistema seguro”.
 
-### 4. ANALOGÍA VISUAL
-Imagina trivy/snyk como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+Tus dependencias e imágenes base traen vulnerabilidades conocidas (CVEs). Si no escaneas, despliegas riesgo conocido. Si solo escaneas y no remedia, solo tienes reportes. La seguridad de supply chain requiere detectar, priorizar, parchear y verificar.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Un escáner de vulnerabilidades es como la revisión técnica del auto: detecta fallas conocidas, pero no maneja por ti ni reemplaza mantenimiento.
+
+**Dónde se rompe la analogía:** el software cambia a diario; nuevas CVEs aparecen sobre imágenes que ayer “pasaban”.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[Trivy/Snyk]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  D[Dockerfile/Imagen] --> S[Trivy Scan]
+  S --> R[Reporte CVEs]
+  R --> P[Priorizar/Parchear]
+  P --> CI[CI/CD gate]
+  CI --> D
 ```
-**Texto alternativo:** Flujo de Trivy/Snyk: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** La imagen se escanea con Trivy, genera reporte de vulnerabilidades, se prioriza y parchea, y el gate se integra en CI/CD.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** Trivy/Snyk es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar trivy/snyk.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m09/labs/l10-trivy-snyk/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m09/labs/l10-trivy-snyk/{src,tests} && cd modules/m09/labs/l10-trivy-snyk
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+- **Trivy:** escáner open source de vulnerabilidades/misconfig/secrets/SBOM.
+- **Snyk:** plataforma comercial con escaneo de dependencias, contenedores, IaC y fix guidance; requiere cuenta/token para uso completo.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m09/labs/l10-trivy-snyk/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “escaneo”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+Trivy analiza capas de imagen, paquetes OS y artefactos; compara con bases de vulnerabilidades. Reporta severidad, CVE, paquete afectado y versión fija cuando existe.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m09/labs/l10-trivy-snyk/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- En CI para cada build de imagen.
+- Periódicamente sobre imágenes en ejecución/registro.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m09/labs/l10-trivy-snyk/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar solo escáner
+- No reemplaza patching, SBOM, políticas de admisión, runtime security ni revisión.
+- No ignores contexto: una CVE “CRITICAL” puede no ser explotable en tu uso; igual requiere triage.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
-```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m09-l10-trivy-snyk`
+
+#### Paso 1: Imagen de prueba
+`Dockerfile`:
+
+```dockerfile
+FROM alpine:3.20
+RUN echo "demo" > /app.txt
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de Trivy/Snyk.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Paso 2: Ejecutar Trivy
+`verify.sh`:
 
-### 10. LABORATORIO PASO A PASO
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
+docker build -t academia-m09l10:local . >/dev/null
+docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.57.1 image --severity HIGH,CRITICAL --no-progress --format table academia-m09l10:local | tee /tmp/m09l10-trivy.txt >/dev/null
+grep -q "Total" /tmp/m09l10-trivy.txt || grep -q "Vulnerability" /tmp/m09l10-trivy.txt || grep -q "academia-m09l10" /tmp/m09l10-trivy.txt
+echo "RESULTADO: OK"
+```
+
+#### Ejecución real
+```bash
 ./verify.sh
 ```
-Output esperado:
+Salida real observada (resumen):
 ```text
+2026-11-22T06:27:28Z	WARN	This OS version is no longer supported by the distribution	family="alpine" version="3.20.10"
+2026-11-22T06:27:28Z	WARN	The vulnerability detection may be insufficient because security updates are not provided
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (pipeline script), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+Esta salida es valiosa: el escáner no solo “pasa”; advierte que la detección puede ser insuficiente por OS no soportado. Ese es el tipo de señal que hay que leer.
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de Trivy/Snyk.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 9. Código de referencia completo
+- `Dockerfile`
+- `verify.sh`
+- `README.md`
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+### 10. Explicación línea por bloque
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías Trivy/Snyk y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `FROM alpine:3.20` | Imagen base | Define superficie de paquetes | Base vieja/EOL cambia CVEs y soporte |
+| `docker build -t ...` | Imagen local reproducible | Trivy escanea algo concreto | Sin imagen, no hay target |
+| `aquasec/trivy:0.57.1 image ...` | Escaneo de imagen | Genera reporte HIGH/CRITICAL | Sin severidad/filtro, salida puede ser ruidosa |
+| `-v /var/run/docker.sock...` | Acceso al daemon Docker | Trivy lee imagen local | Sin socket, no ve la imagen local |
+| `grep ...` | Smoke check | Confirma que hubo salida útil | Sin aserción, script podría dar falso verde |
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar Trivy/Snyk por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 11. Laboratorio reproducible
+```bash
+./verify.sh
+```
+Requiere Docker y acceso a internet para la imagen de Trivy si no está cacheada.
+
+### 12. Verificación automática
+Valida que Trivy se ejecuta y produce salida reconocible. No exige “0 vulnerabilidades” porque eso depende de la base de datos/tiempo; exige evidencia de escaneo.
+
+### 13. Modificación guiada
+- **Cambio:** cambia severidad a `--severity CRITICAL` y usa una imagen base vieja intencionalmente en otra rama de prueba.
+- **Hipótesis:** el reporte puede cambiar en cantidad/detalle.
+- **Comando:** `./verify.sh` tras ajustar.
+- **Resultado observado esperado:** cambia el reporte; el criterio de pass del lab puede requerir ajuste. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** Trivy no encuentra la imagen o falla por Docker socket.
+- **Causa:** no se montó `/var/run/docker.sock` o imagen no construida.
+- **Diagnóstico:** revisar comando docker run y `docker images`.
+- **Fix:** construir imagen local y montar socket.
+
+Otro caso: tratar “RESULTADO: OK” como “sin CVEs”. Falso. El lab verifica ejecución del escaneo, no ausencia total de riesgo.
+
+### 15. Cierre
+
+#### Anti-patrón
+Poner un escáner en CI, ignorar sus warnings y nunca parchear. Security theater.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Qué hace Trivy y qué no hace?
+- **Respuesta modelo:** Trivy detecta vulnerabilidades conocidas, misconfiguraciones o secretos según el target. No remedia automáticamente el riesgo en producción, no reemplaza patch management, ni entiende completamente el contexto de explotabilidad de tu aplicación.
+
+#### Resumen
+- Escanear es necesario, no suficiente.
+- Leer warnings importa (EOL, DB insuficiente).
+- Integrar a CI + remediación.
+
+#### Puente
+Cierra el módulo de seguridad. Siguiente módulo: resiliencia (Resilience4j, circuit breakers, retries).

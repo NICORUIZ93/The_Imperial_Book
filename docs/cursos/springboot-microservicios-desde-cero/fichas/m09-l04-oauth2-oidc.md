@@ -1,112 +1,145 @@
-## FICHA DE TEMA: OAuth2/OIDC
+## CAPÍTULO M09-L04: OAuth2/OIDC con Resource Server
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 9, Lección 4.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M09 — Seguridad
+- **Lección:** L04 — OAuth2/OIDC
+- **Tiempo estimado:** 60 min
+- **Versiones:** Java 21, Spring Boot 3.4.5, Spring Security OAuth2 Resource Server
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M09-L03: JWT, firma, claims, expiración.
+- Conceptos HTTP: Authorization header Bearer.
+- Spring Boot testing con MockMvc.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** oauth2/oidc en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **configurar un Resource Server OAuth2/OIDC en Spring Boot** que rechace requests anónimas y acepte JWT válidos, validándolo con tests MockMvc.
 
-### 4. ANALOGÍA VISUAL
-Imagina oauth2/oidc como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+En microservicios, no quieres que cada servicio maneje usuarios y contraseñas. OAuth2/OIDC separa responsabilidades: un Identity Provider (IdP) autentica y emite tokens; tus APIs los validan. Si no entiendes este rol, implementas autenticación casera en cada servicio, duplicas lógica y multiplicas vulnerabilidades.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Piensa en un aeropuerto: el **IdP** es migración, que verifica pasaporte y emite pase; el **Resource Server** es la puerta de embarque, que no emite pasaportes pero sí valida que el pase sea legítimo y corresponda al vuelo.
+
+**Dónde se rompe la analogía:** los tokens tienen expiración, scopes, audience, issuer y rotación de claves; la puerta de embarque debe validar todo eso, no solo “tiene pase”.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[OAuth2/OIDC]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  U[Usuario/Cliente] -->|login| IDP[Identity Provider OIDC]
+  IDP -->|JWT access token| U
+  U -->|Bearer JWT| RS[Resource Server Spring Boot]
+  RS -->|valida firma/claims| RS
+  RS -->|200 /me| U
+  U -->|sin token| RS
+  RS -->|401| U
 ```
-**Texto alternativo:** Flujo de OAuth2/OIDC: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** El cliente obtiene un JWT del IdP. Luego llama al Resource Server con Bearer token. El Resource Server valida el token y responde 200, o 401 si falta/invalid.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** OAuth2/OIDC es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar oauth2/oidc.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m09/labs/l04-oauth2-oidc/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m09/labs/l04-oauth2-oidc/{src,tests} && cd modules/m09/labs/l04-oauth2-oidc
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+- **OAuth2:** framework de autorización (delegación de acceso).
+- **OIDC:** capa de identidad sobre OAuth2 (quién es el usuario).
+- **Resource Server:** API que protege recursos y valida access tokens.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m09/labs/l04-oauth2-oidc/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “login flow”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona por dentro
+`spring-boot-starter-oauth2-resource-server` configura filtros que extraen el Bearer token, lo decodifican/verifican vía `JwtDecoder`, construyen un `Authentication` y lo ponen en el `SecurityContext`.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m09/labs/l04-oauth2-oidc/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- APIs consumidas por SPA, móviles, otros servicios, o sistemas con IdP central.
+- Cuando necesitas SSO, tokens estandarizados, scopes/audiences.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m09/labs/l04-oauth2-oidc/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No uses OAuth2 completo para un script interno simple donde Basic/Auth simple baste.
+- No aceptes JWT sin validar issuer, audience y expiración.
+- No uses access token como prueba de identidad sin OIDC/id_token cuando el caso lo requiere.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m09-l04-oauth2-oidc`
+
+#### Paso 1: Dependencias
+`pom.xml`: `spring-boot-starter-web`, `spring-boot-starter-oauth2-resource-server`, `spring-boot-starter-test`, `spring-security-test`.
+
+#### Paso 2: Configurar Resource Server
+`src/main/java/com/academia/oidc/OidcApp.java`:
+
 ```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+@Bean SecurityFilterChain chain(HttpSecurity http) throws Exception {
+  http.authorizeHttpRequests(a -> a.anyRequest().authenticated()).oauth2ResourceServer(o -> o.jwt(withDefaults()));
+  return http.build();
+}
+@GetMapping("/me") String me(org.springframework.security.core.Authentication a){ return a.getName(); }
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de OAuth2/OIDC.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Paso 3: Probar con JWT mock
+`src/test/java/com/academia/oidc/OidcAppTest.java` usa `@MockBean JwtDecoder` para no depender de un IdP externo en unit test. En tests reales/integración, apuntarías a issuer/JWK set.
 
-### 10. LABORATORIO PASO A PASO
+```java
+@Test void rejectsAnonymous() throws Exception { mvc.perform(get("/me")).andExpect(status().isUnauthorized()); }
+@Test void acceptsJwt() throws Exception { mvc.perform(get("/me").with(jwt().jwt(j -> j.subject("alice")))).andExpect(status().isOk()).andExpect(content().string("alice")); }
+```
+
+#### Paso 4: Ejecutar
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
+cd docs/cursos/springboot-microservicios-desde-cero/labs/m09-l04-oauth2-oidc
 ./verify.sh
 ```
-Output esperado:
+Salida real observada:
 ```text
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (verify.sh), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `pom.xml`
+- `src/main/java/com/academia/oidc/OidcApp.java`
+- `src/test/java/com/academia/oidc/OidcAppTest.java`
+- `verify.sh`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de OAuth2/OIDC.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por línea / por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Código/bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `oauth2ResourceServer(o -> o.jwt(withDefaults()))` | Activa validación JWT Bearer | Requests usan `Authorization: Bearer <token>` | Sin esto, no se procesa JWT estándar |
+| `anyRequest().authenticated()` | Toda API protegida | Anónimo recibe 401 | Abrirías endpoints accidentalmente |
+| `Authentication a` en `/me` | Acceder a identidad validada | Devuelve subject `alice` | Sin Authentication, no sabes quién llamó |
+| `@MockBean JwtDecoder` | Aislar test de IdP | Test rápido y determinista | Sin mock, Boot buscaría configuración JWT real |
+| `jwt().jwt(j -> j.subject("alice"))` | Crea JWT de prueba | Simula token válido | Permite probar autorización sin IdP levantado |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías OAuth2/OIDC y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+```bash
+./verify.sh
+```
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar OAuth2/OIDC por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida 401 anónimo y 200 con JWT cuyo `sub` es `alice`. Pass/fail por JUnit.
+
+### 13. Modificación guiada
+- **Cambio:** quita la configuración `.oauth2ResourceServer(o -> o.jwt(withDefaults()))`.
+- **Hipótesis:** el test con JWT puede fallar (401/403) porque el Bearer JWT ya no se interpreta.
+- **Comando:** `mvn -q -Dtest=OidcAppTest#acceptsJwt test`.
+- **Resultado esperado:** fallo. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** `401` aunque envías token.
+- **Causa:** Resource Server no configurado, issuer/JWK inválido, audience/exp inválidos, o header mal formado.
+- **Diagnóstico:** habilita logs de seguridad, verifica `Authorization: Bearer <token>`, valida claims.
+- **Fix:** configurar `spring.security.oauth2.resourceserver.jwt.*` o mock adecuado en tests.
+
+### 15. Cierre
+
+#### Anti-patrón
+Validar JWT solo por “tiene 3 partes y no explotó el parser”. Debes validar firma, `iss`, `aud`, `exp`, `nbf` y scopes/roles según el caso.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Qué diferencia hay entre OAuth2 y OIDC?
+- **Respuesta modelo:** OAuth2 es un framework de autorización/delegación de acceso; OIDC agrega una capa de identidad sobre OAuth2 para que el cliente pueda saber quién es el usuario autenticado.
+
+#### Resumen
+- IdP emite; Resource Server valida.
+- JWT Bearer se valida con `oauth2ResourceServer().jwt()`.
+- Tests pueden mockear `JwtDecoder`, pero integración real debe validar contra issuer/JWKS.
+
+#### Puente
+M09-L05 levanta Keycloak como IdP real para emitir tokens y configurar realms/clients.

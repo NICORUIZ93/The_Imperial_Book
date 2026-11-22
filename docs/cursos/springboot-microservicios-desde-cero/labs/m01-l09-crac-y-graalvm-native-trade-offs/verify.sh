@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "$0")"
-echo "PENDIENTE: implementar y ejecutar verificación real para: CRaC y GraalVM Native trade-offs" >&2
-exit 1
+./measure-startup.sh >/tmp/m01l09.measure
+grep -q "startup_ms=" /tmp/m01l09.measure
+grep -q "CRaC" README.md
+grep -q "GraalVM" README.md
+grep -q "Cuándo NO usar" README.md
+echo "RESULTADO: OK"

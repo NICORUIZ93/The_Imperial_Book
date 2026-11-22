@@ -57,8 +57,8 @@ public class Saludador {
 ```
 
 ### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- `package ...`: namespace de la clase.
-- `import ...`: atajo para nombre completo.
+- `package com.academia.m01;`: namespace de la clase.
+- `import java.util.List;`: atajo para nombre completo.
 - `private final String nombre`: estado inmutable tras construcción.
 - `main`: punto de entrada.
 

@@ -1,112 +1,141 @@
-## FICHA DE TEMA: Primer proyecto Maven desde cero
+## CAPÍTULO M01-L04: Primer proyecto Maven desde cero con Spring Boot
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 1, Lección 4.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M01 — Fundamentos Java 21 / Spring Boot
+- **Lección:** L04 — Primer proyecto Maven desde cero
+- **Tiempo estimado:** 50 min
+- **Versiones:** Java 21, Spring Boot 3.4.x, Maven
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M01-L03 Maven básico.
+- Java 21 instalado.
+- Conocer HTTP GET y JSON.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Construir** primer proyecto maven desde cero siguiendo una guía paso a paso, produciendo un artefacto ejecutable verificable con pruebas o script.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **crear un proyecto Spring Boot Maven mínimo desde cero**, exponer un endpoint `/health` y **verificarlo con MockMvc**.
 
-### 4. ANALOGÍA VISUAL
-Imagina primer proyecto maven desde cero como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+Todo microservicio necesita arrancar, exponer endpoints y verificarse automáticamente. Antes de agregar BD, Kafka o Kubernetes, debes dominar el esqueleto mínimo: POM, clase main, controller, test.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Es como montar el tablero eléctrico antes de conectar equipos: primero verificas que hay energía, switch y luz de prueba. `/health` es esa luz: confirma que la app está viva.
+
+**Dónde se rompe la analogía:** un health básico no garantiza que la BD o dependencias externas estén sanas.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[Primer proyecto Maven desde cero]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  C[Cliente/Test] -->|GET /health| D[DispatcherServlet]
+  D --> HC[HelloController]
+  HC --> J[Map status=UP]
+  J --> R[200 JSON]
 ```
-**Texto alternativo:** Flujo de Primer proyecto Maven desde cero: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** Una petición GET /health llega al DispatcherServlet, se enruta al HelloController y responde 200 con JSON status UP.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** Primer proyecto Maven desde cero es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar primer proyecto maven desde cero.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m01/labs/l04-primer-proyecto-maven-desde-cero/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m01/labs/l04-primer-proyecto-maven-desde-cero/{src,tests} && cd modules/m01/labs/l04-primer-proyecto-maven-desde-cero
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+Spring Boot es un framework de arranque rápido sobre Spring: auto-configuración, servidor embebido, starters y convenciones.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m01/labs/l04-primer-proyecto-maven-desde-cero/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “servicio base”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+`@SpringBootApplication` habilita configuración y escaneo. `@RestController` expone endpoints. Spring Boot starter web trae Tomcat embebido y Jackson.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m01/labs/l04-primer-proyecto-maven-desde-cero/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- APIs REST y microservicios Java.
+- Cuando quieres convención y productividad.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m01/labs/l04-primer-proyecto-maven-desde-cero/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No agregues starters/dependencias “por si acaso”.
+- No uses `@SpringBootTest` para todo si un slice test basta.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m01-l04-primer-proyecto-maven-desde-cero`
+
+#### Paso 1: POM con starter web y test
+Usa `spring-boot-starter-parent`, `spring-boot-starter-web`, `spring-boot-starter-test`.
+
+#### Paso 2: Clase principal
+`HelloApplication` con `@SpringBootApplication` y `SpringApplication.run(etc)`.
+
+#### Paso 3: Controller
 ```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+@RestController
+public class HelloController {
+    @GetMapping("/health")
+    public Map<String, String> health() { return Map.of("status", "UP"); }
+}
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de Primer proyecto Maven desde cero.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Paso 4: Test MockMvc
+```java
+@SpringBootTest @AutoConfigureMockMvc
+class HelloControllerTest {
+    @Autowired MockMvc mvc;
+    @Test void healthReturnsUp() throws Exception {
+        mvc.perform(get("/health")).andExpect(status().isOk()).andExpect(jsonPath("$.status").value("UP"));
+    }
+}
+```
 
-### 10. LABORATORIO PASO A PASO
+#### Paso 5: Ejecutar
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
 ./verify.sh
 ```
-Output esperado:
+Salida real observada:
 ```text
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (verify.sh), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `pom.xml`
+- `src/main/java/com/academia/hello/HelloApplication.java`
+- `src/main/java/com/academia/hello/HelloController.java`
+- `src/test/java/com/academia/hello/HelloControllerTest.java`
+- `verify.sh`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de Primer proyecto Maven desde cero.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `spring-boot-starter-web` | Traer MVC + Jackson + Tomcat | Endpoint HTTP posible | No hay stack web |
+| `@SpringBootApplication` | Bootstrapping | Escaneo y auto-config | App no arranca como Boot |
+| `@GetMapping("/health")` | Ruta GET | Expone health | 404 |
+| `Map.of("status","UP")` | JSON simple | Respuesta serializable | Contrato ambiguo |
+| `MockMvc` | Test HTTP sin red real | Rápido y determinista | Menos cobertura sin tests |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías Primer proyecto Maven desde cero y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+`./verify.sh` ejecuta tests y emite `RESULTADO: OK`.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar Primer proyecto Maven desde cero por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida 200 y JSON `status=UP`.
+
+### 13. Modificación guiada
+- **Cambio:** cambia `UP` por `OK`.
+- **Hipótesis:** el test fallará por valor JSON.
+- **Comando:** `mvn -q test`.
+- **Resultado esperado:** fallo en `jsonPath("$.status")`. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** 404 en `/health`.
+- **Causa:** ruta mal escrita, controller fuera de escaneo, app no arrancó.
+- **Diagnóstico:** revisar logs, `@RestController`, paquete base.
+- **Fix:** corregir mapping/paquete.
+
+### 15. Cierre
+
+#### Anti-patrón
+Crear proyecto con dependencias innecesarias desde el día 1. Empieza mínimo y crece por necesidad.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Qué aporta Spring Boot sobre Spring “a secas”?
+- **Respuesta modelo:** Auto-configuración, starters, servidor embebido, métricas/actuator y convenciones que reducen boilerplate y tiempo de arranque del proyecto.
+
+#### Resumen
+- Proyecto mínimo: POM + main + controller + test.
+- `/health` es el smoke test más simple.
+- MockMvc da verificación rápida.
+
+#### Puente
+M01-L05 abre la caja negra: IoC, DI y ciclo de vida de beans.

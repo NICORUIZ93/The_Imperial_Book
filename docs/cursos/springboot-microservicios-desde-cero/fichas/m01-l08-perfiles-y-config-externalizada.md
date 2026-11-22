@@ -1,112 +1,148 @@
-## FICHA DE TEMA: Perfiles y config externalizada
+## CAPÍTULO M01-L08: Perfiles y configuración externalizada
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 1, Lección 8.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M01 — Fundamentos Java 21 / Spring Boot
+- **Lección:** L08 — Perfiles y config externalizada
+- **Tiempo estimado:** 55 min
+- **Versiones:** Java 21, Spring Boot 3.4.x
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M01-L04 a M01-L06.
+- YAML/properties básicos.
+- Entender variables de entorno.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** perfiles y config externalizada en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **configurar propiedades por perfil** (`dev`, `prod`) y **sobrescribir configuración por variables externas**, verificando el comportamiento con tests Spring Boot.
 
-### 4. ANALOGÍA VISUAL
-Imagina perfiles y config externalizada como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+Un microservicio corre en local, CI, staging y producción. Cambian URLs, credenciales, flags y límites. Hardcodear valores o copiar código por entorno causa incidentes. Spring Boot permite externalizar config y activar perfiles.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Es el mismo aparato con distintos modos: “modo casa”, “modo oficina”, “modo viaje”. El hardware es el mismo (código), pero la configuración cambia su comportamiento.
+
+**Dónde se rompe la analogía:** la configuración mala puede romper seguridad o datos; no es solo preferencia.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[Perfiles y config externalizada]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  A[application.yml default] --> M[Merge config]
+  D[application-dev.yml] --> M
+  P[application-prod.yml] --> M
+  E[Env/TestPropertySource override] --> M
+  M --> B[AppProperties bean]
 ```
-**Texto alternativo:** Flujo de Perfiles y config externalizada: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** La configuración por defecto se combina con el perfil activo y overrides externos para producir el bean AppProperties final.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** Perfiles y config externalizada es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar perfiles y config externalizada.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m01/labs/l08-perfiles-y-config-externalizada/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m01/labs/l08-perfiles-y-config-externalizada/{src,tests} && cd modules/m01/labs/l08-perfiles-y-config-externalizada
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+- **Profile:** grupo de configuración/beans activo por entorno.
+- **Externalized config:** propiedades fuera del código, cargadas por Spring.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m01/labs/l08-perfiles-y-config-externalizada/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “dev/test/prod”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+Spring Boot carga propiedades en orden de precedencia (defaults, archivos por perfil, env vars, args, etc.). `@ConfigurationProperties` enlaza propiedades a un objeto tipado.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m01/labs/l08-perfiles-y-config-externalizada/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- Diferencias por entorno.
+- Feature flags simples de configuración.
+- Secretos/URLs inyectadas por entorno.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m01/labs/l08-perfiles-y-config-externalizada/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No pongas secretos reales en YAML versionado.
+- No uses perfiles para bifurcar lógica de negocio compleja en todo el código.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m01-l08-perfiles-y-config-externalizada`
+
+#### Paso 1: Propiedades tipadas
 ```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+@ConfigurationProperties(prefix = "app")
+public record AppProperties(String message, boolean featureX) {}
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de Perfiles y config externalizada.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Paso 2: Archivos YAML
+`application.yml`:
+```yaml
+app:
+  message: "mensaje-default"
+  feature-x: false
+```
+`application-dev.yml`:
+```yaml
+app:
+  message: "mensaje-dev"
+  feature-x: true
+```
+`application-prod.yml`:
+```yaml
+app:
+  message: "mensaje-prod"
+  feature-x: false
+```
 
-### 10. LABORATORIO PASO A PASO
+#### Paso 3: Tests por perfil y override
+```java
+@Nested @SpringBootTest @ActiveProfiles("dev")
+class Dev { @Autowired AppProperties p; @Test void devProfile() { assertThat(p.message()).isEqualTo("mensaje-dev"); assertThat(p.featureX()).isTrue(); } }
+
+@Nested @SpringBootTest @ActiveProfiles("prod") @TestPropertySource(properties = "app.message=override")
+class Override { @Autowired AppProperties p; @Test void envOverride() { assertThat(p.message()).isEqualTo("override"); } }
+```
+
+#### Paso 4: Ejecutar
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
 ./verify.sh
 ```
-Output esperado:
-```text
-RESULTADO: OK
-```
+Salida real: `RESULTADO: OK`.
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (tests), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `AppProperties.java`, `ProfileApplication.java`
+- `application.yml`, `application-dev.yml`, `application-prod.yml`
+- `ProfileApplicationTest.java`, `verify.sh`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de Perfiles y config externalizada.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `@ConfigurationProperties(prefix="app")` | Binding tipado | Config segura y autocompletable | Propiedades dispersas con `@Value` |
+| `@ConfigurationPropertiesScan` | Registrar properties | Bean disponible | Binding no se activa |
+| `@ActiveProfiles("dev")` | Activar perfil en test | Carga application-dev | Usa default inesperado |
+| `TestPropertySource(properties=etc)` | Simular override externo | Prueba precedencia | No cubres caso real de override |
+| YAML por perfil | Separar entornos | Cambios controlados | Hardcode en código |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías Perfiles y config externalizada y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+`./verify.sh`.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar Perfiles y config externalizada por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida dev, prod y override externo.
+
+### 13. Modificación guiada
+- **Cambio:** borra `app.message` de `application-dev.yml`.
+- **Hipótesis:** dev usará `mensaje-default`.
+- **Comando:** `mvn -q -Dtest=ProfileApplicationTest$Dev test`.
+- **Resultado esperado:** fallo al esperar `mensaje-dev`. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** perfil activo no toma valores esperados.
+- **Causa:** nombre de archivo incorrecto, profile mal activado, precedencia no entendida.
+- **Diagnóstico:** `--spring.profiles.active`, logs de environment, actuator env (con cuidado).
+- **Fix:** corregir nombre/profile y revisar precedencia.
+
+### 15. Cierre
+
+#### Anti-patrón
+Comitear secretos en `application-prod.yml`. Usa secret manager o variables/volúmenes seguros.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Cómo maneja Spring Boot la configuración por entorno?
+- **Respuesta modelo:** Mediante externalized configuration con orden de precedencia y profiles. Permite definir defaults, overrides por perfil y sobrescribir por variables de entorno/args sin recompilar.
+
+#### Resumen
+- Mismo código, distinta config.
+- Profiles + overrides = flexibilidad.
+- Secretos fuera del repo.
+
+#### Puente
+M01-L09 compara trade-offs de arranque: JVM, CRaC y GraalVM Native.

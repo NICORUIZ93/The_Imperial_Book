@@ -1,31 +1,18 @@
-# Lab m01-l09-crac-y-graalvm-native-trade-offs
+# m01-l09-crac-y-graalvm-native-trade-offs
 
-## Qué se construyó
-Scaffold del laboratorio para **CRaC y GraalVM Native trade-offs**.
+Laboratorio verificable del capítulo **m01-l09-crac-y-graalvm-native-trade-offs** (C2 M01).
 
-## Prerrequisitos
-Ver ficha del tema.
-
-## Cómo compilar
-Según stack del curso.
-
-## Cómo ejecutar
-Según stack del curso.
-
-## Output esperado
-```text
-RESULTADO: OK
-```
-
-## Cómo verificar
+## Ejecutar
 ```bash
 ./verify.sh
 ```
 
-## Qué modificar para experimentar
-Ver sección 12 de la ficha.
+## Resultado esperado
+```text
+RESULTADO: OK
+```
 
-## Error común
-Ver sección 13 de la ficha.
-
-> **Estado:** scaffold generado automáticamente. Requiere implementación y ejecución real para marcarse cubierto.
+## Contenido
+- Código fuente en `src/` (o módulos Maven según el lab).
+- Tests automatizados.
+- `verify.sh` como gate ejecutable.

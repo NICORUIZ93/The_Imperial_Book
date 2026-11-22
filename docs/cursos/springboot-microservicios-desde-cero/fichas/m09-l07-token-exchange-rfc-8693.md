@@ -1,112 +1,128 @@
-## FICHA DE TEMA: Token Exchange RFC 8693
+## CAPÍTULO M09-L07: Token Exchange (RFC 8693)
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 9, Lección 7.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M09 — Seguridad
+- **Lección:** L07 — Token Exchange RFC 8693
+- **Tiempo estimado:** 55 min
+- **Versiones:** Java 21, Nimbus JOSE+JWT 9.47
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- M09-L03 JWT, M09-L04 OAuth2/OIDC.
+- Entender audience, subject y delegación.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** token exchange rfc 8693 en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **explicar y simular un token exchange RFC 8693**, validando un subject token y emitiendo un token downstream con nueva audience y claim `act`.
 
-### 4. ANALOGÍA VISUAL
-Imagina token exchange rfc 8693 como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+En microservicios, el servicio A recibe un token válido para A, pero necesita llamar a B. Reenviar el mismo token puede ser demasiado amplio o incorrecto en audience. Token Exchange permite obtener un token adecuado para el servicio downstream, preservando identidad y contexto de delegación.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Es como un pase de backstage que se canjea por un pase de sala técnica: la identidad base es la misma, pero el permiso y el destino cambian.
+
+**Dónde se rompe la analogía:** en RFC 8693 intervienen claims formales (`act`, `sub`, `aud`, `iss`), políticas del authorization server y validaciones estrictas.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[Token Exchange RFC 8693]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  C[Cliente] -->|token aud=api-a| A[Servicio A]
+  A -->|subject_token| AS[Authorization Server / Token Exchange]
+  AS -->|nuevo token aud=api-b, act=service-a| A
+  A -->|Bearer nuevo token| B[Servicio B]
 ```
-**Texto alternativo:** Flujo de Token Exchange RFC 8693: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** Servicio A recibe token para api-a, lo intercambia en el AS por un token para api-b con claim actor, y llama a B.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** Token Exchange RFC 8693 es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar token exchange rfc 8693.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m09/labs/l07-token-exchange-rfc-8693/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m09/labs/l07-token-exchange-rfc-8693/{src,tests} && cd modules/m09/labs/l07-token-exchange-rfc-8693
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+**RFC 8693 Token Exchange** define cómo solicitar y emitir tokens basados en un subject token/actor token para delegación o impersonación controlada.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m09/labs/l07-token-exchange-rfc-8693/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “delegación”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+1. Validar subject token (firma, exp, aud, iss).
+2. Aplicar política de intercambio.
+3. Emitir nuevo token con audience/claims adecuados.
+4. Incluir `act` cuando hay actuación en nombre de otro sujeto.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m09/labs/l07-token-exchange-rfc-8693/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- Llamadas service-to-service con delegación.
+- Reducir alcance de tokens downstream.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m09/labs/l07-token-exchange-rfc-8693/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No intercambies tokens si el simple forward con audience correcta basta y está permitido.
+- No uses impersonación sin auditoría y políticas estrictas.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m09-l07-token-exchange-rfc-8693`
+
+#### Código clave
 ```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+SignedJWT subject = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256),
+  new JWTClaimsSet.Builder().subject("user1").audience("api-a").expirationTime(new Date(System.currentTimeMillis()+60000)).build());
+subject.sign(signer);
+// validate subject token, mint new token with new audience and actor
+SignedJWT parsed = SignedJWT.parse(subject.serialize());
+assertTrue(parsed.verify(new MACVerifier(secret)));
+SignedJWT exchanged = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256),
+  new JWTClaimsSet.Builder().subject(parsed.getJWTClaimsSet().getSubject())
+    .audience("api-b").claim("act", java.util.Map.of("sub","service-a"))
+    .issueTime(new Date()).expirationTime(new Date(System.currentTimeMillis()+30000)).build());
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de Token Exchange RFC 8693.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
-
-### 10. LABORATORIO PASO A PASO
+#### Ejecución real
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
 ./verify.sh
 ```
-Output esperado:
 ```text
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (verify.sh), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `pom.xml`
+- `src/test/java/com/academia/token/TokenExchangeTest.java`
+- `verify.sh`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de Token Exchange RFC 8693.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `audience("api-a")` | Token original limitado | Representa token para servicio A | Sin audience, se pierde control de destino |
+| `verify(new MACVerifier(secret))` | Validar antes de canjear | Evita canjear token falso | Aceptarías tokens inválidos |
+| `audience("api-b")` | Nuevo destino | Token útil solo para B | Token sobreamplio/rechazado |
+| `claim("act", {sub:service-a})` | Actor de delegación | Trazabilidad de quién actuó | Pierdes auditoría de delegación |
+| nueva `expirationTime` corta | Limitar ventana | Menor riesgo si se filtra | Token largo aumenta riesgo |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías Token Exchange RFC 8693 y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+`./verify.sh` ejecuta el test JUnit que simula validación y emisión.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar Token Exchange RFC 8693 por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida firma del subject token, subject preservado, nueva audience `api-b` y presencia de `act`.
+
+### 13. Modificación guiada
+- **Cambio:** elimina el claim `act` del token intercambiado.
+- **Hipótesis:** `assertNotNull(out.getJWTClaimsSet().getClaim("act"))` fallará.
+- **Comando:** `mvn -q -Dtest=TokenExchangeTest test`.
+- **Resultado esperado:** fallo por claim `act` ausente. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** servicio B rechaza token intercambiado.
+- **Causa:** audience incorrecta, firma inválida, exp vencido, issuer no confiable.
+- **Diagnóstico:** inspeccionar claims y logs del resource server.
+- **Fix:** emitir token con `aud` correcto y claims requeridos.
+
+### 15. Cierre
+
+#### Anti-patrón
+Reenviar el token original a todos los downstream sin evaluar audience y privilegios. Facilita movimiento lateral.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Para qué sirve el claim `act` en token exchange?
+- **Respuesta modelo:** Indica el actor que está actuando en nombre del subject, permitiendo trazabilidad y decisiones de autorización en escenarios de delegación.
+
+#### Resumen
+- Token exchange adapta tokens a otro destino/contexto.
+- Valida antes de emitir.
+- `act` aporta auditoría de delegación.
+
+#### Puente
+M09-L08 baja al transporte: mTLS con service mesh para identidad servicio-a-servicio.

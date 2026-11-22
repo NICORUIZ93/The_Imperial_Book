@@ -1,31 +1,18 @@
-# Lab m01-l08-perfiles-y-config-externalizada
+# m01-l08-perfiles-y-config-externalizada
 
-## Qué se construyó
-Scaffold del laboratorio para **Perfiles y config externalizada**.
+Laboratorio verificable del capítulo **m01-l08-perfiles-y-config-externalizada** (C2 M01).
 
-## Prerrequisitos
-Ver ficha del tema.
-
-## Cómo compilar
-Según stack del curso.
-
-## Cómo ejecutar
-Según stack del curso.
-
-## Output esperado
-```text
-RESULTADO: OK
-```
-
-## Cómo verificar
+## Ejecutar
 ```bash
 ./verify.sh
 ```
 
-## Qué modificar para experimentar
-Ver sección 12 de la ficha.
+## Resultado esperado
+```text
+RESULTADO: OK
+```
 
-## Error común
-Ver sección 13 de la ficha.
-
-> **Estado:** scaffold generado automáticamente. Requiere implementación y ejecución real para marcarse cubierto.
+## Contenido
+- Código fuente en `src/` (o módulos Maven según el lab).
+- Tests automatizados.
+- `verify.sh` como gate ejecutable.

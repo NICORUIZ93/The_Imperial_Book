@@ -1,112 +1,141 @@
-## FICHA DE TEMA: HashiCorp Vault
+## CAPÍTULO M09-L09: HashiCorp Vault - secretos desde cero
 
-### 1. UBICACIÓN
-C2 Spring Boot Microservicios desde Cero, Módulo 9, Lección 9.
+### 1. Ubicación
+- **Curso:** C2 — Spring Boot Microservicios desde Cero
+- **Módulo:** M09 — Seguridad
+- **Lección:** L09 — HashiCorp Vault
+- **Tiempo estimado:** 55 min
+- **Versiones:** HashiCorp Vault 1.17 (dev mode), Docker Compose
 
-### 2. PRERREQUISITOS
-- Conocimientos del módulo anterior o fundamentos equivalentes de programación.
-- Entorno del curso instalado y verificado.
-- Haber leído la ficha anterior del mismo módulo cuando aplique.
+### 2. Prerrequisitos
+- Docker Compose.
+- Conceptos de secretos, variables de entorno, riesgo de hardcodear credenciales.
+- M09-L01/L02 para contexto de seguridad.
 
-### 3. OBJETIVO DE APRENDIZAJE
-**Implementar** hashicorp vault en un laboratorio desde cero, verificando el comportamiento esperado con un test o script automatizado.
+### 3. Objetivo de aprendizaje
+Al terminar podrás **levantar Vault en modo dev, escribir y leer un secreto KV**, y explicar por qué un vault central reduce exposición de credenciales frente a secretos en código o env files sin control.
 
-### 4. ANALOGÍA VISUAL
-Imagina hashicorp vault como un procedimiento de taller: antes de usarlo, ves la pieza real, entiendes qué problema resuelve, lo construyes paso a paso y luego lo pruebas con un indicador simple.  
-**Texto alternativo:** Taller con piezas etiquetadas, pasos numerados, un resultado esperado y una señal de error que conduce a diagnóstico.
+### 4. Problema real / por qué importa
+Las credenciales en código, repositorios o archivos `.env` copiados sin control se filtran. Un vault centraliza almacenamiento, acceso, auditoría y rotación de secretos. El problema real no es “guardar un string”, sino controlar quién accede, cuándo, y poder rotarlo.
 
-### 5. DIAGRAMA TÉCNICO
+### 5. Analogía y modelo mental
+Vault es una caja fuerte con bitácora: no solo guarda, también registra quién abrió, qué sacó y permite cambiar combinaciones.
+
+**Dónde se rompe la analogía:** Vault además puede emitir credenciales dinámicas, cifrar como servicio, y manejar leases/TTL.
+
+### 6. Diagrama técnico
 ```mermaid
 flowchart LR
-  A[Problema / entrada] --> B[HashiCorp Vault]
-  B --> C[Resultado observable]
-  B --> D[Error común / límite]
-  D --> E[Diagnóstico y corrección]
+  App[Servicio] -->|auth| V[Vault]
+  V -->|lease/secret| App
+  Admin[Admin/CI] -->|kv put| V
+  V --> A[Audit log / policies]
 ```
-**Texto alternativo:** Flujo de HashiCorp Vault: parte de un problema, aplica la técnica, produce resultado observable; un error común se diagnostica y corrige.
+**Texto alternativo:** Aplicaciones se autentican ante Vault y obtienen secretos según políticas. Administradores escriben secretos; Vault audita accesos.
 
-### 6. EXPLICACIÓN CONCEPTUAL
-- **Qué es:** HashiCorp Vault es un concepto/técnica del temario que se aborda con construcción guiada desde cero.
-- **Para qué sirve:** Permite resolver el problema específico del módulo y deja evidencia ejecutable.
-- **Cuándo NO usarlo:** No usarlo cuando el costo/complicación supera el beneficio del caso concreto; validar con un caso simple antes de adoptar hashicorp vault.
+### 7. Conceptos fundamentales
 
-### 7. CONSTRUCCIÓN PASO A PASO DESDE CERO
-1. **Crear estructura del lab**
-   - Ruta: `modules/m09/labs/l09-hashicorp-vault/`
-   - Por qué: aislar el tema, facilitar verificación y evitar contaminación con otros labs.
-   - Comando:
-     ```bash
-     mkdir -p modules/m09/labs/l09-hashicorp-vault/{src,tests} && cd modules/m09/labs/l09-hashicorp-vault
-     ```
-   - Output esperado: directorio creado sin errores.
+#### Qué es
+**HashiCorp Vault** es un sistema de gestión de secretos y cifrado: KV, credenciales dinámicas, PKI, transit encryption, políticas, auditoría.
 
-2. **Crear archivo principal desde cero**
-   - Ruta: `modules/m09/labs/l09-hashicorp-vault/src/` (archivo según stack del curso).
-   - Contenido: implementar la pieza mínima descrita en “secretos dinámicos”.
-   - Por qué: cada línea se escribe con intención; primero la interfaz/comportamiento, luego el detalle.
-   - Output esperado: el archivo compila/parsea sin errores.
+#### Cómo funciona
+El cliente se autentica, Vault evalúa policies, y entrega el secreto o token/lease. En KV v2, los secretos se versionan.
 
-3. **Agregar contrato observable**
-   - Ruta: `modules/m09/labs/l09-hashicorp-vault/README.md` y salida estándar/log.
-   - Por qué: todo laboratorio necesita un resultado observable para comparar.
-   - Output esperado: output definido en la sección Laboratorio.
+#### Cuándo usar
+- Secretos compartidos por múltiples servicios/entornos.
+- Necesidad de auditoría, rotación, acceso programático.
 
-4. **Crear verificación automática**
-   - Ruta: `modules/m09/labs/l09-hashicorp-vault/verify.sh`
-   - Por qué: el estudiante confirma objetivamente que construyó bien el tema.
-   - Comando:
-     ```bash
-     chmod +x verify.sh && ./verify.sh
-     ```
-   - Output esperado: `RESULTADO: OK`.
+#### Cuándo NO usar
+- No uses dev mode en producción (`VAULT_DEV_ROOT_TOKEN_ID`, in-memory).
+- No metas Vault sin plan de unseal/HA/backup.
+- No hardcodees el root token en apps.
 
-5. **Comparar con código de referencia**
-   - Ruta: código de referencia del tema.
-   - Por qué: la referencia no reemplaza la construcción; sirve para comparar y corregir.
+### 8. Construcción desde cero
 
-### 8. CÓDIGO DE REFERENCIA COMPLETO
-```java
-// Referencia mínima Spring Boot / Java del tema.
-@SpringBootApplication
-public class App { public static void main(String[] args){ SpringApplication.run(App.class,args);} }
+Lab: `docs/cursos/springboot-microservicios-desde-cero/labs/m09-l09-hashicorp-vault`
+
+#### Paso 1: Docker Compose
+```yaml
+services:
+  vault:
+    image: hashicorp/vault:1.17
+    cap_add: ["IPC_LOCK"]
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: root
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    ports: ["8200:8200"]
 ```
 
-### 9. EXPLICACIÓN LÍNEA POR LÍNEA
-- La estructura/entrada define el contrato del tema.
-- La implementación central aplica la regla o mecanismo de HashiCorp Vault.
-- La salida/verificación hace observable el comportamiento.
-- El manejo de errores o límites evita falsas certezas.
+#### Paso 2: Escribir y leer secreto
+`verify.sh` ejecuta:
 
-### 10. LABORATORIO PASO A PASO
 ```bash
-mvn test
-# o docker compose up -d --wait cuando aplique
+docker compose up -d --wait
+export VAULT_ADDR=http://localhost:8200 VAULT_TOKEN=root
+docker compose exec -T -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=root vault vault kv put secret/demo password=s3cret >/dev/null
+val=$(docker compose exec -T -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=root vault vault kv get -field=password secret/demo)
+test "$val" = "s3cret"
+echo "RESULTADO: OK"
+```
+
+#### Ejecución real
+```bash
 ./verify.sh
 ```
-Output esperado:
 ```text
+ Container m09-l09-hashicorp-vault-vault-1 Healthy 
 RESULTADO: OK
 ```
 
-### 11. VERIFICACIÓN AUTOMÁTICA
-Script `verify.sh` en el directorio del lab. Criterio: ejecuta el flujo del tema (verify.sh), compara salida/estado esperado y termina con `exit 0` imprimiendo `RESULTADO: OK`; cualquier falla termina con `exit 1` y diagnóstico.
+### 9. Código de referencia completo
+- `docker-compose.yml`
+- `verify.sh`
+- `README.md`
 
-### 12. MODIFICACIÓN GUIADA
-- Cambio: modifica un parámetro o condición clave de HashiCorp Vault.
-- Hipótesis: el comportamiento observable cambiará de forma predecible.
-- Resultado observado: registra salida antes/después y explica por qué.
+### 10. Explicación línea por bloque
 
-### 13. ERROR COMÚN
-- **Síntoma:** el resultado no coincide con lo esperado o falla la verificación.
-- **Causa:** configuración incompleta, orden incorrecto de pasos, o supuesto no válido.
-- **Diagnóstico visual:** comparar diagrama/flujo esperado con logs/salida real.
-- **Corrección:** volver al paso mínimo que falla, corregir y reejecutar `verify.sh`.
+| Bloque | Intención | Efecto | Si se omite/cambia |
+|---|---|---|---|
+| `IPC_LOCK` | Evitar swap de memoria sensible | Mejora higiene de secretos | En algunos entornos puede fallar sin cap |
+| `VAULT_DEV_ROOT_TOKEN_ID: root` | Token predecible en lab | Facilita verificación | En prod es inseguro |
+| `vault kv put secret/demo password=s3cret` | Escribir secreto KV v2 | Guarda versión | Path/engine incorrecto falla |
+| `kv get -field=password secret/demo` | Leer campo específico | Permite aserción exacta | Sin `-field` sale formato completo |
+| `test "$val" = "s3cret"` | Verificación real | Confirma round-trip | Sin aserción, falso verde |
 
-### 14. PREGUNTA DE ENTREVISTA
-- **Pregunta:** ¿Cuándo usarías HashiCorp Vault y cuándo lo evitarías?
-- **Respuesta modelo:** Lo usaría cuando resuelve el problema del contexto con evidencia y costo justificable; lo evitaría cuando existe una alternativa más simple o cuando sus trade-offs operativos superan el beneficio.
+### 11. Laboratorio reproducible
+```bash
+./verify.sh
+```
+Requiere Docker. Cleanup automático con `trap`.
 
-### 15. ANTI-PATRÓN RELACIONADO
-- **Anti-patrón:** aplicar HashiCorp Vault por moda sin medir necesidad.
-- **Cómo se ve:** más complejidad, fallos difíciles de diagnosticar o costo innecesario.
-- **Alternativa:** empezar simple, medir, documentar trade-offs y adoptar la técnica solo con evidencia.
+### 12. Verificación automática
+Valida round-trip KV: escribe `password=s3cret` y lee el mismo valor. Pass/fail por `test`.
+
+### 13. Modificación guiada
+- **Cambio:** cambia el valor esperado a `otro`.
+- **Hipótesis:** `test "$val" = "otro"` fallará.
+- **Comando:** `./verify.sh`.
+- **Resultado esperado:** exit 1. Revierte.
+
+### 14. Error común y diagnóstico
+- **Síntoma:** `permission denied` o `* permission denied`.
+- **Causa:** token incorrecto, policy insuficiente, VAULT_ADDR mal.
+- **Diagnóstico:** revisar `VAULT_TOKEN`, `VAULT_ADDR`, logs.
+- **Fix:** usar token/policy correcta; en dev, root token del lab.
+
+### 15. Cierre
+
+#### Anti-patrón
+Guardar secretos en git “pero en repo privado”. El repo, CI, backups y laptops se convierten en superficie de fuga.
+
+#### Pregunta de entrevista
+- **Pregunta:** ¿Por qué Vault es mejor que un `.env` en producción?
+- **Respuesta modelo:** Vault centraliza secretos con autenticación, policies, auditoría, rotación y, en algunos motores, credenciales dinámicas. Un `.env` es un archivo estático difícil de auditar, rotar y controlar su distribución.
+
+#### Resumen
+- Vault almacena y controla secretos.
+- Dev mode es solo para aprendizaje.
+- Verifica con round-trip real, no solo “contenedor levantó”.
+
+#### Puente
+M09-L10 cierra seguridad con escaneo de vulnerabilidades: Trivy/Snyk.
