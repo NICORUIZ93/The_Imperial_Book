@@ -5960,6 +5960,60 @@
         "fragment": "tema-4-prueba-de-carga-restriccion-sobrevenida-y-defensa-arb"
       }
     ],
+    "13": [
+      {
+        "title": "Gateway pattern",
+        "fragment": "tema-1-gateway-pattern"
+      },
+      {
+        "title": "BFF (Backend for Frontend)",
+        "fragment": "tema-2-bff-backend-for-frontend"
+      },
+      {
+        "title": "Auth en edge, rate limiting y request shaping",
+        "fragment": "tema-3-auth-en-edge-rate-limiting-y-request-shaping"
+      },
+      {
+        "title": "Agregación, version routing y resiliencia en edge",
+        "fragment": "tema-4-agregacion-version-routing-y-resiliencia-en-edge"
+      }
+    ],
+    "14": [
+      {
+        "title": "Caching layers y invalidación",
+        "fragment": "tema-1-caching-layers-y-invalidacion"
+      },
+      {
+        "title": "Profiling y event loop delay",
+        "fragment": "tema-2-profiling-y-event-loop-delay"
+      },
+      {
+        "title": "Memory leaks y heap",
+        "fragment": "tema-3-memory-leaks-y-heap"
+      },
+      {
+        "title": "Escalado horizontal, clustering y load leveling",
+        "fragment": "tema-4-escalado-horizontal-clustering-y-load-leveling"
+      }
+    ],
+    "15": [
+      {
+        "title": "SLO, alertas y runbooks",
+        "fragment": "tema-1-slo-alertas-y-runbooks"
+      },
+      {
+        "title": "Postmortems y mejora continua",
+        "fragment": "tema-2-postmortems-y-mejora-continua"
+      },
+      {
+        "title": "FinOps, supply chain y hardening operativo",
+        "fragment": "tema-3-finops-supply-chain-y-hardening-operativo"
+      },
+      {
+        "title": "Evolución de contratos y deprecación",
+        "fragment": "tema-4-evolucion-de-contratos-y-deprecacion"
+      }
+    ],
     "2": [
       {
         "title": "MongoDB + Mongoose",
