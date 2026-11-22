@@ -5,8 +5,7 @@
 Módulo 1 (configuración y perfiles); el tema de alertas usa los percentiles que aparecen en el Módulo 8 (presupuesto de
 latencia). **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Actuator, Micrometer 1.17.3, Micrometer
 Tracing 1.7.3, OpenTelemetry 1.62.0, logging estructurado), **Prometheus v3.15.1**, **Grafana 13.2.4**, **Jaeger
-2.22.0**, **Zipkin 3.6.1**, Python 3 y `curl`. **Laboratorio:** `modulo-14`
-(los comandos de verificación indicados corre las demostraciones con solo el JDK y Python; los comandos de verificación indicados levanta toda la pila).
+2.22.0**, **Zipkin 3.6.1**, Python 3 y `curl`..
 
 Un sistema de microservicios falla de formas que no se ven desde un solo servicio: una petición lenta puede deberse a
 la tercera dependencia de la segunda llamada. Observar es poder responder **preguntas nuevas** sobre producción sin

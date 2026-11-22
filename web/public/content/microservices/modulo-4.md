@@ -3,8 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semana 4 de 4). **Duración:** 10 h (3 temas: 3 h + 3 h + 4 h). **Dificultad:** 2
 de 5. **Dependencias:** Módulos 0.1 a 0.4 (servidor, API, Java y Node lado a lado, terminal, HTTP, variables de
 entorno). **Herramientas:** **JDK 25 LTS (25.0.5)**, **Node.js 26.13.1 LTS**, **Docker Engine 29.10.0** con
-**Docker Compose v5.6.1** o posterior (en macOS y Windows, Docker Desktop los trae). **Laboratorio:**
-`modulo-4`.
+**Docker Compose v5.6.1** o posterior (en macOS y Windows, Docker Desktop los trae)..
 
 Este módulo cierra la Fase 0: instalas las herramientas, escribes el «Hola Mundo» clásico en Java y en Node.js,
 los conviertes en pequeños servidores HTTP y los empaquetas en **contenedores Docker**, la forma en que se
@@ -30,8 +29,7 @@ Docker (imagen y contenedor) y terminan en docker compose up, que arranca los do
 
 #### 1. UBICACIÓN
 
-Módulo 0.5, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modulo-4.md` · Laboratorio
-`java`.
+Módulo 0.5, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modulo-4.md`
 
 #### 2. PRERREQUISITOS
 

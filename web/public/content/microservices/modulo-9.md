@@ -4,8 +4,7 @@
 **Dificultad:** 3 de 5 (4 de 5 en DDD y Strangler Fig). **Dependencias:** Módulos 1 a 4 (Java moderno, Spring IoC,
 perfiles, Spring MVC, JDBC/JPA, PostgreSQL, testing con JUnit y MockMvc). **Herramientas:** **JDK 25 LTS (25.0.5)**,
 **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6.0.3), **Spring Modulith 2.1.3**, PostgreSQL 18.7 en
-Docker Compose y Gradle 9.9.2 mediante el wrapper `./gradlew`. **Laboratorio:** `modulo-9` (un
-subproyecto Gradle por tema; los comandos de verificación indicados ejecuta todos los tests).
+Docker Compose y Gradle 9.9.2 mediante el wrapper `./gradlew`..
 
 Hasta aquí construiste **una** aplicación Spring Boot. Este módulo responde la pregunta que viene después: ¿cuándo
 conviene partirla en varios servicios, por dónde se corta y cómo se migra sin apagar el negocio? Vas a aprender a
@@ -43,8 +42,7 @@ Fig), que lleva al tema 6 (Database-per-service).
 
 #### 1. UBICACIÓN
 
-Módulo 5, Lección 1 de 6 · Fase 1 · `web/public/content/microservices/modulo-9.md` · Laboratorio
-`f041-estilos`.
+Módulo 5, Lección 1 de 6 · Fase 1 · `web/public/content/microservices/modulo-9.md`
 
 #### 2. PRERREQUISITOS
 

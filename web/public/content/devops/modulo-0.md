@@ -1047,7 +1047,7 @@ Persistent=true
 WantedBy=timers.target
 ```
 
-Crea `verificar.sh`:
+Crea un script de verificación `verificar.sh` en tu carpeta de trabajo:
 
 ```bash
 #!/usr/bin/env bash

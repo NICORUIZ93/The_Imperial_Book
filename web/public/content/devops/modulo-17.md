@@ -666,9 +666,9 @@ Siguiente paso: el laboratorio integra las cuatro piezas en un solo sistema y un
 
 ## Laboratorio práctico
 
-**Entregable:** un directorio `academia-devops/src/modulo17/laboratorio/` con el borde del Tema 1 y la base del Tema 3 conectados, más `informe-capacidad.md` y `verificar.sh`.
+**Entregable:** en tu carpeta de trabajo, un directorio con el borde del Tema 1 y la base del Tema 3 conectados, más `informe-capacidad.md` y un script `verificar.sh` que ejecutes tú mismo.
 
-**Requisito verificable:** el informe declara, para cada una de las cinco comprobaciones, el comando ejecutado y su salida; `verificar.sh` las ejecuta y termina con código `0` solo si las cinco pasan.
+**Requisito verificable:** el informe declara, para cada una de las cinco comprobaciones, el comando ejecutado y su salida; tu script `verificar.sh` las ejecuta y termina con código `0` solo si las cinco pasan.
 
 | Comprobación | Comando | Criterio de aceptación |
 |---|---|---|
@@ -678,4 +678,4 @@ Siguiente paso: el laboratorio integra las cuatro piezas en un solo sistema y un
 | Idempotencia | `psql -f cobro.sql` dos veces | La segunda salida es `INSERT 0 0` |
 | Capacidad | `node carga.mjs .../api/pedidos 1000 20` | `errores: 0` y percentiles impresos |
 
-`verificar.sh` debe fallar en voz alta: si un `curl` devuelve `000`, el script no puede contar eso como éxito. El informe se considera incompleto si alguna cifra de capacidad no viene de una corrida propia o si la decisión final no dice qué **no** harías con el presupuesto de error medido.
+Tu `verificar.sh` debe fallar en voz alta: si un `curl` devuelve `000`, el script no puede contar eso como éxito. El informe se considera incompleto si alguna cifra de capacidad no viene de una corrida propia o si la decisión final no dice qué **no** harías con el presupuesto de error medido.

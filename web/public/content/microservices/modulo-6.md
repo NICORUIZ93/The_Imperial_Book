@@ -5,8 +5,7 @@
 Módulo 1 completo (records, DI, perfiles) y Módulo 0.4 (HTTP, JSON, `curl`). **Herramientas:**JDK 25 LTS
 (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, Jackson 3, Hibernate ORM 7.4, Spring Data JPA 4.1), Flyway 12.4,
 Liquibase 5.0, **PostgreSQL 18.7** y **MySQL 9.7.4 LTS** con Docker Compose, `curl` y `jq` (incluido en macOS 15 o
-superior; en Linux, `sudo apt install jq`). **Laboratorio:** `modulo-6` (un subproyecto Gradle
-por tema; los comandos de verificación indicados levanta las bases, ejecuta todos los tests y las apaga).
+superior; en Linux, `sudo apt install jq`)..
 
 Aquí tu servicio aprende a hablar HTTP y a recordar: recibe peticiones, valida, responde con contratos estables,
 traduce errores a un formato estándar y guarda datos en una base relacional cuyo esquema evoluciona con migraciones
@@ -2592,7 +2591,7 @@ Inyección (JPQL/SQL *injection*), consultas imposibles de cachear en el plan y 
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 6 de 7 · Fase 1 · 2 h · Laboratorios `f030-flyway` y
+Módulo 2, Lección 6 de 7 · Fase 1 · 2 h
 `f030-liquibase` + PostgreSQL 18.7 (bases `f030_flyway` y `f030_liquibase`).
 
 #### 2. PRERREQUISITOS

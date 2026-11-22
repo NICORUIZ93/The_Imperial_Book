@@ -5,7 +5,7 @@
 Gateway, configuración centralizada); para el tema de mTLS conviene haber visto contenedores (Módulo 0.5).
 **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Security 7.1.3, Spring Framework 7.0.11),
 **Spring Cloud 2025.1.4** (Spring Cloud Vault 5.0), **Keycloak 26.8.2**, **HashiCorp Vault 2.2.0**, **Trivy 0.76.1**,
-**Snyk CLI 1.1309.0**, **Istio 1.32** sobre **kind**, OpenSSL 3 y `curl`. **Laboratorio:** `modulo-13`
+**Snyk CLI 1.1309.0**, **Istio 1.32** sobre **kind**, OpenSSL 3 y `curl`.
 (los comandos de verificación indicados corre las demostraciones con solo el JDK; los comandos de verificación indicados añade Keycloak, Vault, Trivy y
 los tests de Spring; los comandos de verificación indicados monta la malla de servicios).
 

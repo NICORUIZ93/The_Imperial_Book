@@ -5,8 +5,7 @@ laboratorio integrador). **Dificultad:** 2 de 5 en ES6+ y TypeScript, 3 de 5 en 
 y apagado. **Dependencias:** Fase 0 (Módulo 0.3: ejecutar Node y leer un test; Módulo 0.4: terminal, HTTP, JSON y
 variables de entorno; Módulo 0.5: Docker básico). Esta fase **no** necesita la Fase 1: todo lo de Node se explica
 aquí desde cero. **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, `@types/node` 26.6.6 y, solo para
-el tema de perfiles, **clinic 13.0.0** por `npx`. **Laboratorio:** `modulo-17` (una carpeta
-por tema; los comandos de verificación indicados instala con `npm ci`, comprueba tipos, ejecuta los 24 tests y cada programa).
+el tema de perfiles, **clinic 13.0.0** por `npx`..
 
 Un microservicio en Node.js es **un solo hilo de JavaScript** que atiende a miles de clientes a la vez sin
 bloquearse. Este módulo te da el lenguaje (JavaScript moderno y TypeScript), te muestra la máquina por dentro (el

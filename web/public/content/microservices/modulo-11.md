@@ -5,8 +5,7 @@ de 2–2,5 h). **Dificultad:** 3 de 5. **Dependencias:** Módulo 6 (comunicació
 del Módulo 1 los perfiles y la configuración externalizada. **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot
 4.1.3**, **Spring Cloud 2025.1.4 «Oakwood»** (Gateway 5.0.4, Netflix Eureka 5.0.3, Consul 5.0.4, Config 5.0.6,
 Commons/LoadBalancer 5.0.4), **Consul 2.1.0** con Docker Compose, Testcontainers 2.0.5, Gradle 9.9.2 por el wrapper
-y `curl`. **Laboratorio:** `modulo-11` (una demostración con JDK puro por tema en `jdk/` y
-un subproyecto Gradle por tema; los comandos de verificación indicados lo ejecuta todo).
+y `curl`..
 
 En el Módulo 6 tus servicios se llamaban con URLs fijas (`http://localhost:8082`). En producción eso no aguanta: las
 instancias nacen y mueren, cambian de IP, hay varias copias de cada servicio y cada entorno tiene su configuración.

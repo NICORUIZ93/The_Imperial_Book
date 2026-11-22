@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 573 446" width="573" height="446" role="img" aria-label="Captura de terminal: la linea base: dieciseis capacidades de Node bajo Node 24">
 <title>Captura de terminal: la linea base: dieciseis capacidades de Node bajo Node 24</title>
-<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Cada linea se ejecuto en la imagen oficial del runtime (oven/bun:1, node:24, denoland/deno:2.9.8, rabbitmq:4-management) montando la carpeta del laboratorio en /app con NO_COLOR=1. Comandos en orden: node --version ; node src/prueba.mjs. Codigo de salida final: 0.</desc>
+<desc>Generado con scripts/render_terminal_capture.py el 2026-11-19. Cada linea se ejecuto en la imagen oficial del runtime (oven/bun:1, node:24, denoland/deno:2.9.8, rabbitmq:4-management) montando la carpeta de trabajo en /app con NO_COLOR=1. Comandos en orden: node --version ; node src/prueba.mjs. Codigo de salida final: 0.</desc>
 <rect width="573" height="446" rx="8" fill="#1e1f24"/>
 <rect width="573" height="30" rx="8" fill="#2b2d33"/><rect y="22" width="573" height="8" fill="#2b2d33"/><circle cx="18" cy="15.0" r="5.5" fill="#ff5f57"/><circle cx="36" cy="15.0" r="5.5" fill="#febc2e"/><circle cx="54" cy="15.0" r="5.5" fill="#28c840"/>
 <text x="286.5" y="19.0" text-anchor="middle" fill="#9aa0a6" font-family="ui-sans-serif, system-ui, sans-serif" font-size="12">la linea base: dieciseis capacidades de Node bajo Node 24</text>

@@ -5,8 +5,7 @@
 partición, clave y consumer group), Módulo 8 (reintentos y fallbacks) y, de la Fase 0, Docker básico y Docker
 Compose. **Herramientas:**JDK 25 LTS**, **Spring Boot 4.1.3** (que gestiona Spring for Apache Kafka 4.1.3,
 `kafka-clients` 4.2.2 y Spring AMQP 4.1.3), Apache Kafka 4.4.0 en modo KRaft, Confluent Schema Registry 8.4.1, Avro
-1.12.2, RabbitMQ 4.4.1, NATS 2.15.3 con JetStream y el cliente jnats 2.26.4. **Laboratorio:**
-`modulo-15` (un subproyecto Gradle por tema; `docker-compose.yml` levanta los cuatro brokers y
+1.12.2, RabbitMQ 4.4.1, NATS 2.15.3 con JetStream y el cliente jnats 2.26.4..yml` levanta los cuatro brokers y
 los comandos de verificación indicados ejecuta todo).
 
 En el Módulo 6 enviaste tu primer evento por RabbitMQ y por Kafka. Funcionaba en la demo. En producción aparecen las

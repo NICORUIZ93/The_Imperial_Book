@@ -1888,7 +1888,7 @@ Guarda los eventos recibidos, cuántos elementos solicitaste y cómo terminó o 
 4. Un correo con espacios se acepta solo si se normaliza antes de validar.
 5. El informe calcula total y conteo en una sola pasada; el código no contiene dos `stream()` sobre la misma lista para el mismo cálculo.
 
-**Checkpoint:** guarda este verificador junto a tus fuentes y ejecútalo antes de entregar:
+**Checkpoint:** guarda este verificador junto a tus fuentes en tu carpeta de trabajo y ejecútalo antes de entregar:
 
 ```bash
 cat > verificar.sh <<'SCRIPT'

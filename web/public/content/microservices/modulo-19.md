@@ -6,8 +6,7 @@ integrador). **Dificultad:** 3 de 5. **Dependencias:** Módulo 13 (promesas, `as
 de bases de datos se explica aquí desde cero. **Herramientas:** **Node.js 26.13.1 LTS**, **mongoose 9.12.2** (driver
 `mongodb` 7.x), **prisma** y **@prisma/client 7.10.1** con **@prisma/adapter-pg 7.10.1**, **sequelize 6.37.8**,
 **pg 8.23.1**, **express 5.3.0**, **tsx 4.23.15**, **TypeScript 6.0.3**; **MongoDB 9.0.8** y **PostgreSQL 18.7** con
-Docker Compose. **Laboratorio:** `modulo-19` (una carpeta por tema;
-los comandos de verificación indicados levanta las bases, ejecuta los tests y cada programa, y guarda los logs en `logs/`).
+Docker Compose..
 
 Hasta ahora tus servicios guardaban los datos en variables: al reiniciar, se perdían. **Persistir** es escribir los
 datos en un sistema que los conserva cuando el proceso muere. En este módulo aprendes las dos familias que más vas a

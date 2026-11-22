@@ -4,9 +4,7 @@
 de 2–3 h). **Dificultad:** 4 de 5. **Dependencias:** Módulo 6 (llamadas entre servicios) y Módulo 7 (descubrimiento,
 gateway, balanceo y BFF). **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3**, **Resilience4j 2.4.0**
 (`resilience4j-spring-boot4`), Spring Cloud 2025.1.4 (BOM), **Toxiproxy 2.13.0** con Docker Compose, Testcontainers
-2.0.5 (módulo Toxiproxy) y toxiproxy-java 2.1.11, Gradle 9.9.2 por el wrapper y `curl`. **Laboratorio:**
-`modulo-12` (una demostración con JDK puro por tema en `jdk/`, un subproyecto Gradle por tema,
-`docker-compose.yml` con el inventario y Toxiproxy, y `simular-fallo.sh`).
+2.0.5 (módulo Toxiproxy) y toxiproxy-java 2.1.11, Gradle 9.9.2 por el wrapper y `curl`..yml` con el inventario y Toxiproxy, y `simular-fallo.sh`).
 
 En un sistema distribuido **algo siempre está fallando**: una red que pierde paquetes, un servicio en plena
 recolección de basura, una base de datos saturada. La resiliencia no consiste en evitar los fallos, sino en que un

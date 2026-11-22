@@ -2,8 +2,7 @@
 
 **Fase 0 · Fundamentos absolutos** (semana 1 de 4). **Duración:** 6 h (2 temas de 3 h). **Dificultad:** 1 de 5.
 **Dependencias:** Módulo 0.1 (ejecutar un programa con `node` y correr un test con `node --test`).
-**Herramientas:** Node.js 26.13.1 LTS, sin dependencias externas. **Laboratorio:**
-`modulo-1`.
+**Herramientas:** Node.js 26.13.1 LTS, sin dependencias externas..
 
 Aquí aprendes los cuatro ladrillos con los que se escribe cualquier programa (variables, decisiones,
 repeticiones y funciones) y la forma de pensar que te permite convertir un problema del mundo real en pasos que
@@ -26,8 +25,7 @@ herramientas), se expresa con la lógica de programación (cuatro ladrillos) y t
 
 #### 1. UBICACIÓN
 
-Módulo 0.2, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-1.md` · Laboratorio
-`logica`.
+Módulo 0.2, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-1.md`
 
 #### 2. PRERREQUISITOS
 

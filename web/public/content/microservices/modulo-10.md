@@ -35,8 +35,7 @@ contiene el tema 4 (RabbitMQ y Kafka). Los temas 3 y 4 llevan al tema 5, sync vs
 
 #### 1. UBICACIÓN
 
-Módulo 6, Lección 1 de 5 · Fase 1 · `web/public/content/microservices/modulo-10.md` · Laboratorio
-`f047-rest-sincrono`.
+Módulo 6, Lección 1 de 5 · Fase 1 · `web/public/content/microservices/modulo-10.md`
 
 #### 2. PRERREQUISITOS
 

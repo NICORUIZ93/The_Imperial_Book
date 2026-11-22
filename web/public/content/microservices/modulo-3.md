@@ -3,7 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semanas 2 y 3 de 4). **Duración:** 12 h (6 temas de 2 h). **Dificultad:** 2 de
 5. **Dependencias:** Módulos 0.1 a 0.3 (servidor, API, ejecutar Java y Node, leer tests). **Herramientas:** Git
 2.4x o posterior (la que traiga tu sistema), bash o zsh, `curl`, **Node.js 26.13.1 LTS**, **JDK 25 LTS** y la
-librería npm `yaml` 2.9.1. **Laboratorio:** `modulo-3`.
+librería npm `yaml` 2.9.1..
 
 Estas seis herramientas aparecen en **cada** microservicio que construyas: Git guarda la historia del código, la
 terminal es tu panel de control, HTTP es el idioma con el que hablan los servicios, JSON es el formato de los
@@ -28,8 +28,7 @@ lleva a JSON, y YAML, que lleva a variables de entorno.
 
 #### 1. UBICACIÓN
 
-Módulo 0.4, Lección 1 de 6 · Fase 0 · `web/public/content/microservices/modulo-3.md` · Laboratorio
-`git`.
+Módulo 0.4, Lección 1 de 6 · Fase 0 · `web/public/content/microservices/modulo-3.md`
 
 #### 2. PRERREQUISITOS
 

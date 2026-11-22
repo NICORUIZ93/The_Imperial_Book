@@ -3,8 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semana 2 de 4). **Duración:** 8 h (2 temas de 4 h). **Dificultad:** 2 de 5.
 **Dependencias:** Módulos 0.1 y 0.2 (programa, servidor, variables, decisiones, bucles, funciones, tests).
 **Herramientas:** **JDK 25 LTS (25.0.5)** y **Node.js 26.13.1 LTS**, sin dependencias externas (la instalación
-paso a paso está en el Módulo 0.5; si aún no tienes Java, instálalo primero con esa guía). **Laboratorio:**
-`modulo-2`.
+paso a paso está en el Módulo 0.5; si aún no tienes Java, instálalo primero con esa guía)..
 
 El curso tiene dos caminos completos y separados: la **Fase 1** con Java y Spring Boot y la **Fase 2** con
 JavaScript/TypeScript y Node.js. Este módulo te presenta los dos lenguajes **escribiendo el mismo programa dos
@@ -32,8 +31,7 @@ directamente con node en el motor V8 con su event loop. Ambos carriles llegan a 
 
 #### 1. UBICACIÓN
 
-Módulo 0.3, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-2.md` · Laboratorio
-`Tienda.java` y `tienda.js`.
+Módulo 0.3, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-2.md` y `tienda.js`.
 
 #### 2. PRERREQUISITOS
 

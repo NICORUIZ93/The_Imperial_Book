@@ -5,9 +5,7 @@
 (perfiles y configuración externalizada), Módulo 7 del curso (Spring Cloud: por qué un servicio necesita un nombre
 estable) y Módulo 10 (Actuator y health). **Herramientas:**JDK 25 LTS**, **Spring Boot 4.1.3**, Docker Engine 29 con
 Compose v5, imágenes `eclipse-temurin:25-jdk` y `gcr.io/distroless/java25-debian13:nonroot`, **kind v0.33.0**
-con **Kubernetes 1.37.0**, kubectl 1.37, metrics-server v0.9.0, **Helm 4.3.1** y **Argo CD v3.5.6**.
-**Laboratorio:** `modulo-16` (una sola aplicación, `app/`, que recorre las 8 fichas;
-los comandos de verificación indicados lo ejecuta todo y cada ficha tiene su prueba en `pruebas/fNNN-*.sh`).
+con **Kubernetes 1.37.0**, kubectl 1.37, metrics-server v0.9.0, **Helm 4.3.1** y **Argo CD v3.5.6**..sh`).
 
 Hasta ahora tus servicios corrían con `./gradlew bootRun`. Producción es otra cosa: el código se empaqueta en una
 **imagen** inmutable, varias imágenes se levantan juntas con **Compose** en tu máquina, y en el clúster

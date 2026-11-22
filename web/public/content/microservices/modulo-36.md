@@ -7,7 +7,7 @@ con Temporal e idempotencia), 28 (costo) y 31 (migración). **Herramientas:** pi
 LTS**, Express **5.3.0**, Temporal TypeScript SDK **1.26.0**, ioredis **6.0.0** y Gatling JS **3.16.101**; pista
 Spring Boot con **JDK 25**, Spring Boot **4.1.3**, Spring Cloud Gateway **5.0.4** (tren 2025.1.4), Temporal Java SDK
 **1.41.1** y Gatling **3.16.1** con el plugin `io.gatling.gradle` **3.16.0**; la pista Spring se construye con **Gradle 9.9.2**; infraestructura: Redis **8.10.2** (Docker
-Compose) y Temporal Server **1.32.1** (`temporal server start-dev`). **Laboratorio:** `modulo-36`
+Compose) y Temporal Server **1.32.1** (`temporal server start-dev`).
 (los comandos de verificación indicados ejecuta 26 tests, los scripts de las siete fichas, Redis real, Gatling a 60 reservas/s y las demos
 JDK de la pista Spring; `--compose` añade Redis con Docker y los tests de `spring/` con Gradle).
 
@@ -3170,8 +3170,7 @@ En el historial de Git se ve como un ADR añadido **semanas después** del commi
 
 #### 1. UBICACIÓN
 
-Módulo 32, Lección 7 de 7 · Fase 3 · 2 h de preparación + 40 min de defensa · Laboratorio
-`f187-defensa-arb`.
+Módulo 32, Lección 7 de 7 · Fase 3 · 2 h de preparación + 40 min de defensa
 
 #### 2. PRERREQUISITOS
 

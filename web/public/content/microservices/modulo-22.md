@@ -6,7 +6,7 @@ asíncrono. **Dependencias:** Módulo 17 (estructura, configuración, descubrimi
 (promesas, `async/await`, streams). **Herramientas:** **Node.js 26.13.1 LTS**, **axios 1.21.1**, **@grpc/grpc-js
 1.14.7** + **@grpc/proto-loader 0.8.1**, **@apollo/server 5.5.2** + **graphql 16.15.0** + **dataloader 2.2.3**,
 **kafkajs 2.2.4**, **amqplib 2.4.0**, **@nats-io/transport-node 3.5.0**; brokers **Apache Kafka 4.4.0**, **RabbitMQ
-4.4.1** y **NATS Server 2.15.3** (Docker Compose). **Laboratorio:** `modulo-22`
+4.4.1** y **NATS Server 2.15.3** (Docker Compose).
 (los comandos de verificación indicados ejecuta 32 tests sin infraestructura y las demos; los comandos de verificación indicados levanta los tres
 brokers y ejecuta además los tests y demos de Kafka, RabbitMQ y NATS).
 

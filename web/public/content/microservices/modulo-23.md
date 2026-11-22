@@ -5,8 +5,7 @@ laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 18 (R
 Módulo 13 (Promises, `async/await`, Event Loop, graceful shutdown); ayuda haber hecho el Módulo 14 (Express).
 **Herramientas:**Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **opossum 10.0.0**, **cockatiel 4.0.0**,
 **redis (node-redis) 6.3.1**, **rate-limiter-flexible 11.5.0**, **express 5.3.0**, **Redis 8.10.2** y **Toxiproxy
-2.13.0**. **Laboratorio:** `modulo-23` (los comandos de verificación indicados levanta la infraestructura,
-ejecuta 25 tests y las simulaciones de fallo de las cinco fichas).
+2.13.0**..
 
 En un sistema distribuido **fallar es lo normal**: una red pierde paquetes, un servicio se queda sin memoria, un
 despliegue reinicia pods. La resiliencia no evita esos fallos; consigue que **un fallo pequeño no se convierta en una

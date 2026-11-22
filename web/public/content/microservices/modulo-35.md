@@ -5,7 +5,7 @@ de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 5 
 allí viste la idea; aquí la llevas a un monolito con años de historia), Módulo 24 (ADR y fitness functions), Módulo 25
 (outbox y CDC: la forma correcta de sacar los datos del monolito) y Módulo 30 (anti-patrones y cuándo NO usar
 microservicios). **Herramientas:**Node.js 26.13.1 LTS** sin dependencias de npm (SQLite 3.54.1 viene dentro de
-Node como `node:sqlite`) y **Git** (el de tu sistema, 2.x). **Laboratorio:** `modulo-35`
+Node como `node:sqlite`) y **Git** (el de tu sistema, 2.x).
 (los comandos de verificación indicados ejecuta 17 tests y los scripts de las cuatro fichas; `--compose` se acepta, pero este módulo no
 levanta contenedores).
 
