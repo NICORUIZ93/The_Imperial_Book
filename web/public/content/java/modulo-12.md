@@ -1,495 +1,327 @@
-# Módulo 12: Buenas prácticas y patrones de diseño
+# Módulo 12: Patrones de diseño y SOLID
 
-Los patrones de diseño son soluciones nombradas a problemas recurrentes de diseño. Su valor está en comunicar intención, reducir acoplamiento y hacer explícitos los trade-offs. Este módulo cubre patrones creacionales y estructurales con criterio: cuándo usarlos y cuándo una solución simple es mejor.
+Los patrones de diseño son soluciones probadas a problemas recurrentes de diseño. No son recetas para copiar ciegamente: aplicados mal, agregan complejidad accidental. SOLID proporciona principios para evaluar si un diseño resiste el cambio. Este módulo cubre patrones creacionales, comportamentales, estructurales y el criterio para no sobre-diseñar.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2.
 
 ## Aprende construyendo
 
 ### Tema 1: Builder — configuración paso a paso y validación · Básico · 35 min
 
-`Guia` tiene obligatorios y opcionales. Un constructor telescópico es ilegible y propenso a errores.
+Caso guía: crear un `Email` con campos obligatorios/opcionales sin telescoping constructors.
 
 #### Builder
 
-**Definición formal.** Patrón creacional que separa la construcción compleja de un objeto de su representación final, normalmente con un `build()` que devuelve el producto.
+**Definición formal.** Builder separa la construcción compleja de un objeto de su representación final, permitiendo pasos nombrados y validación antes de construir.
 
-**Para qué sirve.** Mejora legibilidad y permite validar invariantes antes de crear el objeto.
-
-**Cuándo usarlo y cuándo no.** Úsalo con muchos parámetros/opcionales. No lo uses para objetos triviales de 1-2 campos.
+**Cuándo usar / cuándo no.** Úsalo cuando hay muchos parámetros opcionales, invariantes de construcción o legibilidad. No lo uses para objetos simples de 2-3 campos.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t1-builder && cd /tmp/java-m12-t1-builder
+mkdir -p java-m12-builder
+cd java-m12-builder
 ```
+
+Crea el archivo `DemoBuilder.java`:
 
 ```java
-class User {
-    final String name; final int age;
-    private User(Builder b){ this.name=b.name; this.age=b.age; }
-    static class Builder {
-        private String name; private int age;
-        Builder name(String n){ this.name=n; return this; }
-        Builder age(int a){ this.age=a; return this; }
-        User build(){ if(name==null) throw new IllegalStateException("name"); return new User(this); }
+class Email {
+  final String to, subject, body;
+  private Email(Builder b) { to=b.to; subject=b.subject; body=b.body; }
+  static class Builder {
+    String to, subject, body="";
+    Builder to(String v){ to=v; return this; }
+    Builder subject(String v){ subject=v; return this; }
+    Builder body(String v){ body=v; return this; }
+    Email build(){
+      if (to==null || subject==null) throw new IllegalStateException("to/subject");
+      return new Email(this);
     }
+  }
 }
-public class DemoBuilder { public static void main(String[] args){ System.out.println(new User.Builder().name("Ada").age(36).build().name); } }
+public class DemoBuilder {
+  public static void main(String[] args) {
+    Email e = new Email.Builder().to("a@b.com").subject("Hola").body("Msg").build();
+    System.out.println(e.to + ":" + e.subject);
+  }
+}
 ```
-
-**Caso de uso real.** Request DTOs, objetos de configuración, entidades con opcionales.
-
-**Error común.** `build()` que permite objeto inválido. Corrección: validar invariantes en `build()`.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `Ada`.
-
-#### Configuración paso a paso y validación
-
-**Definición formal.** API fluida encadena llamadas para configurar campos; la validación asegura invariantes obligatorios al construir.
-
-**Para qué sirve.** Call site claro y objeto final válido.
-
-**Cuándo usarlo.** Cuando haya reglas de obligatoriedad/rangos.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t1-valid && cd /tmp/java-m12-t1-valid
+javac DemoBuilder.java
+java DemoBuilder
 ```
 
-```java
-class Cfg {
-    final int port;
-    private Cfg(int port){ this.port=port; }
-    static class Builder {
-        int port;
-        Builder port(int p){ if(p<=0) throw new IllegalArgumentException("port"); this.port=p; return this; }
-        Cfg build(){ if(port==0) throw new IllegalStateException("port requerido"); return new Cfg(port); }
-    }
-}
-public class DemoValid { public static void main(String[] args){ System.out.println(new Cfg.Builder().port(8080).build().port); } }
-```
+**Error común.** Builder que permite objeto inválido. Corrección: validar en `build()`.
 
-**Caso de uso real.** Configuración de cliente HTTP.
-
-**Error común.** Validar tarde en otro servicio. Corrección: validar en construcción.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `8080`.
-
-#### Inmutabilidad del producto
-
-**Definición formal.** El objeto construido no expone mutación tras `build()`.
-
-**Para qué sirve.** Seguridad, simplicidad y facilidad para concurrencia.
-
-**Cuándo usarlo.** Value objects/DTOs/configuración.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m12-t1-inm && cd /tmp/java-m12-t1-inm
-```
-
-```java
-final class Punto {
-    final int x,y;
-    Punto(int x,int y){ this.x=x; this.y=y; }
-}
-public class DemoInm { public static void main(String[] args){ System.out.println(new Punto(1,2).x); } }
-```
-
-**Caso de uso real.** Objetos de valor en dominio.
-
-**Error común.** Agregar setters innecesarios. Corrección: campos `final` y sin setters.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `1`.
-
-#### Ejemplo integrado desde cero
-
-```bash
-mkdir -p /tmp/java-m12-t1 && cd /tmp/java-m12-t1
-```
-
-```java
-public class Guia {
-    private final String id, origen, destino, destinatario;
-    private final double pesoKg; private final boolean fragil;
-    private Guia(Builder b){ id=b.id; origen=b.origen; destino=b.destino; destinatario=b.destinatario; pesoKg=b.pesoKg; fragil=b.fragil; }
-    public static class Builder {
-        private final String id, origen, destino, destinatario;
-        private double pesoKg; private boolean fragil;
-        public Builder(String id,String origen,String destino,String destinatario){ if(id==null||id.isBlank()) throw new IllegalArgumentException("id"); this.id=id; this.origen=origen; this.destino=destino; this.destinatario=destinatario; }
-        public Builder pesoKg(double p){ if(p<=0) throw new IllegalArgumentException("peso"); this.pesoKg=p; return this; }
-        public Builder fragil(boolean f){ this.fragil=f; return this; }
-        public Guia build(){ if(pesoKg<=0) throw new IllegalStateException("peso requerido"); return new Guia(this); }
-    }
-    public String resumen(){ return id+" "+origen+"->"+destino+" "+pesoKg+"kg fragil="+fragil; }
-}
-```
-
-```java
-public class DemoBuilder { public static void main(String[] args){ System.out.println(new Guia.Builder("G-1","Lima","Cusco","Ada").pesoKg(2.5).fragil(true).build().resumen()); } }
-```
-
-**Verificación (JDK 27, 2026-05-22).**
-
-```text
-G-1 Lima->Cusco 2.5kg fragil=true
-```
-
+**Verificación (JDK 27, 2026-05-22).** `a@b.com:Hola`.
 
 ### Tema 2: Factory Method y Strategy · Intermedio · 40 min
 
-Necesitas crear notificaciones por canal y variar el cálculo de flete por tipo de envío. Quieres extensibilidad sin llenar el código de `if/switch`.
+Caso guía: crear notificaciones por canal y cambiar algoritmo de precio sin `if/switch` dispersos.
 
 #### Factory Method
 
-**Definición formal.** Patrón creacional que delega la creación de objetos a un método/fábrica, permitiendo variar el producto concreto.
-
-**Para qué sirve.** Centraliza creación y desacopla el cliente del concreto.
-
-**Cuándo usarlo y cuándo no.** Úsalo cuando el tipo concreto varía por configuración/input. No lo uses si un `new` simple basta.
+**Definición formal.** Define una interfaz para crear un objeto, dejando que subclases/implementaciones decidan la instancia concreta.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t2-factory && cd /tmp/java-m12-t2-factory
+mkdir -p java-m12-factory
+cd java-m12-factory
 ```
+
+Crea el archivo `DemoFactory.java`:
 
 ```java
-interface Canal { String tipo(); }
-class Email implements Canal { public String tipo(){ return "EMAIL"; } }
-class Sms implements Canal { public String tipo(){ return "SMS"; } }
-class CanalFactory { static Canal crear(String t){ return switch(t){ case "EMAIL" -> new Email(); case "SMS" -> new Sms(); default -> throw new IllegalArgumentException(t); }; } }
-public class DemoFactory { public static void main(String[] args){ System.out.println(CanalFactory.crear("EMAIL").tipo()); } }
+interface Notificacion { String enviar(); }
+class EmailN implements Notificacion { public String enviar(){ return "email"; } }
+class SmsN implements Notificacion { public String enviar(){ return "sms"; } }
+class NotificacionFactory {
+  static Notificacion crear(String tipo) {
+    return switch(tipo) { case "email" -> new EmailN(); case "sms" -> new SmsN(); default -> throw new IllegalArgumentException(tipo); };
+  }
+}
+public class DemoFactory {
+  public static void main(String[] args) { System.out.println(NotificacionFactory.crear("sms").enviar()); }
+}
 ```
 
-**Caso de uso real.** Crear estrategia de pago/notificación por tipo.
+```bash
+javac DemoFactory.java
+java DemoFactory
+```
 
-**Error común.** Factory gigante con lógica de negocio. Corrección: factory solo crea/selecciona.
+**Error común.** Factory gigante con toda la lógica de negocio. Corrección: crear objeto, no decidir reglas complejas del dominio.
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `EMAIL`.
+**Verificación (JDK 27, 2026-05-22).** `sms`.
 
 #### Strategy
 
-**Definición formal.** Patrón de comportamiento que encapsula algoritmos intercambiables detrás de una interfaz común.
+**Definición formal.** Encapsula una familia de algoritmos detrás de una interfaz intercambiable.
 
-**Para qué sirve.** Variar comportamiento en runtime sin condicionales dispersos.
-
-**Cuándo usarlo y cuándo no.** Úsalo cuando haya varias políticas intercambiables. No si solo hay un algoritmo estable.
+```mermaid
+flowchart LR
+  Ctx[Checkout] --> S[PricingStrategy]
+  S --> N[Normal]
+  S --> V[Vip]
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t2-strategy && cd /tmp/java-m12-t2-strategy
+mkdir -p java-m12-strategy
+cd java-m12-strategy
 ```
+
+Crea el archivo `DemoStrategy.java`:
 
 ```java
-interface Flete { double calcular(double peso); }
-class Aereo implements Flete { public double calcular(double p){ return p*10; } }
-class Terrestre implements Flete { public double calcular(double p){ return p*3; } }
-class Calculadora { private Flete f; Calculadora(Flete f){this.f=f;} double total(double p){ return f.calcular(p); } }
-public class DemoStrategy { public static void main(String[] args){ System.out.println(new Calculadora(new Aereo()).total(2)); } }
+interface Pricing { double total(double base); }
+class Normal implements Pricing { public double total(double b){ return b; } }
+class Vip implements Pricing { public double total(double b){ return b * 0.9; } }
+public class DemoStrategy {
+  static double cobrar(double base, Pricing p){ return p.total(base); }
+  public static void main(String[] args) {
+    System.out.println(cobrar(100, new Normal()));
+    System.out.println(cobrar(100, new Vip()));
+  }
+}
 ```
-
-**Caso de uso real.** Flete, impuestos, pricing, validaciones.
-
-**Error común.** Estrategias con estado compartido mutable inesperado. Corrección: estrategias stateless o estado controlado.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `20.0`.
-
-#### Ejemplo integrado desde cero
 
 ```bash
-mkdir -p /tmp/java-m12-t2 && cd /tmp/java-m12-t2
+javac DemoStrategy.java
+java DemoStrategy
 ```
 
-```java
-interface Notificador { void enviar(String msg); }
-class Email implements Notificador { public void enviar(String msg){ System.out.println("EMAIL:"+msg); } }
-class Sms implements Notificador { public void enviar(String msg){ System.out.println("SMS:"+msg); } }
-class NotificadorFactory { static Notificador crear(String tipo){ return switch(tipo){ case "EMAIL" -> new Email(); case "SMS" -> new Sms(); default -> throw new IllegalArgumentException(tipo); }; } }
-public class DemoFactoryStrategy { public static void main(String[] args){ NotificadorFactory.crear("SMS").enviar("hola"); } }
-```
+**Error común.** Crear estrategia por cada `if` trivial. Corrección: usarlo cuando hay variación real y se espera extensión.
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `SMS:hola`.
+**Verificación (JDK 27, 2026-05-22).** `100.0`, `90.0`.
 
 ### Tema 3: Abstract Factory y familias de productos compatibles · Intermedio · 35 min
 
-Necesitas crear familias de objetos compatibles (botones/inputs de un mismo tema) sin mezclar variantes.
+Caso guía: crear una familia UI (botón + input) para tema claro u oscuro sin mezclar productos incompatibles.
 
 #### Abstract Factory
 
-**Definición formal.** Patrón creacional que provee una interfaz para crear familias de objetos relacionados sin especificar clases concretas.
-
-**Para qué sirve.** Garantiza compatibilidad entre productos de la misma familia.
-
-**Cuándo usarlo y cuándo no.** Úsalo cuando haya familias coherentes. No si solo hay un producto independiente.
+**Definición formal.** Provee una interfaz para crear familias de objetos relacionados sin especificar clases concretas.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t3-af && cd /tmp/java-m12-t3-af
+mkdir -p java-m12-absf
+cd java-m12-absf
 ```
+
+Crea el archivo `DemoAbsFactory.java`:
 
 ```java
-interface Boton { String render(); }
-interface UI { Boton boton(); }
-class DarkBoton implements Boton { public String render(){ return "dark"; } }
-class DarkUI implements UI { public Boton boton(){ return new DarkBoton(); } }
-public class DemoAF { public static void main(String[] args){ UI ui = new DarkUI(); System.out.println(ui.boton().render()); } }
+interface Button { String render(); }
+interface ThemeFactory { Button button(); }
+class DarkButton implements Button { public String render(){ return "dark-button"; } }
+class LightButton implements Button { public String render(){ return "light-button"; } }
+class DarkFactory implements ThemeFactory { public Button button(){ return new DarkButton(); } }
+class LightFactory implements ThemeFactory { public Button button(){ return new LightButton(); } }
+public class DemoAbsFactory {
+  static void paint(ThemeFactory f){ System.out.println(f.button().render()); }
+  public static void main(String[] args){ paint(new DarkFactory()); paint(new LightFactory()); }
+}
 ```
-
-**Caso de uso real.** Temas UI, proveedores de infraestructura por entorno.
-
-**Error común.** Mezclar productos de familias distintas. Corrección: crear toda la familia desde la misma fábrica.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `dark`.
-
-#### Familias de productos compatibles
-
-**Definición formal.** Conjunto de productos diseñados para usarse juntos; la fábrica asegura coherencia.
-
-**Para qué sirve.** Evita combinaciones inválidas.
-
-**Cuándo usarlo.** Drivers/proveedores/temas.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t3-family && cd /tmp/java-m12-t3-family
+javac DemoAbsFactory.java
+java DemoAbsFactory
 ```
 
-```java
-interface Btn { String kind(); } interface Input { String kind(); }
-interface Kit { Btn btn(); Input input(); }
-class WebBtn implements Btn { public String kind(){ return "web-btn"; } }
-class WebInput implements Input { public String kind(){ return "web-input"; } }
-class WebKit implements Kit { public Btn btn(){ return new WebBtn(); } public Input input(){ return new WebInput(); } }
-public class DemoFamily { public static void main(String[] args){ Kit k=new WebKit(); System.out.println(k.btn().kind()+","+k.input().kind()); } }
-```
+**Error común.** Explosión de clases para variaciones simples. Corrección: aplicar solo cuando hay familias coherentes.
 
-**Caso de uso real.** Adaptadores cloud por proveedor.
-
-**Error común.** Fábrica que permite mezclar. Corrección: encapsular la familia.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `web-btn,web-input`.
+**Verificación (JDK 27, 2026-05-22).** `dark-button`, `light-button`.
 
 ### Tema 4: SOLID y cuándo NO aplicar un patrón · Intermedio · 40 min
 
-Los patrones ayudan, pero aplicarlos sin necesidad crea sobreingeniería. SOLID da criterios para evaluar diseño.
+Caso guía: un servicio de facturación crece y empieza a mezclar cálculo, persistencia y envío.
 
 #### SOLID
 
-**Definición formal.** Conjunto de principios: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion.
+**Definición formal.** SRP: una razón para cambiar. OCP: extender sin modificar núcleo. LSP: subtipos respetan contrato. ISP: interfaces pequeñas. DIP: depender de abstracciones.
 
-**Para qué sirve.** Guiar diseño hacia bajo acoplamiento y alta cohesión.
+```mermaid
+flowchart TD
+  S[SRP\nuna responsabilidad] --> O[OCP\nextensible]
+  O --> L[LSP\nsubtipos válidos]
+  L --> I[ISP\ninterfaces pequeñas]
+  I --> D[DIP\ndepender de abstracciones]
+```
 
-**Cuándo usarlo.** Siempre como criterio, no como dogma.
-
-**Ejemplo mínimo enfocado (ejecutable, SRP/DI simple).**
+**Ejemplo mínimo enfocado (ejecutable, DIP/SRP).**
 
 ```bash
-mkdir -p /tmp/java-m12-t4-solid && cd /tmp/java-m12-t4-solid
+mkdir -p java-m12-solid
+cd java-m12-solid
 ```
+
+Crea el archivo `DemoSolid.java`:
 
 ```java
-interface Repo { void save(String s); }
-class ConsoleRepo implements Repo { public void save(String s){ System.out.println("save:"+s); } }
-class Service { private final Repo repo; Service(Repo repo){ this.repo=repo; } void crear(String s){ repo.save(s); } }
-public class DemoSolid { public static void main(String[] args){ new Service(new ConsoleRepo()).crear("A"); } }
+interface Repo { void save(String id); }
+class MemRepo implements Repo { public void save(String id){ System.out.println("save:" + id); } }
+class Service {
+  private final Repo repo;
+  Service(Repo repo){ this.repo = repo; }
+  void crear(String id){ repo.save(id); }
+}
+public class DemoSolid { public static void main(String[] args){ new Service(new MemRepo()).crear("A1"); } }
 ```
-
-**Caso de uso real.** Servicio que depende de abstracción, no de implementación concreta.
-
-**Error común.** Aplicar SRP creando cientos de clases sin valor. Corrección: cohesión y cambio real.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `save:A`.
-
-#### Cuándo NO aplicar un patrón
-
-**Definición formal.** Decisión de no introducir abstracción/patrón cuando el costo supera el beneficio actual.
-
-**Para qué sirve.** Evita sobreingeniería y complejidad accidental.
-
-**Cuándo usarlo.** Cuando el problema es simple, estable y local.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t4-no && cd /tmp/java-m12-t4-no
+javac DemoSolid.java
+java DemoSolid
 ```
 
-```java
-public class DemoSimple { static int suma(int a,int b){ return a+b; } public static void main(String[] args){ System.out.println(suma(1,2)); } }
-```
+**Cuándo NO aplicar un patrón.** Cuando el problema es simple y el patrón agrega indirección sin beneficio real. Regla: primero claridad, luego patrón si el cambio lo justifica.
 
-**Caso de uso real.** Una función pura no necesita Strategy/Factory.
+**Error común.** “Pattern-driven development”: usar patrones para verse sofisticado. Corrección: nombrar el problema antes del patrón.
 
-**Error común.** “Por si acaso” abstracciones. Síntoma: código difícil de leer. Corrección: YAGNI, refactorizar cuando aparezca la variación real.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `3`.
-
-#### Ejemplo integrado desde cero
-
-Usa `DemoSolid`: `Service` depende de `Repo` (DIP), `ConsoleRepo` implementa detalle (OCP/SRP razonable).
-
-**Verificación.** Salida `save:A`.
-
+**Verificación (JDK 27, 2026-05-22).** `save:A1`.
 
 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos · Intermedio · 35 min
 
-Necesitas duplicar una plantilla de configuración sin que cambios en la copia afecten al original.
+Caso guía: duplicar una plantilla de pedido sin que mutaciones afecten la original.
 
-#### Prototype
+#### Prototype / copia defensiva
 
-**Definición formal.** Patrón creacional que crea nuevos objetos copiando una instancia prototipo.
-
-**Para qué sirve.** Duplicar objetos configurados cuando la creación desde cero es costosa o repetitiva.
-
-**Cuándo usarlo y cuándo no.** Úsalo para plantillas/configuraciones. Cuidado con copias superficiales sobre estado mutable compartido.
+**Definición formal.** Prototype crea nuevos objetos copiando una instancia prototipo. La clave es el tipo de copia: superficial o profunda según datos mutables anidados.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t5-proto && cd /tmp/java-m12-t5-proto
+mkdir -p java-m12-proto
+cd java-m12-proto
 ```
 
-```java
-class Plantilla implements Cloneable {
-    String nombre; java.util.List<String> tags = new java.util.ArrayList<>();
-    Plantilla(String n){ nombre=n; }
-    public Plantilla copia(){ Plantilla p=new Plantilla(nombre); p.tags=new java.util.ArrayList<>(tags); return p; }
-}
-public class DemoProto {
-    public static void main(String[] args){ Plantilla a=new Plantilla("A"); a.tags.add("x"); Plantilla b=a.copia(); b.tags.add("y"); System.out.println(a.tags.size()+" "+b.tags.size()); }
-}
-```
-
-**Caso de uso real.** Plantillas de documentos, configuración base.
-
-**Error común.** Copia superficial con listas mutables compartidas. Síntoma: modificar copia afecta original. Corrección: deep copy de estado mutable necesario.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `1 2`.
-
-#### Copia superficial vs profunda
-
-**Definición formal.** Superficial copia referencias internas; profunda copia también los objetos mutables internos.
-
-**Para qué sirve.** Define si la copia es independiente.
-
-**Cuándo usarlo.** Profunda cuando hay mutabilidad interna compartida.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m12-t5-copy && cd /tmp/java-m12-t5-copy
-```
+Crea el archivo `DemoProto.java`:
 
 ```java
 import java.util.*;
-public class DemoCopy {
-    public static void main(String[] args) {
-        List<String> a = new ArrayList<>(List.of("x"));
-        List<String> shallow = a; // no copia real
-        List<String> deep = new ArrayList<>(a);
-        deep.add("y");
-        System.out.println(a.size()+" "+shallow.size()+" "+deep.size());
-    }
+class Plantilla {
+  String nombre;
+  List<String> items;
+  Plantilla(String n, List<String> i){ nombre=n; items=new ArrayList<>(i); }
+  Plantilla copia(){ return new Plantilla(nombre, items); } // copia defensiva de lista
+}
+public class DemoProto {
+  public static void main(String[] args) {
+    Plantilla p1 = new Plantilla("base", List.of("A"));
+    Plantilla p2 = p1.copia();
+    p2.items.add("B");
+    System.out.println(p1.items);
+    System.out.println(p2.items);
+  }
 }
 ```
 
-**Caso de uso real.** Clonar DTO con lista editable.
+```bash
+javac DemoProto.java
+java DemoProto
+```
 
-**Error común.** Usar `clone()` sin entender profundidad. Corrección: método de copia explícito.
+**Error común.** Copia superficial de listas mutables. Síntoma: mutar copia afecta original. Corrección: copiar estructuras mutables anidadas.
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `1 1 2`.
+**Verificación (JDK 27, 2026-05-22).** `[A]`, `[A, B]`.
 
 ### Tema 6: Patrones estructurales para conectar piezas existentes · Intermedio · 40 min
 
-Integras APIs incompatibles, agregas comportamiento sin herencia explosiva y simplificas subsistemas complejos.
+Caso guía: adaptar una API legacy, decorar un servicio con logging y simplificar una fachada.
 
-#### Adapter
+#### Adapter, Decorator, Facade
 
-**Definición formal.** Convierte la interfaz de una clase en otra que el cliente espera.
+**Definición formal.** Adapter traduce una interfaz a otra esperada. Decorator agrega comportamiento sin modificar la clase base. Facade ofrece una interfaz simple sobre un subsistema complejo.
 
-**Para qué sirve.** Integrar código legado/terceros sin modificar cliente.
+```mermaid
+flowchart LR
+  C[Cliente] --> F[Facade]
+  F --> A[Adapter]
+  A --> L[Legacy API]
+  C2[Cliente] --> D[Decorator]
+  D --> S[Servicio base]
+```
 
-**Cuándo usarlo.** Interfaces incompatibles.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo enfocado (ejecutable, Adapter).**
 
 ```bash
-mkdir -p /tmp/java-m12-t6-adapter && cd /tmp/java-m12-t6-adapter
+mkdir -p java-m12-adapter
+cd java-m12-adapter
 ```
+
+Crea el archivo `DemoAdapter.java`:
 
 ```java
-class Legacy { String old(){ return "legacy"; } }
-interface Target { String get(); }
-class Adapter implements Target { private final Legacy l; Adapter(Legacy l){this.l=l;} public String get(){ return l.old(); } }
-public class DemoAdapter { public static void main(String[] args){ System.out.println(new Adapter(new Legacy()).get()); } }
+class Legacy { String oldPay(){ return "OK-legacy"; } }
+interface Payment { String pay(); }
+class LegacyAdapter implements Payment {
+  private final Legacy legacy;
+  LegacyAdapter(Legacy l){ legacy=l; }
+  public String pay(){ return legacy.oldPay(); }
+}
+public class DemoAdapter { public static void main(String[] args){ System.out.println(new LegacyAdapter(new Legacy()).pay()); } }
 ```
-
-**Caso de uso real.** Adaptar SDK externo a interfaz interna.
-
-**Error común.** Poner lógica de negocio en adapter. Corrección: adapter solo traduce.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `legacy`.
-
-#### Decorator
-
-**Definición formal.** Envuelve un objeto para agregar responsabilidades dinámicamente, manteniendo la misma interfaz.
-
-**Para qué sirve.** Componer comportamiento sin herencia múltiple/explosiva.
-
-**Cuándo usarlo.** Variantes ortogonales (logging, cache, compresión).
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m12-t6-decorator && cd /tmp/java-m12-t6-decorator
+javac DemoAdapter.java
+java DemoAdapter
 ```
 
-```java
-interface Notifier { String send(String m); }
-class Base implements Notifier { public String send(String m){ return m; } }
-class Upper implements Notifier { private final Notifier n; Upper(Notifier n){this.n=n;} public String send(String m){ return n.send(m).toUpperCase(); } }
-public class DemoDecorator { public static void main(String[] args){ System.out.println(new Upper(new Base()).send("hola")); } }
-```
+**Error común.** Poner lógica de negocio en adapters/decorators sin claridad. Corrección: cada patrón con responsabilidad específica.
 
-**Caso de uso real.** `BufferedInputStream` decorando `InputStream`.
+**Verificación (JDK 27, 2026-05-22).** `OK-legacy`.
 
-**Error común.** Cadena de decoradores difícil de depurar. Corrección: documentar orden y mantener simple.
+## Cierre
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `HOLA`.
+Los patrones son vocabulario de diseño, no fin. Usa SOLID para evaluar cambios y patrones para resolver problemas reales, no para anticipar todos los futuros.
 
-#### Facade
+## Checklist
 
-**Definición formal.** Provee una interfaz simple a un subsistema complejo.
-
-**Para qué sirve.** Reducir acoplamiento del cliente con detalles internos.
-
-**Cuándo usarlo.** Subsistema con muchos pasos/objetos.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m12-t6-facade && cd /tmp/java-m12-t6-facade
-```
-
-```java
-class A { String a(){ return "A"; } } class B { String b(){ return "B"; } }
-class Facade { private final A a=new A(); private final B b=new B(); String op(){ return a.a()+b.b(); } }
-public class DemoFacade { public static void main(String[] args){ System.out.println(new Facade().op()); } }
-```
-
-**Caso de uso real.** Fachada de checkout sobre pagos, inventario, notificaciones.
-
-**Error común.** Facade que se vuelve “dios objeto”. Corrección: mantenerla delgada.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `AB`.
-
-## Cierre del módulo
-
-Los patrones son vocabulario de diseño, no checklist obligatorio. Builder, Factory, Strategy, Abstract Factory, Prototype, Adapter, Decorator y Facade resuelven problemas concretos; SOLID ayuda a decidir cuándo la abstracción mejora el sistema y cuándo solo agrega ruido.
+- Sé cuándo Builder/Factory/Strategy/Adapter aportan claridad.
+- Entiendo SOLID y sus trade-offs.
+- Evito sobre-ingeniería y patrones innecesarios.
