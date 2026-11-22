@@ -1,464 +1,475 @@
-# Módulo 15: Java Master — builds, pruebas y observabilidad
+# Módulo 15: Build, testing y observabilidad
 
-Este capítulo endurece el proyecto multi-módulo que creaste en el [Módulo 8, Tema 3](/curso/java/8#tema-3-proyectos-multi-modulo) como producto mantenible. Trabaja sobre ese mismo repositorio; no crea seis demostraciones aisladas.
+Un proyecto profesional no se define solo por compilar: debe construirse de forma reproducible, probarse en varios niveles y dejar evidencia observable cuando falla. Este módulo cubre Maven/Gradle avanzado, estructura multi-módulo, tests con JUnit/Mockito, integración reproducible y logging estructurado.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Configurar Maven con ciclo de vida, scopes y perfiles |
+| 2 | Usar Gradle con tareas, configuraciones y reproducibilidad |
+| 3 | Diseñar multi-módulo sin ciclos y con límites claros |
+| 4 | Escribir tests unitarios expresivos con JUnit/Mockito |
+| 5 | Diseñar pruebas de integración reproducibles |
+| 6 | Implementar logging estructurado con SLF4J/Logback/MDC |
 
 ## Aprende construyendo
 
-
 ### Tema 1: Maven avanzado · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por maven avanzado con foco en comprensión antes de implementación.
+Tu proyecto compila localmente, pero en CI falla por versiones de plugin, dependencias mal scoped o perfiles no controlados. Necesitas un `pom.xml` que exprese el build con precisión.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender maven avanzado te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** Maven es una herramienta de build basada en el Project Object Model (POM). El POM declara coordenadas, dependencias, plugins, propiedades y perfiles. El ciclo de vida estándar (`validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`) define fases donde los goals de plugins se enlazan.
 
-#### ► LA ANALOGÍA
-Piensa en maven avanzado como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** Los plugins deben tener versión fijada para reproducibilidad. Los scopes (`compile`, `provided`, `runtime`, `test`) controlan el classpath. Los perfiles modifican configuración bajo condiciones; deben ser explícitos y auditables. `dependencyManagement` centraliza versiones; no agrega dependencia por sí sola. El build debe ser ejecutable por `./mvnw clean verify`.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que maven avanzado resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** El POM es el contrato de construcción: declara qué entra, qué se ejecuta y en qué fase.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Maven avanzado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Maven avanzado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.academia</groupId>
+  <artifactId>demo-build</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
 
-#### ► CUÁNDO NO USAR ESTO
-No uses maven avanzado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <junit.version>5.11.0</junit.version>
+  </properties>
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: maven avanzado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-#### ► LO QUE DEBES RECORDAR
-- Maven avanzado existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve maven avanzado en tu contexto?
-2. ¿Cómo sabrías que maven avanzado no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar maven avanzado?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-cp -R java-maven ejemplo-maven-avanzado
-cd ejemplo-maven-avanzado
-mvn -pl app -am clean verify
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.0</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
 ```
 
-</details>
+**Desglose del código**
+
+- `maven.compiler.release` fija el bytecode/API objetivo.
+- La dependencia JUnit está en `test`: no contamina runtime.
+- `maven-surefire-plugin` con versión fijada da reproducibilidad.
+- `clean verify` es el comando de verificación estándar en CI.
+
+**Ejecución y salida real**
+
+```bash
+./mvnw clean verify
+```
+
+Salida esperada:
+
+```text
+[INFO] BUILD SUCCESS
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Build distinto en CI | Plugin sin versión o dependencia flotante | Fija versiones y usa wrapper |
+| JAR incluye dependencias de test | Scope incorrecto | Usa `scope test` |
+| Perfil activa comportamiento oculto | Perfil poco documentado | Documenta activación y propósito |
+
+**Verificación rápida**
+
+Ejecuta `./mvnw -q help:effective-pom` y verifica versiones efectivas de plugins/dependencias.
 
 ### Tema 2: Gradle y builds reproducibles · Avanzado · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por gradle y builds reproducibles con foco en comprensión antes de implementación.
+Un equipo usa Gradle y quiere builds rápidos pero reproducibles. Alguien agrega una tarea con efectos no declarados y el cache produce resultados sospechosos.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender gradle y builds reproducibles te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** Gradle es una herramienta de build basada en un DAG de tareas. Cada tarea declara entradas, salidas y acciones; con esa metadata, Gradle puede aplicar up-to-date checks, build cache e incrementalidad.
 
-#### ► LA ANALOGÍA
-Piensa en gradle y builds reproducibles como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** La reproducibilidad requiere wrappers, versiones fijadas, toolchains declaradas y tareas con entradas/salidas bien definidas. Una tarea sin declarar inputs/outputs rompe el modelo de up-to-date/caching. Las dependencias se declaran por configuración (`implementation`, `testImplementation`, etc.). La configuración debe ser determinista: no depender de tiempo, red o entorno no declarado sin invalidación.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que gradle y builds reproducibles resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** Una tarea Gradle es una función pura ideal: mismas entradas declaradas -> mismas salidas. Si oculta entradas, el cache miente.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Gradle y builds reproducibles se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Gradle y builds reproducibles | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses gradle y builds reproducibles por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: gradle y builds reproducibles funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Gradle y builds reproducibles existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve gradle y builds reproducibles en tu contexto?
-2. ¿Cómo sabrías que gradle y builds reproducibles no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar gradle y builds reproducibles?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-cp -R java-gradle ejemplo-gradle-reproducible
-cd ejemplo-gradle-reproducible
-gradle wrapper --gradle-version 9.1.0
-./gradlew clean build
-```
-
-</details>
-
-### Tema 3: Proyectos multi-módulo sin ciclos · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por proyectos multi-módulo sin ciclos con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender proyectos multi-módulo sin ciclos te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proyectos multi-módulo sin ciclos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyectos multi-módulo sin ciclos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyectos multi-módulo sin ciclos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyectos multi-módulo sin ciclos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proyectos multi-módulo sin ciclos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyectos multi-módulo sin ciclos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyectos multi-módulo sin ciclos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyectos multi-módulo sin ciclos en tu contexto?
-2. ¿Cómo sabrías que proyectos multi-módulo sin ciclos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyectos multi-módulo sin ciclos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-// src/test/java/architecture/DependencyRulesTest.java
-@Test
-void dominioNoDependeDeInfraestructura() {
-    var clases = new ClassFileImporter().importPackages("com.academia");
-    noClasses().that().resideInAPackage("..domain..")
-        .should().dependOnClassesThat().resideInAPackage("..infrastructure..")
-        .check(clases);
-}
-```
-
-```bash
-./gradlew test
-```
-
-</details>
-
-### Tema 4: JUnit 6, Mockito y assertions expresivas · Avanzado · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por junit 6, mockito y assertions expresivas con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender junit 6, mockito y assertions expresivas te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en junit 6, mockito y assertions expresivas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que junit 6, mockito y assertions expresivas resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| JUnit 6, Mockito y assertions expresivas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar JUnit 6, Mockito y assertions expresivas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses junit 6, mockito y assertions expresivas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: junit 6, mockito y assertions expresivas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- JUnit 6, Mockito y assertions expresivas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve junit 6, mockito y assertions expresivas en tu contexto?
-2. ¿Cómo sabrías que junit 6, mockito y assertions expresivas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar junit 6, mockito y assertions expresivas?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-// src/test/java/ConfirmarEntregaTest.java
-@Test
-void confirmarEnviaNotificacionYActualizaEstado() {
-    var repo = new RepositorioGuiasFake();
-    var notificacion = mock(PuertoNotificacion.class);
-    var caso = new ConfirmarEntrega(repo, notificacion);
-
-    caso.confirmar("RT-1");
-
-    assertEquals("ENTREGADA", repo.estadoDe("RT-1"));
-    verify(notificacion).enviar(any(EventoEntrega.class));
-}
-```
-
-```bash
-./gradlew test
-```
-
-</details>
-
-### Tema 5: Pruebas de integración reproducibles · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por pruebas de integración reproducibles con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender pruebas de integración reproducibles te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pruebas de integración reproducibles como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que pruebas de integración reproducibles resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Pruebas de integración reproducibles se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Pruebas de integración reproducibles | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses pruebas de integración reproducibles por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pruebas de integración reproducibles funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Pruebas de integración reproducibles existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pruebas de integración reproducibles en tu contexto?
-2. ¿Cómo sabrías que pruebas de integración reproducibles no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pruebas de integración reproducibles?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```kotlin
-val integrationTest by sourceSets.creating {
-    java.srcDir("src/integrationTest/java")
-    resources.srcDir("src/integrationTest/resources")
-    compileClasspath += sourceSets.main.get().output
-    runtimeClasspath += output + compileClasspath
+plugins {
+    java
 }
-configurations[integrationTest.implementationConfigurationName]
-    .extendsFrom(configurations.testImplementation.get())
 
-tasks.register<Test>("integrationTest") {
-    testClassesDirs = integrationTest.output.classesDirs
-    classpath = integrationTest.runtimeClasspath
+group = "com.academia"
+version = "1.0.0-SNAPSHOT"
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
+tasks.test {
     useJUnitPlatform()
 }
 ```
 
+**Desglose del código**
+
+- `toolchain` fija la versión de Java para compilación/tests.
+- `repositories` y versiones explícitas hacen resoluble el build.
+- `useJUnitPlatform()` habilita JUnit Jupiter.
+- El wrapper `gradlew` debe versionarse.
+
+**Ejecución y salida real**
+
 ```bash
-./gradlew integrationTest
+./gradlew clean build
 ```
 
-</details>
+Salida esperada:
 
-### Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 40 min
+```text
+BUILD SUCCESSFUL
+```
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Errores comunes y cómo resolverlos**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por slf4j, logback, mdc y logging estructurado con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender slf4j, logback, mdc y logging estructurado te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en slf4j, logback, mdc y logging estructurado como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que slf4j, logback, mdc y logging estructurado resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| SLF4J, Logback, MDC y logging estructurado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Tarea cacheada incorrectamente | Inputs/outputs no declarados | Declara entradas/salidas |
+| Build no reproducible | Versión de Java o dependencias flotantes | Fija toolchain y versiones |
+| Tests JUnit 5 no corren | Falta `useJUnitPlatform()` | Configura la tarea test |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SLF4J, Logback, MDC y logging estructurado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Verificación rápida**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses slf4j, logback, mdc y logging estructurado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+Ejecuta `./gradlew --version` y `./gradlew clean test` desde el wrapper del proyecto.
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: slf4j, logback, mdc y logging estructurado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+### Tema 3: Proyectos multi-módulo sin ciclos · Avanzado · 40 min
 
-#### ► LO QUE DEBES RECORDAR
-- SLF4J, Logback, MDC y logging estructurado existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
+**Caso guía**
 
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve slf4j, logback, mdc y logging estructurado en tu contexto?
-2. ¿Cómo sabrías que slf4j, logback, mdc y logging estructurado no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar slf4j, logback, mdc y logging estructurado?
+Separas `domain`, `application` e `infrastructure`. Al poco tiempo `domain` importa una clase de `infrastructure` y se crea un ciclo. El build se vuelve frágil y los cambios se propagan.
 
-</details>
+**Fundamento técnico y modelo mental**
 
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
+**Definición formal.** Un proyecto multi-módulo divide el sistema en artefactos/módulos con límites explícitos. Una *dependencia acíclica* significa que el grafo de dependencias entre módulos no tiene ciclos. Los límites se modelan por contratos (interfaces, DTOs, puertos).
 
-#### Código y verificación
+**Contrato / invariantes / reglas.** El dominio debe ser estable y con pocas dependencias externas. La dirección de dependencia debe ser deliberada (por ejemplo, infraestructura depende de aplicación/dominio, no al revés). Los ciclos impiden compilación ordenada, dificultan pruebas y señalan acoplamiento. Un módulo debe tener una razón de cambio clara; separar por carpetas sin controlar dependencias no es modularidad real.
+
+**Modelo mental.** Los módulos son órganos con funciones: pueden colaborar, pero si todos dependen de todos, el sistema pierde estructura.
+
+**Implementación desde cero**
+
+Maven parent (resumen):
+
+```xml
+<modules>
+  <module>domain</module>
+  <module>application</module>
+  <module>infrastructure</module>
+</modules>
+```
+
+Regla de dependencia (conceptual):
+
+```text
+infrastructure -> application -> domain
+```
+
+Ejemplo de contrato en `domain`:
+
 ```java
-// src/main/java/ProcesarEntrega.java
-try (var ignored = MDC.putCloseable("traceId", traceId)) {
-    log.atInfo().addKeyValue("guia", guia).addKeyValue("estado", estado)
-       .log("delivery processed");
+public interface GuiaRepository {
+    void guardar(String guia);
 }
 ```
 
-```bash
-./gradlew run
+Implementación en `infrastructure`:
+
+```java
+public class GuiaRepositoryMemoria implements GuiaRepository {
+    public void guardar(String guia) { System.out.println(guia); }
+}
 ```
 
-</details>
+**Desglose del código**
+
+- `GuiaRepository` en dominio/aplicación define el puerto.
+- La implementación concreta vive en infraestructura.
+- El grafo debe permanecer acíclico; se verifica con revisión y herramientas de build/análisis.
+- Si dos módulos se necesitan mutuamente, extrae contrato común.
+
+**Ejecución y salida real**
+
+```bash
+./mvnw -q -DskipTests package
+```
+
+Build exitoso indica que no hay ciclos de compilación en la estructura declarada.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Ciclo entre módulos | Límites mal definidos | Extrae interfaz/contrato o mueve responsabilidad |
+| Dominio depende de framework | Fuga de infraestructura | Invierte dependencia con puerto |
+| Módulos por moda | Sin razón de cambio clara | Empieza simple; modulariza cuando duela |
+
+**Verificación rápida**
+
+Dibuja el grafo de dependencias de módulos y confirma que sea un DAG.
+
+### Tema 4: JUnit 6, Mockito y assertions expresivas · Avanzado · 35 min
+
+**Caso guía**
+
+Una regla de negocio falla en producción. El bug podría haberse detectado con un test unitario rápido, aislado y legible. Necesitas tests que fallen con mensajes útiles y no dependan de infraestructura.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** Una prueba unitaria verifica una unidad pequeña de comportamiento en aislamiento. JUnit Jupiter provee el modelo de test; Mockito permite crear dobles para dependencias. Una aserción expresiva verifica el resultado observable relevante.
+
+**Contrato / invariantes / reglas.** El test debe ser determinista, rápido y aislado. Se mockean dependencias lentas/externas/no deterministas, no el valor bajo prueba. `verify` se usa para interacciones relevantes; exceso de verificación acopla a implementación. Los nombres de tests deben describir comportamiento. Arrange-Act-Assert ayuda a legibilidad, pero no es dogma.
+
+**Modelo mental.** Un test unitario es una lupa sobre una pieza: si la pieza falla, debe ser obvio por qué, sin levantar todo el sistema.
+
+**Implementación desde cero**
+
+Ejemplo con JUnit 5/6 + Mockito (dependencias externas):
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+interface EmailClient { void send(String to, String body); }
+
+class Notifier {
+    private final EmailClient email;
+    Notifier(EmailClient email) { this.email = email; }
+    void avisar(String to) {
+        if (to == null || to.isBlank()) throw new IllegalArgumentException("to requerido");
+        email.send(to, "Hola");
+    }
+}
+
+class NotifierTest {
+    @Test
+    void enviaEmail() {
+        EmailClient email = mock(EmailClient.class);
+        new Notifier(email).avisar("ada@example.com");
+        verify(email).send("ada@example.com", "Hola");
+    }
+
+    @Test
+    void rechazaDestinoVacio() {
+        EmailClient email = mock(EmailClient.class);
+        assertThrows(IllegalArgumentException.class, () -> new Notifier(email).avisar(""));
+        verifyNoInteractions(email);
+    }
+}
+```
+
+**Desglose del código**
+
+- `mock` crea el doble de `EmailClient`.
+- `assertThrows` verifica el contrato de error.
+- `verifyNoInteractions` garantiza que no hubo efecto lateral.
+- El SUT (`Notifier`) es real; la dependencia es simulada.
+
+**Ejecución y salida real**
+
+```bash
+./mvnw test
+# o
+./gradlew test
+```
+
+Salida esperada: tests ejecutados con 0 fallos.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Test frágil | Verifica detalles internos | Verifica comportamiento observable |
+| Mock de todo | Diseño acoplado o test mal enfocado | Usa objetos reales cuando sean simples |
+| Test no determinista | Tiempo/red/estado global | Aísla y controla dependencias |
+
+**Verificación rápida**
+
+Rompe la condición de validación en `avisar`; el test `rechazaDestinoVacio` debe fallar.
+
+### Tema 5: Pruebas de integración reproducibles · Avanzado · 45 min
+
+**Caso guía**
+
+Tu test unitario pasa, pero en producción falla porque la consulta SQL real o la configuración del contenedor es distinta. Necesitas pruebas de integración reproducibles.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** Una *prueba de integración* verifica la interacción entre componentes reales o casi reales (DB, colas, HTTP, filesystem). *Reproducible* significa que el entorno de prueba se puede crear de forma controlada y determinista en cualquier máquina/CI.
+
+**Contrato / invariantes / reglas.** La integración debe aislar dependencias externas inestables: usar contenedores efímeros (Testcontainers), bases en memoria cuando el comportamiento sea equivalente, o fixtures controladas. Los tests no deben depender de estado compartido entre ejecuciones. Deben limpiar datos o usar bases efímeras. El costo es mayor que unit tests: se ejecutan en menor cantidad y con foco en contratos críticos.
+
+**Modelo mental.** El unit test prueba la pieza; la integración prueba el ensamblaje en un banco de pruebas controlado.
+
+**Implementación desde cero**
+
+Ejemplo conceptual con Testcontainers (dependencia externa):
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.testcontainers.containers.PostgreSQLContainer;
+
+class RepoIntegracionTest {
+    @Test
+    void guardaYLee() {
+        try (var postgres = new PostgreSQLContainer<>("postgres:16-alpine")) {
+            postgres.start();
+            String jdbc = postgres.getJdbcUrl();
+            assertTrue(jdbc.startsWith("jdbc:postgresql://"));
+            // aquí abrirías conexión, crearías esquema y probarías el repo real
+        }
+    }
+}
+```
+
+**Desglose del código**
+
+- El contenedor crea una DB real efímera para el test.
+- `start()` levanta el entorno; el `try-with-resources` lo destruye.
+- El test valida integración con el motor real, no con un mock.
+- El entorno es reproducible en CI si hay Docker disponible.
+
+**Ejecución y salida real**
+
+```bash
+./mvnw -Dtest=RepoIntegracionTest test
+```
+
+Requiere Docker/Testcontainers. Si no están disponibles, el test debe marcarse/gestionarse según política del proyecto.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Test pasa local y falla en CI | Docker/entorno ausente | Documenta prerrequisitos y usa pipeline compatible |
+| Tests lentos y frágiles | Demasiadas integraciones innecesarias | Mantén pirámide de tests: más unit, menos integración |
+| Estado compartido entre tests | No limpias datos | Usa contenedores efímeros/transacciones/fixtures |
+
+**Verificación rápida**
+
+Ejecuta el test dos veces seguidas: debe dar el mismo resultado sin preparación manual.
+
+### Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 40 min
+
+**Caso guía**
+
+En producción hay un error intermitente. Los logs dicen “error al procesar” pero no identifican request, usuario ni operación. Necesitas logs estructurados y correlacionables.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** SLF4J es una fachada de logging; Logback es una implementación común. El *logging estructurado* emite eventos con campos consistentes (nivel, timestamp, logger, mensaje, contexto). MDC (Mapped Diagnostic Context) agrega contexto por hilo/ejecución.
+
+**Contrato / invariantes / reglas.** Loggear por niveles apropiados (`ERROR` para fallos accionables, `WARN` para anomalías recuperables, `INFO` para eventos de negocio, `DEBUG` para diagnóstico). No loggear secretos, tokens o PII sensible. Incluir excepción en el log de error (`log.error("...", e)`). Limpiar MDC en `finally`. El formato estructurado (JSON o key-value) facilita consulta en agregadores.
+
+**Modelo mental.** Un buen log es una caja negra: no graba todo, graba lo necesario para reconstruir el evento.
+
+**Implementación desde cero**
+
+> **Nota:** requiere dependencias `org.slf4j:slf4j-api` y un backend como `ch.qos.logback:logback-classic`.
+
+Ejemplo con SLF4J/Logback (dependencias externas):
+
+```java
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+
+public class DemoLog {
+    private static final Logger log = LoggerFactory.getLogger(DemoLog.class);
+
+    static void procesar(String requestId, String guia) {
+        MDC.put("requestId", requestId);
+        try {
+            log.info("procesando guia={}", guia);
+            if (guia.isBlank()) throw new IllegalArgumentException("guia vacia");
+            log.info("ok guia={}", guia);
+        } catch (Exception e) {
+            log.error("fallo guia={}", guia, e);
+        } finally {
+            MDC.remove("requestId");
+        }
+    }
+
+    public static void main(String[] args) {
+        procesar("req-1", "G-1");
+        procesar("req-2", "");
+    }
+}
+```
+
+**Desglose del código**
+
+- `LoggerFactory.getLogger` crea logger por clase.
+- `{}` evita concatenación innecesaria.
+- `MDC` agrega `requestId` a todos los logs del hilo.
+- `finally` limpia MDC para evitar fuga de contexto.
+
+**Ejecución y salida real**
+
+Con Logback configurado:
+
+```text
+INFO ... [req-1] procesando guia=G-1
+INFO ... [req-1] ok guia=G-1
+INFO ... [req-2] procesando guia=
+ERROR ... [req-2] fallo guia=
+java.lang.IllegalArgumentException: guia vacia
+```
+
+El formato depende del patrón/appender.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Logs inútiles | Mensajes vagos sin contexto | Agrega campos de negocio y MDC |
+| Fuga de contexto | No limpias MDC | Usa `finally { MDC.remove(...) }` |
+| Logs ruidosos/caros | Nivel o volumen mal calibrado | Ajusta niveles y muestreo |
+
+**Verificación rápida**
+
+Configura el patrón para incluir `%X{requestId}` y verifica que aparezca en cada evento del request.
+
+## Cierre del módulo
+
+Build, tests y observabilidad son el sistema inmunológico del proyecto: detectan regresiones, garantizan reproducibilidad y dejan evidencia diagnóstica. En el siguiente módulo pasarás a Spring Boot para construir servicios web sobre estas bases.
