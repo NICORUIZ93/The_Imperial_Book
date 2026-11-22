@@ -1,8 +1,8 @@
 # Módulo 0: Fundamentos de programación y entorno Java
 
-Este módulo establece el ciclo completo: entorno, compilación, ejecución, tipos, texto, control de flujo, arreglos y métodos. Cada tema se construye desde cero, con comandos reproducibles y verificación observable.
+Este módulo establece el ciclo completo de trabajo en Java: preparar el entorno, comprender qué ocurre cuando se compila y ejecuta un programa, y dominar los elementos básicos del lenguaje. Cada tema parte de un problema concreto, presenta el concepto en prosa, desarrolla un ejemplo desde cero y cierra con ejecución real, errores frecuentes y verificación.
 
-**Entorno de referencia verificado (2026-05-22, esta máquina)**:
+**Entorno de referencia verificado en esta máquina (2026-05-22):**
 
 ```bash
 java -version
@@ -16,82 +16,41 @@ OpenJDK 64-Bit Server VM Temurin-27.0.1.0.2+1 (build 27+13-7460, mixed mode, sha
 javac 27.0.1.0.2
 ```
 
-## Prerrequisitos
-
-- Terminal (PowerShell, bash o zsh).
-- Permisos para instalar software.
-- Editor de texto plano (VS Code, IntelliJ, Neovim, etc.).
-- Espacio para crear carpetas de práctica.
-
 ## Aprende construyendo
 
 ### Tema 1: Qué es programar y qué problema resuelve Java · Básico · 25 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Supongamos que necesitamos calcular el precio final de un producto con IVA. La regla es simple: tomar un precio base, aplicar un porcentaje de impuesto y obtener el resultado. Aunque el problema parece pequeño, contiene los elementos esenciales de cualquier programa: datos de entrada, un proceso que transforma esos datos, una salida observable y una forma de verificar que el resultado sea correcto.
 
-#### Caso guía
+#### Qué es un programa y qué significa programar
 
-Tienes que calcular el precio final de un producto con IVA. La regla es simple: precio base + impuesto. El caso obliga a lo esencial: entrada, proceso, salida y verificación.
+Un programa es una especificación finita y ejecutable de un cómputo. A partir de un estado o unos datos de entrada, produce una salida o un nuevo estado siguiendo las reglas del lenguaje y del entorno de ejecución. Programar, en este sentido, no consiste solo en escribir código: consiste en definir con precisión una regla, expresarla en un lenguaje formal, ejecutarla y comprobar que su comportamiento es el esperado.
 
-#### Fundamento técnico y modelo mental
+Cuando la regla es clara y repetible, un programa resulta útil porque automatiza el cálculo y evita repetirlo manualmente. En cambio, si la regla es ambigua, el primer problema no es técnico sino conceptual: antes de codificar hay que definir qué significa “correcto”. La verificación es parte del acto de programar; sin ella, el código es una hipótesis no comprobada.
 
-**Programa**
-- Definición formal: Especificación finita y ejecutable de un cómputo: transforma entrada/estado en salida según reglas del lenguaje y runtime.
-- Para qué sirve: Automatizar reglas repetibles.
-- Cuándo usarlo: Cuando la regla es clara y repetible.
-- Cuándo no / riesgo: No automatices reglas ambiguas sin definirlas.
-- Verificación: Cambias entrada y la salida cambia coherentemente.
+#### Por qué Java
 
-**Programar**
-- Definición formal: Diseñar, codificar, compilar/ejecutar y verificar esa especificación.
-- Para qué sirve: Convertir una necesidad en comportamiento observable.
-- Cuándo usarlo: Siempre que implementes software.
-- Cuándo no / riesgo: No es solo “escribir código”; sin verificación es adivinanza.
-- Verificación: Compila, ejecuta y pasa caso esperado.
+Java es un lenguaje orientado a objetos, de tipado estático, que se compila a bytecode y se ejecuta sobre la Java Virtual Machine (JVM). El tipado estático significa que muchas incompatibilidades de tipos se detectan durante la compilación. La compilación a bytecode permite separar el código fuente de la plataforma concreta donde se ejecuta. La JVM proporciona el entorno de ejecución que interpreta o compila ese bytecode en la máquina anfitriona.
 
-**Java (lenguaje/plataforma)**
-- Definición formal: Lenguaje orientado a objetos, tipado estático, compilado a bytecode ejecutado por JVM.
-- Para qué sirve: Construir software portable, mantenible y con ecosistema amplio.
-- Cuándo usarlo: Backend, Android, herramientas, enterprise.
-- Cuándo no / riesgo: No es la mejor opción para todo script rápido o todo sistema de bajo nivel.
-- Verificación: `javac` genera `.class`, `java` lo ejecuta.
+Java se usa cuando interesa construir software mantenible, con buen tooling, bibliotecas maduras y portabilidad razonable: servicios backend, herramientas empresariales, aplicaciones Android, utilidades de línea de comandos, entre otros casos. No es la mejor opción para todo: un script pequeño de una sola vez puede resolverse con menos ceremonia, y ciertos sistemas de muy bajo nivel pueden requerir lenguajes con control más directo de memoria y hardware.
 
-**Punto de entrada `main`**
-- Definición formal: Método `public static void main(String[] args)` que la JVM invoca al iniciar.
-- Para qué sirve: Definir dónde comienza la ejecución.
-- Cuándo usarlo: Apps standalone Java.
-- Cuándo no / riesgo: Firma incorrecta: JVM no lo reconoce.
-- Verificación: `java Clase` ejecuta el método.
+Para compilar código Java desde la terminal se utiliza `javac`, la herramienta del JDK. El resultado de la compilación es un archivo `.class`, que contiene bytecode. Para ejecutarlo se utiliza `java`, que inicia la JVM y busca el punto de entrada del programa. El punto de entrada estándar de una aplicación Java es el método `main`, cuya firma debe ser exactamente esta:
 
-**Contrato / invariantes / reglas.** El archivo `.java` con clase pública `C` debe llamarse `C.java`. `javac` valida sintaxis/tipos; si falla, no hay `.class` nuevo válido. `main` debe tener la firma exacta. La salida observable debe coincidir con la regla.
+```java
+public static void main(String[] args)
+```
 
-**Modelo mental.** Un programa es una receta verificable: ingredientes (entrada), pasos (proceso), plato (salida), control de calidad (compilación/prueba).
+Si la firma cambia, la JVM no podrá usar ese método como inicio del programa.
 
-#### ► LO QUE PUEDE SALIR MAL
+#### Un primer ejemplo
 
-- **`class ... is public, should be declared in a file named ...`**. Causa probable: Nombre de archivo/clase no coincide. Corrección: Renombrar para que coincidan.
-- **`Could not find or load main class`**. Causa probable: Ejecutaste en carpeta equivocada o con `.class`. Corrección: `cd` a la carpeta y usa `java PrecioFinal`.
-- **Salida no cambia**. Causa probable: Ejecutaste `.class` viejo. Corrección: Recompila con `javac`.
-
-#### Verificación rápida
-
-- [ ] `javac` genera `.class`.
-- [ ] `java PrecioFinal` imprime 121.0 para base 100.0 e IVA 0.21.
-- [ ] Cambiar base a 200.0 produce 242.0.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
+Desde una carpeta vacía, creamos un archivo llamado `PrecioFinal.java`:
 
 ```bash
 mkdir -p /tmp/java-m0-t1 && cd /tmp/java-m0-t1
 ```
 
-`PrecioFinal.java`
+El contenido del archivo es el siguiente:
 
 ```java
 public class PrecioFinal {
@@ -107,24 +66,29 @@ public class PrecioFinal {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`public class PrecioFinal`**: Define la clase pública. Por qué importa: Java organiza código en clases. Si lo omites/cambias: Nombre distinto al archivo falla al compilar.
-- **`main(String[] args)`**: Punto de entrada. Por qué importa: JVM lo invoca. Si lo omites/cambias: Sin firma correcta no ejecuta.
-- **`double precioBase/iva`**: Variables decimales. Por qué importa: Representan valores del cálculo. Si lo omites/cambias: Tipo incorrecto puede perder precisión o no compilar.
-- **`precioBase + (precioBase * iva)`**: Regla de negocio. Por qué importa: Calcula precio final. Si lo omites/cambias: Quitar paréntesis aquí no cambia por precedencia, pero en otras expresiones sí.
-- **`System.out.println`**: Salida estándar. Por qué importa: Permite observar resultado. Si lo omites/cambias: Sin salida no verificas.
+La primera línea declara la clase `PrecioFinal`. En Java, el código ejecutable vive dentro de clases. Como la clase es `public`, el archivo debe llamarse `PrecioFinal.java`; de lo contrario, el compilador rechazará el código.
 
-#### Ejecución y salida real
+Dentro de la clase se define el método `main`. La palabra clave `public` indica que puede ser invocado desde fuera de la clase; `static` permite que la JVM lo ejecute sin crear un objeto; `void` indica que no devuelve un valor; y `String[] args` recibe los argumentos de línea de comandos.
 
-Comandos:
+Las variables `precioBase` e `iva` son de tipo `double`, adecuado aquí para representar valores decimales. La expresión `precioBase + (precioBase * iva)` calcula el impuesto y lo suma al precio base. Finalmente, `System.out.println` escribe cada valor en la salida estándar, lo que nos permite observar el resultado.
+
+#### Compilación y ejecución
+
+Para compilar el programa:
 
 ```bash
 javac PrecioFinal.java
+```
+
+Si la compilación es correcta, se generará `PrecioFinal.class`. Luego ejecutamos:
+
+```bash
 java PrecioFinal
 ```
 
-Salida real observada (2026-05-22, JDK 27):
+Salida real observada en esta máquina (JDK 27, 2026-05-22):
 
 ```text
 Precio base: 100.0
@@ -132,94 +96,41 @@ IVA: 0.21
 Precio final: 121.0
 ```
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **No compila por nombre**. Causa probable: Archivo/clase no coinciden. Corrección: Mismo nombre exacto.
-- **`NumberFormatException` inexistente aquí**. Causa probable: No aplica; no hay parsing. Corrección: Si agregas `args`, valida/parsa.
-- **Resultado incorrecto**. Causa probable: Fórmula mal escrita. Corrección: Verifica con caso manual.
+Si aparece el mensaje `class PrecioFinal is public, should be declared in a file named PrecioFinal.java`, la causa es un desajuste entre el nombre del archivo y el nombre de la clase pública. La corrección es renombrar uno de los dos para que coincidan.
 
-#### Verificación rápida
+Si aparece `Could not find or load main class PrecioFinal`, suele significar que la ejecución se hizo desde otra carpeta o que se pasó el nombre del archivo `.class`. Hay que ubicarse en el directorio donde está `PrecioFinal.class` y ejecutar `java PrecioFinal`.
 
-1. Cambia `precioBase` a 200.0.
-2. `javac PrecioFinal.java && java PrecioFinal`.
-3. Espera `Precio final: 242.0`.
+Si el resultado no cambia después de modificar el código, es probable que se esté ejecutando una versión compilada anterior. En ese caso, debe compilarse nuevamente con `javac` antes de ejecutar.
 
-</details>
+#### Verificación
+
+Una verificación simple consiste en cambiar `precioBase` a `200.0`, recompilar y ejecutar. La salida debe mostrar `Precio final: 242.0`. Si el valor cambia según lo esperado, el programa está calculando el resultado y no simplemente mostrando un texto fijo.
 
 ### Tema 2: JDK, JRE, JVM y bytecode (WORA) · Básico · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Al compilar `HolaJVM.java` se obtiene `HolaJVM.class`, y al ejecutar ese archivo la JVM produce una salida. Esto plantea dos preguntas importantes: por qué no se ejecuta directamente el archivo `.java`, y por qué el archivo compilado puede ejecutarse en otro sistema que tenga una JVM compatible. Responder estas preguntas permite distinguir entre problemas de código fuente, problemas de compilación y problemas de entorno.
 
-#### Caso guía
+#### JDK, JRE, JVM, bytecode y WORA
 
-Compilas `HolaJVM.java`, obtienes `HolaJVM.class` y lo ejecutas. ¿Por qué no ejecutas el `.java` directo? ¿Por qué el `.class` puede correr en otra máquina? La respuesta separa fallos de código, compilación y entorno.
+El **JDK** (Java Development Kit) es el kit de desarrollo. Incluye el compilador `javac`, herramientas como `jar`, `javadoc`, `javap` o `jshell`, y un entorno de ejecución para probar y ejecutar programas. Es lo que necesita quien desarrolla en Java. Si solo se instala un runtime sin compilador, será posible ejecutar programas ya compilados, pero no compilar código fuente.
 
-#### Fundamento técnico y modelo mental
+El **JRE** (Java Runtime Environment) fue históricamente el entorno orientado a ejecutar aplicaciones Java. Incluía la JVM y bibliotecas estándar de ejecución, pero no el conjunto completo de herramientas de desarrollo. En la práctica moderna, muchas distribuciones entregan un JDK completo, y para despliegue se pueden construir runtimes personalizados. La distinción sigue siendo útil: desarrollar requiere herramientas de compilación; ejecutar requiere un runtime compatible.
 
-**JDK**
-- Definición formal: Kit de desarrollo: `javac`, herramientas, docs/libs y runtime para desarrollar/ejecutar.
-- Para qué sirve: Compilar y desarrollar Java.
-- Cuándo usarlo/tenerlo en cuenta: Siempre que programes Java.
-- Cuándo no / riesgo: Instalar solo JRE y esperar `javac`.
-- Verificación: `javac -version` funciona.
+La **JVM** (Java Virtual Machine) es la máquina virtual que carga, verifica e interpreta o compila bytecode según las reglas de la plataforma Java. No ejecuta directamente el `.java`, sino el artefacto intermedio generado por el compilador. Su comportamiento depende de la implementación y versión, por lo que “funciona en Java” siempre debe entenderse como “funciona en una JVM compatible con las características usadas”.
 
-**JRE/Runtime**
-- Definición formal: Entorno para ejecutar Java; históricamente sin toolchain completa de desarrollo.
-- Para qué sirve: Ejecutar apps compiladas.
-- Cuándo usarlo/tenerlo en cuenta: Despliegue/runtime-only.
-- Cuándo no / riesgo: Confundir con JDK.
-- Verificación: `java -version` funciona, `javac` puede faltar.
+El **bytecode** es el formato intermedio contenido en los archivos `.class`. Es el resultado de compilar el código fuente. Su función es separar la compilación del lenguaje de la ejecución en una plataforma concreta. Se puede inspeccionar con `javap`, lo que resulta útil para entender qué generó el compilador o diagnosticar problemas de carga y versión.
 
-**JVM**
-- Definición formal: Máquina virtual que carga, verifica y ejecuta bytecode (intérprete/JIT).
-- Para qué sirve: Ejecutar `.class` en plataforma host.
-- Cuándo usarlo/tenerlo en cuenta: Al ejecutar Java; al diagnosticar rendimiento/memoria.
-- Cuándo no / riesgo: “Es portable” sin considerar versión de JVM.
-- Verificación: `java HolaJVM` ejecuta.
+**WORA** (Write Once, Run Anywhere) es el objetivo de portabilidad de Java: el mismo bytecode puede ejecutarse en cualquier plataforma donde exista una JVM compatible. Esta propiedad tiene límites reales. El código puede depender de rutas de archivos, separadores, codificaciones, librerías nativas, variables de entorno o versiones de JVM. Por eso WORA debe entenderse como portabilidad del bytecode bajo condiciones compatibles, no como ausencia total de diferencias de entorno.
 
-**Bytecode**
-- Definición formal: Formato intermedio `.class` generado por `javac`.
-- Para qué sirve: Separar compilación de ejecución; portabilidad.
-- Cuándo usarlo/tenerlo en cuenta: Inspección con `javap`, compatibilidad.
-- Cuándo no / riesgo: Tratarlo como código fuente.
-- Verificación: `javap -c` muestra instrucciones.
-
-**WORA**
-- Definición formal: “Write Once, Run Anywhere”: mismo bytecode en JVM compatible.
-- Para qué sirve: Portabilidad.
-- Cuándo usarlo/tenerlo en cuenta: Código con APIs estándar y sin supuestos de plataforma.
-- Cuándo no / riesgo: Rutas, encoding, librerías nativas, versión JVM rompen portabilidad.
-- Verificación: Ejecutar mismo `.class` en otra JVM compatible.
-
-**Contrato / invariantes / reglas.** `javac` genera bytecode; `java` recibe nombre de clase, no archivo `.class`. Un `.class` compilado para Java N puede fallar en JVM más vieja (`UnsupportedClassFileError`). WORA es condicional: depende de JVM compatible y comportamiento portable.
-
-**Modelo mental.** `.java` es el guion, bytecode es la partitura intermedia, JVM es el músico que la interpreta en cada escenario.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`javac: command not found`**. Causa probable: JDK ausente/PATH. Corrección: Instalar JDK y configurar PATH.
-- **`UnsupportedClassFileError`**. Causa probable: Versión bytecode > JVM. Corrección: Alinear JDK/JVM o `--release`.
-- **Funciona local, falla en servidor**. Causa probable: WORA asumido sin validar entorno. Corrección: Verificar versión JVM, OS, encoding, paths.
-
-#### Verificación rápida
-
-- [ ] Existe `.class` tras compilar.
-- [ ] `javap -c` muestra bytecode.
-- [ ] `java` ejecuta por nombre de clase.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
+#### Ejemplo desde cero
 
 ```bash
 mkdir -p /tmp/java-m0-t2 && cd /tmp/java-m0-t2
 ```
 
-`HolaJVM.java`
+Creamos `HolaJVM.java`:
 
 ```java
 public class HolaJVM {
@@ -231,14 +142,13 @@ public class HolaJVM {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`javac HolaJVM.java`**: Compila a bytecode. Por qué importa: Crea `.class`. Si lo omites/cambias: No hay artefacto ejecutable por JVM.
-- **`java HolaJVM`**: Inicia JVM y carga clase. Por qué importa: Ejecuta `main`. Si lo omites/cambias: Usar `HolaJVM.class` es error.
-- **`System.getProperty`**: Lee propiedades del runtime. Por qué importa: Muestra dependencia de entorno. Si lo omites/cambias: WORA se malinterpreta como “entorno idéntico”.
-- **`javap -c`**: Desensambla bytecode. Por qué importa: Evidencia del formato intermedio. Si lo omites/cambias: Pierdes visibilidad del artefacto.
+`System.getProperty("java.version")` y `System.getProperty("os.name")` consultan propiedades del entorno de ejecución. Esto sirve para observar una idea importante: el mismo código fuente puede compilarse a bytecode portable, pero el resultado visible incluye información del runtime donde se ejecuta.
 
-#### Ejecución y salida real
+El comando `javac HolaJVM.java` invoca al compilador del JDK y genera `HolaJVM.class`. El comando `java HolaJVM` no recibe el archivo `.class` como ruta; recibe el nombre de la clase que contiene el método `main`. La JVM se encarga de localizar la clase, cargarla y ejecutarla. El comando `javap -c` desensambla el bytecode y permite confirmar que existe una representación intermedia entre el código fuente y la ejecución.
+
+#### Compilación, ejecución e inspección
 
 ```bash
 javac HolaJVM.java
@@ -246,7 +156,7 @@ java HolaJVM
 javap -c HolaJVM | head -5
 ```
 
-Salida real observada (2026-05-22, JDK 27):
+Salida real observada (JDK 27, 2026-05-22):
 
 ```text
 Hola desde la JVM
@@ -256,100 +166,45 @@ Compiled from "HolaJVM.java"
 public class HolaJVM {
   public HolaJVM();
     Code:
-         0: aload_0
+       0: aload_0
 ```
 
-#### Errores comunes y troubleshooting
+La salida muestra tres cosas: el programa se ejecutó, la JVM reportó su versión y el sistema operativo, y `javap` confirmó la existencia de bytecode.
 
-- **`Could not find or load main class HolaJVM.class`**. Causa probable: Pasaste archivo. Corrección: Usa `java HolaJVM`.
-- **`UnsupportedClassFileError`**. Causa probable: Compilaste con JDK nuevo y ejecutas JVM vieja. Corrección: Alinea versiones.
-- **`javap` no encontrado**. Causa probable: PATH/JDK incompleto. Corrección: Revisa instalación JDK.
+#### Errores frecuentes
 
-#### Verificación rápida
+Si se ejecuta `java HolaJVM.class`, la JVM intentará buscar una clase con un nombre incorrecto y aparecerá `Could not find or load main class`. La forma correcta es `java HolaJVM`.
 
-1. Confirma que `HolaJVM.class` existe.
-2. Ejecuta `java HolaJVM`.
-3. Ejecuta `javap -c HolaJVM | head`.
+Si aparece `UnsupportedClassFileError`, el bytecode fue compilado con una versión más nueva que la JVM que intenta ejecutarlo. La corrección es alinear versiones o compilar con una opción de release compatible.
 
-</details>
+Si el programa funciona en una máquina y falla en otra, conviene revisar la promesa de WORA con cuidado: versión de JVM, sistema operativo, rutas, codificación, dependencias nativas y configuración pueden ser diferentes.
+
+#### Verificación
+
+La verificación mínima consiste en confirmar que existe `HolaJVM.class` después de compilar, que `java HolaJVM` ejecuta el método `main`, y que `javap -c HolaJVM` muestra instrucciones de bytecode.
 
 ### Tema 3: Instalar JDK y verificar entorno · Básico · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Antes de escribir código, es necesario confirmar que el entorno puede compilar y ejecutar Java. Muchos problemas iniciales no provienen del programa, sino de una instalación incompleta, de una versión incorrecta o de variables de entorno mal configuradas. Verificar el entorno evita diagnosticar como error de código lo que en realidad es un problema de configuración.
 
-#### Caso guía
+#### Qué significa instalar y verificar el JDK
 
-Vas a compilar tu primer programa, pero `javac` no aparece, o `java` y `javac` apuntan a versiones distintas. Antes de depurar código, necesitas demostrar que el entorno está correctamente instalado.
+Instalar el **JDK** significa disponer de los binarios, bibliotecas y herramientas necesarias para desarrollar en Java. Para el trabajo desde terminal, lo mínimo es poder invocar `java` y `javac`. La presencia de `java` indica que hay un runtime disponible; la presencia de `javac` indica que hay compilador. No basta con que uno funcione: para compilar y ejecutar desde código fuente se necesitan ambos.
 
-#### Fundamento técnico y modelo mental
+La variable **`JAVA_HOME`** apunta normalmente al directorio raíz del JDK activo. Herramientas como Maven, Gradle, IDEs y scripts la usan para localizar el JDK. Debe apuntar al directorio raíz, no a `bin`. La variable **`PATH`** contiene los directorios donde el sistema busca ejecutables. Si `PATH` apunta a una instalación diferente de la indicada por `JAVA_HOME`, pueden aparecer inconsistencias entre la versión que compila y la que ejecuta.
 
-**Instalar JDK**
-- Definición formal: Instalar binarios y bibliotecas del Java Development Kit en el sistema.
-- Para qué sirve: Tener compilador y runtime.
-- Cuándo usarlo: Antes de compilar/ejecutar localmente.
-- Cuándo no / riesgo: Instalar solo runtime y carecer de `javac`.
-- Verificación: `javac -version` responde.
+Verificar el entorno significa comprobar versión, ubicación y coherencia. Es una práctica que conviene repetir después de instalar un JDK, cambiar de versión o abrir un proyecto que exige una versión específica. En sistemas con múltiples JDKs instalados, esta verificación es especialmente importante.
 
-**JDK/JRE/runtime**
-- Definición formal: JDK incluye herramientas de desarrollo; JRE/runtime se orienta a ejecución. Distribuciones modernas suelen usar JDK completo.
-- Para qué sirve: Elegir paquete correcto.
-- Cuándo usarlo: Instalación, CI, despliegue.
-- Cuándo no / riesgo: Confundir “tengo Java” con “tengo JDK”.
-- Verificación: Verificar ambos comandos.
+#### Diagnóstico del entorno
 
-**`JAVA_HOME`**
-- Definición formal: Variable de entorno que apunta a la raíz del JDK activo.
-- Para qué sirve: Maven/Gradle/IDEs localizan JDK.
-- Cuándo usarlo: Builds y múltiples JDKs.
-- Cuándo no / riesgo: Apuntar a bin o a JRE viejo.
-- Verificación: `echo $JAVA_HOME` y contiene `bin/javac`.
-
-**`PATH`**
-- Definición formal: Lista de directorios donde el shell busca ejecutables.
-- Para qué sirve: Invocar `java/javac` sin ruta absoluta.
-- Cuándo usarlo: Toda terminal.
-- Cuándo no / riesgo: PATH apunta a otro Java.
-- Verificación: `which java`/`where.exe java`.
-
-**Verificar entorno**
-- Definición formal: Confirmar versión, ruta y coherencia de herramientas.
-- Para qué sirve: Evitar falsos bugs.
-- Cuándo usarlo: Tras instalar/cambiar JDK.
-- Cuándo no / riesgo: Solo probar `java`.
-- Verificación: `java -version`, `javac -version`, prueba de compilación.
-
-**Contrato / invariantes / reglas.** `java` y `javac` deben ser coherentes en versión mayor para evitar incompatibilidades. `JAVA_HOME` apunta a la raíz del JDK. Una terminal abierta puede no ver cambios recientes en variables de entorno.
-
-**Modelo mental.** El JDK es la caja de herramientas; `PATH` es el atajo; `JAVA_HOME` es la dirección que otras herramientas usan para encontrar la caja.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`javac` no reconocido**. Causa probable: JDK no instalado o PATH mal. Corrección: Instalar JDK, ajustar PATH, abrir nueva terminal.
-- **`java` y `javac` versiones distintas**. Causa probable: Múltiples instalaciones. Corrección: Alinear `JAVA_HOME` y PATH.
-- **Maven/Gradle usa JDK equivocado**. Causa probable: `JAVA_HOME` incorrecto. Corrección: Apuntar a raíz del JDK correcto.
-
-#### Verificación rápida
-
-- [ ] `java -version` responde.
-- [ ] `javac -version` responde.
-- [ ] Prueba de compilación produce `JDK OK`.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-Diagnóstico:
+Los comandos básicos de diagnóstico son:
 
 ```bash
 java -version
 javac -version
 ```
 
-macOS:
+En macOS, además:
 
 ```bash
 /usr/libexec/java_home
@@ -358,7 +213,7 @@ which java
 which javac
 ```
 
-Linux:
+En Linux:
 
 ```bash
 echo "$JAVA_HOME"
@@ -367,7 +222,7 @@ which javac
 readlink -f "$(which java)"
 ```
 
-Windows PowerShell:
+En Windows PowerShell:
 
 ```powershell
 echo $env:JAVA_HOME
@@ -375,7 +230,9 @@ where.exe java
 where.exe javac
 ```
 
-Prueba mínima `EntornoOk.java`:
+#### Prueba mínima de compilación
+
+La verificación más confiable es compilar y ejecutar un programa pequeño. Creamos `EntornoOk.java`:
 
 ```java
 public class EntornoOk {
@@ -386,123 +243,59 @@ public class EntornoOk {
 }
 ```
 
-#### Desglose del código
-
-- **`java -version`**: Verifica runtime. Por qué importa: Confirma ejecución. Si lo omites/cambias: Puedes tener `javac` pero runtime equivocado.
-- **`javac -version`**: Verifica compilador. Por qué importa: Confirma desarrollo. Si lo omites/cambias: Sin él no compilas.
-- **`JAVA_HOME`**: Ruta base JDK. Por qué importa: La usan herramientas. Si lo omites/cambias: Builds fallan o usan otro JDK.
-- **`EntornoOk`**: Compila+ejecuta. Por qué importa: Prueba ciclo real. Si lo omites/cambias: Solo ver versiones no prueba compilación.
-
-#### Ejecución y salida real
-
-Salida real observada (2026-05-22):
-
-```text
-openjdk version "27.0.1.0.2" 2026-09-15
-OpenJDK Runtime Environment Temurin-27.0.1.0.2+1 (build 27+13-7460)
-OpenJDK 64-Bit Server VM Temurin-27.0.1.0.2+1 (build 27+13-7460, mixed mode, sharing)
-javac 27.0.1.0.2
-```
-
-Prueba de compilación:
+Compilamos y ejecutamos:
 
 ```bash
 javac EntornoOk.java
 java EntornoOk
 ```
 
+Salida real observada en esta máquina (2026-05-22):
+
 ```text
 JDK OK
 27.0.1.0.2
 ```
 
-#### Errores comunes y troubleshooting
+El valor de la versión variará según la instalación, pero el punto importante es que ambos pasos funcionen con la misma instalación esperada.
 
-- **`javac` no reconocido**. Causa probable: JDK no instalado/PATH. Corrección: Instalar JDK, abrir terminal nueva.
-- **Versiones distintas**. Causa probable: Múltiples JDKs. Corrección: Alinear PATH/JAVA_HOME.
-- **`UnsupportedClassFileError`**. Causa probable: Compilaste con JDK más nuevo. Corrección: Alinear runtime o `--release`.
+#### Errores frecuentes
 
-#### Verificación rápida
+Si `javac` no se reconoce, la causa habitual es que el JDK no está instalado o que `PATH` no incluye su directorio `bin`. La corrección es instalar un JDK completo, ajustar la configuración y abrir una terminal nueva.
 
-1. `javac -version` y `java -version` responden.
-2. `javac EntornoOk.java && java EntornoOk` imprime `JDK OK`.
+Si `java -version` y `javac -version` muestran versiones diferentes, el sistema está usando instalaciones distintas. Esto puede provocar que el código se compile con un JDK y se ejecute con otro runtime. La corrección es alinear `JAVA_HOME` y `PATH`.
 
-</details>
+Si Maven o Gradle usan un JDK distinto del esperado, el problema suele estar en `JAVA_HOME`. La variable debe apuntar a la raíz del JDK correcto. Cambiar solo `PATH` no siempre resuelve el problema de herramientas que leen `JAVA_HOME`.
+
+#### Verificación
+
+El entorno está listo cuando `java -version` responde, `javac -version` responde y la prueba `EntornoOk` compila y ejecuta mostrando la versión esperada.
 
 ### Tema 4: Primer programa desde cero, sin IDE · Básico · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Crear un programa sin IDE obliga a ver el ciclo completo de trabajo: escribir el archivo, compilarlo, ejecutarlo y corregir errores a partir de los mensajes del compilador o del runtime. Este ejercicio es simple, pero revela qué tareas automatiza un entorno de desarrollo y cuáles siguen siendo responsabilidad del programador.
 
-#### Caso guía
+#### El ciclo mínimo: archivo, clase, `main`, compilación y ejecución
 
-Quieres un CLI que salude por nombre. Si falta el nombre, debe mostrar uso correcto. El caso cubre ciclo completo: archivo, clase, `main`, compilación, ejecución y argumentos.
+Un programa Java mínimo parte de un archivo fuente `.java`. Si el archivo declara una clase pública, su nombre debe coincidir con el de la clase. La clase puede contener el método `main`, que es el punto de entrada que la JVM busca al ejecutar el programa.
 
-#### Fundamento técnico y modelo mental
+La compilación se realiza con `javac`. Si no hay errores de sintaxis o de tipos, el compilador genera un archivo `.class` con bytecode. La ejecución se realiza con `java`, indicando el nombre de la clase. Este ciclo parece trivial, pero es la base de todo lo demás: cuando algo falla, conviene saber en qué paso ocurrió. Un error de sintaxis impide compilar; un error de clase no encontrada suele ser de ejecución o de classpath; un resultado inesperado puede ser un problema lógico.
 
-**Primer programa**
-- Definición formal: Unidad mínima `.java` compilable a `.class` con `main`.
-- Para qué sirve: Validar ciclo completo.
-- Cuándo usarlo: Inicio o entorno nuevo.
-- Cuándo no / riesgo: Saltar a framework sin entender base.
-- Verificación: Compila y ejecuta.
+Trabajar sin IDE no significa trabajar sin herramientas. Significa usar directamente las herramientas básicas del JDK. Es útil para aprender, para diagnosticar problemas de build y para entender qué ocurre en entornos donde no hay un IDE gráfico disponible.
 
-**Desde cero/sin IDE**
-- Definición formal: Crear/compilar/ejecutar manualmente con editor + JDK.
-- Para qué sirve: Entender lo que automatiza el IDE.
-- Cuándo usarlo: Aprendizaje, CI, servidores.
-- Cuándo no / riesgo: No significa sin JDK.
-- Verificación: `javac` y `java` en terminal.
+#### Argumentos de línea de comandos
 
-**`main`**
-- Definición formal: `public static void main(String[] args)`.
-- Para qué sirve: Punto de entrada JVM.
-- Cuándo usarlo: Apps standalone.
-- Cuándo no / riesgo: Firma incorrecta.
-- Verificación: `java SaludoArgs` ejecuta.
+El parámetro `String[] args` del método `main` recibe los argumentos pasados al ejecutar el programa. Permite parametrizar la ejecución sin modificar el código fuente. Por ejemplo, se puede pasar un nombre al programa y hacer que el saludo cambie según ese valor.
 
-**Argumentos CLI**
-- Definición formal: `args` recibe parámetros de invocación.
-- Para qué sirve: Parametrizar sin recompilar.
-- Cuándo usarlo: CLIs/scripts.
-- Cuándo no / riesgo: Acceder `args[0]` sin validar.
-- Verificación: Con y sin argumento produce salidas esperadas.
+El arreglo `args` puede estar vacío. Por eso, antes de acceder a `args[0]`, hay que validar su longitud. Acceder a una posición inexistente provoca `ArrayIndexOutOfBoundsException`. Este es un caso simple de validación de entrada: incluso en un programa pequeño, la entrada externa no debe asumirse válida.
 
-**Validación de entrada**
-- Definición formal: Comprobar precondiciones antes de usar datos.
-- Para qué sirve: Evitar excepciones y comportamiento ambiguo.
-- Cuándo usarlo: Toda entrada externa.
-- Cuándo no / riesgo: Confiar ciegamente en input.
-- Verificación: Sin args imprime uso, no stacktrace.
-
-**Contrato / invariantes / reglas.** `args` puede estar vacío. Validar antes de indexar. `return` en `main` termina el programa. Nombre de clase pública = nombre de archivo.
-
-**Modelo mental.** `main` es la puerta; `args` son notas que deja quien ejecuta el comando. Si no hay nota, el programa responde con instrucciones.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`ArrayIndexOutOfBoundsException`**. Causa probable: `args[0]` sin validar. Corrección: Revisar `args.length`.
-- **`Could not find or load main class`**. Causa probable: Carpeta/nombre incorrecto. Corrección: Ejecutar desde carpeta del `.class`.
-- **No cambia salida**. Causa probable: No recompilaste. Corrección: `javac` antes de `java`.
-
-#### Verificación rápida
-
-- [ ] Sin args: muestra uso.
-- [ ] Con arg: muestra saludo.
-- [ ] No lanza excepción por falta de args.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
+#### Ejemplo desde cero
 
 ```bash
 mkdir -p /tmp/java-m0-t4 && cd /tmp/java-m0-t4
 ```
 
-`SaludoArgs.java`
+Creamos `SaludoArgs.java`:
 
 ```java
 public class SaludoArgs {
@@ -511,20 +304,20 @@ public class SaludoArgs {
             System.out.println("Uso: java SaludoArgs <nombre>");
             return;
         }
+
         String nombre = args[0];
         System.out.println("Hola, " + nombre);
     }
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`args.length == 0`**: Valida entrada. Por qué importa: Evita acceso inválido. Si lo omites/cambias: `args[0]` puede lanzar excepción.
-- **`return;`**: Sale temprano. Por qué importa: Corta flujo inválido. Si lo omites/cambias: Seguiría ejecutando código que asume args.
-- **`args[0]`**: Toma primer argumento. Por qué importa: Parametriza ejecución. Si lo omites/cambias: Ignorar args vuelve el programa rígido.
-- **`javac/java` manual**: Compila y ejecuta. Por qué importa: Hace visible el ciclo. Si lo omites/cambias: IDE oculta el proceso.
+La condición `args.length == 0` comprueba si el usuario ejecutó el programa sin argumentos. En ese caso, el programa imprime un mensaje de uso y termina con `return`. Esta salida temprana evita que el código intente leer `args[0]` cuando no existe.
 
-#### Ejecución y salida real
+Si hay al menos un argumento, el programa toma el primero y lo asigna a `nombre`. Después imprime el saludo. El comportamiento es simple, pero cubre un contrato básico: con entrada válida produce un saludo; con entrada faltante, indica cómo usar el programa.
+
+#### Compilación y ejecución
 
 ```bash
 javac SaludoArgs.java
@@ -532,97 +325,48 @@ java SaludoArgs
 java SaludoArgs Ada
 ```
 
-Salida real observada (2026-05-22):
+Salida real observada (JDK 27, 2026-05-22):
 
 ```text
 Uso: java SaludoArgs <nombre>
 Hola, Ada
 ```
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **Excepción por índice**. Causa probable: Sin validación. Corrección: `if (args.length == 0)`.
-- **Clase no encontrada**. Causa probable: Nombre/carpeta mal. Corrección: Verificar `ls` y nombre de clase.
-- **Argumento con espacios**. Causa probable: Shell separa tokens. Corrección: Usar comillas: `"Ada Lovelace"`.
+Si se accede a `args[0]` sin validar, el programa falla con `ArrayIndexOutOfBoundsException` cuando no se pasan argumentos. La corrección es comprobar `args.length` antes de leer la posición.
 
-#### Verificación rápida
+Si aparece `Could not find or load main class`, conviene revisar que se está ejecutando desde la carpeta correcta y que se usa el nombre de la clase, no el nombre del archivo.
 
-1. `java SaludoArgs` => uso.
-2. `java SaludoArgs Ada` => `Hola, Ada`.
-3. `java SaludoArgs "Ada Lovelace"` => observa `args[0]` (ejercicio: soportar todos los args).
+Si se modifica el código pero la salida no cambia, el problema suele ser que no se recompiló. El archivo `.class` anterior sigue siendo el que ejecuta la JVM.
 
-</details>
+#### Verificación
+
+La verificación consiste en probar los dos caminos: ejecutar sin argumentos y obtener el mensaje de uso; ejecutar con `Ada` y obtener `Hola, Ada`. Como ejercicio adicional, se puede ejecutar `java SaludoArgs "Ada Lovelace"` y observar que las comillas permiten pasar un argumento con espacios.
 
 ### Tema 5: Tipos primitivos, variables y conversiones · Básico · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Cuando un programa manipula datos, necesita representarlos con tipos adecuados. En Java, la elección del tipo no es solo una formalidad sintáctica: define qué valores son posibles, qué operaciones tienen sentido, cuánta memoria se usa y qué conversiones son seguras o peligrosas.
 
-#### Caso guía
+#### Tipos primitivos y variables
 
-Representas edad, población, precio, inicial y estado activo. Luego conviertes `double` a `int` y ves qué se pierde. Un error de tipo puede compilar y aun así producir un dato incorrecto.
+Java define ocho tipos primitivos: `byte`, `short`, `int`, `long`, `float`, `double`, `char` y `boolean`. Son tipos de valor, no objetos. `byte`, `short`, `int` y `long` representan enteros con distintos rangos; `float` y `double` representan números en punto flotante; `char` representa un carácter UTF-16; `boolean` representa `true` o `false`.
 
-#### Fundamento técnico y modelo mental
+Una variable es un nombre asociado a un tipo, un alcance y un valor compatible. Java es de tipado estático: el compilador verifica la compatibilidad de tipos. Esto permite detectar errores antes de ejecutar, pero también exige elegir el tipo correcto. Por ejemplo, `int` sirve para contadores comunes, mientras que `long` es necesario cuando el rango de `int` no alcanza. `double` es útil para ciertos cálculos decimales, pero no debe usarse para dinero en sistemas reales, donde `BigDecimal` suele ser más adecuado por el control de precisión decimal.
 
-**Primitivos**
-- Definición formal: 8 tipos valor: `byte,short,int,long,float,double,char,boolean`.
-- Para qué sirve: Valores simples con semántica/tamaño definidos.
-- Cuándo usarlo: Contadores, flags, caracteres.
-- Cuándo no / riesgo: `float/double` para dinero; overflow.
-- Verificación: Salida coincide con tipo esperado.
+#### Conversiones, cast y overflow
 
-**Variables**
-- Definición formal: Nombre tipado con alcance y valor compatible.
-- Para qué sirve: Nombrar y reutilizar datos.
-- Cuándo usarlo: Siempre.
-- Cuándo no / riesgo: Nombres ambiguos, tipo inadecuado.
-- Verificación: Compilador valida tipos.
+Una conversión *widening* ocurre cuando se asigna un valor a un tipo más amplio compatible, como de `int` a `double`. En estos casos, la conversión puede ser implícita. Una conversión *narrowing* ocurre en sentido inverso, por ejemplo de `double` a `int`; como puede haber pérdida de información, Java exige un cast explícito. El cast no redondea mágicamente al valor “más cercano” según la intención del negocio: en el caso de `double` a `int`, se trunca la parte decimal.
 
-**Widening**
-- Definición formal: Conversión implícita a tipo más amplio compatible.
-- Para qué sirve: Combinar tipos sin cast.
-- Cuándo usarlo: `int`->`long`->`double` en rangos seguros.
-- Cuándo no / riesgo: `int` grande a `float` puede perder precisión.
-- Verificación: Asignación compila.
+Los literales enteros son de tipo `int` por defecto. Si un valor excede el rango de `int`, debe indicarse con el sufijo `L` para tratarlo como `long`. Otro punto importante es el overflow de enteros: en operaciones con `int`, si el resultado excede el rango, Java no lanza excepción por defecto; el valor se desborda. Para detectar esta situación existen métodos como `Math.addExact`, que lanzan `ArithmeticException`.
 
-**Narrowing/cast**
-- Definición formal: Conversión explícita a tipo más estrecho.
-- Para qué sirve: Forzar adaptación consciente.
-- Cuándo usarlo: Cuando aceptas pérdida/regla.
-- Cuándo no / riesgo: Trunca decimales o desborda.
-- Verificación: `19.99` -> `19`.
+#### Ejemplo desde cero
 
-**Overflow/literales**
-- Definición formal: Enteros desbordan sin excepción; `L` para long literal.
-- Para qué sirve: Entender límites numéricos.
-- Cuándo usarlo: IDs, timestamps, acumuladores.
-- Cuándo no / riesgo: `2147483648` sin `L`.
-- Verificación: `Math.addExact` lanza excepción.
+```bash
+mkdir -p /tmp/java-m0-t5 && cd /tmp/java-m0-t5
+```
 
-**Contrato / invariantes / reglas.** Java es tipado estático. Widening implícito; narrowing requiere cast. `int` 32-bit signed, `long` 64-bit signed, `double` IEEE 754 64-bit. Overflow de `int` no lanza excepción por defecto.
-
-**Modelo mental.** Tipos son moldes. De molde chico a grande normalmente cabe; de grande a chico puede recortarse.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`integer number too large`**. Causa probable: Literal int fuera de rango sin `L`. Corrección: Usar `long` y `L`.
-- **`possible lossy conversion`**. Causa probable: Narrowing sin cast. Corrección: Cast explícito solo si aceptas pérdida.
-- **Resultado negativo raro**. Causa probable: Overflow entero. Corrección: `long` o `Math.*Exact`.
-
-#### Verificación rápida
-
-- [ ] `8000000000L` compila.
-- [ ] Cast de `19.99` a `int` da `19`.
-- [ ] `Math.addExact` detecta overflow.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-`TiposYConversiones.java`
+Creamos `TiposYConversiones.java`:
 
 ```java
 public class TiposYConversiones {
@@ -632,8 +376,10 @@ public class TiposYConversiones {
         double precio = 19.99;
         char inicial = 'J';
         boolean activo = true;
+
         double desdeInt = edad;          // widening
         int precioEntero = (int) precio; // narrowing
+
         System.out.println(edad);
         System.out.println(poblacion);
         System.out.println(precio);
@@ -645,7 +391,7 @@ public class TiposYConversiones {
 }
 ```
 
-`Desbordamiento.java`
+Y `Desbordamiento.java`:
 
 ```java
 public class Desbordamiento {
@@ -662,14 +408,13 @@ public class Desbordamiento {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`8_000_000_000L`**: Literal long. Por qué importa: Excede `int`. Si lo omites/cambias: No compila sin `L`.
-- **`double desdeInt = edad`**: Widening. Por qué importa: Conversión segura. Si lo omites/cambias: No necesita cast.
-- **`(int) precio`**: Narrowing. Por qué importa: Hace explícita la pérdida. Si lo omites/cambias: Sin cast no compila.
-- **`Math.addExact`**: Detecta overflow. Por qué importa: Hace visible el error. Si lo omites/cambias: Overflow silencioso da dato corrupto.
+En `TiposYConversiones`, la variable `poblacion` usa el sufijo `L` porque el valor `8_000_000_000` no cabe en un `int`. La asignación `double desdeInt = edad` es un widening implícito: no hay riesgo de perder la parte entera en ese rango. En cambio, `(int) precio` es un narrowing explícito; el valor `19.99` se trunca a `19`.
 
-#### Ejecución y salida real
+En `Desbordamiento`, `Integer.MAX_VALUE` contiene el valor máximo de un `int`. Al sumar 1 con aritmética normal, el resultado se desborda y produce un valor negativo. `Math.addExact` detecta el desbordamiento y lanza `ArithmeticException`, lo que permite reaccionar de forma explícita.
+
+#### Ejecución
 
 ```bash
 javac TiposYConversiones.java Desbordamiento.java
@@ -677,7 +422,7 @@ java TiposYConversiones
 java Desbordamiento
 ```
 
-Salida real observada (2026-05-22):
+Salida real observada (JDK 27, 2026-05-22):
 
 ```text
 30
@@ -692,90 +437,60 @@ true
 overflow detectado
 ```
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **Overflow silencioso**. Causa probable: Aritmética int normal. Corrección: `Math.*Exact` o tipo mayor.
-- **Pérdida de decimales**. Causa probable: Cast a int. Corrección: Usar `Math.round`, `BigDecimal` o mantener `double` según caso.
-- **Dinero impreciso**. Causa probable: IEEE 754 binario. Corrección: `BigDecimal` para dinero real.
+Si el compilador indica `integer number too large`, la causa es un literal entero fuera del rango de `int` sin sufijo `L`. La corrección es usar `long` y agregar `L`.
 
-#### Verificación rápida
+Si aparece `possible lossy conversion from double to int`, se está intentando un narrowing sin cast. Debe hacerse explícito solo si la pérdida es aceptable y está comprendida.
 
-1. Observa `19.99` -> `19`.
-2. Observa overflow a negativo y detección por `addExact`.
-3. Cambia `long` por `int` en población: debe fallar compilación.
+Si un cálculo entero produce un valor negativo inesperado, puede haber overflow. En esos casos conviene usar `long` o métodos `*Exact`.
 
-</details>
+#### Verificación
+
+La verificación consiste en confirmar que `19.99` se trunca a `19`, que el literal largo compila con `L` y que `Math.addExact` detecta el desbordamiento.
 
 ### Tema 6: String, entrada/salida y formato · Básico · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Muchos programas interactúan con personas o con otros sistemas a través de texto. En Java, esto implica entender cómo se representan las cadenas, cómo se leen datos desde la entrada estándar, cómo se escriben resultados y cómo se formatea la salida.
 
-#### Caso guía
+#### `String` como objeto inmutable
 
-Recibes nombre por consola, normalizas espacios, saludas con formato y comparas respuestas. Las trampas típicas: `==` en strings, `String` inmutable y mezcla de entrada por tokens/líneas.
+`String` es una clase de `java.lang` que representa una secuencia de caracteres. Un objeto `String` es inmutable: una vez creado, su contenido no cambia. Métodos como `trim()`, `toUpperCase()` o `replace()` no modifican la cadena original; devuelven una nueva cadena con el resultado.
 
-#### Fundamento técnico y modelo mental
+Esta inmutabilidad tiene consecuencias prácticas. Después de llamar `nombre.trim()`, el valor limpio existe solo si se guarda o se usa. También afecta la comparación: `==` compara referencias, es decir, si dos variables apuntan al mismo objeto. Para comparar contenido textual debe usarse `equals` o `equalsIgnoreCase`. Una forma segura ante `null` es `"si".equals(respuesta)`, porque evita invocar un método sobre una referencia nula.
 
-**`String`**
-- Definición formal: Objeto inmutable que representa secuencia UTF-16.
-- Para qué sirve: Texto.
-- Cuándo usarlo: Nombres, mensajes, IDs.
-- Cuándo no / riesgo: `==` para contenido; asumir mutación in-place.
-- Verificación: `equals` true, `==` puede ser false.
+#### Entrada, salida y formato
 
-**Entrada (stdin)**
-- Definición formal: Lectura de `System.in` vía `Scanner`/`BufferedReader`.
-- Para qué sirve: Recibir datos.
-- Cuándo usarlo: CLIs, ejercicios.
-- Cuándo no / riesgo: Mezclar `nextInt()` y `nextLine()`.
-- Verificación: Entrada produce salida esperada.
+La entrada estándar se representa por `System.in`. Para leer texto de forma simple se puede usar `Scanner`. La salida estándar se representa por `System.out`, y la salida de error por `System.err`. `System.out.println` imprime una línea; `System.out.printf` permite formatear con plantillas.
 
-**Salida (stdout/stderr)**
-- Definición formal: Escritura a `System.out/err`.
-- Para qué sirve: Mostrar resultado/errores.
-- Cuándo usarlo: CLIs, diagnóstico.
-- Cuándo no / riesgo: Usar stdout para logs sensibles.
-- Verificación: Texto visible en consola.
+El formato es útil para presentar datos de manera legible y consistente. En `printf`, especificadores como `%s`, `%d` o `%n` controlan la representación. `%n` es preferible a `\n` cuando se quiere un salto de línea portable.
 
-**Formato**
-- Definición formal: Plantillas con `printf/format`, `%n`, concatenación controlada.
-- Para qué sirve: Salida legible y portable.
-- Cuándo usarlo: Reportes, CLIs.
-- Cuándo no / riesgo: Formato dependiente de locale sin intención.
-- Verificación: `printf` produce formato esperado.
+Al leer entrada, hay que considerar el tipo de lectura. `nextLine()` lee hasta el final de la línea, mientras que métodos como `nextInt()` leen tokens y pueden dejar pendiente el salto de línea. Mezclar estas estrategias sin cuidado produce comportamientos confusos. Para ejercicios simples, leer líneas y luego convertir el valor suele ser más predecible.
 
-**Comparación de texto**
-- Definición formal: `equals`/`equalsIgnoreCase` comparan contenido.
-- Para qué sirve: Validar respuestas.
-- Cuándo usarlo: Comandos, flags.
-- Cuándo no / riesgo: `==` compara referencia.
-- Verificación: `"java".equals(new String("java"))`
+#### Ejemplo desde cero
 
-**Contrato / invariantes / reglas.** `String` es inmutable; métodos devuelven nuevo objeto. `Scanner.nextLine()` consume línea; token methods consumen tokens. `%n` es salto de línea portable. Cerrar `Scanner` sobre `System.in` al final del programa.
+```bash
+mkdir -p /tmp/java-m0-t6 && cd /tmp/java-m0-t6
+```
 
-**Modelo mental.** `String` es texto impreso: no lo editas, creas otra copia. `==` pregunta “¿es el mismo papel?”; `equals` pregunta “¿dice lo mismo?”.
+Creamos `CompararStrings.java`:
 
-#### ► LO QUE PUEDE SALIR MAL
+```java
+public class CompararStrings {
+    public static void main(String[] args) {
+        String a = "java";
+        String b = new String("java");
 
-- **Comparación falla con mismo texto**. Causa probable: Usaste `==`. Corrección: Usa `equals`.
-- **`NullPointerException`**. Causa probable: `variable.equals(...)` con null. Corrección: `"literal".equals(variable)`.
-- **Entrada saltada**. Causa probable: Mezcla `nextInt`/`nextLine`. Corrección: Normalizar estrategia de lectura.
+        System.out.println(a == b);          // referencia
+        System.out.println(a.equals(b));     // contenido
+        System.out.println("si".equalsIgnoreCase("SI"));
+        String respuesta = null;
+        System.out.println("si".equals(respuesta)); // null-safe
+    }
+}
+```
 
-#### Verificación rápida
-
-- [ ] `equals` distingue contenido correctamente.
-- [ ] `trim()` elimina espacios extremos.
-- [ ] Comparación null-safe funciona.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-`TextoIO.java`
+Y `TextoIO.java`:
 
 ```java
 import java.util.Scanner;
@@ -801,37 +516,20 @@ public class TextoIO {
 }
 ```
 
-`CompararStrings.java`
+#### Recorrido del código
 
-```java
-public class CompararStrings {
-    public static void main(String[] args) {
-        String a = "java";
-        String b = new String("java");
-        System.out.println(a == b);          // referencia
-        System.out.println(a.equals(b));     // contenido
-        System.out.println("si".equalsIgnoreCase("SI"));
-        String respuesta = null;
-        System.out.println("si".equals(respuesta)); // null-safe
-    }
-}
-```
+En `CompararStrings`, `a` y `b` contienen el mismo texto, pero `b` se crea explícitamente con `new String(...)`, por lo que es otro objeto. La comparación `a == b` devuelve `false` porque compara referencias. En cambio, `a.equals(b)` devuelve `true` porque compara contenido. `equalsIgnoreCase` permite aceptar mayúsculas o minúsculas, y `"si".equals(respuesta)` evita un `NullPointerException` cuando la variable es `null`.
 
-#### Desglose del código
+En `TextoIO`, `toUpperCase()` devuelve una nueva cadena; `lenguaje` conserva su valor original. `printf` usa `%-10s` para alinear el texto a la izquierda, `%d` para el número y `%n` para el salto de línea portable. La lectura con `nextLine().trim()` toma la línea completa y elimina espacios extremos. Si el resultado queda vacío, el programa responde con un mensaje claro.
 
-- **`toUpperCase()`**: Devuelve nuevo String. Por qué importa: String inmutable. Si lo omites/cambias: No modifica original.
-- **`trim()`**: Limpia espacios extremos. Por qué importa: Normaliza entrada. Si lo omites/cambias: Nombre con espacios sobrantes.
-- **`printf` + `%n`**: Formato portable. Por qué importa: Controla presentación. Si lo omites/cambias: Saltos de línea no portables.
-- **`equals`**: Compara contenido. Por qué importa: Correcto para texto. Si lo omites/cambias: `==` da falsos negativos.
-- **`"si".equals(respuesta)`**: Null-safe. Por qué importa: Evita NPE. Si lo omites/cambias: NPE si respuesta es null.
-
-#### Ejecución y salida real
+#### Ejecución
 
 ```bash
-javac CompararStrings.java && java CompararStrings
+javac CompararStrings.java
+java CompararStrings
 ```
 
-Salida real observada (2026-05-22):
+Salida real observada (JDK 27, 2026-05-22):
 
 ```text
 false
@@ -840,84 +538,54 @@ true
 false
 ```
 
-`TextoIO` es interactivo; verifícalo con nombre vacío y con espacios.
+`TextoIO` es interactivo. Una sesión esperada es:
 
-#### Errores comunes y troubleshooting
+```text
+Lenguaje: Java
+Longitud: 4
+Mayúsculas: JAVA
+Formato: Java       | v25
+Escribe tu nombre:  Ada 
+Hola, Ada
+```
 
-- **`==` falla**. Causa probable: Referencia distinta. Corrección: `equals`.
-- **NPE en comparación**. Causa probable: Llamaste equals sobre null. Corrección: Literal primero.
-- **`nextLine()` vacío tras `nextInt()`**. Causa probable: Quedó `\n` en buffer. Corrección: Consumir línea o usar solo `nextLine()`.
+#### Errores frecuentes
 
-#### Verificación rápida
+Comparar cadenas con `==` es un error clásico. Compila, pero verifica identidad de objeto, no igualdad de contenido. La corrección es usar `equals` o `equalsIgnoreCase`.
 
-1. Ejecuta `CompararStrings`: `false,true,true,false`.
-2. Ejecuta `TextoIO` con `"  Ada  "`: debe saludar `Ada`.
+Invocar `respuesta.equals("si")` cuando `respuesta` es `null` provoca `NullPointerException`. La forma segura es poner el literal conocido primero.
 
-</details>
+Mezclar `nextInt()` y `nextLine()` sin consumir el fin de línea puede hacer que `nextLine()` lea una cadena vacía. Para evitarlo, conviene usar una estrategia consistente de lectura.
+
+#### Verificación
+
+La verificación de `CompararStrings` es observar los cuatro booleanos. La verificación de `TextoIO` consiste en probar un nombre con espacios alrededor y una entrada vacía.
 
 ### Tema 7: Operadores, expresiones y precedencia · Básico · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Las expresiones son el mecanismo con el que un programa calcula valores y toma decisiones. Una expresión puede ser aritmética, relacional o lógica, y su resultado depende no solo de los operadores usados, sino también de la precedencia, la asociatividad y el tipo de los operandos.
 
-#### Caso guía
+#### Operadores y expresiones
 
-Calculas total, promedio y permiso de acceso. Un paréntesis mal puesto o una división entera puede cambiar el resultado sin romper compilación.
+Un operador es un símbolo que aplica una operación sobre uno o más operandos. Los operadores aritméticos (`+`, `-`, `*`, `/`, `%`) producen resultados numéricos; los relacionales (`<`, `>`, `<=`, `>=`, `==`, `!=`) producen valores booleanos; los lógicos (`&&`, `||`, `!`) combinan o niegan condiciones booleanas.
 
-#### Fundamento técnico y modelo mental
+Una expresión es cualquier construcción que se evalúa para producir un valor. `a + b`, `edad >= 18` y `(edad >= 18) && tienePermiso` son expresiones. La legibilidad importa: una expresión correcta pero críptica es difícil de revisar y mantener. Cuando la intención no es obvia, conviene usar paréntesis o extraer variables intermedias con nombres claros.
 
-**Operadores**
-- Definición formal: Símbolos que aplican operaciones aritméticas, relacionales, lógicas, asignación.
-- Para qué sirve: Calcular y comparar.
-- Cuándo usarlo: Toda lógica.
-- Cuándo no / riesgo: Confundir `=` con `==`.
-- Verificación: Salida numérica/booleana esperada.
+#### Precedencia, asociatividad y cortocircuito
 
-**Expresiones**
-- Definición formal: Combinaciones evaluables que producen valor.
-- Para qué sirve: Componer cálculos/condiciones.
-- Cuándo usarlo: Asignaciones y condiciones.
-- Cuándo no / riesgo: Expresiones crípticas.
-- Verificación: Extraer variables mejora claridad.
+La precedencia define qué operador se evalúa primero. La asociatividad define cómo se agrupan operadores de la misma precedencia. En la práctica, la regla más útil es no depender de memoria frágil: si la expresión puede generar dudas, los paréntesis hacen explícita la intención.
 
-**Precedencia**
-- Definición formal: Orden de evaluación entre operadores.
-- Para qué sirve: Interpretar expresión.
-- Cuándo usarlo: Mezcla de operadores.
-- Cuándo no / riesgo: Asumir izquierda-derecha siempre.
-- Verificación: Paréntesis cambian resultado.
+Un caso común es la división entera. Si ambos operandos son enteros, `a / b` trunca la parte decimal. Por eso, `10 / 3` produce `3`. Para obtener un promedio decimal, hay que forzar una operación en punto flotante, por ejemplo `(5 + 4) / 2.0`.
 
-**Asociatividad**
-- Definición formal: Desempate cuando misma precedencia.
-- Para qué sirve: Resolver empates.
-- Cuándo usarlo: `a-b-c`, asignaciones.
-- Cuándo no / riesgo: Malinterpretar.
-- Verificación: Prueba con valores.
+Los operadores `&&` y `||` tienen evaluación en cortocircuito. En `nombre != null && nombre.length() > 0`, la segunda parte solo se evalúa si la primera es verdadera. Esto permite escribir guardas seguras contra `null`. Sin embargo, no conviene colocar efectos secundarios importantes en el lado derecho esperando que siempre se ejecuten.
 
-**Contrato / invariantes / reglas.** División entre enteros trunca hacia cero. División entera por cero lanza `ArithmeticException`. `==` compara valor en primitivos, referencia en objetos. Ante duda, usa paréntesis.
+#### Ejemplo desde cero
 
-**Modelo mental.** La precedencia es la gramática de la expresión; los paréntesis hacen explícita la intención.
+```bash
+mkdir -p /tmp/java-m0-t7 && cd /tmp/java-m0-t7
+```
 
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`4` en vez de `4.5`**. Causa probable: División entera. Corrección: Usar `2.0` o cast.
-- **NPE en condición**. Causa probable: Evaluaste lado derecho sin guarda. Corrección: `obj != null && ...`.
-- **Condición incorrecta**. Causa probable: Precedencia mal asumida. Corrección: Paréntesis y variables booleanas.
-
-#### Verificación rápida
-
-- [ ] `(5+4)/2.0` da `4.5`.
-- [ ] `5+4/2.0` da `7.0` (demuestra precedencia).
-- [ ] Guarda null-safe no lanza NPE.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-`Operadores.java`
+Creamos `Operadores.java`:
 
 ```java
 public class Operadores {
@@ -945,16 +613,20 @@ public class Operadores {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`a / b` enteros**: Trunca. Por qué importa: Regla de Java para enteros. Si lo omites/cambias: Esperar decimal da bug.
-- **`(5+4)/2.0`**: Fuerza división real. Por qué importa: Paréntesis + double. Si lo omites/cambias: Sin paréntesis cambia resultado.
-- **`&&` cortocircuito**: Evalúa derecho solo si necesario. Por qué importa: Evita NPE. Si lo omites/cambias: Invertir guarda causa NPE.
-- **`edad >= 18`**: Relacional booleana. Por qué importa: Condición clara. Si lo omites/cambias: `=` sería asignación/no compila aquí.
+La primera parte muestra aritmética básica con enteros. La división `a / b` produce `3` porque ambos operandos son `int`. Luego, `(5 + 4) / 2.0` fuerza un resultado decimal: primero se suma, después se divide por `2.0`, que es `double`.
 
-#### Ejecución y salida real
+La expresión `(edad >= 18) && tienePermiso` combina una comparación relacional con un valor booleano. El resultado es `true` solo cuando ambas condiciones se cumplen. La última expresión usa cortocircuito: como `nombre != null` es falso, Java no evalúa `nombre.length()`, evitando un `NullPointerException`.
 
-Salida real observada (2026-05-22):
+#### Ejecución
+
+```bash
+javac Operadores.java
+java Operadores
+```
+
+Salida real observada (JDK 27, 2026-05-22):
 
 ```text
 13
@@ -967,91 +639,43 @@ true
 false
 ```
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **Resultado entero inesperado**. Causa probable: División entera. Corrección: Usar `double`.
-- **NPE**. Causa probable: Sin cortocircuito. Corrección: Guarda `!= null` primero.
-- **Condición difícil de leer**. Causa probable: Expresión grande. Corrección: Extraer booleanos con nombre.
+Esperar `4.5` y obtener `4` es consecuencia de la división entera. La corrección es convertir uno de los operandos a `double` o usar un literal decimal.
 
-#### Verificación rápida
+Evaluar `nombre.length()` sin comprobar `null` provoca `NullPointerException`. La guarda con cortocircuito evita el problema.
 
-1. Cambia `2.0` a `2`: observa `4`.
-2. Quita `nombre != null &&`: observa NPE.
-3. Agrega paréntesis para dejar intención explícita.
+Confundir `=` con `==` es otro error habitual. En Java, `=` asigna; `==` compara primitivos por valor y objetos por referencia.
 
-</details>
+#### Verificación
+
+Se puede cambiar `(5 + 4) / 2.0` por `5 + 4 / 2.0` para observar el efecto de la precedencia. También se puede quitar la guarda `nombre != null &&` para comprobar el `NullPointerException`.
 
 ### Tema 8: Control de flujo: decisiones y repeticiones · Básico · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Un programa rara vez ejecuta todas sus líneas de forma lineal. Para resolver problemas reales necesita tomar decisiones y repetir acciones. Las estructuras de control de flujo permiten expresar esas decisiones y repeticiones de forma clara.
 
-#### Caso guía
+#### Decisiones
 
-Validas edad, traduces un número de día y cuentas hacia atrás. El programa debe elegir rutas y repetir acciones sin bucles infinitos ni casos sin cubrir.
+La estructura `if/else` evalúa una condición booleana y selecciona una rama. Su contrato es simple: la condición debe evaluarse a `true` o `false`. A diferencia de otros lenguajes, Java no acepta enteros como condición booleana.
 
-#### Fundamento técnico y modelo mental
+La estructura `switch` es adecuada cuando se quiere seleccionar entre casos discretos. En su forma moderna con `->`, evita el *fall-through* accidental típico del `switch` clásico. El caso `default` es importante porque define qué ocurre ante valores no contemplados. Omitirlo puede dejar el programa sin respuesta clara frente a una entrada inesperada.
 
-**Control de flujo**
-- Definición formal: Sentencias que alteran secuencia: selección, iteración, salto.
-- Para qué sirve: Implementar lógica real.
-- Cuándo usarlo: Reglas, menús, procesamiento.
-- Cuándo no / riesgo: Flujo spaghetti.
-- Verificación: Casos de prueba por rama.
+#### Repeticiones
 
-**Decisiones (`if/switch`)**
-- Definición formal: Selección por condición booleana o casos discretos.
-- Para qué sirve: Validar/clasificar.
-- Cuándo usarlo: Reglas de negocio.
-- Cuándo no / riesgo: `switch` sin default; condiciones incompletas.
-- Verificación: Entrada inesperada cubierta.
+El bucle `for` es adecuado cuando se conoce o se controla claramente la inicialización, la condición y el avance. El bucle `while` repite mientras la condición sea verdadera; es útil cuando no se sabe de antemano cuántas iteraciones habrá, pero sí la condición de continuidad. El bucle `do/while` ejecuta el cuerpo al menos una vez y luego evalúa la condición.
 
-**Repeticiones (`for/while/do-while`)**
-- Definición formal: Ejecutan bloque mientras condición/iteración lo indique.
-- Para qué sirve: Recorrer, acumular, reintentar.
-- Cuándo usarlo: Rangos, colecciones.
-- Cuándo no / riesgo: Bucle infinito, off-by-one.
-- Verificación: Borde 0,1,N.
+Todo bucle debe tener una condición de terminación alcanzable o una salida explícita. De lo contrario, produce un bucle infinito. Otro error frecuente es el *off-by-one*, es decir, iterar una vez de más o de menos por usar mal `<`, `<=` o los límites inicial/final.
 
-**`break/continue`**
-- Definición formal: Salida anticipada o salto a siguiente iteración.
-- Para qué sirve: Control fino.
-- Cuándo usarlo: Buscar/saltar inválidos.
-- Cuándo no / riesgo: Uso excesivo oculta lógica.
-- Verificación: Test de caso saltado.
+Las sentencias `break` y `continue` permiten control fino. `break` sale del bucle o `switch`; `continue` salta a la siguiente iteración. Son útiles, pero conviene usarlas con moderación: si ocultan la lógica principal, es mejor reescribir la condición.
 
-**Condición booleana**
-- Definición formal: Expresión `true/false`.
-- Para qué sirve: Dirigir flujo.
-- Cuándo usarlo: `if/while/for`.
-- Cuándo no / riesgo: Java no acepta enteros como booleanos.
-- Verificación: Compila solo con boolean.
+#### Ejemplo desde cero
 
-**Contrato / invariantes / reglas.** Condiciones deben ser booleanas. `switch` con `->` evita fall-through accidental; `default` cubre casos no previstos. Todo bucle necesita progreso o salida explícita. `do/while` ejecuta al menos una vez.
+```bash
+mkdir -p /tmp/java-m0-t8 && cd /tmp/java-m0-t8
+```
 
-**Modelo mental.** Decisiones son bifurcaciones; bucles son rotondas. Toda rotonda necesita señal de salida.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **Bucle infinito**. Causa probable: Sin progreso. Corrección: `i++`, `n--`, condición revisada.
-- **Caso no manejado**. Causa probable: Falta `default`. Corrección: Agregar default/validación.
-- **Off-by-one**. Causa probable: `<` vs `<=`. Corrección: Probar bordes.
-- **Fall-through inesperado**. Causa probable: `switch` clásico sin `break`. Corrección: Usar `->` o `break`.
-
-#### Verificación rápida
-
-- [ ] `edad 16` y `20` producen ramas distintas.
-- [ ] `dia 9` cae en default.
-- [ ] Bucle termina.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-`Flujo.java`
+Creamos `Flujo.java`:
 
 ```java
 public class Flujo {
@@ -1092,17 +716,20 @@ public class Flujo {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`if/else`**: Elige rama. Por qué importa: Regla binaria. Si lo omites/cambias: Casos sin cubrir.
-- **`switch ->`**: Mapea caso discreto. Por qué importa: Legible y sin fall-through. Si lo omites/cambias: `default` faltante da comportamiento pobre.
-- **`continue`**: Salta iteración. Por qué importa: Omite caso puntual. Si lo omites/cambias: Procesaría el 2.
-- **`n--`**: Progreso. Por qué importa: Garantiza terminación. Si lo omites/cambias: Bucle infinito.
-- **`do/while`**: Ejecuta al menos una vez. Por qué importa: Útil en intentos/menús. Si lo omites/cambias: `while` puede no ejecutar.
+El primer bloque usa `if/else` para clasificar la edad. La condición es booleana y solo una de las ramas se ejecuta. El `switch` asigna un nombre al día; el caso `default` cubre valores fuera del rango esperado.
 
-#### Ejecución y salida real
+En el bucle `for`, la variable `i` avanza desde 1 hasta 3. Cuando `i == 2`, `continue` salta el resto de la iteración y pasa a la siguiente. El bucle `while` imprime una cuenta regresiva; la sentencia `n--` garantiza progreso hacia la condición de salida. El `do/while` incrementa `intentos` antes de evaluar la condición, por eso ejecuta al menos una vez.
 
-Salida real observada (2026-05-22):
+#### Ejecución
+
+```bash
+javac Flujo.java
+java Flujo
+```
+
+Salida real observada (JDK 27, 2026-05-22):
 
 ```text
 Mayor de edad
@@ -1115,90 +742,43 @@ while:1
 intentos:1
 ```
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **Nunca termina**. Causa probable: Condición siempre true. Corrección: Asegura progreso.
-- **Resultado inesperado en switch clásico**. Causa probable: Fall-through. Corrección: Usar `->` o `break`.
-- **Off-by-one**. Causa probable: Límite incorrecto. Corrección: Probar 0,1,N.
+Un bucle infinito ocurre cuando la condición nunca deja de ser verdadera o no hay progreso. Antes de ejecutar un bucle, conviene identificar qué lo hace avanzar.
 
-#### Verificación rápida
+Un `switch` clásico sin `break` puede ejecutar casos siguientes por fall-through. La forma moderna con `->` reduce este riesgo.
 
-1. Cambia `edad` a 16 => `Menor de edad`.
-2. Cambia `dia` a 9 => `Día no válido`.
-3. Cambia `n--` por `n++` mentalmente: identifica bucle infinito.
+El off-by-one aparece al confundir límites. Ante duda, conviene probar los bordes: primer valor, último valor y un caso fuera de rango.
 
-</details>
+#### Verificación
+
+Cambiar `edad` a 16 debe producir `Menor de edad`. Cambiar `dia` a 9 debe producir `Día no válido`. El programa debe terminar sin bucles infinitos.
 
 ### Tema 9: Arreglos y métodos básicos · Básico · 50 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Cuando un programa necesita manejar varios valores del mismo tipo, usar una variable por cada valor deja de ser práctico. Los arreglos permiten agrupar esos valores en una estructura única. Los métodos, por su parte, permiten darle nombre y reutilizar una operación, como calcular un promedio.
 
-#### Caso guía
+#### Arreglos
 
-Tienes varias notas y quieres imprimirlas y calcular el promedio. Necesitas una estructura de tamaño fijo para varios valores y un método reutilizable para el cálculo.
+Un arreglo es un objeto que contiene una cantidad fija de elementos del mismo tipo. Su tamaño se define al crearlo y no cambia después. Los índices comienzan en 0 y llegan hasta `length - 1`. El campo `length` indica la cantidad de elementos; no es un método.
 
-#### Fundamento técnico y modelo mental
+Los arreglos son útiles cuando el tamaño es conocido y la estructura es homogénea. Para colecciones que crecen o se reducen dinámicamente, más adelante conviene usar estructuras como `ArrayList`. Acceder a un índice fuera del rango válido provoca `ArrayIndexOutOfBoundsException`.
 
-**Arreglo**
-- Definición formal: Objeto de tamaño fijo, elementos homogéneos, índice 0-based, campo `length`.
-- Para qué sirve: Colección fija.
-- Cuándo usarlo: Tamaño conocido.
-- Cuándo no / riesgo: Acceso fuera de rango; tamaño dinámico.
-- Verificación: `length` y recorrido correcto.
+Se puede recorrer un arreglo con un `for` clásico cuando se necesita el índice, o con un `for-each` cuando solo interesa el valor. Elegir uno u otro depende de la necesidad: leer todos los elementos suele ser claro con `for-each`; modificar posiciones o comparar índices requiere `for`.
 
-**Índice/`length`**
-- Definición formal: Índices válidos `0..length-1`.
-- Para qué sirve: Acceso seguro.
-- Cuándo usarlo: Bucles y bordes.
-- Cuándo no / riesgo: Off-by-one.
-- Verificación: No lanza `AIOOBE`.
+#### Métodos básicos
 
-**Método**
-- Definición formal: Bloque nombrado con parámetros y retorno.
-- Para qué sirve: Reutilizar y nombrar intención.
-- Cuándo usarlo: Cálculo, validación.
-- Cuándo no / riesgo: Métodos largos sin responsabilidad clara.
-- Verificación: Test unitario/manual.
+Un método es un bloque de código con nombre, parámetros, tipo de retorno y cuerpo. Sirve para encapsular una operación, evitar duplicación y hacer más legible el programa. Un método `static` puede invocarse sin crear una instancia de la clase, lo que resulta adecuado para utilidades simples como las de este módulo.
 
-**Parámetros/retorno**
-- Definición formal: Java pasa argumentos por valor; para arreglos se copia la referencia.
-- Para qué sirve: Contrato de entrada/salida.
-- Cuándo usarlo: APIs pequeñas.
-- Cuándo no / riesgo: Mutar arreglo sin documentar.
-- Verificación: Salida esperada.
+En Java, los argumentos se pasan por valor. Cuando se pasa un arreglo, lo que se copia por valor es la referencia al objeto arreglo. Por eso, un método que recibe un arreglo puede leer sus elementos y también modificarlos si el código lo hace. Este detalle importa al diseñar el contrato del método: si no debe modificar el arreglo, hay que evitarlo y dejarlo claro.
 
-**Recorrido `for/for-each`**
-- Definición formal: `for` con índice; `for-each` sobre elementos.
-- Para qué sirve: Procesar elementos.
-- Cuándo usarlo: Suma, búsqueda, impresión.
-- Cuándo no / riesgo: `for-each` cuando necesitas índice.
-- Verificación: Imprime todos los elementos.
+#### Ejemplo desde cero
 
-**Contrato / invariantes / reglas.** Tamaño fijo tras creación. Acceso fuera de rango lanza `ArrayIndexOutOfBoundsException`. `for-each` no expone índice. Método que recibe arreglo puede mutar su contenido.
+```bash
+mkdir -p /tmp/java-m0-t9 && cd /tmp/java-m0-t9
+```
 
-**Modelo mental.** Arreglo = casilleros numerados desde 0. Método = máquina con entrada, proceso y salida.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`ArrayIndexOutOfBoundsException`**. Causa probable: Índice inválido. Corrección: `i < length`.
-- **Promedio entero**. Causa probable: División entera. Corrección: Cast a `double`.
-- **`NullPointerException`**. Causa probable: Arreglo null. Corrección: Validar entrada.
-
-#### Verificación rápida
-
-- [ ] Imprime 4 notas.
-- [ ] Promedio 8.5.
-- [ ] `length` es 4.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-`Notas.java`
+Creamos `Notas.java`:
 
 ```java
 public class Notas {
@@ -1228,17 +808,22 @@ public class Notas {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`int[] notas = {...}`**: Crea arreglo tamaño 4. Por qué importa: Contiene datos. Si lo omites/cambias: Sin arreglo no hay colección.
-- **`i < valores.length`**: Límite seguro. Por qué importa: Evita AIOOBE. Si lo omites/cambias: `<=` causa excepción.
-- **`(double) suma / valores.length`**: División real. Por qué importa: Promedio correcto. Si lo omites/cambias: Entero trunca.
-- **`for-each` en imprimir**: Lee elementos. Por qué importa: Simple y claro. Si lo omites/cambias: `for` con índice también sirve.
-- **Método `promedio`**: Reutiliza lógica. Por qué importa: Separa cálculo de salida. Si lo omites/cambias: Mezclar todo dificulta pruebas.
+El método `promedio` recibe un arreglo de enteros y devuelve un `double`. Primero considera el caso de arreglo vacío para evitar una división por cero. Luego acumula la suma con un `for` clásico y devuelve el promedio. El cast a `double` es necesario para evitar la división entera.
 
-#### Ejecución y salida real
+El método `imprimir` recorre el arreglo con `for-each` porque solo necesita leer cada valor. El método `main` crea el arreglo, delega la impresión y el cálculo, y finalmente muestra la cantidad de elementos usando `length`.
 
-Salida real observada (2026-05-22):
+Separar el cálculo de la impresión es una decisión importante. `promedio` calcula y devuelve un valor; `imprimir` se encarga de la salida. Esta separación hace que el cálculo sea más fácil de reutilizar y probar.
+
+#### Ejecución
+
+```bash
+javac Notas.java
+java Notas
+```
+
+Salida real observada (JDK 27, 2026-05-22):
 
 ```text
 Nota: 10
@@ -1249,25 +834,18 @@ Promedio: 8.5
 Cantidad: 4
 ```
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **`ArrayIndexOutOfBoundsException`**. Causa probable: Límite mal. Corrección: `i < length`.
-- **Promedio incorrecto**. Causa probable: División entera. Corrección: Cast a double.
-- **`NullPointerException`**. Causa probable: Arreglo null. Corrección: Validar precondición.
+Acceder a `valores[valores.length]` provoca `ArrayIndexOutOfBoundsException` porque el último índice válido es `length - 1`. La condición correcta en un recorrido por índice es `i < valores.length`.
 
-#### Verificación rápida
+Calcular el promedio con división entera devuelve un resultado truncado. Si la suma es 34 y la cantidad es 4, la división entera produce 8, no 8.5. El cast a `double` corrige el problema.
 
-1. Cambia notas a `{10,10,9}` => promedio `9.666...`.
-2. Cambia a `{}` => `0.0`.
-3. Confirma que no hay acceso fuera de rango.
+Si el arreglo recibido es `null`, acceder a `length` provocará `NullPointerException`. Dependiendo del contrato, se puede validar y lanzar una excepción clara o definir un comportamiento explícito.
 
-</details>
+#### Verificación
+
+Una verificación simple es cambiar las notas a `{10, 10, 9}` y comprobar que el promedio sea `9.666...`. También conviene probar el caso vacío para confirmar que el método devuelve `0.0` según el contrato definido.
 
 ## Cierre del módulo
 
-Pasaste por el ciclo completo de fundamentos: entorno JDK, compilación/ejecución, bytecode/JVM, tipos, texto, operadores, control de flujo, arreglos y métodos. En el siguiente módulo ese código se organiza en clases, objetos, encapsulación y contratos.
-
-**Checklist de calidad del módulo (aplicada)**
-- [x] 9 temas con Caso guía, Fundamento técnico/modelo mental, cobertura por concepto, Implementación desde cero, Desglose, Ejecución/salida real, Errores comunes, Verificación rápida.
-- [x] Ejemplos Java ejecutados en `/tmp` con JDK 27 (2026-05-22): PrecioFinal, HolaJVM/javap, EntornoOk, SaludoArgs, TiposYConversiones/Desbordamiento, CompararStrings, Operadores, Flujo, Notas.
-- [x] No se asumió proyecto previo; cada tema incluye comandos y contexto.
+Este módulo recorrió el ciclo básico de trabajo en Java: instalar y verificar el entorno, comprender la relación entre código fuente, bytecode y JVM, escribir programas desde cero, y usar los elementos fundamentales del lenguaje. Con esta base, el siguiente paso natural es organizar el código en clases y objetos, y empezar a modelar comportamiento con mayor estructura.

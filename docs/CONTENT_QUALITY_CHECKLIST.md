@@ -2,25 +2,29 @@
 
 Esta checklist se aplica a **todos los cursos/tracks** y a **cada tema**. No marcar nada como revisado/hecho sin verificación ejecutada.
 
-## 1) Formato D+formal (por tema)
+## 1) Formato tipo libro técnico (estilo "Java a fondo")
 
 Mantener encabezado compatible: `### Tema N: ... · Nivel · min`.
 
-Secciones requeridas:
-- **Caso guía / Para qué sirve / Contexto**: problema real, por qué importa.
-- **Fundamento técnico y modelo mental**:
-  - **Definición formal**: todos los términos/conceptos del tema.
-  - **Contrato / invariantes / reglas**: precondiciones, postcondiciones, defaults, límites, seguridad, edge cases.
-  - **Modelo mental**: analogía precisa, sin sacrificar corrección.
-- **Implementación desde cero**: código completo, ejecutable/verificable.
-- **Desglose del código**: qué hace cada parte importante.
-- **Ejecución y salida real**: comando exacto, ruta, salida esperada/observada.
-- **Errores comunes y cómo resolverlos**: tabla síntoma/causa/solución.
-- **Verificación rápida**: prueba mínima que confirma el comportamiento.
+Estructura por tema (orden flexible, pero con todos los elementos):
+- **Apertura con problema/contexto real**: párrafo que motive el tema con un caso concreto.
+- **Desarrollo conceptual en prosa**: explicar conceptos en texto corrido, con definiciones claras, propósito, cuándo usar, cuándo no usar, reglas/contrato/invariantes y riesgos. Cada concepto mencionado en el título/alcance debe quedar cubierto.
+- **Ejemplo desde cero**: prerrequisitos, dependencias/versiones, bootstrap/carpeta cuando aplique, código completo.
+- **Recorrido del código**: explicar líneas o bloques relevantes y su intención.
+- **Ejecución y salida real**: comandos desde ruta clara; salida real observada cuando se ejecutó. Si no es factible ejecutar, incluir “Nota de verificación” honesta con razón concreta y setup completo.
+- **Errores frecuentes y diagnóstico**: síntoma, causa probable y corrección, en prosa o lista breve.
+- **Cierre/verificación**: comprobación observable del comportamiento.
+
+Estilo:
+- Prosa explicativa primero; código como soporte del razonamiento.
+- Tono formal-neutro, didáctico, técnico.
+- Sin andamiaje rígido de "Capa 1/Capa 2", "Caso guía" como plantilla mecánica, ni fichas/tablas como vehículo principal.
+- Tablas solo como resumen compacto puntual cuando aporten valor real (p. ej. caracteres especiales, versiones). No usar tablas para definir todos los conceptos.
+- No inventar APIs, salidas ni comportamientos.
 
 ## 2) Cobertura total de conceptos (crítico)
 
-Si el título menciona varios conceptos (ej. `LAZY, EAGER y N+1`, `L1/L2/EntityGraph`, `pom.xml vs build.gradle.kts`), **cada concepto** debe incluir:
+Si el título menciona varios conceptos (ej. `LAZY, EAGER y N+1`, `L1/L2/EntityGraph`, `pom.xml vs build.gradle.kts`), **cada concepto** debe incluir, en prosa o de forma explícita:
 - Definición formal.
 - Qué problema resuelve / para qué sirve.
 - Contrato, reglas, defaults, trade-offs.
@@ -29,8 +33,6 @@ Si el título menciona varios conceptos (ej. `LAZY, EAGER y N+1`, `L1/L2/EntityG
 - Caso de uso real.
 - Error común asociado.
 - Verificación/evidencia.
-
-Agregar **tabla comparativa** cuando ayude: concepto | cuándo usar | cuándo evitar | riesgo | alternativa.
 
 No se permite explicar solo un concepto y mencionar los demás superficialmente.
 
@@ -67,7 +69,8 @@ Cuando aplique, incluir:
 
 ## 6) Hallazgos a erradicar (lecciones)
 
-- Temas multi-concepto que explican solo uno (ej. LAZY/EAGER/N+1).
+- Tablas usadas como sustituto de explicación.
+- Temas multi-concepto que explican solo un concepto.
 - Código que asume DB/proyecto/config existente.
 - “Requiere X configurado” sin mostrar cómo configurarlo.
 - Falta de ruta/comando/salida real.
