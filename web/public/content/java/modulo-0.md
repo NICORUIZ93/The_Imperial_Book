@@ -46,7 +46,11 @@ flowchart LR
 
 ```bash
 mkdir -p /tmp/java-m0-prog && cd /tmp/java-m0-prog
-cat > Regla.java << 'JAVA'
+```
+
+Crea el archivo `Regla.java`:
+
+```java
 public class Regla {
   public static void main(String[] args) {
     int entrada = 10;
@@ -54,8 +58,6 @@ public class Regla {
     System.out.println(salida);
   }
 }
-JAVA
-javac Regla.java && java Regla
 ```
 
 **Caso de uso real.** Calcular IVA, comisiones, descuentos o impuestos sobre miles de transacciones con la misma regla.
@@ -76,14 +78,16 @@ javac Regla.java && java Regla
 
 ```bash
 mkdir -p /tmp/java-m0-porque && cd /tmp/java-m0-porque
-cat > Hola.java << 'JAVA'
+```
+
+Crea el archivo `Hola.java`:
+
+```java
 public class Hola {
   public static void main(String[] args) {
     System.out.println("Java OK");
   }
 }
-JAVA
-javac Hola.java && java Hola
 ```
 
 **Caso de uso real.** Servicio backend que procesa pedidos con reglas de negocio, pruebas automatizadas y despliegue en servidores Linux.
@@ -113,7 +117,11 @@ flowchart TB
 
 ```bash
 mkdir -p /tmp/java-m0-t1 && cd /tmp/java-m0-t1
-cat > PrecioFinal.java << 'JAVA'
+```
+
+Crea el archivo `PrecioFinal.java`:
+
+```java
 public class PrecioFinal {
   public static void main(String[] args) {
     double precioBase = 100.0;
@@ -124,8 +132,9 @@ public class PrecioFinal {
     System.out.println("Precio final: " + precioFinal);
   }
 }
-JAVA
-javac PrecioFinal.java
+```
+
+```bash
 java PrecioFinal
 ```
 
@@ -166,7 +175,11 @@ flowchart LR
 
 ```bash
 mkdir -p /tmp/java-m0-jvm && cd /tmp/java-m0-jvm
-cat > HolaJVM.java << 'JAVA'
+```
+
+Crea el archivo `HolaJVM.java`:
+
+```java
 public class HolaJVM {
   public static void main(String[] args) {
     System.out.println("Hola desde la JVM");
@@ -174,8 +187,9 @@ public class HolaJVM {
     System.out.println(System.getProperty("os.name"));
   }
 }
-JAVA
-javac HolaJVM.java
+```
+
+```bash
 java HolaJVM
 javap -c HolaJVM | head -4
 ```
@@ -201,10 +215,15 @@ Compiled from "HolaJVM.java"
 
 ```bash
 mkdir -p /tmp/java-m0-comp && cd /tmp/java-m0-comp
-cat > Compila.java << 'JAVA'
+```
+
+Crea el archivo `Compila.java`:
+
+```java
 public class Compila { public static void main(String[] args){ System.out.println("ok"); } }
-JAVA
-javac Compila.java
+```
+
+```bash
 ls Compila.class
 java Compila
 ```
@@ -269,15 +288,17 @@ echo "${JAVA_HOME:-JAVA_HOME_NO_DEFINIDA}"
 
 ```bash
 mkdir -p /tmp/java-m0-env && cd /tmp/java-m0-env
-cat > EntornoOk.java << 'JAVA'
+```
+
+Crea el archivo `EntornoOk.java`:
+
+```java
 public class EntornoOk {
   public static void main(String[] args) {
     System.out.println("JDK OK");
     System.out.println(System.getProperty("java.version"));
   }
 }
-JAVA
-javac EntornoOk.java && java EntornoOk
 ```
 
 **Verificación (JDK 27, 2026-05-22).** Salida real:
@@ -315,10 +336,12 @@ sequenceDiagram
 
 ```bash
 mkdir -p /tmp/java-m0-ciclo && cd /tmp/java-m0-ciclo
-cat > Ciclo.java << 'JAVA'
+```
+
+Crea el archivo `Ciclo.java`:
+
+```java
 public class Ciclo { public static void main(String[] args){ System.out.println("ciclo"); } }
-JAVA
-javac Ciclo.java && java Ciclo
 ```
 
 **Error común.** Olvidar recompilar. Síntoma: ves salida vieja. Causa: ejecutas un `.class` anterior. Corrección: `javac` tras cada cambio.
@@ -335,15 +358,20 @@ javac Ciclo.java && java Ciclo
 
 ```bash
 mkdir -p /tmp/java-m0-args && cd /tmp/java-m0-args
-cat > Args.java << 'JAVA'
+```
+
+Crea el archivo `Args.java`:
+
+```java
 public class Args {
   public static void main(String[] args) {
     System.out.println(args.length);
     System.out.println(args.length > 0 ? args[0] : "(vacio)");
   }
 }
-JAVA
-javac Args.java
+```
+
+```bash
 java Args
 java Args Ada
 ```
@@ -365,7 +393,11 @@ Ada
 
 ```bash
 mkdir -p /tmp/java-m0-t4 && cd /tmp/java-m0-t4
-cat > SaludoArgs.java << 'JAVA'
+```
+
+Crea el archivo `SaludoArgs.java`:
+
+```java
 public class SaludoArgs {
   public static void main(String[] args) {
     if (args.length == 0) {
@@ -376,8 +408,9 @@ public class SaludoArgs {
     System.out.println("Hola, " + nombre);
   }
 }
-JAVA
-javac SaludoArgs.java
+```
+
+```bash
 java SaludoArgs
 java SaludoArgs Ada
 ```
@@ -413,7 +446,11 @@ flowchart TB
 
 ```bash
 mkdir -p /tmp/java-m0-prims && cd /tmp/java-m0-prims
-cat > Prims.java << 'JAVA'
+```
+
+Crea el archivo `Prims.java`:
+
+```java
 public class Prims {
   public static void main(String[] args) {
     int cantidad = 3;
@@ -426,8 +463,6 @@ public class Prims {
     System.out.println(letra);
   }
 }
-JAVA
-javac Prims.java && java Prims
 ```
 
 **Error común.** Usar `float`/`double` para dinero con expectativas de exactitud decimal. Síntoma: redondeos inesperados. Corrección: para dinero, usar `BigDecimal` o enteros en centavos; en este nivel, entender la limitación.
@@ -451,7 +486,11 @@ A
 
 ```bash
 mkdir -p /tmp/java-m0-cast && cd /tmp/java-m0-cast
-cat > Cast.java << 'JAVA'
+```
+
+Crea el archivo `Cast.java`:
+
+```java
 public class Cast {
   public static void main(String[] args) {
     int a = 10;
@@ -464,8 +503,6 @@ public class Cast {
     System.out.println(max + 1);
   }
 }
-JAVA
-javac Cast.java && java Cast
 ```
 
 **Caso de uso real.** Convertir milisegundos `long` a `int` sin validar rango puede corromper timeouts.
@@ -501,7 +538,11 @@ flowchart LR
 
 ```bash
 mkdir -p /tmp/java-m0-str && cd /tmp/java-m0-str
-cat > Str.java << 'JAVA'
+```
+
+Crea el archivo `Str.java`:
+
+```java
 public class Str {
   public static void main(String[] args) {
     String a = "hola";
@@ -511,8 +552,6 @@ public class Str {
     System.out.println(a.equals("hola"));
   }
 }
-JAVA
-javac Str.java && java Str
 ```
 
 **Error común.** Comparar strings con `==`. Síntoma: comparación falla aunque el texto sea igual. Corrección: `equals` o `Objects.equals`.
@@ -533,7 +572,11 @@ true
 
 ```bash
 mkdir -p /tmp/java-m0-fmt && cd /tmp/java-m0-fmt
-cat > Fmt.java << 'JAVA'
+```
+
+Crea el archivo `Fmt.java`:
+
+```java
 public class Fmt {
   public static void main(String[] args) {
     String nombre = "Ada";
@@ -542,8 +585,6 @@ public class Fmt {
     System.out.printf("Total: %.2f%n", total);
   }
 }
-JAVA
-javac Fmt.java && java Fmt
 ```
 
 **Error común.** Concatenar todo y perder legibilidad/formato numérico. Corrección: `printf`/`String.format` o formatted strings según caso.
@@ -571,7 +612,11 @@ Caso guía: una regla de descuento aplica si el cliente es VIP y el total supera
 
 ```bash
 mkdir -p /tmp/java-m0-arit && cd /tmp/java-m0-arit
-cat > Arit.java << 'JAVA'
+```
+
+Crea el archivo `Arit.java`:
+
+```java
 public class Arit {
   public static void main(String[] args) {
     int a = 7, b = 2;
@@ -581,8 +626,6 @@ public class Arit {
     System.out.println(a);
   }
 }
-JAVA
-javac Arit.java && java Arit
 ```
 
 **Error común.** Esperar `3.5` de `7/2` con enteros. Corrección: usar `double` o castear.
@@ -607,7 +650,11 @@ flowchart LR
 
 ```bash
 mkdir -p /tmp/java-m0-log && cd /tmp/java-m0-log
-cat > Logica.java << 'JAVA'
+```
+
+Crea el archivo `Logica.java`:
+
+```java
 public class Logica {
   public static void main(String[] args) {
     boolean vip = true;
@@ -618,8 +665,6 @@ public class Logica {
     System.out.println(true || (10 / 0 > 0));
   }
 }
-JAVA
-javac Logica.java && java Logica
 ```
 
 **Error común.** Confiar en precedencia sin paréntesis en reglas de negocio. Corrección: usar paréntesis para intención explícita.
@@ -640,7 +685,11 @@ Caso guía: un sistema clasifica pedidos y procesa lotes. Sin control de flujo, 
 
 ```bash
 mkdir -p /tmp/java-m0-if && cd /tmp/java-m0-if
-cat > Decision.java << 'JAVA'
+```
+
+Crea el archivo `Decision.java`:
+
+```java
 public class Decision {
   public static void main(String[] args) {
     int total = 120;
@@ -654,8 +703,6 @@ public class Decision {
     }
   }
 }
-JAVA
-javac Decision.java && java Decision
 ```
 
 **Error común.** Olvidar el caso `default`/rama else en reglas de negocio. Corrección: definir comportamiento explícito para casos inesperados.
@@ -681,7 +728,11 @@ flowchart TD
 
 ```bash
 mkdir -p /tmp/java-m0-loop && cd /tmp/java-m0-loop
-cat > Loop.java << 'JAVA'
+```
+
+Crea el archivo `Loop.java`:
+
+```java
 public class Loop {
   public static void main(String[] args) {
     int suma = 0;
@@ -692,8 +743,6 @@ public class Loop {
     System.out.println();
   }
 }
-JAVA
-javac Loop.java && java Loop
 ```
 
 **Error común.** Bucle infinito por no actualizar condición. Síntoma: programa no termina/CPU alta. Corrección: asegurar progreso y condición de salida.
@@ -714,7 +763,11 @@ Caso guía: procesar una lista de precios. Necesitas agrupar datos y reutilizar 
 
 ```bash
 mkdir -p /tmp/java-m0-arr && cd /tmp/java-m0-arr
-cat > Arr.java << 'JAVA'
+```
+
+Crea el archivo `Arr.java`:
+
+```java
 public class Arr {
   public static void main(String[] args) {
     int[] nums = {10, 20, 30};
@@ -724,8 +777,6 @@ public class Arr {
     System.out.println(suma);
   }
 }
-JAVA
-javac Arr.java && java Arr
 ```
 
 **Error común.** Usar índice `length`. Síntoma: `ArrayIndexOutOfBoundsException`. Corrección: último índice válido es `length - 1`.
@@ -742,7 +793,11 @@ javac Arr.java && java Arr
 
 ```bash
 mkdir -p /tmp/java-m0-met && cd /tmp/java-m0-met
-cat > Met.java << 'JAVA'
+```
+
+Crea el archivo `Met.java`:
+
+```java
 public class Met {
   static int sumar(int a, int b) { return a + b; }
   static double aplicarIva(double base, double iva) { return base + base * iva; }
@@ -751,8 +806,6 @@ public class Met {
     System.out.println(aplicarIva(100, 0.21));
   }
 }
-JAVA
-javac Met.java && java Met
 ```
 
 **Caso de uso real.** Extraer cálculo de impuesto para reutilizarlo en checkout, factura y reporte.

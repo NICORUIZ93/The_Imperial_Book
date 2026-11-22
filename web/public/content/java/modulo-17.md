@@ -49,7 +49,11 @@ flowchart LR
 
 ```bash
 cd /tmp/jdbc-m17
-cat > DemoJdbcApi.java << 'JAVA'
+```
+
+Crea el archivo `DemoJdbcApi.java`:
+
+```java
 import java.sql.Connection;
 import java.sql.DriverManager;
 
@@ -61,8 +65,9 @@ public class DemoJdbcApi {
     }
   }
 }
-JAVA
-javac -cp ".:h2.jar" DemoJdbcApi.java
+```
+
+```bash
 java -cp ".:h2.jar" DemoJdbcApi
 ```
 
@@ -104,7 +109,11 @@ sequenceDiagram
 
 ```bash
 cd /tmp/jdbc-m17
-cat > DemoPs.java << 'JAVA'
+```
+
+Crea el archivo `DemoPs.java`:
+
+```java
 import java.sql.*;
 
 public class DemoPs {
@@ -129,8 +138,9 @@ public class DemoPs {
     }
   }
 }
-JAVA
-javac -cp ".:h2.jar" DemoPs.java
+```
+
+```bash
 java -cp ".:h2.jar" DemoPs
 ```
 
@@ -167,7 +177,11 @@ flowchart LR
 
 ```bash
 cd /tmp/jdbc-m17
-cat > DemoDao.java << 'JAVA'
+```
+
+Crea el archivo `DemoDao.java`:
+
+```java
 import java.sql.*;
 import java.util.*;
 
@@ -214,8 +228,9 @@ public class DemoDao {
     System.out.println(dao.buscarPorId(99).isEmpty());
   }
 }
-JAVA
-javac -cp ".:h2.jar" DemoDao.java
+```
+
+```bash
 java -cp ".:h2.jar" DemoDao
 ```
 
@@ -255,7 +270,11 @@ flowchart TD
 
 ```bash
 cd /tmp/jdbc-m17
-cat > DemoClose.java << 'JAVA'
+```
+
+Crea el archivo `DemoClose.java`:
+
+```java
 import java.sql.*;
 
 public class DemoClose {
@@ -272,8 +291,9 @@ public class DemoClose {
     System.out.println("cerrado");
   }
 }
-JAVA
-javac -cp ".:h2.jar" DemoClose.java
+```
+
+```bash
 java -cp ".:h2.jar" DemoClose
 ```
 
@@ -323,7 +343,11 @@ sequenceDiagram
 
 ```bash
 cd /tmp/jdbc-m17
-cat > DemoTx.java << 'JAVA'
+```
+
+Crea el archivo `DemoTx.java`:
+
+```java
 import java.sql.*;
 
 public class DemoTx {
@@ -365,8 +389,9 @@ public class DemoTx {
     try (Connection c = open()) { print(c); }
   }
 }
-JAVA
-javac -cp ".:h2.jar" DemoTx.java
+```
+
+```bash
 java -cp ".:h2.jar" DemoTx
 ```
 
@@ -428,7 +453,11 @@ flowchart LR
 
 ```bash
 cd /tmp/jdbc-m17
-cat > DemoIsolation.java << 'JAVA'
+```
+
+Crea el archivo `DemoIsolation.java`:
+
+```java
 import java.sql.*;
 public class DemoIsolation {
   public static void main(String[] args) throws Exception {
@@ -439,8 +468,9 @@ public class DemoIsolation {
     }
   }
 }
-JAVA
-javac -cp ".:h2.jar" DemoIsolation.java
+```
+
+```bash
 java -cp ".:h2.jar" DemoIsolation
 ```
 

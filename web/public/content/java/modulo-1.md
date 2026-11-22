@@ -33,7 +33,11 @@ classDiagram
 
 ```bash
 mkdir -p /tmp/j1-clase && cd /tmp/j1-clase
-cat > DemoClase.java << 'JAVA'
+```
+
+Crea el archivo `DemoClase.java`:
+
+```java
 class CuentaMin {
   double saldo;
   void depositar(double m) { saldo += m; }
@@ -45,8 +49,6 @@ public class DemoClase {
     System.out.println(c.saldo);
   }
 }
-JAVA
-javac DemoClase.java && java DemoClase
 ```
 
 **Caso de uso real.** `Cuenta`, `Pedido`, `Reserva`, `Factura`.
@@ -71,7 +73,11 @@ flowchart LR
 
 ```bash
 mkdir -p /tmp/j1-obj && cd /tmp/j1-obj
-cat > DemoObj.java << 'JAVA'
+```
+
+Crea el archivo `DemoObj.java`:
+
+```java
 class Caja { int v; Caja(int v){ this.v = v; } }
 public class DemoObj {
   public static void main(String[] args) {
@@ -81,8 +87,6 @@ public class DemoObj {
     System.out.println(a.v + " " + b.v);
   }
 }
-JAVA
-javac DemoObj.java && java DemoObj
 ```
 
 **Error común.** Confundir clase con objeto. Síntoma: esperar estado compartido o usar campos de instancia como si fueran globales. Corrección: instanciar con `new`; usar `static` solo para estado/comportamiento verdaderamente de clase.
@@ -99,7 +103,11 @@ javac DemoObj.java && java DemoObj
 
 ```bash
 mkdir -p /tmp/j1-ctor && cd /tmp/j1-ctor
-cat > DemoCtor.java << 'JAVA'
+```
+
+Crea el archivo `DemoCtor.java`:
+
+```java
 class CuentaC {
   final String titular;
   CuentaC(String titular) {
@@ -113,8 +121,6 @@ public class DemoCtor {
     try { new CuentaC(""); } catch (IllegalArgumentException e) { System.out.println("error"); }
   }
 }
-JAVA
-javac DemoCtor.java && java DemoCtor
 ```
 
 **Error común.** Permitir objetos inválidos al nacer. Síntoma: fallos tardíos alejados de la causa. Corrección: validar invariantes en el constructor.
@@ -131,7 +137,11 @@ javac DemoCtor.java && java DemoCtor
 
 ```bash
 mkdir -p /tmp/j1-enc && cd /tmp/j1-enc
-cat > DemoEnc.java << 'JAVA'
+```
+
+Crea el archivo `DemoEnc.java`:
+
+```java
 class CajaE {
   private int v;
   void set(int v) { if (v < 0) throw new IllegalArgumentException("negativo"); this.v = v; }
@@ -145,8 +155,6 @@ public class DemoEnc {
     try { c.set(-1); } catch (IllegalArgumentException e) { System.out.println("bloqueado"); }
   }
 }
-JAVA
-javac DemoEnc.java && java DemoEnc
 ```
 
 **Error común.** Getters/setters ciegos para todo. Síntoma: encapsulación nominal, estado inválido posible. Corrección: exponer operaciones de dominio (`depositar`, `retirar`) y validar invariantes.
@@ -157,7 +165,11 @@ javac DemoEnc.java && java DemoEnc
 
 ```bash
 mkdir -p /tmp/java-m1-t1 && cd /tmp/java-m1-t1
-cat > Cuenta.java << 'JAVA'
+```
+
+Crea el archivo `Cuenta.java`:
+
+```java
 public class Cuenta {
   private final String titular;
   private double saldo;
@@ -192,8 +204,6 @@ public class Cuenta {
     try { c.retirar(500); } catch (IllegalStateException e) { System.out.println(e.getMessage()); }
   }
 }
-JAVA
-javac Cuenta.java && java Cuenta
 ```
 
 **Recorrido.** `titular` y `saldo` son privados; no hay escritura directa. El constructor establece invariantes iniciales. `depositar` y `retirar` validan entrada y estado. `IllegalArgumentException` señala dato inválido; `IllegalStateException` señala operación inválida para el estado actual.
@@ -233,14 +243,16 @@ classDiagram
 
 ```bash
 mkdir -p /tmp/j1-her && cd /tmp/j1-her
-cat > DemoHer.java << 'JAVA'
+```
+
+Crea el archivo `DemoHer.java`:
+
+```java
 class Animal { String tipo(){ return "animal"; } }
 class Perro extends Animal { String ladrar(){ return "guau"; } }
 public class DemoHer {
   public static void main(String[] args){ System.out.println(new Perro().tipo()); }
 }
-JAVA
-javac DemoHer.java && java DemoHer
 ```
 
 **Error común.** Heredar por conveniencia. Síntoma: subclase recibe comportamiento que no tiene sentido. Corrección: composición/delegación.
@@ -257,14 +269,16 @@ javac DemoHer.java && java DemoHer
 
 ```bash
 mkdir -p /tmp/j1-ov && cd /tmp/j1-ov
-cat > DemoOv.java << 'JAVA'
+```
+
+Crea el archivo `DemoOv.java`:
+
+```java
 class A { String f(){ return "A"; } }
 class B extends A { @Override String f(){ return "B"; } }
 public class DemoOv {
   public static void main(String[] args){ A x = new B(); System.out.println(x.f()); }
 }
-JAVA
-javac DemoOv.java && java DemoOv
 ```
 
 **Error común.** Cambiar firma y creer que sobrescribiste. Síntoma: se ejecuta el método base. Corrección: `@Override` hace fallar compilación si no hay override real.
@@ -275,7 +289,11 @@ javac DemoOv.java && java DemoOv
 
 ```bash
 mkdir -p /tmp/j1-t2 && cd /tmp/j1-t2
-cat > Herencia.java << 'JAVA'
+```
+
+Crea el archivo `Herencia.java`:
+
+```java
 class Empleado {
   protected final String nombre;
   Empleado(String nombre) { this.nombre = nombre; }
@@ -301,8 +319,6 @@ public class Herencia {
     System.out.println(e2.descripcion());
   }
 }
-JAVA
-javac Herencia.java && java Herencia
 ```
 
 **Verificación (JDK 27, 2026-05-22).**
@@ -335,15 +351,17 @@ flowchart LR
 
 ```bash
 mkdir -p /tmp/j1-int && cd /tmp/j1-int
-cat > DemoInt.java << 'JAVA'
+```
+
+Crea el archivo `DemoInt.java`:
+
+```java
 interface Pagable { double total(); }
 class Factura implements Pagable { public double total(){ return 121.0; } }
 public class DemoInt {
   static void cobrar(Pagable p){ System.out.println(p.total()); }
   public static void main(String[] args){ cobrar(new Factura()); }
 }
-JAVA
-javac DemoInt.java && java DemoInt
 ```
 
 **Error común.** Programar contra la clase concreta. Síntoma: cada nuevo tipo obliga a modificar el cliente. Corrección: depender de la interfaz.
@@ -360,7 +378,11 @@ javac DemoInt.java && java DemoInt
 
 ```bash
 mkdir -p /tmp/j1-abs && cd /tmp/j1-abs
-cat > DemoAbs.java << 'JAVA'
+```
+
+Crea el archivo `DemoAbs.java`:
+
+```java
 abstract class Documento {
   protected final String id;
   Documento(String id){ this.id = id; }
@@ -375,8 +397,6 @@ class Recibo extends Documento {
 public class DemoAbs {
   public static void main(String[] args){ System.out.println(new Recibo("R1",100).etiqueta()); }
 }
-JAVA
-javac DemoAbs.java && java DemoAbs
 ```
 
 **Error común.** Base abstracta gigante. Síntoma: subclases heredan basura. Corrección: mantener solo lo común estable.
@@ -403,7 +423,11 @@ sequenceDiagram
 
 ```bash
 mkdir -p /tmp/j1-poly && cd /tmp/j1-poly
-cat > DemoPoly.java << 'JAVA'
+```
+
+Crea el archivo `DemoPoly.java`:
+
+```java
 interface PagableP { double total(); }
 class FacturaP implements PagableP { public double total(){ return 121.0; } }
 class ReciboP implements PagableP { public double total(){ return 100.0; } }
@@ -411,8 +435,6 @@ public class DemoPoly {
   static void imprimir(PagableP p){ System.out.println(p.total()); }
   public static void main(String[] args){ imprimir(new FacturaP()); imprimir(new ReciboP()); }
 }
-JAVA
-javac DemoPoly.java && java DemoPoly
 ```
 
 **Error común.** Cadena de `instanceof` en el cliente. Síntoma: cada nuevo tipo rompe el cliente. Corrección: mover comportamiento al contrato polimórfico.
@@ -423,7 +445,11 @@ javac DemoPoly.java && java DemoPoly
 
 ```bash
 mkdir -p /tmp/j1-t3 && cd /tmp/j1-t3
-cat > Polimorfismo.java << 'JAVA'
+```
+
+Crea el archivo `Polimorfismo.java`:
+
+```java
 interface Pagable { double total(); }
 abstract class Documento implements Pagable {
   protected final String id;
@@ -450,8 +476,6 @@ public class Polimorfismo {
     System.out.println(f.etiqueta());
   }
 }
-JAVA
-javac Polimorfismo.java && java Polimorfismo
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `121.0`, `100.0`, `F1:121.0`.
@@ -470,7 +494,11 @@ Caso guía: una API necesita variantes de `pagar` con distintos parámetros, sub
 
 ```bash
 mkdir -p /tmp/j1-over && cd /tmp/j1-over
-cat > DemoOver.java << 'JAVA'
+```
+
+Crea el archivo `DemoOver.java`:
+
+```java
 class Calc {
   int sum(int a,int b){ return a+b; }
   double sum(double a,double b){ return a+b; }
@@ -478,8 +506,6 @@ class Calc {
 public class DemoOver {
   public static void main(String[] args){ Calc c=new Calc(); System.out.println(c.sum(1,2)); System.out.println(c.sum(1.5,2.5)); }
 }
-JAVA
-javac DemoOver.java && java DemoOver
 ```
 
 **Error común.** Sobrecargas ambiguas/confusas. Corrección: nombres o parámetros claros.
@@ -494,12 +520,14 @@ javac DemoOver.java && java DemoOver
 
 ```bash
 mkdir -p /tmp/j1-overr && cd /tmp/j1-overr
-cat > DemoOverr.java << 'JAVA'
+```
+
+Crea el archivo `DemoOverr.java`:
+
+```java
 class Base { String who(){ return "base"; } }
 class Sub extends Base { @Override String who(){ return "sub"; } }
 public class DemoOverr { public static void main(String[] args){ Base b=new Sub(); System.out.println(b.who()); } }
-JAVA
-javac DemoOverr.java && java DemoOverr
 ```
 
 **Error común.** Olvidar `@Override`. Corrección: anotarlo siempre.
@@ -523,11 +551,13 @@ flowchart TB
 
 ```bash
 mkdir -p /tmp/j1-mod && cd /tmp/j1-mod
-cat > DemoMod.java << 'JAVA'
+```
+
+Crea el archivo `DemoMod.java`:
+
+```java
 class BaseM { private int x=1; protected int y=2; public int z=3; int p=4; int sum(){ return x+y+z+p; } }
 public class DemoMod { public static void main(String[] args){ System.out.println(new BaseM().sum()); } }
-JAVA
-javac DemoMod.java && java DemoMod
 ```
 
 **Error común.** Hacer todo `public`. Síntoma: acoplamiento y ruptura de invariantes. Corrección: mínima visibilidad necesaria.
@@ -548,11 +578,13 @@ Caso guía: necesitas transportar datos de respuesta (`id`, `codigo`) sin lógic
 
 ```bash
 mkdir -p /tmp/j1-rec && cd /tmp/j1-rec
-cat > DemoRec.java << 'JAVA'
+```
+
+Crea el archivo `DemoRec.java`:
+
+```java
 record Punto(int x, int y) {}
 public class DemoRec { public static void main(String[] args){ System.out.println(new Punto(1,2)); } }
-JAVA
-javac DemoRec.java && java DemoRec
 ```
 
 **Cuándo usarlo / cuándo no.** Úsalo para DTOs/value objects inmutables. No para entidades JPA mutables o con identidad compleja.
@@ -569,7 +601,11 @@ javac DemoRec.java && java DemoRec
 
 ```bash
 mkdir -p /tmp/j1-recv && cd /tmp/j1-recv
-cat > DemoRecV.java << 'JAVA'
+```
+
+Crea el archivo `DemoRecV.java`:
+
+```java
 record Email(String value) {
   Email { if (value == null || !value.contains("@")) throw new IllegalArgumentException("email"); }
 }
@@ -579,8 +615,6 @@ public class DemoRecV {
     try { new Email("bad"); } catch (IllegalArgumentException e) { System.out.println("error"); }
   }
 }
-JAVA
-javac DemoRecV.java && java DemoRecV
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `a@b.com`, `error`.
@@ -605,7 +639,11 @@ Caso guía: antes de llamar a `super(...)` quieres normalizar/validar argumentos
 
 ```bash
 mkdir -p /tmp/j1-flex && cd /tmp/j1-flex
-cat > DemoFlex.java << 'JAVA'
+```
+
+Crea el archivo `DemoFlex.java`:
+
+```java
 class Base {
   final String id;
   Base(String id){ this.id = id; }
@@ -620,8 +658,6 @@ class User extends Base {
 public class DemoFlex {
   public static void main(String[] args) { System.out.println(new User(" ab ").id); }
 }
-JAVA
-javac DemoFlex.java && java DemoFlex
 ```
 
 **Error común.** Usar `this` antes de inicializar la superclase. Corrección: respetar reglas de inicialización segura; hacer solo validación/normalización local.

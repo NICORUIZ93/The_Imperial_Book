@@ -36,7 +36,11 @@ flowchart LR
 
 ```bash
 mkdir -p /tmp/j2-list && cd /tmp/j2-list
-cat > DemoList.java << 'JAVA'
+```
+
+Crea el archivo `DemoList.java`:
+
+```java
 import java.util.*;
 public class DemoList {
   public static void main(String[] args) {
@@ -46,8 +50,6 @@ public class DemoList {
     System.out.println(llegada.get(0));
   }
 }
-JAVA
-javac DemoList.java && java DemoList
 ```
 
 **Caso real.** Historial de eventos de pedido.
@@ -66,7 +68,11 @@ javac DemoList.java && java DemoList
 
 ```bash
 mkdir -p /tmp/j2-set && cd /tmp/j2-set
-cat > DemoSet.java << 'JAVA'
+```
+
+Crea el archivo `DemoSet.java`:
+
+```java
 import java.util.*;
 public class DemoSet {
   public static void main(String[] args) {
@@ -75,8 +81,6 @@ public class DemoSet {
     System.out.println(ids.contains("A"));
   }
 }
-JAVA
-javac DemoSet.java && java DemoSet
 ```
 
 **Error común.** Asumir orden en `HashSet`. Corrección: `LinkedHashSet` o `TreeSet`.
@@ -93,7 +97,11 @@ javac DemoSet.java && java DemoSet
 
 ```bash
 mkdir -p /tmp/j2-map && cd /tmp/j2-map
-cat > DemoMap.java << 'JAVA'
+```
+
+Crea el archivo `DemoMap.java`:
+
+```java
 import java.util.*;
 public class DemoMap {
   public static void main(String[] args) {
@@ -104,8 +112,6 @@ public class DemoMap {
     System.out.println(new TreeMap<>(Map.of("b",2,"a",1)).firstKey());
   }
 }
-JAVA
-javac DemoMap.java && java DemoMap
 ```
 
 **Error común.** Usar clave mutable o asumir orden en `HashMap`. Corrección: claves inmutables; `LinkedHashMap`/`TreeMap` si el orden importa.
@@ -116,7 +122,11 @@ javac DemoMap.java && java DemoMap
 
 ```bash
 mkdir -p /tmp/j2-t1 && cd /tmp/j2-t1
-cat > ColeccionesBasicas.java << 'JAVA'
+```
+
+Crea el archivo `ColeccionesBasicas.java`:
+
+```java
 import java.util.*;
 public class ColeccionesBasicas {
   public static void main(String[] args) {
@@ -131,8 +141,6 @@ public class ColeccionesBasicas {
     System.out.println(estado.get("ENV-001"));
   }
 }
-JAVA
-javac ColeccionesBasicas.java && java ColeccionesBasicas
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `[ENV-003, ENV-001, ENV-003]`, `2`, `ENTREGADO`.
@@ -159,12 +167,14 @@ flowchart TD
 
 ```bash
 mkdir -p /tmp/j2-eq && cd /tmp/j2-eq
-cat > DemoEq.java << 'JAVA'
+```
+
+Crea el archivo `DemoEq.java`:
+
+```java
 import java.util.Objects;
 class Guia { final String codigo; Guia(String c){codigo=c;} @Override public boolean equals(Object o){ return o instanceof Guia g && Objects.equals(codigo,g.codigo);} }
 public class DemoEq { public static void main(String[] args){ System.out.println(new Guia("A").equals(new Guia("A"))); } }
-JAVA
-javac DemoEq.java && java DemoEq
 ```
 
 **Error común.** Usar `==` para igualdad lógica. Corrección: `equals` con contrato correcto.
@@ -181,12 +191,14 @@ javac DemoEq.java && java DemoEq
 
 ```bash
 mkdir -p /tmp/j2-hash && cd /tmp/j2-hash
-cat > DemoHash.java << 'JAVA'
+```
+
+Crea el archivo `DemoHash.java`:
+
+```java
 import java.util.*; import java.util.Objects;
 class Guia { final String codigo; Guia(String c){codigo=c;} @Override public boolean equals(Object o){ return o instanceof Guia g && Objects.equals(codigo,g.codigo);} @Override public int hashCode(){ return Objects.hash(codigo);} }
 public class DemoHash { public static void main(String[] args){ Set<Guia> s=new HashSet<>(); s.add(new Guia("A")); s.add(new Guia("A")); System.out.println(s.size()); } }
-JAVA
-javac DemoHash.java && java DemoHash
 ```
 
 **Error común.** Sobrescribir `equals` sin `hashCode`. Síntoma: `HashSet/HashMap` comportamientos inconsistentes. Corrección: implementar ambos con los mismos campos.
@@ -214,7 +226,11 @@ sequenceDiagram
 
 ```bash
 mkdir -p /tmp/j2-mut && cd /tmp/j2-mut
-cat > DemoMut.java << 'JAVA'
+```
+
+Crea el archivo `DemoMut.java`:
+
+```java
 import java.util.*; import java.util.Objects;
 class K { String id; K(String id){this.id=id;} @Override public boolean equals(Object o){ return o instanceof K k && Objects.equals(id,k.id);} @Override public int hashCode(){ return Objects.hash(id);} }
 public class DemoMut {
@@ -226,8 +242,6 @@ public class DemoMut {
     System.out.println(m.size());
   }
 }
-JAVA
-javac DemoMut.java && java DemoMut
 ```
 
 **Error común.** Usar entidad mutable como clave. Corrección: claves inmutables (String, record, id inmutable).
@@ -246,11 +260,13 @@ Caso guía: quieres una caja/repo reutilizable sin perder seguridad de tipos y s
 
 ```bash
 mkdir -p /tmp/j2-gen && cd /tmp/j2-gen
-cat > DemoGen.java << 'JAVA'
+```
+
+Crea el archivo `DemoGen.java`:
+
+```java
 class Box<T> { private final T v; Box(T v){this.v=v;} T get(){return v;} }
 public class DemoGen { public static void main(String[] args){ Box<String> b=new Box<>("hola"); System.out.println(b.get().toUpperCase()); } }
-JAVA
-javac DemoGen.java && java DemoGen
 ```
 
 **Error común.** Usar raw types. Síntoma: warnings y `ClassCastException` runtime. Corrección: parametrizar siempre.
@@ -265,14 +281,16 @@ javac DemoGen.java && java DemoGen
 
 ```bash
 mkdir -p /tmp/j2-wc && cd /tmp/j2-wc
-cat > DemoWc.java << 'JAVA'
+```
+
+Crea el archivo `DemoWc.java`:
+
+```java
 import java.util.*;
 public class DemoWc {
   static double sum(List<? extends Number> nums){ double s=0; for(Number n:nums) s+=n.doubleValue(); return s; }
   public static void main(String[] args){ System.out.println(sum(List.of(1,2,3))); }
 }
-JAVA
-javac DemoWc.java && java DemoWc
 ```
 
 **Error común.** Intentar agregar a `List<? extends Number>`. Corrección: usar `extends` para leer, `super` para escribir.
@@ -289,11 +307,13 @@ javac DemoWc.java && java DemoWc
 
 ```bash
 mkdir -p /tmp/j2-er && cd /tmp/j2-er
-cat > DemoEr.java << 'JAVA'
+```
+
+Crea el archivo `DemoEr.java`:
+
+```java
 import java.util.*;
 public class DemoEr { public static void main(String[] args){ System.out.println(new ArrayList<String>().getClass()==new ArrayList<Integer>().getClass()); } }
-JAVA
-javac DemoEr.java && java DemoEr
 ```
 
 **Error común.** Esperar info de tipo genérico en runtime. Corrección: pasar `Class<T>` o usar diseño que no dependa de reified generics.
@@ -312,12 +332,14 @@ Caso guía: mostrar guías por prioridad natural o por fecha/vista alternativa s
 
 ```bash
 mkdir -p /tmp/j2-cmp && cd /tmp/j2-cmp
-cat > DemoCmp.java << 'JAVA'
+```
+
+Crea el archivo `DemoCmp.java`:
+
+```java
 import java.util.*;
 record Guia(String codigo) implements Comparable<Guia> { public int compareTo(Guia o){ return codigo.compareTo(o.codigo); } }
 public class DemoCmp { public static void main(String[] args){ var l=new ArrayList<>(List.of(new Guia("B"),new Guia("A"))); Collections.sort(l); System.out.println(l); } }
-JAVA
-javac DemoCmp.java && java DemoCmp
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `[Guia[codigo=A], Guia[codigo=B]]`.
@@ -330,12 +352,14 @@ javac DemoCmp.java && java DemoCmp
 
 ```bash
 mkdir -p /tmp/j2-cmpr && cd /tmp/j2-cmpr
-cat > DemoCmpr.java << 'JAVA'
+```
+
+Crea el archivo `DemoCmpr.java`:
+
+```java
 import java.util.*;
 record Guia(String codigo, int prioridad) {}
 public class DemoCmpr { public static void main(String[] args){ var l=new ArrayList<>(List.of(new Guia("B",2),new Guia("A",1))); l.sort(Comparator.comparingInt(Guia::prioridad).reversed()); System.out.println(l.get(0).codigo()); } }
-JAVA
-javac DemoCmpr.java && java DemoCmpr
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `B`.
@@ -348,7 +372,11 @@ javac DemoCmpr.java && java DemoCmpr
 
 ```bash
 mkdir -p /tmp/j2-it && cd /tmp/j2-it
-cat > DemoIt.java << 'JAVA'
+```
+
+Crea el archivo `DemoIt.java`:
+
+```java
 import java.util.*;
 public class DemoIt {
   public static void main(String[] args) {
@@ -358,8 +386,6 @@ public class DemoIt {
     System.out.println(l);
   }
 }
-JAVA
-javac DemoIt.java && java DemoIt
 ```
 
 **Error común.** `ConcurrentModificationException` al modificar lista dentro de for-each. Corrección: usar `Iterator.remove()` o `removeIf`.

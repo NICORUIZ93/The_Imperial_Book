@@ -11,7 +11,7 @@ Estructura por tema (orden flexible, pero con todos los elementos):
 - **Modelo mental y desarrollo conceptual en prosa**: explicar cómo funciona por dentro, no solo qué es. Definiciones claras, propósito, cuándo usar, cuándo no usar, alternativas, reglas/contrato/invariantes, trade-offs y riesgos. Cada concepto mencionado en el título/alcance debe quedar cubierto.
 - **Diagrama cuando aporte**: usar Mermaid embebido (```mermaid```) para arquitectura, secuencia, estado, flujo o modelo de datos. El diagrama debe explicar algo concreto; incluir breve lectura. No decorativo.
 - **Contrato/API/configuración**: firmas, payloads, headers, esquemas, defaults, límites, compatibilidad o propiedades cuando aplique.
-- **Ejemplo mínimo enfocado por concepto**: ejecutable, copy/paste runnable (ver sección 2).
+- **Ejemplo mínimo enfocado por concepto**: ejecutable, copy/paste runnable (ver sección 2). Presentar el código fuente para que el estudiante lo escriba (nombre de archivo + bloque de código), nunca con heredocs/`cat <<EOF`; separar comandos de compilación/ejecución.
 - **Ejemplo realista/integrado**: caso cercano a producción que conecte varios conceptos del tema; puede apoyarse en el mínimo, pero no sustituye mínimos por concepto.
 - **Recorrido del código**: explicar bloques relevantes, decisiones y trade-offs.
 - **Ejecución y salida real**: comandos desde ruta clara; salida real observada cuando se ejecutó. Si no es factible ejecutar, incluir “Nota de verificación” honesta con razón concreta y setup completo, separando lo ejecutado de lo no ejecutado.
