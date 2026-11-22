@@ -7098,20 +7098,20 @@
     ],
     "1": [
       {
-        "title": "Spring MVC: DispatcherServlet, Controllers, Validación",
-        "fragment": "tema-1-spring-mvc-dispatcherservlet-controllers-validacion"
+        "title": "Spring MVC: DispatcherServlet, Controllers y validación",
+        "fragment": "tema-1-spring-mvc-dispatcherservlet-controllers-y-validacion"
       },
       {
-        "title": "DTOs, @JsonProperty, Jackson",
-        "fragment": "tema-2-dtos-jsonproperty-jackson"
+        "title": "DTOs, @JsonProperty y Jackson",
+        "fragment": "tema-2-dtos-jsonproperty-y-jackson"
       },
       {
         "title": "Manejo global de excepciones (@ControllerAdvice)",
         "fragment": "tema-3-manejo-global-de-excepciones-controlleradvice"
       },
       {
-        "title": "Spring Data JPA, Hibernate, entidades, relaciones, transacciones",
-        "fragment": "tema-4-spring-data-jpa-hibernate-entidades-relaciones-transacciones"
+        "title": "Spring Data JPA, Hibernate, entidades, relaciones y transacciones",
+        "fragment": "tema-4-spring-data-jpa-hibernate-entidades-relaciones-y-transacciones"
       },
       {
         "title": "Criteria API y Specifications",
