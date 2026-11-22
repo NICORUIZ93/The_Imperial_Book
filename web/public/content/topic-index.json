@@ -7336,8 +7336,8 @@
     ],
     "6": [
       {
-        "title": "Service discovery con Eureka/Consul/Nacos/Nacos",
-        "fragment": "tema-1-service-discovery-con-eureka-consul-nacos-nacos"
+        "title": "Service discovery con Eureka/Consul/Nacos",
+        "fragment": "tema-1-service-discovery-con-eureka-consul-nacos"
       },
       {
         "title": "Spring Cloud Gateway",

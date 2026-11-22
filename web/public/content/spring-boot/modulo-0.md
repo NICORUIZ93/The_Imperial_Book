@@ -436,8 +436,9 @@ static final ScopedValue<String> REQUEST_ID = ScopedValue.newInstance();
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).**
 
-```bash
-cat > /tmp/DemoVt.java <<'JAVA'
+Crea el archivo `DemoVt.java`:
+
+```java
 public class DemoVt {
   public static void main(String[] args) throws Exception {
     try (var exec = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
@@ -446,9 +447,11 @@ public class DemoVt {
     }
   }
 }
-JAVA
-javac /tmp/DemoVt.java -d /tmp
-java -cp /tmp DemoVt
+```
+
+```bash
+javac DemoVt.java
+java DemoVt
 ```
 
 Salida esperada: `true`. **Nota de verificación:** JEP 506/513/514/515 no se ejecutaron en JDK 25 en esta sesión; se documentan como features finales/entregadas en JDK 25 según OpenJDK.

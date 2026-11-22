@@ -6,7 +6,7 @@ Una vez que hay múltiples servicios, aparecen problemas transversales: descubri
 
 ## Aprende construyendo
 
-### Tema 1: Service discovery con Eureka/Consul/Nacos/Nacos · Intermedio · 150 min
+### Tema 1: Service discovery con Eureka/Consul/Nacos · Intermedio · 150 min
 
 Caso guía: `orders` necesita encontrar `inventory` sin IP hardcodeada.
 
