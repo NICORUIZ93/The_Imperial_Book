@@ -5893,27 +5893,27 @@
     "10": [
       {
         "title": "Dockerfile multi-stage",
-        "fragment": "dockerfile-multi-stage"
+        "fragment": "tema-1-dockerfile-multi-stage"
       },
       {
         "title": "Kubernetes",
-        "fragment": "kubernetes"
+        "fragment": "tema-2-kubernetes"
       },
       {
         "title": "HPA",
-        "fragment": "hpa"
+        "fragment": "tema-3-hpa"
       },
       {
         "title": "GitHub Actions",
-        "fragment": "github-actions"
+        "fragment": "tema-4-github-actions"
       },
       {
         "title": "Blue-Green y Canary",
-        "fragment": "blue-green-y-canary"
+        "fragment": "tema-5-blue-green-y-canary"
       },
       {
         "title": "GitOps con ArgoCD",
-        "fragment": "gitops-con-argocd"
+        "fragment": "tema-6-gitops-con-argocd"
       }
     ],
     "2": [
@@ -6047,53 +6047,53 @@
     "8": [
       {
         "title": "OpenTelemetry para Node",
-        "fragment": "opentelemetry-para-node"
+        "fragment": "tema-1-opentelemetry-para-node"
       },
       {
         "title": "Propagación de traceparent en AMQP/Kafka",
-        "fragment": "propagacion-de-traceparent-en-amqp-kafka"
+        "fragment": "tema-2-propagacion-de-traceparent-en-amqp-kafka"
       },
       {
         "title": "Pino/Winston",
-        "fragment": "pino-winston"
+        "fragment": "tema-3-pino-winston"
       },
       {
         "title": "ELK o Grafana Loki",
-        "fragment": "elk-o-grafana-loki"
+        "fragment": "tema-4-elk-o-grafana-loki"
       },
       {
         "title": "Prometheus client",
-        "fragment": "prometheus-client"
+        "fragment": "tema-5-prometheus-client"
       }
     ],
     "9": [
       {
         "title": "RabbitMQ: publisher confirms, consumer acknowledgments",
-        "fragment": "rabbitmq-publisher-confirms-consumer-acknowledgments"
+        "fragment": "tema-1-rabbitmq-publisher-confirms-consumer-acknowledgments"
       },
       {
         "title": "Deduplicación con Redis",
-        "fragment": "deduplicacion-con-redis"
+        "fragment": "tema-2-deduplicacion-con-redis"
       },
       {
         "title": "Sagas con NestJS CQRS",
-        "fragment": "sagas-con-nestjs-cqrs"
+        "fragment": "tema-3-sagas-con-nestjs-cqrs"
       },
       {
         "title": "Compensaciones idempotentes",
-        "fragment": "compensaciones-idempotentes"
+        "fragment": "tema-4-compensaciones-idempotentes"
       },
       {
         "title": "Event Sourcing con EventStoreDB o MongoDB",
-        "fragment": "event-sourcing-con-eventstoredb-o-mongodb"
+        "fragment": "tema-5-event-sourcing-con-eventstoredb-o-mongodb"
       },
       {
         "title": "Proyecciones materializadas",
-        "fragment": "proyecciones-materializadas"
+        "fragment": "tema-6-proyecciones-materializadas"
       },
       {
         "title": "CQRS",
-        "fragment": "cqrs"
+        "fragment": "tema-7-cqrs"
       }
     ]
   },
