@@ -4632,8 +4632,8 @@
         "fragment": "tema-3-tests-parametrizados-y-cobertura"
       },
       {
-        "title": "Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada",
-        "fragment": "tema-4-pruebas-basadas-en-propiedades-reglas-que-se-cumplen-para-cualquier-entrada"
+        "title": "Pruebas basadas en propiedades",
+        "fragment": "tema-4-pruebas-basadas-en-propiedades"
       }
     ]
   },
