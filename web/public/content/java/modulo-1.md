@@ -483,27 +483,117 @@ La verificación mínima es ejecutar el integrado y confirmar `121.0` y `100.0`.
 
 ### Tema 4: Sobrecarga, sobreescritura y modificadores de acceso · Intermedio · 35 min
 
-Los términos sobrecarga y sobreescritura se parecen, pero describen mecanismos distintos. Confundirlos lleva a errores comunes: creer que se está sobreescribiendo un método cuando en realidad se creó otro, o no entender por qué Java elige una implementación en tiempo de compilación y otra en tiempo de ejecución. Los modificadores de acceso completan el cuadro, porque determinan qué miembros pueden verse y, por lo tanto, qué se puede invocar, heredar o sobreescribir.
+Los términos sobrecarga y sobreescritura se parecen, pero describen mecanismos distintos. Confundirlos lleva a errores comunes: creer que se está sobreescribiendo un método cuando en realidad se creó otro, o esperar que Java decida por tipo real lo que en realidad decide por firma en compilación. Los modificadores de acceso completan el cuadro, porque determinan qué miembros pueden verse y, por lo tanto, qué puede invocarse, heredarse o sobreescribirse.
 
 #### Sobrecarga
 
-La **sobrecarga** (overloading) ocurre cuando una misma clase define varios métodos con el mismo nombre pero distinta lista de parámetros. Su propósito es ofrecer la misma operación conceptual con distintas formas de entrada. Se usa cuando el significado es el mismo, como `sumar(int,int)` y `sumar(double,double)`. No debe usarse para nombrar operaciones conceptualmente distintas solo por comodidad.
+**Definición formal.** La sobrecarga (overloading) ocurre cuando una misma clase define varios métodos con el mismo nombre pero distinta lista de parámetros. El tipo de retorno no forma parte de la firma para distinguir sobrecargas.
 
-La resolución de sobrecarga ocurre en tiempo de compilación: el compilador elige el método según los tipos y cantidad de argumentos. El tipo de retorno por sí solo no basta para sobrecargar. El error común es esperar despacho dinámico; la sobrecarga no depende del tipo real del objeto en ejecución. La verificación es compilar y observar qué variante acepta cada llamada.
+**Para qué sirve.** Permite expresar la misma operación conceptual con distintas formas de entrada, manteniendo una API legible. El llamador usa el mismo nombre cuando la intención es la misma.
+
+**Cuándo usarla y cuándo no.** Se usa cuando el significado conceptual es el mismo, como `sumar(int,int)` y `sumar(double,double)`. No se usa cuando las variantes hacen cosas conceptualmente distintas; en ese caso, nombres distintos evitan ambigüedad. La resolución se hace en compilación, según tipos y cantidad de argumentos.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+class Calculadora {
+    int sumar(int a, int b) { return a + b; }
+    double sumar(double a, double b) { return a + b; }
+}
+```
+
+**Caso de uso real.** Una API de logging puede ofrecer `log(String)` y `log(String, Throwable)`; misma intención, distinta información de entrada.
+
+**Error común.** Cambiar solo el tipo de retorno esperando una sobrecarga válida. El síntoma es error de compilación o diseño confuso. La corrección es cambiar la lista de parámetros.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t4-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoSobrecarga.java
+java DemoSobrecarga
+```
+
+```text
+3
+4.0
+```
 
 #### Sobreescritura
 
-La **sobreescritura** (overriding) ocurre cuando una subclase define un método con la misma firma que un método visible de la superclase. Su propósito es especializar comportamiento respetando el contrato del tipo base. Se usa en jerarquías donde el mismo mensaje debe producir comportamiento específico según el objeto real.
+**Definición formal.** La sobreescritura (overriding) ocurre cuando una subclase define un método con la misma firma que un método visible y no final de su superclase. La implementación ejecutada se resuelve en tiempo de ejecución según el tipo real del objeto.
 
-La resolución ocurre en tiempo de ejecución (despacho dinámico). La anotación `@Override` obliga al compilador a verificar la firma. No se puede reducir la visibilidad al sobreescribir; un método `protected` puede ser `protected` o `public` en la subclase, pero no `private`. Un método `private` no se sobreescribe porque no es visible para la subclase. El error común es cambiar la firma y creer que se sobreescribió. La verificación es invocar el método a través de una referencia del tipo base.
+**Para qué sirve.** Permite especializar comportamiento manteniendo el contrato del tipo base. El código que usa la superclase o interfaz puede funcionar con distintas implementaciones concretas.
+
+**Cuándo usarla y cuándo no.** Se usa cuando una subclase debe cambiar la implementación de una operación manteniendo su significado. No se usa si se quiere solo agregar una variante por parámetros; eso es sobrecarga. No se puede reducir la visibilidad al sobreescribir, y `@Override` debe usarse para que el compilador verifique la firma.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+class Base { String tipo() { return "base"; } }
+class Derivada extends Base { @Override String tipo() { return "derivada"; } }
+
+Base b = new Derivada();
+System.out.println(b.tipo()); // derivada
+```
+
+**Caso de uso real.** `Documento.total()` puede tener implementaciones distintas en `Factura` y `Recibo`, mientras el servicio de cobro invoca el mismo método sobre el tipo base.
+
+**Error común.** Cambiar la firma sin darse cuenta y creer que se sobreescribió. El síntoma es que se ejecuta el método de la base. La corrección es agregar `@Override`; el compilador avisará si no hay método a sobreescribir.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t4-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoSobreescritura.java
+java DemoSobreescritura
+```
+
+```text
+derivada
+```
 
 #### Modificadores de acceso
 
-Los **modificadores de acceso** controlan la visibilidad de clases, campos, constructores y métodos. `private` limita el acceso a la propia clase; package-private (sin modificador) al mismo paquete; `protected` al mismo paquete y a subclases; `public` a cualquier lugar. Su propósito es proteger invariantes, reducir acoplamiento y definir la superficie pública de un tipo.
+**Definición formal.** Los modificadores de acceso controlan la visibilidad de clases, campos, constructores y métodos. Java define `private`, package-private (sin modificador), `protected` y `public`.
 
-Se usan para aplicar encapsulación y diseñar APIs claras. No conviene exponer todo como `public` por comodidad, ni hacer todo `private` cuando hay extensiones legítimas. La regla práctica es comenzar con la visibilidad más restrictiva y ampliarla con justificación. El error común es confundir `protected` con “casi privado” o con “público para subclases en cualquier contexto sin condiciones”. La verificación es intentar acceder al miembro desde otra clase/paquete y observar el error de compilación o el acceso permitido.
+**Para qué sirve.** Protegen invariantes, reducen acoplamiento y definen la API pública de un tipo. Permiten exponer solo lo necesario y ocultar detalles internos.
 
-#### Ejemplo desde cero
+**Cuándo usarlo y cuándo no.** Se usa como parte del diseño de encapsulación: empezar con la visibilidad más restrictiva y ampliar solo con justificación. No conviene hacer todo `public` por comodidad, ni exponer campos mutables. `protected` debe usarse con cuidado porque amplía la superficie visible a subclases y al paquete.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+package acceso;
+public class Caja {
+    private int secreto = 1;
+    int interno = 2;        // package-private
+    protected int protegido = 3;
+    public int abierto = 4;
+}
+```
+
+Desde otra clase del mismo paquete se puede acceder a `interno`, `protegido` y `abierto`, pero no a `secreto`.
+
+**Caso de uso real.** Un dominio mantiene `saldo` como `private` y expone `depositar/retirar`, evitando que cualquier código externo deje el objeto inválido.
+
+**Error común.** Usar `protected` creyendo que es accesible solo por subclases. El síntoma es acceso inesperado desde clases del mismo paquete. La corrección es entender que `protected` incluye el paquete y considerar package-private o `private` según el caso.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t4-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac -d . acceso/Caja.java acceso/DemoAcceso.java
+java acceso.DemoAcceso
+```
+
+```text
+2
+3
+4
+1
+```
+
+`secreto` no es accesible directamente; `verSecreto()` muestra su valor mediante un método público controlado.
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m1-t4 && cd /tmp/java-m1-t4
@@ -542,9 +632,7 @@ public class Sobrecarga {
 
 #### Recorrido del código
 
-En `Calculadora`, el método `sumar` aparece tres veces con distintas listas de parámetros. Cuando se llama `c.sumar(1, 2)`, el compilador selecciona la versión `int, int`. Cuando se llama con `1.5, 2.5`, selecciona `double, double`. No hay magia en tiempo de ejecución: la decisión quedó resuelta por los tipos de los argumentos.
-
-En la jerarquía `Base`/`Derivada`, el método `tipo()` tiene la misma firma. `Derivada` lo sobreescribe y amplía la visibilidad a `public`, lo cual es permitido. La variable `b` se declara como `Base`, pero el objeto real es `Derivada`. Por eso, `b.tipo()` imprime `derivada`. Aquí la decisión se toma en tiempo de ejecución.
+`Calculadora` muestra sobrecarga: tres firmas distintas, resueltas por el compilador según los argumentos. `Base` y `Derivada` muestran sobreescritura y modificadores de acceso: `tipo()` es `protected` en la base y `public` en la subclase, una ampliación permitida. La variable `b` es de tipo `Base`, pero apunta a `Derivada`; por eso `b.tipo()` se resuelve en ejecución a la implementación de la subclase.
 
 #### Ejecución y salida real
 
@@ -564,44 +652,155 @@ derivada
 
 #### Errores frecuentes
 
-Creer que cambiar solo el tipo de retorno sobrecarga un método es un error. La lista de parámetros debe ser diferente.
+Confundir sobrecarga con sobreescritura lleva a esperar el mecanismo equivocado. La sobrecarga se resuelve en compilación por firma; la sobreescritura, en ejecución por tipo real.
 
-Escribir un método en la subclase con una firma casi igual y sin `@Override` puede ocultar un intento fallido de sobreescritura. El compilador, con `@Override`, detecta el problema.
+Omitir `@Override` permite que un error de firma pase como método nuevo. La corrección es anotar siempre los métodos sobreescritos.
 
-Reducir la visibilidad al sobreescribir, por ejemplo de `protected` a `private`, no está permitido. Rompería el contrato esperado por quienes usan la superclase.
+Exponer campos como `public` para evitar escribir métodos rompe encapsulación. La corrección es exponer comportamiento controlado y mantener el estado privado.
 
 #### Verificación
 
-La verificación consiste en ejecutar el programa y confirmar que cada llamada a `sumar` usa la variante esperada y que `b.tipo()` resuelve a la implementación de `Derivada`.
-
+La verificación mínima es ejecutar el integrado y confirmar `3`, `4.0`, `6`, `derivada`. Como prueba adicional, cambiar `tipo()` en `Derivada` a `private` debe producir error de compilación por reducir visibilidad.
 
 ### Tema 5: `record` — modelos inmutables sin boilerplate · Intermedio · 35 min
 
-En muchos programas aparecen clases cuyo propósito principal es transportar datos: un punto con coordenadas, una respuesta DTO, una clave compuesta, un resultado de consulta. Antes de los records, ese tipo de clase requería escribir constructor, getters, `equals`, `hashCode` y `toString`, o depender de herramientas externas. El código era correcto, pero repetitivo y propenso a inconsistencias.
+En muchos programas aparecen clases cuyo propósito principal es transportar datos: un punto con coordenadas, una respuesta DTO, una clave compuesta, un resultado de consulta. Antes de los records, ese tipo de clase requería constructor, accesores, `equals`, `hashCode` y `toString`, o dependencias externas. El código era correcto, pero repetitivo y propenso a inconsistencias. Los records reducen ese ruido, pero exigen entender qué garantizan y qué no garantizan.
 
 #### Record
 
-Un **record** es un tipo especial de clase, introducido como característica final en Java 16, diseñado para modelar datos como valores. Al declarar `public record Punto(int x, int y)`, Java genera un constructor canónico, accesores `x()` e `y()`, y implementaciones de `equals`, `hashCode` y `toString` basadas en los componentes. Su propósito es reducir boilerplate y hacer explícita la intención de “objeto de datos”.
+**Definición formal.** Un record es un tipo especial de clase, introducido como característica final en Java 16, diseñado para modelar datos como valores. Declara componentes; el compilador genera constructor canónico, accesores, `equals`, `hashCode` y `toString` basados en esos componentes.
 
-Se usa para DTOs, valores, respuestas, claves compuestas y resultados inmutables. No se usa cuando el objeto tiene identidad mutable, ciclo de vida complejo o necesita heredar de otra clase, porque todo record extiende implícitamente `java.lang.Record`. El error común es usarlo como entidad JPA mutable. La verificación es observar los accesores generados, el `toString` y la igualdad basada en componentes.
+**Para qué sirve.** Reduce boilerplate y hace explícita la intención de “objeto de valor”. Es ideal cuando la identidad del objeto está dada por sus datos.
+
+**Cuándo usarlo y cuándo no.** Se usa para DTOs, valores, respuestas y claves compuestas. No se usa cuando el objeto tiene identidad mutable, ciclo de vida complejo o necesita heredar de otra clase, porque todo record extiende implícitamente `java.lang.Record`. Puede implementar interfaces.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+record Punto(int x, int y) {}
+
+Punto p = new Punto(2, 3);
+System.out.println(p.x());
+System.out.println(p);
+```
+
+**Caso de uso real.** Un endpoint devuelve `record UsuarioDto(String id, String email)`; el contrato de datos es claro y la igualdad por componentes es útil en tests.
+
+**Error común.** Esperar getters estilo JavaBean (`getX()`). El síntoma es error de compilación. La corrección es usar el accesor generado: `x()`.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoRecord.java
+java DemoRecord
+```
+
+```text
+2
+Punto[x=2, y=3]
+```
 
 #### Modelo inmutable y componentes
 
-Los **componentes** de un record son la base de su estado y de los métodos generados. La inmutabilidad que ofrece es superficial: los campos de componente son finales, pero si un componente referencia un objeto mutable, su contenido interno puede cambiar. Por eso, al usar listas o colecciones mutables, conviene copiar defensivamente o exponer versiones inmutables.
+**Definición formal.** Los componentes de un record son la base de su estado y de los métodos generados. Los campos correspondientes son finales. La inmutabilidad es superficial: el record no puede reasignar sus componentes, pero si un componente referencia un objeto mutable, ese objeto interno puede cambiar.
 
-Se usa cuando la identidad del valor está dada por sus datos. No debe asumirse inmutabilidad profunda automática. El error común es pasar un `List` mutable y creer que el record quedó totalmente protegido. La verificación es comparar dos records iguales con `equals` y comprobar que cambios en una estructura mutable interna pueden romper la expectativa si no se protegió.
+**Para qué sirve.** Da previsibilidad para objetos de valor: después de construido, el record no cambia sus componentes. Esto simplifica razonamiento, pruebas y uso como clave.
+
+**Cuándo usarlo y cuándo no.** Se usa cuando los componentes son inmutables o se protegen con copia defensiva. No se debe asumir inmutabilidad profunda si hay `List`, `Date` u otros objetos mutables dentro.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+import java.util.*;
+record Caja(List<String> items) {
+    Caja { items = List.copyOf(items); }
+}
+```
+
+`List.copyOf` evita que cambios externos afecten el estado interno del record.
+
+**Caso de uso real.** Un DTO con lista de permisos debe exponer una copia inmodificable para que consumidores no alteren el estado por accidente.
+
+**Error común.** Guardar una lista mutable tal cual. El síntoma es que el “record inmutable” cambia por fuera. La corrección es copiar defensivamente y exponer colecciones inmutables.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoInmutable.java
+java DemoInmutable
+```
+
+```text
+[a]
+```
+
+La lista original se modificó, pero el record conservó `[a]`.
 
 #### Constructor compacto y validación
 
-El **constructor canónico** recibe todos los componentes. El **constructor compacto** permite validar o normalizar datos sin repetir la lista de parámetros ni las asignaciones finales; Java asigna los componentes al final del constructor compacto. Sirve para proteger invariantes de forma concisa.
+**Definición formal.** El constructor canónico recibe todos los componentes. El constructor compacto es una forma concisa de declarar ese constructor para validar o normalizar datos; no repite la lista de parámetros y Java asigna los componentes al final.
 
-Se usa cuando el record debe rechazar estados inválidos. No conviene colocar lógica pesada o efectos secundarios. El error común es olvidar que la validación debe lanzar excepción antes de aceptar el estado. La verificación es crear un record inválido y confirmar la excepción.
+**Para qué sirve.** Protege invariantes del record sin escribir boilerplate. Permite rechazar estados inválidos antes de que el objeto exista.
+
+**Cuándo usarlo y cuándo no.** Se usa para validaciones y normalizaciones simples. No conviene colocar lógica pesada, I/O o efectos secundarios en constructores.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+record PuntoC(int x, int y) {
+    public PuntoC {
+        if (x < 0 || y < 0) throw new IllegalArgumentException("Coordenada inválida");
+    }
+}
+```
+
+**Caso de uso real.** Un `record Email(String value)` puede normalizar a minúsculas y rechazar formatos inválidos en su constructor compacto.
+
+**Error común.** Aceptar datos inválidos para “validar después”. El síntoma es objetos de valor inválidos circulando por el sistema. La corrección es validar en la construcción.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoCompacto.java
+java DemoCompacto
+```
+
+```text
+Coordenada inválida
+```
 
 #### Comportamiento adicional
 
-Un record puede declarar **métodos de instancia, métodos estáticos, constructores alternativos y constantes**, y puede implementar interfaces. No puede extender otra clase. Se usa para agregar comportamiento coherente con el valor, como `suma()` en un `Punto`. El error común es llenarlo de lógica ajena a su naturaleza de valor. La verificación es invocar el método adicional y confirmar que no altera el estado.
+**Definición formal.** Un record puede declarar métodos de instancia, métodos estáticos, constructores alternativos y constantes. También puede implementar interfaces. No puede extender otra clase ni declarar campos de instancia mutables adicionales.
 
-#### Ejemplo desde cero
+**Para qué sirve.** Permite agregar comportamiento coherente con el valor, como cálculos derivados o fábricas, sin perder la naturaleza compacta del record.
+
+**Cuándo usarlo y cuándo no.** Se usa para lógica simple relacionada con el valor. No se usa para convertir el record en una entidad con mutación, identidad compleja o dependencias.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+record PuntoM(int x, int y) {
+    public int suma() { return x + y; }
+}
+```
+
+**Caso de uso real.** Un `record Money(BigDecimal amount, String currency)` puede exponer `add` devolviendo otro `Money`, preservando inmutabilidad.
+
+**Error común.** Agregar métodos que simulan setters o mutan estado externo como parte central del diseño. El síntoma es perder la claridad del modelo de valor. La corrección es devolver nuevos valores o usar una clase normal si hay mutación real.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t5-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoComportamiento.java
+java DemoComportamiento
+```
+
+```text
+5
+```
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m1-t5 && cd /tmp/java-m1-t5
@@ -638,11 +837,7 @@ public record Punto(int x, int y) {
 
 #### Recorrido del código
 
-La declaración `public record Punto(int x, int y)` define dos componentes. Java genera los accesores `x()` e `y()`, no `getX()` o `getY()`. También genera `equals` y `hashCode` basados en `x` e `y`, y un `toString` legible.
-
-El constructor compacto `public Punto { ... }` valida que las coordenadas no sean negativas. Si la validación falla, lanza una excepción y el record no se crea en un estado inválido. Si pasa, Java asigna automáticamente los componentes. El método `suma()` es un comportamiento adicional; los records pueden tener lógica, siempre que no contradigan su naturaleza de valor.
-
-En `main`, `System.out.println(p)` usa el `toString` generado, que muestra el nombre del record y sus componentes.
+El record declara componentes `x` e `y`, generando accesores, `equals`, `hashCode` y `toString`. El constructor compacto valida el invariante de no negatividad antes de aceptar el estado. El método `suma()` agrega comportamiento derivado sin mutar el valor.
 
 #### Ejecución y salida real
 
@@ -663,60 +858,125 @@ Coordenada inválida
 
 #### Errores frecuentes
 
-Intentar tratar un record como una clase mutable y buscar setters es un error de modelo. Si el dato debe cambiar con el tiempo, un record no es la opción adecuada.
+Usar record para entidades mutables o con identidad compleja genera fricción. Si el objeto debe cambiar con el tiempo, una clase normal suele ser mejor.
 
-Asumir que un record hace inmutable todo lo que contiene es otro error. Si un componente es una colección mutable, conviene copiarla defensivamente o usar una colección inmutable.
+Asumir inmutabilidad profunda cuando hay componentes mutables es peligroso. Se debe copiar defensivamente.
 
-Usar records para entidades JPA suele ser problemático, porque JPA espera características que no encajan bien con la inmutabilidad y el diseño de records. Para DTOs de transferencia, en cambio, suelen ser una buena opción.
+Poner lógica pesada en el constructor compacto oscurece la creación del valor. El constructor debe centrarse en invariantes.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo, confirmar que los accesores y el `toString` funcionan, y comprobar que una coordenada inválida provoca la excepción esperada.
-
+La verificación mínima es ejecutar el integrado y confirmar accesores, cálculo, `toString` y rechazo de coordenada inválida.
 
 ### Tema 6: Constructores flexibles (Java 25) · Avanzado · 30 min
 
-Los constructores tienen una responsabilidad delicada: deben dejar el objeto en un estado válido. En versiones clásicas de Java, una subclase debía llamar a `super(...)` o `this(...)` como primera sentencia del constructor. Esa regla impedía validar o normalizar argumentos antes de invocar al constructor de la superclase. Java 25 introduce constructores flexibles, que permiten ejecutar cierta lógica antes de la llamada a `super(...)`, siempre que el objeto todavía no haya sido inicializado de forma insegura.
+Los constructores deben dejar el objeto en un estado válido. En versiones clásicas de Java, una subclase debía llamar a `super(...)` o `this(...)` como primera sentencia del constructor. Esa regla protegía el orden de inicialización, pero dificultaba validar o normalizar argumentos antes de delegar. Java 25 introduce constructores flexibles para permitir esa lógica temprana con reglas de seguridad.
 
-#### Regla clásica de `super(...)`/`this(...)`
+#### Regla clásica de `super(...)` / `this(...)`
 
-La **regla clásica** exigía que la primera sentencia del constructor fuera `super(...)` o `this(...)`. Su propósito era garantizar un orden de inicialización seguro: primero se inicializa la parte base o se delega en otro constructor. Se usa en todas las versiones anteriores al soporte flexible; entenderla sigue siendo necesario porque explica el modelo de inicialización.
+**Definición formal.** Antes de los constructores flexibles, la primera sentencia de un constructor debía ser una invocación explícita o implícita a `super(...)` o `this(...)`. El compilador inserta `super()` si la superclase tiene constructor sin argumentos.
 
-No era conveniente para validaciones previas a `super(...)`, porque obligaba a usar métodos estáticos auxiliares o duplicar lógica. El error común es olvidar que la superclase debe inicializarse y esperar que la subclase pueda saltarse esa responsabilidad. La verificación en Java moderno es comparar un constructor clásico con uno flexible y observar que ambos inicializan correctamente.
+**Para qué sirve.** Garantiza un orden de inicialización predecible: la parte heredada se inicializa antes de que la subclase use el estado del objeto.
+
+**Cuándo usarla y cuándo no.** Es el modelo mental base que sigue vigente. No es conveniente cuando necesitas validar/normalizar parámetros antes de pasarlos a `super(...)`; en Java clásico requería métodos estáticos auxiliares o duplicación.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+Sub(String nombre, int puntos) {
+    super(validar(nombre)); // auxiliar estático por la regla clásica
+    this.puntos = puntos;
+}
+static String validar(String n) { return n.trim(); }
+```
+
+**Caso de uso real.** Jerarquías donde la superclase exige parámetros ya normalizados; antes de Java 25 la normalización se movía a métodos estáticos.
+
+**Error común.** Olvidar que la superclase sin constructor vacío exige `super(...)` explícito. El síntoma es error de compilación. La corrección es invocar el constructor base adecuado.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t6-pilot` con `javac --release 25` (JDK 27, 2026-05-22):
+
+```bash
+javac --release 25 DemoClasica.java
+java DemoClasica
+```
+
+```text
+Ada
+```
 
 #### Constructores flexibles
 
-Los **constructores flexibles** permiten ejecutar sentencias antes de `super(...)` o `this(...)` en una fase inicial controlada. Su propósito es permitir validar o preparar argumentos en el lugar natural antes de inicializar la superclase. Se usan cuando la validación afecta directamente a los argumentos que se pasarán a `super(...)`.
+**Definición formal.** En Java 25, un constructor puede ejecutar sentencias antes de `super(...)` o `this(...)` en una fase inicial controlada, siempre que respete las reglas de inicialización segura: no usar el objeto en construcción de forma indebida antes de delegar.
 
-No deben usarse para meter lógica pesada, I/O o efectos secundarios en el constructor. La restricción principal es la seguridad de inicialización: no se debe usar el objeto en construcción de forma indebida antes de que la inicialización esté permitida. El error común es tratar esta característica como permiso para “hacer cualquier cosa” antes de `super(...)`. La verificación es compilar con JDK compatible y confirmar que la validación ocurre antes de delegar.
+**Para qué sirve.** Permite validar, normalizar o calcular argumentos en el lugar natural antes de construir la parte base.
+
+**Cuándo usarlo y cuándo no.** Se usa cuando la validación afecta directamente los argumentos de `super(...)`. No se usa para lógica pesada, I/O, acceso a red o efectos secundarios. El constructor sigue siendo inicialización.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+SubF(String nombre, int puntos) {
+    if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
+    super(nombre.trim());
+    this.puntos = puntos;
+}
+```
+
+**Caso de uso real.** Una subclase `CuentaPremium` valida puntos o límites antes de delegar al constructor de `Cuenta`, manteniendo la regla cerca del dato.
+
+**Error común.** Tratar la flexibilidad como permiso para hacer cualquier cosa antes de `super(...)`. El síntoma es constructores difíciles de razonar o errores por inicialización insegura. La corrección es limitar la fase previa a validación/preparación de argumentos.
+
+**Verificación.** Ejecutado en `/tmp/java-m1-t6-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac --release 25 DemoFlexible.java
+java DemoFlexible
+```
+
+```text
+Ada
+Puntos inválidos
+```
 
 #### Validación temprana e invariantes
 
-La **validación temprana** en constructor protege invariantes antes de completar la inicialización. Sirve para fallar rápido y evitar estados parcialmente construidos o inválidos. Se usa para argumentos obligatorios, rangos, formatos y precondiciones locales. No sustituye validaciones de negocio más amplias en servicios o dominios; el constructor debe centrarse en invariantes del objeto.
+**Definición formal.** La validación temprana es la comprobación de precondiciones e invariantes antes de completar la construcción del objeto. En constructores flexibles, puede ocurrir antes de `super(...)` cuando se trata de preparar argumentos válidos.
 
-El error común es duplicar validaciones inconsistentes entre superclase y subclase. La verificación es probar casos válidos e inválidos y confirmar el mensaje/estado esperado. El ejemplo de abajo muestra que se valida `puntos` antes de `super(...)` y que la superclase sigue validando `titular`.
+**Para qué sirve.** Falla rápido y evita objetos inválidos o parcialmente válidos. Hace visible la regla de negocio en el punto de construcción.
 
-#### Ejemplo desde cero
+**Cuándo usarla y cuándo no.** Se usa para rangos, nulls, formatos y precondiciones locales del objeto. No reemplaza validaciones de negocio de capa de servicio o de persistencia; el constructor debe proteger invariantes del objeto.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
+super(nombre.trim());
+```
+
+**Caso de uso real.** Antes de crear una entidad de dominio, se rechaza un valor fuera de rango, evitando propagar datos inválidos a capas superiores.
+
+**Error común.** Duplicar validaciones inconsistentes entre subclase y superclase. El síntoma es comportamiento distinto según el constructor usado. La corrección es definir claramente qué invariante protege cada nivel.
+
+**Verificación.** La salida `Puntos inválidos` del ejemplo flexible confirma el rechazo temprano. El caso válido devuelve `Ada`, confirmando la normalización antes de delegar.
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m1-t6 && cd /tmp/java-m1-t6
 ```
 
-Creamos `FlexMain.java`:
+Creamos `ConstructoresFlexibles.java`:
 
 ```java
 class Cuenta {
-    private final String titular;
+    protected final String titular;
 
     Cuenta(String titular) {
         if (titular == null || titular.isBlank()) {
-            throw new IllegalArgumentException("Titular obligatorio");
+            throw new IllegalArgumentException("Titular inválido");
         }
         this.titular = titular;
-    }
-
-    String titular() {
-        return titular;
     }
 }
 
@@ -727,22 +987,20 @@ class CuentaPremium extends Cuenta {
         if (puntos < 0) {
             throw new IllegalArgumentException("Puntos inválidos");
         }
+        super(titular.trim());
         this.puntos = puntos;
-        super(titular);
     }
 
-    int puntos() {
-        return puntos;
+    String resumen() {
+        return titular + ":" + puntos;
     }
 }
 
-public class FlexMain {
+public class ConstructoresFlexibles {
     public static void main(String[] args) {
-        CuentaPremium c = new CuentaPremium("Ada", 10);
-        System.out.println(c.titular());
-        System.out.println(c.puntos());
+        System.out.println(new CuentaPremium(" Ada ", 10).resumen());
         try {
-            new CuentaPremium("", 10);
+            new CuentaPremium("Ada", -1);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
         }
@@ -752,41 +1010,30 @@ public class FlexMain {
 
 #### Recorrido del código
 
-`Cuenta` valida el titular en su propio constructor. Esa validación protege la invariante de la superclase. `CuentaPremium` agrega `puntos`, que también debe ser válido. Con constructores flexibles, el constructor de la subclase puede comprobar `puntos < 0` antes de invocar `super(titular)`.
-
-La línea `super(titular)` aparece después de validar `puntos` y asignar el campo propio. La clave es que la lógica previa no usa el objeto de forma insegura; simplemente prepara y valida el estado necesario para construirlo correctamente. Si `puntos` es inválido, el constructor falla antes de delegar en la superclase.
-
-En `main`, se crea una cuenta válida y se imprime su titular y puntos. Después se intenta crear una cuenta con titular vacío; la validación de la superclase lanza `IllegalArgumentException`, que se captura para mostrar el mensaje.
+`Cuenta` protege el invariante de titular válido. `CuentaPremium` valida `puntos` antes de `super(...)`, algo natural con constructores flexibles. Luego normaliza `titular` con `trim()` al delegar. El objeto solo queda construido si ambas validaciones pasan.
 
 #### Ejecución y salida real
 
-Este ejemplo usa una característica de Java 25. En esta máquina se verificó con JDK 27 compilando con `--release 25`:
-
 ```bash
-javac --release 25 FlexMain.java
-java FlexMain
+javac --release 25 ConstructoresFlexibles.java
+java ConstructoresFlexibles
 ```
 
 Salida real observada (JDK 27, 2026-05-22):
 
 ```text
-Ada
-10
-Titular obligatorio
+Ada:10
+Puntos inválidos
 ```
 
 #### Errores frecuentes
 
-Intentar usar esta sintaxis en un compilador o nivel de lenguaje anterior produce errores de compilación. La corrección es usar un JDK compatible y configurar el release adecuado.
+Poner lógica pesada antes de `super(...)` vuelve opaco el constructor. La fase previa debe ser breve y defensiva.
 
-Mover demasiada lógica al constructor es otro riesgo. La validación de invariantes es apropiada; cargar datos externos o ejecutar procesos complejos no lo es.
+Asumir que Java 25 elimina la necesidad de `super(...)` es incorrecto; la delegación sigue siendo necesaria, solo cambia cuándo puede ocurrir.
 
-También es un error asumir que la nueva flexibilidad elimina la necesidad de `super(...)`. La superclase sigue teniendo que inicializarse correctamente; lo que cambia es el momento en que se puede colocar parte de la lógica previa.
+Dejar la validación solo en la subclase puede olvidar invariantes de la superclase. Cada nivel debe proteger sus propias reglas.
 
 #### Verificación
 
-La verificación consiste en compilar con `--release 25`, ejecutar el ejemplo y confirmar que la cuenta válida se crea y que la cuenta inválida falla con el mensaje esperado.
-
-## Cierre del módulo
-
-Este módulo introdujo las bases de la programación orientada a objetos en Java. Las clases y objetos permiten modelar conceptos del dominio; los constructores y la encapsulación protegen invariantes; la herencia y la sobreescritura reutilizan y especializan comportamiento; las interfaces y clases abstractas definen contratos y bases comunes; la sobrecarga, la sobreescritura y los modificadores de acceso precisan cómo se resuelven y exponen los miembros; los records simplifican los modelos de datos inmutables; y los constructores flexibles mejoran la forma de validar antes de inicializar la superclase. Con esta base, el siguiente módulo puede entrar en excepciones, colecciones y genéricos con un modelo de diseño más sólido.
+La verificación mínima es compilar con `--release 25`, ejecutar y confirmar `Ada:10` y `Puntos inválidos`. Como prueba adicional, pasar titular en blanco debe fallar por la validación de `Cuenta`.
