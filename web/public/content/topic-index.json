@@ -5475,19 +5475,19 @@
     "12": [
       {
         "title": "Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter",
-        "fragment": "resilience4j-circuit-breaker-retry-ratelimiter-bulkhead-timelimiter"
+        "fragment": "tema-1-resilience4j-circuit-breaker-retry-ratelimiter-bulkhead-timelimiter"
       },
       {
         "title": "Timeouts en cascada y presupuesto de latencia",
-        "fragment": "timeouts-en-cascada-y-presupuesto-de-latencia"
+        "fragment": "tema-2-timeouts-en-cascada-y-presupuesto-de-latencia"
       },
       {
         "title": "Fallback strategies",
-        "fragment": "fallback-strategies"
+        "fragment": "tema-3-fallback-strategies"
       },
       {
         "title": "Chaos Engineering con Toxiproxy",
-        "fragment": "chaos-engineering-con-toxiproxy"
+        "fragment": "tema-4-chaos-engineering-con-toxiproxy"
       }
     ],
     "13": [
