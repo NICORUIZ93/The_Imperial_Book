@@ -4320,10 +4320,6 @@
     ],
     "16": [
       {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
-      },
-      {
         "title": "Entidades y relaciones JPA",
         "fragment": "tema-1-entidades-y-relaciones-jpa"
       },
