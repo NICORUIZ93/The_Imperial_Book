@@ -5553,27 +5553,27 @@
     "15": [
       {
         "title": "Kafka profundo: particionamiento, consumer groups",
-        "fragment": "kafka-profundo-particionamiento-consumer-groups"
+        "fragment": "tema-1-kafka-profundo-particionamiento-consumer-groups"
       },
       {
         "title": "Exactly-Once Semantics (EOS)",
-        "fragment": "exactly-once-semantics-eos"
+        "fragment": "tema-2-exactly-once-semantics-eos"
       },
       {
         "title": "Schema Registry y Avro",
-        "fragment": "schema-registry-y-avro"
+        "fragment": "tema-3-schema-registry-y-avro"
       },
       {
         "title": "Dead Letter Topics",
-        "fragment": "dead-letter-topics"
+        "fragment": "tema-4-dead-letter-topics"
       },
       {
         "title": "RabbitMQ: publisher confirms, DLQ",
-        "fragment": "rabbitmq-publisher-confirms-dlq"
+        "fragment": "tema-5-rabbitmq-publisher-confirms-dlq"
       },
       {
         "title": "NATS",
-        "fragment": "nats"
+        "fragment": "tema-6-nats"
       }
     ],
     "16": [
