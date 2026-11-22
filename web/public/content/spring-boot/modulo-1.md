@@ -53,373 +53,141 @@ normal ni esperes archivos de Gradle dentro de `target/`.
 
 ### Tema 1: Spring Initializr y starters · Básico · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: necesitas crear un servicio web Spring Boot sin armar dependencias a mano y entender qué trae cada starter.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por spring initializr y starters con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Spring Initializr | Generador de proyectos (start.spring.io, IDE, CLI). | Bootstrap consistente. | Fijar Boot, Java, build tool, metadata. | Aceptar defaults sin revisar Java/Boot. |
+| Starter | Dependencia “paraguas” que trae un conjunto curado. | Arranque rápido y compatible. | Agregar starter por capacidad. | Agregar dependencias individuales contradictorias. |
+| BOM/parent | `spring-boot-starter-parent` o BOM administra versiones. | Compatibilidad entre dependencias. | Dejar que Boot gestione versiones. | Fijar versiones manuales sin necesidad. |
+| Dependencias transitivas | Dependencias traídas indirectamente por un starter. | Entender el classpath. | Inspeccionar con `dependency:tree`/`dependencies`. | “No sé por qué está Jackson”. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender spring initializr y starters te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en spring initializr y starters como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    initializr[Opciones elegidas] --> starter[Starter agregado]
-    starter --> deps[Dependencias transitivas]
-    bom[Parent o BOM de Boot] --> versions[Versiones administradas]
-    deps --> versions
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Spring Initializr y starters se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Spring Initializr y starters | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses spring initializr y starters por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: spring initializr y starters funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Spring Initializr y starters existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve spring initializr y starters en tu contexto?
-2. ¿Cómo sabrías que spring initializr y starters no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar spring initializr y starters?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
+**Implementación desde cero (Maven)**
 ```bash
-mkdir ejemplo-spring-m1
-cd ejemplo-spring-m1
+mkdir ejemplo-spring-m1 && cd ejemplo-spring-m1
 curl -fsSL -G 'https://start.spring.io/starter.zip' \
-  -d type=maven-project \
-  -d language=java \
-  -d javaVersion=25 \
-  -d bootVersion=4.1.2 \
-  -d packageName=com.example.demo \
-  -d dependencies=web \
-  -o app.zip
+  -d type=maven-project -d language=java -d javaVersion=25 -d bootVersion=4.1.2 \
+  -d groupId=com.example -d artifactId=demo -d name=demo -d packageName=com.example.demo \
+  -d dependencies=web -o app.zip
 unzip app.zip
 ./mvnw test
 ```
+Equivalente Gradle: `type=gradle-project` y `./gradlew test`.
 
+`SaludController.java`
 ```java
 package com.example.demo;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 @RestController
-public class SaludController {
-    @GetMapping("/health")
-    public String health() {
-        return "OK";
-    }
-}
+public class SaludController { @GetMapping("/health") public String health(){ return "OK"; } }
 ```
 
+**Ejecución y salida real**
 ```bash
 ./mvnw spring-boot:run
-```
-
-```bash
 curl -i http://localhost:8080/health
 ```
+Salida esperada: `HTTP/1.1 200` y cuerpo `OK`.
 
-```bash
-./mvnw dependency:tree
-```
-
-```mermaid
-flowchart LR
-    initializr[Opciones elegidas] --> starter[Starter agregado]
-    starter --> deps[Dependencias transitivas]
-    bom[Parent o BOM de Boot] --> versions[Versiones administradas]
-    deps --> versions
-```
-
-</details>
+**Verificación**: `./mvnw dependency:tree | grep spring-boot-starter-web` muestra el starter; cambia a Gradle y confirma `./gradlew dependencies --configuration runtimeClasspath`.
 
 ### Tema 2: application.yml vs application.properties · Básico · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: configurar puerto y un valor propio; entender precedencia entre formatos y overrides.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por application.yml vs application.properties con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| `application.properties` | Configuración key=value plana. | Simple y directa. | Una clave por línea. | Duplicar claves accidentalmente. |
+| `application.yml` | Configuración jerárquica YAML. | Estructura legible. | Cuidar indentación espacios. | Tabs/indentación inválida. |
+| Precedencia de config | Spring Boot resuelve propiedades por orden de fuentes. | Predecir valor efectivo. | Args CLI/env vars ganan sobre archivos empaquetados. | “Cambié YAML pero no toma”. |
+| `@Value` / `@ConfigurationProperties` | Inyección de propiedades. | Usar config en código. | `@ConfigurationProperties` para grupos. | `@Value` por todos lados sin validación. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender application.yml vs application.properties te permite tomar mejores decisiones técnicas.**
+**Implementación desde cero**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en application.yml vs application.properties como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TD
-    cli[Argumento de consola] -->|gana sobre archivos| result[academia.banner efectivo]
-    prop[application.properties] -->|gana a YAML en la misma ubicación| result
-    yaml[application.yml] -->|se lee si no lo reemplaza otra fuente| result
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| application.yml vs application.properties se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar application.yml vs application.properties | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses application.yml vs application.properties por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: application.yml vs application.properties funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- application.yml vs application.properties existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve application.yml vs application.properties en tu contexto?
-2. ¿Cómo sabrías que application.yml vs application.properties no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar application.yml vs application.properties?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
+`application.yml`
 ```yaml
 academia:
   banner: "En camino"
 server:
   port: 8080
 ```
-
+`ConfigController.java`
 ```java
 package com.example.demo;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.beans.factory.annotation.Value; import org.springframework.web.bind.annotation.*;
 @RestController
 public class ConfigController {
-    private final String banner;
-
-    public ConfigController(
-            @Value("${academia.banner:sin-configurar}") String banner) {
-        this.banner = banner;
-    }
-
-    @GetMapping("/banner")
-    public String mostrar() {
-        return banner;
-    }
+  private final String banner;
+  public ConfigController(@Value("${academia.banner:sin-configurar}") String banner){ this.banner=banner; }
+  @GetMapping("/banner") public String mostrar(){ return banner; }
 }
 ```
 
+**Ejecución y salida real**
 ```bash
+./mvnw spring-boot:run
+curl http://localhost:8080/banner
+# override por argumento
+./mvnw spring-boot:run -Dspring-boot.run.arguments=--academia.banner=Prueba
 curl http://localhost:8080/banner
 ```
+Salida esperada: `En camino` y luego `Prueba`.
 
-```properties
-academia.banner=En camino
-server.port=8080
-```
-
-```bash
-./mvnw clean spring-boot:run -Dspring-boot.run.arguments=--academia.banner=Prueba
-```
-
-```mermaid
-flowchart TD
-    cli[Argumento de consola] -->|gana sobre archivos| result[academia.banner efectivo]
-    prop[application.properties] -->|gana a YAML en la misma ubicación| result
-    yaml[application.yml] -->|se lee si no lo reemplaza otra fuente| result
-```
-
-</details>
+**Verificación**: si conviven `.properties` y `.yml` en misma ubicación, verifica la precedencia documentada para tu versión; evita tener ambos para la misma clave.
 
 ### Tema 3: Perfiles y estructura por capas · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: mismo código, distinta config por entorno, y separación controller-service-repository.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por perfiles y estructura por capas con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Perfil Spring (`spring.profiles.active`) | Grupo de config/beans activo para un entorno. | dev/test/prod. | Activar por env/arg, no hardcode. | Lógica `if(prod)` dispersa. |
+| `application-{profile}.yml` | Archivo de config específico de perfil. | Sobrescribir valores base. | Mantener base mínima común. | Duplicar toda la config en cada perfil. |
+| Estructura por capas | Controller (HTTP) → Service (negocio) → Repository (datos). | Separación de responsabilidades. | Dependencias hacia abajo. | Controller accediendo a DB directo. |
+| Paquetes por rol/feature | Organización de código. | Mantenibilidad. | Consistencia en el equipo. | Paquetes caóticos sin frontera. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender perfiles y estructura por capas te permite tomar mejores decisiones técnicas.**
+**Implementación desde cero**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en perfiles y estructura por capas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    http[Petición HTTP] --> controller[controller]
-    controller --> service[service]
-    service --> repository[repository]
-    repository --> data[Dato]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Perfiles y estructura por capas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Perfiles y estructura por capas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses perfiles y estructura por capas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: perfiles y estructura por capas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Perfiles y estructura por capas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve perfiles y estructura por capas en tu contexto?
-2. ¿Cómo sabrías que perfiles y estructura por capas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar perfiles y estructura por capas?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
+`application.yml`
 ```yaml
 academia:
   banner: "Base"
   entorno: "compartido"
-server:
-  port: 8080
 ```
-
+`application-dev.yml`
 ```yaml
 academia:
   banner: "Desarrollo"
 ```
-
+`PerfilController.java`
 ```java
 package com.example.demo;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.beans.factory.annotation.Value; import org.springframework.web.bind.annotation.*;
 @RestController
 public class PerfilController {
-    private final String banner;
-    private final String entorno;
-
-    public PerfilController(
-            @Value("${academia.banner:sin-configurar}") String banner,
-            @Value("${academia.entorno:sin-configurar}") String entorno) {
-        this.banner = banner;
-        this.entorno = entorno;
-    }
-
-    @GetMapping("/perfil")
-    public String mostrar() {
-        return "banner=" + banner + "; entorno=" + entorno;
-    }
+  private final String banner, entorno;
+  public PerfilController(@Value("${academia.banner}") String banner, @Value("${academia.entorno}") String entorno){ this.banner=banner; this.entorno=entorno; }
+  @GetMapping("/perfil") public String mostrar(){ return "banner="+banner+"; entorno="+entorno; }
 }
 ```
-
-```bash
-./mvnw clean spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=dev
-```
-
+Capas:
 ```java
 package com.example.demo.repository;
-
 import org.springframework.stereotype.Repository;
-
-@Repository
-public class EstadoRepository {
-    public String buscar(String codigo) {
-        return "En ruta: " + codigo;
-    }
-}
+@Repository public class EstadoRepository { public String buscar(String c){ return "En ruta: "+c; } }
 ```
-
 ```java
 package com.example.demo.service;
-
-import com.example.demo.repository.EstadoRepository;
-import org.springframework.stereotype.Service;
-
-@Service
-public class EstadoService {
-    private final EstadoRepository repository;
-
-    public EstadoService(EstadoRepository repository) {
-        this.repository = repository;
-    }
-
-    public String consultar(String codigo) {
-        return repository.buscar(codigo);
-    }
-}
+import com.example.demo.repository.EstadoRepository; import org.springframework.stereotype.Service;
+@Service public class EstadoService { private final EstadoRepository repo; public EstadoService(EstadoRepository repo){this.repo=repo;} public String consultar(String c){ return repo.buscar(c);} }
 ```
 
-</details>
+**Ejecución y salida real**
+```bash
+./mvnw spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=dev
+curl http://localhost:8080/perfil
+```
+Salida esperada: `banner=Desarrollo; entorno=compartido`.
+
+**Verificación**: corre sin perfil y confirma `banner=Base`; prueba `SPRING_PROFILES_ACTIVE=dev`.
+
