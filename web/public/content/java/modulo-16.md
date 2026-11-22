@@ -591,26 +591,79 @@ Activa `hibernate.show_sql=true` y compara el `WHERE` generado cuando pasas solo
 
 **Caso guía**
 
-Listas 100 guías y, por cada una, accedes a su remitente. El log muestra 1 consulta inicial + 100 consultas adicionales. Eso es N+1.
+Tienes 100 guías y cada guía tiene un remitente. En una pantalla de listado solo necesitas el número de guía; en otra pantalla necesitas guía + remitente. Si cargas mal la asociación, haces 101 consultas (N+1) o traes datos que no usas.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** *N+1* es un patrón de acceso ineficiente donde se ejecuta una consulta para obtener N registros y luego una consulta adicional por cada registro para cargar una asociación. `LAZY` difiere la carga; `EAGER` la carga anticipada. Ninguno elimina N+1 por sí solo si el acceso se hace por elemento.
+**Definición formal.** Una *estrategia de fetch* define cuándo se carga una asociación desde la base de datos. `FetchType.LAZY` difiere la carga hasta que se accede a la asociación (puede usar proxy/colección lazy). `FetchType.EAGER` indica al proveedor que cargue la asociación al cargar la entidad raíz (en la consulta inicial o inmediatamente después, según el proveedor y el caso). *N+1* es un antipatrón de acceso: 1 consulta para N raíces + N consultas adicionales para una asociación por cada raíz.
 
-**Contrato / invariantes / reglas.** `LAZY` es preferible por defecto en asociaciones `@OneToMany`/`@ManyToMany` y a menudo en `@ManyToOne`. `EAGER` puede causar sobrecarga y joins/cartesianas inesperadas. Las soluciones típicas son `JOIN FETCH`, EntityGraph, DTO projection o batch fetching, según caso. La decisión debe basarse en el caso de uso y en el SQL observado.
+**Contrato / invariantes / reglas.** Los defaults JPA: `@ManyToOne` y `@OneToOne` son `EAGER` por defecto; `@OneToMany` y `@ManyToMany` son `LAZY` por defecto. Un default no es una recomendación: debes declarar el fetch según el caso de uso. `LAZY` no es gratis: fuera de contexto de persistencia puede lanzar `LazyInitializationException`; dentro de un bucle puede generar N+1. `EAGER` no elimina N+1 automáticamente y puede producir joins/cartesianas, sobrecarga y consultas inesperadas. La solución se elige por caso: `JOIN FETCH`, `EntityGraph`, DTO projection, batch fetching (`@BatchSize`/Hibernate) o consultas separadas. La evidencia es el SQL generado (`hibernate.show_sql=true`).
 
-**Modelo mental.** N+1 es ir al almacén 101 veces cuando podías traer la caja grande una vez.
+**Modelo mental.** `EAGER` es pedir la maleta y el contenido al mostrador, aunque solo quieras la etiqueta. `LAZY` es pedir solo la etiqueta y volver por el contenido cuando lo necesites; N+1 ocurre si vuelves al mostrador una vez por cada etiqueta.
 
 **Implementación desde cero**
 
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU`. Asegura estas entidades en `persistence.xml` (`Remitente`, `Guia`). 
 
-Archivo: `src/main/java/com/academia/jpa/DemoN1.java`
+#### 1) LAZY: carga diferida
+
+`Remitente` y `Guia` (si ya existen del Tema 2, reutilízalos; aquí importa la asociación):
+
+```java
+@ManyToOne(optional = false, fetch = FetchType.LAZY)
+Remitente remitente;
+```
+
+Demo LAZY (`src/main/java/com/academia/jpa/DemoLazy.java`):
 
 ```java
 package com.academia.jpa;
 
-import jakarta.persistence.*;
+import jakarta.persistence.EntityManager;
+
+public class DemoLazy {
+    public static void main(String[] args) {
+        Long guiaId = Jpa.tx(em -> {
+            Remitente r = new Remitente("Ada");
+            em.persist(r);
+            em.persist(new Guia(r));
+            em.flush();
+            return em.createQuery("select g.id from Guia g", Long.class).getSingleResult();
+        });
+
+        // Carga LAZY: dentro de tx se puede inicializar
+        String nombre = Jpa.tx(em -> {
+            Guia g = em.find(Guia.class, guiaId);
+            return g.remitente.nombre; // aquí puede disparar SELECT adicional
+        });
+        System.out.println(nombre);
+        Jpa.close();
+    }
+}
+```
+
+**Uso de LAZY:** listados, APIs que devuelven solo campos raíz, asociaciones grandes o poco usadas. **Riesgo:** acceder fuera de tx => `LazyInitializationException`.
+
+#### 2) EAGER: carga anticipada
+
+Ejemplo de mapeo EAGER (úsalo solo para demostrar; no lo dejes global si no lo necesitas):
+
+```java
+@ManyToOne(optional = false, fetch = FetchType.EAGER)
+Remitente remitente;
+```
+
+Demo EAGER (`src/main/java/com/academia/jpa/DemoEager.java`): con `hibernate.show_sql=true`, al hacer `em.find(Guia.class, id)` o una query de guías, observarás que el remitente se carga anticipadamente (join/select según proveedor). 
+
+**Uso de EAGER:** asociación pequeña, casi siempre necesaria, bajo volumen controlado. **Riesgo:** sobre-fetching, N+1 en colecciones, joins inesperados.
+
+#### 3) N+1: reproducción y corrección
+
+Demo N+1 + solución (`src/main/java/com/academia/jpa/DemoN1.java`):
+
+```java
+package com.academia.jpa;
+
 import java.util.List;
 
 public class DemoN1 {
@@ -624,11 +677,16 @@ public class DemoN1 {
             return null;
         });
 
+        // MAL: 1 query guías + N queries remitente (si accedes en bucle con LAZY)
+        // List<Guia> guias = Jpa.tx(em -> em.createQuery("select g from Guia g", Guia.class).getResultList());
+        // for (Guia g: guias) g.remitente.nombre; // N+1 fuera/según contexto
+
+        // BIEN: join fetch carga asociación en una consulta
         int total = Jpa.tx(em -> {
             List<Guia> guias = em.createQuery(
                 "select g from Guia g join fetch g.remitente", Guia.class).getResultList();
             int s = 0;
-            for (Guia g : guias) s += g.remitente.nombre.length(); // ya cargado
+            for (Guia g : guias) s += g.remitente.nombre.length();
             return s;
         });
         System.out.println(total);
@@ -639,38 +697,53 @@ public class DemoN1 {
 
 **Desglose del código**
 
-- `join fetch` carga la asociación en la misma consulta.
-- El acceso a `remitente.nombre` no dispara consultas adicionales si ya fue fetched.
-- Usa `hibernate.show_sql=true` para evidenciar 1 consulta con join.
-- Para colecciones múltiples, evalúa cartesianas y alternativas (EntityGraph/DTO).
+- `LAZY` en `@ManyToOne`: el remitente se carga cuando accedes a `g.remitente`. Útil cuando no siempre lo necesitas.
+- `EAGER` carga antes; conveniente solo si casi siempre lo usas y el costo es pequeño.
+- N+1 aparece al iterar raíces y tocar una asociación lazy por elemento.
+- `join fetch` resuelve N+1 en ese caso de uso; EntityGraph/DTO/batch son alternativas cuando `join fetch` no encaja.
+
+**Tabla de decisión rápida**
+
+| Caso | Recomendación | Cuidado |
+|---|---|---|
+| Asociación no siempre usada | `LAZY` + fetch por caso (`join fetch`/EntityGraph/DTO) | `LazyInitializationException` fuera de tx |
+| Asociación pequeña siempre necesaria | Puede ser `EAGER` o fetch explícito | Sobre-fetching; EAGER en colecciones suele ser mala idea |
+| Listado + detalle de asociación | `join fetch`/EntityGraph para esa query | Cartesian product en múltiples colecciones |
+| Reporte/datos planos | DTO projection | Pierdes entidad managed |
 
 **Ejecución y salida real**
+
+Desde `~/academia-java/jpa-lab`:
 
 ```bash
 mvn -q -DskipTests compile
 mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoLazy
 java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoN1
 ```
 
 Salida esperada:
 
 ```text
+Ada
 6
 ```
 
-(SQL log debe mostrar un `select ... join remitentes ...`, no 1+N).
+Con `hibernate.show_sql=true`, `DemoN1` debe mostrar un `select ... join remitentes ...`, no 1+N selects.
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| 1+N consultas | Carga lazy por iteración | Usa `join fetch`, EntityGraph o batch size |
-| `MultipleBagFetchException` | Fetch join de varias bags | Usa `Set`, consultas separadas o DTOs |
-| Sobrecarga por EAGER global | Mapeo mal elegido | Pon LAZY y carga por caso de uso |
+| 1+N consultas | Acceso a asociación LAZY en bucle | `join fetch`, EntityGraph, batch size o DTO |
+| `LazyInitializationException` | Acceso LAZY fuera de tx/sesión | Cargar dentro de tx, DTO o fetch explícito |
+| Sobrecarga por EAGER | Mapeo EAGER global innecesario | Cambiar a LAZY y cargar por caso de uso |
+| `MultipleBagFetchException` | Join fetch de varias bags | Usa `Set`, consultas separadas o DTO |
 
 **Verificación rápida**
 
-Compara logs con y sin `join fetch`: sin fetch verás selects extra por remitente.
+Activa `show_sql`, ejecuta una versión sin `join fetch` y otra con `join fetch`: compara el número de consultas.
+
 
 ### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
