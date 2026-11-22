@@ -18,7 +18,6 @@ export const OFFICIAL_LEARNING_PATHS: OfficialLearningPath[] = [
   { trackId: 'react', source: 'React Learn', sourceUrl: 'https://react.dev/learn' },
   { trackId: 'java', source: 'Dev.java Learn', sourceUrl: 'https://dev.java/learn/' },
   { trackId: 'spring-boot', source: 'Spring Guides', sourceUrl: 'https://spring.io/guides' },
-  { trackId: 'microservices', source: 'Azure Architecture Center, gRPC y OpenTelemetry', sourceUrl: 'https://learn.microsoft.com/en-us/azure/architecture/patterns/' },
   { trackId: 'spring-microservices', source: 'Spring Boot, Spring Cloud y Resilience4j', sourceUrl: 'https://spring.io/projects/spring-boot' },
   { trackId: 'node-microservices', source: 'Node.js, NestJS y OpenTelemetry JS', sourceUrl: 'https://nodejs.org/en/learn' },
   { trackId: 'kotlin-multiplatform', source: 'Kotlin Multiplatform Get started', sourceUrl: 'https://kotlinlang.org/docs/multiplatform/get-started.html' },

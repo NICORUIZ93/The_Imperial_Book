@@ -18,7 +18,6 @@ describe('academy learning sequence', () => {
 
   it('keeps frameworks and distributed systems in explicit stages', () => {
     expect(stageForTrack('angular')?.id).toBe('applications');
-    expect(stageForTrack('microservices')?.id).toBe('systems');
     expect(stageForTrack('spring-microservices')?.id).toBe('systems');
     expect(stageForTrack('node-microservices')?.id).toBe('systems');
     expect(stageForTrack('rutaflow')?.id).toBe('capstone');

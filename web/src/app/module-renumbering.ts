@@ -10,6 +10,8 @@ export interface RenumberingMove {
   fromModule: number;
   toTrack: string;
   toModule: number;
+  /** When true, keep the source progress and also copy it to destination. */
+  copy?: boolean;
 }
 
 export interface RenumberingStep {
@@ -261,6 +263,28 @@ export const RENUMBERING_STEPS: RenumberingStep[] = [
       { fromTrack: 'microservices', fromModule: 27, toTrack: 'node-microservices', toModule: 10 },
     ],
   },
+  // El track agnóstico `microservices` se retira. Se copian solo mapeos claros a módulos ya existentes.
+  // Los conceptos restantes se reescribirán dentro de cada track por stack.
+  {
+    version: 4,
+    tracks: {},
+    moves: [
+      { fromTrack: 'microservices', fromModule: 0, toTrack: 'node-microservices', toModule: 0, copy: true },
+      { fromTrack: 'microservices', fromModule: 1, toTrack: 'node-microservices', toModule: 1, copy: true },
+      { fromTrack: 'microservices', fromModule: 2, toTrack: 'node-microservices', toModule: 3, copy: true },
+      { fromTrack: 'microservices', fromModule: 3, toTrack: 'node-microservices', toModule: 4, copy: true },
+      { fromTrack: 'microservices', fromModule: 6, toTrack: 'node-microservices', toModule: 5, copy: true },
+      { fromTrack: 'microservices', fromModule: 8, toTrack: 'node-microservices', toModule: 6, copy: true },
+      { fromTrack: 'microservices', fromModule: 9, toTrack: 'node-microservices', toModule: 7, copy: true },
+      { fromTrack: 'microservices', fromModule: 10, toTrack: 'node-microservices', toModule: 8, copy: true },
+      { fromTrack: 'microservices', fromModule: 11, toTrack: 'node-microservices', toModule: 9, copy: true },
+      { fromTrack: 'microservices', fromModule: 12, toTrack: 'node-microservices', toModule: 10, copy: true },
+      { fromTrack: 'microservices', fromModule: 0, toTrack: 'spring-microservices', toModule: 0, copy: true },
+      { fromTrack: 'microservices', fromModule: 1, toTrack: 'spring-microservices', toModule: 1, copy: true },
+      { fromTrack: 'microservices', fromModule: 2, toTrack: 'spring-microservices', toModule: 2, copy: true },
+      { fromTrack: 'microservices', fromModule: 3, toTrack: 'spring-microservices', toModule: 3, copy: true },
+    ],
+  },
 ];
 
 export const RENUMBERING_VERSION_KEY = 'imperial-book-renumbering-version';
@@ -311,11 +335,13 @@ export function applyRenumberings(
         .map(k => moveModuleKey(k, move.fromModule, move.toModule))
         .filter((k): k is string => k !== null);
       if (movedModule || movedExercises.length || movedTopics.length) {
-        next[move.fromTrack] = {
-          completedModules: source.completedModules.filter(id => id !== move.fromModule),
-          completedExercises: source.completedExercises.filter(k => !/^(\d+):/.exec(k) || Number(/^(\d+):/.exec(k)?.[1]) !== move.fromModule),
-          completedTopics: source.completedTopics.filter(k => !/^(\d+):/.exec(k) || Number(/^(\d+):/.exec(k)?.[1]) !== move.fromModule),
-        };
+        if (!move.copy) {
+          next[move.fromTrack] = {
+            completedModules: source.completedModules.filter(id => id !== move.fromModule),
+            completedExercises: source.completedExercises.filter(k => !/^(\d+):/.exec(k) || Number(/^(\d+):/.exec(k)?.[1]) !== move.fromModule),
+            completedTopics: source.completedTopics.filter(k => !/^(\d+):/.exec(k) || Number(/^(\d+):/.exec(k)?.[1]) !== move.fromModule),
+          };
+        }
         next[move.toTrack] = {
           completedModules: [...new Set([...target.completedModules, ...(movedModule ? [move.toModule] : [])])],
           completedExercises: [...new Set([...target.completedExercises, ...movedExercises])],
