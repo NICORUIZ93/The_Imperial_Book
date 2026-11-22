@@ -1,60 +1,61 @@
-# Módulo 15: Arquitectura: hexagonal, Clean, C4, ADR y Spring Modulith
+# Módulo 15: Arquitectura, DDD, C4 y Modulith
 
-Cubre arquitectura de aplicación: puertos/adaptadores, Clean, documentación C4/ADR y modularidad con Spring Modulith.
+Cuando un sistema crece, el problema deja de ser “cómo escribir un controller” y pasa a ser “dónde poner la lógica y cómo evitar que todo dependa de todo”. Este módulo cubre arquitectura hexagonal, Clean, C4, ADR y Spring Modulith.
 
-**Entorno (2026-05-22):** JDK 27. Spring Modulith requiere dependencia.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Spring Boot 3.5.0, Spring Modulith (verificar versión del proyecto).
 
 ## Aprende construyendo
 
 ### Tema 1: Hexagonal y puertos/adaptadores · Avanzado · 45 min
+
+Caso guía: el dominio debe poder testearse sin DB ni HTTP.
+
 #### Arquitectura hexagonal
-**Definición formal.** Estilo que separa dominio/aplicación de infraestructura mediante puertos (interfaces) y adaptadores (implementaciones).
-**Para qué sirve.** Aislar el dominio de frameworks y detalles externos.
-**Cuándo usarlo.** Dominios con reglas y múltiples integraciones. No sobreingenierizar CRUD trivial.
-**Ejemplo mínimo enfocado (ejecutable).**
-```bash
-mkdir -p /tmp/sb15-hex && cd /tmp/sb15-hex
-cat > DemoHex.java << 'JAVA'
-interface PuertoRepo { String get(String id); }
-class AdaptadorMem implements PuertoRepo { public String get(String id){ return "ok"; } }
-class CasoUso { private final PuertoRepo repo; CasoUso(PuertoRepo r){repo=r;} String ejecutar(String id){ return repo.get(id); } }
-public class DemoHex { public static void main(String[] args){ System.out.println(new CasoUso(new AdaptadorMem()).ejecutar("1")); } }
-JAVA
-javac DemoHex.java && java DemoHex
+
+**Definición formal.** El dominio/aplicación define puertos (interfaces); los adaptadores implementan entrada/salida (HTTP, DB, Kafka).
+
+```mermaid
+flowchart LR
+  IN[Adapter In: HTTP] --> APP[Application/Domain]
+  APP --> OUT[Port Out]
+  OUT --> DB[Adapter Out: DB]
 ```
-**Caso de uso real.** Cambiar adapter REST por otro sin tocar dominio.
-**Error común.** Dependencias del dominio hacia Spring/JPA. Corrección: puertos en dominio/aplicación.
-**Verificación (JDK 27, 2026-05-22).** Salida: `ok`.
+
+**Error común.** Anotar el dominio con dependencias de infraestructura por todos lados. Corrección: dependencias hacia adentro.
 
 ### Tema 2: Clean Architecture, C4 y ADR · Avanzado · 45 min
-#### C4/ADR
-**Definición formal.** C4 es modelo para documentar arquitectura por niveles; ADR registra decisiones arquitectónicas y su contexto.
-**Para qué sirve.** Comunicación y trazabilidad técnica.
-**Cuándo usarlo.** Decisiones importantes o equipos múltiples.
-**Ejemplo mínimo enfocado (ejecutable como artefacto).**
-```bash
-mkdir -p /tmp/sb15-adr && cd /tmp/sb15-adr
-cat > ADR-001.md << 'MD'
-# ADR-001: Usar PostgreSQL
-## Contexto
-## Decision
-## Consecuencias
-MD
-grep Decision ADR-001.md
-```
-**Caso de uso real.** Decidir mensajería o BD.
-**Error común.** Decisiones solo en chat. Corrección: ADR versionado.
-**Verificación (2026-05-22).** Salida: `## Decision`.
+
+Caso guía: documentar por qué se eligió Kafka y no RabbitMQ.
+
+#### C4
+
+**Definición formal.** Modelo de diagramas en 4 niveles: Context, Containers, Components, Code.
+
+#### ADR
+
+**Definición formal.** Architecture Decision Record: documento breve que registra decisión, contexto, alternativas y consecuencias.
+
+**Error común.** Decisiones arquitectónicas solo en chats. Corrección: ADR versionado.
 
 ### Tema 3: Spring Modulith y fronteras de módulos · Avanzado · 45 min
+
+Caso guía: separar módulos `pedido`, `inventario`, `envio` dentro de un monolito.
+
 #### Spring Modulith
-**Definición formal.** Herramienta para estructurar y verificar modularidad dentro de un monolito Spring.
-**Para qué sirve.** Fronteras explícitas sin pasar a microservicios.
-**Cuándo usarlo.** Monolito modular creciendo.
-**Ejemplo mínimo enfocado (conceptual).** `@ApplicationModule`, tests de dependencias entre módulos.
-**Caso de uso real.** Módulos pedidos, pagos, envíos.
-**Error común.** Paquetes sin fronteras reales. Corrección: verificar dependencias con Modulith.
-**Verificación.** **Nota:** requiere dependencia Spring Modulith.
+
+**Definición formal.** Herramienta para estructurar y verificar módulos lógicos dentro de una app Spring Boot, con eventos y pruebas de arquitectura.
+
+**Error común.** Paquetes “modulares” sin reglas de dependencia. Corrección: verificar fronteras con tests Modulith.
+
+**Nota de verificación.** Requiere dependencia Spring Modulith; lab ejecutable.
 
 ## Cierre
-Buena arquitectura hace explícitas las fronteras y decisiones. Documenta con C4/ADR y verifica modularidad.
+
+La arquitectura controla el cambio. Los límites claros valen más que capas dibujadas sin enforcement.
+
+## Checklist
+
+- Separo dominio de infraestructura.
+- Documento decisiones con ADR.
+- Uso C4 para comunicar niveles.
+- Verifico fronteras con Modulith/tests.

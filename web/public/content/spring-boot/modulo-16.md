@@ -1,66 +1,71 @@
-# Módulo 16: Microservicios con Spring Cloud
+# Módulo 16: Spring Cloud y microservicios
 
-Cubre patrones Spring Cloud: service discovery, config, gateway, resiliencia, observabilidad distribuida. Requiere infra distribuida para verificación completa.
+Spring Cloud aporta patrones para sistemas distribuidos: discovery, config, gateway, resiliencia y observabilidad. Estos patrones agregan poder y complejidad; úsalos cuando el problema sea realmente distribuido.
 
-**Entorno (2026-05-22):** JDK 27, Docker 29.9.3. Componentes Cloud requieren múltiples servicios/infra.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Spring Boot 3.5.0, Spring Cloud compatible (verificar BOM).
 
 ## Aprende construyendo
 
 ### Tema 1: Service discovery y configuración centralizada · Avanzado · 45 min
-#### Service discovery
-**Definición formal.** Mecanismo donde servicios registran su ubicación y otros los descubren dinámicamente.
-**Para qué sirve.** Evitar endpoints hardcodeados.
-**Cuándo usarlo.** Entornos dinámicos con múltiples instancias.
-**Ejemplo mínimo enfocado (conceptual).** Eureka/Consul/Kubernetes DNS.
-**Caso de uso real.** `orders` llama `payments` por nombre lógico.
-**Error común.** Usar discovery como balanceador mágico sin timeouts. Corrección: timeouts + retries + circuit breaker.
-**Verificación.** **Nota:** requiere registry.
+
+Caso guía: servicios que escalan dinámicamente y necesitan config compartida.
+
+#### Discovery
+
+**Definición formal.** Mecanismo donde servicios se registran y descubren sin IPs hardcodeadas (Eureka/Consul/Kubernetes DNS).
 
 #### Config centralizada
-**Definición formal.** Gestión externa y central de configuración para múltiples servicios.
-**Para qué sirve.** Consistencia y cambios controlados.
-**Cuándo usarlo.** Muchos servicios/entornos.
-**Ejemplo mínimo enfocado.** Spring Cloud Config / ConfigMap.
-**Caso de uso real.** Cambiar feature flag/config.
-**Error común.** Config dinámica sin auditoría. Corrección: versionado y control de cambios.
-**Verificación.** **Nota:** requiere config server/infra.
+
+**Definición formal.** Config externa gestionada en servidor/config repo; los clientes la obtienen al arrancar o refrescan.
+
+**Error común.** Centralizar secretos sin cifrado/control. Corrección: secret manager, cifrado, least privilege.
 
 ### Tema 2: API Gateway y composición · Avanzado · 45 min
-#### API Gateway
-**Definición formal.** Punto de entrada que enruta, autentica, limita y observa requests hacia servicios internos.
-**Para qué sirve.** Cross-cutting concerns en borde.
-**Cuándo usarlo.** Múltiples clientes/servicios.
-**Ejemplo mínimo enfocado (conceptual Spring Cloud Gateway).** ruta `/api/envios/**` -> servicio envíos.
-**Caso de uso real.** Auth y rate limit central.
-**Error común.** Poner lógica de negocio pesada en gateway. Corrección: gateway fino.
-**Verificación.** **Nota:** requiere gateway+servicios.
+
+Caso guía: un punto de entrada para auth, rate limit y routing.
+
+#### Gateway
+
+**Definición formal.** Componente de borde que enruta requests a servicios internos y aplica cross-cutting concerns.
+
+**Error común.** Poner lógica de negocio pesada en gateway. Corrección: gateway fino, dominio en servicios.
 
 ### Tema 3: Resiliencia distribuida · Avanzado · 45 min
-#### Circuit breaker / timeout / bulkhead
-**Definición formal.** Patrones para limitar fallos: timeout acota espera, circuit breaker abre ante fallas, bulkhead aísla recursos.
-**Para qué sirve.** Evitar cascadas.
-**Cuándo usarlo.** Llamadas remotas.
-**Ejemplo mínimo enfocado (ejecutable timeout).**
-```bash
-mkdir -p /tmp/sb16-to && cd /tmp/sb16-to
-cat > DemoTo.java << 'JAVA'
-import java.util.concurrent.*; public class DemoTo { public static void main(String[] args) throws Exception { ExecutorService ex=Executors.newSingleThreadExecutor(); Future<?> f=ex.submit(() -> { try{Thread.sleep(500);}catch(Exception e){} }); try{ f.get(100,TimeUnit.MILLISECONDS); } catch(TimeoutException e){ System.out.println("timeout"); } ex.shutdownNow(); } }
-JAVA
-javac DemoTo.java && java DemoTo
+
+Caso guía: servicio downstream lento.
+
+#### Circuit breaker, timeout, retry, bulkhead
+
+**Definición formal.** Patrones para contener fallos: timeout limita espera, retry reintenta transitorios, circuit breaker abre ante fallos sostenidos, bulkhead aísla recursos.
+
+```mermaid
+stateDiagram-v2
+  [*] --> Closed
+  Closed --> Open: fallos sostenidos
+  Open --> HalfOpen: timeout
+  HalfOpen --> Closed: éxito
+  HalfOpen --> Open: fallo
 ```
-**Caso de uso real.** Evitar esperar 30s a un servicio caído.
-**Error común.** Retries sin timeout. Corrección: timeout + retry acotado + circuit breaker.
-**Verificación (JDK 27, 2026-05-22).** Salida: `timeout`.
+
+**Error común.** Retries sin timeout ni presupuesto. Corrección: budgets, backoff, idempotencia.
 
 ### Tema 4: Observabilidad distribuida · Avanzado · 45 min
-#### Tracing distribuido
-**Definición formal.** Propagación de trace/span IDs entre servicios para reconstruir una request end-to-end.
-**Para qué sirve.** Diagnóstico en sistemas distribuidos.
-**Cuándo usarlo.** Microservicios/colas.
-**Ejemplo mínimo enfocado (conceptual).** OpenTelemetry/Micrometer Tracing.
-**Caso de uso real.** Ver dónde se perdió latencia.
-**Error común.** No propagar headers. Corrección: instrumentación y propagación estándar.
-**Verificación.** **Nota:** requiere collector/backend tracing.
+
+Caso guía: una request cruza 4 servicios; necesitas rastrearla.
+
+#### Tracing, métricas, logs correlacionados
+
+**Definición formal.** Tres pilares: logs, métricas y traces. En distribuido, `traceId`/`spanId` correlacionan eventos.
+
+**Error común.** Logs sin correlation id. Corrección: propagación de contexto (OpenTelemetry/Micrometer Tracing).
 
 ## Cierre
-Spring Cloud ayuda, pero los fundamentos son redes falibles: timeouts, resiliencia, observabilidad y contratos.
+
+Spring Cloud ayuda en sistemas distribuidos, pero no convierte un mal diseño en microservicios buenos. Primero límites, después infraestructura.
+
+## Checklist
+
+- Uso discovery/config solo si aporta.
+- Mantengo gateway fino.
+- Aplico resiliencia con budgets.
+- Correlaciono logs/métricas/traces.
