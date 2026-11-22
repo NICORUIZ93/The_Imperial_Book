@@ -17,58 +17,62 @@ Los errores son parte normal de un programa: un archivo no existe, una entrada e
 
 **Caso guía**
 
-Vas a leer la edad de una persona desde texto. Pueden ocurrir dos problemas distintos: el texto no es un número (error de datos/uso) o un archivo que debías leer no está disponible (error externo recuperable). Tratar ambos igual suele generar mal manejo de errores.
+Lees edad desde texto: `"abc"` es un dato inválido (bug/precondición) y un archivo ausente es un fallo externo recuperable. Tratarlos igual crea mal manejo de errores.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** En Java, una *excepción* es un objeto que representa una condición anómala durante la ejecución. La jerarquía principal es `Throwable` → `Error` y `Exception`; dentro de `Exception`, las subclases de `RuntimeException` son *unchecked* y el resto son *checked*.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Las checked exceptions deben ser manejadas (`catch`) o declaradas (`throws`) en tiempo de compilación. Las unchecked no requieren declaración obligatoria. `Error` representa condiciones graves del runtime que normalmente no deben manejarse. Capturar una excepción solo tiene sentido si se puede recuperar, agregar contexto o traducir la falla; silenciarla rompe la trazabilidad. `finally` se ejecuta al salir del bloque try/catch salvo terminación anómala de la JVM.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Checked exceptions** | Subclases de `Exception` no derivadas de `RuntimeException`; el compilador exige manejar o declarar (`throws`). | Forzar decisión ante fallos externos recuperables (I/O, red, SQL). | Cuando el llamador puede recuperarse razonablemente. | Usarlas para todo, complicando APIs. |
+| **Unchecked exceptions** | `RuntimeException` y subclases; no requieren `throws`. | Señalar bugs, precondiciones violadas, estados inválidos. | Validaciones, argumentos inválidos, errores de programación. | Capturarlas masivamente y ocultar bugs. |
+| **Jerarquía `Throwable`** | `Throwable` → `Error` / `Exception` → `RuntimeException`... | Clasificar fallos y decidir manejo. | Diseñar catch/throws. | Capturar `Throwable`/`Exception` sin criterio. |
+| **`throw`/`throws`/`try-catch-finally`** | `throw` lanza; `throws` declara; `try-catch-finally` maneja/limpia. | Control de flujo de error y limpieza. | Propagar o manejar con contexto. | `catch` vacío; perder causa. |
 
-**Modelo mental.** Checked: el compilador te obliga a reconocer un riesgo externo previsible. Unchecked: suele indicar bug o precondición violada. Error: el piso se está moviendo, no es un flujo normal.
+**Contrato / invariantes / reglas.** Checked: manejar o declarar. Unchecked: opcional declarar, pero documentar si es relevante. `Error` no se maneja normalmente. `finally` se ejecuta al salir del try/catch salvo terminación anómala de JVM. Captura solo si puedes recuperar, traducir o agregar contexto.
+
+**Modelo mental.** Checked = riesgo externo que el compilador te obliga a mirar; unchecked = bug/precondición rota; `Error` = fallo grave del entorno.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
 ```
 
-Crea `ParseoEdad.java`:
+`ParseoEdad.java`:
 
 ```java
+import java.io.IOException;
+import java.nio.file.*;
+
 public class ParseoEdad {
-    public static int parsearEdad(String texto) {
-        if (texto == null || texto.isBlank()) {
-            throw new IllegalArgumentException("La edad es obligatoria");
-        }
-        int edad = Integer.parseInt(texto.trim());
-        if (edad < 0 || edad > 120) {
-            throw new IllegalArgumentException("Edad fuera de rango: " + edad);
-        }
+    static int parsearEdad(String texto) { // unchecked para datos inválidos
+        if (texto == null || texto.isBlank()) throw new IllegalArgumentException("La edad es obligatoria");
+        int edad = Integer.parseInt(texto.trim()); // NumberFormatException (unchecked)
+        if (edad < 0 || edad > 120) throw new IllegalArgumentException("Edad fuera de rango: " + edad);
         return edad;
     }
 
-    public static void main(String[] args) {
-        String[] entradas = {"25", "-3", "abc", ""};
-        for (String entrada : entradas) {
+    static String leerPrimeraLinea(Path ruta) throws IOException { // checked: fallo externo I/O
+        return Files.readAllLines(ruta).get(0);
+    }
+
+    public static void main(String[] args) throws Exception {
+        for (String entrada : new String[]{"25", "-3", "abc", ""}) {
             try {
                 System.out.println("OK: " + parsearEdad(entrada));
             } catch (IllegalArgumentException e) {
-                System.out.println("ERROR: " + entrada + " -> " + e.getMessage());
+                System.out.println("ERROR: " + e.getMessage());
             }
         }
+        Path ruta = Path.of("edad.txt");
+        Files.writeString(ruta, "30");
+        System.out.println("Archivo: " + parsearEdad(leerPrimeraLinea(ruta))); // checked + unchecked
+        Files.deleteIfExists(ruta);
     }
 }
 ```
-
-**Desglose del código**
-
-- `NumberFormatException` es unchecked y subclase de `IllegalArgumentException` en la jerarquía? No: `NumberFormatException` extiende `IllegalArgumentException`, por eso el catch de `IllegalArgumentException` la cubre.
-- Validar precondiciones temprano evita propagar estado inválido.
-- El mensaje incluye el dato problemático; eso facilita depurar sin ocultar la excepción.
-- No se usa `catch (Exception e) {}` porque silenciaría fallos.
 
 **Ejecución y salida real**
 
@@ -79,79 +83,68 @@ java ParseoEdad
 
 ```text
 OK: 25
-ERROR: -3 -> Edad fuera de rango: -3
-ERROR: abc -> For input string: "abc"
-ERROR:  -> La edad es obligatoria
+ERROR: Edad fuera de rango: -3
+ERROR: For input string: "abc"
+ERROR: La edad es obligatoria
+Archivo: 30
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `catch (Exception e) {}` | Tragaste la excepción | Registra, propaga o maneja con criterio |
-| El programa sigue con estado corrupto | Capturaste sin recuperar correctamente | Falla rápido o devuelve un error explícito |
-| Usas checked para todo | API difícil de usar | Usa checked cuando el llamador puede recuperarse razonablemente |
+| `catch (Exception e) {}` | Silenciaste fallo | Registrar, traducir o relanzar |
+| `unreported exception IOException` | Checked no manejada/declarada | `try-catch` o `throws` |
+| Usas checked para validación de argumentos | API ruidosa | Usa `IllegalArgumentException` (unchecked) |
 
-**Verificación rápida**
+**Verificación rápida:** elimina el `throws IOException` y observa el error de compilación; añade `"121"` y confirma rechazo.
 
-```bash
-javac ParseoEdad.java && java ParseoEdad
-```
-
-Agrega una entrada `"120"` y otra `"121"` para confirmar los límites.
 
 ### Tema 2: try-with-resources · Básico · 40 min
 
 **Caso guía**
 
-Tu programa lee un archivo de texto. Si ocurre un error a mitad de lectura, el archivo debe cerrarse igual. Hacerlo manualmente con `finally` es posible, pero verboso y fácil de romper.
+Lees un archivo línea a línea. Si falla a mitad, el archivo debe cerrarse igual para no filtrar descriptores.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** `try-with-resources` es una forma de `try` que declara uno o más recursos que implementan `AutoCloseable` (o `Closeable`) y garantiza su cierre al salir del bloque.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** El cierre ocurre en orden inverso al de declaración, tanto en finalización normal como por excepción. Si el cuerpo lanza excepción y `close()` también, la excepción de cierre se suprime y se adjunta como *suppressed exception*. El recurso debe ser efectivamente final o final. Esto implementa manejo determinista de liberación de recursos, no recolección por GC.
+| Concepto | Definición formal | Para qué sirve | Regla | Error común |
+|---|---|---|---|---|
+| **`try-with-resources`** | Forma de `try` que declara recursos `AutoCloseable` y garantiza cierre al salir. | Liberar recursos determinísticamente. | Usar para archivos, streams, conexiones, JDBC. | Olvidar cerrar y fugar recursos. |
+| **`AutoCloseable`/`Closeable`** | Interfaces con `close()`. `Closeable` (I/O) restringe a `IOException`. | Contrato de liberación. | Recurso debe ser final o efectivamente final. | Cerrar manualmente mal en `finally`. |
+| **Cierre inverso + suppressed** | Se cierran en orden inverso. Si cuerpo y `close()` lanzan, la de cierre se suprime en la primaria. | No perder excepción principal. | Inspeccionar `getSuppressed()` si hace falta. | Ignorar excepción de cierre. |
+| **Limpieza determinista** | Liberación en punto conocido, no depende de GC. | Evitar leaks de FDs/conexiones. | No confiar en finalize/GC. | “El GC lo cierra”. |
 
-**Modelo mental.** Es pedir un libro en la biblioteca con devolución automática al salir por la puerta, aunque tropieces en el pasillo.
+**Modelo mental.** Biblioteca con devolución automática al salir por la puerta, aunque tropieces.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
 ```
 
-Crea `LeerArchivo.java`:
+`LeerArchivo.java`:
 
 ```java
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.*;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class LeerArchivo {
     public static void main(String[] args) throws IOException {
         Path ruta = Path.of("guias.txt");
         Files.write(ruta, List.of("G-1,Madrid", "G-2,Bogotá", "G-3,Lima"));
-
-        try (var lineas = Files.lines(ruta)) {
-            lineas.filter(l -> l.contains("Bogotá"))
-                  .forEach(System.out::println);
-        }
-
+        try (Stream<String> lineas = Files.lines(ruta)) { // AutoCloseable
+            lineas.filter(l -> l.contains("Bogotá")).forEach(System.out::println);
+        } // cierre garantizado aquí
         System.out.println("Existe: " + Files.exists(ruta));
         Files.deleteIfExists(ruta);
     }
 }
 ```
-
-**Desglose del código**
-
-- `Files.lines(...)` devuelve un `Stream<String>` que debe cerrarse porque mantiene abierto el archivo.
-- `try (var lineas = Files.lines(ruta))` garantiza el cierre.
-- `IOException` es checked; en este ejemplo simple se propaga con `throws`.
-- `Files.deleteIfExists` limpia el archivo de prueba.
 
 **Ejecución y salida real**
 
@@ -165,81 +158,71 @@ G-2,Bogotá
 Existe: true
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Fuga de descriptores de archivo | Abriste stream/recurso y no lo cerraste | Usa `try-with-resources` |
-| `IOException` no manejada | Olvidaste `catch` o `throws` | Maneja donde puedas recuperarte o propaga con contexto |
-| Cerrar manualmente en `finally` con código frágil | Lógica de cierre compleja | Prefiere `AutoCloseable` y try-with-resources |
+| Fuga de file descriptors | No cerraste stream | `try-with-resources` |
+| Excepción de close oculta la real | Manejo manual incorrecto | Usa try-with-resources; revisa suppressed |
+| `IOException` no manejada | Checked | `catch` o `throws` con contexto |
 
-**Verificación rápida**
+**Verificación rápida:** cambia a ruta inexistente y maneja la `IOException` con mensaje claro.
 
-```bash
-javac LeerArchivo.java && java LeerArchivo
-```
-
-Cambia la ruta a un archivo inexistente y observa la excepción. Luego decide si en tu caso conviene capturarla y mostrar un mensaje claro.
 
 ### Tema 3: Excepciones personalizadas y no tragar excepciones · Intermedio · 35 min
 
 **Caso guía**
 
-En un proceso de retiro bancario, “saldo insuficiente” no es lo mismo que un `NullPointerException` o un error de disco. Necesitas un error de dominio claro para que la capa superior pueda reaccionar correctamente.
+“Saldo insuficiente” es una regla de negocio; no es lo mismo que `NullPointerException` o un fallo de disco. Necesitas un tipo de error claro y no debes ocultar excepciones.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Una *excepción personalizada* es un tipo definido por el dominio que extiende `Exception`/`RuntimeException` para representar una condición de error específica. *Envolver* (wrapping) una excepción consiste en lanzar una nueva excepción preservando la causa original (`cause`).
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Una excepción de dominio debe tener nombre significativo, mensaje útil y, cuando corresponda, la causa original (`super(message, cause)`). No se deben capturar excepciones sin acción (`catch` vacío). Si se captura, se debe recuperar, registrar con contexto, traducir o relanzar. Mantener la causa preserva la traza de diagnóstico.
+| Concepto | Definición formal | Para qué sirve | Regla | Error común |
+|---|---|---|---|---|
+| **Excepciones personalizadas** | Tipo que extiende `Exception`/`RuntimeException` para representar error de dominio/técnico específico. | Comunicar semántica y datos del fallo. | Nombre claro, mensaje útil, campos relevantes, `cause` si envuelve. | Crear excepciones genéricas sin valor. |
+| **No tragar excepciones** | Antipatrón: `catch` vacío o log sin acción ante fallo irrecuperable. | Preservar trazabilidad y estado correcto. | Recuperar, traducir, registrar con contexto, o relanzar. | `catch(Exception e){}`. |
+| **Wrapping/cause** | Lanzar nueva excepción con causa original (`super(msg,cause)`). | Traducir capa manteniendo evidencia. | No perder la causa. | `throw new X("falló")` sin causa. |
+| **Checked vs unchecked de dominio** | Checked si llamador puede recuperarse; unchecked si es bug/precondición o regla que se maneja en frontera. | Diseñar API usable. | Ser consistente y documentar. | Checked para todo. |
 
-**Modelo mental.** Una excepción personalizada es una etiqueta precisa en la caja de fallos: no dice solo “algo salió mal”, dice “qué salió mal” y conserva la evidencia.
+**Modelo mental.** Excepción personalizada = etiqueta precisa en la caja de fallos; la causa es la evidencia dentro de la caja.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
 ```
 
-Crea `SaldoInsuficienteException.java`:
+`SaldoInsuficienteException.java`:
 
 ```java
 public class SaldoInsuficienteException extends RuntimeException {
-    private final double saldo;
-    private final double monto;
-
+    private final double saldo; private final double monto;
     public SaldoInsuficienteException(double saldo, double monto) {
         super("Saldo insuficiente: saldo=" + saldo + ", monto=" + monto);
-        this.saldo = saldo;
-        this.monto = monto;
+        this.saldo = saldo; this.monto = monto;
     }
-
-    public double getSaldo() { return saldo; }
-    public double getMonto() { return monto; }
+    public double getSaldo() { return saldo; } public double getMonto() { return monto; }
 }
 ```
 
-Crea `Cuenta.java`:
+`Cuenta.java`:
 
 ```java
 public class Cuenta {
     private double saldo;
-
     public Cuenta(double saldoInicial) { this.saldo = saldoInicial; }
-
     public void retirar(double monto) {
         if (monto <= 0) throw new IllegalArgumentException("Monto inválido");
         if (monto > saldo) throw new SaldoInsuficienteException(saldo, monto);
         saldo -= monto;
     }
-
     public double getSaldo() { return saldo; }
 }
 ```
 
-Crea `DemoExcepcion.java`:
+`DemoExcepcion.java`:
 
 ```java
 public class DemoExcepcion {
@@ -255,13 +238,6 @@ public class DemoExcepcion {
 }
 ```
 
-**Desglose del código**
-
-- `SaldoInsuficienteException` extiende `RuntimeException`: representa una regla de dominio.
-- La excepción guarda contexto (`saldo`, `monto`) útil para diagnóstico o respuesta.
-- El `catch` no oculta el problema; lo traduce a una reacción clara.
-- `IllegalArgumentException` se usa para entrada inválida; son errores distintos.
-
 **Ejecución y salida real**
 
 ```bash
@@ -274,106 +250,92 @@ Error de negocio: Saldo insuficiente: saldo=100.0, monto=150.0
 Saldo actual: 100.0
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `catch` vacío | Quisiste “silenciar” el error | Registra, maneja o relanza con contexto |
-| Excepción genérica para todo | Perdió sentido el dominio | Crea excepciones de dominio cuando aporten claridad |
-| Pierdes la causa original | Creas una nueva excepción sin `cause` | Usa `super(mensaje, cause)` al envolver |
+| Bug invisible | Catch vacío | Registrar/relanzar/manejar |
+| Pierdes causa raíz | No usaste `cause` | `super(msg, cause)` |
+| Excepción genérica | Sin semántica de dominio | Excepción personalizada cuando aporta claridad |
 
-**Verificación rápida**
+**Verificación rápida:** prueba catch vacío y observa cómo el fallo desaparece; eso es lo que no debe pasar.
 
-```bash
-javac SaldoInsuficienteException.java Cuenta.java DemoExcepcion.java
-java DemoExcepcion
-```
-
-Agrega un `catch (Exception e) {}` temporalmente y compara: el fallo se vuelve invisible. Esa es la razón de no tragar excepciones.
 
 ### Tema 4: Incremento del proyecto: leer guías y respetar capacidad · Intermedio · 25 min
 
 **Caso guía**
 
-El importador de guías lee un archivo y debe rechazar guías con datos inválidos o cuando la capacidad se excede. Aquí se combinan I/O, validación y excepciones de dominio.
+Importas guías desde CSV: debes validar formato, respetar capacidad y cerrar el archivo aunque falle.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** La validación de entrada es la verificación de precondiciones sobre datos externos antes de incorporarlos al estado del sistema. La separación entre errores técnicos (I/O) y de dominio (reglas de negocio) permite decisiones de manejo distintas.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `IOException` representa fallos de I/O checked. `IllegalArgumentException`/`IllegalStateException` representan violaciones de precondición/estado en este ejemplo. El recurso de lectura debe cerrarse con try-with-resources. La operación debe fallar de forma explícita ante datos inválidos; no debe devolver resultados parciales silenciosos.
-
-**Modelo mental.** El importador es un control de aduana: verifica formato, capacidad y deja registro claro si algo no entra.
+| Concepto | Definición formal | Para qué sirve | Regla | Error común |
+|---|---|---|---|---|
+| **Leer guías (I/O)** | Cargar datos externos desde archivo con `Files.lines`/`BufferedReader`. | Ingestar datos reales. | Try-with-resources. | Fuga de recurso. |
+| **Respetar capacidad** | Invariante de dominio: no aceptar más elementos que el límite. | Proteger reglas de negocio. | Validar antes de insertar. | Aceptar sobrecupo. |
+| **Separar errores técnicos/dominio** | I/O checked (`IOException`) vs validación/estado (`IllegalArgumentException/IllegalStateException`). | Manejo diferenciado por capa. | No tragar ni mezclar semántica. | Devolver lista parcial silenciosa. |
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
 ```
 
-Crea `ImportadorGuias.java`:
+`ImportadorGuias.java`:
+
 ```java
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.*;
+import java.util.stream.*;
 
 public class ImportadorGuias {
     public static List<String> importar(Path ruta, int capacidad) throws IOException {
         if (capacidad <= 0) throw new IllegalArgumentException("Capacidad inválida");
         List<String> guias = new ArrayList<>();
-        try (var lineas = Files.lines(ruta)) {
+        try (Stream<String> lineas = Files.lines(ruta)) {
             for (String linea : (Iterable<String>) lineas::iterator) {
-                if (linea.isBlank() || !linea.contains(",")) {
-                    throw new IllegalArgumentException("Línea inválida: " + linea);
-                }
-                if (guias.size() >= capacidad) {
-                    throw new IllegalStateException("Capacidad excedida: " + capacidad);
-                }
+                if (linea.isBlank() || !linea.contains(",")) throw new IllegalArgumentException("Línea inválida: " + linea);
+                if (guias.size() >= capacidad) throw new IllegalStateException("Capacidad excedida: " + capacidad);
                 guias.add(linea.trim());
             }
         }
         return guias;
     }
-
     public static void main(String[] args) throws IOException {
         Path ruta = Path.of("guias.csv");
         Files.write(ruta, List.of("G-1,Madrid", "G-2,Bogotá"));
         System.out.println(importar(ruta, 5));
+        try { importar(ruta, 1); } catch (IllegalStateException e) { System.out.println(e.getMessage()); }
         Files.deleteIfExists(ruta);
     }
 }
 ```
 
-**Desglose del código**
-
-- `Files.lines` se cierra con `try-with-resources`.
-- `IllegalArgumentException` señala datos/capacidad inválidos.
-- `IllegalStateException` señala que no se puede aceptar más guías.
-- `IOException` se propaga porque el llamador debe decidir cómo reaccionar ante falla de I/O.
-
 **Ejecución y salida real**
+
+```bash
+javac ImportadorGuias.java
+java ImportadorGuias
+```
 
 ```text
 [G-1,Madrid, G-2,Bogotá]
+Capacidad excedida: 1
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Archivo queda abierto | No usaste try-with-resources | Envuelve el stream/recurso |
-| Error genérico sin contexto | Mensaje pobre | Incluye línea/dato/capacidad en la excepción |
-| Se traga la excepción y devuelve lista parcial | `catch` vacío | Falla o reporta el error explícitamente |
+| Lista parcial | Catch vacío / no fallar | Falla explícita |
+| Recurso abierto | Sin try-with-resources | Usar try-with-resources |
+| Error ambiguo | Mensaje pobre | Incluir dato/línea/capacidad |
 
-**Verificación rápida**
+**Verificación rápida:** capacidad 1 con 2 líneas debe lanzar `IllegalStateException`.
 
-```bash
-javac ImportadorGuias.java && java ImportadorGuias
-```
-
-Prueba con capacidad `1` y verifica que se lanza `IllegalStateException`.
 
 ## Cierre del módulo
 
