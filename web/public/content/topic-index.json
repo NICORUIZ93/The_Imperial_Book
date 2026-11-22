@@ -5999,49 +5999,49 @@
     "6": [
       {
         "title": "Circuit Breaker con opossum o cockatiel",
-        "fragment": "circuit-breaker-con-opossum-o-cockatiel"
+        "fragment": "tema-1-circuit-breaker-con-opossum-o-cockatiel"
       },
       {
         "title": "Retry con jitter",
-        "fragment": "retry-con-jitter"
+        "fragment": "tema-2-retry-con-jitter"
       },
       {
         "title": "Rate Limiting con Redis",
-        "fragment": "rate-limiting-con-redis"
+        "fragment": "tema-3-rate-limiting-con-redis"
       },
       {
         "title": "Timeouts",
-        "fragment": "timeouts"
+        "fragment": "tema-4-timeouts"
       },
       {
         "title": "Fallback strategies",
-        "fragment": "fallback-strategies"
+        "fragment": "tema-5-fallback-strategies"
       }
     ],
     "7": [
       {
         "title": "JWT con jsonwebtoken",
-        "fragment": "jwt-con-jsonwebtoken"
+        "fragment": "tema-1-jwt-con-jsonwebtoken"
       },
       {
         "title": "Passport.js",
-        "fragment": "passport-js"
+        "fragment": "tema-2-passport-js"
       },
       {
         "title": "Helmet, CORS",
-        "fragment": "helmet-cors"
+        "fragment": "tema-3-helmet-cors"
       },
       {
         "title": "Prevención de inyecciones NoSQL",
-        "fragment": "prevencion-de-inyecciones-nosql"
+        "fragment": "tema-4-prevencion-de-inyecciones-nosql"
       },
       {
         "title": "OWASP Top 10",
-        "fragment": "owasp-top-10"
+        "fragment": "tema-5-owasp-top-10"
       },
       {
         "title": "Secretos: AWS Secrets Manager, Vault, Azure Key Vault",
-        "fragment": "secretos-aws-secrets-manager-vault-azure-key-vault"
+        "fragment": "tema-6-secretos-aws-secrets-manager-vault-azure-key-vault"
       }
     ],
     "8": [
