@@ -4484,12 +4484,12 @@
         "fragment": "tema-5-comparable-vs-comparator-e-iteracion"
       },
       {
-        "title": "Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue`",
+        "title": "Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue",
         "fragment": "tema-6-colas-y-pilas-queue-deque-arraydeque-y-priorityqueue"
       },
       {
         "title": "Incremento del proyecto: preparar guías asignables",
-        "fragment": "incremento-del-proyecto-preparar-guias-asignables"
+        "fragment": "tema-7-incremento-del-proyecto-preparar-guias-asignables"
       }
     ],
     "20": [

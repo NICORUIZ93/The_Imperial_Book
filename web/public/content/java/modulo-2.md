@@ -1,432 +1,257 @@
 # Módulo 2: Colecciones y genéricos
 
+Cuando un programa maneja más de unos pocos valores, los arreglos se quedan cortos: tamaño fijo, búsquedas manuales y poca expresividad. La biblioteca de colecciones de Java ofrece estructuras para listas, conjuntos, mapas, colas y pilas; los genéricos permiten usarlas con seguridad de tipos. Este módulo enseña a elegir la estructura correcta y a entender los contratos que la hacen funcionar.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Elegir entre `List`, `Set` y `Map` según el problema |
+| 2 | Implementar correctamente `equals` y `hashCode` |
+| 3 | Evitar el bug de claves mutables en `HashMap` |
+| 4 | Escribir clases y métodos genéricos con wildcards |
+| 5 | Ordenar con `Comparable` y `Comparator` |
+| 6 | Usar colas, pilas y colas de prioridad |
 
 ## Aprende construyendo
 
+### Tema 1: List, Set, Map y sus implementaciones · Intermedio · 40 min
 
-### Tema 1: List, Set, Map y sus implementaciones · Intermedio · 35 min
+**Caso guía**
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Estás construyendo un pequeño registro de envíos. Necesitas mantener el orden de llegada, evitar IDs duplicados y buscar rápidamente un envío por su código. Un solo tipo de colección no resuelve bien los tres casos.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por list, set, map y sus implementaciones con foco en comprensión antes de implementación.
+**Concepto clave / modelo mental**
 
-#### ► LA IDEA EN UNA FRASE
-**Entender list, set, map y sus implementaciones te permite tomar mejores decisiones técnicas.**
+| Interfaz | Qué garantiza | Implementaciones comunes | Cuándo usarla |
+|---|---|---|---|
+| `List` | Orden e índices; permite duplicados | `ArrayList`, `LinkedList` | Cuando importa la posición o el orden de inserción |
+| `Set` | No permite duplicados (según igualdad) | `HashSet`, `LinkedHashSet`, `TreeSet` | Cuando importa la pertenencia/únicidad |
+| `Map` | Pares clave → valor; clave única | `HashMap`, `LinkedHashMap`, `TreeMap` | Cuando buscas por clave |
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Regla rápida:
 
-#### ► LA ANALOGÍA
-Piensa en list, set, map y sus implementaciones como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+- ¿Necesitas índice o duplicados? `List`.
+- ¿Necesitas saber si ya existe? `Set`.
+- ¿Necesitas buscar por clave? `Map`.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que list, set, map y sus implementaciones resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Implementación desde cero**
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| List, Set, Map y sus implementaciones se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+Crea `ColeccionesBasicas.java`:
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar List, Set, Map y sus implementaciones | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses list, set, map y sus implementaciones por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: list, set, map y sus implementaciones funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- List, Set, Map y sus implementaciones existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve list, set, map y sus implementaciones en tu contexto?
-2. ¿Cómo sabrías que list, set, map y sus implementaciones no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar list, set, map y sus implementaciones?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
-public class ColeccionesDemo {
+public class ColeccionesBasicas {
     public static void main(String[] args) {
-        List<String> guias = new ArrayList<>();
-        guias.add("RF-101");
-        guias.add("RF-102");
-        guias.add(1, "RF-105");
-        System.out.println(guias);
-        System.out.println("primera=" + guias.get(0));
+        List<String> llegada = new ArrayList<>();
+        llegada.add("ENV-003");
+        llegada.add("ENV-001");
+        llegada.add("ENV-003");
+        System.out.println("List: " + llegada);
 
-        List<String> cola = new LinkedList<>(List.of("RF-101", "RF-102"));
-        cola.add(0, "RF-105");
-        System.out.println("cola=" + cola);
+        Set<String> idsUnicos = new HashSet<>(llegada);
+        System.out.println("Set: " + idsUnicos);
+
+        Map<String, String> estadoPorId = new HashMap<>();
+        estadoPorId.put("ENV-001", "PENDIENTE");
+        estadoPorId.put("ENV-003", "EN_RUTA");
+        estadoPorId.put("ENV-001", "ENTREGADO");
+
+        System.out.println("Estado ENV-001: " + estadoPorId.get("ENV-001"));
+        System.out.println("Mapa: " + estadoPorId);
     }
 }
 ```
 
-```bash
-mkdir -p out
-javac -d out src/ColeccionesDemo.java
-java -cp out ColeccionesDemo
-```
+**Desglose del código**
 
-```java
-import java.util.LinkedHashSet;
-import java.util.Set;
+- `ArrayList` conserva el orden de inserción y acepta duplicados: por eso `ENV-003` aparece dos veces.
+- `HashSet` elimina duplicados según `equals/hashCode`. El orden no está garantizado.
+- `HashMap.put` con una clave existente reemplaza el valor. Por eso `ENV-001` termina en `ENTREGADO`.
+- Programar contra la interfaz (`List`, `Set`, `Map`) permite cambiar la implementación sin reescribir todo el código cliente.
 
-public class ColeccionesDemo {
-    public static void main(String[] args) {
-        Set<String> ingreso = new LinkedHashSet<>();
-        ingreso.add("RF-102");
-        ingreso.add("RF-101");
-        ingreso.add("RF-102");
-
-        System.out.println("ingreso=" + ingreso);
-        System.out.println("duplicada=" + ingreso.add(new String("RF-101")));
-        System.out.println("cantidad=" + ingreso.size());
-    }
-}
-```
-
-```java
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-public class ColeccionesDemo {
-    public static void main(String[] args) {
-        Map<String, String> estados = new LinkedHashMap<>();
-        estados.put("RF-101", "EN_RUTA");
-        estados.put("RF-102", "ENTREGADA");
-        estados.put("RF-101", "EN_REPARTO");
-
-        System.out.println(estados.get("RF-101"));
-        System.out.println(estados.getOrDefault("RF-999", "DESCONOCIDA"));
-        System.out.println("guias=" + estados.size());
-        estados.put("RF-103", null);
-        System.out.println("registrada=" + estados.containsKey("RF-103"));
-        System.out.println("valor=" + estados.getOrDefault("RF-103", "DESCONOCIDA"));
-    }
-}
-```
+**Ejecución y salida real**
 
 ```bash
-javac -d out src/ColeccionesDemo.java
-java -cp out ColeccionesDemo
+javac ColeccionesBasicas.java
+java ColeccionesBasicas
 ```
 
-</details>
+Salida posible (el orden de `HashSet` y `HashMap` puede variar):
 
-### Tema 2: El contrato de equals y hashCode · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por el contrato de equals y hashcode con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender el contrato de equals y hashcode te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en el contrato de equals y hashcode como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    A["new Punto(2, 3)"] --> H["hashCode() = h"]
-    H --> B["cubo h"]
-    C["new Punto(2, 3)"] --> H2["hashCode() = h'"]
-    H2 --> D["cubo h'"]
-    B -->|"mismo cubo: equals decide"| E["1 entrada"]
-    D -->|"cubo distinto: nunca se compara"| F["2 entradas"]
+```text
+List: [ENV-003, ENV-001, ENV-003]
+Set: [ENV-003, ENV-001]
+Estado ENV-001: ENTREGADO
+Mapa: {ENV-003=EN_RUTA, ENV-001=ENTREGADO}
 ```
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| El contrato de equals y hashCode se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Duplicados inesperados en un registro de IDs | Usaste `List` donde necesitabas unicidad | Usa `Set` o valida antes de insertar |
+| Búsqueda lenta por clave en una lista grande | Recorres la lista completa | Usa `Map` con la clave adecuada |
+| Asumes orden en `HashSet`/`HashMap` | Su orden no está garantizado | Usa `LinkedHashSet/LinkedHashMap` o `TreeSet/TreeMap` |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar El contrato de equals y hashCode | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses el contrato de equals y hashcode por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: el contrato de equals y hashcode funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- El contrato de equals y hashCode existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve el contrato de equals y hashcode en tu contexto?
-2. ¿Cómo sabrías que el contrato de equals y hashcode no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar el contrato de equals y hashcode?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    A["new Punto(2, 3)"] --> H["hashCode() = h"]
-    H --> B["cubo h"]
-    C["new Punto(2, 3)"] --> H2["hashCode() = h'"]
-    H2 --> D["cubo h'"]
-    B -->|"mismo cubo: equals decide"| E["1 entrada"]
-    D -->|"cubo distinto: nunca se compara"| F["2 entradas"]
-```
+**Verificación rápida**
 
 ```bash
-mkdir pedidos-core && cd pedidos-core
-mkdir -p src/io/academia/modelo
+javac ColeccionesBasicas.java && java ColeccionesBasicas
 ```
 
-```java
-// src/io/academia/modelo/RotoPunto.java
-package io.academia.modelo;
+Cambia `HashSet` por `TreeSet` y observa que los IDs quedan ordenados. Cambia `HashMap` por `LinkedHashMap` si necesitas conservar orden de inserción.
 
+### Tema 2: El contrato de equals y hashCode · Intermedio · 45 min
+
+**Contexto y para qué sirve**
+
+`HashSet` y `HashMap` no adivinan si dos objetos “son el mismo”. Usan `equals()` y `hashCode()`. Si implementas uno mal, o solo uno de los dos, las colecciones basadas en hash se comportan de forma incorrecta: duplicados aparentes, búsquedas que no encuentran, elementos imposibles de localizar.
+
+**Concepto clave / modelo mental**
+
+Contrato esencial:
+
+1. Si `a.equals(b)` es `true`, entonces `a.hashCode() == b.hashCode()` debe ser `true`.
+2. Si dos objetos tienen el mismo `hashCode`, **no** significa necesariamente que sean iguales (puede haber colisión).
+3. `equals` debe ser reflexivo, simétrico, transitivo, consistente y devolver `false` ante `null`.
+4. Los campos usados en `equals/hashCode` deberían ser los que definen la identidad lógica del objeto.
+
+**Implementación desde cero**
+
+Crea `Cliente.java`:
+
+```java
 import java.util.Objects;
 
-public final class RotoPunto {
-    private final int x;
-    private final int y;
+public class Cliente {
+    private final String dni;
+    private final String nombre;
 
-    public RotoPunto(int x, int y) {
-        this.x = x;
-        this.y = y;
+    public Cliente(String dni, String nombre) {
+        this.dni = dni;
+        this.nombre = nombre;
     }
 
+    public String getDni() { return dni; }
+    public String getNombre() { return nombre; }
+
     @Override
-    public boolean equals(Object otro) {
-        if (this == otro) {
-            return true;
-        }
-        if (!(otro instanceof RotoPunto p)) {
-            return false;
-        }
-        return x == p.x;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Cliente cliente)) return false;
+        return Objects.equals(dni, cliente.dni);
     }
 
     @Override
     public int hashCode() {
-        // El fallo deliberado: y participa en el hash, pero no en equals.
-        return Objects.hash(x, y);
+        return Objects.hash(dni);
     }
 
     @Override
     public String toString() {
-        return "RotoPunto[x=" + x + ", y=" + y + "]";
+        return "Cliente{dni='" + dni + "', nombre='" + nombre + "'}";
     }
 }
 ```
 
-```java
-// src/io/academia/modelo/Punto.java
-package io.academia.modelo;
-
-import java.util.Objects;
-
-public final class Punto {
-    private final int x;
-    private final int y;
-
-    public Punto(int x, int y) {
-        this.x = x;
-        this.y = y;
-    }
-
-    @Override
-    public boolean equals(Object otro) {
-        if (this == otro) {
-            return true;
-        }
-        if (!(otro instanceof Punto p)) {
-            return false;
-        }
-        return x == p.x && y == p.y;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(x, y);
-    }
-
-    @Override
-    public String toString() {
-        return "Punto[x=" + x + ", y=" + y + "]";
-    }
-}
-```
+Crea `DemoEqualsHash.java`:
 
 ```java
-// src/Demo.java
-import io.academia.modelo.Punto;
-import io.academia.modelo.RotoPunto;
-
 import java.util.HashSet;
 import java.util.Set;
 
-public class Demo {
+public class DemoEqualsHash {
     public static void main(String[] args) {
-        RotoPunto a = new RotoPunto(2, 3);
-        RotoPunto b = new RotoPunto(2, 4);
-        System.out.println("roto equals = " + a.equals(b));
-        System.out.println("roto hash iguales = " + (a.hashCode() == b.hashCode()));
+        Set<Cliente> clientes = new HashSet<>();
+        clientes.add(new Cliente("A1", "Ada"));
+        clientes.add(new Cliente("A1", "Ada Lovelace"));
+        clientes.add(new Cliente("B2", "Linus"));
 
-        Set<RotoPunto> rotos = new HashSet<>();
-        rotos.add(a);
-        rotos.add(b);
-        System.out.println("roto contains = " + rotos.contains(new RotoPunto(2, 5)));
-        System.out.println("roto size = " + rotos.size());
-
-        Set<Punto> puntos = new HashSet<>();
-        puntos.add(new Punto(2, 3));
-        puntos.add(new Punto(2, 3));
-        System.out.println("bien contains = " + puntos.contains(new Punto(2, 3)));
-        System.out.println("bien size = " + puntos.size());
+        System.out.println(clientes.size());
+        System.out.println(clientes.contains(new Cliente("A1", "Otra")));
+        System.out.println(clientes);
     }
 }
 ```
 
+**Desglose del código**
+
+- `equals` define identidad lógica por `dni`. Dos clientes con el mismo DNI se consideran el mismo cliente.
+- `hashCode` usa el mismo campo (`dni`). Esto cumple el contrato.
+- `HashSet` usa primero `hashCode` para ubicar el bucket y luego `equals` para confirmar. Si el hash es inconsistente, el objeto “se pierde”.
+- `toString` no forma parte del contrato, pero facilita depurar.
+
+**Ejecución y salida real**
+
 ```bash
-javac -d out $(find src -name '*.java')
-java -cp out Demo
+javac Cliente.java DemoEqualsHash.java
+java DemoEqualsHash
 ```
 
-</details>
-
-### Tema 3: Claves mutables y el mapa que pierde entradas · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por claves mutables y el mapa que pierde entradas con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender claves mutables y el mapa que pierde entradas te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en claves mutables y el mapa que pierde entradas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    K1["clave = A-1"] --> H1["hash(A-1) = 3"]
-    H1 --> B3["cubo 3: valor"]
-    K2["clave mutada = A-2"] --> H2["hash(A-2) = 7"]
-    H2 --> B7["cubo 7: vacío"]
-    B3 -.->|"entrada inalcanzable"| X["get devuelve null"]
+```text
+2
+true
+[Cliente{dni='A1', nombre='Ada'}, Cliente{dni='B2', nombre='Linus'}]
 ```
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+El orden del set puede variar.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Claves mutables y el mapa que pierde entradas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| `contains` devuelve `false` aunque el objeto “igual” existe | Redefiniste `equals` pero no `hashCode` | Implementa ambos con los mismos campos |
+| Duplicados lógicos en `HashSet` | `equals/hashCode` no reflejan la identidad real | Define qué campo(s) identifican al objeto |
+| Comportamiento raro tras cambiar un campo usado en hash | Mutaste la clave/objeto dentro de una estructura hash | Usa campos inmutables para identidad |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Claves mutables y el mapa que pierde entradas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Verificación rápida**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses claves mutables y el mapa que pierde entradas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: claves mutables y el mapa que pierde entradas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Claves mutables y el mapa que pierde entradas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve claves mutables y el mapa que pierde entradas en tu contexto?
-2. ¿Cómo sabrías que claves mutables y el mapa que pierde entradas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar claves mutables y el mapa que pierde entradas?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    K1["clave = A-1"] --> H1["hash(A-1) = 3"]
-    H1 --> B3["cubo 3: valor"]
-    K2["clave mutada = A-2"] --> H2["hash(A-2) = 7"]
-    H2 --> B7["cubo 7: vacío"]
-    B3 -.->|"entrada inalcanzable"| X["get devuelve null"]
+```bash
+javac Cliente.java DemoEqualsHash.java && java DemoEqualsHash
 ```
+
+Comenta temporalmente `hashCode()` y vuelve a ejecutar: verás por qué el contrato roto rompe `HashSet`.
+
+### Tema 3: Claves mutables y el mapa que pierde entradas · Intermedio · 35 min
+
+**Caso guía**
+
+Guardas pedidos en un `HashMap` usando un objeto como clave. Luego modificas un campo de esa clave. Cuando buscas el pedido, el mapa parece “olvidarlo”, aunque al iterar sigue allí. Este bug es real y difícil de ver si no entiendes cómo funcionan los hashes.
+
+**Concepto clave / modelo mental**
+
+`HashMap` calcula el bucket de una clave usando `hashCode()` en el momento de insertar/buscar. Si mutas un campo que participa en `hashCode/equals` después de insertar:
+
+- el objeto sigue dentro del mapa;
+- pero el mapa lo busca en otro bucket;
+- `get` devuelve `null` o no lo encuentra.
+
+Regla: las claves de `HashMap`/elementos de `HashSet` deben ser efectivamente inmutables respecto de su identidad hash.
+
+**Implementación desde cero**
+
+Crea `ClaveMutable.java`:
 
 ```java
-// src/io/academia/modelo/ClaveMutable.java
-package io.academia.modelo;
-
 import java.util.Objects;
 
-public final class ClaveMutable {
+public class ClaveMutable {
     private String codigo;
 
     public ClaveMutable(String codigo) {
         this.codigo = codigo;
     }
 
-    public void setCodigo(String codigo) {
-        this.codigo = codigo;
-    }
+    public String getCodigo() { return codigo; }
+    public void setCodigo(String codigo) { this.codigo = codigo; }
 
     @Override
-    public boolean equals(Object otro) {
-        return otro instanceof ClaveMutable c && Objects.equals(codigo, c.codigo);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ClaveMutable that)) return false;
+        return Objects.equals(codigo, that.codigo);
     }
 
     @Override
@@ -436,669 +261,497 @@ public final class ClaveMutable {
 
     @Override
     public String toString() {
-        return "ClaveMutable[" + codigo + "]";
+        return "ClaveMutable{codigo='" + codigo + "'}";
     }
 }
 ```
 
-```java
-// src/io/academia/modelo/ClaveInmutable.java
-package io.academia.modelo;
-
-public record ClaveInmutable(String codigo) {
-}
-```
+Crea `DemoMapaPerdido.java`:
 
 ```java
-// src/Demo.java
-import io.academia.modelo.ClaveInmutable;
-import io.academia.modelo.ClaveMutable;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class Demo {
+public class DemoMapaPerdido {
     public static void main(String[] args) {
-        Map<ClaveMutable, String> mapa = new HashMap<>();
-        ClaveMutable clave = new ClaveMutable("A-1");
-        mapa.put(clave, "valor");
-        clave.setCodigo("A-2");
+        Map<ClaveMutable, String> pedidos = new HashMap<>();
+        ClaveMutable clave = new ClaveMutable("A1");
+        pedidos.put(clave, "Pedido-Ada");
 
-        System.out.println("get tras mutar = " + mapa.get(clave));
-        System.out.println("tamano = " + mapa.size());
-        System.out.println("valor sigue dentro = " + mapa.containsValue("valor"));
-        System.out.println("entradas = " + mapa.entrySet());
+        System.out.println("Antes: " + pedidos.get(clave));
 
-        Map<ClaveInmutable, String> seguro = new HashMap<>();
-        ClaveInmutable k = new ClaveInmutable("A-1");
-        seguro.put(k, "valor");
-        System.out.println("record get = " + seguro.get(new ClaveInmutable("A-1")));
+        clave.setCodigo("B2"); // mutación peligrosa
+        System.out.println("Después get(clave): " + pedidos.get(clave));
+        System.out.println("Después get(new A1): " + pedidos.get(new ClaveMutable("A1")));
+        System.out.println("Contenido real: " + pedidos);
     }
 }
 ```
 
+**Desglose del código**
+
+- Al insertar, `HashMap` usa el hash de `"A1"`.
+- `clave.setCodigo("B2")` cambia el campo que alimenta `hashCode()`.
+- El mapa sigue buscando con el nuevo hash; la entrada quedó ubicada según el hash viejo.
+- Iterar el mapa puede mostrar la entrada, pero el acceso por clave está roto.
+
+**Ejecución y salida real**
+
 ```bash
-javac -d out $(find src -name '*.java')
-java -cp out Demo
+javac ClaveMutable.java DemoMapaPerdido.java
+java DemoMapaPerdido
 ```
 
 ```text
-get tras mutar = null
-tamano = 1
-valor sigue dentro = true
-entradas = [ClaveMutable[A-2]=valor]
-record get = valor
+Antes: Pedido-Ada
+Después get(clave): null
+Después get(new A1): null
+Contenido real: {ClaveMutable{codigo='B2'}=Pedido-Ada}
 ```
 
-</details>
+**Errores comunes y cómo resolverlos**
 
-### Tema 4: Genéricos, wildcards y type erasure · Avanzado · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por genéricos, wildcards y type erasure con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender genéricos, wildcards y type erasure te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en genéricos, wildcards y type erasure como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que genéricos, wildcards y type erasure resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Genéricos, wildcards y type erasure se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| `get` devuelve `null` pero el elemento aparece al iterar | Mutaste una clave usada en hash | No mutes campos de identidad; usa claves inmutables |
+| Duplicados o pérdidas en `HashSet` | Mutaste el objeto tras insertarlo | Elimina, modifica fuera de la estructura, vuelve a insertar |
+| Usas entidad JPA mutable como clave | Identidad/ciclo de vida complejo | Prefiere ID inmutable o clave de negocio estable |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Genéricos, wildcards y type erasure | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses genéricos, wildcards y type erasure por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: genéricos, wildcards y type erasure funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Genéricos, wildcards y type erasure existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve genéricos, wildcards y type erasure en tu contexto?
-2. ¿Cómo sabrías que genéricos, wildcards y type erasure no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar genéricos, wildcards y type erasure?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-final class Caja<T> {
-    private final T contenido;
-
-    Caja(T contenido) { this.contenido = contenido; }
-
-    T obtener() { return contenido; }
-}
-
-public class GenericosDemo {
-    public static void main(String[] args) {
-        Caja<String> guia = new Caja<>("RF-401");
-        Caja<Integer> peso = new Caja<>(12);
-        System.out.println(guia.obtener());
-        System.out.println(peso.obtener() + " kg");
-    }
-}
-```
+**Verificación rápida**
 
 ```bash
-mkdir -p out
-javac -d out src/GenericosDemo.java
-java -cp out GenericosDemo
+javac ClaveMutable.java DemoMapaPerdido.java && java DemoMapaPerdido
 ```
 
-```java
-import java.util.List;
+La corrección de diseño es hacer `codigo` `final` y eliminar el setter. Si la clave debe cambiar, usa otro objeto clave.
 
-public class GenericosDemo {
-    static double sumarPesos(List<? extends Number> pesos) {
+### Tema 4: Genéricos, wildcards y type erasure · Intermedio · 45 min
+
+**Caso guía**
+
+Quieres una caja que almacene un valor de cualquier tipo sin perder seguridad en compilación. También quieres un método que pueda imprimir una lista de números, ya sean `Integer` o `Double`. Los genéricos resuelven esto sin caer en `Object` y casts por todas partes.
+
+**Concepto clave / modelo mental**
+
+- **Genérico**: parametriza tipos (`Caja<T>`). El compilador verifica el tipo.
+- **Wildcard `? extends T`**: acepta `T` o subtipos. Útil para leer (productor).
+- **Wildcard `? super T`**: acepta `T` o supertipos. Útil para escribir (consumidor).
+- **Type erasure**: en runtime, los genéricos se borran en gran parte. `List<String>` y `List<Integer>` son `List` en bytecode; la seguridad se aplica principalmente en compilación.
+
+**Implementación desde cero**
+
+Crea `Caja.java`:
+
+```java
+public class Caja<T> {
+    private T valor;
+
+    public Caja(T valor) {
+        this.valor = valor;
+    }
+
+    public T getValor() { return valor; }
+    public void setValor(T valor) { this.valor = valor; }
+}
+```
+
+Crea `DemoGenericos.java`:
+
+```java
+import java.util.*;
+
+public class DemoGenericos {
+    public static void main(String[] args) {
+        Caja<String> texto = new Caja<>("Hola");
+        Caja<Integer> numero = new Caja<>(42);
+        System.out.println(texto.getValor());
+        System.out.println(numero.getValor());
+
+        List<Integer> enteros = List.of(1, 2, 3);
+        List<Double> decimales = List.of(1.5, 2.5);
+        System.out.println(suma(enteros));
+        System.out.println(suma(decimales));
+
+        List<Number> destino = new ArrayList<>();
+        agregarUnoADiez(destino);
+        System.out.println(destino);
+    }
+
+    static double suma(List<? extends Number> numeros) {
         double total = 0;
-        for (Number peso : pesos) {
-            total += peso.doubleValue();
+        for (Number n : numeros) {
+            total += n.doubleValue();
         }
         return total;
     }
 
-    public static void main(String[] args) {
-        System.out.println(sumarPesos(List.of(2, 3, 4)));
-        System.out.println(sumarPesos(List.of(1.5, 2.5)));
+    static void agregarUnoADiez(List<? super Integer> destino) {
+        for (int i = 1; i <= 3; i++) {
+            destino.add(i);
+        }
     }
 }
 ```
 
-```java
-import java.util.ArrayList;
-import java.util.List;
+**Desglose del código**
 
-public class GenericosDemo {
-    static void agregarCodigos(List<? super Integer> destino) {
-        destino.add(401);
-        destino.add(402);
-    }
+- `Caja<T>` permite reutilizar la misma clase con tipos distintos, manteniendo chequeo en compilación.
+- `List<? extends Number>` acepta listas de `Integer`, `Double`, etc. Puedes leer elementos como `Number`, pero no puedes agregar cualquier `Number` porque el tipo concreto exacto es desconocido.
+- `List<? super Integer>` acepta `List<Integer>`, `List<Number>` o `List<Object>`. Puedes agregar `Integer`, pero al leer obtienes `Object`.
+- El borrado de tipos explica por qué no puedes hacer `new T()` o `instanceof List<String>` directamente.
 
-    public static void main(String[] args) {
-        List<Integer> codigos = new ArrayList<>();
-        List<Number> numeros = new ArrayList<>();
-        agregarCodigos(codigos);
-        agregarCodigos(numeros);
-        System.out.println(codigos);
-        System.out.println(numeros);
-    }
-}
-```
-
-```java
-final class Caja<T> {
-    private final T contenido;
-    Caja(T contenido) { this.contenido = contenido; }
-    T obtener() { return contenido; }
-}
-
-public class GenericosDemo {
-    public static void main(String[] args) {
-        Caja<String> texto = new Caja<>("RF-401");
-        Caja<Integer> numero = new Caja<>(401);
-        System.out.println(texto.getClass() == numero.getClass());
-        System.out.println(texto.obtener().getClass().getSimpleName());
-        System.out.println(numero.obtener().getClass().getSimpleName());
-    }
-}
-```
-
-```java
-Caja sinTipo = numero;
-Caja<String> contaminada = sinTipo;
-System.out.println(contaminada.obtener().length());
-```
-
-</details>
-
-### Tema 5: Comparable vs Comparator, e iteración · Avanzado · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por comparable vs comparator, e iteración con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender comparable vs comparator, e iteración te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en comparable vs comparator, e iteración como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que comparable vs comparator, e iteración resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Comparable vs Comparator, e iteración se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Comparable vs Comparator, e iteración | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses comparable vs comparator, e iteración por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: comparable vs comparator, e iteración funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Comparable vs Comparator, e iteración existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve comparable vs comparator, e iteración en tu contexto?
-2. ¿Cómo sabrías que comparable vs comparator, e iteración no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar comparable vs comparator, e iteración?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.TreeSet;
-
-class Guia implements Comparable<Guia> {
-    private final String codigo;
-
-    Guia(String codigo) { this.codigo = codigo; }
-    String codigo() { return codigo; }
-
-    @Override
-    public int compareTo(Guia otra) {
-        return codigo.compareTo(otra.codigo);
-    }
-
-    @Override
-    public String toString() { return codigo; }
-}
-
-public class OrdenDemo {
-    public static void main(String[] args) {
-        List<Guia> guias = new ArrayList<>(List.of(
-            new Guia("RF-103"), new Guia("RF-101"), new Guia("RF-102")));
-        Collections.sort(guias);
-        System.out.println(guias);
-        TreeSet<Guia> unicasPorCodigo = new TreeSet<>(guias);
-        System.out.println("agrega mismo codigo=" + unicasPorCodigo.add(new Guia("RF-101")));
-        System.out.println("codigos distintos=" + unicasPorCodigo.size());
-    }
-}
-```
+**Ejecución y salida real**
 
 ```bash
-mkdir -p out
-javac -d out src/OrdenDemo.java
-java -cp out OrdenDemo
+javac Caja.java DemoGenericos.java
+java DemoGenericos
 ```
 
+```text
+Hola
+42
+6.0
+4.0
+[1, 2, 3]
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `incompatible types` al leer de `List<? super Integer>` | El compilador solo garantiza `Object` | Usa `? extends` para leer tipos específicos |
+| No puedes agregar a `List<? extends Number>` | No se conoce el subtipo concreto | Usa `? super` si necesitas escribir |
+| Uso excesivo de `List<Object>` y casts | Perdiste seguridad de tipos | Introduce genéricos en la API |
+
+**Verificación rápida**
+
+```bash
+javac Caja.java DemoGenericos.java && java DemoGenericos
+```
+
+Intenta agregar un `Double` a `List<? extends Number>` dentro de `suma`: el compilador debe rechazarlo. Ese error es el genérico protegiéndote.
+
+### Tema 5: Comparable vs Comparator, e iteración · Intermedio · 40 min
+
+**Caso guía**
+
+Tienes personas que normalmente se ordenan por edad, pero en una pantalla quieres ordenarlas por nombre. No puedes tener un solo “orden natural” para todos los casos. Necesitas separar el orden natural del orden contextual.
+
+**Concepto clave / modelo mental**
+
+| Interfaz | Dónde se implementa | Propósito | Ejemplo |
+|---|---|---|---|
+| `Comparable<T>` | Dentro de la clase | Orden natural | Persona por edad |
+| `Comparator<T>` | Clase/objeto externo | Orden alternativo | Persona por nombre |
+
+- `compareTo` devuelve negativo, cero o positivo.
+- `Comparator.comparing(...)` crea comparadores legibles.
+- Iteración: `for-each`, `Iterator`, `forEach`. Usa `Iterator.remove()` si necesitas eliminar mientras iteras.
+
+**Implementación desde cero**
+
+Crea `Persona.java`:
+
 ```java
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+public class Persona implements Comparable<Persona> {
+    private final String nombre;
+    private final int edad;
 
-class Guia {
-    private final String codigo;
-    private final String destino;
-
-    Guia(String codigo, String destino) {
-        this.codigo = codigo;
-        this.destino = destino;
+    public Persona(String nombre, int edad) {
+        this.nombre = nombre;
+        this.edad = edad;
     }
 
-    String codigo() { return codigo; }
-    String destino() { return destino; }
+    public String getNombre() { return nombre; }
+    public int getEdad() { return edad; }
+
+    @Override
+    public int compareTo(Persona otra) {
+        return Integer.compare(this.edad, otra.edad);
+    }
 
     @Override
     public String toString() {
-        return "Guia[codigo=" + codigo + ", destino=" + destino + "]";
+        return nombre + "(" + edad + ")";
     }
 }
+```
 
-class PorDestinoYCodigo implements Comparator<Guia> {
+Crea `DemoOrden.java`:
+
+```java
+import java.util.*;
+
+public class DemoOrden {
+    public static void main(String[] args) {
+        List<Persona> personas = new ArrayList<>(List.of(
+            new Persona("Linus", 55),
+            new Persona("Ada", 36),
+            new Persona("Grace", 85)
+        ));
+
+        Collections.sort(personas);
+        System.out.println("Por edad: " + personas);
+
+        personas.sort(Comparator.comparing(Persona::getNombre));
+        System.out.println("Por nombre: " + personas);
+
+        Map<String, Integer> stock = new HashMap<>();
+        stock.put("A", 2);
+        stock.put("B", 3);
+        for (Map.Entry<String, Integer> entry : stock.entrySet()) {
+            System.out.println(entry.getKey() + "=" + entry.getValue());
+        }
+    }
+}
+```
+
+**Desglose del código**
+
+- `Comparable` define el orden natural en la propia clase.
+- `Collections.sort(personas)` usa `compareTo`.
+- `personas.sort(Comparator.comparing(Persona::getNombre))` aplica un orden alternativo sin modificar la clase.
+- `entrySet()` es la forma eficiente de recorrer clave y valor en un `Map`.
+
+**Ejecución y salida real**
+
+```bash
+javac Persona.java DemoOrden.java
+java DemoOrden
+```
+
+Salida (el orden del último `Map` puede variar):
+
+```text
+Por edad: [Ada(36), Linus(55), Grace(85)]
+Por nombre: [Ada(36), Grace(85), Linus(55)]
+A=2
+B=3
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `ClassCastException` al ordenar | Elementos no comparables y sin `Comparator` | Implementa `Comparable` o pasa `Comparator` |
+| Orden inconsistente con `equals` | `compareTo` contradice la identidad lógica | Diseña coherencia entre comparación e igualdad |
+| `ConcurrentModificationException` al eliminar en for-each | Modificaste la colección durante la iteración | Usa `Iterator.remove()` |
+
+**Verificación rápida**
+
+```bash
+javac Persona.java DemoOrden.java && java DemoOrden
+```
+
+Agrega `.reversed()` al comparador por nombre y confirma que el orden se invierte.
+
+### Tema 6: Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue · Intermedio · 40 min
+
+**Caso guía**
+
+En un sistema de atención, algunos tickets entran por orden normal y otros por prioridad. Además, necesitas deshacer la última acción. Una lista sola puede hacerlo, pero una cola/pila expresa mejor la intención y evita errores.
+
+**Concepto clave / modelo mental**
+
+| Estructura | Comportamiento | Implementación típica | Uso |
+|---|---|---|---|
+| Cola (`Queue`) | FIFO: primero en entrar, primero en salir | `ArrayDeque`, `LinkedList` | Tareas en orden |
+| Pila (`Deque` como stack) | LIFO: último en entrar, primero en salir | `ArrayDeque` | Deshacer/retroceso |
+| Cola de prioridad | Sale el elemento “más importante” | `PriorityQueue` | Tickets urgentes, scheduling |
+
+`ArrayDeque` es generalmente preferible a `Stack` y suele ser mejor que `LinkedList` para pila/cola.
+
+**Implementación desde cero**
+
+Crea `ColasYPilas.java`:
+
+```java
+import java.util.*;
+
+public class ColasYPilas {
+    public static void main(String[] args) {
+        Queue<String> cola = new ArrayDeque<>();
+        cola.add("ticket-1");
+        cola.add("ticket-2");
+        cola.add("ticket-3");
+        System.out.println("Atiendo: " + cola.poll());
+        System.out.println("Siguiente: " + cola.peek());
+        System.out.println("Cola: " + cola);
+
+        Deque<String> pila = new ArrayDeque<>();
+        pila.push("editar");
+        pila.push("borrar");
+        pila.push("mover");
+        System.out.println("Deshacer: " + pila.pop());
+        System.out.println("Pila: " + pila);
+
+        PriorityQueue<Integer> prioridad = new PriorityQueue<>();
+        prioridad.add(5);
+        prioridad.add(1);
+        prioridad.add(3);
+        System.out.println("Prioridad poll: " + prioridad.poll());
+        System.out.println("Prioridad poll: " + prioridad.poll());
+        System.out.println("Prioridad restante: " + prioridad);
+    }
+}
+```
+
+**Desglose del código**
+
+- `Queue` con `add/poll/peek`: inserta, extrae cabeza, inspecciona cabeza.
+- `Deque` como pila con `push/pop`: LIFO.
+- `PriorityQueue` no garantiza orden al iterar; garantiza que `poll()` entrega el menor elemento según el orden natural o comparador.
+- `poll()` devuelve `null` si la estructura está vacía; `remove/pop` pueden lanzar excepción según el caso.
+
+**Ejecución y salida real**
+
+```bash
+javac ColasYPilas.java
+java ColasYPilas
+```
+
+```text
+Atiendo: ticket-1
+Siguiente: ticket-2
+Cola: [ticket-2, ticket-3]
+Deshacer: mover
+Pila: [borrar, editar]
+Prioridad poll: 1
+Prioridad poll: 3
+Prioridad restante: [5]
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `PriorityQueue` parece desordenada al imprimir | Iterar no respeta prioridad | Usa `poll()` en bucle para extraer en orden |
+| `NoSuchElementException` en pila/cola vacía | Usaste `pop/remove` sin verificar | Usa `poll()` o comprueba `isEmpty()` |
+| Usas `Stack` por costumbre | API antigua y sincronizada | Prefiere `ArrayDeque` |
+
+**Verificación rápida**
+
+```bash
+javac ColasYPilas.java && java ColasYPilas
+```
+
+Extrae todos los elementos de `PriorityQueue` con `while (!prioridad.isEmpty()) System.out.println(prioridad.poll());` para ver el orden real.
+
+## Cierre del módulo
+
+Ya sabes elegir la colección según el problema, implementar identidad lógica con `equals/hashCode`, evitar claves mutables en mapas, usar genéricos para seguridad de tipos y aplicar colas/pilas/prioridades. El siguiente módulo trata un problema transversal: qué hacer cuando algo falla, cómo modelar errores y cómo liberar recursos correctamente.
+
+### Tema 7: Incremento del proyecto: preparar guías asignables · Intermedio · 25 min
+
+**Caso guía**
+
+En el proyecto integrador de la ruta Java, las guías llegan con datos sueltos y necesitas guardarlas, evitar duplicados por ID y consultarlas rápido por código. Este incremento conecta colecciones con un dominio pequeño y real.
+
+**Concepto clave / modelo mental**
+
+- Usa `List` cuando el orden de llegada importa.
+- Usa `Set` o un `Map` con clave por ID cuando la identidad debe ser única.
+- Encapsula la colección dentro de una clase de repositorio; no expongas la lista mutable directamente.
+
+**Implementación desde cero**
+
+Crea `Guia.java`:
+
+```java
+import java.util.Objects;
+
+public class Guia {
+    private final String id;
+    private final String destino;
+
+    public Guia(String id, String destino) {
+        if (id == null || id.isBlank()) throw new IllegalArgumentException("id obligatorio");
+        this.id = id;
+        this.destino = destino;
+    }
+
+    public String getId() { return id; }
+    public String getDestino() { return destino; }
+
     @Override
-    public int compare(Guia primera, Guia segunda) {
-        int destino = primera.destino().compareTo(segunda.destino());
-        if (destino != 0) return destino;
-        return primera.codigo().compareTo(segunda.codigo());
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Guia guia)) return false;
+        return Objects.equals(id, guia.id);
     }
-}
 
-public class OrdenDemo {
-    public static void main(String[] args) {
-        List<Guia> guias = new ArrayList<>(List.of(
-            new Guia("RF-103", "Cali"),
-            new Guia("RF-101", "Bogota"),
-            new Guia("RF-102", "Bogota")));
+    @Override
+    public int hashCode() { return Objects.hash(id); }
 
-        guias.sort(new PorDestinoYCodigo());
-        for (Guia guia : guias) {
-            System.out.println(guia);
-        }
-    }
+    @Override
+    public String toString() { return "Guia{id='" + id + "', destino='" + destino + "'}"; }
 }
 ```
+
+Crea `RepositorioGuias.java`:
 
 ```java
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
-public class OrdenDemo {
-    public static void main(String[] args) {
-        Map<String, String> estados = new LinkedHashMap<>();
-        estados.put("RF-101", new String("ENTREGADA"));
-        estados.put("RF-102", "EN_RUTA");
+public class RepositorioGuias {
+    private final Map<String, Guia> porId = new LinkedHashMap<>();
 
-        Iterator<Map.Entry<String, String>> iterador =
-            estados.entrySet().iterator();
-        while (iterador.hasNext()) {
-            Map.Entry<String, String> entrada = iterador.next();
-            if (entrada.getValue().equals("ENTREGADA")) {
-                iterador.remove();
-            }
+    public void agregar(Guia guia) {
+        if (porId.containsKey(guia.getId())) {
+            throw new IllegalArgumentException("ID duplicado: " + guia.getId());
         }
+        porId.put(guia.getId(), guia);
+    }
 
-        for (Map.Entry<String, String> entrada : estados.entrySet()) {
-            System.out.println(entrada.getKey() + "=" + entrada.getValue());
-        }
+    public Optional<Guia> buscar(String id) {
+        return Optional.ofNullable(porId.get(id));
+    }
+
+    public List<Guia> todas() {
+        return List.copyOf(porId.values());
     }
 }
 ```
+
+**Desglose del código**
+
+- `equals/hashCode` por `id` definen la identidad de la guía.
+- `LinkedHashMap` conserva orden de inserción y da búsqueda por clave.
+- `Optional` evita devolver `null` al buscar.
+- `List.copyOf` expone una vista inmutable hacia afuera.
+
+**Ejecución y salida real**
+
+```java
+public class DemoRepoGuias {
+    public static void main(String[] args) {
+        RepositorioGuias repo = new RepositorioGuias();
+        repo.agregar(new Guia("G-1", "Madrid"));
+        repo.agregar(new Guia("G-2", "Bogotá"));
+        System.out.println(repo.buscar("G-1").orElseThrow());
+        System.out.println(repo.todas().size());
+    }
+}
+```
+
+```text
+Guia{id='G-1', destino='Madrid'}
+2
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Duplicados con mismo ID | Usaste `List` sin validar | Usa `Map` por ID o valida existencia |
+| Código externo modifica la colección interna | Expones la colección mutable | Devuelve copia inmutable o vista no modificable |
+| `NullPointerException` al buscar | Devuelves `null` | Usa `Optional` o documenta contrato |
+
+**Verificación rápida**
 
 ```bash
-javac -d out src/OrdenDemo.java
-java -cp out OrdenDemo
+javac Guia.java RepositorioGuias.java DemoRepoGuias.java
+java DemoRepoGuias
 ```
 
-</details>
-
-### Tema 6: Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue` · Avanzado · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue` existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` en tu contexto?
-2. ¿Cómo sabrías que colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue` no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar colas y pilas: `queue`, `deque`, `arraydeque` y `priorityqueue`?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-import java.util.ArrayDeque;
-import java.util.Queue;
-
-public class ColaDeParadas {
-    public static void main(String[] args) {
-        Queue<String> paradas = new ArrayDeque<>();
-        paradas.offer("Bodega");
-        paradas.offer("Laureles");
-        paradas.offer("Envigado");
-
-        System.out.println("Siguiente: " + paradas.peek());
-        while (!paradas.isEmpty()) {
-            System.out.println("Visitando " + paradas.poll());
-        }
-        System.out.println("poll en cola vacia: " + paradas.poll());
-        System.out.println("remove en cola vacia:");
-        paradas.remove();
-    }
-}
-```
-
-```text
-Siguiente: Bodega
-Visitando Bodega
-Visitando Laureles
-Visitando Envigado
-poll en cola vacia: null
-remove en cola vacia:
-Exception in thread "main" java.util.NoSuchElementException
-```
-
-```java
-import java.util.ArrayDeque;
-import java.util.Deque;
-
-public class PilaDeCambios {
-    public static void main(String[] args) {
-        Deque<String> cambios = new ArrayDeque<>();
-        cambios.push("asignar conductor");
-        cambios.push("cambiar destino");
-        cambios.push("marcar urgente");
-
-        System.out.println("Ultimo cambio: " + cambios.peek());
-        System.out.println("Deshacer: " + cambios.pop());
-        System.out.println("Deshacer: " + cambios.pop());
-        System.out.println("Quedan: " + cambios);
-
-        cambios.offerLast("auditar al final");
-        System.out.println("Primero: " + cambios.peekFirst() + " | Ultimo: " + cambios.peekLast());
-    }
-}
-```
-
-```text
-Ultimo cambio: marcar urgente
-Deshacer: marcar urgente
-Deshacer: cambiar destino
-Quedan: [asignar conductor]
-Primero: asignar conductor | Ultimo: auditar al final
-```
-
-```java
-import java.util.Comparator;
-import java.util.PriorityQueue;
-
-public class PrioridadDeEnvios {
-    record Envio(String guia, int prioridad) {}
-
-    public static void main(String[] args) {
-        PriorityQueue<Envio> porAtender = new PriorityQueue<>(
-                Comparator.comparingInt(Envio::prioridad).thenComparing(Envio::guia));
-        porAtender.add(new Envio("RF-3", 2));
-        porAtender.add(new Envio("RF-1", 1));
-        porAtender.add(new Envio("RF-9", 3));
-        porAtender.add(new Envio("RF-2", 1));
-
-        System.out.println("Vista interna: " + porAtender);
-        while (!porAtender.isEmpty()) {
-            System.out.println("Atender " + porAtender.poll());
-        }
-    }
-}
-```
-
-```text
-Vista interna: [Envio[guia=RF-1, prioridad=1], Envio[guia=RF-2, prioridad=1], Envio[guia=RF-9, prioridad=3], Envio[guia=RF-3, prioridad=2]]
-Atender Envio[guia=RF-1, prioridad=1]
-Atender Envio[guia=RF-2, prioridad=1]
-Atender Envio[guia=RF-3, prioridad=2]
-Atender Envio[guia=RF-9, prioridad=3]
-```
-
-</details>
-
-### Incremento del proyecto: preparar guías asignables
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por incremento del proyecto: preparar guías asignables con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender incremento del proyecto: preparar guías asignables te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en incremento del proyecto: preparar guías asignables como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que incremento del proyecto: preparar guías asignables resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Incremento del proyecto: preparar guías asignables se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Incremento del proyecto: preparar guías asignables | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses incremento del proyecto: preparar guías asignables por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: incremento del proyecto: preparar guías asignables funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Incremento del proyecto: preparar guías asignables existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve incremento del proyecto: preparar guías asignables en tu contexto?
-2. ¿Cómo sabrías que incremento del proyecto: preparar guías asignables no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar incremento del proyecto: preparar guías asignables?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import modelo.Guia;
-
-public class MotorAsignacion {
-    static class PorNumero implements Comparator<Guia> {
-        @Override
-        public int compare(Guia primera, Guia segunda) {
-            return primera.numero().compareTo(segunda.numero());
-        }
-    }
-
-    public static void main(String[] args) {
-        List<Guia> recibidas = List.of(
-            new Guia("RF-103"), new Guia("RF-101"),
-            new Guia("RF-102"), new Guia("RF-101"));
-        Map<String, Guia> unicas = new LinkedHashMap<>();
-        Set<String> duplicadas = new LinkedHashSet<>();
-
-        for (Guia guia : recibidas) {
-            if (unicas.containsKey(guia.numero())) {
-                duplicadas.add(guia.numero());
-            } else {
-                unicas.put(guia.numero(), guia);
-            }
-        }
-
-        Iterator<Map.Entry<String, Guia>> iterador =
-            unicas.entrySet().iterator();
-        while (iterador.hasNext()) {
-            if (iterador.next().getKey().equals("RF-103")) {
-                iterador.remove(); // cancelación conocida antes de asignar
-            }
-        }
-
-        List<Guia> asignables = new ArrayList<>(unicas.values());
-        asignables.sort(new PorNumero());
-        System.out.println("duplicadas=" + duplicadas);
-        for (Guia guia : asignables) {
-            System.out.println("asignable=" + guia.numero());
-        }
-    }
-}
-```
-
-```bash
-mkdir -p out
-javac -d out src/modelo/Guia.java src/MotorAsignacion.java
-java -cp out MotorAsignacion
-```
-
-</details>
+Prueba agregar dos guías con el mismo ID: debe lanzar `IllegalArgumentException`.
