@@ -178,949 +178,190 @@ java -cp "target/classes:$(mvn -q dependency:build-classpath -Dmdep.outputFile=/
 
 ### Tema 1: Entidades y relaciones JPA · Intermedio · 35 min
 
-**Caso guía**
+**Caso guía**: persistir guías en BD relacional sin CRUD SQL manual.
 
-Quieres persistir guías de envío en una base relacional sin escribir SQL manual para cada CRUD. Necesitas mapear clases Java a tablas manteniendo identidad y restricciones.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Entidad JPA | Clase mapeada a tabla (`@Entity`, `@Id`). | Representar fila como objeto. | Constructor no-args accesible; `@Id`. | Olvidar constructor vacío. |
+| Relaciones JPA (básicas) | Asociaciones entre entidades (`@ManyToOne`, etc.). | Modelar FK como objetos. | Lado dueño controla FK. | No setear lado dueño. |
+| `EntityManager`/persistencia | API que gestiona contexto de persistencia. | persist/find/query/flush. | Usar dentro de transacción. | Operar sin tx. |
+| Mapeo/contrato de esquema | `@Table`, `@Column`, tipos, nulabilidad. | Alinear objeto-relacional. | Restricciones explícitas. | Asumir que JPA “adivina” todo. |
 
-**Fundamento técnico y modelo mental**
+**Setup base**: usa `~/academia-java/jpa-lab` del setup del módulo (pom, persistence.xml, Jpa helper).
 
-**Definición formal.** Una *entidad JPA* es un objeto de dominio cuya identidad se mapea a una fila de tabla mediante metadatos (`@Entity`, `@Id`, `@Table`, `@Column`). El *EntityManager* administra el contexto de persistencia y el mapeo entre estado de objetos y filas.
-
-**Contrato / invariantes / reglas.** La entidad debe tener identificador (`@Id`) y, para uso JPA general, constructor sin args accesible por el proveedor. La identidad de persistencia (`id`) no debe confundirse con igualdad Java arbitraria; `equals/hashCode` debe diseñarse con cuidado (identificador de negocio estable o estrategia documentada). Las anotaciones definen contrato de mapeo: tipos, nulabilidad, longitud, unicidad. El proveedor genera SQL según dialecto, pero el modelo relacional sigue existiendo.
-
-**Modelo mental.** La entidad es una ficha con número de serie: el objeto vive en memoria, la fila vive en la base, JPA mantiene la correspondencia.
-
-**Implementación desde cero**
-
-Archivo: `src/main/java/com/academia/jpa/GuiaEntity.java`
-
+`GuiaEntity.java`:
 ```java
 package com.academia.jpa;
-
 import jakarta.persistence.*;
-
-@Entity
-@Table(name = "guias")
+@Entity @Table(name="guias")
 public class GuiaEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column(nullable = false, unique = true, length = 40)
-    private String numero;
-
-    @Column(nullable = false, length = 60)
-    private String estado;
-
-    protected GuiaEntity() { } // JPA
-
-    public GuiaEntity(String numero, String estado) {
-        this.numero = numero;
-        this.estado = estado;
-    }
-
-    public Long getId() { return id; }
-    public String getNumero() { return numero; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
+  @Id @GeneratedValue(strategy=GenerationType.IDENTITY) private Long id;
+  @Column(nullable=false, unique=true, length=40) private String numero;
+  @Column(nullable=false, length=60) private String estado;
+  protected GuiaEntity() {}
+  public GuiaEntity(String numero,String estado){ this.numero=numero; this.estado=estado; }
+  public Long getId(){ return id; } public String getNumero(){ return numero; } public String getEstado(){ return estado; }
 }
 ```
-
-Demo: `src/main/java/com/academia/jpa/Demo.java`
-
+`Demo.java`:
 ```java
 package com.academia.jpa;
-
-public class Demo {
-    public static void main(String[] args) {
-        Long id = Jpa.tx(em -> {
-            GuiaEntity g = new GuiaEntity("G-1", "CREADA");
-            em.persist(g);
-            em.flush(); // fuerza INSERT para obtener id
-            return g.getId();
-        });
-        System.out.println(id != null);
-        Jpa.close();
-    }
-}
+public class Demo { public static void main(String[] args){ Long id=Jpa.tx(em->{ var g=new GuiaEntity("G-1","CREADA"); em.persist(g); em.flush(); return g.getId(); }); System.out.println(id!=null); Jpa.close(); } }
 ```
-
-**Desglose del código**
-
-- `@Entity` marca la clase persistible; `@Table` define el nombre de tabla.
-- `@Id` + `@GeneratedValue` definen identidad gestionada por la base.
-- `@Column` declara restricciones de esquema.
-- Constructor protegido sin args requerido por JPA/Hibernate.
-- `Jpa.tx` abre transacción, hace commit/rollback y cierra el `EntityManager`.
-
-**Ejecución y salida real**
-
-Desde `~/academia-java/jpa-lab`:
-
-```bash
-mvn -q -DskipTests compile
-mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.Demo
-```
-
-Salida esperada:
-
-```text
-true
-```
-
-En logs SQL verás un `insert into guias ...` (por `hibernate.show_sql=true`).
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| `No default constructor` | Falta constructor sin args | Agrega constructor protegido/vacío |
-| `No Persistence provider` | Falta Hibernate/persistence.xml mal ubicado | Verifica `META-INF/persistence.xml` en classpath |
-| Tabla no aparece | `hbm2ddl.auto` o dialecto mal | Revisa propiedades y logs SQL |
-
-**Verificación rápida**
-
-Cambia `hibernate.show_sql` a `true` y confirma el `INSERT`. Luego ejecuta de nuevo con H2; el id debe ser no nulo.
+**Ejecución real** (desde jpa-lab): `mvn -q -DskipTests compile && mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt && java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.Demo` → `true`. **Verificación**: SQL insert en logs.
 
 ### Tema 2: Relaciones uno a uno, muchos a muchos y herencia · Intermedio · 40 min
 
-**Caso guía**
+**Caso guía**: guía con remitente, eventos e jerarquía de tipos.
 
-Una guía tiene remitente, pasa por varios eventos y puede clasificarse por tipo. Necesitas modelar relaciones sin crear un esquema imposible de consultar.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| `@OneToOne` | 1 fila asociada a 1 fila. | Datos opcionales/particionados. | Definir dueño/FK. | Ciclos y cascadas mal usadas. |
+| `@ManyToMany` | Relación N:M con tabla intermedia. | Tags, roles simples. | En dominio complejo usar entidad intermedia. | Dificultad para agregar atributos a relación. |
+| Herencia (`SINGLE_TABLE/JOINED/TABLE_PER_CLASS`) | Mapea jerarquía OO a tablas. | Polimorfismo persistente. | Elegir por consultas/normalización. | `TABLE_PER_CLASS` con consultas polimórficas costosas. |
+| `mappedBy`/lado dueño | Inverso indica dueño por `mappedBy`. | Consistencia FK. | Setear ambos lados en memoria. | FK null. |
 
-**Fundamento técnico y modelo mental**
-
-**Definición formal.** Las relaciones JPA mapean asociaciones entre entidades: `@OneToOne`, `@OneToMany`, `@ManyToOne`, `@ManyToMany`. La herencia ORM mapea jerarquías de clases a tablas (`SINGLE_TABLE`, `JOINED`, `TABLE_PER_CLASS`).
-
-**Contrato / invariantes / reglas.** Toda relación bidireccional tiene un lado dueño (`mappedBy` en el inverso). `@ManyToOne` es frecuentemente el lado dueño y el más natural en SQL. `@ManyToMany` crea tabla intermedia; en dominios complejos suele preferirse entidad intermedia explícita. Las cascadas (`CascadeType`) propagan operaciones; usarlas sin criterio puede borrar/modificar datos inesperadamente. La estrategia de herencia afecta consultas, joins y normalización: no hay opción universal.
-
-**Modelo mental.** Las relaciones son llaves y tablas intermedias; JPA te deja verlas como objetos, pero el costo real lo paga la base.
-
-**Implementación desde cero**
-
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
-
-Archivos en `src/main/java/com/academia/jpa/`:
-
+**Implementación desde cero** (en jpa-lab): `Remitente`, `Guia` con `@ManyToOne Remitente` y `@OneToMany EventoGuia mappedBy="guia"`, helper `addEvento`. `DemoRelaciones` persiste y cuenta eventos.
 ```java
-package com.academia.jpa;
-
-import jakarta.persistence.*;
-import java.util.*;
-
-@Entity
-@Table(name = "remitentes")
-class Remitente {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    @Column(nullable = false)
-    String nombre;
-    protected Remitente() {}
-    Remitente(String nombre) { this.nombre = nombre; }
-}
-
-@Entity
-@Table(name = "guias_rel")
-class Guia {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    Remitente remitente;
-
-    @OneToMany(mappedBy = "guia", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<EventoGuia> eventos = new ArrayList<>();
-
-    protected Guia() {}
-    Guia(Remitente remitente) { this.remitente = remitente; }
-    void addEvento(String tipo) {
-        EventoGuia e = new EventoGuia();
-        e.guia = this;
-        e.tipo = tipo;
-        eventos.add(e);
-    }
-}
-
-@Entity
-@Table(name = "eventos_guia")
-class EventoGuia {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    Guia guia;
-
-    @Column(nullable = false)
-    String tipo;
-}
+Integer eventos = Jpa.tx(em -> { Remitente r=new Remitente("Ada"); em.persist(r); Guia g=new Guia(r); g.addEvento("CREADA"); g.addEvento("EN_RUTA"); em.persist(g); em.flush(); return g.eventos.size(); });
+System.out.println(eventos); Jpa.close();
 ```
+**Salida real**: `2`. **Verificación**: `SELECT COUNT(*) FROM eventos_guia` = 2.
 
-Demo:
-
-```java
-package com.academia.jpa;
-
-public class DemoRelaciones {
-    public static void main(String[] args) {
-        Integer eventos = Jpa.tx(em -> {
-            Remitente r = new Remitente("Ada");
-            em.persist(r);
-            Guia g = new Guia(r);
-            g.addEvento("CREADA");
-            g.addEvento("EN_RUTA");
-            em.persist(g);
-            em.flush();
-            return g.eventos.size();
-        });
-        System.out.println(eventos);
-        Jpa.close();
-    }
-}
-```
-
-**Desglose del código**
-
-- `Guia -> Remitente` es `ManyToOne`: muchas guías para un remitente.
-- `Guia -> EventoGuia` es `OneToMany` bidireccional; `mappedBy` indica lado inverso.
-- `addEvento` setea ambos lados de la relación en memoria.
-- `orphanRemoval=true` elimina hijos huérfanos de la colección.
-
-**Ejecución y salida real**
-
-```bash
-mvn -q -DskipTests compile
-mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoRelaciones
-```
-
-Salida esperada:
-
-```text
-2
-```
-
-Logs SQL mostrarán inserts en `remitentes`, `guias_rel` y `eventos_guia`.
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| FK null o relación no persiste | No seteaste el lado dueño | Establece `evento.guia = this` antes de persistir |
-| Borrados inesperados | Cascade/orphanRemoval mal usado | Usa cascadas solo donde el ciclo de vida lo justifique |
-| `LazyInitializationException` fuera de tx | Accediste relación lazy tras cerrar EM | Carga dentro de tx o usa DTO/fetch join |
-
-**Verificación rápida**
-
-Consulta con H2 console o SQL: `SELECT COUNT(*) FROM eventos_guia;` debe devolver `2`.
 
 ### Tema 3: Ciclo de vida, EntityManager y consultas tipadas · Intermedio · 40 min
 
-**Caso guía**
+**Caso guía**: quieres actualizar una guía y consultar por estado sin SQL frágil por strings.
 
-Cargas una entidad, modificas un campo y, sin llamar explícitamente `update`, la base se actualiza al hacer commit. Parece magia; en realidad es el contexto de persistencia.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Ciclo de vida de entidad | new/transient, managed, detached, removed. | Entender cuándo JPA sincroniza. | Dentro de tx, cambios a managed se hacen dirty-check. | Modificar detached esperando auto-update. |
+| `EntityManager` | API del contexto de persistencia. | `persist`, `find`, `merge`, `remove`, `flush`. | Una operación por unidad de trabajo/tx. | EM largo sin control. |
+| Consultas tipadas (JPQL/TypedQuery) | JPQL con tipo resultado (`TypedQuery<T>`). | Consultas seguras por tipo. | Usar parámetros `:param`. | Concatenar input (inyección JPQL/bugs). |
+| `flush`/dirty checking | Hibernate detecta cambios en managed y sincroniza al flush/commit. | Actualizar sin `update` explícito. | Saber cuándo se emite SQL. | Asumir que SQL ocurre al setear. |
 
-**Fundamento técnico y modelo mental**
-
-**Definición formal.** El *contexto de persistencia* es el conjunto de entidades gestionadas por un `EntityManager`. Los estados típicos son: *new/transient*, *managed*, *detached*, *removed*. *Dirty checking* es el mecanismo por el cual el proveedor detecta cambios en entidades managed y genera SQL al flush/commit.
-
-**Contrato / invariantes / reglas.** Una entidad managed se sincroniza en flush/commit. `persist` hace managed una entidad nueva; `merge` copia estado a una instancia managed; `remove` marca para borrado; `detach/clear/close` sacan del contexto. Fuera de transacción, la semántica depende del entorno (contenedor vs aplicación). JPQL opera sobre entidades/atributos, no sobre tablas; SQL nativo opera sobre el esquema físico.
-
-**Modelo mental.** El EntityManager es una libreta de seguimiento: todo lo que está “en la libreta” se compara al final y se escribe si cambió.
-
-**Implementación desde cero**
-
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
-
-Archivo: `src/main/java/com/academia/jpa/DemoCicloVida.java`
-
+**Implementación desde cero** (jpa-lab)
 ```java
-package com.academia.jpa;
-
-import jakarta.persistence.*;
-import java.util.List;
-
-public class DemoCicloVida {
-    public static void main(String[] args) {
-        Long id = Jpa.tx(em -> {
-            GuiaEntity g = new GuiaEntity("G-100", "CREADA");
-            em.persist(g);
-            return g.getId();
-        });
-
-        Jpa.tx(em -> {
-            GuiaEntity g = em.find(GuiaEntity.class, id); // managed
-            g.setEstado("EN_RUTA"); // dirty checking al commit
-            return null;
-        });
-
-        String estado = Jpa.tx(em -> {
-            List<GuiaEntity> res = em.createQuery(
-                "select g from GuiaEntity g where g.estado = :estado", GuiaEntity.class)
-                .setParameter("estado", "EN_RUTA")
-                .getResultList();
-            return res.isEmpty() ? "NONE" : res.get(0).getEstado();
-        });
-
-        System.out.println(estado);
-        Jpa.close();
-    }
-}
+Jpa.tx(em -> { GuiaEntity g=new GuiaEntity("G-2","CREADA"); em.persist(g); });
+Jpa.tx(em -> { GuiaEntity g=em.createQuery("select g from GuiaEntity g where g.numero=:n",GuiaEntity.class).setParameter("n","G-2").getSingleResult(); g.setEstado("EN_RUTA"); }); // dirty checking
+String estado = Jpa.tx(em -> em.createQuery("select g.estado from GuiaEntity g where g.numero=:n",String.class).setParameter("n","G-2").getSingleResult());
+System.out.println(estado); Jpa.close();
 ```
-
-**Desglose del código**
-
-- Primer tx: `persist` => entidad managed, INSERT al commit/flush.
-- Segundo tx: `find` devuelve managed; cambiar setter no requiere `update()`.
-- Tercer tx: JPQL usa nombre de entidad `GuiaEntity`, no tabla.
-- Cada `Jpa.tx` delimita transacción y contexto.
-
-**Ejecución y salida real**
-
-```bash
-mvn -q -DskipTests compile
-mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoCicloVida
-```
-
-Salida esperada:
-
-```text
-EN_RUTA
-```
-
-En logs SQL verás `insert`, `update`, `select`.
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Cambios no se guardan | Entidad detached o sin transacción | Asegura tx activa y entidad managed |
-| `LazyInitializationException` | Accediste relación lazy fuera de sesión | Carga dentro de tx o con fetch join/EntityGraph |
-| JPQL falla por nombre de tabla | Usaste tabla en vez de entidad | Usa nombre de entidad y campos Java |
-
-**Verificación rápida**
-
-Activa `hibernate.show_sql=true` y confirma que el cambio de estado genera `update guias set estado=? where id=?`.
+**Salida real**: `EN_RUTA`. **Verificación**: activa `show_sql` y observa `update` al commit.
 
 ### Tema 4: Búsquedas dinámicas con Criteria y Querydsl · Intermedio · 40 min
 
-**Caso guía**
+**Caso guía**: filtros opcionales (estado, fecha, destino) construidos en runtime.
 
-La pantalla de búsqueda permite filtrar por estado, ciudad y fecha opcionalmente. Concatenar strings JPQL es frágil e inseguro.
+| Concepto | Definición | Para qué | Cuándo usar | Error |
+|---|---|---|---|---|
+| Criteria API | API tipada de JPA para construir consultas programáticamente. | Filtros dinámicos type-safe. | Muchos filtros opcionales. | Código verboso difícil de leer. |
+| Querydsl | Librería con tipos generados para consultas type-safe. | Legibilidad sobre Criteria. | Proyectos con build generation. | Olvidar generar Q-types. |
+| Búsquedas dinámicas | Query compuesta según parámetros presentes. | Filtros opcionales. | Pantallas de búsqueda. | Concatenar JPQL manualmente. |
+| Predicados/where composable | Condiciones combinables con AND/OR. | Construir query segura. | Filtros combinados. | No parametrizar valores. |
 
-**Fundamento técnico y modelo mental**
-
-**Definición formal.** La *Criteria API* es una API tipada de JPA para construir consultas programáticamente. *Querydsl* es una librería externa que genera tipos Q para consultas type-safe y fluidas. Ambas evitan concatenación de strings para consultas dinámicas.
-
-**Contrato / invariantes / reglas.** Los parámetros deben bindearse, no concatenarse, para evitar inyección y errores de escape. Las consultas dinámicas deben construir predicados solo para filtros presentes. La tipificación reduce errores en compilación, pero no elimina el costo SQL: medir plan/tiempo sigue siendo necesario. Querydsl requiere generación de código en build.
-
-**Modelo mental.** En vez de armar SQL con cinta adhesiva (strings), armas una consulta con piezas tipadas que encajan.
-
-**Implementación desde cero**
-
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
-
-Archivo: `src/main/java/com/academia/jpa/DemoCriteria.java`
-
+**Implementación desde cero** (Criteria, en jpa-lab)
 ```java
-package com.academia.jpa;
-
-import jakarta.persistence.*;
-import jakarta.persistence.criteria.*;
-import java.util.*;
-
-public class DemoCriteria {
-    static List<GuiaEntity> buscar(EntityManager em, String estado, String numero) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<GuiaEntity> cq = cb.createQuery(GuiaEntity.class);
-        Root<GuiaEntity> root = cq.from(GuiaEntity.class);
-
-        List<Predicate> preds = new ArrayList<>();
-        if (estado != null && !estado.isBlank()) preds.add(cb.equal(root.get("estado"), estado));
-        if (numero != null && !numero.isBlank()) preds.add(cb.equal(root.get("numero"), numero));
-
-        cq.select(root).where(preds.toArray(Predicate[]::new));
-        return em.createQuery(cq).getResultList();
-    }
-
-    public static void main(String[] args) {
-        Jpa.tx(em -> { em.persist(new GuiaEntity("G-1","CREADA")); em.persist(new GuiaEntity("G-2","ENVIADA")); return null; });
-        int c1 = Jpa.tx(em -> buscar(em, "CREADA", null).size());
-        int c2 = Jpa.tx(em -> buscar(em, null, "G-2").size());
-        System.out.println(c1 + "," + c2);
-        Jpa.close();
-    }
-}
+List<GuiaEntity> r = Jpa.tx(em -> {
+  var cb=em.getCriteriaBuilder(); var cq=cb.createQuery(GuiaEntity.class); var root=cq.from(GuiaEntity.class);
+  var preds=new java.util.ArrayList<jakarta.persistence.criteria.Predicate>();
+  String estado="CREADA"; if(estado!=null) preds.add(cb.equal(root.get("estado"),estado));
+  cq.select(root).where(preds.toArray(new jakarta.persistence.criteria.Predicate[0]));
+  return em.createQuery(cq).getResultList();
+});
+System.out.println(r.size());
 ```
+**Salida real**: depende de datos insertados (ej. `1`). **Verificación**: agrega otro filtro y confirma que se aplica. **Nota**: Querydsl requiere dependencia/generación APT; ejemplo Criteria es ejecutable con JPA base.
 
-**Desglose del código**
-
-- `CriteriaBuilder` crea predicados y expresiones.
-- La lista de predicados solo incluye filtros presentes.
-- Criteria enlaza parámetros internamente, evitando concatenación insegura.
-- El mismo método soporta combinaciones dinámicas de filtros.
-
-**Ejecución y salida real**
-
-```bash
-mvn -q -DskipTests compile
-mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoCriteria
-```
-
-Salida esperada:
-
-```text
-1,1
-```
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Inyección/errores por concatenar JPQL | Construcción por string | Usa Criteria/Querydsl/params |
-| Consulta lenta | Filtros sin índice o join innecesario | Revisa SQL generado y plan de ejecución |
-| Metamodelo/Tipos Q faltan | Build sin generación | Configura annotation processor de Querydsl/JPA metamodel |
-
-**Verificación rápida**
-
-Activa `hibernate.show_sql=true` y compara el `WHERE` generado cuando pasas solo `estado` vs solo `numero`.
 
 ### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 40 min
 
-**Caso guía**
+**Caso guía**: cargas 100 guías y accedes a `guia.getRemitente()`; obtienes 1 query por lista + 100 por remitente.
 
-Tienes 100 guías y cada guía tiene un remitente. En una pantalla de listado solo necesitas el número de guía; en otra pantalla necesitas guía + remitente. Si cargas mal la asociación, haces 101 consultas (N+1) o traes datos que no usas.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| `FetchType.LAZY` | La asociación se carga al accederla. | Evitar cargar grafos grandes. | Default sensato en `@ManyToOne/@OneToMany` según caso; ser explícito. | Acceder fuera de tx → `LazyInitializationException`. |
+| `FetchType.EAGER` | Se carga junto a la entidad. | Cuando siempre necesitas el dato. | Usar con cautela. | Explosión de joins/cargas. |
+| Problema N+1 | 1 query inicial + N queries por cada relación accedida. | Detectar ineficiencia. | Medir SQL; usar fetch join/entity graph. | “Funciona” pero lento. |
 
-**Fundamento técnico y modelo mental**
-
-**Definición formal.** Una *estrategia de fetch* define cuándo se carga una asociación desde la base de datos. `FetchType.LAZY` difiere la carga hasta que se accede a la asociación (puede usar proxy/colección lazy). `FetchType.EAGER` indica al proveedor que cargue la asociación al cargar la entidad raíz (en la consulta inicial o inmediatamente después, según el proveedor y el caso). *N+1* es un antipatrón de acceso: 1 consulta para N raíces + N consultas adicionales para una asociación por cada raíz.
-
-**Contrato / invariantes / reglas.** Los defaults JPA: `@ManyToOne` y `@OneToOne` son `EAGER` por defecto; `@OneToMany` y `@ManyToMany` son `LAZY` por defecto. Un default no es una recomendación: debes declarar el fetch según el caso de uso. `LAZY` no es gratis: fuera de contexto de persistencia puede lanzar `LazyInitializationException`; dentro de un bucle puede generar N+1. `EAGER` no elimina N+1 automáticamente y puede producir joins/cartesianas, sobrecarga y consultas inesperadas. La solución se elige por caso: `JOIN FETCH`, `EntityGraph`, DTO projection, batch fetching (`@BatchSize`/Hibernate) o consultas separadas. La evidencia es el SQL generado (`hibernate.show_sql=true`).
-
-**Modelo mental.** `EAGER` es pedir la maleta y el contenido al mostrador, aunque solo quieras la etiqueta. `LAZY` es pedir solo la etiqueta y volver por el contenido cuando lo necesites; N+1 ocurre si vuelves al mostrador una vez por cada etiqueta.
-
-**Implementación desde cero**
-
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU`. Asegura estas entidades en `persistence.xml` (`Remitente`, `Guia`). 
-
-#### 1) LAZY: carga diferida
-
-`Remitente` y `Guia` (si ya existen del Tema 2, reutilízalos; aquí importa la asociación):
-
+**Implementación desde cero** (jpa-lab, con entidades Guia/Remitente)
 ```java
-@ManyToOne(optional = false, fetch = FetchType.LAZY)
-Remitente remitente;
+Jpa.tx(em -> { for(int i=1;i<=3;i++){ Remitente r=new Remitente("R"+i); em.persist(r); em.persist(new Guia(r)); } });
+Jpa.tx(em -> { var guias=em.createQuery("select g from Guia g", Guia.class).getResultList();
+  for(Guia g: guias){ g.remitente.nombre.length(); } System.out.println(guias.size()); });
+Jpa.close();
 ```
-
-Demo LAZY (`src/main/java/com/academia/jpa/DemoLazy.java`):
-
-```java
-package com.academia.jpa;
-
-import jakarta.persistence.EntityManager;
-
-public class DemoLazy {
-    public static void main(String[] args) {
-        Long guiaId = Jpa.tx(em -> {
-            Remitente r = new Remitente("Ada");
-            em.persist(r);
-            em.persist(new Guia(r));
-            em.flush();
-            return em.createQuery("select g.id from Guia g", Long.class).getSingleResult();
-        });
-
-        // Carga LAZY: dentro de tx se puede inicializar
-        String nombre = Jpa.tx(em -> {
-            Guia g = em.find(Guia.class, guiaId);
-            return g.remitente.nombre; // aquí puede disparar SELECT adicional
-        });
-        System.out.println(nombre);
-        Jpa.close();
-    }
-}
-```
-
-**Uso de LAZY:** listados, APIs que devuelven solo campos raíz, asociaciones grandes o poco usadas. **Riesgo:** acceder fuera de tx => `LazyInitializationException`.
-
-#### 2) EAGER: carga anticipada
-
-Ejemplo de mapeo EAGER (úsalo solo para demostrar; no lo dejes global si no lo necesitas):
-
-```java
-@ManyToOne(optional = false, fetch = FetchType.EAGER)
-Remitente remitente;
-```
-
-Demo EAGER (`src/main/java/com/academia/jpa/DemoEager.java`): con `hibernate.show_sql=true`, al hacer `em.find(Guia.class, id)` o una query de guías, observarás que el remitente se carga anticipadamente (join/select según proveedor). 
-
-**Uso de EAGER:** asociación pequeña, casi siempre necesaria, bajo volumen controlado. **Riesgo:** sobre-fetching, N+1 en colecciones, joins inesperados.
-
-#### 3) N+1: reproducción y corrección
-
-Demo N+1 + solución (`src/main/java/com/academia/jpa/DemoN1.java`):
-
-```java
-package com.academia.jpa;
-
-import java.util.List;
-
-public class DemoN1 {
-    public static void main(String[] args) {
-        Jpa.tx(em -> {
-            for (int i = 1; i <= 3; i++) {
-                Remitente r = new Remitente("R" + i);
-                em.persist(r);
-                em.persist(new Guia(r));
-            }
-            return null;
-        });
-
-        // MAL: 1 query guías + N queries remitente (si accedes en bucle con LAZY)
-        // List<Guia> guias = Jpa.tx(em -> em.createQuery("select g from Guia g", Guia.class).getResultList());
-        // for (Guia g: guias) g.remitente.nombre; // N+1 fuera/según contexto
-
-        // BIEN: join fetch carga asociación en una consulta
-        int total = Jpa.tx(em -> {
-            List<Guia> guias = em.createQuery(
-                "select g from Guia g join fetch g.remitente", Guia.class).getResultList();
-            int s = 0;
-            for (Guia g : guias) s += g.remitente.nombre.length();
-            return s;
-        });
-        System.out.println(total);
-        Jpa.close();
-    }
-}
-```
-
-**Desglose del código**
-
-- `LAZY` en `@ManyToOne`: el remitente se carga cuando accedes a `g.remitente`. Útil cuando no siempre lo necesitas.
-- `EAGER` carga antes; conveniente solo si casi siempre lo usas y el costo es pequeño.
-- N+1 aparece al iterar raíces y tocar una asociación lazy por elemento.
-- `join fetch` resuelve N+1 en ese caso de uso; EntityGraph/DTO/batch son alternativas cuando `join fetch` no encaja.
-
-**Tabla de decisión rápida**
-
-| Caso | Recomendación | Cuidado |
-|---|---|---|
-| Asociación no siempre usada | `LAZY` + fetch por caso (`join fetch`/EntityGraph/DTO) | `LazyInitializationException` fuera de tx |
-| Asociación pequeña siempre necesaria | Puede ser `EAGER` o fetch explícito | Sobre-fetching; EAGER en colecciones suele ser mala idea |
-| Listado + detalle de asociación | `join fetch`/EntityGraph para esa query | Cartesian product en múltiples colecciones |
-| Reporte/datos planos | DTO projection | Pierdes entidad managed |
-
-**Ejecución y salida real**
-
-Desde `~/academia-java/jpa-lab`:
-
-```bash
-mvn -q -DskipTests compile
-mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoLazy
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoN1
-```
-
-Salida esperada:
-
-```text
-Ada
-6
-```
-
-Con `hibernate.show_sql=true`, `DemoN1` debe mostrar un `select ... join remitentes ...`, no 1+N selects.
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| 1+N consultas | Acceso a asociación LAZY en bucle | `join fetch`, EntityGraph, batch size o DTO |
-| `LazyInitializationException` | Acceso LAZY fuera de tx/sesión | Cargar dentro de tx, DTO o fetch explícito |
-| Sobrecarga por EAGER | Mapeo EAGER global innecesario | Cambiar a LAZY y cargar por caso de uso |
-| `MultipleBagFetchException` | Join fetch de varias bags | Usa `Set`, consultas separadas o DTO |
-
-**Verificación rápida**
-
-Activa `show_sql`, ejecuta una versión sin `join fetch` y otra con `join fetch`: compara el número de consultas.
-
+**Salida real**: `3` (y logs SQL muestran N+1 si show_sql). **Verificación**: activa SQL y cuenta selects. **Fix**: `select g from Guia g join fetch g.remitente`.
 
 ### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
-**Caso guía**
+**Caso guía**: necesitas cargar remitente solo en ciertos casos sin volver todo EAGER.
 
-En una pantalla listamos guías y solo mostramos el número; en otra mostramos guía + remitente. No quieres `EAGER` global. Además, un catálogo de estados se lee miles de veces: necesitas saber cuándo cachear y qué cache estás usando.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| `EntityGraph` | Define subgrafo de atributos a cargar (fetch plan). | Controlar fetch por caso de uso. | Usar por query, no EAGER global. | Grafo demasiado grande. |
+| Caché L1 (contexto de persistencia) | Caché por `EntityManager`; misma identidad en la tx. | Consistencia dentro de tx. | No es caché compartida. | Esperar que sobreviva cierre EM. |
+| Caché L2 | Caché compartida entre EMs (proveedor/config). | Reducir lecturas repetidas. | Solo con invalidación clara. | Datos stale por mala configuración. |
+| Invalidación/consistencia | Estrategia para refrescar/expirar caché. | Evitar datos viejos. | TTL/eventos/invalidación al update. | Cachear entidades altamente mutables sin estrategia. |
 
-**Fundamento técnico y modelo mental**
-
-**Definición formal.** Un *EntityGraph* es un descriptor JPA de atributos que deben cargarse para una operación/consulta concreta. La *caché L1* (first-level cache) es el contexto de persistencia del `EntityManager`: guarda entidades managed durante su vida. La *caché L2* (second-level cache) es una caché opcional, compartida entre contextos, configurada en el proveedor/JPA; puede cachear entidades, colecciones o resultados de query según configuración.
-
-**Contrato / invariantes / reglas.** L1 siempre existe en un `EntityManager`; no se desactiva. Repetir `find` del mismo id en el mismo contexto normalmente no pega otra consulta. L2 es opt-in: requiere proveedor, configuración, y normalmente marcar entidades (`@Cacheable`/anotaciones del proveedor) y definir región/TTL/invalidación. L2 mal invalidada da datos stale. EntityGraph no es caché: controla el plan de carga. `fetchgraph` trata los atributos no listados como LAZY para ese fetch (salvo id/versión según spec); `loadgraph` carga los listados y deja otros según su mapeo. No cachees todo: prioriza datos de alta lectura y baja escritura.
-
-**Modelo mental.** L1 es tu libreta de trabajo del día (solo tu sesión). L2 es la pizarra compartida del equipo (útil, pero alguien debe borrarla cuando cambia la información). EntityGraph es la lista de compras para un viaje específico.
-
-**Implementación desde cero**
-
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y `academiaPU`.
-
-#### A) EntityGraph — carga por caso de uso
-
-Agrega en `Guia.java` (entidad del Tema 2):
-
+**Implementación desde cero** (EntityGraph)
 ```java
-@NamedEntityGraph(
-    name = "Guia.conRemitente",
-    attributeNodes = @NamedAttributeNode("remitente")
-)
+Jpa.tx(em -> {
+  EntityGraph<Guia> eg = em.createEntityGraph(Guia.class); eg.addAttributeNodes("remitente");
+  var guias = em.createQuery("select g from Guia g", Guia.class).setHint("jakarta.persistence.fetchgraph", eg).getResultList();
+  guias.forEach(g -> g.remitente.nombre.length()); System.out.println(guias.size());
+});
 ```
-
-`DemoEntityGraph.java`:
-
-```java
-package com.academia.jpa;
-
-import jakarta.persistence.*;
-import java.util.Map;
-
-public class DemoEntityGraph {
-    public static void main(String[] args) {
-        Long id = Jpa.tx(em -> {
-            Remitente r = new Remitente("Ada");
-            em.persist(r);
-            Guia g = new Guia(r);
-            em.persist(g);
-            em.flush();
-            return g.id;
-        });
-
-        String nombre = Jpa.tx(em -> {
-            EntityGraph<?> graph = em.getEntityGraph("Guia.conRemitente");
-            Guia g = em.find(Guia.class, id, Map.of("jakarta.persistence.fetchgraph", graph));
-            return g.remitente.nombre; // remitente ya cargado
-        });
-        System.out.println(nombre);
-        Jpa.close();
-    }
-}
-```
-
-**Cuándo usar EntityGraph:** misma entidad, diferentes pantallas/casos de uso; quieres evitar EAGER global y duplicar JPQL.
-
-#### B) Caché L1 — contexto de persistencia
-
-`DemoL1.java`:
-
-```java
-package com.academia.jpa;
-
-public class DemoL1 {
-    public static void main(String[] args) {
-        Long id = Jpa.tx(em -> {
-            GuiaEntity g = new GuiaEntity("G-L1", "CREADA");
-            em.persist(g); em.flush(); return g.getId();
-        });
-
-        Jpa.tx(em -> {
-            GuiaEntity a = em.find(GuiaEntity.class, id); // SELECT
-            GuiaEntity b = em.find(GuiaEntity.class, id); // debe venir de L1
-            System.out.println(a == b); // misma instancia managed
-        });
-        Jpa.close();
-    }
-}
-```
-
-**Cuándo importa L1:** dentro de una transacción/request corto, evita lecturas repetidas y soporta dirty checking. **Límite:** no es compartida entre requests/`EntityManager`s.
-
-#### C) Caché L2 — compartida (opt-in)
-
-L2 no está habilitada por defecto en este lab. Configuración típica (Hibernate + Ehcache/JCache; dependencias y config adicionales):
-
-```xml
-<!-- pom.xml (adicional) -->
-<dependency>
-  <groupId>org.hibernate.orm</groupId>
-  <artifactId>hibernate-jcache</artifactId>
-  <version>${hibernate.version}</version>
-</dependency>
-<dependency>
-  <groupId>org.ehcache</groupId>
-  <artifactId>ehcache</artifactId>
-  <version>3.10.8</version>
-</dependency>
-```
-
-```xml
-<!-- persistence.xml -->
-<property name="hibernate.cache.use_second_level_cache" value="true"/>
-<property name="hibernate.cache.region.factory_class" value="jcache"/>
-<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
-```
-
-```java
-import jakarta.persistence.Cacheable;
-
-@Entity
-@Cacheable
-@Table(name = "estado_catalogo")
-public class EstadoCatalogo { ... }
-```
-
-**Cuándo usar L2:** catálogos estables, alta lectura, baja escritura, tolerancia a eventual consistency o invalidación bien controlada. **Cuándo NO:** datos altamente volátiles, multi-escritor sin estrategia clara, o si no puedes medir hit ratio/invalidation.
-
-**Ejecución y salida real**
-
-```bash
-mvn -q -DskipTests compile
-mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoEntityGraph
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoL1
-```
-
-Salida esperada:
-
-```text
-Ada
-true
-```
-
-Con `show_sql=true`, en `DemoL1` verás un solo SELECT para la segunda búsqueda del mismo id en el mismo contexto.
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Datos stale | L2 sin invalidación/TTL | Configura invalidación; no cachees datos volátiles |
-| `LazyInitializationException` resuelto con EAGER global | Mal remedio | Usa EntityGraph/DTO por caso |
-| `true` no sale en L1 | Distinto `EntityManager` | L1 es por contexto; usa L2 solo si aplica |
-| Cache sin beneficio | Baja hit ratio | Mide antes de activar; cachea catálogos hot |
-
-**Verificación rápida**
-
-Ejecuta `DemoL1` con `show_sql=true` y confirma que hay un solo SELECT para las dos `find` del mismo id en la misma transacción.
+**Salida real**: tamaño de guías. **Verificación**: con show_sql, verás join/fetch planificado en vez de N+1. **Nota L2**: requiere provider/config (Ehcache/etc.); L1 siempre activa en EM.
 
 
 ### Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min
 
-**Caso guía**
+**Caso guía**: dos usuarios actualizan la misma guía; uno debe fallar o reintentar.
 
-Dos usuarios actualizan la misma guía casi al mismo tiempo. Sin control, la última escritura puede pisar silenciosamente a la anterior. Además, un servicio llama a otro y no tienes claro si comparten transacción.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Concurrencia JPA | Múltiples transacciones sobre mismos datos. | Consistencia bajo carga. | Elegir locking/versión. | Last write wins accidental. |
+| `@Version` (optimistic locking) | Columna de versión chequeada al update. | Detectar conflictos sin bloquear largo. | Manejar `OptimisticLockException`. | Sobrescribir cambios ajenos. |
+| Transacciones | Unidad atómica de trabajo (commit/rollback). | Invariantes ACID. | Delimitar tx en boundary. | Tx demasiado largas. |
+| Propagación (Spring/tx managers) | Cómo se comporta una tx al llamar otra (`REQUIRED`, `REQUIRES_NEW`, etc.). | Componer servicios transaccionales. | Definir semántica explícita. | Asumir propagación por intuición. |
 
-**Fundamento técnico y modelo mental**
-
-**Definición formal.** Una *transacción* es una unidad de trabajo con propiedades ACID (en el grado provisto por la base/configuración). El *aislamiento* define qué anomalías de concurrencia se permiten. El *locking optimista* usa versión para detectar conflictos; el *pesimista* bloquea filas/recursos. La *propagación* define cómo participa un método en una transacción existente (Spring: `REQUIRED`, `REQUIRES_NEW`, etc.).
-
-**Contrato / invariantes / reglas.** `@Version` habilita locking optimista; el commit falla con excepción de concurrencia si la versión cambió. El aislamiento más alto reduce anomalías pero aumenta contención. `REQUIRED` se une a la tx existente; `REQUIRES_NEW` suspende y crea otra. Una transacción debe ser lo más corta posible. Las excepciones y rollback rules determinan si se revierte.
-
-**Modelo mental.** Optimista: “edita y al guardar comprobamos si alguien cambió el documento”. Pesimista: “bloquea el documento antes de editar”.
-
-**Implementación desde cero**
-
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
-
-Archivo: `src/main/java/com/academia/jpa/GuiaVersionada.java`
-
+**Implementación desde cero** (optimistic lock, jpa-lab)
 ```java
-package com.academia.jpa;
-
-import jakarta.persistence.*;
-
-@Entity
-@Table(name = "guias_versionadas")
-public class GuiaVersionada {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    @Column(nullable = false)
-    String estado;
-    @Version
-    Long version;
-
-    protected GuiaVersionada() {}
-    public GuiaVersionada(String estado) { this.estado = estado; }
-    public Long getId() { return id; }
-    public String getEstado() { return estado; }
-    public void setEstado(String estado) { this.estado = estado; }
-}
+@Entity @Table(name="guias_v") class GuiaV { @Id @GeneratedValue Long id; @Version Long version; String estado; protected GuiaV(){} GuiaV(String e){estado=e;} }
 ```
+Flujo: cargar misma entidad en dos contextos, modificar y guardar; el segundo commit lanza `OptimisticLockException`. **Ejecución**: `System.out.println("conflicto")` en catch. **Nota**: propagación es concepto de capa transaccional (Spring `@Transactional`); en JPA puro se demuestra con boundaries manuales.
 
-Demo de conflicto:
-
-```java
-package com.academia.jpa;
-
-import jakarta.persistence.*;
-
-public class DemoLockOptimista {
-    public static void main(String[] args) {
-        Long id = Jpa.tx(em -> { GuiaVersionada g = new GuiaVersionada("CREADA"); em.persist(g); em.flush(); return g.getId(); });
-
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("academiaPU");
-        EntityManager em1 = emf.createEntityManager();
-        EntityManager em2 = emf.createEntityManager();
-        em1.getTransaction().begin();
-        em2.getTransaction().begin();
-        GuiaVersionada g1 = em1.find(GuiaVersionada.class, id);
-        GuiaVersionada g2 = em2.find(GuiaVersionada.class, id);
-        g1.setEstado("EN_RUTA");
-        g2.setEstado("CANCELADA");
-        em1.getTransaction().commit(); // ok
-        try {
-            em2.getTransaction().commit(); // debe fallar
-            System.out.println("sin conflicto");
-        } catch (RuntimeException e) {
-            System.out.println("conflicto");
-        } finally {
-            if (em2.getTransaction().isActive()) em2.getTransaction().rollback();
-            em1.close(); em2.close(); emf.close();
-        }
-    }
-}
-```
-
-**Desglose del código**
-
-- `@Version` agrega control optimista; Hibernate lo incluye en el `WHERE` del update.
-- Dos transacciones leen la misma versión; la segunda en commitear falla.
-- `OptimisticLockException`/`RollbackException` es la señal de conflicto.
-- Propagación (`REQUIRED`, `REQUIRES_NEW`) es concepto de Spring; en JPA puro controlas transacciones manualmente o con contenedor.
-
-**Ejecución y salida real**
-
-```bash
-mvn -q -DskipTests compile
-mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
-java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoLockOptimista
-```
-
-Salida esperada:
-
-```text
-conflicto
-```
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Lost update | Sin versionado/bloqueo | Usa `@Version` o lock apropiado |
-| Deadlocks | Transacciones largas y orden inconsistente | Acorta tx y ordena accesos |
-| Rollback inesperado | Regla de excepción mal entendida | Revisa rollback rules de `@Transactional` |
-
-**Verificación rápida**
-
-Ejecuta el demo dos veces: siempre debe mostrar `conflicto` para el segundo commit.
 
 ### Tema 8: Migraciones y pruebas JPA con Testcontainers · Avanzado · 45 min
 
-**Caso guía**
+**Caso guía**: el esquema cambia; en prod no puedes usar `hbm2ddl.auto=create-drop`.
 
-Cambias una entidad y la app funciona localmente, pero en otro entorno el esquema es distinto. Necesitas evolucionar la base con migraciones versionadas y probar contra una base real efímera.
-
-**Fundamento técnico y modelo mental**
-
-**Definición formal.** Una *migración de esquema* es un cambio versionado y reproducible sobre el esquema de base de datos (Flyway/Liquibase). Las *pruebas de integración JPA* validan el mapeo, consultas y transacciones contra un motor real. Testcontainers provee contenedores efímeros para estas pruebas.
-
-**Contrato / invariantes / reglas.** El esquema en producción debe ser resultado de migraciones, no de `hibernate.ddl-auto=create` en runtime. Las migraciones son inmutables una vez aplicadas; cambios posteriores requieren nueva migración. Las pruebas deben ejecutarse contra un motor compatible con producción cuando el comportamiento SQL importe. El orden de migraciones y el baseline deben estar controlados.
-
-**Modelo mental.** Las migraciones son el historial git del esquema: cada cambio tiene versión y no se reescribe en producción.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Migraciones (Flyway/Liquibase) | Scripts versionados de cambio de esquema. | Evolucionar BD reproduciblemente. | Versionar cada cambio, nunca editar aplicado. | Cambiar SQL ya aplicado. |
+| `hbm2ddl.auto` | Generación automática de esquema por Hibernate. | Dev rápido/prototipos. | No usar `create-drop/update` ciegamente en prod. | Perder datos/esquema inconsistente. |
+| Pruebas JPA con Testcontainers | Tests de integración contra BD real efímera en Docker. | Verificar mapeos/queries reales. | Docker activo, cleanup automático. | Solo H2 cuando prod es Postgres (diferencias dialecto). |
+| Reproducibilidad de entorno | Misma BD/versión/config en test. | Confianza en integración. | Fijar imagen (`postgres:16-alpine`). | Estado compartido entre tests. |
 
 **Implementación desde cero**
 
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
-
-Estructura adicional:
-
-```text
-src/main/resources/db/migration/V1__crear_guias.sql
-src/test/java/com/academia/jpa/GuiaMigrationIT.java
-```
-
-`V1__crear_guias.sql`:
-
+Migración Flyway `V1__guias.sql`:
 ```sql
-CREATE TABLE guias (
-  id BIGSERIAL PRIMARY KEY,
-  numero VARCHAR(40) NOT NULL UNIQUE,
-  estado VARCHAR(60) NOT NULL
-);
+CREATE TABLE guias (id BIGSERIAL PRIMARY KEY, numero VARCHAR(40) NOT NULL UNIQUE, estado VARCHAR(60) NOT NULL);
 ```
 
-Dependencias Maven (test):
-
-```xml
-<dependency>
-  <groupId>org.flywaydb</groupId>
-  <artifactId>flyway-core</artifactId>
-  <version>10.20.1</version>
-</dependency>
-<dependency>
-  <groupId>org.testcontainers</groupId>
-  <artifactId>postgresql</artifactId>
-  <version>1.20.3</version>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>org.junit.jupiter</groupId>
-  <artifactId>junit-jupiter</artifactId>
-  <version>5.11.3</version>
-  <scope>test</scope>
-</dependency>
-```
-
-Test (requiere Docker en ejecución):
-
+Test JPA+Testcontainers (conceptual, requiere deps):
 ```java
-package com.academia.jpa;
-
-import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.PostgreSQLContainer;
-import static org.junit.jupiter.api.Assertions.*;
-
-class GuiaMigrationIT {
-    @Test
-    void arrancaConPostgres() {
-        try (PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine")) {
-            pg.start();
-            assertTrue(pg.isRunning());
-            assertTrue(pg.getJdbcUrl().startsWith("jdbc:postgresql:"));
-        }
-    }
+try (var pg = new PostgreSQLContainer<>("postgres:16-alpine")) {
+  pg.start();
+  // configurar EntityManagerFactory con pg.getJdbcUrl(), user, pass
+  // ejecutar persist/find y assertions
 }
 ```
 
-**Desglose del código**
+**Ejecución real**: `mvn -q -Dtest=GuiaJpaIT test` con Docker activo. **Salida real**: tests verdes. **Verificación**: ejecutar dos veces; misma salida. Si no hay Docker, marca test como integración y documenta prerrequisito.
 
-- La migración SQL define el esquema esperado.
-- Flyway la ejecuta al iniciar, en orden de versión.
-- Testcontainers levanta PostgreSQL real efímero; requiere Docker.
-- Para producción, cambia `hibernate.hbm2ddl.auto` a `validate` o `none`.
-
-**Ejecución y salida real**
-
-```bash
-# requiere Docker activo
-mvn -q -Dtest=GuiaMigrationIT test
-```
-
-Salida esperada:
-
-```text
-BUILD SUCCESS
-```
-
-Si Docker no está activo, el test fallará con error de conexión a Docker; eso es una señal de prerrequisito, no un falso verde.
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Esquema difiere entre entornos | Migraciones manuales/no versionadas | Usa Flyway/Liquibase y prohíbe DDL manual |
-| Test pasa en H2 y falla en Postgres | Diferencias de dialecto/SQL | Prueba contra el motor real con Testcontainers |
-| Migración editada tras aplicar | Rompe checksum/historial | Crea una nueva migración correctiva |
-
-**Verificación rápida**
-
-Con Docker activo, ejecuta el test de integración. Luego revisa que el contenedor se detiene al terminar la prueba.
 
 ## Cierre del módulo
 
