@@ -16,23 +16,30 @@ Casi toda aplicación real lee o escribe datos: archivos, JSON, configuración, 
 
 **Caso guía**
 
-Necesitas guardar un reporte, leerlo, crear directorios si no existen y listar archivos generados. Hacerlo con rutas como strings suele producir bugs por separadores y falta de validaciones.
+Necesitas guardar un reporte, leerlo, crear directorios si no existen y listar archivos generados. Las rutas como strings son frágiles entre OS; necesitas la API moderna.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** NIO.2 (`java.nio.file`) es la API moderna de I/O de archivos. `Path` representa una ruta del sistema de archivos; `Files` provee operaciones estáticas sobre archivos/directorios. `IOException` y sus subtipos representan fallos de I/O checked.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `Path` no implica existencia; es una abstracción de ruta. Métodos como `Files.list`, `Files.walk` y `Files.lines` devuelven streams que deben cerrarse. Las operaciones pueden fallar por permisos, ausencia, existencia previa o concurrencia externa del FS. Las rutas deben construirse con `Path.of/resolve` para evitar concatenación frágil dependiente de plataforma.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **NIO.2 (`java.nio.file`)** | API moderna de I/O de archivos de Java (Java 7+). | Operaciones ricas y seguras sobre FS. | Nuevo código de archivos. | Mezclar `File` legacy sin necesidad. |
+| **`Path`** | Abstracción inmutable de ruta (no implica existencia). | Construir rutas portables. | Siempre para rutas. | Concatenar strings con `/` o `\`. |
+| **`Files`** | Utilidad estática para operar sobre archivos/directorios. | Leer/escribir/copiar/mover/listar. | Operaciones comunes de FS. | No cerrar streams de `list/walk/lines`. |
+| **`IOException` checked** | Excepción por fallo de I/O (permisos, inexistencia, etc.). | Señalar fallo externo recuperable. | Manejar o declarar con contexto. | Tragar excepción. |
 
-**Modelo mental.** `Path` es la dirección; `Files` es el servicio postal/archivo que actúa sobre esa dirección.
+**Contrato / invariantes / reglas.** `resolve` compone rutas; `normalize` limpia `..`. `Files.list/walk/lines` devuelven `Stream` que debe cerrarse. `createDirectories` es idempotente si ya existe como directorio. Operaciones pueden fallar por race conditions del FS: maneja excepciones.
+
+**Modelo mental.** `Path` = dirección; `Files` = oficina que actúa sobre esa dirección.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-6 && cd ~/academia-java/modulo-6
 ```
+
+`DemoNio.java`:
 
 ```java
 import java.io.IOException;
@@ -43,31 +50,25 @@ public class DemoNio {
     public static void main(String[] args) throws IOException {
         Path dir = Path.of("salida");
         Files.createDirectories(dir);
-
         Path archivo = dir.resolve("reporte.txt");
         Files.writeString(archivo, "id,total\nG-1,100\nG-2,150\n");
         System.out.println(Files.exists(archivo));
         System.out.println(Files.readString(archivo).trim());
-
         try (var paths = Files.list(dir)) {
             paths.forEach(p -> System.out.println("archivo: " + p.getFileName()));
         }
-
         Files.deleteIfExists(archivo);
         Files.deleteIfExists(dir);
     }
 }
 ```
 
-**Desglose del código**
-
-- `Path.of("salida")` crea una ruta relativa al directorio de trabajo.
-- `resolve` une rutas de forma segura.
-- `Files.writeString/readString` son convenientes para archivos de texto pequeños.
-- `Files.list` devuelve un stream que debe cerrarse; por eso va en try-with-resources.
-- `deleteIfExists` evita fallo si el archivo ya no está.
-
 **Ejecución y salida real**
+
+```bash
+javac DemoNio.java
+java DemoNio
+```
 
 ```text
 true
@@ -77,41 +78,39 @@ G-2,150
 archivo: reporte.txt
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `NoSuchFileException` | Ruta incorrecta o archivo no creado | Verifica con `exists`, crea directorios con `createDirectories` |
-| `FileAlreadyExistsException` | `createFile/createDirectory` sobre algo existente | Usa `createDirectories` o `deleteIfExists` según caso |
-| Fuga de recursos con `Files.list/walk` | No cerraste el stream | Usa try-with-resources |
+| `NoSuchFileException` | Ruta inexistente | `exists`/`createDirectories` |
+| Fuga de recurso | No cerraste `Files.list/walk` | try-with-resources |
+| Ruta rota en Windows/Linux | Concatenación manual | `Path.of/resolve` |
 
-**Verificación rápida**
+**Verificación rápida:** cambia a `Path.of("tmp","salida")` y confirma creación anidada.
 
-```bash
-javac DemoNio.java && java DemoNio
-```
-
-Cambia `Path.of("salida")` a una ruta anidada como `Path.of("tmp","salida")` y confirma que `createDirectories` crea la estructura.
 
 ### Tema 2: Serialización con Jackson · Intermedio · 40 min
 
 **Caso guía**
 
-Recibes y envías datos en JSON. Quieres convertir un objeto Java a JSON y volver a objeto sin escribir parsing manual.
+Recibes y envías JSON. Quieres mapear objeto Java↔JSON sin parsing manual frágil.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** La *serialización* es la transformación de un objeto en una representación externa (JSON, bytes, etc.); la *deserialización* es la transformación inversa. Jackson es una biblioteca de data-binding/streaming para JSON en Java.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** El mapeo depende de nombres de propiedades, constructores/accesores, configuración de `ObjectMapper` y módulos registrados. La deserialización debe tratar datos no confiables con cuidado (validación, límites, tipos permitidos). La compatibilidad de esquema/versión es un contrato entre productor y consumidor. Este ejemplo requiere dependencia externa en classpath.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Serialización** | Transformar objeto en representación externa (JSON). | Enviar/guardar datos. | APIs, mensajes, archivos. | Exponer campos sensibles. |
+| **Deserialización** | Reconstruir objeto desde representación externa. | Leer input externo. | APIs, config, mensajes. | Confiar ciegamente en input. |
+| **Jackson `ObjectMapper`** | Biblioteca de data-binding JSON para Java. | Mapear JSON↔POJO/record. | JSON en backend Java. | Falta dependencia/módulo/config. |
+| **Contrato de esquema** | Estructura esperada (nombres/tipos/obligatoriedad). | Compatibilidad productor/consumidor. | Evolución de APIs. | Cambiar campo sin versionar/manejar compatibilidad. |
 
-> **Nota:** requiere `com.fasterxml.jackson.core:jackson-databind`.
+**Contrato / invariantes / reglas.** Requiere dependencias Jackson en classpath. `writeValueAsString` serializa; `readValue` deserializa. Data-binding depende de nombres, constructores/accesores y configuración. Valida datos no confiables; la deserialización no sustituye validación de negocio.
 
-**Modelo mental.** Serializar es empaquetar un objeto en una caja estándar (JSON); deserializar es reconstruirlo siguiendo la etiqueta de la caja.
+**Modelo mental.** Serializar = empaquetar en caja estándar etiquetada; deserializar = reconstruir desde la etiqueta.
 
 **Implementación desde cero**
-
-Desde carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-06-jackson && cd ~/academia-java/modulo-06-jackson
@@ -120,21 +119,17 @@ curl -L -o jackson-core.jar https://repo1.maven.org/maven2/com/fasterxml/jackson
 curl -L -o jackson-annotations.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.jar
 ```
 
-Crea `DemoJackson.java`:
+`DemoJackson.java`:
 
 ```java
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 public class DemoJackson {
     record Guia(String id, String destino, int pesoKg) {}
-
     public static void main(String[] args) throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         Guia guia = new Guia("G-1", "Madrid", 3);
-
         String json = mapper.writeValueAsString(guia);
         System.out.println(json);
-
         Guia leida = mapper.readValue(json, Guia.class);
         System.out.println(leida.id());
         System.out.println(leida.destino());
@@ -143,21 +138,12 @@ public class DemoJackson {
 }
 ```
 
-**Desglose del código**
-
-- `writeValueAsString` serializa el objeto a JSON.
-- `readValue` deserializa el JSON al tipo indicado.
-- Un `record` funciona bien como DTO simple.
-- Fallos de mapeo suelen indicar nombres/tipos incompatibles o configuración faltante.
-
 **Ejecución y salida real**
 
 ```bash
 javac -cp ".:jackson-databind.jar:jackson-core.jar:jackson-annotations.jar" DemoJackson.java
 java -cp ".:jackson-databind.jar:jackson-core.jar:jackson-annotations.jar" DemoJackson
 ```
-
-Salida esperada:
 
 ```text
 {"id":"G-1","destino":"Madrid","pesoKg":3}
@@ -166,88 +152,76 @@ Madrid
 3
 ```
 
-> En Windows usa `;` como separador de classpath.
+(Windows: usa `;` en classpath).
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `ClassNotFoundException`/NoClassDefFound | Jackson no está en el classpath | Agrega la dependencia correcta |
-| Propiedades no mapean | Nombre JSON distinto al campo | Usa `@JsonProperty` o configura naming strategy |
-| Falla al deserializar record/POJO | Falta constructor/configuración | Verifica compatibilidad de Jackson y estructura del tipo |
+| `NoClassDefFoundError` | Jackson no en classpath | Agrega jars/dependencias |
+| Campo no mapea | Nombre/tipo distinto | `@JsonProperty`, validar esquema |
+| Falla deserialización | Constructor/tipo incompatible | Ajusta DTO/config ObjectMapper |
 
-**Verificación rápida**
+**Verificación rápida:** cambia `pesoKg` a string en JSON y observa el error de mapeo.
 
-Compila y ejecuta con Jackson en el classpath. Cambia una clave JSON y observa el error de mapeo.
 
 ### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 40 min
 
 **Caso guía**
 
-Debes procesar un archivo grande línea por línea sin cargarlo entero en memoria. Además, necesitas leer una plantilla de configuración empaquetada dentro del JAR.
+Procesas un archivo grande línea por línea sin cargarlo en memoria y lees una plantilla pequeña empaquetada en el classpath.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** El *procesamiento en streaming* lee datos incrementalmente, manteniendo uso de memoria acotado. El *classpath* es el conjunto de ubicaciones desde donde el cargador de clases busca clases y recursos.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `BufferedReader`/`Files.lines` permiten procesar línea por línea; `readAllBytes/readString` cargan todo en memoria y no escalan para archivos grandes. `getResourceAsStream` devuelve `null` si el recurso no existe. Los streams deben cerrarse. La codificación debe explicitarse cuando importa (`StandardCharsets.UTF_8`).
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Archivos grandes (streaming)** | Lectura incremental línea a línea/bloques sin cargar todo. | Memoria acotada. | Logs, CSV, cargas masivas. | `readAllBytes` en archivo enorme. |
+| **`BufferedReader`/`Files.lines`** | APIs para lectura eficiente por líneas. | Procesar secuencialmente. | Filtros, ETL simple. | No cerrar `Files.lines`. |
+| **Recursos del classpath** | Recursos empaquetados accesibles por classloader (`getResourceAsStream`). | Config/plantillas dentro del JAR/app. | Defaults, templates read-only. | Buscar en FS cuando está en classpath. |
+| **Codificación (`UTF-8`)** | Mapeo bytes↔caracteres. | Evitar corrupción de texto. | Siempre especificar en I/O texto. | Depender de charset por defecto. |
 
-**Modelo mental.** Archivo grande: no te tragas el libro entero, lees página por página. Recurso de classpath: está dentro del paquete entregado, no en una ruta cualquiera del disco.
+**Contrato / invariantes / reglas.** `getResourceAsStream` devuelve `null` si no existe: validar. Streams se cierran. Para recursos pequeños `readAllBytes` está bien; para archivos grandes, no. `Files.lines` es lazy pero requiere cierre.
+
+**Modelo mental.** Archivo grande = leer página por página; recurso classpath = archivo dentro del paquete entregado.
 
 **Implementación desde cero**
-
-Desde una carpeta vacía:
 
 ```bash
 mkdir -p ~/academia-java/modulo-06 && cd ~/academia-java/modulo-06
 ```
 
-Crea `DemoArchivoGrande.java`:
+`DemoArchivoGrande.java`:
 
 ```java
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
-import java.util.stream.*;
 
 public class DemoArchivoGrande {
     public static void main(String[] args) throws Exception {
         Path path = Path.of("grande.txt");
         Files.writeString(path, "linea-1\nlinea-2\nlinea-3\n", StandardCharsets.UTF_8);
-
         try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
             String line;
             while ((line = reader.readLine()) != null) {
                 if (line.contains("3")) System.out.println(line);
             }
         }
-
         try (InputStream in = DemoArchivoGrande.class.getResourceAsStream("/config.txt")) {
-            if (in != null) {
-                String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                System.out.println(text.trim());
-            } else {
-                System.out.println("recurso no encontrado");
-            }
+            if (in != null) System.out.println(new String(in.readAllBytes(), StandardCharsets.UTF_8).trim());
+            else System.out.println("recurso no encontrado");
         }
     }
 }
 ```
-
-Para probar el recurso del classpath, crea `config.txt` y ejecútalo con el directorio actual en classpath:
 
 ```bash
 echo "modo=demo" > config.txt
 javac DemoArchivoGrande.java
 java -cp . DemoArchivoGrande
 ```
-
-**Desglose del código**
-
-- `Files.newBufferedReader` lee eficientemente línea por línea.
-- El `while` procesa sin guardar todo el archivo en una lista.
-- `getResourceAsStream("/config.txt")` busca en la raíz del classpath; por eso se usa `-cp .`.
-- `readAllBytes()` es aceptable para recursos pequeños; no lo uses con archivos enormes.
 
 **Ejecución y salida real**
 
@@ -256,23 +230,16 @@ linea-3
 modo=demo
 ```
 
-Si eliminas `config.txt` del classpath, la segunda línea será `recurso no encontrado`.
+**Errores comunes**
 
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `OutOfMemoryError` con archivo grande | Cargaste todo en memoria | Usa lectura por streaming |
-| `NullPointerException` al leer recurso | `getResourceAsStream` devolvió `null` | Verifica ruta y que el recurso esté empaquetado |
-| Caracteres raros | Codificación incorrecta | Especifica charset (`StandardCharsets.UTF_8`) |
+| `OutOfMemoryError` | Cargaste todo | Streaming línea a línea |
+| `NullPointerException` recurso | No está en classpath/ruta mal | Verifica ruta y `-cp` |
+| Caracteres raros | Charset implícito | `StandardCharsets.UTF_8` |
 
-**Verificación rápida**
+**Verificación rápida:** elimina `config.txt` del classpath y confirma “recurso no encontrado”.
 
-```bash
-javac DemoArchivoGrande.java && java DemoArchivoGrande
-```
-
-Genera un archivo con más líneas y confirma que no necesitas cambiar la lógica para procesarlo línea por línea.
 
 ## Cierre del módulo
 
