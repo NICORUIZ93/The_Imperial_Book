@@ -550,7 +550,7 @@ Activa `"experimentalDecorators": true` en `tsconfig.json`, compila de nuevo y e
 #### Paso 7 · Cierre
 
 
-### Tema 6: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies · Experto · 50 min
+### Tema 6: TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás declarar sobrecargas de funciones, derivar tipos con `Omit`, `Pick` y tipos mapeados, filtrar propiedades con tipos condicionales, construir nombres con tipos de plantilla y validar objetos con `satisfies` sin perder sus tipos literales. Prerrequisitos: Temas 1 a 4 de este módulo.

@@ -156,7 +156,7 @@ Comprueba que obtuviste el mismo \(L\) a mano y con `acker`.
 - [ ] Obtuve el mismo \(L\) por dualidad con `acker`.
 - [ ] Diagnostiqué el orden \(LC\) frente a \(CL\).
 
-**Fuentes oficiales:** [acker y place, python-control](https://python-control.readthedocs.io/en/latest/generated/control.acker.html) y [Diseño de observadores, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [acker y place, python-control](https://python-control.readthedocs.io/en/latest/generated/control.place_acker.html) y [Diseño de observadores, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
 
 ### Tema 2: Elige la velocidad del observador · Avanzado · 30 min
 
@@ -303,7 +303,7 @@ Anota las dos ganancias y concluye cuál usarías con un encoder ruidoso.
 - [ ] Medí la ganancia del ruido de alta frecuencia en los dos casos.
 - [ ] Comparé el observador con un derivador puro.
 
-**Fuentes oficiales:** [initial_response, python-control](https://python-control.readthedocs.io/en/latest/generated/control.initial_response.html) y [Diseño de observadores, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [initial_response, python-control](https://python-control.readthedocs.io/en/latest/generated/control.initial_response.html) y [Diseño de observadores, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
 
 ### Tema 3: Controlador con observador · Avanzado · 35 min
 
@@ -450,4 +450,4 @@ Anota la ganancia estática (0,9664) y el error relativo: 3,4 % de error permane
 - [ ] Diagnostiqué el observador sin la entrada \(u\).
 - [ ] Probé el efecto de un error de modelo en la estabilidad y en el error.
 
-**Fuentes oficiales:** [ss y tf, python-control](https://python-control.readthedocs.io/en/latest/generated/control.ss.html) y [Diseño de observadores, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [ss y tf, python-control](https://python-control.readthedocs.io/en/latest/generated/control.ss.html) y [Diseño de observadores, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).

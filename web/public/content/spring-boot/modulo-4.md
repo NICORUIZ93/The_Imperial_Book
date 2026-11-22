@@ -477,7 +477,7 @@ Ejecuta desde la raíz:
 
 **Cierra:** guarda los tres resultados de la prueba y explica por qué no cambiarías todo a `EAGER`. **Práctica:** en `crearTresClientesConPedido()` cambia el límite del bucle a 4 y ajusta la prueba perezosa a `5L`; ambas pruebas con carga previa deben seguir en `1L`. Ejecuta `./mvnw -q -Dtest=NMasUnoTest test` y luego restaura el límite y la aserción. Integra `Cliente` y `Pedido` al backend acumulativo y lleva la medición al proyecto integrador cuando uses una lista real. El tema siguiente versiona el esquema para que estas dos tablas tengan cambios reproducibles.
 
-### Tema 3: Más allá del N+1: el límite de LAZY y páginas DTO
+### Tema 3: Más allá del N+1: el límite de LAZY y páginas DTO · Intermedio · 40 min
 **Meta:** reproducir el límite de una asociación `LAZY` cuando el contexto de persistencia ya se cerró y resolver la pantalla de resumen con una página DTO que selecciona solo dos campos.
 
 **¿Por qué es importante?** El Tema 2 corrigió el N+1 con `JOIN FETCH`/`@EntityGraph`. Falta el otro extremo: qué pasa cuando la respuesta HTTP toca una relación que nunca se cargó, y cómo paginar sin traer entidades completas.

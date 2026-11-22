@@ -11,11 +11,11 @@ Para un polinomio de tercer orden o más, sacar las raíces a mano es difícil. 
 
 ## Aprende construyendo
 
-### Tema 1: Qué es estabilidad
+### Tema 1: Qué es estabilidad · Avanzado · 45 min
 
 **¿Por qué es importante?** Un sistema inestable es inútil o peligroso; definir estabilidad con precisión es el punto de partida de todo diseño.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior) y [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 > **Idea clave.** Un sistema es estable (BIBO) si toda entrada acotada produce una salida acotada.
 
@@ -122,11 +122,11 @@ cambia el polinomio a `(s - 2) * (s + 1)` y confirma que `estable` da `False` (E
 
 **Límite:** este criterio de "mirar el signo de la parte real" solo funciona cuando ya conoces los polos; para polinomios de tercer orden o más, calcular las raíces a mano es difícil — por eso existe el criterio de Routh-Hurwitz (Tema 2), que decide la estabilidad sin resolver el polinomio.
 
-### Tema 2: El arreglo de Routh
+### Tema 2: El arreglo de Routh · Avanzado · 45 min
 
 **¿Por qué es importante?** Routh dice cuántas raíces son inestables sin calcularlas, lo que es indispensable para polinomios de tercer orden o más.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior) y [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 Para \(a_ns^n + a_{n-1}s^{n-1} + \cdots + a_0\):
 
@@ -335,11 +335,11 @@ cambia el polinomio a `s**3 + 2*s**2 + 3*s + 10` y confirma `raices_en_semiplano
 
 **Límite:** este script resuelve el polinomio exactamente con sympy, algo que no se puede hacer a mano para orden 3 o más; el valor real del arreglo de Routh es que da el conteo de raíces inestables **sin** tener que resolver el polinomio.
 
-### Tema 3: Casos especiales del arreglo de Routh
+### Tema 3: Casos especiales del arreglo de Routh · Avanzado · 45 min
 
 **¿Por qué es importante?** Los casos especiales aparecen justo en el límite de estabilidad, que es donde se hacen las preguntas difíciles.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior) y [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 #### Ejemplo 1 · Un cero en la primera columna · *Nivel parcial*
 
@@ -464,11 +464,11 @@ cambia el polinomio a `s**4 + s**3 + 2*s**2 + 2*s + 3` y confirma que hay 2 raí
 
 **Límite:** resolver el polinomio directamente (como hace este script) es la comprobación, no el método; en el examen debes llegar al mismo conteo de raíces inestables construyendo el arreglo con el truco de \(\varepsilon\) o el polinomio auxiliar, sin resolver el polinomio completo.
 
-### Tema 4: Rango de K para estabilidad
+### Tema 4: Rango de K para estabilidad · Avanzado · 45 min
 
 **¿Por qué es importante?** El rango de \(K\) dice hasta dónde se puede subir la ganancia de un controlador y es la base de Ziegler-Nichols.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior) y [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 #### Ejemplo 1 · Rango de K · *Nivel parcial*
 

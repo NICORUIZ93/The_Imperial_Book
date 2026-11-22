@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: ECR y por qué no basta con Docker Hub
+### Tema 1: ECR y por qué no basta con Docker Hub · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a publicar en un repositorio ECR privado la imagen del planificador de rutas de RutaFlow, un proceso propietario que no debería vivir en un registro público. Prerrequisitos: Módulo 0 (Docker).
@@ -58,7 +58,7 @@ Volvé a autenticarte, publicá una segunda versión (`:v2`) de la misma imagen,
 #### Paso 7 · Cierre
 Entregá la publicación exitosa del Paso 4, el rechazo sin sesión del Paso 5, y la comparación de digests del Paso 6; explicá por qué un repositorio como este nunca debería ser público para RutaFlow. Siguiente paso: orquestación. Errores comunes: usar tags mutables y credenciales compartidas. Fuente oficial: https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html.
 
-### Tema 2: Task Definition y ECS Cluster
+### Tema 2: Task Definition y ECS Cluster · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a correr `rutaflow-planificador` (Tema 1) como una tarea real de ECS, describiendo cuánta memoria y CPU necesita. Prerrequisitos: Tema 1 de este módulo.
@@ -111,7 +111,7 @@ Corregí el Paso 5 apuntando de nuevo a `:latest`, y documentá qué pasaría si
 #### Paso 7 · Cierre
 Entregá la Task Definition registrada y corriendo, el fallo de imagen inexistente del Paso 5, y la reflexión sobre escalado del Paso 6; explicá qué controla la Task Definition y qué controla el Cluster por separado. Siguiente paso: elegir servicio. Errores comunes: estado manual y no definir límites. Fuente oficial: https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html.
 
-### Tema 3: Contenedores vs Lambda, y EKS
+### Tema 3: Contenedores vs Lambda, y EKS · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a justificar, con el límite real de Lambda del Módulo 5, por qué el planificador de rutas tiene que ser un contenedor y `confirmar-entrega` tiene que ser una función. Prerrequisitos: Módulo 5 completo, Temas 1-2 de este módulo.

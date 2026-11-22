@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: El protocolo View y composición · Básico · 50 min
+### Tema 1: El protocolo View y composición · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir `TarjetaEnvio`, una vista propia que muestra un envío de RutaFlow, y a componerla dentro de otra vista como si fuera nativa. Prerrequisitos: macOS, Xcode y Swift; verifica `xcodebuild -version`.
@@ -322,7 +322,7 @@ Combiná `VStack`, `HStack` y `ZStack` para mostrar `TarjetaEnvio` con un ícono
 Entregá las dos versiones con orden distinto del Paso 4, el padding mal entendido del Paso 5, y el layout combinado del Paso 6; explicá por qué "el orden no debería importar" es la intuición equivocada más común al empezar con modificadores de SwiftUI. Siguiente paso: estudia estado. Errores comunes: View enorme, modifier perdido, índices inestables y preview con red real. Fuentes oficiales: https://developer.apple.com/tutorials/swiftui y https://developer.apple.com/documentation/swiftui.
 **Implicación práctica:** Cada modificador envuelve la vista anterior en una nueva capa, de modo que el orden en que se escriben cambia físicamente el resultado visual, no solo su apariencia superficial.
 
-### Tema 3: Previews, LazyVGrid/ScrollView y property wrappers · Intermedio · 50 min
+### Tema 3: Previews, LazyVGrid/ScrollView y property wrappers · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mostrar una lista completa de envíos de RutaFlow con `LazyVGrid` dentro de un `ScrollView`, e iterar su diseño con Previews sin correr la app. Prerrequisitos: Temas 1-2 de este módulo.

@@ -62,7 +62,7 @@ Pista: repetí el mismo perfil, pero esta vez en el simulador en vez de en un iP
 Corregí el Paso 5 volviendo a perfilar en un dispositivo real, y agregá una segunda sesión de Allocations mientras entrás y salís de `ListaEnvios` diez veces — confirmá si la memoria usada vuelve a su nivel original o queda creciendo (señal de fuga).
 
 #### Paso 7 · Cierre
-Entregá el perfil de Time Profiler del Paso 4, la diferencia detectada entre simulador y dispositivo real del Paso 5, y la sesión de Allocations del Paso 6; explicá por qué medir en el simulador no sustituye medir en el hardware real de un usuario. Siguiente paso: estudia accesibilidad con VoiceOver. Errores comunes: medir solo en el simulador, confiar en la percepción subjetiva de fluidez, y no perfilar builds de Release (que optimizan distinto a Debug). Fuentes oficiales: https://developer.apple.com/documentation/xcode/improving-your-app-s-performance y https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-swift-code.
+Entregá el perfil de Time Profiler del Paso 4, la diferencia detectada entre simulador y dispositivo real del Paso 5, y la sesión de Allocations del Paso 6; explicá por qué medir en el simulador no sustituye medir en el hardware real de un usuario. Siguiente paso: estudia accesibilidad con VoiceOver. Errores comunes: medir solo en el simulador, confiar en la percepción subjetiva de fluidez, y no perfilar builds de Release (que optimizan distinto a Debug). Fuentes oficiales: https://developer.apple.com/documentation/xcode/improving-your-app-s-performance y https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-shipping-app.
 
 ### Tema 2: Accesibilidad con VoiceOver · Intermedio · 35 min
 
@@ -340,7 +340,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** concatenar textos, 
 
 **Fuente oficial:** [Apple — Localizing and varying text with a string catalog](https://developer.apple.com/documentation/xcode/localizing-and-varying-text-with-a-string-catalog).
 
-### Tema 5: UIKit desde cero para mantener aplicaciones reales · Avanzado · 55 min
+### Tema 5: UIKit desde cero para mantener aplicaciones reales · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir en UIKit la lista de paradas de RutaFlow (`StopsViewController`), entendiendo quién crea la vista, cuándo se carga, y por qué una referencia fuerte puede impedir que salga de memoria. Prerrequisitos: módulos 0-9, un proyecto iOS existente.

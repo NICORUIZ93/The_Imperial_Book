@@ -206,7 +206,7 @@ Corrige el Paso 5 especificando explícitamente el parámetro de tipo (`useLocal
 Entrega el hook genérico reutilizado para dos tipos distintos del Paso 4, el caso de inferencia ambigua del Paso 5, y la especificación explícita del Paso 6; explica cuándo conviene especificar el parámetro de tipo explícitamente en vez de depender de que TypeScript lo infiera solo. Siguiente paso: estudia eventos tipados y componentes polimórficos. Errores comunes: depender de la inferencia de tipos en casos ambiguos donde el valor inicial no determina claramente el tipo deseado, duplicar un hook para cada tipo de dato en vez de generalizarlo, y omitir el parámetro de tipo cuando TypeScript realmente no puede inferirlo del contexto. Fuentes oficiales: https://www.typescriptlang.org/docs/handbook/2/generics.html y https://react.dev/learn/reusing-logic-with-custom-hooks.
 **Implicación práctica:** Un hook genérico se escribe una única vez y se reutiliza correctamente tipado para cualquier tipo de dato concreto, evitando duplicar la implementación.
 
-### Tema 3: Eventos tipados y componentes polimórficos · Avanzado · 50 min
+### Tema 3: Eventos tipados y componentes polimórficos · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a tipar el manejador de cambio del campo de búsqueda de guía con `React.ChangeEvent<HTMLInputElement>`, y a construir un `Boton` polimórfico que pueda renderizarse como `<button>` o como `<a>`. Prerrequisitos: Tema 2 de este módulo.

@@ -7,7 +7,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas.** Sirven para razonar sobre qué sobrevive y qué se pierde, pero no ejecutan Android. La evidencia real de cada tema es la que aparece como **Verificación real en Android**: logs de `adb logcat` en el emulador con una salida esperada concreta.
 
-### Tema 1: Ciclo de vida de una Activity
+### Tema 1: Ciclo de vida de una Activity · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -106,7 +106,7 @@ Ya predices en qué callback específico es seguro iniciar o liberar un recurso,
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Instrumenta la pantalla de captura de evidencia. Al enviarla a segundo plano, comprueba que libera la cámara y registra el orden de callbacks; volver debe permitir una nueva captura sin reiniciar la app.
 
-### Tema 2: ViewModel sobrevive a la rotación
+### Tema 2: ViewModel sobrevive a la rotación · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -226,7 +226,7 @@ Ya mueves estado a un `ViewModel` y confirmas por qué sobrevive a rotación gra
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Conserva en un ViewModel la guía seleccionada y el filtro de entregas. Rota durante una consulta y verifica que mantiene la selección sin duplicar la petición al repositorio.
 
-### Tema 3: SavedStateHandle
+### Tema 3: SavedStateHandle · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

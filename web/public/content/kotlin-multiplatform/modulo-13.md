@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Kotlin/Native
+### Tema 1: Kotlin/Native · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a compilar el framework de Kotlin/Native para el target del simulador de iOS y para el dispositivo físico, y empaquetarlos juntos en un XCFramework. Prerrequisitos: macOS con Xcode instalado, módulo `shared` del proyecto integrador (Módulo 11).
@@ -56,7 +56,7 @@ Corrige el Paso 5 distribuyendo el XCFramework del Paso 4, que incluye también 
 #### Paso 7 · Cierre
 Entrega el XCFramework del Paso 4, el error de arquitectura del Simulador del Paso 5, y la verificación en ambos contextos del Paso 6; explicá por qué "funciona en mi dispositivo" no es evidencia suficiente de que un framework nativo está completo. Siguiente paso: si el proyecto necesita interactuar con una librería C existente, estudiá cómo Kotlin/Native expone ese interop. Errores comunes: distribuir un framework compilado para una sola arquitectura asumiendo que cubre todos los casos de uso del equipo, no probar el Simulador antes de distribuir un build, e intentar unir con `lipo` los frameworks de dispositivo y de simulador, que comparten arquitectura arm64. Fuentes oficiales: https://kotlinlang.org/docs/native-overview.html y https://kotlinlang.org/docs/multiplatform-build-native-binaries.html.
 
-### Tema 2: Interop con C
+### Tema 2: Interop con C · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar un binding cinterop hacia una función C que recibe un buffer, y a usar `usePinned` correctamente para pasar memoria Kotlin de forma segura sin retener el puntero después del bloque. Prerrequisitos: Tema 1 de este módulo; macOS con Xcode para ejecutar el target `iosSimulatorArm64`.
@@ -145,9 +145,9 @@ Pista: extraé el puntero fuera del bloque con `val puntero = datos.usePinned { 
 Corregí el Paso 5 asegurando que toda llamada C que use ese puntero ocurra dentro del mismo bloque `usePinned`, y agregá una prueba que repita la operación 1000 veces buscando corrupción intermitente.
 
 #### Paso 7 · Cierre
-Entregá el uso correcto de `usePinned` del Paso 4, el puntero colgante del Paso 5, y la prueba repetida 1000 veces del Paso 6; explicá por qué un bug de memoria de este tipo puede no manifestarse en pruebas rápidas pero sí en uso prolongado o bajo presión de memoria real. Siguiente paso: si necesitás exponer esta misma funcionalidad directamente a Swift, explorá qué ofrece Swift Export frente al interop manual. Errores comunes: retener un puntero obtenido de `usePinned` fuera de su bloque, asumir que una prueba rápida sin crash es evidencia suficiente de manejo correcto de memoria, y copiar buffers innecesariamente cuando pinnear directamente sería más simple y igual de seguro. Fuentes oficiales: https://kotlinlang.org/docs/native-c-interop.html y https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.native/-pinned/.
+Entregá el uso correcto de `usePinned` del Paso 4, el puntero colgante del Paso 5, y la prueba repetida 1000 veces del Paso 6; explicá por qué un bug de memoria de este tipo puede no manifestarse en pruebas rápidas pero sí en uso prolongado o bajo presión de memoria real. Siguiente paso: si necesitás exponer esta misma funcionalidad directamente a Swift, explorá qué ofrece Swift Export frente al interop manual. Errores comunes: retener un puntero obtenido de `usePinned` fuera de su bloque, asumir que una prueba rápida sin crash es evidencia suficiente de manejo correcto de memoria, y copiar buffers innecesariamente cuando pinnear directamente sería más simple y igual de seguro. Fuentes oficiales: https://kotlinlang.org/docs/native-c-interop.html y https://kotlinlang.org/api/core/kotlin-stdlib/kotlinx.cinterop/use-pinned.html.
 
-### Tema 3: Swift Export
+### Tema 3: Swift Export · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a exportar una función `suspend` de `TaskClient` directamente como una función `async` de Swift usando Swift Export, y a aislar su uso detrás de un experimento verificable. Prerrequisitos: Tema 2 de este módulo; Swift Export habilitado en el proyecto.
@@ -197,9 +197,9 @@ Pista: reemplazá TODOS los wrappers manuales de interop existentes (incluyendo 
 Corregí el Paso 5 manteniendo la facade manual de `TaskClient` (Módulo 12) como la vía estable de producción, y aislando el uso de Swift Export detrás de un flag o módulo claramente marcado como experimental, documentando su versión y estado de estabilidad exactos.
 
 #### Paso 7 · Cierre
-Entregá el mapeo de la función async del Paso 4, la ruptura total del build tras el upgrade del Paso 5, y el aislamiento del experimento del Paso 6; explicá por qué adoptar una herramienta en estado Alpha como única vía de producción traslada el riesgo de su inestabilidad a toda la app de una sola vez. Siguiente paso: empaquetá el framework resultante en un XCFramework con una API pública explícita. Errores comunes: adoptar Swift Export como única vía de producción sin revisar su estado de estabilidad declarado, eliminar wrappers manuales de respaldo antes de confirmar la estabilidad del reemplazo, y no fijar la versión de Kotlin exacta cuando se depende de una característica en estado Alpha. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-swift-export-overview.html y https://kotlinlang.org/docs/components-stability.html.
+Entregá el mapeo de la función async del Paso 4, la ruptura total del build tras el upgrade del Paso 5, y el aislamiento del experimento del Paso 6; explicá por qué adoptar una herramienta en estado Alpha como única vía de producción traslada el riesgo de su inestabilidad a toda la app de una sola vez. Siguiente paso: empaquetá el framework resultante en un XCFramework con una API pública explícita. Errores comunes: adoptar Swift Export como única vía de producción sin revisar su estado de estabilidad declarado, eliminar wrappers manuales de respaldo antes de confirmar la estabilidad del reemplazo, y no fijar la versión de Kotlin exacta cuando se depende de una característica en estado Alpha. Fuentes oficiales: https://kotlinlang.org/docs/native-swift-export.html y https://kotlinlang.org/docs/components-stability.html.
 
-### Tema 4: XCFramework y API pública
+### Tema 4: XCFramework y API pública · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a empaquetar el framework compartido en un XCFramework con una API pública mínima, decidiendo explícitamente qué dependencias transitivas exportar. Prerrequisitos: Tema 3 de este módulo.
@@ -254,7 +254,7 @@ Corregí el Paso 5 quitando el `export` de la dependencia de networking interna,
 #### Paso 7 · Cierre
 Entregá el XCFramework con export explícito del Paso 4, el conflicto de símbolos duplicados del Paso 5, y la corrección verificada del Paso 6; explicá por qué "incluir todo para comodidad del consumidor" puede romper exactamente a los consumidores que ya tienen esas dependencias por su cuenta. Siguiente paso: publicá este mismo artefacto en un repositorio donde otros equipos puedan consumirlo de forma versionada. Errores comunes: exportar transitivamente todas las dependencias internas sin evaluar conflictos con el consumidor, no decidir explícitamente entre framework estático y dinámico, y no probar la integración contra una app consumidora real antes de publicar. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-build-native-binaries.html#build-xcframeworks y https://developer.apple.com/documentation/xcode/creating-a-multi-platform-binary-framework-bundle.
 
-### Tema 5: Publicación en Maven Central
+### Tema 5: Publicación en Maven Central · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a publicar el módulo compartido en un repositorio Maven con coordenadas, firma y checksums inmutables. Prerrequisitos: Tema 4 de este módulo; credenciales de publicación configuradas.
@@ -300,9 +300,9 @@ Pista: volvé a publicar bajo la misma coordenada `1.2.0` con el fix aplicado, s
 Corregí el Paso 5 publicando el fix como `1.2.1` (nunca reescribiendo `1.2.0`), y documentá en el changelog del proyecto que `1.2.0` queda marcada como conocida con el bug, dirigiendo a todos los consumidores hacia `1.2.1`.
 
 #### Paso 7 · Cierre
-Entregá la publicación inmutable del Paso 4, la reescritura de versión detectada del Paso 5, y el changelog corregido del Paso 6; explicá por qué sobrescribir una versión ya publicada rompe una garantía que todo el ecosistema de dependencias asume como verdadera. Siguiente paso: asegurate de que esta versión sea binariamente compatible antes de publicarla, verificándolo en el pipeline de CI multi-target. Errores comunes: sobrescribir una versión ya publicada en vez de incrementarla, no firmar los artefactos publicados, y no publicar sources/docs junto con el binario principal. Fuentes oficiales: https://central.sonatype.org/publish/ y https://kotlinlang.org/docs/multiplatform-publish-lib-setup.html.
+Entregá la publicación inmutable del Paso 4, la reescritura de versión detectada del Paso 5, y el changelog corregido del Paso 6; explicá por qué sobrescribir una versión ya publicada rompe una garantía que todo el ecosistema de dependencias asume como verdadera. Siguiente paso: asegurate de que esta versión sea binariamente compatible antes de publicarla, verificándolo en el pipeline de CI multi-target. Errores comunes: sobrescribir una versión ya publicada en vez de incrementarla, no firmar los artefactos publicados, y no publicar sources/docs junto con el binario principal. Fuentes oficiales: https://central.sonatype.org/publish/publish-portal-guide/ y https://kotlinlang.org/docs/multiplatform/multiplatform-publish-lib-setup.html.
 
-### Tema 6: Compatibilidad binaria y CI multi-target
+### Tema 6: Compatibilidad binaria y CI multi-target · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar una matriz de CI que pruebe la compilación del módulo compartido contra la versión mínima soportada de Xcode, no solo la más reciente. Prerrequisitos: Tema 5 de este módulo.

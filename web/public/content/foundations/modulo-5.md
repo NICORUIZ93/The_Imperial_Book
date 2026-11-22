@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Depurar con evidencia, no con cambios aleatorios
+### Tema 1: Depurar con evidencia, no con cambios aleatorios · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reproducir un bug real de `listar_pendientes` en el proyecto Fundamentos, vas a escribir tu hipótesis en una línea ANTES de tocar el código, y vas a distinguir un cambio que corrige la causa real de un cambio que solo parece arreglar algo. **Prerrequisitos:** `tareas.py` del Módulo 1 (con `contar_pendientes`) y la persistencia SQLite del Módulo 4; comprueba `python3 --version`.
@@ -130,7 +130,7 @@ Elegí una función real de tu propio `tareas.py` (no inventada) que sospeches q
 Entregá la reproducción del bug de `listar_pendientes`, la hipótesis escrita antes de corregir, la pista falsa que no cambió el síntoma y la corrección real confirmada; como siguiente paso, en el Tema 2 vas a convertir ese mismo caso mínimo en una prueba automatizada para que nadie tenga que reproducirlo a mano otra vez. Errores comunes: cambiar varias cosas a la vez antes de confirmar cuál funcionó; aceptar un cambio como "arreglo" sin volver a ejecutar el caso que fallaba; depurar sin escribir la hipótesis, lo que impide saber después qué se estaba probando. Fuentes oficiales: https://docs.python.org/es/3/library/pdb.html y https://docs.python.org/es/3/howto/logging.html.
 **Implicación práctica:** Sin un caso mínimo reproducible y una hipótesis escrita, "arreglar" un bug es indistinguible de cambiar cosas hasta que el síntoma visible desaparezca, aunque la causa real siga ahí.
 
-### Tema 2: Pruebas con propósito y niveles adecuados
+### Tema 2: Pruebas con propósito y niveles adecuados · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir una prueba unitaria real para `contar_pendientes` y una prueba de integración real contra SQLite, y vas a comprobar en carne propia por qué una prueba unitaria sobresimulada (fake) puede seguir en verde aunque la consulta SQL real esté rota. **Prerrequisitos:** `tareas.py` del Módulo 1 y la base SQLite del Módulo 4; `python3 -m pip install pytest`.
@@ -274,7 +274,7 @@ Agregá una prueba de integración real (con `sqlite3.connect(":memory:")`) para
 Entregá la prueba unitaria de `contar_pendientes`, la prueba con el fake que no detectó la consulta rota, y la prueba de integración que sí la detectó; como siguiente paso, en el Tema 3 vas a usar Git para dejar registrado POR QUÉ agregaste esa prueba de integración, no solo que la agregaste. Errores comunes: confiar en una prueba unitaria para cubrir la base de datos; usar un doble tan simple que ignora el comportamiento real que debería simular; medir éxito solo por cobertura y no por qué detecta cada prueba. Fuentes oficiales: https://docs.pytest.org/en/stable/ y https://docs.python.org/es/3/library/sqlite3.html.
 **Implicación práctica:** Una suite en verde no garantiza nada por sí sola: garantiza solo lo que sus pruebas realmente ejecutaron, y un doble demasiado simple puede ejecutar menos de lo que parece.
 
-### Tema 3: Git como historial de decisiones y colaboración
+### Tema 3: Git como historial de decisiones y colaboración · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar en la práctica por qué un mensaje de commit como "fix" no le sirve a nadie dentro de una semana, y vas a reemplazar ese hábito escribiendo mensajes que expliquen el motivo de un cambio, no solo qué archivo tocaron. **Prerrequisitos:** Git instalado; comprueba `git --version`.
@@ -412,7 +412,7 @@ Elegí tres commits de un repositorio de práctica (no reescribas mensajes de co
 Entregá el commit con mensaje inútil del Paso 4, la dificultad real de diagnosticarlo tres semanas después, y el commit de reemplazo con mensaje que explica el motivo; como siguiente paso, en el Tema 4 vas a automatizar en CI los controles de calidad que hasta ahora corriste a mano. Errores comunes: escribir "fix" o "cambios" confiando en que "ya se entiende"; mezclar en un commit un refactor con una corrección de bug, lo que oscurece cuál de las dos cosas motivó el cambio; reescribir con `git commit --amend` un commit que ya compartiste con otra persona. Fuentes oficiales: https://git-scm.com/book/es/v2 y https://docs.github.com/es/pull-requests.
 **Implicación práctica:** El código muestra QUÉ existe hoy, pero solo el historial de commits puede explicar POR QUÉ se llegó hasta ahí — y esa información se pierde para siempre si el mensaje no la registra.
 
-### Tema 4: Calidad estática, revisión e integración continua
+### Tema 4: Calidad estática, revisión e integración continua · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a usar Ruff para detectar un error antes de ejecutar el código, y vas a reproducir en carne propia la trampa de "funciona en mi máquina": una prueba que pasa localmente solo porque depende de un archivo que quedó de una corrida manual anterior, y que falla en cuanto corre en un entorno limpio como el que usa CI. **Prerrequisitos:** `tareas.py` del Módulo 1; con el entorno virtual activado, instala las herramientas mediante `python -m pip install ruff pytest`.

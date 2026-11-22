@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Amazon Data Firehose — entrega gestionada sin consumidores propios
+### Tema 1: Amazon Data Firehose — entrega gestionada sin consumidores propios · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a acumular eventos reales de "entregado" en un stream Firehose que los deja en S3 sin que escribas ningún consumidor. Prerrequisitos: Módulo 19 completo.
@@ -63,7 +63,7 @@ Repetí el envío usando `put-record-batch` con los 5 registros en una sola llam
 #### Paso 7 · Cierre
 Entregá el archivo NDJSON con los 5 eventos del Paso 4, el registro mal formado del Paso 5, y la comparación con `put-record-batch` del Paso 6; explicá por qué Firehose no valida el contenido de `Data`, solo lo transporta. Siguiente paso: consumidores. Errores comunes: buffers sin límite y no comprobar entrega. Fuente oficial: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html.
 
-### Tema 2: Firehose vs Kinesis Data Streams — quién consume los datos
+### Tema 2: Firehose vs Kinesis Data Streams — quién consume los datos · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comparar, con comandos reales, el stream de ubicaciones del Módulo 17 (que tú consumís) contra `demo-eventos` del Tema 1 (que Firehose consume por vos). Prerrequisitos: Módulo 17 completo, Tema 1 de este módulo.
@@ -116,7 +116,7 @@ Construí una tabla de dos columnas (Kinesis Data Streams / Firehose) con tres f
 #### Paso 7 · Cierre
 Entregá la comparación de estado/shards del Paso 4, el error de concepto equivocado del Paso 5, y la tabla del Paso 6; explicá por qué RutaFlow necesita los dos servicios en paralelo, no uno sustituyendo al otro. Siguiente paso: Pipes. Errores comunes: olvidar latencia de buffer y responsabilidad operativa. Fuente oficial: https://docs.aws.amazon.com/firehose/latest/dev/what-is-this-service.html.
 
-### Tema 3: EventBridge Pipes — conectar origen y destino sin código de pegamento
+### Tema 3: EventBridge Pipes — conectar origen y destino sin código de pegamento · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar una cola de notificaciones directamente a una Lambda con un pipe, sin escribir ninguna función que haga polling. Prerrequisitos: Módulo 11 completo.
@@ -182,7 +182,7 @@ Agregale a `demo-pipe` un filtro (`--source-parameters` con una condición sobre
 #### Paso 7 · Cierre
 Entregá el pipe funcionando sin polling del Paso 4, el destino incompatible rechazado del Paso 5, y el filtro agregado del Paso 6; explicá por qué cada línea de código de pegamento que Pipes evita escribir es una línea menos que puede tener bugs. Siguiente paso: patrones. Errores comunes: permisos incompletos y eventos sin esquema. Fuente oficial: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-pipes.html.
 
-### Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions
+### Tema 4: Cuándo usar Pipes frente a reglas EventBridge o Step Functions · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a confirmar, consultando las tres APIs reales, que RutaFlow ya usa las tres piezas de integración donde corresponde: Pipes, reglas EventBridge y Step Functions. Prerrequisitos: Módulos 11 y 16, Tema 3 de este módulo.

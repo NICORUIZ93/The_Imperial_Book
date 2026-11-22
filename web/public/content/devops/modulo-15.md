@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Docker y Compose avanzados
+### Tema 1: Docker y Compose avanzados · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar un `healthcheck` y un `depends_on: condition: service_healthy` para que el servicio de RutaFlow no arranque contra una base de datos que aún no acepta conexiones. Prerrequisitos: Docker Compose v2 instalado (`docker compose version`).
@@ -145,7 +145,7 @@ Detén solo `db` después de arrancar y comprueba que la API devuelve 503; vuelv
 #### Paso 7 · Cierre
 Entregá el compose con healthcheck del Paso 4, el bloqueo por dependencia unhealthy del Paso 5, y el ajuste de reintentos del Paso 6; explicá la diferencia entre "el contenedor existe" y "el servicio está listo". Siguiente paso: aplica el mismo principio de disponibilidad verificada a Kubernetes con probes. Errores comunes: confiar en `depends_on` sin condición para servicios con arranque lento, healthchecks que prueban el proceso en vez del servicio real, y timeouts de healthcheck más cortos que el arranque real del servicio. Fuentes oficiales: https://docs.docker.com/compose/compose-file/05-services/#healthcheck y https://docs.docker.com/compose/compose-file/05-services/#depends_on.
 
-### Tema 2: Kubernetes extensible y Helm avanzado
+### Tema 2: Kubernetes extensible y Helm avanzado · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar un Helm hook `pre-upgrade` que corra las migraciones de RutaFlow antes de que el nuevo Deployment reciba tráfico. Prerrequisitos: Tema 1 de este módulo; Helm 3 instalado (`helm version`).
@@ -237,7 +237,7 @@ Corregí el Paso 5 restaurando la annotation `pre-upgrade`, y agregá un segundo
 #### Paso 7 · Cierre
 Entregá el hook `pre-upgrade` del Paso 4, la carrera de tiempos del Paso 5, y la verificación `post-upgrade` del Paso 6; explicá por qué un recurso "normal" del chart no tiene garantía de orden frente a un hook explícito. Siguiente paso: estudia cómo un service mesh añade control de tráfico entre versiones. Errores comunes: Jobs de migración sin `hook-delete-policy` que acumulan ejecuciones viejas, hooks sin `hook-weight` cuando el orden entre varios hooks importa, y no verificar el resultado del hook antes de continuar. Fuentes oficiales: https://helm.sh/docs/topics/charts_hooks/ y https://helm.sh/docs/chart_template_guide/.
 
-### Tema 3: Service Mesh con Istio o Linkerd
+### Tema 3: Service Mesh con Istio o Linkerd · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar un `VirtualService` y un `DestinationRule` de Istio para dividir el tráfico de la API de RutaFlow 90/10 entre la versión estable y un canary. Prerrequisitos: Tema 2 de este módulo; clúster con Istio instalado (`istioctl version`).
@@ -326,7 +326,7 @@ Corregí el Paso 5 ajustando la etiqueta del Deployment del canary a `version: v
 #### Paso 7 · Cierre
 Entregá el split 90/10 del Paso 4, los 503 del subset vacío del Paso 5, y la verificación de endpoints del Paso 6; explicá por qué un subset sin pods que cumplan su selector no "reparte menos tráfico" sino que falla ese porcentaje por completo. Siguiente paso: estudia cómo GitOps aplica estos mismos manifiestos de forma declarativa y auditable. Errores comunes: subsets cuyo selector de etiquetas no coincide con los pods reales, mTLS en modo STRICT que bloquea un servicio sin sidecar inyectado, y aumentar el peso del canary sin verificar antes que tiene endpoints sanos. Fuentes oficiales: https://istio.io/latest/docs/tasks/traffic-management/traffic-shifting/ y https://istio.io/latest/docs/concepts/traffic-management/.
 
-### Tema 4: GitOps con Argo CD y Flux
+### Tema 4: GitOps con Argo CD y Flux · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar una Application de Argo CD con `syncPolicy.automated.selfHeal` para que el estado de RutaFlow en el clúster nunca diverja silenciosamente del repositorio Git. Prerrequisitos: Tema 3 de este módulo; Argo CD instalado (`argocd version`).
@@ -395,7 +395,7 @@ Corregí el Paso 5 de la forma correcta para GitOps: actualizá `replicas: 10` d
 #### Paso 7 · Cierre
 Entregá la Application con self-heal del Paso 4, la mitigación revertida silenciosamente del Paso 5, y el cambio correcto vía Git del Paso 6; explicá por qué un `kubectl edit` manual en un clúster gestionado por GitOps es una mitigación temporal engañosa, no una solución. Siguiente paso: estudia cómo Ansible gestiona configuración fuera del clúster con la misma disciplina declarativa. Errores comunes: mitigar incidentes con cambios manuales en clústeres con self-heal activo, no tener un procedimiento documentado de "cambio de emergencia vía Git", y dejar `automated.prune` activo sin revisar qué recursos elimina. Fuentes oficiales: https://argo-cd.readthedocs.io/en/stable/user-guide/auto_sync/ y https://opengitops.dev/.
 
-### Tema 5: Ansible, inventarios, roles y Vault
+### Tema 5: Ansible, inventarios, roles y Vault · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a cifrar la API key de RutaFlow con `ansible-vault` y a escribirla en el servidor usando una tarea idempotente que no duplique su valor al ejecutarse varias veces. Prerrequisitos: Tema 4 de este módulo; Ansible instalado (`ansible --version`).
@@ -480,7 +480,7 @@ Corregí el Paso 5 restaurando la tarea `lineinfile` con `regexp` y `state: pres
 #### Paso 7 · Cierre
 Entregá el secreto cifrado y la tarea idempotente del Paso 4, la duplicación de línea del Paso 5, y la verificación de `changed=0` del Paso 6; explicá por qué `shell`/`command` nunca son idempotentes por sí mismos, a diferencia de los módulos declarativos de Ansible. Siguiente paso: cerrá el módulo conectando estas prácticas con las métricas DORA que miden el impacto real de todo el pipeline. Errores comunes: guardar secretos sin `ansible-vault`, usar `shell`/`command` para tareas que ya tienen un módulo idempotente equivalente, y no verificar `changed=0` en una segunda ejecución antes de confiar en un playbook. Fuentes oficiales: https://docs.ansible.com/ansible/latest/vault_guide/index.html y https://docs.ansible.com/ansible/latest/collections/ansible/builtin/lineinfile_module.html.
 
-### Tema 6: DevSecOps y métricas DORA
+### Tema 6: DevSecOps y métricas DORA · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a calcular las cuatro métricas DORA (frecuencia de despliegue, lead time, tasa de fallo de cambios y MTTR) a partir de los datos reales del pipeline de RutaFlow. Prerrequisitos: Tema 5 de este módulo; acceso a los logs de CI/CD y al historial de incidentes de RutaFlow.

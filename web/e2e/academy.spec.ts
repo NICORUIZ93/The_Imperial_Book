@@ -1,4 +1,15 @@
 import { expect, test } from '@playwright/test';
+import { readFileSync } from 'node:fs';
+import { dirname, resolve } from 'node:path';
+
+// Los recuentos de temas por capítulo se derivan del índice publicado (specs/026 C9):
+// un cambio de lección no debe romper la suite por un número escrito a mano.
+type TopicIndex = Record<string, Record<string, { title: string }[]>>;
+const topicIndex: TopicIndex = JSON.parse(
+  readFileSync(resolve(dirname(__filename), '../public/content/topic-index.json'), 'utf8'),
+);
+const topicCount = (curso: string, modulo: number): number =>
+  topicIndex[curso]?.[String(modulo)]?.length ?? 0;
 
 test.beforeEach(async ({ page }) => {
   await page.goto('/');
@@ -15,7 +26,7 @@ test.beforeEach(async ({ page }) => {
 test('inicio: muestra la biblioteca de cursos', async ({ page }) => {
   await expect(page.locator('.topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.card').first()).toBeVisible();
-  await expect(page.locator('.hero-stats')).toContainText('16');
+  await expect(page.locator('.hero-stats')).toContainText(String(Object.keys(topicIndex).length));
 });
 
 test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({ page }) => {
@@ -23,7 +34,7 @@ test('catalogo: lista los tracks agrupados sin secciones de marketing', async ({
 
   await expect(page.locator('.topbar')).toContainText('The Imperial Book');
   await expect(page.locator('.group-title').first()).toBeVisible();
-  await expect(page.locator('.card')).toHaveCount(16);
+  await expect(page.locator('.card')).toHaveCount(Object.keys(topicIndex).length);
   await expect(page.locator('.hero-stats dd').nth(2)).not.toHaveText('—');
   await expect(page.getByRole('link', { name: /Ver el temario completo/ })).toBeVisible();
 });
@@ -35,7 +46,7 @@ test('temario: solo publica temas con lección real, sin candidatos ni rutas pri
   const index = await (await page.request.get('/content/topic-index.json')).json();
   const total = Object.values(index).flatMap(track => Object.values(track as Record<string, unknown[]>)).reduce((sum, topics) => sum + topics.length, 0);
   await expect(page.locator('.curriculum-stats')).toContainText(String(total));
-  await expect(page.locator('.stack-row')).toHaveCount(16);
+  await expect(page.locator('.stack-row')).toHaveCount(Object.keys(topicIndex).length);
   await expect(page.locator('body')).not.toContainText('candidato');
 
   await page.goto('/temario/foundations');
@@ -45,8 +56,10 @@ test('temario: solo publica temas con lección real, sin candidatos ni rutas pri
   await expect(page.getByRole('link', { name: /Abrir lección/ })).toHaveCount(await rows.count());
   await expect(page.locator('body')).not.toContainText('/Volumes/');
   await page.getByRole('link', { name: /Abrir lección/ }).first().click();
-  await expect(page).toHaveURL(/\/curso\/foundations\/0\/tema\/tema-1$/);
+  // El visor espera un índice 1-based: `tema-N` daba NaN y no enfocaba el tema (specs/025 C1).
+  await expect(page).toHaveURL(/\/curso\/foundations\/0\/tema\/1$/);
   await expect(page.locator('.topic-card').first()).toContainText('Computador, sistema operativo, programa y proceso');
+  await expect(page.locator('.topic-focus-banner')).toContainText('Computador, sistema operativo, programa y proceso');
 });
 
 test('temario de una ruta sin lecciones no existe: no hay stacks propuestos (specs/006 I1)', async ({ page }) => {
@@ -58,7 +71,8 @@ test('Fundamentos módulo 1: muestra los estados inválidos y bytes UTF-8 en la 
   await page.goto('/curso/foundations/1');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(5);
+  // El capítulo creció al migrar Clases y objetos y Herencia (specs/024).
+  await expect(topics).toHaveCount(topicCount('foundations', 1));
   await expect(topics.nth(0)).toContainText('Tarea 2: estado no admitido: archivada');
   await expect(topics.nth(4)).toContainText('4 bytes');
 });
@@ -67,7 +81,7 @@ test('Fundamentos módulo 2: renderiza el ejemplo de identidad por id y sus resu
   await page.goto('/curso/foundations/2');
 
   const topic = page.locator('.topic-card').first();
-  await expect(page.locator('.topic-card')).toHaveCount(8);
+  await expect(page.locator('.topic-card')).toHaveCount(topicCount('foundations', 2));
   await expect(topic).toContainText('buscar_por_id_lista');
   await expect(topic).toContainText('llamar al dentista');
 });
@@ -76,7 +90,7 @@ test('Fundamentos módulo 3: muestra HTTP, sitio accesible y servidor local segu
   await page.goto('/curso/foundations/3');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(5);
+  await expect(topics).toHaveCount(topicCount('foundations', 3));
   await expect(topics.nth(0)).toContainText('--bind 127.0.0.1');
   await expect(topics.nth(0)).toContainText('Rutas 404 vs 500');
   await expect(topics.nth(0)).toContainText('HTTP/1.0 200 OK');
@@ -90,7 +104,7 @@ test('Fundamentos módulo 4: verifica el plan del índice y los límites de la t
   await page.goto('/curso/foundations/4');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(7);
+  await expect(topics).toHaveCount(topicCount('foundations', 4));
   await topics.nth(2).getByRole('button', { name: 'Abrir tema' }).click();
   await expect(topics.nth(2)).toContainText('SCAN tareas');
   await expect(topics.nth(2)).toContainText('SEARCH tareas USING INDEX idx_tareas_estado');
@@ -104,7 +118,7 @@ test('Fundamentos módulo 5: comprueba depuración, pruebas, Git y CI', async ({
   await page.goto('/curso/foundations/5');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(4);
+  await expect(topics).toHaveCount(topicCount('foundations', 5));
   await expect(topics.nth(0)).toContainText('Stack trace');
 
   await topics.nth(1).getByRole('button', { name: 'Abrir tema' }).click();
@@ -122,7 +136,7 @@ test('Node módulo 0: renderiza configuración explícita y eventos no durables'
   await page.goto('/curso/node/0');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(4);
+  await expect(topics).toHaveCount(topicCount('node', 0));
   for (const index of [2, 3]) {
     await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
   }
@@ -133,7 +147,7 @@ test('Flutter módulo 0: renderiza mixins y el flujo de Future sin confundirlo c
   await page.goto('/curso/flutter/0');
 
   const topics = page.locator('.topic-card');
-  await expect(topics).toHaveCount(7);
+  await expect(topics).toHaveCount(topicCount('flutter', 0));
   for (const index of [1, 2]) {
     await expect(topics.nth(index).locator('.visual-diagram pre.mermaid svg')).toHaveCount(1);
   }
@@ -223,7 +237,7 @@ test('diagramas: renderiza Mermaid en capítulos con etiquetas complejas', async
     { track: 'ios', module: 12, diagrams: 4 },
     { track: 'ios', module: 14, diagrams: 10 },
     { track: 'react', module: 6, diagrams: 3 },
-    { track: 'spring-boot', module: 2, diagrams: 5 },
+    { track: 'spring-boot', module: 2, diagrams: 6 },
   ];
 
   for (const { track, module, diagrams } of chapters) {
@@ -256,7 +270,7 @@ test('diagramas: la vista ampliada muestra el diagrama completo sin encogerlo', 
 
 test('diagramas Archify: muestra Java y Spring Boot dentro de la lección', async ({ page }) => {
   for (const { path, topicIndex } of [
-    { path: '/curso/java/0', topicIndex: 1 },
+    { path: '/curso/java/0', topicIndex: 2 },
     { path: '/curso/spring-boot/0', topicIndex: 0 },
   ]) {
     await page.goto(path, { waitUntil: 'domcontentloaded' });
@@ -404,7 +418,7 @@ test('estructura: cada Tema se muestra como una tarjeta separada, no anidado en 
   // PL/pgSQL y Excel) se ven como
   // topic-card independientes y que ninguna anida a otra.
   await page.goto('/curso/foundations/4');
-  await expect(page.locator('.topic-card')).toHaveCount(7);
+  await expect(page.locator('.topic-card')).toHaveCount(topicCount('foundations', 4));
   await expect(page.locator('.topic-card .topic-card')).toHaveCount(0);
   await expect(page.locator('.topic-card.expanded')).toHaveCount(1);
   await expect(page.locator('.lesson-error')).toHaveCount(0);
@@ -686,4 +700,32 @@ test('control 1: renderiza fórmulas TeX con KaTeX y las figuras del curso', asy
   const src = await figure.getAttribute('src');
   expect((await page.request.get(`/${src}`)).status()).toBe(200);
   expect((await page.request.get('/content/figures/control-1-segundo-orden/figure-light.html')).status()).toBe(200);
+});
+
+test('paleta: abrir por botón enfoca el campo, aísla el fondo y restaura el foco (specs/025 C2)', async ({ page }) => {
+  await page.goto('/');
+  const trigger = page.getByRole('button', { name: 'Buscar cursos, módulos y temas' });
+  await trigger.focus();
+  await trigger.click();
+
+  const input = page.getByRole('textbox', { name: 'Buscar cursos, módulos y temas' });
+  await expect(input).toBeFocused();
+  await expect(page.locator('app-root > app-course-catalog')).toHaveAttribute('inert', '');
+
+  await input.fill('Java');
+  await expect(input).toHaveValue('Java');
+  await page.keyboard.press('Escape');
+  await expect(page.locator('.palette')).toHaveCount(0);
+  await expect(page.locator('app-root > app-course-catalog')).not.toHaveAttribute('inert', '');
+  await expect(trigger).toBeFocused();
+
+  await trigger.click();
+  await expect(input).toHaveValue('');
+});
+
+test('ruta desconocida: muestra 404 en lugar de redirigir al inicio (specs/025 C4)', async ({ page }) => {
+  await page.goto('/esta-ruta-no-existe');
+  await expect(page.getByRole('heading', { name: 'Esta página no existe' })).toBeVisible();
+  await expect(page).toHaveURL(/\/esta-ruta-no-existe$/);
+  await expect(page.locator('main#main-content')).toBeVisible();
 });

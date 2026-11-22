@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions
+### Tema 1: floci-az — Blob Storage, Queue Storage, Table Storage, Cosmos DB, Functions · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a portar la foto de prueba de entrega del bucket `pruebas-entrega` (Módulo 2, S3) a un contenedor Blob Storage, para comparar el mismo caso real en otro proveedor. Prerrequisitos: Módulo 2, floci-az corriendo (Módulo 0).
@@ -67,7 +67,7 @@ Relacioná cada pieza de RutaFlow con su servicio Azure correcto: la foto de ent
 #### Paso 7 · Cierre
 Entregá el ciclo completo de subida/descarga en Blob Storage, el error de puerto equivocado del Paso 5 y la relación de los tres servicios del Paso 6; explicá qué cambia y qué no cambia al portar `pruebas-entrega` de S3 a Blob Storage. Siguiente paso: GCP. Errores comunes: asumir nombres idénticos entre nubes. Fuente oficial: https://learn.microsoft.com/azure/.
 
-### Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions
+### Tema 2: floci-gcp — Cloud Storage, Pub/Sub, Firestore, Cloud Functions · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar el mismo "confirmar entrega" de `DeliveryCommands` (Módulo 3, SQS) como un topic Pub/Sub real en GCP. Prerrequisitos: Módulo 3, floci-gcp corriendo (Módulo 0).
@@ -131,7 +131,7 @@ Creá una segunda suscripción (`delivery-commands-sub-2`) sobre el mismo topic,
 #### Paso 7 · Cierre
 Entregá la publicación y recepción exitosa, el error de topic inexistente del Paso 5, y la doble recepción del Paso 6; explicá por qué Pub/Sub no es un calco exacto de SQS aunque resuelva el mismo problema de negocio. Siguiente paso: comparación. Errores comunes: confundir documento con tabla y evento con cola. Fuente oficial: https://cloud.google.com/docs.
 
-### Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio
+### Tema 3: Comparativa AWS vs Azure vs GCP por categoría de servicio · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar en vivo una diferencia real (no solo de nombre) entre SQS y Pub/Sub, usando el mismo comando de RutaFlow de los Temas 1-2. Prerrequisitos: Temas 1-2 de este módulo.

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Nombres que revelan intención y funciones pequeñas
+### Tema 1: Nombres que revelan intención y funciones pequeñas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás renombrar variables y funciones para que expliquen su propósito, dividir una función que hace varias cosas en funciones de un solo nivel de abstracción, reemplazar números mágicos por constantes y eliminar argumentos bandera, sin cambiar el comportamiento. Prerrequisitos: Módulo 1, Tema 4 (funciones) y Módulo 7, Tema 3 (cohesión, acoplamiento y la primera prueba caracterizadora).
@@ -110,7 +110,7 @@ Toma una función larga de uno de tus proyectos anteriores, escribe primero una 
 #### Paso 7 · Cierre
 
 
-### Tema 2: Comentarios honestos y excepciones en lugar de códigos de error
+### Tema 2: Comentarios honestos y excepciones en lugar de códigos de error · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás reemplazar códigos de error por excepciones con nombre, decidir cuándo un comentario aporta y cuándo debe convertirse en código, y separar el camino feliz del manejo de errores. Prerrequisito: Tema 1 de este módulo.
@@ -214,7 +214,7 @@ Busca en un proyecto tuyo tres comentarios que expliquen *qué* hace el código 
 #### Paso 7 · Cierre
 
 
-### Tema 3: Objetos frente a estructuras de datos y la ley de Demeter
+### Tema 3: Objetos frente a estructuras de datos y la ley de Demeter · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás distinguir un objeto (esconde datos y expone comportamiento) de una estructura de datos (expone datos), aplicar la ley de Demeter y evitar las "cadenas de vagón" que acoplan el código a la estructura interna. Prerrequisitos: Temas 1 y 2 de este módulo.
@@ -318,7 +318,7 @@ Revisa un proyecto tuyo con `grep -rE "\.\w+\.\w+\.\w+"` y clasifica cada cadena
 #### Paso 7 · Cierre
 
 
-### Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba
+### Tema 4: Pruebas limpias: F.I.R.S.T. y un concepto por prueba · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás escribir pruebas unitarias rápidas, independientes, repetibles, autoevaluadas y oportunas (F.I.R.S.T.), con un concepto por prueba y nombres que describen el comportamiento. Prerrequisitos: Módulo 5, Tema 2 y los temas anteriores de este módulo.

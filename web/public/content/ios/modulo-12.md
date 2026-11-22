@@ -88,7 +88,7 @@ Corregí el Paso 5 devolviendo esa llamada a `EnviosViewModel`, y recorré el re
 Entregá el diagrama de capas del Paso 4, la violación provocada en el Paso 5, y el resultado de la revisión del Paso 6; explicá con tus propias palabras por qué integrar todos los módulos del track en un solo proyecto expone violaciones de capas que un módulo aislado nunca mostraría. Siguiente paso: aplicá esta misma revisión al proyecto integrador de Android o Flutter. Errores comunes: lógica de red o persistencia filtrada directamente en una vista, un ViewModel que importa SwiftUI, y Dominio que depende de Servicios o Persistencia en vez de ser puro. Fuentes oficiales: https://developer.apple.com/documentation/swiftui y https://developer.apple.com/documentation/foundation/urlsession.
 **Implicación práctica:** Integrar todo el track en un único proyecto expone violaciones de capas (y acoplamientos ocultos) que un módulo estudiado aisladamente nunca revela.
 
-### Tema 2: Sincronización entre red y persistencia local · Avanzado · 50 min
+### Tema 2: Sincronización entre red y persistencia local · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a hacer que `EnviosViewModel` orqueste tanto `ServicioAPI` (red) como SwiftData (persistencia local) para que `ListaEnvios` siga mostrando datos aunque la red falle. Prerrequisitos: Tema 1 de este módulo.

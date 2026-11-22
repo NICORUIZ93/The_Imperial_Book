@@ -10,7 +10,7 @@ Para saber cómo se comporta la salida en el tiempo hay que volver de \(Y(s)\) a
 
 ## Aprende construyendo
 
-### Tema 1: Caso 1: polos reales distintos
+### Tema 1: Caso 1: polos reales distintos · Básico · 45 min
 
 **¿Por qué es importante?** Casi ninguna salida \(Y(s)\) está en la tabla tal cual; partirla en fracciones es la forma de volver al tiempo.
 
@@ -240,7 +240,7 @@ cambia `Y` por \(\dfrac{10}{(s+1)(s+4)}\) y confirma los coeficientes del Ejempl
 
 **Límite:** `apart` solo separa factores reales distintos tal cual están escritos; si el denominador tiene un factor cuadrático irreducible (polos complejos, Tema 3) no lo descompone en seno/coseno — hay que completar el cuadrado a mano.
 
-### Tema 2: Caso 2: polos repetidos
+### Tema 2: Caso 2: polos repetidos · Básico · 45 min
 
 **¿Por qué es importante?** Los polos repetidos aparecen en los sistemas críticamente amortiguados y necesitan un tratamiento distinto.
 
@@ -421,7 +421,7 @@ cambia `Y` por \(\dfrac{4}{s^2(s+2)}\) y confirma los coeficientes del Ejemplo 4
 
 **Límite:** el coeficiente \(B\) de la potencia más baja sale de derivar lo que queda tras tapar; con multiplicidad 3 o más hay que derivar varias veces y dividir por el factorial correspondiente, no solo una vez.
 
-### Tema 3: Caso 3: polos complejos (completar el cuadrado)
+### Tema 3: Caso 3: polos complejos (completar el cuadrado) · Básico · 45 min
 
 **¿Por qué es importante?** Completar el cuadrado es exactamente lo que pedía el punto 3 del Parcial 1 y la base de la respuesta de segundo orden.
 
@@ -689,7 +689,7 @@ completa el cuadrado de \(s^2+4s+13\) a mano, confirma con el script (`(s + 2) *
 
 **Límite:** completar el cuadrado solo aplica a un factor cuadrático; si el denominador tiene un factor cúbico o mayor con raíces complejas, se necesita descomposición en fracciones parciales de orden superior o un cambio de variable distinto.
 
-### Tema 4: Resolver una ecuación diferencial completa
+### Tema 4: Resolver una ecuación diferencial completa · Básico · 45 min
 
 **¿Por qué es importante?** Es el uso más directo de todo el capítulo: transformar, despejar, partir en fracciones e invertir. Así se resuelve cualquier sistema lineal con entrada y condiciones iniciales.
 

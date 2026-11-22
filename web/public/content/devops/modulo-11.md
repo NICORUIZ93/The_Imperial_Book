@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Escaneo de imágenes y dependencias (Trivy, Snyk)
+### Tema 1: Escaneo de imágenes y dependencias (Trivy, Snyk) · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -101,7 +101,7 @@ Ya escaneas imágenes propias y priorizas hallazgos por severidad con criterio, 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Escanea exactamente la imagen que se desplegará y conserva el reporte con su digest. Revisa una vulnerabilidad detectada y documenta corrección o excepción con responsable y vencimiento.
 
-### Tema 2: Integración en el pipeline
+### Tema 2: Integración en el pipeline · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -197,7 +197,7 @@ Ya conviertes el escaneo de seguridad en un gate automático y obligatorio del p
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Introduce un hallazgo conocido en una rama de laboratorio y comprueba que la política del pipeline bloquea la publicación. Evita que una herramienta fallida se interprete como ausencia de vulnerabilidades.
 
-### Tema 3: Gestión de secretos (Vault, SOPS)
+### Tema 3: Gestión de secretos (Vault, SOPS) · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -274,7 +274,7 @@ Ya distingues por qué un secreto hardcodeado es un antipatrón grave y cómo Va
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Entrega una credencial al servicio desde el mecanismo de secretos elegido. Rótala y verifica acceso con la nueva versión sin guardarla en artefactos, logs ni historial del repositorio.
 
-### Tema 4: Menor privilegio en CI/CD
+### Tema 4: Menor privilegio en CI/CD · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -392,7 +392,7 @@ Ya acotas los permisos de un token de pipeline al mínimo necesario, limitando e
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Reduce el token del job de prueba a permisos de lectura. Comprueba que el despliegue autorizado usa una identidad distinta y que una contribución externa no puede obtener sus credenciales.
 
-### Tema 5: SBOM y supply chain security
+### Tema 5: SBOM y supply chain security · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -481,7 +481,7 @@ Ya generas un inventario preciso de dependencias que acelera drásticamente la r
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Genera una SBOM del artefacto publicado y relaciónala con su digest. Busca una dependencia específica y demuestra que el inventario corresponde al binario desplegado, no solo al árbol del desarrollador.
 
-### Tema 6: SAST, DAST y SCA — diferencias y herramientas
+### Tema 6: SAST, DAST y SCA — diferencias y herramientas · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -565,7 +565,7 @@ Ya distingues qué detecta específicamente cada una de SAST, DAST y SCA, y por 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Asigna controles distintos a código, dependencias y aplicación en ejecución. Reproduce un hallazgo de prueba por categoría y documenta qué riesgo queda fuera del alcance de cada herramienta.
 
-### Tema 7: Reconocimiento de tu propio laboratorio: escaneo de puertos y banners
+### Tema 7: Reconocimiento de tu propio laboratorio: escaneo de puertos y banners · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás explicar cómo un escáner descubre puertos abiertos, cerrados y filtrados, implementar uno mínimo con sockets, leer los banners de los servicios y comparar el resultado con `nmap`, siempre sobre equipos propios y con autorización. Prerrequisitos: Tema 7 del Módulo 0 (redes) y los temas anteriores de este módulo.

@@ -407,7 +407,7 @@ Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del l
 bash ./scripts/verify-integration.sh
 ```
 
-### Tema 4: CRUD API y contratos · Intermedio · 35 min
+### Tema 4: CRUD API y contratos · Experto · 35 min
 
 **¿Por qué es importante?** Cancelar sin borrar conserva evidencia útil para auditoría y evita que un reintento de red destruya información o cree un resultado distinto. En este laboratorio, `DELETE` marca el envío como cancelado; no borra la fila. Las claves para reintentar una creación se estudian en M17 T2.
 
@@ -500,7 +500,7 @@ Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-ruta
 
 **Aplicación y decisión:** En el proyecto integrador, conserva la cancelación como transición y prueba la segunda petición sobre el mismo ID. Límite: idempotencia de DELETE no define por sí sola cómo resolver dos operaciones concurrentes ni la autorización del solicitante.
 
-### Tema 5: MySQL y datos espaciales · Avanzado · 35 min
+### Tema 5: MySQL y datos espaciales · Experto · 35 min
 
 **¿Por qué es importante?** Una búsqueda de repartidores cercanos necesita distinguir coordenadas bien interpretadas de un filtro espacial rápido. El laboratorio ejecuta las consultas contra MySQL 8.0.36 real con Testcontainers, no contra H2.
 
@@ -623,14 +623,14 @@ Para comprobar «Separa candidatos cercanos de una ruta», consulta: `examples/s
 
 **Cierra:** Conserva la salida de las pruebas y la explicación del orden de ejes. El siguiente tema convierte estos puntos a tipos Java con Hibernate Spatial.
 
-**Fuentes:** [MySQL 8.0: WKT y orden de ejes](https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html), [MySQL: `ST_Distance_Sphere`](https://dev.mysql.com/doc/refman/8.0/en/spatial-convenience-functions.html), [MySQL: índices espaciales](https://dev.mysql.com/doc/refman/8.4/en/spatial-index-optimization.html) y [Testcontainers MySQL](https://java.testcontainers.org/modules/databases/mysql/).
+**Fuentes:** [MySQL 8.0: WKT y orden de ejes](https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/gis-wkt-functions.html), [MySQL: `ST_Distance_Sphere`](https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/spatial-convenience-functions.html), [MySQL: índices espaciales](https://docs.oracle.com/cd/E17952_01/mysql-8.4-en/spatial-index-optimization.html) y [Testcontainers MySQL](https://java.testcontainers.org/modules/databases/mysql/).
 
 ---
 
 
 **Aplicación y decisión:** En el proyecto integrador, fija orden de ejes y unidades antes de calcular distancias y conserva el EXPLAIN del caso real. Una distancia esférica no equivale a una ruta por carretera ni a tiempo de llegada.
 
-### Tema 6: JPA e Hibernate Spatial · Avanzado · 35 min
+### Tema 6: JPA e Hibernate Spatial · Experto · 35 min
 
 **¿Por qué es importante?** La aplicación necesita trabajar con puntos GPS como datos tipados y conservar los cambios cuando dos conductores actualizan una posición casi al mismo tiempo. El laboratorio conecta JTS, Hibernate Spatial y MySQL real.
 
@@ -716,14 +716,14 @@ Para comprobar «Detecta dos escrituras sobre versiones distintas», consulta: `
 
 **Cierra:** Guarda la ejecución verde y el error real de la mutación. El siguiente tema agrega autenticación y comprueba propiedad del recurso.
 
-**Fuentes:** [Hibernate Spatial y mapeo JTS](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial), [Hibernate: bloqueo optimista con `@Version`](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic) y [MySQL: tipos espaciales](https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html).
+**Fuentes:** [Hibernate Spatial y mapeo JTS](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#spatial), [Hibernate: bloqueo optimista con `@Version`](https://docs.jboss.org/hibernate/orm/current/userguide/html_single/Hibernate_User_Guide.html#locking-optimistic) y [MySQL: tipos espaciales](https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/spatial-type-overview.html).
 
 ---
 
 
 **Aplicación y decisión:** En el proyecto integrador, mantén SRID y orden de coordenadas en el adaptador Spatial. Límite: persistir un Point con Hibernate no acredita que el índice elegido reduzca coste bajo la distribución real de datos.
 
-### Tema 7: JWT Bearer y autorización por roles · Avanzado · 35 min
+### Tema 7: JWT Bearer y autorización por roles · Experto · 35 min
 
 **¿Por qué es importante?** Un rol autoriza una clase de acción; no demuestra que el recurso solicitado sea de esa persona. El laboratorio firma JWT con HS256, valida su firma y revisa el dueño de la jornada por separado.
 
@@ -813,7 +813,7 @@ Para comprobar «Distingue autenticación de rol», consulta: `examples/spring-b
 
 ---
 
-### Tema 8: Tiempo real con STOMP · Avanzado · 40 min
+### Tema 8: Tiempo real con STOMP · Experto · 40 min
 
 **Objetivo observable:** conectar un cliente STOMP por WebSocket, recibir una posición publicada a un topic y demostrar que una secuencia repetida se descarta.
 
@@ -918,7 +918,7 @@ Ejecuta `./mvnw -q test` y registra por qué la segunda llamada devuelve `false`
 
 **Fuentes oficiales:** [Spring WebSocket y STOMP](https://docs.spring.io/spring-framework/reference/web/websocket/stomp.html), [broker simple: límites y alternativas](https://docs.spring.io/spring-framework/reference/web/websocket/stomp/handle-broker-relay.html).
 
-### Tema 9: Archivos y notificaciones push · Avanzado · 40 min
+### Tema 9: Archivos y notificaciones push · Experto · 40 min
 
 **Objetivo observable:** aceptar una imagen decodificable de una lista permitida, guardar su contenido bajo una clave nueva y enviar un aviso solo tras el commit.
 

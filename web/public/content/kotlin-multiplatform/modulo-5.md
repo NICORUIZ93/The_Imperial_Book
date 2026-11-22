@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Ktor Client multiplataforma
+### Tema 1: Ktor Client multiplataforma · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -142,7 +142,7 @@ Ya configuras un `HttpClient` compartido con deserialización automática, confi
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Consulta entregas con el engine apropiado de cada plataforma. Usa un endpoint de prueba y verifica contrato, serialización y cancelación en ambos destinos, manteniendo la API del repositorio común.
 
-### Tema 2: Manejo de errores de red con un tipo explícito
+### Tema 2: Manejo de errores de red con un tipo explícito · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -284,7 +284,7 @@ Ya modelas el resultado de una llamada de red como un tipo explícito, confirman
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Mapea respuestas HTTP y errores de transporte a resultados tipados. Prueba timeout, 404 y JSON inválido; no deben producir el mismo estado ni ocultarse como una lista vacía.
 
-### Tema 3: Interceptores y autenticación
+### Tema 3: Interceptores y autenticación · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -422,7 +422,7 @@ Ya centralizas el header de autenticación en un interceptor configurado una sol
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Centraliza credenciales y renovación sin imprimir tokens. Prueba dos consultas concurrentes con sesión vencida y comprueba que la política de refresco no genera un bucle de reintentos.
 
-### Tema 4: Reintentos con backoff exponencial
+### Tema 4: Reintentos con backoff exponencial · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -574,7 +574,7 @@ Ya implementas un mecanismo de reintentos con backoff exponencial, confirmando c
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Reintenta solo operaciones recuperables con espera acotada y clave de idempotencia estable. Con reloj controlado, verifica número de intentos y que cancelar detiene la secuencia.
 
-### Tema 5: kotlinx.serialization — JSON compartido entre plataformas
+### Tema 5: kotlinx.serialization — JSON compartido entre plataformas · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás serializar y deserializar modelos entre JSON y objetos Kotlin con `kotlinx.serialization` en el módulo común, de forma que Android e iOS compartan el mismo mapeo. Prerrequisitos: Temas 1-2 de este módulo (Ktor Client y manejo de errores).

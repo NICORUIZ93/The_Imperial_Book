@@ -6,7 +6,7 @@ Un evento no es una notificación decorativa ni un log con nombre bonito: es un 
 
 El laboratorio usa Floci para SQS y DynamoDB local. Puedes completar los temas 1 y 4 sin Docker; los temas 2 y 3 incluyen una parte pura que se prueba con `node --test` y una integración opcional contra `http://localhost:4566`. **Conocimiento previo:** Módulo 19 (agregados y eventos de dominio), Node.js, JSON y Docker. Si trabajas en Java, el Módulo 15 de Spring Boot muestra la misma saga con transacciones y compensación; aquí el foco está en el contrato y en la evidencia reproducible.
 
-### Tema 1: Eventos de dominio e integración: hechos, no comandos
+### Tema 1: Eventos de dominio e integración: hechos, no comandos · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque un equipo que confunde un comando con un evento termina acoplando consumidores a la intención del emisor y descubre demasiado tarde que no puede reaccionar a un hecho ya ocurrido. Un evento bien nombrado y versionado permite que Facturación, Notificaciones o Analítica reaccionen sin que Operaciones sepa quiénes son, y permite reconstruir qué pasó cuando algo falla.
 
@@ -147,7 +147,7 @@ Siguiente paso: el Tema 2 resuelve el problema de publicar un evento después de
 
 **Fuentes oficiales:** [Martin Fowler — DomainEvent](https://martinfowler.com/eaaDev/DomainEvent.html) y [microservices.io — Messaging](https://microservices.io/patterns/communication-style/messaging.html).
 
-### Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos
+### Tema 2: Outbox transaccional: guardar el hecho y el mensaje juntos · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque escribir en una base de datos y publicar en una cola son dos operaciones distintas. Si guardas el pedido y luego falla la publicación, el consumidor nunca se entera; si publicas y luego falla la escritura, el consumidor actúa sobre un hecho que no existe. El patrón **outbox** elimina la escritura doble: el estado y el mensaje se guardan en la misma transacción, y un relevo publica después con reintentos.
 
@@ -373,7 +373,7 @@ Siguiente paso: el Tema 3 asume que el relay puede publicar dos veces y conviert
 
 **Fuentes oficiales:** [microservices.io — Transactional outbox](https://microservices.io/patterns/data/transactional-outbox.html) y [AWS — DynamoDB transactions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/transaction-apis.html).
 
-### Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos
+### Tema 3: Idempotencia y orden: consumidores que sobreviven a reintentos · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque SQS estándar garantiza entrega al menos una vez, no exactamente una vez. Un consumidor que cobra, envía un correo o descuenta inventario puede ejecutar el mismo efecto dos veces si el mensaje se reentrega por un timeout, un reinicio o una respuesta perdida. La idempotencia convierte un reintento inevitable en un resultado único.
 
@@ -544,7 +544,7 @@ Siguiente paso: el Tema 4 coordina varios pasos que no pueden vivir en una sola 
 
 **Fuentes oficiales:** [microservices.io — Idempotent consumer](https://microservices.io/patterns/communication-style/idempotent-consumer.html) y [AWS — SQS at-least-once delivery](https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/standard-queues-at-least-once-delivery.html).
 
-### Tema 4: Sagas y compensaciones: procesos largos sin transacción distribuida
+### Tema 4: Sagas y compensaciones: procesos largos sin transacción distribuida · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque un proceso de negocio como «confirmar entrega, emitir factura y notificar» abarca varios servicios y no puede resolverse con una transacción ACID única. Si el segundo paso falla, el primero no se deshace solo. Una **saga** coordina pasos locales y ejecuta **compensaciones** para dejar el sistema en un estado coherente, sin fingir que existe una transacción global.
 

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Arquitectura de la aplicación — frontend, backend y base de datos
+### Tema 1: Arquitectura de la aplicación — frontend, backend y base de datos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear los tres recursos base del proyecto (tabla, bucket, cola) y a comprobar en vivo por qué un archivo no pertenece dentro de un item de DynamoDB. Prerrequisitos: Módulos 2-7 completos.
@@ -59,7 +59,7 @@ Corregí el Paso 5: subí el mismo archivo a `adjuntos-tareas` con `aws s3 cp`, 
 #### Paso 7 · Cierre
 Entregá la creación de los tres recursos, el item con el archivo embebido del Paso 5 y su corrección por referencia del Paso 6; explicá por qué esta separación no es un formalismo sino un límite real de DynamoDB. Siguiente paso: modelo de datos. Errores comunes: lógica en gateway y acoplamiento a proveedor. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/welcome.html.
 
-### Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda
+### Tema 2: CRUD de tareas sobre DynamoDB expuesto por Lambda · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a ejecutar el CRUD completo de `Tareas` con los cuatro comandos DynamoDB del Módulo 4, y a validar una regla de negocio antes de escribir nada. Prerrequisitos: Tema 1 de este módulo.
@@ -126,7 +126,7 @@ Escribí la validación que falta: antes de cualquier `update-item` de `estado`,
 #### Paso 7 · Cierre
 Entregá el ciclo CRUD exitoso, el estado inválido aceptado sin validación del Paso 5 y la validación agregada en el Paso 6; explicá por qué DynamoDB nunca va a hacer esa validación por vos. Siguiente paso: archivos. Errores comunes: claves inestables y operaciones no idempotentes. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html.
 
-### Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS
+### Tema 3: Archivos adjuntos en S3 y procesamiento en segundo plano con SQS · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a adjuntar un archivo real a la tarea `t-001` y a encolar su procesamiento en segundo plano, sin bloquear ninguna respuesta. Prerrequisitos: Temas 1-2 de este módulo.
@@ -186,7 +186,7 @@ Corregí la referencia rota del Paso 5 volviendo a apuntar `adjunto_key` al obje
 #### Paso 7 · Cierre
 Entregá el flujo completo de subida + referencia + encolado, la referencia rota del Paso 5 y su corrección; explicá por qué nada en DynamoDB o S3 detecta automáticamente esa inconsistencia. Siguiente paso: seguridad. Errores comunes: guardar binarios en la tabla y no expirar URLs. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/PresignedUrlUploadObject.html.
 
-### Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto
+### Tema 4: API Gateway e IAM de mínimo privilegio para el proyecto · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir las dos políticas de mínimo privilegio exactas que necesita este proyecto — una por función Lambda — y a comprobar con el simulador que ninguna se puede confundir con la otra. Prerrequisitos: Módulo 7, Temas 1-3 de este módulo.
@@ -254,7 +254,7 @@ Escribí `policy-procesar.json` con exactamente los permisos de `lambda-procesar
 #### Paso 7 · Cierre
 Entregá las dos políticas, la denegación cruzada correcta del Paso 4, el permiso de más corregido en el Paso 5, y la denegación documentada del Paso 6; explicá por qué ninguna de las dos funciones debería poder hacer lo que solo le corresponde a la otra. Siguiente paso: documentación. Errores comunes: roles compartidos y permisos wildcard. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-intro-execution-role.html.
 
-### Tema 5: Documentación de la API y guía de despliegue
+### Tema 5: Documentación de la API y guía de despliegue · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás documentar y desplegar desde cero. Prerrequisitos: Node.js y Docker; verifica `node --version`.

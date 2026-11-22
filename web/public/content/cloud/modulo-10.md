@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Secrets Manager y por qué no usar variables de entorno hardcodeadas
+### Tema 1: Secrets Manager y por qué no usar variables de entorno hardcodeadas · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a sacar una clave real de RutaFlow de un archivo versionado y meterla donde corresponde. Prerrequisitos: Módulo 9 completo.
@@ -61,7 +61,7 @@ Documentá, en una frase, cada cuánto correspondería rotar `/rutaflow/sms-gate
 #### Paso 7 · Cierre
 Entregá la clave expuesta en `.env`, su migración a Secrets Manager, y la respuesta del Paso 6; explicá por qué borrar un archivo no borra su historial de Git. Siguiente paso: cifrado. Errores comunes: secretos en logs y acceso global. Fuente oficial: https://docs.aws.amazon.com/secretsmanager/latest/userguide/intro.html.
 
-### Tema 2: KMS y envelope encryption
+### Tema 2: KMS y envelope encryption · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a cifrar un respaldo local de la clave del Tema 1 con KMS, y a comprobar qué pasa si alguien sin permiso intenta descifrarlo. Prerrequisitos: Tema 1 de este módulo.
@@ -117,7 +117,7 @@ Documentá por escrito qué pasaría si perdieras `respaldo-secreto.enc` sin hab
 #### Paso 7 · Cierre
 Entregá el ciclo completo de cifrado/descifrado, la denegación simulada del Paso 5 y la reflexión del Paso 6; explicá por qué cifrar el respaldo completo con la clave maestra sería más lento que usar una clave de datos efímera. Siguiente paso: parámetros. Errores comunes: compartir claves maestras y perder contexto. Fuente oficial: https://docs.aws.amazon.com/kms/latest/developerguide/concepts.html.
 
-### Tema 3: SSM Parameter Store vs Secrets Manager
+### Tema 3: SSM Parameter Store vs Secrets Manager · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a separar, para RutaFlow, qué va en SSM Parameter Store y qué va en Secrets Manager, y a comprobar por qué un rol sin permiso específico no puede leer ninguno de los dos. Prerrequisitos: Temas 1-2 de este módulo.

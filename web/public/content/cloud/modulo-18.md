@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Por qué no construir tu propio sistema de autenticación
+### Tema 1: Por qué no construir tu propio sistema de autenticación · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a registrar un conductor real de RutaFlow en Cognito, en vez de inventar un sistema de login propio para la app del conductor. Prerrequisitos: Módulo 6 completo.
@@ -66,7 +66,7 @@ Intentá `initiate-auth` con ese mismo conductor antes de confirmar su registro,
 #### Paso 7 · Cierre
 Entregá el registro del conductor, el código inválido del Paso 5 y la diferencia confirmado/no confirmado del Paso 6; explicá qué parte de este flujo habrías tenido que construir a mano sin Cognito. Siguiente paso: JWT. Errores comunes: confiar solo en frontend y mensajes que revelan usuarios. Fuente oficial: https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html.
 
-### Tema 2: Access Token, ID Token y Refresh Token
+### Tema 2: Access Token, ID Token y Refresh Token · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a loguear al conductor del Tema 1 y a distinguir cuál de los tres tokens que recibís debería usarse para llamar `POST /entregas`. Prerrequisitos: Tema 1 de este módulo.
@@ -125,7 +125,7 @@ Guardá el `RefreshToken`, esperá a que el `AccessToken` esté cerca de expirar
 #### Paso 7 · Cierre
 Entregá los tres tokens decodificados del Paso 4, la explicación del error de confundirlos del Paso 5, y la renovación del Paso 6; explicá por qué `POST /entregas` debe validar específicamente el Access Token. Siguiente paso: OAuth. Errores comunes: guardar refresh en local inseguro y no rotar. Fuente oficial: https://datatracker.ietf.org/doc/html/rfc7519.
 
-### Tema 3: OAuth 2.0 y PKCE
+### Tema 3: OAuth 2.0 y PKCE · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a armar el flujo OAuth 2.0 con PKCE que la app móvil del conductor necesita, porque esa app no puede guardar ningún secreto de cliente de forma segura. Prerrequisitos: Temas 1-2 de este módulo.

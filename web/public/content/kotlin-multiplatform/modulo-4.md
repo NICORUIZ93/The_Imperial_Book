@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Modelos de dominio y casos de uso
+### Tema 1: Modelos de dominio y casos de uso · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -144,7 +144,7 @@ Ya declaras modelos de dominio sin dependencias de plataforma y casos de uso que
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Implementa confirmar entrega como caso de uso con precondiciones explícitas. Prueba guía ya entregada y evidencia ausente sin depender de la red ni de una interfaz móvil.
 
-### Tema 2: Repositorios con interfaz común
+### Tema 2: Repositorios con interfaz común · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -272,7 +272,7 @@ Ya defines una interfaz de repositorio con al menos dos implementaciones que com
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Define el repositorio por operaciones del dominio, no por detalles del cliente HTTP. Ejecuta las mismas pruebas de contrato contra un fake y contra el adaptador de persistencia del laboratorio.
 
-### Tema 3: Inyección de dependencias multiplataforma con Koin
+### Tema 3: Inyección de dependencias multiplataforma con Koin · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -409,7 +409,7 @@ Ya distingues `single` de `factory` según si el estado debe compartirse o recre
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Ensambla repositorio y casos de uso en módulos de dependencias de prueba y producción. Verifica que una prueba compartida sustituye la red sin modificar la lógica de confirmación.
 
-### Tema 4: Modelado de errores de dominio con un tipo Result explícito
+### Tema 4: Modelado de errores de dominio con un tipo Result explícito · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -586,7 +586,7 @@ Ya modelas el resultado de una operación que puede fallar con un tipo explícit
 
 ## Laboratorio de transferencia
 
-### Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global
+### Tema 5: Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar comprobarás el vencimiento de una oferta de entrega con un reloj sustituible. **Prerrequisitos:** interfaces, lambdas, Long y funciones de Kotlin. Kotlin/JVM y JDK para el ejemplo independiente; en KMP puedes colocar el contrato en commonMain y sus pruebas en commonTest.

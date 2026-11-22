@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Contratos HTTP y autorización
+### Tema 1: Contratos HTTP y autorización · Avanzado · 45 min
 
 **Conceptos clave:** OpenAPI, recursos, errores, identidad, roles y ownership.
 
@@ -136,7 +136,7 @@ Entrega `contrato.yaml`, `src/asignar.js`, la salida exitosa, la salida del fall
 
 **Transferencia al proyecto integrador «RutaFlow»:** Define consulta y confirmación con identidad y autorización por envío. Prueba dos operadores y un identificador inexistente, verificando que las respuestas no revelan datos privados de otros recursos.
 
-### Tema 2: Casos de uso y transacciones
+### Tema 2: Casos de uso y transacciones · Avanzado · 45 min
 
 **Conceptos clave:** puertos, adaptadores, invariantes, optimistic locking e idempotency key.
 
@@ -259,7 +259,7 @@ Entrega `src/transaccion.js`, la salida consistente, la salida del fallo con la 
 
 **Límites y decisión de uso:** Una transacción local no abarca automáticamente notificaciones, otra base o un broker. Mantén invariantes locales dentro de la transacción y coordina efectos externos mediante mensajes recuperables y compensaciones explícitas.
 
-### Tema 3: Outbox, colas y observabilidad
+### Tema 3: Outbox, colas y observabilidad · Avanzado · 45 min
 
 **Conceptos clave:** commit atómico, entrega al menos una vez, deduplicación, trazas y métricas.
 
@@ -399,7 +399,7 @@ Entrega `esquema.sql`, `confirmar.sql`, `relay.sql` y `sin-outbox.sql`, la salid
 
 ## Laboratorio de transferencia
 
-### Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores
+### Tema 4: Evolución de contratos: aceptar una versión nueva sin romper clientes anteriores · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar definirás una frontera compatible entre dos versiones de un comando de creación de envío y rechazarás datos ambiguos. **Prerrequisitos:** objetos JavaScript, módulos, pruebas y el dominio de envíos. Node 24 o superior. Ejemplo independiente desde una carpeta vacía.

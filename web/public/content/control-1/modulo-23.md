@@ -165,7 +165,7 @@ Abre `nyquist_k30.png` y comprueba que la curva es simétrica y que el punto \(-
 - [ ] Leí \(MG = 2\) y \(MF = 25{,}4^\circ\) en el diagrama polar.
 - [ ] Expliqué por qué la rama de frecuencias negativas es un espejo.
 
-**Fuentes oficiales:** [nyquist_response, python-control](https://python-control.readthedocs.io/en/latest/generated/control.nyquist_response.html) y [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [nyquist_response, python-control](https://python-control.readthedocs.io/en/latest/generated/control.nyquist_response.html) y [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 ### Tema 2: El criterio Z = N + P · Intermedio · 35 min
 
@@ -319,7 +319,7 @@ Escribe la regla para tu formulario: **con \(P\) polos inestables en lazo abiert
 - [ ] Provoqué el error \(Z = N - P\) con un lazo abierto inestable y lo diagnostiqué.
 - [ ] Expliqué por qué un lazo abierto inestable necesita vueltas antihorarias.
 
-**Fuentes oficiales:** [nyquist_response, python-control](https://python-control.readthedocs.io/en/latest/generated/control.nyquist_response.html) y [Estabilidad en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [nyquist_response, python-control](https://python-control.readthedocs.io/en/latest/generated/control.nyquist_response.html) y [Estabilidad en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 ### Tema 3: Polos en el origen y estabilidad relativa · Avanzado · 30 min
 
@@ -462,4 +462,4 @@ Añade a tu formulario: **márgenes de Bode → solo con \(P = 0\) y un cruce; e
 - [ ] Mostré con \(2/(s-1)\) que \(MG < 1\) no implica inestabilidad.
 - [ ] Escribí la regla de cuándo usar márgenes y cuándo contar vueltas.
 
-**Fuentes oficiales:** [margin y nyquist_plot, python-control](https://python-control.readthedocs.io/en/latest/generated/control.nyquist_plot.html) y [Control Tutorials (U. de Michigan), métodos en frecuencia](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [margin y nyquist_plot, python-control](https://python-control.readthedocs.io/en/latest/generated/control.nyquist_plot.html) y [Feedback Systems (Åström y Murray), métodos en frecuencia](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).

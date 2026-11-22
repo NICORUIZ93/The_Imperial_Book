@@ -7,7 +7,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la app en el emulador: rotar, enviar a segundo plano y observar qué se muestra.
 
-### Tema 1: StateFlow en el ViewModel
+### Tema 1: StateFlow en el ViewModel · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -132,7 +132,7 @@ Ya expones un estado de pantalla con `StateFlow`, garantizando un valor actual s
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Expón un estado inmutable de la ruta desde StateFlow. Simula carga y fallo de red y verifica que la pantalla no combina un indicador de éxito con datos de una consulta anterior.
 
-### Tema 2: collectAsStateWithLifecycle y UDF
+### Tema 2: collectAsStateWithLifecycle y UDF · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -227,7 +227,7 @@ Ya observas un `StateFlow` de forma consciente del ciclo de vida, y explicas por
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Recoge el estado de ruta solo mientras la pantalla esté activa. Envía la aplicación al fondo y vuelve; verifica que muestra el valor reciente y no crea colecciones adicionales en cada regreso.
 
-### Tema 3: SharedFlow para eventos de un solo uso
+### Tema 3: SharedFlow para eventos de un solo uso · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -404,7 +404,7 @@ Ya sabes por qué un `SharedFlow` puede perder un evento de un solo uso y lo mod
 
 ## Laboratorio de transferencia
 
-### Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable
+### Tema 4: Restaurar un borrador tras recreación: remember no equivale a rememberSaveable · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar distinguirás recomposición, recreación de Activity y restauración del estado de un campo. **Prerrequisitos:** Kotlin, estado Compose y ciclo de vida. Android Studio y emulador con rotación habilitada. El ejemplo independiente parte de un proyecto nuevo Empty Activity con Compose y Material 3.

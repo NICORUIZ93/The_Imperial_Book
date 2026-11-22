@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Logging estructurado (JSON)
+### Tema 1: Logging estructurado (JSON) · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -100,7 +100,7 @@ Ya emites logs estructurados con campos consultables independientemente, sentand
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Emite logs estructurados para una petición exitosa y una fallida. Parsealos automáticamente y comprueba campos estables y ausencia de secretos, sin depender de expresiones regulares sobre mensajes libres.
 
-### Tema 2: Pipeline ELK/EFK
+### Tema 2: Pipeline ELK/EFK · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -186,7 +186,7 @@ Ya distingues las tres etapas de un pipeline de logging centralizado y dónde di
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Envía logs del contenedor al colector y búscalos por correlación. Interrumpe temporalmente el destino y documenta qué buffering o pérdida observas antes de declarar fiable la entrega.
 
-### Tema 3: Loki + Grafana como alternativa ligera
+### Tema 3: Loki + Grafana como alternativa ligera · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -265,7 +265,7 @@ Ya consultas logs de forma eficiente filtrando primero por labels, entendiendo e
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Consulta los logs de la candidata por servicio y versión en Loki. Verifica que las etiquetas tienen cardinalidad controlada y usa el cuerpo del log para identificadores de petición.
 
-### Tema 4: Correlation ID a través de servicios
+### Tema 4: Correlation ID a través de servicios · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

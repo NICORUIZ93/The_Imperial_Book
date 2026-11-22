@@ -133,7 +133,7 @@ Ejecuta desde la carpeta del laboratorio:
 
 **Fuentes primarias:** [Spring Framework: ejecución, `@Async`, proxies y errores](https://docs.spring.io/spring-framework/reference/integration/scheduling.html), [Spring Boot: ejecución y scheduling](https://docs.spring.io/spring-boot/reference/features/task-execution-and-scheduling.html). El siguiente bloque compara contratos de integración; conserva separados protocolo, ejecución y garantía de entrega.
 
-### Tema 2: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 1 h 20 min
+### Tema 2: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 45 min
 
 **Prerrequisito:** Módulo 13 de este track (WebFlux y reactividad), JDK 25 (la versión del curso) y Maven.
 
@@ -306,7 +306,7 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 
 **Fuente oficial:** [documentación de Spring Framework — Task Execution and Scheduling](https://docs.spring.io/spring-framework/reference/integration/scheduling.html).
 
-### Tema 3: Locks, deadlocks, semáforos y MDC en concurrencia · Experto · 1 h 30 min
+### Tema 3: Locks, deadlocks, semáforos y MDC en concurrencia · Avanzado · 45 min
 
 **Prerrequisito:** Tema 2 de este módulo.
 

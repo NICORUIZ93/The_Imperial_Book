@@ -141,7 +141,7 @@ flowchart LR
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** prueba una regla pura de envíos con `node:test` y haz que el pipeline falle si el reporte no demuestra que descubrió pruebas. Conserva Vitest donde sus capacidades aporten un beneficio concreto.
 
-### Tema 2: TDD práctico: rojo, verde y refactor con node:test · Intermedio · 60 min
+### Tema 2: TDD práctico: rojo, verde y refactor con node:test · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, aserciones básicas y capacidad para ejecutar `node --test`.
 
@@ -312,7 +312,7 @@ npm test
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** desarrolla con TDD la regla de reasignación de entregas fallidas. Define primero los bordes y conserva las pruebas como especificación ejecutable mientras refactorizas.
 
-### Tema 3: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Intermedio · 35 min
+### Tema 3: Cobertura de pruebas con node:test: líneas, ramas y umbrales · Avanzado · 35 min
 
 **Prerrequisito:** tema «node:test — test runner nativo sin dependencias» de este módulo.
 
@@ -431,7 +431,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** mirar s
 
 **Fuente oficial:** [Node.js — Test runner: collecting code coverage](https://nodejs.org/api/test.html#collecting-code-coverage).
 
-### Tema 4: Vitest y Supertest — pruebas de integración HTTP reales · Intermedio · 50 min
+### Tema 4: Vitest y Supertest — pruebas de integración HTTP reales · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, JavaScript con módulos ES y conceptos básicos de HTTP.
 
@@ -561,7 +561,7 @@ En este mismo proyecto, añade una ruta `GET /tareas/:id` que devuelva `404` y `
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** prueba por HTTP el alta, la consulta y la confirmación de una entrega. Aísla los datos por caso y verifica tanto el cuerpo de confirmación como el efecto persistido.
 
-### Tema 5: Testcontainers — bases de datos de prueba reales y efímeras · Intermedio · 55 min
+### Tema 5: Testcontainers — bases de datos de prueba reales y efímeras · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, Docker Desktop o un daemon Docker compatible en ejecución, y SQL básico.
 
@@ -706,7 +706,7 @@ flowchart LR
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** ejecuta las migraciones y las consultas de entregas contra un PostgreSQL efímero en CI. Aísla cada corrida y verifica restricciones y transacciones que un mock no reproduce con fidelidad.
 
-### Tema 6: Mocks de servicios externos y CI · Intermedio · 50 min
+### Tema 6: Mocks de servicios externos y CI · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, promesas, Git básico y una cuenta donde puedas consultar GitHub Actions.
 
@@ -856,7 +856,7 @@ flowchart LR
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** sustituye el notificador externo por un doble o servidor controlado en CI. Prueba timeout y respuesta inválida, y comprueba que el comportamiento propio no dependa de la disponibilidad del tercero.
 
-### Tema 7: Alternativas de testing y debugging · Intermedio · 45 min
+### Tema 7: Alternativas de testing y debugging · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, aserciones básicas y Chrome o Chromium para conectar DevTools.
 

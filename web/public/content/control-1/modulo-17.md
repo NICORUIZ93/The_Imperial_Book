@@ -11,11 +11,11 @@ Cuando subes la ganancia \(K\) de un lazo, los polos de lazo cerrado se mueven. 
 
 ## Aprende construyendo
 
-### Tema 1: Las dos condiciones del lugar de las raíces
+### Tema 1: Las dos condiciones del lugar de las raíces · Avanzado · 45 min
 
 **¿Por qué es importante?** Las condiciones de ángulo y magnitud son la base de todo el método: deciden qué puntos son polos posibles y con qué ganancia.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 Con realimentación unitaria y ganancia \(K\), los polos de lazo cerrado cumplen \(1 + KG(s) = 0\), es decir \(KG(s) = -1\). El número \(-1\) tiene magnitud 1 y ángulo 180°:
 
@@ -136,11 +136,11 @@ cambia `s` a `-1 + 1*I` y confirma que el ángulo da aproximadamente \(-153{,}4�
 
 **Límite:** este script evalúa un punto a la vez; para **dibujar** el lugar completo se usan las reglas de construcción (Tema 2), no se prueba punto por punto si está en el lugar.
 
-### Tema 2: Reglas de construcción (con su porqué)
+### Tema 2: Reglas de construcción (con su porqué) · Avanzado · 45 min
 
 **¿Por qué es importante?** Con las reglas dibujas a mano cómo se mueven los polos al cambiar la ganancia y eliges el \(K\) que cumple las especificaciones.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 Escribe \(G = N(s)/D(s)\), con \(n\) polos y \(m\) ceros. La ecuación característica es \(D(s) + KN(s) = 0\).
 
@@ -360,11 +360,11 @@ cambia `poles` a `[0, -1, -5]` y confirma el centroide \(-2\) del Ejemplo 4. Con
 
 **Límite:** este cálculo del centroide no verifica si un punto del eje real pertenece al lugar (regla 4) ni dónde está el punto de ruptura (regla 6); ambas exigen aplicar las reglas específicas de este tema, no solo promediar los polos.
 
-### Tema 3: Elegir K desde el lugar de las raíces
+### Tema 3: Elegir K desde el lugar de las raíces · Avanzado · 45 min
 
 **¿Por qué es importante?** El lugar de las raíces se dibuja para decidir: con él se elige la ganancia que da el amortiguamiento o la rapidez pedidos, que es lo que se pregunta en el examen y lo que se hace al ajustar un controlador real.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 Cuando el lazo es de segundo orden, todo el lugar se puede escribir con la ecuación característica \(s^2 + as + K = 0\):
 

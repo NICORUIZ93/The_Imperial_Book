@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Cabeceras seguras con helmet · Intermedio · 55 min
+### Tema 1: Cabeceras seguras con helmet · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, fundamentos de Express y uso básico de `curl`. No necesitas archivos de otros temas.
 
@@ -100,7 +100,7 @@ Crea `cabeceras.md` y registra tres cabeceras observadas, el riesgo que mitiga c
 
 ---
 
-### Tema 2: Rate limiting · Intermedio · 55 min
+### Tema 2: Rate limiting · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, middleware de Express y lectura de códigos de estado HTTP. El proyecto es independiente del tema anterior.
 
@@ -198,7 +198,7 @@ Crea `politica-limites.md`. Documenta por separado una política para `/acceso` 
 
 ---
 
-### Tema 3: Inyección SQL y sanitización contra XSS · Intermedio · 65 min
+### Tema 3: Inyección SQL y sanitización contra XSS · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, SQL básico y distinción entre texto y HTML. No necesitas una base de datos ni archivos de otros temas para la práctica.
 
@@ -310,7 +310,7 @@ Crea `contextos-salida.md` con una tabla para texto HTML, atributo, URL y JavaSc
 
 ---
 
-### Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Intermedio · 65 min
+### Tema 4: OWASP API Security Top 10 y auditoría de dependencias · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, pruebas básicas con `node:test` y lectura de `package.json`. El ejercicio no reutiliza proyectos anteriores.
 
@@ -450,7 +450,7 @@ Ejecuta `npm test` y actualiza la matriz con ambas evidencias. Después elige un
 
 ---
 
-### Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 70 min
+### Tema 5: CVE, CWE y npm audit en el pipeline · Avanzado · 45 min
 
 **Prerrequisito:** Node LTS, npm, lectura del Tema 4 y fundamentos de integración continua. Se creará otro proyecto desde cero.
 

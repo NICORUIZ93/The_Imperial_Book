@@ -6,7 +6,7 @@ Este módulo convierte el conocimiento inicial de Compose en una interfaz manten
 Trabajarás sobre RutaFlow y separarás estado, presentación, interacción y efectos. Cada
 tema deja una prueba observable; una captura bonita no sustituye comportamiento correcto.
 
-### Tema 1: Constraints, Modifier y componentes con slots
+### Tema 1: Constraints, Modifier y componentes con slots · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás explicar el ciclo medir–dimensionar–colocar, ordenar modificadores
@@ -93,7 +93,7 @@ personalizado si `Row`, `Column`, `Box` o un componente Material resuelven el co
 [layout en Compose](https://developer.android.com/develop/ui/compose/layouts/basics) y
 [modificadores](https://developer.android.com/develop/ui/compose/modifiers).
 
-### Tema 2: LazyColumn, grids, claves estables y estado de scroll
+### Tema 2: LazyColumn, grids, claves estables y estado de scroll · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás renderizar colecciones grandes, preservar identidad al reordenar y
@@ -179,7 +179,7 @@ usarlo:** para cinco elementos estáticos sin scroll, `Column` es más simple.
 **Transferencia a RutaFlow:** bandeja paginada estable. **Fuente oficial:**
 [listas y grids lazy](https://developer.android.com/develop/ui/compose/lists).
 
-### Tema 3: Formularios, IME, foco y validación accesible
+### Tema 3: Formularios, IME, foco y validación accesible · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás modelar valor, error y envío; configurar teclado y foco; y conservar
@@ -267,7 +267,7 @@ un formulario si una selección del sistema resuelve la tarea con menos datos y 
 [entrada de texto](https://developer.android.com/develop/ui/compose/text/user-input) y
 [accesibilidad](https://developer.android.com/develop/ui/compose/accessibility).
 
-### Tema 4: Side effects, lifecycle y APIs imperativas
+### Tema 4: Side effects, lifecycle y APIs imperativas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás elegir `LaunchedEffect`, `DisposableEffect`, `SideEffect`,
@@ -348,7 +348,7 @@ usa cálculo o `derivedStateOf`, no un efecto.
 **Transferencia a RutaFlow:** mapa sin listeners duplicados. **Fuente oficial:**
 [side effects](https://developer.android.com/develop/ui/compose/side-effects).
 
-### Tema 5: Gestos, Canvas y componentes personalizados accesibles
+### Tema 5: Gestos, Canvas y componentes personalizados accesibles · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás elegir una abstracción de gesto, dibujar progreso y ofrecer una

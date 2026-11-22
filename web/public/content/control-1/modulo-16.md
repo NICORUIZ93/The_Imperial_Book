@@ -11,11 +11,11 @@ Dónde están los polos te dice cómo se comporta el sistema sin hacer cuentas. 
 
 ## Aprende construyendo
 
-### Tema 1: Geometría de un polo en el plano s
+### Tema 1: Geometría de un polo en el plano s · Avanzado · 45 min
 
 **¿Por qué es importante?** Leer la geometría de un polo te da \(\zeta\), \(\omega_n\) y las especificaciones mirando un dibujo.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 ![Geometría de un polo complejo: sigma, omega d, omega n y theta](content/figures/control-1/geometria-polo.svg)
 
@@ -145,11 +145,11 @@ cambia `sigma, wd` a `1, 3` y confirma \(\omega_n\approx3{,}16\), \(\zeta\approx
 
 **Límite:** esta lectura geométrica solo aplica a un polo complejo de un sistema de segundo orden dominante; con polos adicionales o ceros cercanos (módulo 12), las especificaciones reales se desvían de lo que predice solo la posición de este polo.
 
-### Tema 2: Estabilidad según la posición de los polos
+### Tema 2: Estabilidad según la posición de los polos · Avanzado · 45 min
 
 **¿Por qué es importante?** Decidir estabilidad mirando el plano s es la forma más rápida de revisar un resultado.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 | Dónde están los polos | Sistema |
 |---|---|
@@ -273,11 +273,11 @@ cambia el polinomio a `(s+1)*(s+4)` (caso a) y confirma `estable: True`. Confír
 
 **Límite:** `re(r) < 0` para cada raíz exacta es la definición misma de estabilidad; en un examen sin software hay que decidirlo mirando los coeficientes (atajo de segundo orden) o con Routh-Hurwitz (módulo 14) para polinomios más grandes, sin resolver las raíces.
 
-### Tema 3: La zona de diseño
+### Tema 3: La zona de diseño · Avanzado · 45 min
 
 **¿Por qué es importante?** La zona de diseño traduce especificaciones a una región del plano; es lo que pedía el punto 2 del Parcial 2.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 > **Idea clave.** Es la región del plano s donde deben quedar los polos para cumplir las especificaciones. Cada especificación traza una frontera; la zona es la intersección de todas.
 

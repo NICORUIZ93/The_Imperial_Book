@@ -423,7 +423,7 @@ cd examples/java-jpa-lab
 
 Modifica `BusquedaPedido.java` para tratar una cadena vacía como "sin filtro de prefijo" en vez de omitir el predicado solo cuando el valor es `null`, y prueba con `""` para confirmar que la combinación de filtros sigue siendo correcta.
 
-### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 50 min
+### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 40 min
 
 **¿Por qué es importante?** cada pedido puede disparar una consulta adicional al cargar su cliente.
 
@@ -493,7 +493,7 @@ La consulta y su fetch plan se eligen según la operación, no para toda la apli
 
 Anota campos de listado y de detalle.
 
-**Cuenta consultas:** carga diez envíos y accede a `paradas` de cada uno. Si aparece una consulta por envío, el total crece con la lista: es N+1. Repite con `EntityGraph` o `join fetch` y compara consultas y filas. No pongas todo en `EAGER`: otra pantalla puede no necesitar paradas. Registra el SQL del caso real y decide qué asociaciones leer antes de serializar. Fuentes: https://docs.hibernate.org/orm/6.6/introduction/html_single/ y https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph.
+**Cuenta consultas:** carga diez envíos y accede a `paradas` de cada uno. Si aparece una consulta por envío, el total crece con la lista: es N+1. Repite con `EntityGraph` o `join fetch` y compara consultas y filas. No pongas todo en `EAGER`: otra pantalla puede no necesitar paradas. Registra el SQL del caso real y decide qué asociaciones leer antes de serializar. Fuentes: https://docs.hibernate.org/orm/6.6/introduction/html_single/ y https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/EntityGraph.html.
 
 **Comprueba el caso de pantalla:** pide solo los campos que la lista presenta y abre luego un envío para pedir su detalle. Compara ambos SQL; cada vista tiene una necesidad distinta.
 
@@ -520,7 +520,7 @@ cd examples/java-jpa-lab
 
 Modifica el repositorio para usar `findAll()` simple en vez de `findAllWithClienteByOrderByReferenciaAsc()` dentro del mismo test y cuenta cuántas consultas SQL adicionales aparecen al acceder a `cliente` de cada pedido.
 
-### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 50 min
+### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
 **¿Por qué es importante?** el fetch plan selecciona asociaciones por operación; caché requiere medir y controlar consistencia.
 
@@ -590,7 +590,7 @@ Caché de segundo nivel es opcional y necesita política de consistencia.
 
 Guarda medición y decisión.
 
-**Distingue herramientas:** `EntityGraph` describe asociaciones deseadas para una operación; no es una caché ni obliga al proveedor a traer solo esos datos. La caché de primer nivel vive en el contexto actual; la de segundo nivel requiere configuración e invalidación. Compara SQL con y sin grafo y repite después de limpiar el contexto para no medir una entidad ya administrada. Fuentes: https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph y https://docs.hibernate.org/orm/6.6/introduction/html_single/.
+**Distingue herramientas:** `EntityGraph` describe asociaciones deseadas para una operación; no es una caché ni obliga al proveedor a traer solo esos datos. La caché de primer nivel vive en el contexto actual; la de segundo nivel requiere configuración e invalidación. Compara SQL con y sin grafo y repite después de limpiar el contexto para no medir una entidad ya administrada. Fuentes: https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/EntityGraph.html y https://docs.hibernate.org/orm/6.6/introduction/html_single/.
 
 **Comprobación:** compara conteo de consultas en un contexto recién creado y en el mismo contexto. Anota si cambió por el grafo o por una entidad ya administrada.
 

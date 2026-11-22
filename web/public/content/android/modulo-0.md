@@ -60,7 +60,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Estructura de un proyecto Android Studio
+### Tema 1: Estructura de un proyecto Android Studio · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -188,7 +188,7 @@ Ejecuta `./gradlew :core:assembleDebug` desde la carpeta `LocationPolicyLab`. De
 
 Ya ubicas con confianza dónde vive el código, los recursos y la configuración de build de cualquier proyecto Android. El siguiente tema profundiza específicamente en cómo y por qué externalizar recursos de texto. Fuente oficial: [Android Developers — App resources overview](https://developer.android.com/guide/topics/resources/providing-resources).
 
-### Tema 2: Recursos externalizados
+### Tema 2: Recursos externalizados · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -316,7 +316,7 @@ Agrega un tercer idioma (`values-pt/strings.xml`, portugués) con la traducción
 
 Ya externalizas textos y confirmas programáticamente que las traducciones mantienen las mismas claves de recurso. El siguiente tema cubre el manifiesto que declara los componentes de la app ante el sistema operativo. Fuente oficial: [Android Developers — Localization](https://developer.android.com/guide/topics/resources/localization).
 
-### Tema 3: AndroidManifest.xml y módulos Gradle
+### Tema 3: AndroidManifest.xml y módulos Gradle · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -528,7 +528,7 @@ Agrega una segunda función a `core/src/main/kotlin/com/academia/core/Formateado
 
 Ya declaras componentes y permisos en el manifiesto, y divides un proyecto en módulos Gradle con dependencias explícitas y unidireccionales. El siguiente módulo del track construye sobre esta base con Jetpack Compose y estado. Fuente oficial: [Android Developers — App manifest overview](https://developer.android.com/guide/topics/manifest/manifest-intro).
 
-### Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla
+### Tema 4: Kotlin esencial para Android — lo que usarás en cada pantalla · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás modelar una tarea inmutable, transformar una colección y representar la ausencia de datos sin producir un `NullPointerException`. No se promete «dominar Kotlin» en un tema: aquí construirás la base que después reutilizan Compose, ViewModel, Room y Retrofit. **Prerrequisitos:** Temas 1–3 y el proyecto `academia-android` compilando.
@@ -636,7 +636,7 @@ Entrega `Tarea.kt`, el test verde, el fallo de nulabilidad reproducido y el mode
 **Transferencia al proyecto integrador «RutaFlow»:** `Envio` será un valor inmutable que el ViewModel reemplaza con `copy`; esa sustitución produce un estado nuevo observable por Compose. **Errores comunes:** creer que `copy` muta el original, propagar `String?` sin motivo y usar `!!` para silenciar al compilador.
 
 **Fuentes oficiales:** [Android Basics with Compose](https://developer.android.com/courses/android-basics-compose/course), [Kotlin — sintaxis básica](https://kotlinlang.org/docs/basic-syntax.html), [null safety](https://kotlinlang.org/docs/null-safety.html) y [data classes](https://kotlinlang.org/docs/data-classes.html).
-### Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Intermedio · 120 min
+### Tema 5: Lambdas y funciones de orden superior en Kotlin — contratos, captura y receptores · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -760,7 +760,7 @@ Crea `PoliticaRuta.kt` con un `typealias Validador = (Envio) -> Boolean`, compos
 
 **Estado de ejecución:** contenido contrastado con documentación primaria; el entorno de revisión no tiene `kotlinc` ni un proyecto Android generado, por lo que la prueba Gradle queda pendiente y no se acredita como ejecutada.
 
-### Tema 6: Coroutines — asincronía sin bloquear la UI
+### Tema 6: Coroutines — asincronía sin bloquear la UI · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás distinguir suspensión de bloqueo, ejecutar dos operaciones con concurrencia estructurada, cancelar trabajo cooperativamente y decidir qué dispatcher corresponde. **Prerrequisitos:** Tema 4 y su suite verde.

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Del mundo real al modelo relacional
+### Tema 1: Del mundo real al modelo relacional · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar las tareas de Fundamentos como una tabla `tareas` relacionada por clave foránea con una tabla `categorias`, y vas a comprobar en SQLite si esa relación protege o no la integridad al borrar una categoría. **Prerrequisitos:** Python 3 (incluye el módulo `sqlite3`), terminal y editor. Comprueba `python3 -c "import sqlite3; print(sqlite3.sqlite_version)"`.
@@ -156,7 +156,7 @@ Agregá una tabla `etiquetas` relacionada con `tareas` mediante una tabla interm
 Entregá el esquema `categorias`/`tareas`, los tres comportamientos del Paso 5 (sin `PRAGMA`, con `PRAGMA`, con `CASCADE`) y el diseño de `etiquetas` del Paso 6. Como siguiente paso, en el Tema 2 vas a escribir las consultas SQL (`INSERT`, `SELECT`, `JOIN`) sobre este mismo esquema. Errores comunes: asumir que declarar `REFERENCES` ya protege la integridad sin activar `PRAGMA foreign_keys`; confundir una relación uno-a-muchos con una muchos-a-muchos. Fuentes oficiales: https://www.sqlite.org/foreignkeys.html y https://www.sqlite.org/lang_createtable.html.
 **Implicación práctica:** Una clave foránea declarada pero no verificada da una falsa sensación de seguridad: el esquema "se ve" correcto, pero la base permite exactamente lo que la relación debería impedir.
 
-### Tema 2: SQL para definir, escribir, consultar y relacionar
+### Tema 2: SQL para definir, escribir, consultar y relacionar · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir las sentencias SQL (`CREATE TABLE`, `INSERT`, `SELECT` con `JOIN`) sobre el esquema `tareas`/`categorias` del Tema 1, y vas a provocar y corregir una inyección SQL real construyendo una consulta con texto concatenado en vez de parámetros. **Prerrequisitos:** Tema 1 de este módulo; Python 3 con `sqlite3` (viene incluido en la librería estándar).
@@ -311,7 +311,7 @@ Escribí un `UPDATE` parametrizado que cambie el `titulo` de una tarea por `id`,
 Entregá las dos versiones (insegura y parametrizada) del Paso 4, la variante con `LIKE` del Paso 5, y el `UPDATE`/`DELETE`/`GROUP BY` del Paso 6. Como siguiente paso, en el Tema 3 vas a crear un índice sobre esta misma tabla `tareas` y vas a medir con `EXPLAIN QUERY PLAN` si realmente acelera las consultas. Errores comunes: concatenar entrada de usuario en SQL aunque la base sea local; asumir que un `JOIN` siempre encuentra una fila coincidente del otro lado. Fuentes oficiales: https://www.sqlite.org/lang.html y https://docs.python.org/es/3/library/sqlite3.html.
 **Implicación práctica:** Cualquier entrada que llega desde afuera (un argumento de CLI, un formulario) puede contener texto diseñado para alterar tu consulta; parametrizar no es un detalle de estilo, es lo que separa código de dato.
 
-### Tema 3: Índices, restricciones y planes de consulta
+### Tema 3: Índices, restricciones y planes de consulta · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear un índice sobre la tabla `tareas` y vas a comparar, con `EXPLAIN QUERY PLAN`, el plan de consulta antes y después de crearlo — confirmando en tu propia terminal la diferencia entre un `SCAN` (recorre toda la tabla) y un `SEARCH` (usa el índice). **Prerrequisitos:** Temas 1 y 2 de este módulo; `sqlite3` disponible como CLI o desde Python.
@@ -454,7 +454,7 @@ Generá 5 000 tareas de prueba con un bucle en Python, medí el tiempo de la con
 #### Paso 7 · Cierre
 Entregá los dos `EXPLAIN QUERY PLAN` (antes/después del índice) del Paso 4, el índice compuesto del Paso 5, y la medición de tiempo del Paso 6. Como siguiente paso, en el Tema 4 vas a envolver varias operaciones sobre estas mismas tablas dentro de una transacción para que un fallo a mitad de camino no deje la base a medio actualizar. Errores comunes: crear un índice por columna sin medir si realmente se usa; crear el mismo índice dos veces en una migración sin `IF NOT EXISTS`; medir con pocos datos y concluir que el índice "no sirve". Límites y decisión de uso: un índice no corrige un `SELECT *`, una paginación sin límite ni un modelo incoherente; primero se corrige la consulta y después se mide el plan. Fuentes oficiales: https://www.sqlite.org/eqp.html y https://www.sqlite.org/lang_createindex.html.
 
-### Tema 4: Transacciones, concurrencia y elección SQL/NoSQL
+### Tema 4: Transacciones, concurrencia y elección SQL/NoSQL · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a envolver dos actualizaciones relacionadas (marcar una tarea como completada y registrar ese cambio en un historial) dentro de una transacción, y vas a comprobar que un fallo simulado a mitad de camino deja la base exactamente como estaba antes — ni a medias, ni corrupta. **Prerrequisitos:** Temas 1 a 3 de este módulo.
@@ -616,7 +616,7 @@ Documentá una comparación de una línea cada caso: qué pasaría con este mism
 #### Paso 7 · Cierre
 Entregá el camino feliz y el `ROLLBACK` del Paso 4, la transacción de tres pasos del Paso 5, y la comparación SQL/NoSQL del Paso 6. Con esto cerrás el Módulo 4; como siguiente paso, en el Módulo 5 (Testing, depuración, Git y CI) vas a escribir tests automatizados y usar Git/CI para que estos mismos cambios de esquema y consultas queden verificados antes de integrarse. Errores comunes: olvidar `BEGIN` y asumir que dos `execute()` consecutivos ya son atómicos; dejar transacciones abiertas por mucho tiempo bloqueando otras escrituras; elegir NoSQL únicamente para evitar diseñar un esquema. Límites y decisión de uso: una transacción no corrige un modelo incoherente ni reemplaza la validación de entrada; y en bases distribuidas, confirmar entre regiones puede costar más latencia que la operación original. Fuentes oficiales: https://www.sqlite.org/lang_transaction.html y https://www.sqlite.org/atomiccommit.html.
 
-### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana
+### Tema 5: SQL avanzado: subconsultas, vistas, triggers y funciones de ventana · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás escribir subconsultas en WHERE, SELECT y FROM, guardar consultas como vistas, automatizar reglas con triggers y ordenar dentro de grupos con funciones de ventana. Prerrequisitos: Temas 2 y 3 de este módulo.
@@ -769,7 +769,7 @@ Escribe la misma consulta de efectividad por zona sin subconsulta (solo con `JOI
 #### Paso 7 · Cierre
 
 
-### Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL
+### Tema 6: Procedimientos almacenados, funciones y cursores con PL/pgSQL · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás escribir funciones y procedimientos almacenados en PL/pgSQL, recorrer resultados con un cursor, lanzar y capturar excepciones, y distinguir cuándo usar `SELECT` (funciones) y `CALL` (procedimientos). Prerrequisito: Tema 5 de este módulo.
@@ -910,7 +910,7 @@ Reescribe `cerrar_dia` sin cursor, con un solo `INSERT ... SELECT`, y compara le
 #### Paso 7 · Cierre
 
 
-### Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas
+### Tema 7: De SQL a Excel: reportes con tablas y fórmulas vivas · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás generar desde una consulta SQL un archivo Excel con encabezados, una tabla con filtros, fórmulas que Excel recalcula y formato de porcentaje, y verificar el archivo leyéndolo de nuevo. Prerrequisitos: Temas 2 y 5 de este módulo.

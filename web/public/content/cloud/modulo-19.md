@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Data lake y Glue Catalog
+### Tema 1: Data lake y Glue Catalog · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a catalogar, sin moverlos, los archivos de ubicación histórica que Firehose (Módulo 17) ya deposita en `rutaflow-ubicaciones-historico`. Prerrequisitos: Módulo 17 completo.
@@ -65,7 +65,7 @@ Corregí la tabla quitando `velocidad` y agregando solo las columnas reales (`co
 #### Paso 7 · Cierre
 Entregá la tabla catalogada, la consulta con la columna inventada del Paso 5, y la corrección del Paso 6; explicá por qué "schema-on-read" significa que el esquema puede mentir si nadie lo mantiene sincronizado. Siguiente paso: formato. Errores comunes: esquema desactualizado y permisos excesivos. Fuente oficial: https://docs.aws.amazon.com/athena/latest/ug/what-is.html.
 
-### Tema 2: Glue Crawler y Athena
+### Tema 2: Glue Crawler y Athena · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a dejar que un Glue Crawler descubra solo el esquema real de `rutaflow-ubicaciones-historico`, en vez de declararlo a mano como en el Tema 1. Prerrequisitos: Tema 1 de este módulo.
@@ -141,7 +141,7 @@ Compará, en una tabla de dos columnas, el esquema que declaraste a mano en el T
 #### Paso 7 · Cierre
 Entregá el esquema descubierto por el crawler, el problema de formatos mezclados del Paso 5, y la comparación del Paso 6; explicá cuándo conviene declarar el esquema a mano y cuándo dejar que el crawler lo infiera. Siguiente paso: particiones. Errores comunes: confiar ciegamente en inferencia y no versionar esquema. Fuente oficial: https://docs.aws.amazon.com/glue/latest/dg/catalog-and-crawler.html.
 
-### Tema 3: Parquet vs CSV, y partition pruning
+### Tema 3: Parquet vs CSV, y partition pruning · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir, con bytes escaneados reales, cuánto cuesta de más consultar `rutaflow-ubicaciones-historico` sin particionar por fecha. Prerrequisitos: Tema 2 de este módulo.

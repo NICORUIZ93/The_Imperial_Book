@@ -122,7 +122,7 @@ Corrige el Paso 5 devolviendo `zona` a la `queryKey`, y agrega una tercera consu
 #### Paso 7 · Cierre
 Entrega la deduplicación del Paso 4, la cache desincronizada por `queryKey` incompleta del Paso 5, y la tercera consulta del Paso 6; explica por qué la `queryKey` debe incluir cualquier variable que afecte qué datos trae `queryFn`, no solo las que "parecen importantes". Siguiente paso: estudia mutations e invalidación. Errores comunes: una `queryKey` que no incluye todas las variables relevantes del `queryFn`, seguir usando `useState`+`useEffect` para datos que ya tiene una query equivalente, y no aprovechar React Query Devtools para inspeccionar el estado real de la cache. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/queries y https://tanstack.com/query/latest/docs/framework/react/guides/query-keys.
 
-### Tema 2: Mutations e invalidación · Intermedio · 50 min
+### Tema 2: Mutations e invalidación · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear una mutación que registre un nuevo envío y, al completarse, invalide la query de la lista para que `PanelEnvios` la muestre sin recargar la página. Prerrequisitos: Tema 1 de este módulo.
@@ -269,7 +269,7 @@ Corrige el Paso 5 restaurando la invalidación, y agrega un segundo `onSuccess` 
 Entrega la invalidación tras crear del Paso 4, la lista desactualizada provocada en el Paso 5, y la doble invalidación del Paso 6; explica por qué invalidar y refetchear (en vez de actualizar manualmente la cache con el resultado exacto de la mutación) garantiza que la vista refleje el estado verdadero del servidor. Siguiente paso: estudia optimistic updates para no esperar ese refetch. Errores comunes: olvidar invalidar la query relacionada tras una mutación exitosa, invalidar una `queryKey` demasiado específica que no cubre todas las variantes relacionadas, y actualizar la cache manualmente de forma que puede desincronizarse del servidor real. Fuentes oficiales: https://tanstack.com/query/latest/docs/framework/react/guides/mutations y https://tanstack.com/query/latest/docs/framework/react/guides/query-invalidation.
 **Implicación práctica:** Invalidar la query relacionada tras una mutación exitosa garantiza que la vista refleje el estado real del servidor, sin sincronizar manualmente la cache con el resultado exacto de cada mutación.
 
-### Tema 3: Optimistic updates · Avanzado · 50 min
+### Tema 3: Optimistic updates · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a hacer que marcar un envío como "entregado" se refleje instantáneamente en `PanelEnvios`, antes de que el servidor confirme, revirtiendo si la confirmación falla. Prerrequisitos: Tema 2 de este módulo.

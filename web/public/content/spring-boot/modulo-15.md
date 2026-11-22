@@ -458,7 +458,7 @@ javac -d "$build_dir" Main.java
 java -cp "$build_dir" Main
 ```
 
-### Tema 4: C4: contexto, contenedores, componentes y código · Avanzado · 35 min
+### Tema 4: C4: contexto, contenedores, componentes y código · Experto · 35 min
 
 Al finalizar vas a dibujar los cuatro niveles C4 de una API de envíos, a enlazar cada relación con el código que la implementa y a validar el documento con un script que falla si un contenedor del sistema no aparece.
 
@@ -782,7 +782,7 @@ Siguiente paso: aplicar el mismo criterio a cada nueva decisión del proyecto. *
 
 **Fuente oficial:** [Architecture Decision Records (AWS Prescriptive Guidance)](https://docs.aws.amazon.com/prescriptive-guidance/latest/architectural-decision-records/adr-process.html) y [ADR en Martin Fowler](https://martinfowler.com/bliki/ArchitectureDecisionRecord.html).
 
-### Tema 6: módulos y límites entre paquetes · Avanzado · 30 min
+### Tema 6: módulos y límites entre paquetes · Experto · 30 min
 
 **Meta:** detectar una dependencia de un módulo hacia una clase interna de otro.
 
@@ -866,7 +866,7 @@ cd practica-m23-t1
 
 **Fuente primaria:** [Spring Modulith: fundamentos](https://docs.spring.io/spring-modulith/reference/fundamentals.html)
 
-### Tema 7: eventos entre módulos sin importar implementación · Avanzado · 30 min
+### Tema 7: eventos entre módulos sin importar implementación · Experto · 30 min
 
 **Meta:** publicar un hecho de negocio y observar su reacción local después del commit.
 
@@ -950,7 +950,7 @@ cd practica-m23-t2
 
 **Fuente primaria:** [Spring Modulith: eventos](https://docs.spring.io/spring-modulith/reference/events.html)
 
-### Tema 8: documentación generada y mapa de dependencias · Avanzado · 30 min
+### Tema 8: documentación generada y mapa de dependencias · Experto · 30 min
 
 **Meta:** generar PlantUML y fichas Asciidoc desde el modelo modular y contrastar una relación con un import.
 
@@ -1034,7 +1034,7 @@ cd practica-m23-t3
 
 **Fuente primaria:** [Spring Modulith: Documenter](https://docs.spring.io/spring-modulith/reference/documentation.html)
 
-### Tema 9: pruebas de integración por módulo · Avanzado · 30 min
+### Tema 9: pruebas de integración por módulo · Experto · 30 min
 
 **Meta:** distinguir un test modular acotado del contexto completo y localizar qué evidencia produce cada uno.
 

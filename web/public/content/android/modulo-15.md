@@ -5,7 +5,7 @@
 
 > **Dependencias de este módulo** (catálogo del Módulo 0, Tema 3; cada tema crea su proyecto nuevo, así que copia en su `gradle/libs.versions.toml` las líneas que use). Tema 3 y Tema 6: `implementation(libs.play.services.location)`. Tema 5: `implementation(libs.maps.compose)` y el plugin `alias(libs.plugins.secrets)` (raíz con `apply false`). Tema 7: `implementation(libs.androidx.camera.camera2)`, `implementation(libs.androidx.camera.lifecycle)`, `implementation(libs.androidx.camera.view)`, `implementation(libs.androidx.camera.mlkit.vision)` e `implementation(libs.mlkit.barcode.scanning)`. Todas van dentro de `dependencies { }` de `app/build.gradle.kts`.
 
-### Tema 1: Intents implícitos y Activity Result API
+### Tema 1: Intents implícitos y Activity Result API · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás pedir al sistema que otra app comparta, navegue o elija un contacto mediante Intents implícitos, recibir el resultado con la Activity Result API y manejar el caso en que ninguna app puede resolver el Intent. Prerrequisitos: Módulos 1 y 2 (Activities y Compose).
@@ -130,7 +130,7 @@ Usa el contrato `ActivityResultContracts.TakePicture()` para tomar la foto de la
 #### Paso 7 · Cierre
 
 
-### Tema 2: BroadcastReceiver: reaccionar a eventos del sistema
+### Tema 2: BroadcastReceiver: reaccionar a eventos del sistema · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás registrar un `BroadcastReceiver` dinámico atado al ciclo de vida de una pantalla, declarar si recibe broadcasts de otras apps y simular eventos del sistema con `adb`. Prerrequisitos: Módulo 1 (ciclo de vida) y Tema 1 de este módulo.
@@ -253,7 +253,7 @@ Cuando llegue `ACTION_BATTERY_LOW`, encola un `OneTimeWorkRequest` de sincroniza
 #### Paso 7 · Cierre
 
 
-### Tema 3: Foreground Service de ubicación con FusedLocationProvider
+### Tema 3: Foreground Service de ubicación con FusedLocationProvider · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás mantener un seguimiento de ubicación con la app en segundo plano usando un *foreground service* de tipo `location`, pedir actualizaciones al FusedLocationProvider con un intervalo que cuida la batería y simular posiciones en el emulador. Prerrequisitos: Tema 2 de este módulo y Módulo 8 (trabajo en segundo plano).
@@ -417,7 +417,7 @@ Mide en el emulador el efecto de cambiar la prioridad a `PRIORITY_HIGH_ACCURACY`
 #### Paso 7 · Cierre
 
 
-### Tema 4: Compartir archivos con FileProvider y content://
+### Tema 4: Compartir archivos con FileProvider y content:// · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás compartir un archivo privado de tu app con otra app mediante un `FileProvider`, conceder permiso de lectura temporal sobre una URI `content://` y explicar por qué Android prohíbe las URI `file://`. Prerrequisito: Tema 1 de este módulo.
@@ -546,7 +546,7 @@ Lee un archivo que el usuario elija con `ActivityResultContracts.OpenDocument()`
 
 #### Paso 7 · Cierre
 
-### Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Intermedio · 45 min
+### Tema 5: Mapas con Maps Compose: marcadores, cámara y ruta · Avanzado · 45 min
 
 **Prerrequisito:** tema «Foreground Service de ubicación con FusedLocationProvider» de este módulo.
 
@@ -671,7 +671,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** subir la clave al r
 
 **Fuente oficial:** [Google — Maps Compose library](https://developers.google.com/maps/documentation/android-sdk/maps-compose) y [Google — Using API keys](https://developers.google.com/maps/documentation/android-sdk/get-api-key).
 
-### Tema 6: Sensores con SensorManager: detectar caídas del paquete y orientación · Intermedio · 40 min
+### Tema 6: Sensores con SensorManager: detectar caídas del paquete y orientación · Avanzado · 40 min
 
 **Prerrequisito:** tema «BroadcastReceiver: reaccionar a eventos del sistema» de este módulo.
 
@@ -947,7 +947,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar radios de poco
 
 **Fuente oficial:** [Android Developers — Create and monitor geofences](https://developer.android.com/develop/sensors-and-location/location/geofencing).
 
-### Tema 8: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 50 min
+### Tema 8: CameraX y ML Kit: foto de entrega y escaneo de códigos de barras · Avanzado · 45 min
 
 **Prerrequisito:** tema «Permisos en tiempo de ejecución y alternativas sin permisos» (módulo 16).
 
@@ -1086,7 +1086,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** olvidar pedir el pe
 
 **Fuente oficial:** [Android Developers — CameraX overview](https://developer.android.com/media/camera/camerax) y [Google — ML Kit Barcode scanning](https://developers.google.com/ml-kit/vision/barcode-scanning/android).
 
-### Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 50 min
+### Tema 9: Bluetooth LE: buscar y leer una báscula del vehículo · Avanzado · 45 min
 
 **Prerrequisito:** tema «Permisos en tiempo de ejecución y alternativas sin permisos» (módulo 16).
 

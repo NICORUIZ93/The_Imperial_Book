@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Store propio con signals
+### Tema 1: Store propio con signals · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -156,7 +156,7 @@ Ya confirmas, con `TestBed` real, que un store de signals es un singleton compar
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Implementa un store de entregas con comandos y selectores derivados. Prueba confirmar una guía y recuperar un fallo; ningún consumidor debe mutar directamente la colección almacenada.
 
-### Tema 2: NgRx — actions, reducers y selectors
+### Tema 2: NgRx — actions, reducers y selectors · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -310,7 +310,7 @@ Ya confirmas, con un test real que compara referencias de objetos, que un reduce
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Modela cargar, cargar correctamente y fallar como acciones distintas. Reproduce la secuencia de asignación y comprueba reducers puros y selectores que no duplican estado calculable.
 
-### Tema 3: Cuándo NgRx justifica su complejidad
+### Tema 3: Cuándo NgRx justifica su complejidad · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

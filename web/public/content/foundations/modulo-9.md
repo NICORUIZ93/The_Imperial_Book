@@ -5,7 +5,7 @@ Las matemáticas de este módulo no son una colección de fórmulas para memoriz
 
 ## Aprende construyendo
 
-### Tema 1: Lógica para especificar antes de programar
+### Tema 1: Lógica para especificar antes de programar · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir pre/postcondiciones formales para `transition()` de RutaFlow y a buscarle un contraejemplo con `hypothesis`. Prerrequisitos: instala la dependencia en tu entorno con `python3 -m pip install hypothesis`.
@@ -155,7 +155,7 @@ Agregá una quinta transición inválida a mano al diccionario (`ShipmentStatus.
 #### Paso 7 · Cierre
 Entregá el contrato formal y la prueba generativa pasando del Paso 4, el contraejemplo real encontrado del Paso 5, y la reflexión sobre qué SÍ y qué NO valida una prueba generativa del Paso 6; explicá por qué una prueba que pasa con casos elegidos a mano no es lo mismo que una que busca activamente contraejemplos. Errores comunes: confundir la condición con el contrato completo, escribir una postcondición que solo describe el camino feliz, y asumir que pasar unos pocos casos a mano prueba lo mismo que una búsqueda activa de contraejemplos. Fuente oficial: https://hypothesis.readthedocs.io/en/latest/.
 
-### Tema 2: Conjuntos, relaciones, funciones e inducción
+### Tema 2: Conjuntos, relaciones, funciones e inducción · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a confirmar que `ALLOWED_TRANSITIONS` de RutaFlow es, matemáticamente, una relación de orden parcial — no una de equivalencia. Prerrequisitos: Python 3 instalado.
@@ -264,7 +264,7 @@ Deshacé el Paso 5 y comprobá la propiedad reflexiva: ¿existe algún par `(a, 
 #### Paso 7 · Cierre
 Entregá la salida de las tres propiedades del Paso 4, la relación rota del Paso 5, y el análisis de reflexividad del Paso 6; explicá por qué modelar `ALLOWED_TRANSITIONS` como orden parcial (no equivalencia) es la razón matemática detrás de la regla "un envío nunca retrocede de estado". Errores comunes: tratar una relación direccional como si fuera simétrica, confundir reflexividad permitida (idempotencia) con un bug, y dar por sentado que una propiedad matemática aplica sin verificarla sobre los datos reales. Fuente oficial: https://docs.python.org/3/library/stdtypes.html#set-types-set-frozenset-set.
 
-### Tema 3: Conteo, grafos y estructuras conectadas
+### Tema 3: Conteo, grafos y estructuras conectadas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a tratar `ALLOWED_TRANSITIONS` como el grafo dirigido que realmente es, y a confirmar con el `tiene_ciclo()` de este mismo Tema que es un DAG. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (grafos, lista de adyacencia, BFS y DFS), que es la introducción única a grafos del curso; aquí no se vuelve a explicar.
@@ -391,7 +391,7 @@ Deshacé el Paso 5 y calculá a mano un orden topológico de los cuatro estados.
 
 #### Paso 7 · Cierre
 Entregá la salida del DAG del Paso 4, el ciclo detectado del Paso 5, y el análisis del orden topológico del Paso 6; explicá por qué un ciclo en este grafo sería un defecto de diseño, no solo una curiosidad matemática. Como siguiente paso, aplicá `tiene_ciclo` a las dependencias reales de tu proyecto antes de automatizar el orden de build. Errores comunes: confundir el conjunto de nodos visitados con el de nodos activos en la ruta actual (lo que rompe la detección de ciclos), asumir que solo existe un orden topológico válido, y no distinguir un grafo disperso de uno realmente acíclico. Fuente oficial: https://docs.python.org/3/library/graphlib.html.
-### Tema 4: Probabilidad y evidencia para decisiones técnicas
+### Tema 4: Probabilidad y evidencia para decisiones técnicas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir la distribución real de tiempos de `nearest_neighbor_route` de RutaFlow sobre distintos tamaños de entrada, con percentiles reales, no solo un promedio. Prerrequisitos: Python 3 instalado.

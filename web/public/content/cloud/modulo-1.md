@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Virtualización vs contenedores
+### Tema 1: Virtualización vs contenedores · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás comparar virtualización y contenedores desde cero. Prerrequisitos: Docker; verifica `docker --version`.
@@ -77,7 +77,7 @@ Compara memoria y tiempo de arranque y conserva la salida.
 #### Paso 7 · Cierre
 Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: imágenes. Errores comunes: confundir aislamiento con seguridad total y olvidar límites. Fuente oficial: https://docs.docker.com/get-started/docker-overview/.
 
-### Tema 2: Imágenes y capas
+### Tema 2: Imágenes y capas · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás construir una imagen desde cero. Prerrequisitos: Docker; verifica `docker --version`.
@@ -137,7 +137,7 @@ Reduce capas y compara tamaños.
 #### Paso 7 · Cierre
 Entrega Dockerfile, salida, fallo y corrección; explica el resultado. Siguiente paso: registros. Errores comunes: copiar secretos y usar etiquetas ambiguas. Fuente oficial: https://docs.docker.com/build/building/best-practices/.
 
-### Tema 3: Registros de contenedores (Docker Hub)
+### Tema 3: Registros de contenedores (Docker Hub) · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás publicar una imagen de forma segura. Prerrequisitos: Docker; verifica `docker --version`.
@@ -187,7 +187,7 @@ Documenta una etiqueta inmutable y una política de acceso.
 #### Paso 7 · Cierre
 Entrega configuración, salida, fallo y corrección; explica el resultado. Siguiente paso: comandos. Errores comunes: usar latest en producción y dejar repositorios públicos. Fuente oficial: https://docs.docker.com/docker-hub/.
 
-### Tema 4: Comandos esenciales de Docker
+### Tema 4: Comandos esenciales de Docker · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás operar contenedores desde cero. Prerrequisitos: Docker; verifica `docker --version`.
@@ -246,7 +246,7 @@ Ejecuta un servicio, inspecciona logs y documenta su ciclo.
 #### Paso 7 · Cierre
 Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: Compose. Errores comunes: borrar antes de leer logs y exponer puertos sin necesidad. Fuente oficial: https://docs.docker.com/engine/reference/commandline/cli/.
 
-### Tema 5: Docker Compose — servicios, redes y volúmenes
+### Tema 5: Docker Compose — servicios, redes y volúmenes · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás coordinar servicios desde cero. Prerrequisitos: Docker Compose; verifica `docker compose version`.

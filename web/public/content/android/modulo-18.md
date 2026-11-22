@@ -6,7 +6,7 @@ Aquí el proyecto deja de ser una sola configuración local y se convierte en un
 reproducible. Cada decisión se prueba con Gradle; no se considera profesional una build
 que depende de archivos secretos o pasos manuales en el portátil del autor.
 
-### Tema 1: Gradle, version catalogs y resolución de dependencias
+### Tema 1: Gradle, version catalogs y resolución de dependencias · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás leer el grafo Gradle, centralizar versiones y diagnosticar un conflicto.
@@ -88,7 +88,7 @@ las aplicaciones usen la misma versión si tienen ciclos independientes.
 [gestión de dependencias](https://developer.android.com/build/dependencies) y
 [version catalogs](https://docs.gradle.org/current/userguide/version_catalogs.html).
 
-### Tema 2: Build types, product flavors y configuración segura
+### Tema 2: Build types, product flavors y configuración segura · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás generar demo/prod y debug/release con IDs, endpoints y recursos
@@ -170,7 +170,7 @@ configuración remota validada y el binario es idéntico.
 **Transferencia a RutaFlow:** demo aislada de producción. **Fuente oficial:**
 [build variants](https://developer.android.com/build/build-variants).
 
-### Tema 3: Modularización, convenciones y fronteras de arquitectura
+### Tema 3: Modularización, convenciones y fronteras de arquitectura · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás separar feature, core y data sin ciclos. **Prerrequisitos:** Hilt,
@@ -247,7 +247,7 @@ extraer módulos cuando exista una frontera o métrica real.
 **Transferencia a RutaFlow:** feature de entregas aislada. **Fuente oficial:**
 [modularización](https://developer.android.com/topic/modularization).
 
-### Tema 4: R8, recursos, Baseline Profiles y pipeline reproducible
+### Tema 4: R8, recursos, Baseline Profiles y pipeline reproducible · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás minimizar release, conservar solo reglas necesarias, medir arranque

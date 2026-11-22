@@ -16,11 +16,11 @@ Cuando subir la ganancia no basta (módulo 14, Ejemplo 4), se agrega un compensa
 - Adelanto (lead)El cero está más cerca del origen que el polo. Aporta ángulo positivo: \(\angle(s+z) - \angle(s+p) > 0\). Jala el lugar a la izquierda: más rápido y más amortiguado. Se parece a un PD.
 - Atraso (lag)El polo está más cerca del origen. Con \(z\) y \(p\) muy pequeños casi no cambia el lugar, pero multiplica la ganancia en \(s=0\) por \(z/p\). Mejora el error. Se parece a un PI.
 
-### Tema 1: Diseño de un adelanto
+### Tema 1: Diseño de un adelanto · Avanzado · 40 min
 
 **¿Por qué es importante?** El adelanto mejora la velocidad y el amortiguamiento cuando subir la ganancia ya no alcanza.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus) y [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design) y [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 **Procedimiento**
 
@@ -131,11 +131,11 @@ cambia `phi` a `pi*45/180` y confirma \(\alpha\approx0{,}172\) (Ejemplo 3, 45° 
 
 **Límite:** esta fórmula de \(\alpha\) da la relación cero/polo para la fase **máxima** de un adelanto simple; no dice dónde ubicar ese cero en \(s\) — eso sale de la condición de ángulo en el polo deseado \(s_d\) (procedimiento completo del Ejemplo 1).
 
-### Tema 2: Diseño de un atraso
+### Tema 2: Diseño de un atraso · Avanzado · 40 min
 
 **¿Por qué es importante?** El atraso reduce el error final sin dañar el transitorio, algo que la ganancia sola no puede lograr.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus) y [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design) y [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 #### Demostración · el atraso multiplica el error sin mover los polos
 
@@ -249,11 +249,11 @@ cambia `z, p` a `0.1, 0.0125` y confirma `beta: 8.0` (Ejemplo 4). Confírmalo mo
 
 **Límite:** esta multiplicación de \(K_v\) solo es válida si el cero y el polo quedan mucho más cerca del origen que los polos dominantes (regla práctica: a menos de 5° de desviación, como se comprueba en el Ejemplo 1); si \(z\) o \(p\) se acercan demasiado a \(s_d\), sí mueven el transitorio.
 
-### Tema 3: Implementación con op-amps
+### Tema 3: Implementación con op-amps · Avanzado · 40 min
 
 **¿Por qué es importante?** Implementar el compensador con op-amps conecta el diseño en papel con un circuito real.
 
-**Fuentes oficiales:** [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus) y [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design) y [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 Dos inversores en cascada: el primero con \(Z_i = R_1\parallel C_1\) y \(Z_f = R_2\parallel C_2\); el segundo con \(R_3\) y \(R_4\) para corregir el signo y la ganancia.
 

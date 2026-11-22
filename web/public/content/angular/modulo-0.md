@@ -73,7 +73,7 @@ flowchart LR
 
 Cada tema verifica su garantía con código real: un error genuino de Angular al mezclar componentes standalone y no-standalone, una comprobación real de propiedad del DOM frente a atributo HTML, el compilador TypeScript real (`tsc`) exigiendo narrowing en `unknown`, y `ng build` real fallando ante un error de plantilla detectado en tiempo de compilación (AOT).
 
-### Tema 1: El CLI ya no genera NgModules
+### Tema 1: El CLI ya no genera NgModules · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -224,7 +224,7 @@ Ya confirmas, con un error real y específico de Angular, exactamente qué signi
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Crea el componente standalone de tarjeta de entrega y úsalo desde la lista. El build debe detectar una dependencia retirada de imports; repón esa dependencia y conserva la prueba como control del proyecto.
 
-### Tema 2: Interpolación y property binding
+### Tema 2: Interpolación y property binding · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -376,7 +376,7 @@ Ya confirmas, con una comprobación real sobre el objeto DOM, que el property bi
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Enlaza el estado de envío del formulario con la propiedad disabled del botón. Cambia entre cargando y disponible y verifica la propiedad DOM, además del texto visible de la guía.
 
-### Tema 3: TypeScript a fondo — unknown, any, never y utility types
+### Tema 3: TypeScript a fondo — unknown, any, never y utility types · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -523,7 +523,7 @@ Ya confirmas, con el compilador real de TypeScript, que `unknown` exige narrowin
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Recibe como unknown la respuesta de una guía y valida su estructura antes de mostrarla. Prueba una respuesta sin identificador: debe fallar en la frontera y no propagarse como un objeto de dominio válido.
 
-### Tema 4: Compilador AOT frente a JIT
+### Tema 4: Compilador AOT frente a JIT · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 

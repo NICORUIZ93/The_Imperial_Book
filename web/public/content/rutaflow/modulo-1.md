@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Modelo relacional e historial
+### Tema 1: Modelo relacional e historial · Intermedio · 45 min
 
 **Conceptos clave:** identidades, claves, constraints, migraciones y auditoría.
 
@@ -111,7 +111,7 @@ Entrega `schema.sql`, la salida de la consulta con los dos eventos, y la salida 
 
 **Límites y decisión de uso:** Un historial append-only conserva evidencia, pero no impide insertar hechos falsos o duplicados. Valida identidad y transiciones y controla permisos; corrige mediante nuevos eventos, con una política distinta para datos personales que requieran tratamiento especial.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-### Tema 2: Geografía con precisión útil
+### Tema 2: Geografía con precisión útil · Intermedio · 45 min
 
 **Conceptos clave:** PostGIS, SRID, índices, distancia, geocodificación y privacidad.
 
@@ -211,7 +211,7 @@ Entrega `conductores.sql`, la salida con la distancia correcta en metros y la sa
 
 **Límites y decisión de uso:** Distancia geodésica y precisión decimal no predicen tiempo de conducción ni calidad del GPS. Considera red vial, antigüedad y error reportado; no asignes una entrega solo porque un punto parece cercano en el mapa.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-### Tema 3: Ledger de doble partida
+### Tema 3: Ledger de doble partida · Intermedio · 45 min
 
 **Conceptos clave:** cuentas, débitos, créditos, tarifas versionadas y conciliación.
 

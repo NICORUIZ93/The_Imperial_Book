@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Arquitectura del proyecto integrador
+### Tema 1: Arquitectura del proyecto integrador · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a organizar el proyecto integrador completo en `commonMain` (dominio + datos), `commonTest`, `androidApp` e `iosApp`, documentando qué vive en cada capa. Prerrequisitos: Módulos 0-10 completados.
@@ -78,9 +78,9 @@ Pista: cuando el desarrollador nuevo pregunta dónde poner la nueva validación,
 Corregí el Paso 5 moviendo la validación a `dominio/` en `commonMain`, escribiendo su test en `commonTest`, y documentando en el README del proyecto el criterio explícito: "toda regla de negocio nueva vive en `commonMain` salvo que dependa genuinamente de una API nativa de plataforma".
 
 #### Paso 7 · Cierre
-Entregá la estructura documentada del Paso 4, la duplicación evitable del Paso 5, y el criterio documentado del Paso 6; explicá por qué una decisión de arquitectura sin un criterio explícito y escrito termina resolviéndose caso por caso de forma inconsistente entre desarrolladores. Siguiente paso: implementá la sincronización de datos remotos con caché local dentro de `data/`. Errores comunes: no documentar explícitamente el criterio de qué vive en `commonMain` frente a cada plataforma, dejar que cada desarrollador decida el límite caso por caso sin un criterio compartido, y mezclar lógica de UI dentro de `dominio/`. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-discover-project.html y https://kotlinlang.org/docs/multiplatform-architect-your-app.html.
+Entregá la estructura documentada del Paso 4, la duplicación evitable del Paso 5, y el criterio documentado del Paso 6; explicá por qué una decisión de arquitectura sin un criterio explícito y escrito termina resolviéndose caso por caso de forma inconsistente entre desarrolladores. Siguiente paso: implementá la sincronización de datos remotos con caché local dentro de `data/`. Errores comunes: no documentar explícitamente el criterio de qué vive en `commonMain` frente a cada plataforma, dejar que cada desarrollador decida el límite caso por caso sin un criterio compartido, y mezclar lógica de UI dentro de `dominio/`. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-discover-project.html y https://kotlinlang.org/docs/multiplatform/multiplatform-project-configuration.html.
 
-### Tema 2: Sincronización de datos remotos con caché local
+### Tema 2: Sincronización de datos remotos con caché local · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar un `TareaRepositoryImpl` que combine Ktor (datos remotos) y SQLDelight (caché local) con fallback automático cuando la red falla. Prerrequisitos: Tema 1 de este módulo.
@@ -171,7 +171,7 @@ Corregí el Paso 5 restaurando el `try/catch` con fallback a `db.tareaQueries.se
 #### Paso 7 · Cierre
 Entregá el repositorio con fallback del Paso 4, la pantalla de error reproducida del Paso 5, y la verificación manual sin red del Paso 6; explicá por qué "simplificar" eliminando el manejo de errores de red convierte un problema de conectividad temporal en una falla completa de la aplicación. Siguiente paso: cerrá el track reflexionando sobre qué compartir realmente entre Android e iOS. Errores comunes: no implementar ningún fallback offline en el repositorio, decidir compartir la lógica de sincronización pero duplicarla por error en cada plataforma, y no probar manualmente el comportamiento sin conexión antes de confiar en el fallback. Fuentes oficiales: https://ktor.io/docs/client-response-validation.html y https://sqldelight.github.io/sqldelight/2.1.0/.
 
-### Tema 3: Cierre del track — la promesa realista de KMP
+### Tema 3: Cierre del track — la promesa realista de KMP · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a auditar el proyecto integrador completo y documentar explícitamente qué se comparte (y por qué) frente a qué se mantuvo nativo por plataforma. Prerrequisitos: Tema 2 de este módulo.

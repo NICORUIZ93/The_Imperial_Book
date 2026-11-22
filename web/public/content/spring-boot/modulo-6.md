@@ -421,7 +421,7 @@ Ejecuta solo `./mvnw -q -Dtest=TareaFlowEndToEndTest#creaConJwtYLeeLaTareaPersis
 
 **Aplicación y decisión:** Práctica del proyecto integrador: demuestra que una petición rechazada no crea una fila. La diferencia entre flujo MockMvc y HTTP de red importa: pasar el primero no verifica proxy, TLS ni configuración del puerto publicado.
 
-### Tema 4: `RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4 · Intermedio · 35 min
+### Tema 4: `RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4 · Avanzado · 35 min
 
 Al terminar, podrás escribir el flujo del Tema 3 con `RestTestClient`, ejecutarlo primero contra MockMvc y luego contra un servidor real en un puerto aleatorio, y reemplazar un `TestRestTemplate` heredado.
 

@@ -5,7 +5,7 @@
 
 > **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: la suite de Gradle `./gradlew :app:testDebugUnitTest :app:connectedDebugAndroidTest :app:lintDebug` en verde. La checklist en Python solo comprueba que existan archivos; no demuestra que funcionen.
 
-### Tema 1: Arquitectura MVVM completa con UDF
+### Tema 1: Arquitectura MVVM completa con UDF · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -124,7 +124,7 @@ Ya integras Compose, navegación, StateFlow, Room y Retrofit en una única arqui
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Separa la pantalla de entregas, su estado y la confirmación de entrega. Prueba el ViewModel con un repositorio falso: una confirmación fallida debe conservar la entrega pendiente y ofrecer reintento.
 
-### Tema 2: Inyección de dependencias en toda la app
+### Tema 2: Inyección de dependencias en toda la app · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -216,7 +216,7 @@ Ya confirmas, con una auditoría real de código, que ninguna clase de la app in
 
 **Cuándo no usarlo:** dentro de los propios módulos de Hilt (`NetworkModule`, `DatabaseModule`, Módulo 7), la instanciación explícita es necesaria y correcta; la auditoría de este Tema debe excluir deliberadamente esos módulos, no prohibir la instanciación en absolutamente todo el código.
 
-### Tema 3: Cierre del track y próximos pasos
+### Tema 3: Cierre del track y próximos pasos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

@@ -4,7 +4,7 @@
 
 Cada Tema parte de una carpeta vacía y se verifica con comandos reales. El servidor de práctica es un VPS desechable con Ubuntu 24.04 LTS (o una VM local con red puente) en `203.0.113.10`, y el dominio de los Temas 2 a 4 es `app.tudominio.com`; sustituye ambos valores por los tuyos.
 
-### Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches
+### Tema 1: Aprovisionar y endurecer: usuario, SSH, firewall y parches · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -158,7 +158,7 @@ Ya tienes un servidor donde el acceso depende de una clave, el firewall niega po
 
 **Fuente oficial:** [Ubuntu Server — OpenSSH](https://documentation.ubuntu.com/server/how-to/security/openssh-server/) y [OpenSSH — sshd_config(5)](https://man.openbsd.org/sshd_config).
 
-### Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare
+### Tema 2: Dominio, TLS y borde: DNS, Let's Encrypt y Cloudflare · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -293,7 +293,7 @@ Ya emites, sirves y renuevas TLS con un dominio real, y distingues "el temporiza
 
 **Fuente oficial:** [Certbot — instrucciones por sistema](https://certbot.eff.org/instructions) y [Let's Encrypt — tipos de desafío](https://letsencrypt.org/docs/challenge-types/).
 
-### Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados
+### Tema 3: Despliegue y rollback: systemd, nginx y artefactos versionados · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -512,7 +512,7 @@ Ya despliegas artefactos versionados, sirves por proxy y vuelves atrás cambiand
 
 **Fuente oficial:** [systemd.service](https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html) y [nginx — ngx_http_proxy_module](https://nginx.org/en/docs/http/ngx_http_proxy_module.html).
 
-### Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro
+### Tema 4: Respaldos que se restauran: restic, RPO/RTO y simulacro · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

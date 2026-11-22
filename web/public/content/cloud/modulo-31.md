@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Arquitectura multi-nube y portabilidad de conocimiento
+### Tema 1: Arquitectura multi-nube y portabilidad de conocimiento · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir y probar un `confirmDelivery` de RutaFlow diseñado contra un puerto `DeliveryRepository`, no contra un proveedor cloud específico, y lo ejecutarás con dos adaptadores creados por ti. Prerrequisitos: Módulo 5 completo y Node.js.
@@ -162,7 +162,7 @@ Escribe un segundo adaptador `src/map-delivery-repository.ts` que implemente `De
 #### Paso 7 · Cierre
 Entregá los archivos del puerto, la función y ambas pruebas del Paso 4, la copia acoplada del Paso 5 y el segundo adaptador con la nueva salida de pruebas del Paso 6; explicá qué parte de este diseño es portable entre proveedores y cuál sería específica de cada uno. Siguiente paso: Testcontainers. Errores comunes: abstraer detalles sin necesidad y filtrar tipos del proveedor. Fuente oficial: https://12factor.net/.
 
-### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD
+### Tema 2: Arquitectura interna de cloud local y su uso en CI/CD · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás probar contra motores reales desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
@@ -222,7 +222,7 @@ Arranca, prueba y destruye un contenedor.
 #### Paso 7 · Cierre
 Entrega test, salida, fallo y corrección; explica el resultado. Siguiente paso: LocalStack. Errores comunes: contenedores persistentes y tests no aislados. Fuente oficial: https://testcontainers.com/guides/getting-started-with-testcontainers-for-nodejs/.
 
-### Tema 3: Migración desde otros emuladores, y límites de un emulador
+### Tema 3: Migración desde otros emuladores, y límites de un emulador · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a levantar Floci con un único `docker-compose.yml` y a confirmar en vivo un límite real documentado, en vez de asumir paridad total con AWS. Prerrequisitos: Módulo 30 completo.
@@ -273,7 +273,7 @@ Apagá el entorno completo con `docker compose down`, confirmá que los contened
 #### Paso 7 · Cierre
 Entregá el entorno unificado levantado del Paso 4, el límite real confirmado del Paso 5, y la lista de servicios con plano de datos pendiente del Paso 6; explicá por qué ninguna cantidad de fidelidad en un emulador sustituye la validación final contra la nube real. Siguiente paso: módulos por lenguaje. Errores comunes: usar emulador en producción y asumir paridad total. Fuente oficial: https://docs.localstack.cloud/.
 
-### Tema 4: Testcontainers — pruebas de integración automatizadas
+### Tema 4: Testcontainers — pruebas de integración automatizadas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás aislar suites de prueba desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
@@ -470,7 +470,7 @@ Ejecuta suites en paralelo y verifica limpieza.
 #### Paso 7 · Cierre
 Entrega tests, salida, fallo y corrección; explica el resultado. Siguiente paso: CI. Errores comunes: depender de puertos fijos y dejar contenedores vivos. Fuente oficial: https://testcontainers.com/.
 
-### Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Intermedio · 40 min
+### Tema 5: Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación · Avanzado · 40 min
 
 **Prerrequisito:** tema «Migración desde otros emuladores…» de este módulo.
 

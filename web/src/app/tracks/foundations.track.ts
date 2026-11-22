@@ -2,12 +2,13 @@ import { CourseModule, createModule as m } from '../course-module.model';
 
 export const FOUNDATIONS_MODULES: CourseModule[] = [
   m(0, 'Cómo funciona tu entorno de desarrollo', 'Computador y terminal', 'Fundamentos', '6 h', '#6d5dfc',
-    'Empieza desde cero absoluto: entiende qué es un computador, cómo organiza archivos el sistema operativo, qué hace una terminal y cómo ejecutar tu primer programa sin copiar comandos a ciegas.',
-    [
-      'Hardware, sistema operativo, programa, intérprete, proceso y código de salida',
-      'Archivos, carpetas, rutas absolutas y relativas',
-      'Terminal, shell, comando, argumento y código de salida',
-      'Editor, archivo fuente, intérprete y salida del programa',
+    'Empieza desde cero absoluto: entiende qué es un computador, cómo organiza archivos el sistema operativo, qué hace una terminal y cómo ejecutar tu primer programa sin copiar comandos a ciegas.',[
+      'Computador, sistema operativo, programa y proceso',
+      'Del archivo fuente al programa en ejecución',
+      'Archivos, carpetas y rutas sin perderse',
+      'Cómo leer un comando antes de ejecutarlo',
+      'Primer programa, primer error y primera evidencia',
+      'VS Code, comandos y atajos comprobables'
     ],
     [
       'Identifica CPU, memoria, almacenamiento y sistema operativo de tu equipo',
@@ -23,15 +24,14 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Sistema operativo', 'Terminal', 'Python 3.14', 'Visual Studio Code'],
     'Carpeta de trabajo creada desde terminal con primer programa ejecutado, error diagnosticado y README de evidencia.'),
   m(1, 'Pensamiento computacional y programación', 'Lógica y programación', 'Fundamentos', '7 h 15 min', '#6d5dfc',
-    'Aprende a convertir un problema cotidiano en datos, decisiones, repeticiones y funciones verificables, y da el primer paso en programación orientada a objetos con clases, herencia, composición y clases abstractas.',
-    [
-      'Problema, algoritmo, entrada, proceso, salida y casos de prueba',
-      'Variables, tipos, expresiones y estado',
-      'Condiciones, bucles y trazado manual',
-      'Funciones, parámetros, retorno, alcance y descomposición',
-      'Representación de datos: binario, UTF-8 y punto flotante',
-      'Clases y objetos: atributos, métodos, __init__, identidad e igualdad',
-      'Herencia, composición y clases abstractas con abc',
+    'Aprende a convertir un problema cotidiano en datos, decisiones, repeticiones y funciones verificables, y da el primer paso en programación orientada a objetos con clases, herencia, composición y clases abstractas.',[
+      'Del problema al algoritmo y a los casos de prueba',
+      'Variables, tipos, expresiones y cambios de estado',
+      'Decisiones, repeticiones y trazado de ejecución',
+      'Funciones y descomposición de problemas',
+      'Cómo la computadora representa los datos — binario, texto y decimales',
+      'Clases y objetos: atributos, métodos e `__init__`',
+      'Herencia, composición y clases abstractas con `abc`'
     ],
     [
       'Diseña en papel el algoritmo para calcular el precio final de una compra',
@@ -50,16 +50,15 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Python', 'Pseudocódigo', 'abc'],
     'Calculadora de presupuesto por consola, dividida en funciones, validada con una tabla de casos y documentada.'),
   m(2, 'Estructuras de datos, algoritmos y complejidad', 'Datos y algoritmos', 'Fundamentos', '8 h', '#6d5dfc',
-    'Organiza información con listas, diccionarios, pilas y colas; implementa búsquedas y ordenamientos; y compara soluciones usando corrección, tiempo y memoria.',
-    [
-      'Listas, tuplas, conjuntos y diccionarios',
-      'Pilas, colas y modelos de uso',
-      'Búsqueda lineal, búsqueda binaria y precondiciones',
-      'Ordenamiento, recursión, complejidad temporal y espacial',
+    'Organiza información con listas, diccionarios, pilas y colas; implementa búsquedas y ordenamientos; y compara soluciones usando corrección, tiempo y memoria.',[
+      'Elegir estructuras según las operaciones',
+      'Pilas, colas y abstracciones de comportamiento',
+      'Búsqueda, precondiciones y demostración de corrección',
+      'Complejidad, medición, ordenamiento y recursión',
       'Árboles y árboles binarios de búsqueda (BST)',
-      'Tablas hash: búsqueda en tiempo constante y colisiones',
+      'Tablas hash — búsqueda en tiempo constante',
       'Grafos y recorridos BFS/DFS',
-      'Programación dinámica y memoización',
+      'Programación dinámica — resolver una vez, recordar el resultado'
     ],
     [
       'Modela un inventario y justifica la estructura elegida para cada operación',
@@ -75,13 +74,12 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Python', 'JSON'],
     'Gestor de inventario con estructuras justificadas, búsquedas comparadas, persistencia JSON y análisis reproducible.'),
   m(3, 'Fundamentos de web, redes y accesibilidad', 'Web y redes', 'Fundamentos', '8 h', '#6d5dfc',
-    'Comprende qué ocurre al abrir una URL y construye una web semántica, responsive y accesible antes de utilizar frameworks de frontend o backend.',
-    [
-      'Cliente, servidor, URL, DNS, IP, TCP y puertos',
-      'HTTP: métodos, headers, estados, cuerpo, caché y HTTPS',
-      'HTML semántico, formularios, DOM y validación',
-      'CSS: cascada, box model, layout responsive y accesibilidad verificable',
-      'Proyecto integrador: sitio de seguimiento accesible y responsive',
+    'Comprende qué ocurre al abrir una URL y construye una web semántica, responsive y accesible antes de utilizar frameworks de frontend o backend.',[
+      'De una URL al servidor: red, DNS, IP y puertos',
+      'HTTP como contrato observable',
+      'HTML semántico, formularios y el DOM',
+      'CSS, layout responsive y accesibilidad verificable',
+      'Proyecto integrador — sitio de seguimiento accesible'
     ],
     [
       'Traza desde una URL hasta una respuesta HTTP',
@@ -97,12 +95,14 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['HTML', 'CSS', 'HTTP', 'DevTools', 'curl'],
     'Sitio responsive y accesible servido localmente, con informe de red, auditoría de teclado y evidencia HTTP.'),
   m(4, 'Modelado de datos, SQL y persistencia', 'Datos y SQL', 'Aplicación', '10 h', '#6d5dfc',
-    'Pasa de archivos JSON a una base relacional: modela entidades y relaciones, consulta con SQL, protege integridad con transacciones y compara responsablemente SQL con NoSQL.',
-    [
-      'Entidades, atributos, claves, relaciones y normalización',
-      'SQL: DDL, CRUD, filtros, agregaciones y JOIN',
-      'Índices, planes de consulta y restricciones',
-      'Transacciones, ACID, concurrencia y criterios SQL/NoSQL',
+    'Pasa de archivos JSON a una base relacional: modela entidades y relaciones, consulta con SQL, protege integridad con transacciones y compara responsablemente SQL con NoSQL.',[
+      'Del mundo real al modelo relacional',
+      'SQL para definir, escribir, consultar y relacionar',
+      'Índices, restricciones y planes de consulta',
+      'Transacciones, concurrencia y elección SQL/NoSQL',
+      'SQL avanzado: subconsultas, vistas, triggers y funciones de ventana',
+      'Procedimientos almacenados, funciones y cursores con PL/pgSQL',
+      'De SQL a Excel: reportes con tablas y fórmulas vivas'
     ],
     [
       'Diseña un modelo entidad-relación para inventario y movimientos',
@@ -118,12 +118,11 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['SQLite', 'SQL', 'Python'],
     'Sistema de inventario persistente con esquema versionado, consultas seguras, transacciones, reportes y análisis SQL/NoSQL.'),
   m(5, 'Testing, depuración, Git y CI', 'Calidad y colaboración', 'Aplicación', '10 h', '#6d5dfc',
-    'Convierte código funcional en software confiable: diagnostica con evidencia, automatiza pruebas, trabaja con ramas y revisiones, y ejecuta controles de calidad en CI.',
-    [
-      'Depuración, hipótesis, debugger, logs y reproducción mínima',
-      'Pruebas unitarias, integración, E2E, dobles y cobertura',
-      'Git: commits, ramas, merge, conflictos y pull requests',
-      'Calidad estática, revisión de código e integración continua',
+    'Convierte código funcional en software confiable: diagnostica con evidencia, automatiza pruebas, trabaja con ramas y revisiones, y ejecuta controles de calidad en CI.',[
+      'Depurar con evidencia, no con cambios aleatorios',
+      'Pruebas con propósito y niveles adecuados',
+      'Git como historial de decisiones y colaboración',
+      'Calidad estática, revisión e integración continua'
     ],
     [
       'Reproduce y corrige un defecto mediante una prueba de regresión',
@@ -139,12 +138,12 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['pytest', 'Git', 'GitHub Actions', 'Ruff'],
     'Repositorio colaborativo del inventario con regresiones, pruebas aisladas/integradas, pipeline CI y revisión documentada.'),
   m(6, 'Seguridad, privacidad y modelado de amenazas', 'Seguridad aplicada', 'Integración', '10 h', '#6d5dfc',
-    'Integra seguridad desde requisitos: identifica activos y amenazas, protege identidades y secretos, aplica criptografía mediante primitivas confiables y prueba que acciones no autorizadas fallan.',
-    [
-      'Activos, actores, límites de confianza, amenazas, riesgo y STRIDE',
-      'Autenticación, autorización, sesiones, contraseñas y mínimo privilegio',
-      'Hash, MAC, cifrado, TLS, gestión de claves y secretos',
-      'Validación, inyección, XSS, CSRF, privacidad, logging y respuesta',
+    'Integra seguridad desde requisitos: identifica activos y amenazas, protege identidades y secretos, aplica criptografía mediante primitivas confiables y prueba que acciones no autorizadas fallan.',[
+      'Activos, amenazas, riesgos y límites de confianza',
+      'Identidad, contraseñas, sesiones y autorización',
+      'Criptografía aplicada, TLS, claves y secretos',
+      'Validación, vulnerabilidades web, privacidad y respuesta',
+      'Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo'
     ],
     [
       'Construye un diagrama de flujo de datos y threat model del inventario',
@@ -160,15 +159,14 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Python', 'SQLite', 'pytest', 'OWASP'],
     'Inventario endurecido con threat model, credenciales seguras, roles, auditoría, pruebas de abuso y runbook de incidentes.'),
   m(7, 'Requisitos, diseño, arquitectura y mantenimiento', 'Ingeniería de software', 'Integración', '12 h', '#6d5dfc',
-    'Diseña software como sistema mantenible: convierte necesidades en requisitos verificables, prioriza atributos de calidad, define límites arquitectónicos y documenta decisiones y evolución.',
-    [
-      'Stakeholders, requisitos funcionales/no funcionales, historias y criterios',
-      'Atributos de calidad, arquitectura, dependencias y diagramas C4',
-      'Cohesión, acoplamiento, SOLID, puertos y adaptadores (Repository y Adapter)',
-      'ADRs, documentación, deuda técnica, mantenimiento y evolución',
+    'Diseña software como sistema mantenible: convierte necesidades en requisitos verificables, prioriza atributos de calidad, define límites arquitectónicos y documenta decisiones y evolución.',[
+      'Requisitos, stakeholders y criterios verificables',
+      'Arquitectura guiada por atributos de calidad',
+      'Diseño modular, principios, patrones y refactoring',
+      'Decisiones, documentación, deuda y evolución',
       'Records de C#: igualdad por valor no implica inmutabilidad profunda',
       'Desarrollo guiado por especificación con agentes de IA',
-      'Evaluar una skill de agente antes de usarla',
+      'Evaluar una skill de agente antes de usarla: validar, deduplicar y medir'
     ],
     [
       'Entrevista un caso, redacta historias y criterios verificables',
@@ -184,12 +182,12 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['C4', 'ADRs', 'Python', 'Node.js 24', 'Git'],
     'Inventario modular con especificación, diagramas, ADRs, refactoring protegido por pruebas y plan de mantenimiento.'),
   m(8, 'Sistemas operativos, concurrencia, Linux y contenedores', 'Ejecución y contenedores', 'Integración', '12 h', '#6d5dfc',
-    'Comprende cómo el sistema operativo ejecuta y aísla programas, razona sobre memoria y concurrencia, administra un servicio Linux y empaqueta la aplicación acumulativa en un contenedor reproducible y observable.',
-    [
-      'Kernel, procesos, archivos, permisos, señales y llamadas al sistema',
-      'Memoria, procesos, hilos, condiciones de carrera, bloqueo y sincronización',
-      'Shell Linux, procesos, servicios, logs, puertos y diagnóstico operativo',
-      'Máquinas virtuales, imágenes, contenedores, namespaces, cgroups y persistencia',
+    'Comprende cómo el sistema operativo ejecuta y aísla programas, razona sobre memoria y concurrencia, administra un servicio Linux y empaqueta la aplicación acumulativa en un contenedor reproducible y observable.',[
+      'El sistema operativo como administrador y frontera',
+      'Memoria y concurrencia sin magia',
+      'Linux como entorno observable',
+      'Contenedores: aislamiento reproducible',
+      'Problemas clásicos de concurrencia: filósofos y lectores-escritores'
     ],
     [
       'Inspecciona procesos, descriptores, permisos, señales y códigos de salida',
@@ -205,12 +203,11 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Linux', 'Python', 'Docker', 'SQLite'],
     'Inventario contenerizado con usuario no root, almacenamiento persistente, healthcheck, límites, apagado limpio, prueba concurrente y runbook operativo.'),
   m(9, 'Matemáticas discretas, lógica y probabilidad para software', 'Razonamiento cuantitativo', 'Experto', '12 h', '#6d5dfc',
-    'Usa lógica, conjuntos, relaciones, combinatoria, grafos y probabilidad para especificar reglas, demostrar propiedades, diseñar pruebas y tomar decisiones técnicas con datos en lugar de intuición.',
-    [
-      'Proposiciones, predicados, cuantificadores, equivalencias e invariantes',
-      'Conjuntos, funciones, relaciones, inducción y estructuras discretas',
-      'Combinatoria, grafos dirigidos, ciclos, DAG y orden topológico',
-      'Probabilidad, variables aleatorias, distribuciones, muestreo e inferencia básica',
+    'Usa lógica, conjuntos, relaciones, combinatoria, grafos y probabilidad para especificar reglas, demostrar propiedades, diseñar pruebas y tomar decisiones técnicas con datos en lugar de intuición.',[
+      'Lógica para especificar antes de programar',
+      'Conjuntos, relaciones, funciones e inducción',
+      'Conteo, grafos y estructuras conectadas',
+      'Probabilidad y evidencia para decisiones técnicas'
     ],
     [
       'Formaliza reglas del inventario y encuentra contraejemplos automáticamente',
@@ -226,14 +223,14 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Python', 'Hypothesis'],
     'Cuaderno reproducible del inventario con especificaciones lógicas, pruebas generativas, análisis de grafos y experimento probabilístico con conclusiones limitadas por evidencia.'),
   m(10, 'Sistemas distribuidos, resiliencia y observabilidad', 'Sistemas distribuidos', 'Experto', '14 h', '#6d5dfc',
-    'Evoluciona el inventario hacia componentes que se comunican por red y aprende a diseñar bajo fallos parciales, mensajes duplicados, relojes imperfectos y dependencias lentas mediante invariantes, idempotencia y evidencia operativa.',
-    [
+    'Evoluciona el inventario hacia componentes que se comunican por red y aprende a diseñar bajo fallos parciales, mensajes duplicados, relojes imperfectos y dependencias lentas mediante invariantes, idempotencia y evidencia operativa.',[
+      'La red convierte el resultado en una incertidumbre',
+      'Replicación, consistencia y decisiones explícitas',
+      'Mensajes que se procesan con efectos exactamente una vez',
+      'Resiliencia y observabilidad orientadas a objetivos',
+      'Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases',
       'Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada',
-      'Fallos parciales, latencia, tiempo, orden causal y límites de red',
-      'Replicación, particiones, consistencia, consenso y compromisos CAP',
-      'Mensajería, entrega, idempotencia, reintentos, outbox y sagas',
-      'Resiliencia, SLI/SLO, logs, métricas, trazas y respuesta a incidentes',
-      'Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella',
+      'Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella'
     ],
     [
       'Simula latencia, timeout, pérdida, duplicación y reordenamiento de mensajes',
@@ -249,20 +246,18 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Python', 'Docker Compose', 'SQLite'],
     'Inventario distribuido mínimo con outbox, consumidor idempotente, fallos inyectados, telemetría correlacionada, SLO medible, runbook y postmortem sin culpables.'),
   m(11, 'Ciencias de la Computación: mapa de especializaciones', 'Mapa de especializaciones', 'Experto', '18 h', '#6d5dfc',
-    'Conecta los fundamentos con teoría, sistemas, datos, inteligencia artificial, gráficos, cómputo científico y práctica profesional sin confundir introducción con dominio especializado.',
-    ['Sistemas, arquitectura, hardware y sistemas operativos', 'Algoritmos, autómatas, lenguajes formales y compiladores', 'Bases de datos, data warehousing, Big Data y minería', 'IA, ML, redes neuronales y procesamiento de imágenes', 'Gráficos, cómputo científico y bioinformática', 'Redes, seguridad, web, ingeniería y práctica profesional'],
+    'Conecta los fundamentos con teoría, sistemas, datos, inteligencia artificial, gráficos, cómputo científico y práctica profesional sin confundir introducción con dominio especializado.',['Sistemas, arquitectura y sistemas operativos', 'Algoritmos, autómatas, lenguajes y compiladores', 'Bases de datos, almacenes analíticos y minería de datos', 'Inteligencia artificial, aprendizaje automático y visión', 'Gráficos y cómputo científico', 'Redes, seguridad, web e ingeniería profesional'],
     ['Simula una máquina y un autómata', 'Implementa parser pequeño', 'Diseña experimento de datos', 'Evalúa modelo sencillo', 'Renderiza una transformación', 'Presenta informe ético reproducible'],
     ['¿Qué diferencia existe entre usar una herramienta y comprender su fundamento?', '¿Qué especializaciones requieren matemáticas adicionales antes de profundizar?'],
     ['Python', 'SQL'],
     'Portafolio de orientación con seis experimentos, mapa de prerrequisitos y una especialización elegida mediante evidencia.'),
   m(12, 'Algoritmos clásicos', 'Algoritmos clásicos', 'Aplicación', '10 h', '#6d5dfc',
-    'Implementa y mide los algoritmos que aparecen en cada entrevista y en cada sistema de rutas: ordenamientos, algoritmos codiciosos, caminos más cortos, búsqueda en cadenas y problemas intratables, aplicados al planificador de entregas de RutaFlow.',
-    [
-      'Insertion, merge y quick sort: complejidad, estabilidad y peor caso',
-      'Algoritmos codiciosos, contraejemplos y árbol de expansión mínima',
-      'Caminos más cortos con Dijkstra y pesos negativos con Bellman-Ford',
-      'Búsqueda en cadenas: fuerza bruta, KMP y Rabin-Karp',
-      'P, NP, NP-completitud y heurísticas para el problema del viajante',
+    'Implementa y mide los algoritmos que aparecen en cada entrevista y en cada sistema de rutas: ordenamientos, algoritmos codiciosos, caminos más cortos, búsqueda en cadenas y problemas intratables, aplicados al planificador de entregas de RutaFlow.',[
+      'Ordenamientos: insertion, merge y quick sort',
+      'Algoritmos codiciosos y árbol de expansión mínima',
+      'Caminos más cortos con Dijkstra',
+      'Búsqueda en cadenas: de la fuerza bruta a KMP',
+      'Problemas intratables: P, NP y heurísticas'
     ],
     [
       'Mide comparaciones y tiempo de tres ordenamientos con 100, 1 000 y 3 000 datos',
@@ -280,15 +275,13 @@ export const FOUNDATIONS_MODULES: CourseModule[] = [
     ['Python', 'heapq', 'Git'],
     'Planificador de entregas con orden de carga estable, tiempos mínimos por Dijkstra, ruta heurística medida contra la exacta y README con complejidad y límites.'),
   m(13, 'Catálogo de patrones de diseño', 'Patrones de diseño', 'Integración', '10 h', '#6d5dfc',
-    'Referencia de patrones del curso: Decorator, State, Template Method, Chain of Responsibility, Mediator, Memento, Visitor y Flyweight, cada uno justificado por un requisito de RutaFlow y comparado con su alternativa más simple. Parte de las clases, la herencia, la composición y abc del Módulo 1.',
-    ['Decorator y decoradores de función', 'State y máquinas de estados', 'Template Method y ganchos', 'Chain of Responsibility y orden de evaluación', 'Mediator y acoplamiento', 'Memento e instantáneas inmutables', 'Visitor y doble despacho', 'Flyweight y memoria compartida'],
+    'Referencia de patrones del curso: Decorator, State, Template Method, Chain of Responsibility, Mediator, Memento, Visitor y Flyweight, cada uno justificado por un requisito de RutaFlow y comparado con su alternativa más simple. Parte de las clases, la herencia, la composición y abc del Módulo 1.',['Decorator: agregar comportamiento sin heredar', 'State: un objeto que cambia de comportamiento según su estado', 'Template Method: un algoritmo fijo con pasos variables', 'Chain of Responsibility: una cadena de validadores', 'Mediator: coordinar objetos sin que se conozcan', 'Memento: guardar y restaurar estado para deshacer', 'Visitor: operaciones nuevas sin tocar las clases', 'Flyweight: compartir estado para ahorrar memoria'],
     ['Apila decoradores y conserva metadatos con functools.wraps', 'Rechaza transiciones inválidas de un envío', 'Demuestra una falla silenciosa en una cadena mal armada', 'Implementa deshacer y rehacer sin copias superficiales', 'Mide el ahorro de memoria de un flyweight'],
     ['¿Cuándo prefieres composición sobre herencia?', '¿Qué costo tiene agregar un tipo nuevo con Visitor?', '¿Por qué un memento o un flyweight deben ser inmutables?'],
     ['Python', 'abc', 'dataclasses', 'Git'],
     'Núcleo de envíos con estados, validadores encadenados, notificaciones decoradas, deshacer, reportes y tarifas por visitante, con README que justifica cada patrón.'),
   m(14, 'Código limpio', 'Código limpio', 'Integración', '8 h', '#6d5dfc',
-    'Aplica las prácticas de Código limpio (Robert C. Martin) a código Python real: nombres, funciones pequeñas, comentarios honestos, excepciones, objetos frente a estructuras de datos y pruebas F.I.R.S.T., siempre con una red de seguridad antes de refactorizar.',
-    ['Nombres que revelan intención y funciones pequeñas', 'Comentarios y excepciones', 'Objetos, estructuras de datos y ley de Demeter', 'Pruebas limpias F.I.R.S.T.'],
+    'Aplica las prácticas de Código limpio (Robert C. Martin) a código Python real: nombres, funciones pequeñas, comentarios honestos, excepciones, objetos frente a estructuras de datos y pruebas F.I.R.S.T., siempre con una red de seguridad antes de refactorizar.',['Nombres que revelan intención y funciones pequeñas', 'Comentarios honestos y excepciones en lugar de códigos de error', 'Objetos frente a estructuras de datos y la ley de Demeter', 'Pruebas limpias: F.I.R.S.T. y un concepto por prueba'],
     ['Refactoriza una función críptica sin cambiar su resultado', 'Reemplaza códigos de error por excepciones con nombre', 'Elimina cadenas de vagón moviendo decisiones al objeto', 'Convierte una prueba no determinista en una repetible'],
     ['¿Qué indica un argumento bandera?', '¿Cuándo aporta un comentario?', '¿Qué dice la ley de Demeter?', '¿Qué significa F.I.R.S.T.?'],
     ['Python', 'unittest', 'Git'],

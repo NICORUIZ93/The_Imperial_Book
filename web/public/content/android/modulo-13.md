@@ -7,7 +7,7 @@ Una app móvil se ejecuta en un dispositivo que puede perderse, restaurarse, que
 
 > **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En el Tema 2, la criptografía en Python no usa `AndroidKeyStore`: para probar tu `CifradoSensible.kt` de verdad, escribe una prueba instrumentada en `app/src/androidTest` que cifre y descifre un texto y ejecútala con `./gradlew :app:connectedDebugAndroidTest` (el almacén de claves de Android solo existe en el dispositivo o emulador).
 
-### Tema 1: El sistema operativo conecta tu app con entradas externas
+### Tema 1: El sistema operativo conecta tu app con entradas externas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -134,7 +134,7 @@ Ya validas la forma y la autorización de un deep link como dos pasos distintos 
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Abre una guía desde una notificación y desde un enlace verificado. Comprueba sesión y autorización antes de mostrar direcciones; una guía inexistente debe llevar a un estado recuperable, sin cerrar la aplicación.
 
-### Tema 2: Proteger datos exige conocer copias y ciclo de vida
+### Tema 2: Proteger datos exige conocer copias y ciclo de vida · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -248,7 +248,7 @@ Ya cifras un dato sensible con una construcción autenticada real, confirmando q
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Clasifica tokens, coordenadas y fotografías según persistencia y respaldo. Cierra sesión y verifica qué datos se eliminan; restaura una copia de prueba y confirma que no habilita operaciones con credenciales antiguas.
 
-### Tema 3: Offline-first necesita un protocolo de cambios
+### Tema 3: Offline-first necesita un protocolo de cambios · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -385,7 +385,7 @@ Ya implementas un protocolo de sincronización offline con outbox, operation ID 
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Registra una entrega sin conexión y reconecta dos veces. La cola local debe mantener un identificador estable y el servidor aplicar una sola confirmación; conserva el historial de reintentos como evidencia.
 
-### Tema 4: La calidad se opera por dispositivo y versión
+### Tema 4: La calidad se opera por dispositivo y versión · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -567,7 +567,7 @@ Para cada tema responde qué problema resuelve, cuál es su modelo mental, cómo
 
 
 
-### Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado
+### Tema 5: Del dispositivo al diagnóstico: SoC, memoria, límites térmicos y arranque verificado · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar recogerás evidencias de memoria, estado térmico y arranque en un dispositivo de pruebas, distinguiendo mediciones disponibles de garantías de seguridad. **Prerrequisitos:** Android Studio, Platform Tools, una app de laboratorio instalada y autorización de depuración del dispositivo. Ejemplo independiente: usa la app Restauracion del módulo 4 o una copia propia; no necesitas modificar el kernel.

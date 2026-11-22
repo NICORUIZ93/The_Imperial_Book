@@ -152,7 +152,7 @@ Entrega la respuesta antes y después del cambio, la lista de capas y la línea 
 
 Fuentes oficiales: [capas y empaquetado Maven de Spring Boot](https://docs.spring.io/spring-boot/maven-plugin/packaging.html) y [Dockerfiles para imágenes de contenedor](https://docs.spring.io/spring-boot/reference/packaging/container-images/dockerfiles.html). Siguiente: Tema 2, imagen nativa con GraalVM.
 
-### Tema 2: GraalVM native image · Avanzado · 50 min
+### Tema 2: GraalVM native image · Avanzado · 45 min
 
 Duración: 45–60 min. **Meta:** ejecutar una app con el AOT de Spring y aprender qué hace falta para convertirla en un binario nativo. Usa `examples/spring-boot-native-rutaflow/`, Java 25 y Maven Wrapper.
 

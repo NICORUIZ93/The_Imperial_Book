@@ -5,7 +5,7 @@
 
 Cada tema verifica su garantía con código real: el error genuino de Angular al faltar un input requerido, una comprobación real de identidad de nodos del DOM con `track`, contenido proyectado real verificado sobre `fixture.nativeElement`, y un espía real confirmando el orden exacto de los hooks de ciclo de vida.
 
-### Tema 1: input()/output() basados en signals
+### Tema 1: input()/output() basados en signals · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -165,7 +165,7 @@ Ya confirmas que `input.required()` hace cumplir su contrato: `NG8008` en el bui
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Haz que una tarjeta reciba la entrega y emita su identificador al seleccionarla. La prueba del contenedor debe abrir exactamente la guía elegida sin permitir que la tarjeta modifique la lista original.
 
-### Tema 2: Control de flujo nativo — @if, @for, @switch
+### Tema 2: Control de flujo nativo — @if, @for, @switch · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -307,7 +307,7 @@ Ya confirmas, con una comparación real de identidad de nodos del DOM, que `trac
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Representa carga, lista vacía y entregas con control de flujo nativo. Reordena dos guías con identidad estable y verifica que el foco y el estado de cada fila siguen asociados a la entrega correcta.
 
-### Tema 3: Content projection con ng-content
+### Tema 3: Content projection con ng-content · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -452,7 +452,7 @@ Ya confirmas, con contenido proyectado real verificado sobre el DOM, que `ng-con
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Permite proyectar las acciones de una entrega dentro de una tarjeta compartida. Prueba una tarjeta de solo lectura y otra operativa: ambas conservan estructura semántica sin botones vacíos.
 
-### Tema 4: Ciclo de vida completo de un componente
+### Tema 4: Ciclo de vida completo de un componente · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -591,7 +591,7 @@ Ya confirmas, con un espía real y `fixture.destroy()`, el orden exacto en que A
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Registra y limpia la escucha de eventos del mapa al montar y destruir su componente. Entra y sale del panel varias veces; cada evento debe producir una sola actualización.
 
-### Tema 5: Consultas signal y trabajo posterior al render
+### Tema 5: Consultas signal y trabajo posterior al render · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -755,7 +755,7 @@ Ya confirmas, con un componente real y un test que verifica tanto el error de `v
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Enfoca el campo de búsqueda después de abrir su panel. Prueba que la consulta de vista soporta su ausencia y que cerrar el panel antes del render no intenta operar sobre un elemento destruido.
 
-### Tema 6: Directivas y pipes personalizados
+### Tema 6: Directivas y pipes personalizados · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear una **directiva de atributo** que modifica el comportamiento de un elemento y un **pipe** que transforma un valor en la plantilla, reutilizables en toda la app. Prerrequisitos: Temas 1-4 de este módulo (componentes y binding).
@@ -829,7 +829,7 @@ Crea una directiva `appSoloNumeros` que impida escribir letras en un input (escu
 #### Paso 7 · Cierre
 Entrega el pipe de distancia, la directiva de resaltado y la directiva de solo-números. **¿Por qué es importante?** Directivas y pipes son el mecanismo de Angular para no repetir lógica de presentación y comportamiento: un pipe de fecha/moneda/distancia y una directiva de permisos o resaltado se usan en decenas de plantillas. Saber crearlos propios es lo que distingue usar Angular de dominarlo. Fuentes: [Angular — Pipes](https://angular.dev/guide/templates/pipes) y [Angular — Attribute directives](https://angular.dev/guide/directives/attribute-directives).
 
-### Tema 7: Pipes puros e impuros, AsyncPipe y signals
+### Tema 7: Pipes puros e impuros, AsyncPipe y signals · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás explicar cuándo Angular vuelve a ejecutar un pipe puro y uno impuro, demostrar el error de mutar un array con un pipe puro, usar `AsyncPipe` con un Observable y elegir signals con actualizaciones inmutables. Prerrequisitos: Tema 6 de este módulo y Módulo 2 (signals).

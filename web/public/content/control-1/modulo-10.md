@@ -10,11 +10,11 @@ Otra forma de describir sistemas, con matrices y ecuaciones de primer orden. Es 
 
 ## Aprende construyendo
 
-### Tema 1: La forma de espacio de estados
+### Tema 1: La forma de espacio de estados · Intermedio · 45 min
 
 **¿Por qué es importante?** El espacio de estados describe sistemas con varias entradas y salidas y es la base del control moderno.
 
-**Fuentes oficiales:** [Espacio de estados, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [Espacio de estados, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
 
 \[\dot{\mathbf x} = A\mathbf x + B u \qquad y = C\mathbf x + Du\]
 
@@ -141,11 +141,11 @@ repite con las matrices del Ejemplo 4 (3×3, denominador \(s^3+6s^2+11s+6\)) y c
 
 **Límite:** `A.eigenvals()` da los polos directamente porque esta representación es la forma canónica controlable; con otra elección de estados, \(A\) cambia de forma pero sus valores propios (los polos) son siempre los mismos.
 
-### Tema 2: De estados a función de transferencia
+### Tema 2: De estados a función de transferencia · Intermedio · 45 min
 
 **¿Por qué es importante?** Pasar de matrices a \(G(s)\) muestra que las dos descripciones son equivalentes y que los polos son los valores propios de \(A\).
 
-**Fuentes oficiales:** [Espacio de estados, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [Espacio de estados, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
 
 \[G(s) = C\,(sI - A)^{-1}B + D\]
 

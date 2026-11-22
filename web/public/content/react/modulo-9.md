@@ -200,7 +200,7 @@ Corrige el Paso 5 quitando `React.memo` de `BotonFiltro` (que no lo necesita, po
 Entrega `EncabezadoPanel` memoizado del Paso 4, el memo desperdiciado en `BotonFiltro` del Paso 5, y la limpieza del Paso 6; explica por qué `React.memo` solo aporta beneficio cuando las props de un componente son estables con frecuencia significativa, no en cualquier componente "por si acaso". Siguiente paso: estudia virtualización para listas largas. Errores comunes: envolver indiscriminadamente todos los componentes en `React.memo`, memoizar un componente cuyas props cambian en casi todos los renders, y no confirmar con el Profiler que la memoización efectivamente eliminó un render real. Fuentes oficiales: https://react.dev/reference/react/memo y https://react.dev/reference/react/memo#minimizing-props-changes.
 **Implicación práctica:** `React.memo` solo ayuda cuando un componente recibe las mismas props con frecuencia significativa; aplicarlo indiscriminadamente agrega overhead de comparación sin beneficio real.
 
-### Tema 3: Virtualización de listas largas
+### Tema 3: Virtualización de listas largas · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a virtualizar `ListaEnvios` cuando RutaFlow acumula miles de envíos históricos, renderizando en el DOM solo los que están visibles en pantalla. Prerrequisitos: Tema 2 de este módulo.
@@ -367,7 +367,7 @@ Corrige el Paso 5 devolviendo `setTextoInput` fuera de la transición (urgente) 
 Entrega la transición correctamente dividida del Paso 4, el bloqueo del input provocado en el Paso 5, y el indicador de `isPending` del Paso 6; explica por qué solo el cálculo derivado costoso (no la actualización del propio input) debería marcarse como no urgente, y cómo Fiber hace posible que React interrumpa ese trabajo para atender la tecla siguiente. Siguiente paso: cierra el módulo integrando Profiler, memo, virtualización y transitions en el panel completo de RutaFlow. Errores comunes: marcar como no urgente la actualización que debería sentirse instantánea, no usar `isPending` para comunicar que hay trabajo en curso, y aplicar `useTransition` a actualizaciones que ya son baratas y no lo necesitan. Fuentes oficiales: https://react.dev/reference/react/useTransition y https://react.dev/reference/react/useDeferredValue.
 **Implicación práctica:** `useTransition`/`useDeferredValue` mantienen la interfaz responsiva ante actualizaciones costosas al priorizar el trabajo urgente sobre el no urgente, gracias a la arquitectura Fiber.
 
-### Tema 5: Suspense y React.lazy: carga diferida de componentes y rutas · Intermedio · 40 min
+### Tema 5: Suspense y React.lazy: carga diferida de componentes y rutas · Avanzado · 40 min
 
 **Duración estimada:** 40 min (4 subtemas de 10 min). Este es el único tema del curso que enseña la carga diferida en el cliente; el Módulo 5 y el Tema 3 de este módulo remiten aquí, y el Módulo 10 reutiliza `<Suspense>` en el servidor.
 

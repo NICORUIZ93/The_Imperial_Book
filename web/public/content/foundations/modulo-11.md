@@ -8,7 +8,7 @@ Necesitas Python 3 y una terminal. Crea `academia-labs/foundations/specializatio
 
 Este capítulo no intenta resumir toda la disciplina. Construirás seis experimentos pequeños para distinguir sus áreas, reconocer los fundamentos que comparten y elegir qué estudiar después con evidencia. Trabaja dentro de `academia-labs/foundations/specializations/` y guarda cada resultado en `evidence/`.
 
-### Tema 1: Sistemas, arquitectura y sistemas operativos
+### Tema 1: Sistemas, arquitectura y sistemas operativos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a simular con Round Robin cómo un dispositivo de RutaFlow repartiría CPU entre GPS, sincronización y procesamiento de fotos. Prerrequisitos: Python 3 instalado.
@@ -109,7 +109,7 @@ Agregá un tercer proceso `photo` con ráfaga 7 y contá cuántos turnos complet
 #### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: algoritmos. Errores comunes: confundir proceso e hilo. Fuente oficial: https://pages.cs.wisc.edu/~remzi/OSTEP/.
 
-### Tema 2: Algoritmos, autómatas, lenguajes y compiladores
+### Tema 2: Algoritmos, autómatas, lenguajes y compiladores · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir un autómata que reconoce guías de RutaFlow con el formato `RF-####`. Prerrequisitos: Python 3 instalado.
@@ -226,7 +226,7 @@ Corregí el Paso 5 restaurando `digits == 4`, y extendé el autómata para acept
 #### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: datos. Errores comunes: mezclar análisis y ejecución. Fuente oficial: https://craftinginterpreters.com/.
 
-### Tema 3: Bases de datos, almacenes analíticos y minería de datos
+### Tema 3: Bases de datos, almacenes analíticos y minería de datos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregar tiempos de entrega de RutaFlow por zona, y a confirmar que una restricción `CHECK` protege la calidad del dato. Prerrequisitos: Python 3 instalado.
@@ -305,7 +305,7 @@ Agregá columnas `fecha` y `estado`, calculá entregas completadas por día, y d
 #### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: inteligencia artificial. Errores comunes: ignorar cardinalidad. Fuente oficial: https://www.postgresql.org/docs/.
 
-### Tema 4: Inteligencia artificial, aprendizaje automático y visión
+### Tema 4: Inteligencia artificial, aprendizaje automático y visión · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir la línea base mínima que cualquier modelo de predicción de retraso de RutaFlow tendría que superar para justificar su complejidad. Prerrequisitos: Python 3 instalado.
@@ -416,7 +416,7 @@ Dejá `training_minutes` vacío y confirmá que el programa falla por división 
 #### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: gráficos. Errores comunes: fuga de datos y sesgo no medido. Fuente oficial: https://scikit-learn.org/stable/user_guide.html.
 
-### Tema 5: Gráficos y cómputo científico
+### Tema 5: Gráficos y cómputo científico · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a rotar las coordenadas de una parada de RutaFlow y a confirmar que la distancia entre paradas se conserva. Prerrequisitos: Python 3 instalado.
@@ -516,7 +516,7 @@ Rotá tres puntos que formen una pequeña ruta (por ejemplo, tres paradas de un 
 #### Paso 7 · Cierre
 Entrega código, salida, fallo y corrección; explica el resultado. Siguiente paso: redes. Errores comunes: ejes ambiguos y datos sin unidad. Fuente oficial: https://matplotlib.org/stable/users/explain/quick_start.html.
 
-### Tema 6: Redes, seguridad, web e ingeniería profesional
+### Tema 6: Redes, seguridad, web e ingeniería profesional · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a registrar un hallazgo real de latencia de RutaFlow separando evidencia, inferencia y decisión, sin que nada se pueda editar después en silencio. Prerrequisitos: Python 3 instalado.

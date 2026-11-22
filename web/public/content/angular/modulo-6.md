@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Observable frente a Promise
+### Tema 1: Observable frente a Promise · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -141,7 +141,7 @@ Ya confirmas, con espías reales, que un Observable es perezoso (no produce nada
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Compara una consulta puntual de guía con la secuencia de cambios del filtro. Demuestra qué suscripción puede cancelarse al salir y qué valor debe mantenerse como estado de pantalla.
 
-### Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest
+### Tema 2: Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -282,7 +282,7 @@ Ya confirmas, con el reloj simulado de Vitest (`vi.useFakeTimers()`) sobre un `S
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Combina texto, estado y zona para consultar entregas. Prueba escritura rápida y respuestas invertidas: solo la combinación actual debe aparecer y no deben enviarse consultas por cada tecla.
 
-### Tema 3: Manejo de suscripciones sin fugas de memoria
+### Tema 3: Manejo de suscripciones sin fugas de memoria · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -416,7 +416,7 @@ Ya confirmas, con un componente real creado y destruido, que `takeUntilDestroyed
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Abre y cierra el panel de seguimiento repetidamente. Cuenta suscripciones al flujo de posiciones y demuestra que destruir el componente deja de recibir actualizaciones y libera la escucha.
 
-### Tema 4: Subjects y operadores de aplanamiento avanzados
+### Tema 4: Subjects y operadores de aplanamiento avanzados · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

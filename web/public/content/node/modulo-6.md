@@ -6,7 +6,7 @@ Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escri
 
 Los ejemplos son laboratorios locales. Las claves de firma y de sesión se leen de variables de entorno, sin valores de respaldo en el código; fuera del laboratorio, usa un mecanismo de gestión de secretos del entorno. No imprimas contraseñas, hashes, tokens ni cookies en logs reales.
 
-### Tema 1: Hashing de contraseñas · Intermedio · 90 min
+### Tema 1: Hashing de contraseñas · Avanzado · 45 min
 
 #### Aprende
 
@@ -122,7 +122,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 **Fuentes oficiales:** [`node:crypto`](https://nodejs.org/api/crypto.html) y [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).
 
-### Tema 2: JWT — access y refresh tokens · Intermedio · 90 min
+### Tema 2: JWT — access y refresh tokens · Avanzado · 45 min
 
 #### Aprende
 
@@ -230,7 +230,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 **Fuentes oficiales:** [RFC 7519](https://www.rfc-editor.org/rfc/rfc7519) y [jose](https://github.com/panva/jose).
 
-### Tema 3: Middleware de autenticación y control de roles · Intermedio · 90 min
+### Tema 3: Middleware de autenticación y control de roles · Avanzado · 45 min
 
 #### Aprende
 
@@ -423,7 +423,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 **Fuentes oficiales:** [Express middleware](https://expressjs.com/en/guide/using-middleware.html), [RFC 6750 Bearer](https://www.rfc-editor.org/rfc/rfc6750) y [OWASP Broken Access Control](https://owasp.org/Top10/A01_2021-Broken_Access_Control/).
 
-### Tema 4: OAuth 2.0 y Passport.js · Intermedio · 75 min
+### Tema 4: OAuth 2.0 y Passport.js · Avanzado · 45 min
 
 #### Aprende
 
@@ -521,7 +521,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 **Fuentes oficiales:** [OAuth 2.0 RFC 6749](https://www.rfc-editor.org/rfc/rfc6749), [PKCE RFC 7636](https://www.rfc-editor.org/rfc/rfc7636) y [OAuth Security BCP](https://www.rfc-editor.org/rfc/rfc9700).
 
-### Tema 5: Sesiones, cookies seguras y protección CSRF · Intermedio · 105 min
+### Tema 5: Sesiones, cookies seguras y protección CSRF · Avanzado · 45 min
 
 #### Aprende
 
@@ -758,7 +758,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-6-api-operati
 
 **Fuentes oficiales:** [MDN cookies](https://developer.mozilla.org/es/docs/Web/HTTP/Cookies), [OWASP CSRF](https://owasp.org/www-community/attacks/csrf), [Express cookies](https://expressjs.com/en/api.html#res.cookie) y [express-session](https://expressjs.com/en/resources/middleware/session.html).
 
-### Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Intermedio · 105 min
+### Tema 6: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 45 min
 
 #### Aprende
 

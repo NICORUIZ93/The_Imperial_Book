@@ -10,11 +10,11 @@ Todo sistema físico se describe con una ecuación diferencial. Laplace la convi
 
 ## Aprende construyendo
 
-### Tema 1: Qué es la función de transferencia
+### Tema 1: Qué es la función de transferencia · Básico · 45 min
 
 **¿Por qué es importante?** La función de transferencia resume un sistema completo en una fracción; con ella se calcula la salida para cualquier entrada.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling) y [Ecuaciones diferenciales y Laplace, MIT OpenCourseWare 18.03SC](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling) y [Ecuaciones diferenciales y Laplace, MIT OpenCourseWare 18.03SC](https://ocw.mit.edu/courses/18-03sc-differential-equations-fall-2011/).
 
 > **Idea clave.** \(G(s)\) es la salida dividida por la entrada, en Laplace, con condiciones iniciales cero. Describe al sistema sin importar qué entrada le pongas.
 

@@ -462,4 +462,4 @@ Escribe el controlador completo: \(u = \dfrac{25(s+10)^2}{s(s+23)}\,r - \dfrac{1
 - [ ] Combiné integrador y dos parámetros: \(M_p\) de 31 % a 9,5 %.
 - [ ] Diagnostiqué por qué el integrador va en el lazo y no en \(M\).
 
-**Fuentes oficiales:** [minreal y step_info, python-control](https://python-control.readthedocs.io/en/latest/generated/control.step_info.html) y [Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
+**Fuentes oficiales:** [minreal y step_info, python-control](https://python-control.readthedocs.io/en/latest/generated/control.step_info.html) y [Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).

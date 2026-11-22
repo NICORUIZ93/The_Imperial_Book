@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: HttpClient (fetch por defecto) y peticiones tipadas
+### Tema 1: HttpClient (fetch por defecto) y peticiones tipadas · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -158,7 +158,7 @@ Ya confirmas, con `HttpTestingController` real, exactamente qué petición reali
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Consulta el detalle mediante HttpClient (con su transporte fetch por defecto). Prueba éxito, 404 y cancelación; la plantilla debe mostrar estados separados sin convertir cualquier fallo en una lista vacía.
 
-### Tema 2: Interceptores funcionales
+### Tema 2: Interceptores funcionales · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -312,7 +312,7 @@ Ya confirmas, con `HttpTestingController` real, que un interceptor funcional tra
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Añade un identificador de correlación a las llamadas del panel y conserva el original al reintentar. Comprueba que el interceptor no adjunta credenciales a solicitudes de terceros.
 
-### Tema 3: Registro de interceptores y centralización del manejo de errores
+### Tema 3: Registro de interceptores y centralización del manejo de errores · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

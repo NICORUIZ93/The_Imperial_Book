@@ -173,7 +173,7 @@ Guarda `adelanto.py` con los resultados. El procedimiento completo es: (1) \(K\)
 - [ ] Provoqué el fallo de 5° de corrección y expliqué por qué el cruce se corre.
 - [ ] Verifiqué \(MF\), \(K_v\) y la respuesta al escalón con python-control.
 
-**Fuentes oficiales:** [margin y step_info, python-control](https://python-control.readthedocs.io/en/latest/generated/control.margin.html) y [Diseño en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [margin y step_info, python-control](https://python-control.readthedocs.io/en/latest/generated/control.margin.html) y [Diseño en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 ### Tema 2: Compensador de atraso por margen de fase · Avanzado · 35 min
 
@@ -322,7 +322,7 @@ Escribe con tus palabras en qué caso no sirve un atraso (pista: cuando a ningun
 - [ ] Diagnostiqué el fallo de `brentq` con la fase envuelta.
 - [ ] Comparé el ancho de banda del adelanto y del atraso.
 
-**Fuentes oficiales:** [bandwidth, python-control](https://python-control.readthedocs.io/en/latest/generated/control.bandwidth.html) y [Diseño en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [bandwidth, python-control](https://python-control.readthedocs.io/en/latest/generated/control.bandwidth.html) y [Diseño en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 ### Tema 3: Atraso-adelanto y sensibilidad · Avanzado · 35 min
 

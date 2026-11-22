@@ -10,7 +10,7 @@ El objetivo no es memorizar comandos, sino aprender a **verificar el entorno ant
 
 La progresión de ejercicios se inspira en el índice público [bregman-arie/devops-exercises](https://github.com/bregman-arie/devops-exercises), distribuido bajo CC BY-NC-SA. Este módulo no reproduce ni traduce su texto: las explicaciones, el código y las prácticas son redacción original adaptada a RutaFlow y a Floci.
 
-### Tema 1: Floci desde cero: instalar, aislar y verificar
+### Tema 1: Floci desde cero: instalar, aislar y verificar · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque un laboratorio de nube sin aislamiento es un riesgo, no una práctica. Si tus pruebas usan credenciales reales o un endpoint mal configurado, puedes crear recursos en una cuenta de verdad mientras crees que estás en local. Aprender a instalar el emulador, comprobar que responde y demostrar que el cliente apunta al puerto correcto es la base de todos los ejercicios posteriores.
 
@@ -176,7 +176,7 @@ Siguiente paso: con el entorno verificado, el Tema 2 usa S3 para crear objetos, 
 
 **Fuentes oficiales:** [Floci — sitio oficial](https://floci.io/) y [Floci CLI — repositorio y releases](https://github.com/floci-io/floci-cli).
 
-### Tema 2: S3 y diagnóstico de red: objetos, metadatos y errores
+### Tema 2: S3 y diagnóstico de red: objetos, metadatos y errores · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque S3 es el primer servicio con el que se topa casi cualquier laboratorio cloud y, al mismo tiempo, el que produce los errores más confusos: un `403` puede significar credenciales, un `404` puede significar bucket o clave, y una conexión rechazada puede significar endpoint o red. Aprender a leer el objeto, sus metadatos y la causa del error convierte una tarde de prueba y error en una lista corta de comprobaciones.
 
@@ -339,7 +339,7 @@ Siguiente paso: el Tema 3 empaqueta estas comprobaciones en una imagen y las eje
 
 **Fuentes oficiales:** [Amazon S3 — PutObject](https://docs.aws.amazon.com/AmazonS3/latest/API/API_PutObject.html), [AWS CLI — s3api put-object](https://docs.aws.amazon.com/cli/latest/reference/s3api/put-object.html) y [Floci — sitio oficial](https://floci.io/).
 
-### Tema 3: Contenedores y CI: una imagen que se prueba contra Floci
+### Tema 3: Contenedores y CI: una imagen que se prueba contra Floci · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque «funciona en mi máquina» suele significar «funciona con mi endpoint, mis credenciales y mi red». Una imagen que se construye una vez y se prueba contra el emulador dentro de la misma red de contenedores elimina esas diferencias. El mismo artefacto puede ejecutarse en tu equipo y en integración continua, y el fallo se reproduce antes de llegar a otra persona.
 
@@ -546,7 +546,7 @@ Siguiente paso: el Tema 4 reemplaza los comandos manuales por Terraform para que
 
 **Fuentes oficiales:** [Docker — Dockerfile reference](https://docs.docker.com/reference/dockerfile/), [Docker — Networking](https://docs.docker.com/engine/network/) y [Floci — sitio oficial](https://floci.io/).
 
-### Tema 4: Terraform, SQS y operación: infraestructura reproducible y ejercicios
+### Tema 4: Terraform, SQS y operación: infraestructura reproducible y ejercicios · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque crear recursos a mano en una consola no deja un registro reproducible: la siguiente persona obtiene otro nombre, otra configuración y otros errores. Terraform describe la infraestructura en archivos, calcula un plan antes de cambiar nada y permite destruir el laboratorio completo. En un emulador local puedes practicar ese ciclo sin coste y aprender a leer un plan antes de aplicarlo.
 

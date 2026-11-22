@@ -5,7 +5,7 @@ La app integradora demuestra que el código común compila y funciona. Un produc
 
 ## Aprende construyendo
 
-### Tema 1: La mejor frontera compartida es deliberadamente pequeña
+### Tema 1: La mejor frontera compartida es deliberadamente pequeña · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a diseñar una facade `TaskClient` mínima en `commonMain` que exponga solo lo que Android e iOS necesitan consumir, sin filtrar tipos internos del dominio. Prerrequisitos: Módulo 11 completado.
@@ -107,7 +107,7 @@ Corregí el Paso 5 revirtiendo `TareaRepositoryImpl` a `internal`, exponiendo ú
 #### Paso 7 · Cierre
 Entregá la facade mínima del Paso 4, la superficie filtrada del Paso 5, y la corrección con `internal` del Paso 6; explicá por qué el costo de una API exportada se multiplica entre Kotlin, Swift, Gradle, Xcode, documentación y soporte, no solo en `commonMain`. Siguiente paso: estudia por qué el garbage collector no basta para liberar recursos que cruzan esta misma frontera. Errores comunes: exponer una implementación completa de infraestructura en vez de una interfaz mínima, forzar una abstracción universal cuando los modelos de cada plataforma genuinamente difieren, y no inspeccionar la superficie exportada antes de publicar una nueva versión. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-expect-actual.html y https://kotlinlang.org/docs/multiplatform-share-on-platforms.html.
 
-### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos
+### Tema 2: Garbage collection no cierra sockets ni rompe ciclos externos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar un `TaskSubscription: AutoCloseable` que cancele explícitamente su `Job` al cerrarse, evitando que una pantalla de iOS retenida indefinidamente siga consumiendo un `Flow` compartido. Prerrequisitos: Tema 1 de este módulo.
@@ -191,9 +191,9 @@ Pista: quitá la llamada a `observation?.cancel()` del `deinit` de `TaskScreenMo
 Corregí el Paso 5 restaurando `observation?.cancel()` en el `deinit`, y repetí la navegación 100 veces midiendo el conteo de objetos activos antes y después del cambio (con Instruments o los logs del GC de Kotlin/Native) para confirmar que ya no crece de forma sostenida.
 
 #### Paso 7 · Cierre
-Entregá el `TaskSubscription` con cierre explícito del Paso 4, la fuga reproducida 100 veces del Paso 5, y la medición de objetos activos del Paso 6; explicá por qué compilar exitosamente para iOS no prueba que el ownership de recursos cruzados entre runtimes sea correcto. Siguiente paso: asegurate de que un artefacto publicado con esta API sea binariamente compatible con versiones futuras. Errores comunes: confiar en que GC/ARC cierran sockets, drivers SQL o handles nativos sin una llamada explícita de cierre, usar `GlobalScope` para suscripciones que deberían vivir y morir con una pantalla, y no medir con una prueba repetida antes de descartar una fuga como "poco probable". Límites y decisión de uso: cerrar el `Job` no libera por sí solo un recurso nativo que el flujo abrió; el dueño de ese recurso debe cerrarlo en el mismo `close()` o quedar documentado como responsabilidad del adaptador. Fuentes oficiales: https://kotlinlang.org/docs/native-memory-manager.html y https://developer.apple.com/documentation/swift/automaticreferencecounting.
+Entregá el `TaskSubscription` con cierre explícito del Paso 4, la fuga reproducida 100 veces del Paso 5, y la medición de objetos activos del Paso 6; explicá por qué compilar exitosamente para iOS no prueba que el ownership de recursos cruzados entre runtimes sea correcto. Siguiente paso: asegurate de que un artefacto publicado con esta API sea binariamente compatible con versiones futuras. Errores comunes: confiar en que GC/ARC cierran sockets, drivers SQL o handles nativos sin una llamada explícita de cierre, usar `GlobalScope` para suscripciones que deberían vivir y morir con una pantalla, y no medir con una prueba repetida antes de descartar una fuga como "poco probable". Límites y decisión de uso: cerrar el `Job` no libera por sí solo un recurso nativo que el flujo abrió; el dueño de ese recurso debe cerrarlo en el mismo `close()` o quedar documentado como responsabilidad del adaptador. Fuentes oficiales: https://kotlinlang.org/docs/native-memory-manager.html y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/.
 
-### Tema 3: Un artefacto compatible necesita más que el mismo número de versión
+### Tema 3: Un artefacto compatible necesita más que el mismo número de versión · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a activar la validación binaria del plugin de Kotlin (`abiValidation`) para que `check` falle ante cualquier cambio de API no aprobado explícitamente. Prerrequisitos: Tema 2 de este módulo; JDK 25 y Gradle 9.7+ para el ejemplo.
@@ -306,7 +306,7 @@ Entregá la validación binaria activada del Paso 4, el cambio de API no detecta
 
 **Proyecto integrador:** genera y aprueba el dump ABI de `EnvioClient`, añade `checkKotlinAbi` al pipeline de RutaFlow y demuestra que un parámetro nuevo sin default bloquea la publicación.
 
-### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas
+### Tema 4: Un fallo compartido necesita símbolos y contexto de ambas plataformas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a inyectar una interfaz `Diagnostics` en `commonMain` y provocar el mismo fallo compartido en ambas apps para confirmar que puede simbolizarse con mapping/dSYM en cada plataforma. Prerrequisitos: Tema 3 de este módulo.

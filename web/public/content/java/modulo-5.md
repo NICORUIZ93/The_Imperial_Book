@@ -244,7 +244,7 @@ System.out.println(respuesta.join());
 
 Conserva el mensaje mostrado y anota qué dato de diagnóstico guardarías. Fuente oficial: [CompletableFuture](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/concurrent/CompletableFuture.html).
 
-### Tema 3: Virtual threads · Avanzado · 50 min
+### Tema 3: Virtual threads · Intermedio · 40 min
 
 **¿Por qué es importante?** Virtual threads hacen más simple manejar muchas tareas que pasan tiempo esperando E/S. **Modelo mental:** hay muchos turnos livianos compartiendo un conjunto de trabajadores de plataforma.
 

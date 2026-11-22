@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Estados explícitos y arquitectura de interfaz
+### Tema 1: Estados explícitos y arquitectura de interfaz · Avanzado · 45 min
 
 **Conceptos clave:** carga, vacío, éxito, error, cache, componentes y stores.
 
@@ -133,7 +133,7 @@ Entrega `src/estado-vista.js` con su salida de tres líneas, `src/estado-vista-r
 
 **Límites y decisión de uso:** Añadir más indicadores no corrige un modelo de estado ambiguo. Define transiciones válidas y conserva identidad de solicitud; una respuesta vieja debe descartarse aunque llegue con éxito después de la consulta actual.
 
-### Tema 2: Mapas operativos
+### Tema 2: Mapas operativos · Avanzado · 45 min
 
 **Conceptos clave:** viewport, capas, clustering, selección, actualización incremental y precisión.
 
@@ -277,7 +277,7 @@ Entrega `src/clustering.js` con la salida de 36 grupos, la salida de `500 de 500
 
 **Transferencia al proyecto integrador «RutaFlow»:** Muestra posiciones con antigüedad y precisión en el mapa operativo. Prueba una coordenada inválida y un vehículo sin actualizaciones, manteniendo acceso textual a sus entregas.
 
-### Tema 3: Accesibilidad, seguridad y rendimiento
+### Tema 3: Accesibilidad, seguridad y rendimiento · Avanzado · 45 min
 
 **Conceptos clave:** teclado, foco, contraste, XSS, CSP, budgets y pruebas.
 

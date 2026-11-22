@@ -413,7 +413,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confirmar mensajes 
 
 **Fuente oficial:** [Spring Boot — JMS](https://docs.spring.io/spring-boot/reference/messaging/jms.html) y [Apache ActiveMQ Artemis — Documentation](https://activemq.apache.org/components/artemis/documentation/).
 
-### Tema 4: bindings y destinations · Intermedio · 25 min
+### Tema 4: bindings y destinations · Avanzado · 25 min
 
 **Duración estimada:** 25 min.
 **¿Por qué es importante?** Separar función y binding permite cambiar el broker sin duplicar la regla de negocio.
@@ -497,7 +497,7 @@ Guarda la salida y el mensaje exacto que indica por qué se rechaza el dato.
 
 **Aplicación y decisión:** En el proyecto integrador, conserva nombres lógicos de binding en código y destinos de broker en configuración. Límite: cambiar destination puede desconectar un consumidor sin cambiar una sola línea de la función.
 
-### Tema 5: binder Kafka y binder RabbitMQ · Intermedio · 30 min
+### Tema 5: binder Kafka y binder RabbitMQ · Avanzado · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Probar ambos perfiles muestra qué comportamiento depende del broker elegido.

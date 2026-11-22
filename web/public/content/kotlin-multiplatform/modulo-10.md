@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Pipeline Gradle multiplataforma en CI
+### Tema 1: Pipeline Gradle multiplataforma en CI · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar un pipeline de CI que compile y pruebe el módulo `shared` contra el target Android y el target iOS en cada push, usando un runner macOS específicamente para iOS. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»), y acceso a un runner CI con macOS.
@@ -109,7 +109,7 @@ Corregí el Paso 5 restaurando el job `build-ios` con `runs-on: macos-latest`, y
 #### Paso 7 · Cierre
 Entregá el workflow con los tres jobs del Paso 4, el pipeline verde engañoso del Paso 5, y la corrección con `needs:` del Paso 6; explicá por qué ahorrar minutos de runner quitando un target de la validación traslada el costo real a un descubrimiento tardío y más caro. Siguiente paso: automatizá la firma y distribución de cada build con Fastlane. Errores comunes: validar solo un target asumiendo que el otro compilará igual, usar un runner Linux estándar para builds de iOS, y no declarar dependencias explícitas (`needs:`) entre el test de lógica compartida y los builds de plataforma. Fuentes oficiales: https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html y https://docs.github.com/actions/using-github-hosted-runners/about-github-hosted-runners.
 
-### Tema 2: Fastlane
+### Tema 2: Fastlane · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a automatizar con Fastlane la secuencia de build y subida a TestFlight de la app iOS en un único comando. Prerrequisitos: Tema 1 de este módulo; Xcode y Fastlane instalados (`fastlane --version`).
@@ -190,7 +190,7 @@ Entregá el lane completo del Paso 4, el error de build number duplicado del Pas
 
 **Proyecto integrador:** crea `fastlane/Fastfile` para RutaFlow con un lane `beta` que incremente build, compile y distribuya; ejecuta dos builds de laboratorio y compara sus números antes de automatizar un release real.
 
-### Tema 3: Versionado compartido
+### Tema 3: Versionado compartido · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a centralizar el número de versión del módulo compartido en un único archivo leído por los pipelines de build de Android y de iOS. Prerrequisitos: Tema 2 de este módulo.

@@ -395,7 +395,7 @@ Entregá el interceptor y la sealed class del Paso 4, la omisión silenciosa con
 **Implicación práctica:** Los interceptores centralizan transformaciones transversales sin duplicar lógica; modelar estados explícitos con sealed classes, verificados exhaustivamente por el compilador, previene omitir el manejo de algún estado en la UI.
 
 
-### Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión · Avanzado · 50 min
+### Tema 4: Flujo de autenticación con tokens: login, almacenamiento seguro, renovación y cierre de sesión · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar el inicio de sesión del conductor, guardar sus tokens de forma segura, renovar el token vencido sin que el usuario lo note y cerrar la sesión limpiando todo. **Prerrequisitos:** Tema 3 de este módulo (interceptores de `dio`) y un backend con `/auth/login` y `/auth/refresh` (el del proyecto integrador sirve).

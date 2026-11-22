@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Ordenamientos: insertion, merge y quick sort
+### Tema 1: Ordenamientos: insertion, merge y quick sort · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás implementar tres algoritmos de ordenamiento, explicar su complejidad (O(n²) frente a O(n log n)) y decidir cuándo uno es mejor que otro. Prerrequisito: Módulo 2, Tema 4 (complejidad y recursión). Necesitas Python 3.14, la línea del curso.
@@ -120,7 +120,7 @@ Ordena una lista de paquetes `(peso, guia)` por peso con `merge_sort` adaptado y
 #### Paso 7 · Cierre
 Entrega la tabla de comparaciones, la prueba de estabilidad y el `RecursionError` del fallo deliberado con su explicación. **¿Por qué es importante?** porque las preguntas de entrevista sobre ordenamiento no buscan que reemplaces `sorted()`, sino que sepas razonar sobre complejidad, estabilidad, memoria y peor caso.
 
-### Tema 2: Algoritmos codiciosos y árbol de expansión mínima
+### Tema 2: Algoritmos codiciosos y árbol de expansión mínima · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás reconocer un algoritmo codicioso, demostrar con un contraejemplo cuándo falla y construir un árbol de expansión mínima con Kruskal. Prerrequisitos: Módulo 2, Temas 7 (grafos) y 8 (programación dinámica).
@@ -231,7 +231,7 @@ Resuelve el problema de **selección de actividades**: dadas franjas `(inicio, f
 #### Paso 7 · Cierre
 Entrega el contraejemplo del cambio, la comparación Kruskal/Prim y la selección de actividades. **¿Por qué es importante?** porque muchos algoritmos de la industria (Dijkstra, Huffman, planificadores) son codiciosos, y saber demostrar o refutar la elección codiciosa evita bugs que solo aparecen con datos raros.
 
-### Tema 3: Caminos más cortos con Dijkstra
+### Tema 3: Caminos más cortos con Dijkstra · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás calcular la ruta de menor costo en un grafo con pesos usando Dijkstra y una cola de prioridad, reconstruir el camino y explicar por qué falla con pesos negativos. Prerrequisitos: Tema 2 de este módulo y Módulo 2, Tema 7 (BFS).
@@ -342,7 +342,7 @@ Implementa Bellman-Ford sobre el mismo mapa con la arista negativa y comprueba q
 #### Paso 7 · Cierre
 Entrega las rutas calculadas, la comparación con parada temprana y Bellman-Ford. **¿Por qué es importante?** porque "camino más corto" es una de las preguntas de entrevista más frecuentes y la base de mapas, redes y planificación de rutas.
 
-### Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP
+### Tema 4: Búsqueda en cadenas: de la fuerza bruta a KMP · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás implementar la búsqueda ingenua y el algoritmo Knuth-Morris-Pratt (KMP), construir su tabla de fallos y medir la diferencia en comparaciones. Prerrequisito: Módulo 2, Tema 4.
@@ -454,7 +454,7 @@ Implementa **Rabin-Karp** (hash rodante) y compáralo con KMP buscando varios pa
 #### Paso 7 · Cierre
 Entrega la tabla hecha a mano, el caso de solapamiento y la comparación con Rabin-Karp. **¿Por qué es importante?** porque explica por qué herramientas como `grep` son rápidas y entrena el razonamiento sobre invariantes en bucles.
 
-### Tema 5: Problemas intratables: P, NP y heurísticas
+### Tema 5: Problemas intratables: P, NP y heurísticas · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás explicar qué significa que un problema sea NP-completo, observar el crecimiento factorial de una búsqueda exhaustiva y justificar el uso de una heurística con su costo en calidad. Prerrequisitos: los temas anteriores de este módulo.

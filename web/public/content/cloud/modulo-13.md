@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: RDS Instance y cuándo elegir SQL sobre NoSQL
+### Tema 1: RDS Instance y cuándo elegir SQL sobre NoSQL · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear el esquema relacional real de facturación de RutaFlow, y a comprobar por qué DynamoDB (Módulo 4) no sería la elección correcta para este caso específico. Prerrequisitos: Módulo 4 completo.
@@ -60,7 +60,7 @@ Insertá un cliente, una factura ligada a ese cliente y a un `shipment_id` real 
 #### Paso 7 · Cierre
 Entregá el esquema creado, el error de integridad del Paso 5 y el join exitoso del Paso 6; explicá por qué este caso concreto justifica RDS sobre DynamoDB aunque el resto de RutaFlow use DynamoDB. Siguiente paso: copias. Errores comunes: relaciones implícitas y transacciones incompletas. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Welcome.html.
 
-### Tema 2: Snapshots y restore
+### Tema 2: Snapshots y restore · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a respaldar `rutaflow-facturacion` (Tema 1) y a restaurarlo como una instancia nueva, probando que el histórico de facturas sobrevive a un error humano. Prerrequisitos: Tema 1 de este módulo.
@@ -126,7 +126,7 @@ Documentá, para `rutaflow-facturacion`, un RPO (cuántos datos podés permitirt
 #### Paso 7 · Cierre
 Entregá el snapshot y restore exitosos del Paso 4, el error de snapshot inexistente del Paso 5, y el RPO/RTO documentados del Paso 6; explicá por qué un backup nunca probado no cuenta como plan de recuperación. Siguiente paso: migraciones. Errores comunes: backup sin restore probado y retención insuficiente. Fuente oficial: https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/CHAP_CommonTasks.BackupRestore.html.
 
-### Tema 3: Migrations
+### Tema 3: Migrations · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregar una columna nueva a `facturas` (Tema 1) con una migración versionada, y a comprobar qué pasa si la corrés dos veces por accidente. Prerrequisitos: Tema 1 de este módulo.

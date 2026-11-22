@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: El framework generado para iOS
+### Tema 1: El framework generado para iOS · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a identificar la estructura que debe tener el framework `Shared` para que Swift lo importe sin puentes manuales, y a verificarla con un script antes de abrir Xcode. Prerrequisitos: el apartado «Antes de comenzar» del módulo 0 y, para generar el binario real, JDK 25, el Gradle Wrapper del proyecto y macOS con Xcode.
@@ -136,9 +136,9 @@ Pista: agregá `Shared.framework/Headers/Interna.h` con `@interface SharedTareaI
 Eliminá `Interna.h` y, si tenés Gradle y Xcode disponibles, generá el framework real con `./gradlew linkDebugFrameworkIosSimulatorArm64` y apuntá el verificador a `shared/build/bin/iosSimulatorArm64/debugFramework/Shared.framework`. Si no tenés el toolchain, documentá esa limitación y compará la estructura generada con la del ejercicio. Luego agregá `iosArm64` y explicá por qué produce un binario separado para dispositivo. Conectá el resultado con el proyecto integrador: la app iOS consume `Shared.framework` sin saber que se originó en Kotlin.
 
 #### Paso 7 · Cierre
-Entregá la salida del Paso 4, el fallo de exportación del Paso 5 y la configuración de targets del Paso 6; explicá por qué una clase `internal` compila pero no existe para Swift. Siguiente paso: mapear los tipos Kotlin hacia Swift en el Tema 2. Errores comunes: declarar `internal` una clase que Swift necesita, olvidar el target de dispositivo y asumir que un build exitoso implica que todos los símbolos se exportaron. **Fuentes oficiales:** https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ios-framework.html y https://kotlinlang.org/docs/native-objc-interop.html.
+Entregá la salida del Paso 4, el fallo de exportación del Paso 5 y la configuración de targets del Paso 6; explicá por qué una clase `internal` compila pero no existe para Swift. Siguiente paso: mapear los tipos Kotlin hacia Swift en el Tema 2. Errores comunes: declarar `internal` una clase que Swift necesita, olvidar el target de dispositivo y asumir que un build exitoso implica que todos los símbolos se exportaron. **Fuentes oficiales:** https://kotlinlang.org/docs/multiplatform/multiplatform-ios-integration-overview.html y https://kotlinlang.org/docs/native-objc-interop.html.
 
-### Tema 2: Mapeo de tipos Kotlin ↔ Swift
+### Tema 2: Mapeo de tipos Kotlin ↔ Swift · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a exponer una `sealed class` de Kotlin hacia Swift y vas a confirmar que Swift NO verifica automáticamente la exhaustividad de un `switch` sobre ella, a diferencia de un `when` en Kotlin. Prerrequisitos: Tema 1 de este módulo.
@@ -209,10 +209,10 @@ Pista: agregá un tercer caso `Cargando` a la `sealed class Resultado` en Kotlin
 Corregí el Paso 5 documentando explícitamente (en un comentario o test) la lista completa de casos de `Resultado` que el equipo Swift debe revisar manualmente cada vez que el framework se actualiza, y agregá el manejo real de `Cargando` al `switch`.
 
 #### Paso 7 · Cierre
-Entregá el `switch` funcionando del Paso 4, el caso silenciosamente no manejado del Paso 5, y la documentación/corrección del Paso 6; explicá por qué la exhaustividad verificada de Kotlin no cruza la frontera hacia Swift automáticamente. Siguiente paso: exponé funciones suspend hacia Swift y elegí cómo distribuir el framework. Errores comunes: asumir que Swift avisará si falta un caso nuevo de una sealed class actualizada; usar un `default` que oculta silenciosamente casos nuevos en vez de uno que, como mínimo, registre un error visible. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://developer.apple.com/documentation/swift/switch.
+Entregá el `switch` funcionando del Paso 4, el caso silenciosamente no manejado del Paso 5, y la documentación/corrección del Paso 6; explicá por qué la exhaustividad verificada de Kotlin no cruza la frontera hacia Swift automáticamente. Siguiente paso: exponé funciones suspend hacia Swift y elegí cómo distribuir el framework. Errores comunes: asumir que Swift avisará si falta un caso nuevo de una sealed class actualizada; usar un `default` que oculta silenciosamente casos nuevos en vez de uno que, como mínimo, registre un error visible. Fuentes oficiales: https://kotlinlang.org/docs/native-objc-interop.html y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/.
 **Implicación práctica:** La exhaustividad verificada de una `sealed class` en Kotlin no cruza automáticamente hacia Swift; un caso nuevo puede caer silenciosamente en un `default` sin que nadie se entere hasta producción.
 
-### Tema 3: Coroutines desde Swift, y distribución del framework
+### Tema 3: Coroutines desde Swift, y distribución del framework · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a invocar una función `suspend` de Kotlin desde Swift mediante el callback que Kotlin/Native genera automáticamente, y vas a decidir entre CocoaPods y Swift Package Manager para distribuir el framework. Prerrequisitos: Tema 2 de este módulo.

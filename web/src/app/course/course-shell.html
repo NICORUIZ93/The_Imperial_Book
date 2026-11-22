@@ -8,7 +8,7 @@
       <div class="shell-progress" role="progressbar" aria-label="Progreso del track" aria-valuemin="0" aria-valuemax="100" [attr.aria-valuenow]="percent()"><span [style.width.%]="percent()"></span></div>
     </div>
     <button class="search-trigger" aria-label="Buscar cursos, módulos y temas" (click)="paletteService.open()">
-      <lucide-icon [img]="icons.Search" /><span>Buscar</span><kbd>⌘K</kbd>
+      <lucide-icon [img]="icons.Search" /><span>Buscar</span><kbd>{{ paletteService.shortcutLabel }}</kbd>
     </button>
     <button class="icon-button theme-toggle" (click)="themeService.toggle()" [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'" [title]="themeService.isDark() ? 'Modo claro' : 'Modo oscuro'">
       <lucide-icon [img]="themeService.isDark() ? icons.Sun : icons.Moon" />

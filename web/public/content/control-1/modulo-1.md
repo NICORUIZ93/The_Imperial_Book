@@ -11,7 +11,7 @@ Los polos de un sistema casi siempre son números complejos. Si los manejas con 
 
 ## Aprende construyendo
 
-### Tema 1: ¿Qué es un número complejo?
+### Tema 1: ¿Qué es un número complejo? · Básico · 45 min
 
 **¿Por qué es importante?** Los polos de casi todos los sistemas que estudiarás son números complejos; sin entenderlos no puedes leer su comportamiento.
 
@@ -180,7 +180,7 @@ cambia `z` por \(-5+12j\) y vuelve a ejecutar. Resultado esperado: magnitud 13 y
 
 **Límite:** la forma polar no está definida en \(z=0\) (el ángulo queda indeterminado); ese caso se trata aparte, no con esta fórmula.
 
-### Tema 2: Operaciones con números complejos: suma, producto y división
+### Tema 2: Operaciones con números complejos: suma, producto y división · Básico · 45 min
 
 **¿Por qué es importante?** Multiplicar conjugados y dividir complejos aparece en cada cálculo de polos, ángulos y respuestas en frecuencia.
 
@@ -430,7 +430,7 @@ calcula \((1+j)(2+3j)\) y \(\dfrac{4+2j}{1+j}\) a mano y confirma modificando `v
 
 **Límite:** la regla "multiplica magnitudes y suma ángulos" vale para cualquier ángulo, porque \(e^{j\varphi}\) se repite cada 360°: no hace falta normalizar antes de sumar. Lo que sí conviene es normalizar el **resultado** a un rango fijo (p. ej. \((-180°,180°]\)) para compararlo con la calculadora o con SymPy: \(200°\) y \(-160°\) son el mismo ángulo.
 
-### Tema 3: Raíces de s²+bs+c
+### Tema 3: Raíces de s²+bs+c · Básico · 45 min
 
 **¿Por qué es importante?** Las raíces de \(s^2+bs+c\) son los polos de un sistema de segundo orden: de ellas sale si el sistema oscila o no.
 
@@ -676,7 +676,7 @@ cambia el polinomio a \(s^2+8s+41\) y vuelve a ejecutar. Resultado esperado: \(s
 
 **Límite:** el atajo \(-b/2 \pm j\sqrt{c-b^2/4}\) solo aplica a polinomios de segundo orden con coeficiente 1 en \(s^2\); para orden 3 o mayor no existe una fórmula cerrada general y se recurre a factorización por inspección o métodos numéricos.
 
-### Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω)
+### Tema 4: Forma polar, fórmula de Euler y evaluación de G(jω) · Básico · 45 min
 
 **¿Por qué es importante?** Escribir un complejo como magnitud y ángulo convierte productos y cocientes en operaciones simples, y es exactamente lo que se hace al evaluar \(G(j\omega)\) en respuesta en frecuencia.
 

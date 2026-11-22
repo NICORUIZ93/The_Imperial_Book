@@ -6,7 +6,7 @@ Este módulo no empieza con la pregunta «¿microservicios o monolito?», sino c
 
 Cada tema parte de una carpeta vacía, crea archivos ejecutables y se comprueba con `node --test` o un script de verificación. No necesitas Docker para este módulo; el laboratorio con Floci llega en el Módulo 22. **Conocimiento previo:** Módulos 0 a 3 (Linux, Git, Docker y Compose), programación con funciones y objetos, y haber leído el modelo de envíos del proyecto RutaFlow. Si vienes de Java, el Módulo 22 de Spring Boot amplía estos mismos conceptos con puertos y C4; aquí el foco está en la decisión y en la evidencia, no en el framework.
 
-### Tema 1: Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta
+### Tema 1: Límites, acoplamiento y monolito modular: cuándo un microservicio no es la respuesta · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque la mayoría de los equipos que fracasa con microservicios no falla por Kubernetes: falla porque convirtió un sistema con fronteras borrosas en una red de servicios con las mismas fronteras borrosas, y ahora cada cambio exige coordinar despliegues, versiones y caídas ajenas. Un monolito modular bien delimitado conserva transacciones locales, depuración sencilla y un solo despliegue, y permite extraer un servicio más adelante si una frontera demuestra que lo necesita.
 
@@ -160,7 +160,7 @@ Siguiente paso: el Tema 2 muestra qué ocurre cuando dos contextos usan la misma
 
 **Fuentes oficiales:** [Martin Fowler — MonolithFirst](https://martinfowler.com/bliki/MonolithFirst.html) y [Martin Fowler — BoundedContext](https://martinfowler.com/bliki/BoundedContext.html).
 
-### Tema 2: Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo
+### Tema 2: Lenguaje ubicuo y contextos delimitados: el mismo envío no significa lo mismo · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque dos áreas pueden usar la misma palabra y referirse a modelos incompatibles. Para Operaciones, una entrega es un recorrido con estado y conductor; para Facturación, es un hecho económico con precio, impuesto y fecha de corte. Si ambas comparten una sola clase `Entrega`, cada cambio de una rompe la otra, y las reglas de facturación terminan escondidas en campos opcionales que Operaciones nunca usa.
 
@@ -322,7 +322,7 @@ Siguiente paso: el Tema 3 baja del mapa al código y muestra cómo un agregado p
 
 **Fuentes oficiales:** [Martin Fowler — UbiquitousLanguage](https://martinfowler.com/bliki/UbiquitousLanguage.html) y [Martin Fowler — BoundedContext](https://martinfowler.com/bliki/BoundedContext.html).
 
-### Tema 3: Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper
+### Tema 3: Agregados, invariantes y eventos de dominio: dónde vive la regla que no se puede romper · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque una regla de negocio repartida entre controladores, servicios y scripts se rompe en cuanto aparece un caso de uso nuevo. Un agregado concentra las reglas que deben cumplirse juntas y emite hechos cuando algo cambia; así, la invariante «una entrega confirmada no vuelve a tránsito» se cumple en un solo lugar y no depende de que cada pantalla recuerde validarla.
 
@@ -472,7 +472,7 @@ Siguiente paso: el Tema 4 convierte estas decisiones en un registro durable y en
 
 **Fuentes oficiales:** [Martin Fowler — DDD_Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html) y [Martin Fowler — DomainEvent](https://martinfowler.com/eaaDev/DomainEvent.html).
 
-### Tema 4: ADR y fitness functions: decisiones que el código puede defender
+### Tema 4: ADR y fitness functions: decisiones que el código puede defender · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque una decisión de arquitectura sin registro se olvida y se contradice seis meses después. Un ADR conserva el contexto, las alternativas y las consecuencias; una **fitness function** convierte una parte de esa decisión en una prueba que falla cuando el código se desvía. Sin ambas, «arquitectura» queda en una presentación que nadie ejecuta.
 

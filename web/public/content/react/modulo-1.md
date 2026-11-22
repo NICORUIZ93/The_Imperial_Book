@@ -328,7 +328,7 @@ Corrige el Paso 5 quitando los `setTimeout` innecesarios, y agrega una cuarta ac
 #### Paso 7 · Cierre
 Entrega la prueba de un solo render del Paso 4, la ruptura del batching provocada en el Paso 5, y la cuarta actualización del Paso 6; explica por qué agrupar múltiples actualizaciones en un único render es una optimización deliberada, no un detalle incidental. Siguiente paso: estudia componentes controlados. Errores comunes: asumir que cada llamada a un setter dispara su propio render inmediato, sacar actualizaciones de estado fuera de manejadores de evento sin saber que eso puede afectar el batching, y depender del orden de ejecución de los `console.log` para razonar sobre el estado en vez de sobre el valor final. Fuentes oficiales: https://react.dev/learn/queueing-a-series-of-state-updates y https://react.dev/reference/react/useState.
 
-### Tema 4: Componentes controlados · Básico · 40 min
+### Tema 4: Componentes controlados · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a convertir el campo de PIN de `FormularioConfirmacion` en un componente controlado, con `value` y `onChange` gobernados completamente por `useState`. Prerrequisitos: Tema 1 de este módulo.
@@ -430,7 +430,7 @@ Entrega el input de PIN controlado del Paso 4, la pérdida de sincronización de
 
 * Cuándo: usar componentes controlados para validación y transformación en tiempo real; no conviene en formularios con miles de campos donde el costo de re-render por tecla se vuelve relevante (usa React Hook Form en ese caso).
 
-### Tema 5: Componentes puros y el estado como instantánea · Básico · 40 min
+### Tema 5: Componentes puros y el estado como instantánea · Intermedio · 40 min
 
 **Prerrequisito:** tema «useState y actualizaciones funcionales» de este módulo.
 
@@ -557,7 +557,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** mutar arrays u obje
 
 **Fuente oficial:** [React — Keeping components pure](https://react.dev/learn/keeping-components-pure) y [React — State as a snapshot](https://react.dev/learn/state-as-a-snapshot).
 
-### Tema 6: Compartir estado: levantar el estado al padre común · Básico · 40 min
+### Tema 6: Compartir estado: levantar el estado al padre común · Intermedio · 40 min
 
 **Duración estimada:** 40 min (4 subtemas de 10 min).
 

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Principio de mínimo privilegio
+### Tema 1: Principio de mínimo privilegio · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir la política real que necesita el rol de `confirmar-entrega` (Módulo 5): ni más ni menos de lo que esa función hace. Prerrequisitos: Módulo 5 completo.
@@ -65,7 +65,7 @@ Corré `simulate-custom-policy` pidiendo `s3:GetObject` sobre `arn:aws:s3:::prue
 #### Paso 7 · Cierre
 Entregá la política mínima, el permiso excesivo del Paso 5 y su corrección, y la denegación esperada del Paso 6; explicá por qué "denegado por defecto" es más seguro que empezar permisivo e ir restringiendo. Siguiente paso: modelo de responsabilidad. Errores comunes: usar * y olvidar recursos. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/introduction.html.
 
-### Tema 2: Modelo de responsabilidad compartida
+### Tema 2: Modelo de responsabilidad compartida · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar, con un error real provocado a propósito, qué parte de la seguridad de `ShipmentEvents` depende de AWS/Floci y qué parte depende exclusivamente de RutaFlow. Prerrequisitos: Tema 1 de este módulo.
@@ -125,7 +125,7 @@ Listá, en una tabla de dos columnas, qué cubre Floci/AWS (que DynamoDB funcion
 #### Paso 7 · Cierre
 Entregá los dos resultados del simulador (permitido con la política excesiva, denegado con la mínima) y la tabla de responsabilidades; explicá por qué ninguno de los dos resultados es un fallo de Floci/AWS. Siguiente paso: usuarios y roles. Errores comunes: asumir que el proveedor configura tu bucket. Fuente oficial: https://aws.amazon.com/compliance/shared-responsibility-model/.
 
-### Tema 3: Usuarios, grupos y roles
+### Tema 3: Usuarios, grupos y roles · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear el rol real que `confirmar-entrega` debería usar, en vez de un usuario con claves fijas. Prerrequisitos: Tema 1 de este módulo.
@@ -180,7 +180,7 @@ Confirmá con `aws lambda get-function-configuration --function-name confirmar-e
 #### Paso 7 · Cierre
 Entregá la creación del rol, su asignación a la función, y el error al intentar usar un usuario en su lugar; explicá por qué el `trust policy` restringido a `lambda.amazonaws.com` es parte de la seguridad, no un detalle de sintaxis. Siguiente paso: políticas. Errores comunes: claves largas en repositorio y no rotar. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html.
 
-### Tema 4: Estructura de una política — acciones, recursos y condiciones
+### Tema 4: Estructura de una política — acciones, recursos y condiciones · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás leer una policy desde cero. Prerrequisitos: AWS CLI y Node.js; verifica `node --version`.
@@ -255,7 +255,7 @@ Escribe una policy de lectura de un bucket.
 #### Paso 7 · Cierre
 Entrega JSON, salida, fallo y corrección; explica el resultado. Siguiente paso: auditoría. Errores comunes: Resource *, Deny inesperado y ARN mal formado. Fuente oficial: https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html.
 
-### Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales
+### Tema 5: Buenas prácticas — roles sobre usuarios, políticas restrictivas, rotación de credenciales · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a rotar de verdad las claves del `usuario-de-prueba` que creaste en el Tema 3, y a confirmar que la clave vieja queda inutilizable. Prerrequisitos: Tema 3 de este módulo.

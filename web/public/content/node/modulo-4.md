@@ -4,7 +4,7 @@
 
 Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente todos los archivos indicados; no copies archivos prefabricados ni reutilices el código de otro tema. `npm init -y` crea el `package.json` de cada proyecto y `npm install` reconstruye las dependencias a partir de ese manifiesto.
 
-### Tema 1: Middleware — orden de ejecución y next() · Básico · 75 min
+### Tema 1: Middleware — orden de ejecución y next() · Intermedio · 45 min
 
 #### Aprende
 
@@ -121,7 +121,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 **Fuentes oficiales:** [guía de middleware de Express](https://expressjs.com/en/guide/using-middleware.html), [`express.json`](https://expressjs.com/en/api.html#express.json) y [evento `finish` de Node](https://nodejs.org/api/http.html#event-finish).
 
-### Tema 2: Routers anidados · Básico · 75 min
+### Tema 2: Routers anidados · Intermedio · 45 min
 
 #### Aprende
 
@@ -253,7 +253,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 **Fuentes oficiales:** [Express Router](https://expressjs.com/en/guide/routing.html), [`express.Router`](https://expressjs.com/en/api.html#express.router) y [parámetros de ruta](https://expressjs.com/en/guide/routing.html#route-parameters).
 
-### Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 75 min
+### Tema 3: Validación de entrada con Zod y manejo centralizado de errores · Intermedio · 45 min
 
 #### Aprende
 
@@ -385,7 +385,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 **Fuentes oficiales:** [Zod: basic usage](https://zod.dev/basics), [manejo de errores en Express](https://expressjs.com/en/guide/error-handling.html), [estado `400`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/400) y [estado `500`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/500).
 
-### Tema 4: Express frente a Fastify · Intermedio · 75 min
+### Tema 4: Express frente a Fastify · Intermedio · 45 min
 
 #### Aprende
 
@@ -525,7 +525,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 **Fuentes oficiales:** [Express API](https://expressjs.com/en/api.html), [Fastify: getting started](https://fastify.dev/docs/latest/Guides/Getting-Started/), [Fastify validation and serialization](https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/) y [Fastify hooks](https://fastify.dev/docs/latest/Reference/Hooks/).
 
-### Tema 5: WebSocket — comunicación en tiempo real bidireccional · Intermedio · 75 min
+### Tema 5: WebSocket — comunicación en tiempo real bidireccional · Intermedio · 45 min
 
 #### Aprende
 
@@ -623,7 +623,7 @@ En el **[Proyecto integrador: API operativa de entregas](#proyecto-4-api-operati
 
 **Fuentes oficiales:** [MDN — WebSocket](https://developer.mozilla.org/es/docs/Web/API/WebSockets_API), [`ws`](https://github.com/websockets/ws) y [documentación de Node.js](https://nodejs.org/docs/latest/api/).
 
-### Tema 6: Subida de archivos — multipart y validación segura · Intermedio · 75 min
+### Tema 6: Subida de archivos — multipart y validación segura · Intermedio · 45 min
 
 #### Aprende
 

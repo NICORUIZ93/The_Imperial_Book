@@ -246,7 +246,7 @@ curl -s -H "x-request-id: $(node -e 'process.stdout.write("A".repeat(5000))')" h
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** propaga el ID validado desde la confirmación hasta repositorio y notificaciones. Devuélvelo al cliente para soporte, pero conserva la autorización basada en la identidad autenticada.
 
-### Tema 3: REST, GraphQL y gRPC · Intermedio · 55 min
+### Tema 3: REST, GraphQL y gRPC · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, JSON, HTTP y lectura básica de contratos. Crearás artefactos nuevos, no un servidor reutilizado.
 
@@ -432,7 +432,7 @@ gRPC: RPC presente; compilación y servidor no ejecutados
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** expón la consulta de guía con el contrato elegido y conserva errores y autorización equivalentes. Justifica la elección por los clientes reales, no por la cantidad de endpoints.
 
-### Tema 4: Excepciones no capturadas y graceful shutdown · Avanzado · 60 min
+### Tema 4: Excepciones no capturadas y graceful shutdown · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS moderno, procesos, señales de terminal y HTTP básico. El servidor se crea desde cero y no depende de ejemplos anteriores.
 
@@ -732,7 +732,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** pasar e
 
 **Fuente oficial:** [Node.js — Asynchronous context tracking](https://nodejs.org/api/async_context.html) y [Node.js — Diagnostics Channel](https://nodejs.org/api/diagnostics_channel.html).
 
-### Tema 6: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 75 min
+### Tema 6: Métricas Prometheus y trazas distribuidas con OpenTelemetry · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, Express básico, HTTP, métricas y promesas. El proyecto incluye sus propias dependencias y no importa archivos de otros temas.
 

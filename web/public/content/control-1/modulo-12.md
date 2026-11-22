@@ -11,11 +11,11 @@ Es el tema más preguntado de los dos parciales. Un RLC, una masa con resorte o 
 
 ## Aprende construyendo
 
-### Tema 1: Forma estándar de segundo orden: K, ωn y ζ
+### Tema 1: Forma estándar de segundo orden: K, ωn y ζ · Intermedio · 45 min
 
 **¿Por qué es importante?** Leer \(K\), \(\omega_n\) y \(\zeta\) de una \(G(s)\) es el primer paso de casi todas las preguntas del Parcial 2.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 \[G(s) = \frac{K\,\omega_n^2}{s^2 + 2\zeta\omega_n s + \omega_n^2}\]
 
@@ -183,11 +183,11 @@ cambia `num, b, c` por `16, 4, 16` y confirma \(K=1\), \(\omega_n=4\), \(\zeta=0
 
 **Límite:** esta lectura directa solo aplica cuando el coeficiente de \(s^2\) ya es 1; si no lo es (como en el Ejemplo 4 de este tema), primero hay que dividir todo el denominador por ese coeficiente.
 
-### Tema 2: Simulador: mueve ζ y ωn
+### Tema 2: Simulador: mueve ζ y ωn · Intermedio · 45 min
 
 **¿Por qué es importante?** Mover \(\zeta\) y \(\omega_n\) en el simulador te da la intuición de qué hace cada parámetro antes de usar las fórmulas.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 Prueba esto: deja \(\omega_n = 2\) y mueve \(\zeta\) desde 0,05 hasta 1,5. Luego deja \(\zeta = 0{,}3\) y sube \(\omega_n\). Observa qué cambia en la curva y en los polos.
 
@@ -303,11 +303,11 @@ cambia `zeta, wn` a `0.5, 2` y confirma \(M_p\approx16{,}3\,\%\), \(t_s=4\) s (E
 
 **Límite:** este script solo predice; verificar que coincide con el simulador no prueba que entendiste de dónde salen las fórmulas — ese es el objetivo de las demostraciones del Tema 4.
 
-### Tema 3: Los cuatro casos según ζ
+### Tema 3: Los cuatro casos según ζ · Intermedio · 45 min
 
 **¿Por qué es importante?** Clasificar el sistema por \(\zeta\) te dice de inmediato si va a oscilar y qué método usar para resolverlo.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 | \(\zeta\) | Caso | Polos | Respuesta al escalón |
 |---|---|---|---|
@@ -437,11 +437,11 @@ cambia `b` a `6` y confirma que da \(\zeta=1\) (Ejemplo 2, críticamente amortig
 
 **Límite:** esta clasificación por \(\zeta\) solo aplica a un sistema de segundo orden estándar (sin ceros); un cero en el numerador, cercano a los polos, puede hacer que la respuesta real se vea distinta de lo que predice solo \(\zeta\) (módulo 13).
 
-### Tema 4: Fórmulas del caso subamortiguado
+### Tema 4: Fórmulas del caso subamortiguado · Intermedio · 45 min
 
 **¿Por qué es importante?** Las fórmulas de \(M_p\), \(t_p\), \(t_s\) y \(t_r\) son las especificaciones con las que se diseña un controlador.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 *Polos*
 
@@ -808,11 +808,11 @@ cambia `wn, zeta` a `10, 0.25` y confirma los valores del Ejemplo 9 (\(M_p\appro
 
 **Límite:** \(t_s\approx4/\sigma\) es una aproximación válida para \(\zeta\) entre 0 y 0,7 aproximadamente (demostración 5); fuera de ese rango el tiempo de establecimiento real se aleja de \(4/\sigma\) y conviene usar la fórmula exacta con el logaritmo.
 
-### Tema 5: De las especificaciones a la función de transferencia
+### Tema 5: De las especificaciones a la función de transferencia · Intermedio · 45 min
 
 **¿Por qué es importante?** Los parciales piden el camino inverso: dan el sobrepico y el tiempo de establecimiento y preguntan por \(\zeta\), \(\omega_n\), los polos o la \(G(s)\) que los cumple. Es la base de todo el diseño de controladores.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 El camino inverso usa las mismas fórmulas, despejadas:
 

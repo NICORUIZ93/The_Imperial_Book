@@ -2,8 +2,7 @@ import { CourseModule, createModule as m } from '../course-module.model';
 
 export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
   m(0, 'Fundamentos de Kotlin', 'Fundamentos', 'Fundamentos', '2 h 30 min', '#7f52ff',
-    'Kotlin es conciso y null-safe por diseño. Aprende la sintaxis que vas a reutilizar en Android, backend y multiplataforma.',
-    ['val/var, null safety (?, !!, ?:)', 'data class y sintaxis concisa', 'Funciones de extensión', 'when como expresión', 'Destructuring declarations y rangos'],
+    'Kotlin es conciso y null-safe por diseño. Aprende la sintaxis que vas a reutilizar en Android, backend y multiplataforma.',['Null safety real', 'data class y funciones de extensión', 'when como expresión', 'Destructuring declarations y rangos'],
     [
       'Declara variables con val y var y explica cuándo el compilador te obliga a usar cada una',
       'Declara una variable nullable (String?) e intenta usarla sin verificar null — observa el error de compilación',
@@ -17,8 +16,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Kotlin'],
     'Programa de consola sin un solo NullPointerException posible (null safety real).'),
   m(1, 'Programación funcional en Kotlin', 'Funcional', 'Fundamentos', '2 h', '#7f52ff',
-    'Kotlin trata las funciones como ciudadanos de primera clase, similar a JavaScript pero con tipado estático.',
-    ['Lambdas y funciones de orden superior', 'Scope functions (let, run, apply, also)', 'Sealed classes para modelar estados', 'Colecciones: map/filter/fold idiomático', 'Lambdas con receptor y builders tipo DSL'],
+    'Kotlin trata las funciones como ciudadanos de primera clase, similar a JavaScript pero con tipado estático.',['Funciones de orden superior', 'Scope functions', 'Sealed classes y colecciones funcionales', 'Lambdas con receptor y builders tipo DSL', 'Genéricos en Kotlin: varianza con in y out, restricciones y reified'],
     [
       'Escribe una función de orden superior que reciba una lambda y la aplique a cada elemento de una lista',
       'Usa let para ejecutar código solo si una variable nullable no es null, sin un if explícito',
@@ -31,8 +29,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Kotlin'],
     'Modelo de estado (loading/success/error) con sealed classes manejado exhaustivamente.'),
   m(2, 'Coroutines y Flow', 'Coroutines', 'Aplicación', '3 h', '#7f52ff',
-    'La concurrencia estructurada de Kotlin reemplaza callbacks y threads manuales en Android e iOS compartido.',
-    ['suspend functions y CoroutineScope', 'Structured concurrency', 'Flow vs StateFlow vs SharedFlow', 'Manejo de errores en coroutines', 'Mutex para exclusión mutua en corrutinas', 'kotlinx.atomicfu para estado atómico multiplataforma', 'Dispatchers y withContext'],
+    'La concurrencia estructurada de Kotlin reemplaza callbacks y threads manuales en Android e iOS compartido.',['suspend functions y concurrencia estructurada', 'Flow, StateFlow y SharedFlow', 'Manejo de errores y exclusión mutua', 'Dispatchers y withContext: en qué hilo corre tu código'],
     [
       'Escribe una función suspend que simule una llamada de red con delay() y devuelva un resultado',
       'Lanza dos coroutines en paralelo con async/await y combina sus resultados',
@@ -46,8 +43,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Kotlin Coroutines'],
     'Función suspendida que combina dos fuentes de datos con manejo de errores estructurado.'),
   m(3, 'Arquitectura de un proyecto KMP', 'Arquitectura KMP', 'Aplicación', '2 h 30 min', '#7f52ff',
-    'Entiende cómo un mismo código Kotlin termina ejecutándose en Android e iOS.',
-    ['Source sets: commonMain, androidMain, iosMain', 'expect/actual: declarar e implementar por plataforma', 'Gradle multiplataforma', 'Targets disponibles (JVM, Native, JS)', 'Jerarquía de source sets intermedios (appleMain)'],
+    'Entiende cómo un mismo código Kotlin termina ejecutándose en Android e iOS.',['Source sets', 'expect/actual', 'Gradle multiplataforma y targets disponibles', 'Jerarquía de source sets intermedios', 'Version catalogs y convention plugins: una sola fuente de versiones y configuración de Gradle', 'Más allá del móvil: targets JVM, JS y Wasm desde el mismo código común'],
     [
       'Crea un proyecto KMP desde la plantilla oficial y explora la estructura de carpetas (commonMain, androidMain, iosMain)',
       'Escribe una función en commonMain que dependa de una implementación específica por plataforma usando expect/actual',
@@ -60,9 +56,13 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Kotlin Multiplatform'],
     'Proyecto KMP con un módulo compartido que compila para Android e iOS.'),
   m(4, 'Lógica de negocio compartida', 'Lógica compartida', 'Integración', '3 h', '#7f52ff',
-    'El valor real de KMP: escribe la lógica una vez, úsala en ambas plataformas nativas.',
-    [
-      'Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global','Modelos de dominio compartidos', 'Casos de uso (use cases) independientes de plataforma', 'Repositorios con interfaces comunes', 'Inyección de dependencias multiplataforma (Koin)', 'Modelado de errores de dominio con Result explícito'],
+    'El valor real de KMP: escribe la lógica una vez, úsala en ambas plataformas nativas.',[
+      'Modelos de dominio y casos de uso',
+      'Repositorios con interfaz común',
+      'Inyección de dependencias multiplataforma con Koin',
+      'Modelado de errores de dominio con un tipo Result explícito',
+      'Tiempo determinista: probar vencimientos sin dormir ni consultar el reloj global'
+      ],
     [
       'Define modelos de dominio (data classes) en commonMain que representen las entidades centrales de tu app',
       'Implementa un caso de uso (ej. ObtenerTareasPendientesUseCase) que dependa de una interfaz de repositorio, no de su implementación concreta',
@@ -74,8 +74,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Koin'],
     'Capa de dominio compartida (modelos + casos de uso) sin código específico de plataforma.'),
   m(5, 'Networking compartido con Ktor Client', 'Ktor Client', 'Integración', '2 h 30 min', '#7f52ff',
-    'Consume APIs HTTP desde el código común, sin duplicar clientes por plataforma.',
-    ['Ktor Client multiplataforma', 'Serialización con kotlinx.serialization', 'Manejo de errores de red', 'Interceptores y autenticación', 'Reintentos con backoff exponencial'],
+    'Consume APIs HTTP desde el código común, sin duplicar clientes por plataforma.',['Ktor Client multiplataforma', 'Manejo de errores de red con un tipo explícito', 'Interceptores y autenticación', 'Reintentos con backoff exponencial', 'kotlinx.serialization — JSON compartido entre plataformas'],
     [
       'Configura un HttpClient de Ktor en commonMain con el plugin de serialización JSON',
       'Define un modelo @Serializable y consume un endpoint real, deserializando la respuesta automáticamente',
@@ -87,8 +86,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Ktor'],
     'Cliente HTTP compartido que consume una API real desde Android e iOS.'),
   m(6, 'Persistencia compartida con SQLDelight', 'SQLDelight', 'Integración', '2 h 30 min', '#7f52ff',
-    'Persiste datos localmente con SQL tipado y verificado en tiempo de compilación.',
-    ['Esquemas SQLDelight y generación de código', 'Queries tipadas', 'Migraciones de base de datos', 'Drivers por plataforma', 'Transacciones y atomicidad multi-tabla'],
+    'Persiste datos localmente con SQL tipado y verificado en tiempo de compilación.',['Esquemas SQLDelight y queries tipadas', 'Drivers por plataforma', 'Migraciones de esquema', 'Transacciones: atomicidad en operaciones multi-tabla', 'Seguridad multiplataforma: guardar secretos con Keystore y Keychain detrás de una interfaz común'],
     [
       'Define un esquema .sq con una tabla Tarea y queries básicas (insertar, listar, actualizar)',
       'Genera el código Kotlin tipado a partir del esquema y úsalo desde commonMain',
@@ -99,9 +97,8 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['¿Qué error detecta SQLDelight en tiempo de COMPILACIÓN que un ORM dinámico solo detectaría en runtime?', '¿Por qué necesitas un driver distinto por plataforma aunque las queries sean compartidas?', '¿Por qué una transacción revierte TODAS sus escrituras si cualquiera de ellas falla, en vez de dejar las anteriores aplicadas?'],
     ['SQLDelight'],
     'Capa de persistencia compartida con al menos una migración de esquema.'),
-  m(7, 'Compose Multiplatform: UI compartida', 'Compose Multiplatform', 'Experto', '3 h', '#7f52ff',
-    'Comparte no solo lógica sino también UI declarativa entre Android, iOS y desktop.',
-    ['Compose Multiplatform vs Jetpack Compose', 'Estado y recomposición (mutableStateOf)', 'Theming compartido', 'Navegación multiplataforma', 'Limitaciones actuales en iOS', 'Compose Multiplatform para Desktop y Web, no solo móvil'],
+  m(7, 'Compose Multiplatform — UI compartida', 'Compose Multiplatform', 'Experto', '3 h', '#7f52ff',
+    'Comparte no solo lógica sino también UI declarativa entre Android, iOS y desktop.',['Compose Multiplatform vs Jetpack Compose', 'Estado y recomposición — mutableStateOf y por qué la UI se redibuja', 'Theming y navegación compartidos', 'Limitaciones en iOS y otros targets', 'Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes', 'Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver', 'Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app', 'Deep links en Compose Multiplatform: abrir una pantalla desde un enlace'],
     [
       'Crea una pantalla simple con Compose Multiplatform en commonMain (no androidMain)',
       'Agrega estado con mutableStateOf y confirma que un valor repetido no dispara recomposición',
@@ -114,8 +111,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Compose Multiplatform'],
     'Pantalla compartida en Compose Multiplatform renderizada en Android e iOS.'),
   m(8, 'Interoperabilidad con iOS', 'Interop con iOS', 'Experto', '2 h 30 min', '#7f52ff',
-    'Conecta el módulo Kotlin compartido con una app SwiftUI real.',
-    ['Kotlin/Native y el framework generado para iOS', 'Mapeo de tipos Kotlin ↔ Swift', 'Manejo de coroutines desde Swift', 'CocoaPods vs Swift Package Manager para el framework KMP'],
+    'Conecta el módulo Kotlin compartido con una app SwiftUI real.',['El framework generado para iOS', 'Mapeo de tipos Kotlin ↔ Swift', 'Coroutines desde Swift, y distribución del framework', 'Compose Multiplatform dentro de SwiftUI y vistas UIKit dentro de Compose'],
     [
       'Genera el framework .framework de tu módulo compartido y agrégalo a un proyecto Xcode',
       'Llama a una función Kotlin desde código Swift y verifica el tipo resultante en Swift',
@@ -126,8 +122,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Kotlin/Native'],
     'App SwiftUI consumiendo el módulo compartido KMP a través del framework generado.'),
   m(9, 'Testing multiplataforma', 'Testing', 'Experto', '2 h', '#7f52ff',
-    'Prueba la lógica compartida una sola vez y confía en que se comporta igual en ambas plataformas.',
-    ['kotlin.test en código común', 'Fakes para dependencias de plataforma', 'Testing de coroutines (runTest)', 'Cobertura de la capa compartida'],
+    'Prueba la lógica compartida una sola vez y confía en que se comporta igual en ambas plataformas.',['kotlin.test en commonTest', 'Fakes en vez de mocks', 'runTest para coroutines', 'Benchmarks multiplataforma con kotlinx-benchmark: medir el mismo código en cada target'],
     [
       'Escribe un test con kotlin.test en commonTest que pruebe un caso de uso, sin depender de Android ni iOS',
       'Usa una implementación fake del repositorio (en vez de mockear) para aislar la prueba',
@@ -138,8 +133,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['kotlin.test'],
     'Suite de tests sobre el módulo common que corre igual en Android e iOS.'),
   m(10, 'CI/CD para KMP', 'CI/CD', 'Experto', '2 h 30 min', '#7f52ff',
-    'Automatiza build y distribución de un proyecto que compila a múltiples plataformas.',
-    ['Pipeline Gradle multiplataforma en CI', 'Distribución a TestFlight/Play Console', 'Fastlane para automatizar releases', 'Versionado compartido entre apps'],
+    'Automatiza build y distribución de un proyecto que compila a múltiples plataformas.',['Pipeline Gradle multiplataforma en CI', 'Fastlane', 'Versionado compartido'],
     [
       'Configura un pipeline de CI que compile el módulo compartido para ambos targets (Android e iOS) en cada push',
       'Agrega la ejecución de los tests de commonTest como parte obligatoria del pipeline',
@@ -149,9 +143,8 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['¿Por qué validar ambos targets en CI en cada push, y no solo antes de un release?', '¿Qué automatiza Fastlane que sería tedioso hacer manualmente en cada release?'],
     ['Fastlane'],
     'Pipeline CI que compila el módulo compartido para Android e iOS en cada push.'),
-  m(11, 'Proyecto integrador: app KMP completa', 'Proyecto final', 'Experto', '7 h', '#7f52ff',
-    'Une lógica, networking, persistencia y UI compartida en una app real para Android e iOS.',
-    ['Arquitectura compartida por capas', 'Networking y persistencia comunes', 'UI nativa o Compose Multiplatform', 'CI que valida ambas plataformas'],
+  m(11, 'Proyecto integrador — app KMP completa', 'Proyecto final', 'Experto', '7 h', '#7f52ff',
+    'Une lógica, networking, persistencia y UI compartida en una app real para Android e iOS.',['Arquitectura del proyecto integrador', 'Sincronización de datos remotos con caché local', 'Cierre del track — la promesa realista de KMP'],
     [
       'Diseña la arquitectura compartida: dominio, casos de uso, repositorios con Ktor + SQLDelight',
       'Implementa la UI en Compose Multiplatform o nativa por plataforma (Jetpack Compose en Android, SwiftUI en iOS) consumiendo el módulo compartido',
@@ -161,13 +154,12 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['¿Qué porcentaje real de tu código terminó siendo compartido vs específico de plataforma?', '¿Qué decisión de arquitectura te ahorró más tiempo al final del proyecto?'],
     ['Kotlin Multiplatform', 'Ktor', 'SQLDelight'],
     'App con lógica de negocio, networking y persistencia compartidos, funcionando en Android e iOS.'),
-  m(12, 'KMP en producción: fronteras, compatibilidad y observabilidad', 'Producción KMP', 'Experto', '8 h', '#7f52ff',
-    'Convierte el módulo compartido en un producto mantenible: diseña una API idiomática para Kotlin y Swift, propaga cancelación sin fugas, controla memoria/recursos nativos, valida compatibilidad binaria y de datos y opera releases coordinados por plataforma.',
-    [
-      'Frontera shared/plataforma, API Swift-friendly, errores, Flow y cancelación',
-      'Kotlin/Native memory manager, recursos nativos, pinning, callbacks y leaks',
-      'Compatibilidad source/binary/behavior, schemas, KLib/XCFramework y publicación',
-      'Seguridad, telemetría, símbolos, matriz de targets, rollout y rollback coordinado',
+  m(12, 'KMP en producción — fronteras, compatibilidad y observabilidad', 'Producción KMP', 'Experto', '8 h', '#7f52ff',
+    'Convierte el módulo compartido en un producto mantenible: diseña una API idiomática para Kotlin y Swift, propaga cancelación sin fugas, controla memoria/recursos nativos, valida compatibilidad binaria y de datos y opera releases coordinados por plataforma.',[
+      'La mejor frontera compartida es deliberadamente pequeña',
+      'Garbage collection no cierra sockets ni rompe ciclos externos',
+      'Un artefacto compatible necesita más que el mismo número de versión',
+      'Un fallo compartido necesita símbolos y contexto de ambas plataformas'
     ],
     [
       'Reduce la API exportada y prueba consumo idiomático y cancelable desde Swift/Android',
@@ -183,8 +175,7 @@ export const KOTLIN_MULTIPLATFORM_MODULES: CourseModule[] = [
     ['Kotlin Multiplatform', 'Kotlin/Native', 'Swift', 'Gradle', 'XCFramework'],
     'SDK compartido con superficie estable, cancelación/recursos probados, gates de API y schemas, artefactos versionados, telemetría simbolizada y estrategia de release compatible para Android/iOS.'),
   m(13, 'KMP Master: Native, Swift Export y publicación', 'KMP Master', 'Experto', '8 h', '#7f52ff',
-    'Compila binarios Kotlin/Native, diseña interop C/Swift estable y publica una librería multiplataforma verificable.',
-    ['Kotlin/Native y toolchains', 'C interop y memoria', 'Swift Export', 'XCFramework y API pública', 'Publicación Maven Central', 'Compatibilidad binaria y CI'],
+    'Compila binarios Kotlin/Native, diseña interop C/Swift estable y publica una librería multiplataforma verificable.',['Kotlin/Native', 'Interop con C', 'Swift Export', 'XCFramework y API pública', 'Publicación en Maven Central', 'Compatibilidad binaria y CI multi-target'],
     ['Llama librería C', 'Prueba ownership', 'Consume API Swift', 'Genera XCFramework', 'Firma publicación', 'Rompe API en CI'],
     ['¿Qué no puede exportarse limpiamente a Swift?', '¿Cómo se protege compatibilidad de consumidores?'], ['Kotlin/Native','Swift Export','XCFramework','Maven Central'], 'SDK publicado para Android/iOS con interop, compatibilidad y pipeline multi-target.'),
 ];

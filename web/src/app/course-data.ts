@@ -44,13 +44,15 @@ export const COURSE_MODULES: CourseModule[] = [
     'Introducción y preparación',
     'Introducción',
     'Fundamentos', '1 h', '#137c8b',
-    'Presentación del curso, qué es Floci y cómo se compara con LocalStack, e instalación de todo lo que necesitas antes del primer laboratorio.',
-    [
-      '¿Qué vas a aprender y cómo está estructurado el curso?',
-      'Qué es Floci: definición, propósito y comparativa con LocalStack',
-      'Servicios que emula Floci: AWS, Azure y GCP',
+    'Presentación del curso, qué es Floci y cómo se compara con LocalStack, e instalación de todo lo que necesitas antes del primer laboratorio.',[
+      'Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo',
+      'Fundamentos de redes — direcciones IP, puertos, HTTP y APIs',
+      'Qué vas a aprender y cómo está estructurado el curso',
+      'Qué es Floci — definición, propósito y comparativa con LocalStack',
+      'Servicios que emula Floci — AWS, Azure y GCP',
       'Ventajas y limitaciones de practicar con un emulador local',
-      'Metodología de estudio: teoría, laboratorio y evaluación en cada módulo',
+      'Metodología de estudio — teoría, laboratorio y evaluación en cada módulo',
+      'Modelos de servicio (IaaS, PaaS, SaaS), regiones y zonas de disponibilidad'
     ],
     [
       'Instala Docker (Desktop en Windows/Mac, Docker Engine en Linux) y verifica con docker --version',
@@ -69,14 +71,12 @@ export const COURSE_MODULES: CourseModule[] = [
     'Fundamentos de Docker y contenedores',
     'Docker y contenedores',
     'Fundamentos', '2 h', '#475569',
-    'Virtualización vs contenedores, imágenes y capas, y los comandos esenciales de Docker y Docker Compose antes de levantar Floci.',
-    [
+    'Virtualización vs contenedores, imágenes y capas, y los comandos esenciales de Docker y Docker Compose antes de levantar Floci.',[
       'Virtualización vs contenedores',
       'Imágenes y capas',
       'Registros de contenedores (Docker Hub)',
-      'Comandos esenciales: docker pull/run/ps/stop/rm/images/exec/logs',
-      'Docker Compose: servicios, redes y volúmenes',
-      'Levantar Floci con Docker (AWS, Azure y GCP)',
+      'Comandos esenciales de Docker',
+      'Docker Compose — servicios, redes y volúmenes'
     ],
     [
       'Ejecuta docker pull hello-world y luego docker run hello-world, y explica con tus palabras qué hizo cada comando',
@@ -173,14 +173,14 @@ export const COURSE_MODULES: CourseModule[] = [
     'Serverless con Lambda',
     'Lambda',
     'Integración', '3 h', '#e9a23b',
-    'Escribe, despliega e invoca funciones que se ejecutan sin gestionar servidores, y actualiza su código como en el día a día real.',
-    [
-      'Qué es serverless: ventajas y desventajas',
+    'Escribe, despliega e invoca funciones que se ejecutan sin gestionar servidores, y actualiza su código como en el día a día real.',[
+      'Qué es serverless — ventajas y desventajas',
       'Estructura de una función Lambda',
-      'Runtimes: Node.js, Python, Java, Go',
+      'Runtimes — Node.js, Python, Java, Go',
       'Payload de entrada y respuesta',
       'Versionado y alias',
       'Integración con S3, DynamoDB Streams y API Gateway',
+      'Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte'
     ],
     [
       'Laboratorio 5.1: escribe una función Node.js (index.js), comprímela y despliégala con aws lambda create-function',
@@ -272,12 +272,12 @@ export const COURSE_MODULES: CourseModule[] = [
     'Proyecto final: Sistema de Gestión de Tareas',
     'Proyecto: tareas',
     'Experto', '6 h', '#bd4b72',
-    'Integra todo lo aprendido en un solo sistema: DynamoDB, S3, SQS, Lambda, API Gateway e IAM trabajando juntos.',
-    [
-      'Arquitectura de la aplicación: frontend, backend y base de datos',
-      'Integración de S3, SQS, DynamoDB, Lambda, API Gateway e IAM',
-      'Despliegue y pruebas de integración',
-      'Documentación de la API y guía de despliegue',
+    'Integra todo lo aprendido en un solo sistema: DynamoDB, S3, SQS, Lambda, API Gateway e IAM trabajando juntos.',[
+      'Arquitectura de la aplicación — frontend, backend y base de datos',
+      'CRUD de tareas sobre DynamoDB expuesto por Lambda',
+      'Archivos adjuntos en S3 y procesamiento en segundo plano con SQS',
+      'API Gateway e IAM de mínimo privilegio para el proyecto',
+      'Documentación de la API y guía de despliegue'
     ],
     [
       'Diseña el diagrama de arquitectura del Sistema de Gestión de Tareas antes de escribir código',
@@ -299,8 +299,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Secretos y configuración: Secrets Manager, Key Vault y Secret Manager',
     'Secretos',
     'Fundamentos', '2 h', '#bd4b72',
-    'Aprende a gestionar secretos, contraseñas y configuración externalizada. Ningún secreto debe estar en tu código fuente ni en variables de entorno hardcodeadas.',
-    ['Least privilege', 'KMS / envelope encryption', 'Rotación de secretos', 'SSM Parameter Store vs Secrets Manager', 'AWS Config'],
+    'Aprende a gestionar secretos, contraseñas y configuración externalizada. Ningún secreto debe estar en tu código fuente ni en variables de entorno hardcodeadas.',['Secrets Manager y por qué no usar variables de entorno hardcodeadas', 'KMS y envelope encryption', 'SSM Parameter Store vs Secrets Manager'],
     [
       'AWS Secrets Manager: crea un secreto — aws secretsmanager create-secret --name /app/db-password --secret-string "mi-password-segura"',
       'Lee el secreto desde la CLI — aws secretsmanager get-secret-value --secret-id /app/db-password --query SecretString --output text',
@@ -322,8 +321,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Mensajería Pub/Sub: SNS, EventBridge y Azure Event Hubs',
     'SNS / EventBridge',
     'Aplicación', '3 h 30 min', '#8167a9',
-    'Distribuye eventos a múltiples consumidores simultáneamente. Aprende el patrón fan-out y cuándo usar SNS vs EventBridge vs SQS.',
-    ['Fan-out pattern', 'Topic SNS', 'Event Bus', 'Event Rule', 'Filtros de contenido', 'AMQP', 'Scheduler'],
+    'Distribuye eventos a múltiples consumidores simultáneamente. Aprende el patrón fan-out y cuándo usar SNS vs EventBridge vs SQS.',['El patrón fan-out con SNS', 'EventBridge: bus de eventos con filtrado declarativo', 'SNS + SQS juntos, y Azure Event Hubs'],
     [
       'Crea un topic SNS: aws sns create-topic --name mis-alertas',
       'Suscribe una cola SQS al topic: aws sns subscribe --topic-arn arn:aws:sns:us-east-1:000000000000:mis-alertas --protocol sqs --notification-endpoint arn:aws:sqs:us-east-1:000000000000:mi-cola',
@@ -344,8 +342,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Observabilidad con CloudWatch: logs, métricas y alarmas',
     'CloudWatch',
     'Aplicación', '2 h 30 min', '#2f6f9f',
-    'Sin observabilidad no puedes diagnosticar problemas en producción. Aprende a centralizar logs, crear métricas desde ellos y configurar alarmas antes de que los usuarios noten el fallo.',
-    ['Log group', 'Log stream', 'Metric filter', 'Alarm', 'Correlation ID', 'Dashboard', 'X-Ray trace'],
+    'Sin observabilidad no puedes diagnosticar problemas en producción. Aprende a centralizar logs, crear métricas desde ellos y configurar alarmas antes de que los usuarios noten el fallo.',['Log groups, log streams y correlation ID', 'Metric filters y alarmas', 'Diagnóstico sistemático y X-Ray'],
     [
       'Crea un log group: aws logs create-log-group --log-group-name /mi-app/backend',
       'Crea un log stream y envía logs: aws logs create-log-stream --log-group-name /mi-app/backend --log-stream-name app-001 && aws logs put-log-events --log-group-name /mi-app/backend --log-stream-name app-001 --log-events \'[{"timestamp":\'$(date +%s%3N)\',message:"ERROR request_id=abc tarea_id=001 msg=fallo"}]\'',
@@ -366,8 +363,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Bases de datos relacionales con RDS (PostgreSQL real)',
     'RDS',
     'Integración', '3 h', '#e85d4a',
-    'cloud local corre PostgreSQL real cuando creas una instancia RDS. La única diferencia con AWS real es el endpoint. Aprende cuándo elegir SQL sobre NoSQL.',
-    ['RDS Instance', 'Parameter group', 'Snapshot y restore', 'IAM Authentication', 'Connection string', 'Migrations'],
+    'cloud local corre PostgreSQL real cuando creas una instancia RDS. La única diferencia con AWS real es el endpoint. Aprende cuándo elegir SQL sobre NoSQL.',['RDS Instance y cuándo elegir SQL sobre NoSQL', 'Snapshots y restore', 'Migrations'],
     [
       'Crea una instancia RDS PostgreSQL: aws rds create-db-instance --db-instance-identifier mi-postgres --db-instance-class db.t3.micro --engine postgres --master-username admin --master-user-password admin123 --allocated-storage 20',
       'Espera a que esté disponible: aws rds wait db-instance-available --db-instance-identifier mi-postgres',
@@ -388,8 +384,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Contenedores: ECR, ECS y comparación con Cloud Run',
     'ECR / ECS',
     'Integración', '4 h', '#137c8b',
-    'Empaqueta tu aplicación en una imagen Docker, publícala en ECR y ejecútala en ECS. cloud local corre contenedores Docker reales.',
-    ['OCI image', 'ECR Repository', 'Task Definition', 'ECS Cluster', 'Fargate vs EC2 mode', 'Service Discovery'],
+    'Empaqueta tu aplicación en una imagen Docker, publícala en ECR y ejecútala en ECS. cloud local corre contenedores Docker reales.',['ECR y por qué no basta con Docker Hub', 'Task Definition y ECS Cluster', 'Contenedores vs Lambda, y EKS', 'Cadena de suministro en la nube: escaneo, firma y verificación de imágenes en ECR'],
     [
       'Construye tu imagen Docker: docker build -t mi-api:latest .',
       'Crea un repositorio ECR en cloud local: aws ecr create-repository --repository-name mi-api',
@@ -411,8 +406,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Infraestructura como código con CloudFormation',
     'CloudFormation / IaC',
     'Integración', '3 h', '#bd4b72',
-    'Define toda tu infraestructura en archivos YAML versionables. Crea, actualiza y destruye recursos con un solo comando sin tocar la consola.',
-    ['Stack', 'Template', 'Resource', 'Parameter', 'Output', 'Change set', 'Drift detection', 'Terraform y OpenTofu como alternativa multi-nube (HCL, plan/apply, state)', 'AWS CDK: infraestructura como código real (TypeScript/Python)', 'Compatibilidad de cloud local con AWS CLI v2, SDK v2/v3, boto3, Go, Rust y Terraform'],
+    'Define toda tu infraestructura en archivos YAML versionables. Crea, actualiza y destruye recursos con un solo comando sin tocar la consola.',['Stack, Template y por qué no crear recursos manualmente con la CLI', 'Change sets', 'Drift detection, Terraform/CDK, y compatibilidad multi-herramienta'],
     [
       'Escribe un template stack-basico.yaml que define un bucket S3 + una cola SQS + una tabla DynamoDB con Resources y Outputs',
       'Despliega el stack: aws cloudformation deploy --template-file stack-basico.yaml --stack-name mi-stack',
@@ -433,8 +427,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Orquestación de flujos con Step Functions',
     'Step Functions',
     'Integración', '3 h', '#e9a23b',
-    'Coordina múltiples servicios en flujos complejos con lógica condicional, reintentos automáticos y manejo de errores declarativo.',
-    ['State machine', 'Task state', 'Choice state', 'Retry / Catch', 'Express vs Standard', 'Parallel state'],
+    'Coordina múltiples servicios en flujos complejos con lógica condicional, reintentos automáticos y manejo de errores declarativo.',['State machine y Task states', 'Choice state, Retry y Catch', 'Express vs Standard, y cuándo EventBridge Pipes es suficiente', 'Procesamiento por lotes: trabajos independientes, reintentos e idempotencia'],
     [
       'Escribe una state machine en JSON/YAML con estados: ValidarTarea → GuardarEnDynamoDB → EnviarNotificacion (SNS)',
       'Crea la state machine en cloud local: aws stepfunctions create-state-machine --name FlujoTareas --definition file://maquina.json --role-arn arn:aws:iam::000000000000:role/sfn-role',
@@ -455,8 +448,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Streaming: Kinesis, MSK (Kafka) y Pub/Sub avanzado',
     'Kinesis / MSK / Kafka',
     'Experto', '4 h', '#8167a9',
-    'Procesa flujos de millones de eventos por segundo. Aprende la diferencia entre colas (SQS) y streams (Kinesis/Kafka) y cuándo cada uno es la herramienta correcta.',
-    ['Shard', 'Partition key', 'Consumer group', 'Offset', 'Retention period', 'Compaction', 'Backpressure'],
+    'Procesa flujos de millones de eventos por segundo. Aprende la diferencia entre colas (SQS) y streams (Kinesis/Kafka) y cuándo cada uno es la herramienta correcta.',['Streams vs colas', 'MSK (Kafka gestionado) y consumer groups', 'Kinesis Data Streams vs Firehose, y GCP Managed Kafka'],
     [
       'AWS Kinesis: crea un data stream con 2 shards: aws kinesis create-stream --stream-name mi-stream --shard-count 2',
       'Produce registros: aws kinesis put-record --stream-name mi-stream --partition-key user-001 --data $(echo -n "evento-1" | base64)',
@@ -477,8 +469,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Autenticación de usuarios con Cognito',
     'Cognito / Auth',
     'Experto', '3 h', '#2f6f9f',
-    'Implementa registro, login y autorización de usuarios sin construir tu propio sistema de autenticación. Cognito en cloud local soporta flujos OAuth 2.0 completos.',
-    ['User Pool', 'App Client', 'JWT (Access / ID / Refresh token)', 'OAuth 2.0', 'PKCE', 'Grupos y atributos'],
+    'Implementa registro, login y autorización de usuarios sin construir tu propio sistema de autenticación. Cognito en cloud local soporta flujos OAuth 2.0 completos.',['Por qué no construir tu propio sistema de autenticación', 'Access Token, ID Token y Refresh Token', 'OAuth 2.0 y PKCE'],
     [
       'Crea un User Pool: aws cognito-idp create-user-pool --pool-name MiApp --auto-verified-attributes email',
       'Crea un App Client: aws cognito-idp create-user-pool-client --user-pool-id <pool-id> --client-name web-client --no-generate-secret',
@@ -499,8 +490,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Analítica de datos con Athena y Glue',
     'Athena / BigQuery',
     'Experto', '3 h', '#e85d4a',
-    'Consulta terabytes de datos en S3 con SQL sin moverlos ni cargarlos en una base de datos. Athena en cloud local usa DuckDB como motor real.',
-    ['Data lake', 'Parquet vs CSV', 'Glue Catalog', 'Glue Crawler', 'Athena Workgroup', 'Partition pruning', 'Compresión'],
+    'Consulta terabytes de datos en S3 con SQL sin moverlos ni cargarlos en una base de datos. Athena en cloud local usa DuckDB como motor real.',['Data lake y Glue Catalog', 'Glue Crawler y Athena', 'Parquet vs CSV, y partition pruning'],
     [
       'Prepara datos: crea un archivo orders.json con 100 registros y súbelo a S3: aws s3 cp orders.json s3://analytics-bucket/pedidos/2024/01/',
       'Crea una base de datos en Glue Catalog: aws glue create-database --database-input \'{"Name":"tienda"}\'',
@@ -521,8 +511,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'IA y servicios especializados: Bedrock, Textract y Transcribe',
     'Bedrock / IA',
     'Experto', '2 h 30 min', '#137c8b',
-    'Integra modelos de IA generativa y procesamiento de documentos. cloud local emula Bedrock con stubs deterministas — aprende a probar contratos de IA sin depender de un modelo real.',
-    ['Bedrock Runtime', 'InvokeModel API', 'Textract (OCR)', 'Transcribe (STT)', 'Stub vs Mock', 'Prompt engineering', 'Token limits'],
+    'Integra modelos de IA generativa y procesamiento de documentos. cloud local emula Bedrock con stubs deterministas — aprende a probar contratos de IA sin depender de un modelo real.',['Bedrock Runtime y respuestas stub deterministas', 'Textract y Transcribe', 'Stub vs mock, y qué probar localmente', 'Gobierno de IA y ML: fichas de modelo, umbrales por grupo y una puerta antes de publicar'],
     [
       'AWS Bedrock Runtime: invoca un modelo — aws bedrock-runtime invoke-model --model-id anthropic.claude-3-sonnet-20240229-v1:0 --body \'{"prompt":"Hola","max_tokens":100}\' --cli-binary-format raw-in-base64-out output.json && cat output.json',
       'Observa que cloud local devuelve una respuesta stub determinista (misma respuesta para mismo input)',
@@ -543,8 +532,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Cómputo elástico con EC2 y Auto Scaling',
     'EC2 y Auto Scaling',
     'Integración', '3 h', '#137c8b',
-    'Lanza instancias EC2 respaldadas por contenedores Docker reales, inyecta claves SSH y UserData, y usa Auto Scaling para mantener automáticamente una capacidad deseada de instancias.',
-    ['Modelo de ejecución EC2 sobre Docker real', 'AMIs y su mapeo a imágenes Docker', 'IMDS v1/v2 y credenciales por instancia', 'Launch configurations y Auto Scaling Groups', 'Reconciliador de capacidad cada 10 s'],
+    'Lanza instancias EC2 respaldadas por contenedores Docker reales, inyecta claves SSH y UserData, y usa Auto Scaling para mantener automáticamente una capacidad deseada de instancias.',['El modelo de ejecución de EC2 — instancias que son contenedores Docker reales', 'AMIs, grupos de seguridad y claves SSH', 'UserData e IMDS — arranque automatizado y credenciales por instancia', 'Auto Scaling — configuraciones de lanzamiento y grupos', 'El reconciliador de capacidad y las políticas de escalado', 'VPC y redes — subredes, security groups y el flujo del tráfico'],
     [
       'Laboratorio 21.1: importa una clave SSH real y lanza una instancia con aws ec2 run-instances --image-id ami-amazonlinux2023',
       'Consulta IMDSv2 desde dentro del contenedor: pide un token y luego el instance-id',
@@ -562,8 +550,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Balanceo de carga, CDN y DNS — ELB, CloudFront, Route53 y ACM',
     'ELB, CDN y DNS',
     'Integración', '3 h 30 min', '#2f6f9f',
-    'Crea un Application Load Balancer con grupos objetivo y reglas de enrutamiento, solicita certificados TLS reales con ACM, distribuye contenido con CloudFront y gestiona DNS con Route53.',
-    ['ALB, grupos objetivo y listeners', 'ACM: emisión automática con criptografía real', 'Distribuciones CloudFront y políticas de caché', 'Zonas alojadas y registros de recursos en Route53', 'La cadena ACM → ALB/CloudFront → Route53'],
+    'Crea un Application Load Balancer con grupos objetivo y reglas de enrutamiento, solicita certificados TLS reales con ACM, distribuye contenido con CloudFront y gestiona DNS con Route53.',['ELB v2 — balanceadores, grupos objetivo y reglas', 'ACM — certificados TLS con criptografía real', 'CloudFront — distribución de contenido y control de acceso al origen', 'Route53 — zonas alojadas y registros de recursos', 'Cómo se integran los cuatro servicios en una arquitectura de borde real', 'WAF y protección DDoS: limitar peticiones y bloquear ataques comunes en el borde'],
     [
       'Laboratorio 22.1: crea un ALB, un grupo objetivo y una regla de enrutamiento por ruta /api/*',
       'Laboratorio 22.2: solicita un certificado ACM y verifica que se emite con criptografía real',
@@ -581,8 +568,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Caché en memoria con ElastiCache',
     'ElastiCache',
     'Integración', '2 h 30 min', '#8167a9',
-    'Crea un clúster ElastiCache respaldado por un contenedor Valkey/Redis real, aplica el patrón cache-aside, y practica autenticación IAM en vez de contraseñas fijas.',
-    ['Cache-aside, cache hit/miss y TTL', 'Contenedores Valkey/Redis reales en Floci', 'Conexión con clientes Redis estándar', 'Autenticación IAM para el plano de datos'],
+    'Crea un clúster ElastiCache respaldado por un contenedor Valkey/Redis real, aplica el patrón cache-aside, y practica autenticación IAM en vez de contraseñas fijas.',['Qué resuelve un caché en memoria — y cuándo no ayuda', 'Arquitectura de ElastiCache en Floci — contenedores reales, no simulación', 'Creación de clústeres y conexión con clientes estándar', 'Autenticación IAM para el plano de datos de ElastiCache'],
     [
       'Crea un grupo de réplicas y obtén su puerto real con describe-replication-groups',
       'Conéctate con redis-cli y confirma el servidor con PING',
@@ -600,8 +586,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'CI/CD nativo de AWS con CodeBuild y CodeDeploy',
     'CodeBuild y CodeDeploy',
     'Experto', '3 h 30 min', '#e85d4a',
-    'Ejecuta compilaciones reales dentro de contenedores Docker con CodeBuild, y despliega Lambda con una estrategia canary usando CodeDeploy, con reversión automática ante fallos.',
-    ['Fases de buildspec.yml: install/pre_build/build/post_build', 'Artefactos recolectados y subidos a S3', 'Aplicaciones y grupos de implementación', 'Despliegue Blue/Green de Lambda por alias', 'Lifecycle hooks y reversión automática'],
+    'Ejecuta compilaciones reales dentro de contenedores Docker con CodeBuild, y despliega Lambda con una estrategia canary usando CodeDeploy, con reversión automática ante fallos.',['CodeBuild — compilaciones reales dentro de contenedores Docker', 'buildspec.yml — fases y artefactos', 'CodeDeploy — aplicaciones, grupos y configuraciones predefinidas', 'Despliegue Blue/Green de Lambda — cambio de tráfico por alias', 'Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB'],
     [
       'Laboratorio 24.1: crea un proyecto CodeBuild y ejecuta una compilación con buildspec inline',
       'Verifica que el artefacto generado se subió automáticamente a S3',
@@ -619,9 +604,14 @@ export const COURSE_MODULES: CourseModule[] = [
     'Gobierno, configuración y continuidad — AWS Config, AppConfig y Backup',
     'Config, AppConfig y Backup',
     'Experto', '3 h', '#4f7a5d',
-    'Gestiona reglas de cumplimiento con AWS Config, despliega configuración dinámica sin redeployar código con AppConfig, y centraliza tu política de respaldo con AWS Backup.',
-    [
-      'Simulacro de restauración: comprobar contenido, no solo la existencia del backup','Reglas, grabadores y paquetes de conformidad de Config', 'Aplicaciones, entornos y perfiles de AppConfig', 'Sesiones de configuración en AppConfigData', 'Bóvedas, planes y selecciones de Backup', 'El ciclo de vida CREATED → RUNNING → COMPLETED de un trabajo de respaldo'],
+    'Gestiona reglas de cumplimiento con AWS Config, despliega configuración dinámica sin redeployar código con AppConfig, y centraliza tu política de respaldo con AWS Backup.',[
+      'AWS Config — rastrear reglas sobre tus recursos',
+      'AppConfig — desplegar configuración sin redeployar código',
+      'AppConfigData — el plano de datos que consume tu aplicación',
+      'AWS Backup — centralizar la política de respaldo de múltiples servicios',
+      'El ciclo de vida de un trabajo de respaldo',
+      'Simulacro de restauración: comprobar contenido, no solo la existencia del backup'
+      ],
     [
       'Laboratorio 25.1: despliega un cambio de configuración con AppConfig y recupéralo desde AppConfigData',
       'Crea una regla de Config y consulta su estado de cumplimiento con describe-compliance-by-config-rule',
@@ -639,8 +629,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Streaming e integración avanzada — Firehose y EventBridge Pipes',
     'Firehose y Pipes',
     'Experto', '2 h 30 min', '#e9a23b',
-    'Entrega streams de datos automáticamente a S3 con Data Firehose, y conecta un origen con un destino sin código de pegamento usando EventBridge Pipes.',
-    ['Firehose: buffer, vaciado automático y NDJSON', 'Firehose vs Kinesis Data Streams: quién consume los datos', 'Pipes: origen, destino y enriquecimiento opcional', 'Cuándo usar Pipes frente a reglas EventBridge o Step Functions'],
+    'Entrega streams de datos automáticamente a S3 con Data Firehose, y conecta un origen con un destino sin código de pegamento usando EventBridge Pipes.',['Amazon Data Firehose — entrega gestionada sin consumidores propios', 'Firehose vs Kinesis Data Streams — quién consume los datos', 'EventBridge Pipes — conectar origen y destino sin código de pegamento', 'Cuándo usar Pipes frente a reglas EventBridge o Step Functions'],
     [
       'Laboratorio 26.1: crea un stream Firehose y envía registros hasta ver el vaciado automático en S3',
       'Inspecciona el archivo NDJSON generado en el bucket floci-firehose-results',
@@ -658,8 +647,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'APIs GraphQL con AppSync y correo transaccional con SES',
     'AppSync y SES',
     'Experto', '3 h', '#137c8b',
-    'Crea una API GraphQL gestionada con AppSync y resolvers locales, y usa SES junto al simulador de buzones de correo para probar de forma determinista flujos de entrega, rebote y queja.',
-    ['Esquemas GraphQL y resolvers', 'Fuentes de datos tipo NONE para prototipar', 'Eliminación en cascada de una API GraphQL', 'Identidades, envío y plantillas en SES', 'El simulador de buzones de correo (success/bounce/complaint)'],
+    'Crea una API GraphQL gestionada con AppSync y resolvers locales, y usa SES junto al simulador de buzones de correo para probar de forma determinista flujos de entrega, rebote y queja.',['AppSync — APIs GraphQL gestionadas', 'Fuentes de datos y resolvers', 'SES — identidades, envío y plantillas', 'El simulador de buzones y el punto de inspección local'],
     [
       'Laboratorio 27.1: crea una API GraphQL, define un esquema y un resolver con fuente de datos NONE',
       'Genera una clave API y documenta cómo la usarías desde un cliente',
@@ -677,8 +665,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Bases de datos de grafos y búsqueda — Neptune y OpenSearch',
     'Neptune y OpenSearch',
     'Experto', '3 h', '#bd4b72',
-    'Modela relaciones con un servidor Gremlin real en Neptune, y crea un dominio OpenSearch en modo real para búsqueda de texto completo, afinando tu criterio de selección de bases de datos.',
-    ['Vértices, aristas y consultas multi-salto', 'Neptune sobre un contenedor Gremlin Server real', 'OpenSearch: modo simulado vs modo real', 'Cuándo elegir Neptune, OpenSearch o DynamoDB'],
+    'Modela relaciones con un servidor Gremlin real en Neptune, y crea un dominio OpenSearch en modo real para búsqueda de texto completo, afinando tu criterio de selección de bases de datos.',['Bases de datos de grafos — cuando las relaciones son el dato', 'Neptune en Floci — un servidor Gremlin real, no una simulación', 'OpenSearch — modo simulado y modo real', 'Eligiendo entre Neptune, OpenSearch y DynamoDB', 'Datos de series temporales: escritura por tiempo, reducción de resolución y retención'],
     [
       'Laboratorio 28.1: crea un clúster Neptune y modela un pequeño grafo de personas con gremlin-python',
       'Ejecuta una consulta de recorrido: g.V().has(...).out(...).values(...)',
@@ -696,8 +683,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'FinOps y gobierno de cuenta — Cost Explorer, Pricing, BCM Data Exports, Resource Groups Tagging y STS',
     'FinOps y gobierno',
     'Experto', '3 h', '#2f6f9f',
-    'Consulta el costo sintetizado de tus propios recursos con Cost Explorer, exporta reportes en formato FOCUS con BCM Data Exports, descubre recursos por etiqueta entre servicios, y profundiza en credenciales temporales con STS.',
-    ['Síntesis de costos a partir del estado real de recursos', 'El catálogo de precios estático de Pricing', 'Exportaciones CUR/FOCUS en Parquet', 'Descubrimiento centralizado por etiqueta', 'AssumeRole y resolución de cuenta multi-tenant'],
+    'Consulta el costo sintetizado de tus propios recursos con Cost Explorer, exporta reportes en formato FOCUS con BCM Data Exports, descubre recursos por etiqueta entre servicios, y profundiza en credenciales temporales con STS.',['Cost Explorer — costos sintetizados a partir de tu estado real', 'Pricing — catálogo de tarifas de referencia', 'BCM Data Exports — reportes de costo en formato estándar', 'Resource Groups Tagging API — descubrimiento centralizado por etiqueta', 'STS en profundidad — identidad temporal y aislamiento multi-cuenta'],
     [
       'Laboratorio 29.1: consulta get-cost-and-usage agrupado por SERVICE con tus recursos reales del curso',
       'Crea una exportación BCM Data Exports y confirma el archivo Parquet generado en S3',
@@ -715,8 +701,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Transferencia de archivos gestionada con Transfer Family',
     'Transfer Family',
     'Experto', '2 h', '#8167a9',
-    'Crea un servidor SFTP gestionado con Transfer Family, gestiona usuarios con claves públicas SSH, y reconoce los límites de la Fase 1 actual: plano de gestión completo, plano de datos todavía pendiente.',
-    ['SFTP/FTP gestionado sin servidores propios', 'Ciclo de vida ONLINE/OFFLINE del servidor', 'Usuarios, directorios de inicio y claves SSH', 'Plano de gestión completo vs plano de datos pendiente'],
+    'Crea un servidor SFTP gestionado con Transfer Family, gestiona usuarios con claves públicas SSH, y reconoce los límites de la Fase 1 actual: plano de gestión completo, plano de datos todavía pendiente.',['Qué resuelve Transfer Family', 'Ciclo de vida del servidor y modelo de usuarios', 'Claves públicas SSH y autenticación de usuarios', 'Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente'],
     [
       'Laboratorio 30.1: crea un servidor SFTP y confirma su estado inicial',
       'Crea un usuario con un directorio de inicio específico',
@@ -734,8 +719,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Proyecto integrador: API multi-nube con AWS, Azure y GCP',
     'Proyecto multi-nube',
     'Experto', '8 h', '#bd4b72',
-    'Construye la misma API "Gestor de Tareas" tres veces: una en AWS local, una en Azure local y una en GCP local. Compara las diferencias y demuestra portabilidad de conocimiento.',
-    ['Arquitectura multi-nube', 'Portabilidad', 'Feature parity', 'Interoperabilidad', 'CI local', 'Documentación de diferencias', 'Arquitectura interna de cloud local: GraalVM, arranque en ~24ms, "real engines, not mocks"', 'cloud local en CI/CD: pruebas de integración sin coste, integración con Testcontainers', 'Migración desde LocalStack, Azurite o gcloud emulators a un único endpoint cloud local', 'Persistencia de estado entre reinicios (ECS, CodeBuild, Config) y límites: emulador para desarrollo, no para producción'],
+    'Construye la misma API "Gestor de Tareas" tres veces: una en AWS local, una en Azure local y una en GCP local. Compara las diferencias y demuestra portabilidad de conocimiento.',['Arquitectura multi-nube y portabilidad de conocimiento', 'Arquitectura interna de cloud local y su uso en CI/CD', 'Migración desde otros emuladores, y límites de un emulador', 'Testcontainers — pruebas de integración automatizadas', 'Migrar a la nube: las 7 R para decidir qué hacer con cada aplicación', 'Nube híbrida: conectar el centro de datos con la nube de forma segura y medible'],
     [
       'AWS: implementa GET /tareas y POST /tareas usando Lambda + API Gateway + DynamoDB + SQS + S3 + CloudWatch',
       'AWS: añade autenticación con Cognito y despliega toda la infraestructura con CloudFormation',
@@ -756,8 +740,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Arquitectura cloud resiliente: redes, landing zones y recuperación',
     'Resiliencia cloud',
     'Experto', '5 h', '#137c8b',
-    'Diseña una base cloud gobernada y prueba que el sistema puede aislar fallos y recuperar datos dentro de objetivos explícitos.',
-    ['VPC/VNet y segmentación', 'Landing zones y separación de cuentas', 'Alta disponibilidad y disaster recovery', 'RTO, RPO, chaos experiments y runbooks'],
+    'Diseña una base cloud gobernada y prueba que el sistema puede aislar fallos y recuperar datos dentro de objetivos explícitos.',['Una red segura empieza por flujos, no por subredes', 'Una landing zone convierte gobierno en una base repetible', 'Disponibilidad y recuperación responden preguntas distintas', 'Un backup solo existe operativamente después de restaurarlo', 'Well-Architected: revisar una arquitectura con los seis pilares', 'Residencia y soberanía de datos: que los datos personales vivan donde la ley permite'],
     [
       'Dibuja flujos norte-sur y este-oeste, rutas, zonas de confianza y puntos únicos de fallo',
       'Diseña una landing zone con cuentas/proyectos, identidad federada, logs y políticas centrales',
@@ -771,8 +754,7 @@ export const COURSE_MODULES: CourseModule[] = [
     ['aws', 'azure', 'gcp']
   ),
   m(33, 'Cloud Master: plataforma, seguridad, datos y FinOps', 'Cloud Master', 'Experto', '20 h', '#137c8b',
-    'Integra los 22 temas avanzados del itinerario Cloud en una arquitectura propia desplegable, observable, segura y económicamente gobernada.',
-    ['Terraform avanzado y CI/CD cloud', 'EKS, AKS, GKE, ECS y Service Mesh', 'EC2, VPC, RDS, S3 y DynamoDB avanzados', 'Lambda y API Gateway avanzados', 'CloudWatch, CloudTrail, seguridad y FinOps', 'Serverless, microservicios, Big Data, AI/ML y multi-cloud'],
+    'Integra los 22 temas avanzados del itinerario Cloud en una arquitectura propia desplegable, observable, segura y económicamente gobernada.',['Terraform avanzado y CI/CD cloud', 'Kubernetes administrado, ECS y Service Mesh', 'EC2, VPC, RDS, S3 y DynamoDB avanzados', 'Lambda, API Gateway y observabilidad avanzada', 'Seguridad, auditoría y FinOps', 'Microservicios, Big Data, AI/ML y multi-cloud', 'Detección de amenazas: leer registros de auditoría y alertar sobre comportamiento sospechoso'],
     ['Construye módulos Terraform con estado remoto', 'Despliega y autoescala un workload', 'Prueba backup y réplica', 'Optimiza cold start', 'Investiga un evento de auditoría', 'Calcula coste por entrega'],
     ['¿Qué complejidad añade multi-cloud?', '¿Cómo demuestra FinOps una mejora sin degradar confiabilidad?'],
     ['Terraform', 'EKS/AKS/GKE', 'OpenTelemetry', 'CloudTrail', 'Bedrock/SageMaker'], 'Arquitectura cloud Master con IaC, plataforma, datos, seguridad, observabilidad, FinOps y DR.', ['aws','azure','gcp']),
@@ -780,8 +762,7 @@ export const COURSE_MODULES: CourseModule[] = [
     'Floci oficial completo: plataforma, servicios y laboratorios',
     'Floci oficial',
     'Experto', '12 h', '#137c8b',
-    'Recorre en español la documentación oficial actual de Floci, floci-az y floci-gcp: instalación multiplataforma, CLI, configuración avanzada, servicios diferenciales, UI, Testcontainers y laboratorios 101.',
-    ['Instalación en macOS, Linux y Windows', 'CLI, Docker Compose, persistencia, snapshots, TLS y hooks', 'Aislamiento por cuenta AWS y proyecto GCP', '68 servicios AWS, 22 Azure y 22 GCP', 'Testcontainers en Java, Node.js, Python y Go', 'Desarrollo asistido por IA sin credenciales reales', 'floci-ui: panel visual multi-nube como proyecto separado, no fuente de verdad versionada', 'Límites del emulador y validación final en nube real'],
+    'Recorre en español la documentación oficial actual de Floci, floci-az y floci-gcp: instalación multiplataforma, CLI, configuración avanzada, servicios diferenciales, UI, Testcontainers y laboratorios 101.',['Instalación en macOS, Linux y Windows', 'Modelo mental de la plataforma', 'AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK', 'Configuración avanzada y ciclo de vida', 'Automatización, UI y agentes', 'Servicios AWS incorporados en la documentación actual', 'Servicios Azure que completan el recorrido', 'Servicios GCP que completan el recorrido', 'floci-ui — explorador visual multi-nube', 'Laboratorios oficiales reconstruidos en español', 'Límites y transferencia a producción'],
     ['Instala la CLI con el método propio de tu sistema y ejecuta floci doctor', 'Levanta AWS, Azure y GCP y verifica sus puertos', 'Configura persistencia, guarda un snapshot y restaura evidencia', 'Completa los cuatro laboratorios 101 con predicción y diagnóstico', 'Ejecuta una prueba aislada con Testcontainers', 'Conecta floci-ui al runtime local, crea un secreto por CLI y edítalo visualmente, confirmando que ambas vías comparten el mismo estado real', 'Documenta qué comportamiento debes volver a validar en una cuenta cloud real'],
     ['¿Por qué Floci reduce el radio de impacto pero no sustituye las pruebas finales en nube real?', '¿Cuándo elegirías persistencia y cuándo un entorno efímero por suite?', '¿Qué diferencia existe entre compatibilidad de API y paridad operacional completa?'],
     ['floci-cli', 'floci-ui', 'floci', 'floci-az', 'floci-gcp', 'Testcontainers'],

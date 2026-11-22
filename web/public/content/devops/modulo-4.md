@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Jobs, steps y matrices de build
+### Tema 1: Jobs, steps y matrices de build · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -95,7 +95,7 @@ Ya diseñas jobs paralelos y matrices sin duplicar definiciones. El siguiente te
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Ejecuta las pruebas del servicio en las versiones soportadas del runtime. Provoca un fallo en una variante y comprueba que bloquea la publicación, aunque las demás variantes terminen correctamente.
 
-### Tema 2: Caché de dependencias en CI
+### Tema 2: Caché de dependencias en CI · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -168,7 +168,7 @@ Ya evitas reinstalaciones innecesarias basando el caché en el contenido real de
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Clavea la caché de dependencias con el lockfile y la plataforma necesaria. Modifica una dependencia y verifica instalación correcta tanto con caché limpia como con una entrada anterior disponible.
 
-### Tema 3: Artifacts y reportes de cobertura
+### Tema 3: Artifacts y reportes de cobertura · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -234,7 +234,7 @@ Ya conservas y pasas resultados entre pasos aislados de un pipeline con artifact
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Publica reportes de pruebas y cobertura asociados al commit. Provoca un fallo y verifica que conserva el reporte para diagnóstico sin presentar el artefacto de aplicación como listo para desplegar.
 
-### Tema 4: Pipelines como código (GitHub Actions/GitLab CI)
+### Tema 4: Pipelines como código (GitHub Actions/GitLab CI) · Intermedio · 35 min
 
 #### Paso 1 · Objetivo y preparación
 

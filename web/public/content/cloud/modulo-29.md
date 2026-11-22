@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real
+### Tema 1: Cost Explorer — costos sintetizados a partir de tu estado real · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar que el costo sintetizado de Floci cambia cuando creás y borrás un bucket real, en vez de devolver números inventados. Prerrequisitos: Módulo 2 completo.
@@ -62,7 +62,7 @@ Eliminá el bucket (`aws s3 rb s3://demo-costo-antes`) y volvé a consultar `get
 #### Paso 7 · Cierre
 Entregá el costo reflejado tras crear el bucket del Paso 4, el rango inválido rechazado del Paso 5, y el costo actualizado tras borrarlo del Paso 6; explicá por qué estos números nunca deberían usarse para un presupuesto real. Siguiente paso: precios. Errores comunes: mezclar fechas y no etiquetar recursos. Fuente oficial: https://docs.aws.amazon.com/cost-management/latest/userguide/ce-what-is.html.
 
-### Tema 2: Pricing — catálogo de tarifas de referencia
+### Tema 2: Pricing — catálogo de tarifas de referencia · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a consultar el catálogo de tarifas que el Tema 1 usa por detrás para sintetizar el costo de la infraestructura de RutaFlow. Prerrequisitos: Tema 1 de este módulo.
@@ -123,7 +123,7 @@ Repetí la consulta cambiando `regionCode` a otra región cubierta por la instan
 #### Paso 7 · Cierre
 Entregá la tarifa real de `t3.micro` del Paso 4, el `PriceList` vacío del Paso 5, y la comparación entre regiones del Paso 6; explicá por qué esta instantánea mínima nunca debería usarse para cotizar un presupuesto real. Siguiente paso: exportación. Errores comunes: precio sin unidad y moneda incorrecta. Fuente oficial: https://docs.aws.amazon.com/awsaccountbilling/latest/aboutv2/price-changes.html.
 
-### Tema 3: BCM Data Exports — reportes de costo en formato estándar
+### Tema 3: BCM Data Exports — reportes de costo en formato estándar · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a generar el reporte de costo de RutaFlow en formato FOCUS, el estándar que una herramienta externa de FinOps podría consumir directamente. Prerrequisitos: Temas 1-2 de este módulo.
@@ -179,7 +179,7 @@ Descargá el archivo `.parquet` generado y confirmá con alguna herramienta loca
 #### Paso 7 · Cierre
 Entregá el export FOCUS generado del Paso 4, el formato CSV rechazado del Paso 5, y la validación de columnas del Paso 6; explicá por qué la estandarización del esquema es lo que permite comparar costos entre proveedores distintos. Siguiente paso: tags. Errores comunes: exportar sin retención y no validar columnas. Fuente oficial: https://docs.aws.amazon.com/cur/latest/userguide/what-is-data-exports.html.
 
-### Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta
+### Tema 4: Resource Groups Tagging API — descubrimiento centralizado por etiqueta · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a etiquetar con `Proyecto=rutaflow` recursos de dos servicios distintos y a descubrirlos con una sola consulta. Prerrequisitos: Módulos 2 y 4.
@@ -240,7 +240,7 @@ Usá `get-tag-keys` y `get-tag-values` para auditar qué claves y valores de eti
 #### Paso 7 · Cierre
 Entregá el descubrimiento cruzado del Paso 4, el ARN inexistente aceptado sin validar del Paso 5, y la política propuesta del Paso 6; explicá por qué ese comportamiento de "aceptar ARNs arbitrarios" es útil y riesgoso a la vez. Siguiente paso: identidad. Errores comunes: claves inconsistentes y tags ausentes en recursos nuevos. Fuente oficial: https://docs.aws.amazon.com/resourcegroupstagging/latest/APIReference/Welcome.html.
 
-### Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta
+### Tema 5: STS en profundidad — identidad temporal y aislamiento multi-cuenta · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a confirmar en qué cuenta simulada está operando tu sesión antes de desplegar nada, y a comprobar el aislamiento entre dos cuentas distintas. Prerrequisitos: Módulo 7 completo.

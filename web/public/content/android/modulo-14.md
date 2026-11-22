@@ -5,7 +5,7 @@ Una pantalla Compose que "se ve bien" en el emulador puede seguir rota para quie
 
 ## Aprende construyendo
 
-### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible
+### Tema 1: ComposeTestRule ejecuta tu UI sin emulador visible · Avanzado · 45 min
 
 #### Por qué una captura visual no basta
 
@@ -133,7 +133,7 @@ Ya montas un composable real en un host de prueba, disparas una acción y verifi
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Monta la pantalla de ruta con entregas falsas y prueba sus estados vacío, cargando y con datos. El test debe fallar si desaparece la acción para abrir una guía, aunque los datos del ViewModel sigan correctos.
 
-### Tema 2: Finders, assertions y actions navegan el árbol semántico
+### Tema 2: Finders, assertions y actions navegan el árbol semántico · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -235,7 +235,7 @@ Ya distingues cuándo un finder por texto es frágil ante ambigüedad y cuándo 
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Localiza una entrega por su etiqueta semántica, abre el detalle y pulsa confirmar. Comprueba el resultado visible y evita identificar nodos por su posición, que cambia al ordenar la ruta.
 
-### Tema 3: Semantics y clearAndSetSemantics definen qué percibe la accesibilidad
+### Tema 3: Semantics y clearAndSetSemantics definen qué percibe la accesibilidad · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -384,7 +384,7 @@ Ya distingues cuándo la fusión automática de semántica es suficiente y cuán
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Agrupa la tarjeta de entrega en una descripción útil con guía y estado. Verifica que su acción sigue accesible después de usar clearAndSetSemantics; no ocultes el botón de confirmación al simplificar el árbol.
 
-### Tema 4: AccessibilityService y TalkBack consumen el árbol semántico en producción
+### Tema 4: AccessibilityService y TalkBack consumen el árbol semántico en producción · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -494,7 +494,7 @@ Ya auditas una pantalla completa detectando nodos interactivos sin descripción 
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Recorre con TalkBack la entrega completa, incluyendo un error de conexión. Registra qué anuncia al actualizar el estado y corrige controles sin nombre o cambios que solo se distingan por color.
 
-### Tema 5: Animaciones de estado y visibilidad usan una especificación medible
+### Tema 5: Animaciones de estado y visibilidad usan una especificación medible · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -620,7 +620,7 @@ Ya calculas el valor esperado de una animación en cualquier instante usando la 
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Anima el cambio de pendiente a entregado sin bloquear el botón de regreso. Prueba con animaciones reducidas o desactivadas y confirma que el estado final sigue siendo comprensible sin movimiento.
 
-### Tema 6: AnimatedContent y AnimationSpec especifican transiciones completas
+### Tema 6: AnimatedContent y AnimationSpec especifican transiciones completas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

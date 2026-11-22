@@ -1193,7 +1193,7 @@ Compila y ejecuta `javac -d out src/Instantes.java` y `java -cp out Instantes`.
 
 Explica cuál valor guardarías para registrar el momento de una entrega y cuál para guardar el día prometido. Fuente oficial: [java.time](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/time/package-summary.html).
 
-### Tema 9: Java 25 para programas pequeños: `IO`, archivos compactos e `import module` · Básico · 30 min
+### Tema 9: Java 25 para programas pequeños: `IO`, archivos compactos e `import module` · Intermedio · 30 min
 
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Java 25 (LTS) incorporó como definitivas tres funciones pensadas para scripts y primeros programas: archivos fuente compactos con `main` de instancia (JEP 512), la clase `java.lang.IO` para leer y escribir en consola, y la importación de módulos completos (JEP 511). Las verás en ejemplos actuales y en la certificación de Java 25; también debes saber cuándo **no** usarlas, porque no compilan con versiones anteriores.

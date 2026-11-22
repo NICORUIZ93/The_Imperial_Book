@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales
+### Tema 1: El modelo de ejecución de EC2 — instancias que son contenedores Docker reales · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás lanzar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
@@ -74,7 +74,7 @@ Inicia, inspecciona y detén una instancia simulada.
 #### Paso 7 · Cierre
 Entrega configuración, salida, fallo y corrección; explica el resultado. Siguiente paso: seguridad. Errores comunes: instancias sin apagado y puertos abiertos. Fuente oficial: https://docs.aws.amazon.com/ec2/.
 
-### Tema 2: AMIs, grupos de seguridad y claves SSH
+### Tema 2: AMIs, grupos de seguridad y claves SSH · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a preparar el grupo de seguridad y la clave SSH que el primer nodo de reparto va a usar para arrancar. Prerrequisitos: Tema 1 de este módulo.
@@ -128,7 +128,7 @@ Documentá cuál sería la regla mínima real (no `0.0.0.0/0`) que usarías en A
 #### Paso 7 · Cierre
 Entregá el security group y la clave creados, la conexión que no se bloqueó en el Paso 5, y la regla mínima documentada del Paso 6; explicá por qué no deberías validar reglas de firewall de producción contra Floci. Siguiente paso: UserData. Errores comunes: claves en repositorio y 0.0.0.0/0 innecesario. Fuente oficial: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/ec2-security-groups.html.
 
-### Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia
+### Tema 3: UserData e IMDS — arranque automatizado y credenciales por instancia · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás inicializar una instancia desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
@@ -187,7 +187,7 @@ Verifica idempotencia y logs de arranque.
 #### Paso 7 · Cierre
 Entrega script, salida, fallo y corrección; explica el resultado. Siguiente paso: escalado. Errores comunes: secretos en UserData y usar IMDSv1. Fuente oficial: https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html.
 
-### Tema 4: Auto Scaling — configuraciones de lanzamiento y grupos
+### Tema 4: Auto Scaling — configuraciones de lanzamiento y grupos · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar `demo-asg`, el grupo que mantiene siempre disponible al menos un nodo de reparto activo. Prerrequisitos: Temas 2-3 de este módulo.
@@ -245,7 +245,7 @@ Corregí los valores a `--min-size 1 --max-size 3 --desired-capacity 1`, confirm
 #### Paso 7 · Cierre
 Entregá `demo-asg` creado con éxito, el error de mínimo/máximo invertido del Paso 5, y la verificación de límites del Paso 6; explicá por qué separar "qué lanzar" (la configuración de lanzamiento) de "cuántos mantener" (el grupo) es el mismo patrón declarativo de Kubernetes o ECS. Siguiente paso: políticas. Errores comunes: capacidad deseada inconsistente y healthcheck ausente. Fuente oficial: https://docs.aws.amazon.com/autoscaling/ec2/userguide/what-is-amazon-ec2-auto-scaling.html.
 
-### Tema 5: El reconciliador de capacidad y las políticas de escalado
+### Tema 5: El reconciliador de capacidad y las políticas de escalado · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a forzar que el reconciliador de `demo-asg` (Tema 4) escale de verdad, y a comprobar qué pasa cuando le pedís algo imposible. Prerrequisitos: Tema 4 de este módulo.
@@ -304,7 +304,7 @@ Bajá `desired-capacity` de nuevo a 1 y observá en `describe-scaling-activities
 #### Paso 7 · Cierre
 Entregá el scale-out real del Paso 4, el límite rechazado del Paso 5, y el scale-in más el lifecycle hook propuesto del Paso 6; explicá por qué este mismo patrón de reconciliación continua aparece también en Kubernetes y Terraform. Siguiente paso: VPC. Errores comunes: escalar por métrica ruidosa y olvidar cooldown. Fuente oficial: https://docs.aws.amazon.com/autoscaling/ec2/userguide/as-scaling-simple-step.html.
 
-### Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico
+### Tema 6: VPC y redes — subredes, security groups y el flujo del tráfico · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear una VPC con una subred pública y una privada, un security group, y explicar por qué una base de datos va en la subred privada mientras el balanceador va en la pública. Prerrequisitos: Módulo 0 (fundamentos de redes: IP, puertos) y Floci corriendo.

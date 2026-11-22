@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: De cloud local a un proveedor cloud real
+### Tema 1: De cloud local a un proveedor cloud real · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -103,7 +103,7 @@ Ya identificas con precisión las dos únicas configuraciones que cambian entre 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Documenta las dos configuraciones exactas (endpoint y credenciales) que cambiarán cuando la plataforma migre de Floci a un proveedor real, antes de tocar la gestión de secretos del Tema siguiente.
 
-### Tema 2: Gestión de secretos cloud-native
+### Tema 2: Gestión de secretos cloud-native · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -183,7 +183,7 @@ Ya describes el flujo completo de un secreto gestionado de forma nativa por el p
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Configura acceso a secretos con identidad del servicio. Prueba permiso revocado y recuperación, verificando que el proceso informa del fallo sin recurrir a credenciales incrustadas de respaldo.
 
-### Tema 3: IaC multi-nube
+### Tema 3: IaC multi-nube · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -290,7 +290,7 @@ Ya distingues el coste real de diseñar infraestructura verdaderamente portable 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Implementa un recurso equivalente en dos proveedores con estados separados. Compara red, identidad y recuperación para el servicio, y documenta las diferencias que impiden intercambiar módulos sin adaptación.
 
-### Tema 4: Checklist de salida a producción
+### Tema 4: Checklist de salida a producción · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -382,7 +382,7 @@ Ya construyes y ejecutas una checklist de producción verificable programáticam
 
 **Cuándo no usarlo:** para un cambio interno menor sin ningún riesgo de impacto en usuarios reales (un script de uso puramente personal), aplicar la checklist completa de producción es una sobrecarga innecesaria.
 
-### Tema 5: GitOps con ArgoCD y FluxCD
+### Tema 5: GitOps con ArgoCD y FluxCD · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -476,7 +476,7 @@ Ya demuestras el modelo de reconciliación pull-based de GitOps y su capacidad d
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Introduce un cambio de imagen mediante Git y observa la reconciliación en el clúster. Provoca drift manual en laboratorio y demuestra cómo se detecta y restaura el estado declarado.
 
-### Tema 6: Platform Engineering — Internal Developer Platforms (IDPs)
+### Tema 6: Platform Engineering — Internal Developer Platforms (IDPs) · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 

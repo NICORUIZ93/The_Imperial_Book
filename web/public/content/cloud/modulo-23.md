@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda
+### Tema 1: Qué resuelve un caché en memoria — y cuándo no ayuda · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir, con el caso real del panel de seguimiento de RutaFlow, cuándo cachear la posición de un repartidor ayuda y cuándo no. Prerrequisitos: Módulo 17 completo.
@@ -67,7 +67,7 @@ Repetí la lectura después de que pasen los 10 segundos del Paso 4 y confirmá 
 #### Paso 7 · Cierre
 Entregá el ciclo completo de miss→set→hit del Paso 4, el TTL cero roto del Paso 5, y la medición de latencia del Paso 6; explicá por qué la posición GPS de un conductor es un buen candidato para cache-aside y el saldo de una factura (Módulo 13) no lo sería. Siguiente paso: Valkey. Errores comunes: datos obsoletos y cachear errores. Fuente oficial: https://docs.aws.amazon.com/whitepapers/latest/database-caching-strategies-using-redis/database-caching-strategies-using-redis.html.
 
-### Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación
+### Tema 2: Arquitectura de ElastiCache en Floci — contenedores reales, no simulación · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear `demo-cache` y confirmar que es un servidor Valkey real, no una simulación del protocolo. Prerrequisitos: Tema 1 de este módulo.
@@ -120,7 +120,7 @@ Conectate con `docker exec -it <container-id> valkey-cli info server` y confirm�
 #### Paso 7 · Cierre
 Entregá el contenedor real confirmado del Paso 4, el error de puerto fijo del Paso 5, y la verificación de versión del Paso 6; explicá por qué que el motor sea real (no simulado) importa para confiar en el comportamiento de comandos avanzados. Siguiente paso: descubrimiento. Errores comunes: tratar caché como fuente permanente y no limitar memoria. Fuente oficial: https://docs.aws.amazon.com/elasticache/latest/dg/WhatIs.html.
 
-### Tema 3: Creación de clústeres y conexión con clientes estándar
+### Tema 3: Creación de clústeres y conexión con clientes estándar · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a resolver dinámicamente el puerto real de `demo-cache` (Tema 2), en vez de asumir el 6379 de siempre. Prerrequisitos: Tema 2 de este módulo.
@@ -179,7 +179,7 @@ redis-cli -h localhost -p "$PUERTO" ping
 #### Paso 7 · Cierre
 Entregá el puerto resuelto y el `PONG` del Paso 4, el error de grupo inexistente del Paso 5, y los dos puertos distintos del Paso 6; explicá por qué hardcodear `6379` en el servicio de RutaFlow sería un error incluso si "funciona hoy". Siguiente paso: autenticación. Errores comunes: fijar IP y no esperar estado available. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/elasticache/describe-replication-groups.html.
 
-### Tema 4: Autenticación IAM para el plano de datos de ElastiCache
+### Tema 4: Autenticación IAM para el plano de datos de ElastiCache · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear un usuario ElastiCache con permisos limitados solo a las claves de posición GPS, en vez de una contraseña fija compartida. Prerrequisitos: Tema 3 de este módulo, Módulo 7.

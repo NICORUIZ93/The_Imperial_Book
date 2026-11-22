@@ -127,7 +127,7 @@ Ya puedes hacer que evolución del dominio revele consumidores incompletos. El s
 
 **Límites y decisión de uso:** Los tipos de TypeScript se eliminan al ejecutar y no validan respuestas externas. Combina contratos estáticos con validación en las fronteras; una aserción de tipo no transforma un dato inválido en uno correcto.
 
-### Tema 2: Workers y ejecución fuera del hilo principal · Avanzado · 50 min
+### Tema 2: Workers y ejecución fuera del hilo principal · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1015,7 +1015,7 @@ Los patrones son vocabulario para decisiones, no objetivos. El siguiente bloque 
 
 **Errores comunes:** convertir todo en Singleton; if central creciente; Observer sin unsubscribe; bus global sin contratos; patrones que agregan capas sin variación real.
 
-**Fuentes oficiales:** [web.dev — Design patterns](https://web.dev/learn/design-patterns/) y [MDN — Working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects).
+**Fuentes oficiales:** [web.dev — Design patterns](https://web.dev/learn/javascript) y [MDN — Working with objects](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Working_with_objects).
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Separa la selección del cliente, el formato del estado y la publicación de cambios. Prueba dos instancias del widget y verifica que sus suscriptores se liberan al desmontar.
 
@@ -1468,7 +1468,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** usar `using` con un
 **Transferencia al proyecto integrador «RutaFlow»:** en el exportador CSV de RutaFlow, reemplaza los `try/finally` por `await using` para el archivo y una `DisposableStack` para las conexiones temporales.
 
 **Fuente oficial:** [MDN — using](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Statements/using) y [MDN — DisposableStack](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/DisposableStack).
-### Tema 14: WebAssembly con Rust o C · Experto · 50 min
+### Tema 14: WebAssembly con Rust o C · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1605,11 +1605,11 @@ Ya puedes evaluar WASM como intercambio medido, no como reemplazo general. El si
 
 **Errores comunes:** usar WASM para DOM; ignorar frontera/memoria; medir solo ejecución caliente; no ofrecer fallback; adoptar toolchain sin beneficio reproducible.
 
-**Fuentes oficiales:** [MDN — WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly), [Rust and WebAssembly](https://rustwasm.github.io/docs/book/) y [wasm-bindgen](https://rustwasm.github.io/wasm-bindgen/).
+**Fuentes oficiales:** [MDN — WebAssembly](https://developer.mozilla.org/en-US/docs/WebAssembly), [Rust and WebAssembly](https://rustwasm.github.io/docs/book/) y [wasm-bindgen](https://wasm-bindgen.github.io/wasm-bindgen/).
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Aísla un cálculo candidato a WebAssembly detrás de una función con alternativa JavaScript. Compara resultados y coste de transferencia con datos iguales antes de justificar su incorporación al widget.
 
-### Tema 15: Service Workers, PWA y estrategias de caché · Experto · 50 min
+### Tema 15: Service Workers, PWA y estrategias de caché · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

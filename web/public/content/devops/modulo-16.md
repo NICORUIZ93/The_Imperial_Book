@@ -4,7 +4,7 @@
 
 Cada Tema parte de una carpeta vacía y se verifica con comandos reales, no solo describiendo la interfaz gráfica de las herramientas.
 
-### Tema 1: Postman y Newman — tu primera colección contra una API real
+### Tema 1: Postman y Newman — tu primera colección contra una API real · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -110,7 +110,7 @@ Agrega una variable `nombreServicio` al environment con el valor `"RutaFlow"`, y
 
 #### Paso 7 · Cierre
 
-Ya ejecutas una colección Postman real desde la terminal con Newman, separando la definición de las peticiones (colección) de dónde apuntan (environment). El siguiente tema agrega scripts y aserciones más completas sobre el cuerpo de la respuesta. Fuentes oficiales: [Postman — integración de Newman en línea de comandos](https://learning.postman.com/docs/collections/using-newman-cli/command-line-integration-with-newman/) y [Newman — npm](https://www.npmjs.com/package/newman).
+Ya ejecutas una colección Postman real desde la terminal con Newman, separando la definición de las peticiones (colección) de dónde apuntan (environment). El siguiente tema agrega scripts y aserciones más completas sobre el cuerpo de la respuesta. Fuentes oficiales: [Postman — integración de Newman en línea de comandos](https://learning.postman.com/docs/collections/using-newman-cli/command-line-integration-with-newman/) y [Newman — npm](https://github.com/postmanlabs/newman).
 
 **Errores comunes:** hardcodear la URL completa en cada petición en vez de usar `{{baseUrl}}`, obligando a editar toda la colección para cambiar de entorno; usar `localhost` en vez de una IP explícita y tropezar con resolución DNS inconsistente entre máquinas.
 
@@ -118,7 +118,7 @@ Ya ejecutas una colección Postman real desde la terminal con Newman, separando 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Crea la colección base que validará el endpoint de salud del servicio real del proyecto, con un environment por cada entorno (local, staging) que usarás en los Temas siguientes.
 
-### Tema 2: Scripts y assertions — pruebas automatizadas sobre datos reales
+### Tema 2: Scripts y assertions — pruebas automatizadas sobre datos reales · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -220,7 +220,7 @@ Ya escribes aserciones que validan el cuerpo real de una respuesta JSON, no solo
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Agrega a la colección del proyecto una petición que cree un envío real y valide guía, estado y presencia de un identificador — esta es la prueba que detectará si un cambio futuro rompe silenciosamente el contrato de la API.
 
-### Tema 3: Newman en profundidad — reportes y el contrato del código de salida
+### Tema 3: Newman en profundidad — reportes y el contrato del código de salida · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -287,7 +287,7 @@ Agrega el reportero `json` (`--reporters cli,json --reporter-json-export resulta
 
 #### Paso 7 · Cierre
 
-Ya generas reportes exportables de una corrida de Newman, y reconoces por qué canalizar su salida sin cuidado puede ocultar un fallo real que un pipeline de CI necesitaba detectar. El siguiente tema presenta Jenkins, la otra pieza de este módulo, antes de integrarlos juntos en el Tema 5. Fuentes oficiales: [Newman — reporteros](https://github.com/postmanlabs/newman#newman-run-options) y [Bash — PIPESTATUS](https://www.gnu.org/software/bash/manual/html_node/Pipelines.html).
+Ya generas reportes exportables de una corrida de Newman, y reconoces por qué canalizar su salida sin cuidado puede ocultar un fallo real que un pipeline de CI necesitaba detectar. El siguiente tema presenta Jenkins, la otra pieza de este módulo, antes de integrarlos juntos en el Tema 5. Fuentes oficiales: [Newman — reporteros](https://github.com/postmanlabs/newman#newman-run-options) y [Bash — PIPESTATUS](https://tiswww.case.edu/php/chet/bash/bashref.html#Pipelines).
 
 **Errores comunes:** canalizar la salida de Newman hacia otro comando y leer `$?`, perdiendo el código de salida real; olvidar instalar `newman-reporter-html` por separado y asumir que viene incluido con Newman.
 
@@ -295,7 +295,7 @@ Ya generas reportes exportables de una corrida de Newman, y reconoces por qué c
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Define que el pipeline del proyecto siempre redirija la salida de Newman a un archivo (nunca la canalice directamente a otro comando) antes de comprobar su código de salida, evitando exactamente el falso positivo reproducido en este Tema.
 
-### Tema 4: Jenkins — instalación, jobs y el linter real de pipelines declarativos
+### Tema 4: Jenkins — instalación, jobs y el linter real de pipelines declarativos · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -408,7 +408,7 @@ Ya levantas Jenkins desde cero, confirmas que no trae plugins preinstalados, ins
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Escribe y valida con el linter real el `Jenkinsfile` que construirá y probará el proyecto, antes de crear ningún job — así detectas un error de sintaxis en segundos, no después de esperar a que arranque un build completo.
 
-### Tema 5: Integración completa — Newman dentro de un pipeline Jenkins
+### Tema 5: Integración completa — Newman dentro de un pipeline Jenkins · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -515,7 +515,7 @@ Ya creaste un job de Jenkins real a partir de un `Jenkinsfile`, lo ejecutaste, y
 
 ## Ampliación de la página 41 del PDF
 
-### Tema 6: Bruno y Postman, evaluar con el mismo contrato
+### Tema 6: Bruno y Postman, evaluar con el mismo contrato · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás comparar dos clientes de API por resultados verificables. **Prerrequisitos:** colección Postman, aserciones y servidor local del Tema 1; Bruno instalado desde su sitio oficial. No se asume que todas las funciones o licencias de una captura sigan vigentes.

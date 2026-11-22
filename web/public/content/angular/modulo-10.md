@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: TestBed y componentes standalone
+### Tema 1: TestBed y componentes standalone · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -173,7 +173,7 @@ Ya confirmas, con `TestBed` real, que un `input()` signal se asigna desde una pr
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Monta el formulario de asignación con sus imports standalone y dependencias falsas. Verifica que un conductor inválido impide enviar la solicitud y que un caso válido emite el identificador esperado.
 
-### Tema 2: Angular Testing Library
+### Tema 2: Angular Testing Library · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -317,7 +317,7 @@ Ya confirmas, con un refactor cosmético real aplicado a un componente, que una 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Prueba asignar una entrega mediante etiquetas y botones visibles. Cambia la estructura interna del componente: la prueba debe seguir pasando mientras el operador pueda completar la tarea.
 
-### Tema 3: Mockear HttpClient y el builder predeterminado basado en Vitest
+### Tema 3: Mockear HttpClient y el builder predeterminado basado en Vitest · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -482,7 +482,7 @@ Ya confirmas, con `HttpTestingController` real, tanto una respuesta exitosa como
 ---
 
 
-### Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses
+### Tema 4: Angular Material y CDK: componentes accesibles probados con harnesses · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás construir una tabla con Angular Material, anunciar cambios a lectores de pantalla con el CDK y probar el componente con *component harnesses* en lugar de selectores de CSS. Prerrequisitos: Temas 1 y 2 de este módulo.

@@ -1525,19 +1525,94 @@ dejara de ser único, esta clase volvería a mezclar tareas distintas —por eso
 
 ### Tema 7: Herencia, composición y clases abstractas con `abc` · Intermedio · 40 min
 
-**Duración estimada:** 40 min (tres subtemas de 13, 14 y 13 min).
-**¿Por qué es importante?** Con varias clases aparece la pregunta de diseño central de la programación orientada a objetos: ¿una clase **es un** caso especial de otra (herencia) o **tiene** otra a la que le encarga trabajo (composición)? Los patrones del Módulo 13 (Decorator, State, Template Method) se construyen con estas tres herramientas.
-**Prerrequisitos:** Tema 6 de este módulo (clases, métodos y `self`). Línea de versiones: Python 3.14.
+#### Paso 1 · Objetivo y preparación
+Al terminar vas a poder decidir si una clase nueva **es un** caso especial de otra (herencia con `super()`) o **tiene**
+otra a la que le encarga trabajo (composición), y convertir esa decisión en un contrato que el intérprete comprueba con
+`abc`. **Prerrequisitos:** el Tema 6 de este módulo (clases, métodos, `self` y `__init__`), y del Tema 5 la costumbre de
+leer el *traceback* de abajo arriba. Comprueba `python3.14 --version` (en Windows, `py -3.14 --version`): debe responder
+`Python 3.14.10` o un 3.14 más reciente. Las salidas de este tema son literales de Python 3.14.10 en macOS 27.2 arm64,
+tomadas el 2026-11-21 dentro de `ejemplo-clases`; las rutas de los *tracebacks* son las de esta máquina.
 
-**Mapa de subtemas críticos:** herencia, sobrescritura y `super()` (núcleo y diagnóstico, 7.1); composición y delegación (núcleo y decisión, 7.2); clases abstractas con `abc` como contrato comprobado (núcleo y límite, 7.3). Los decoradores (la línea con `@`) se explican a fondo en el Módulo 13, Tema 1; `typing.Protocol`, la alternativa sin herencia, aparece en el Módulo 7.
+#### Paso 2 · Contexto y caso real
+El gestor de tareas ya tiene una clase `Tarea`. Llega el primer requisito: «algunas tareas tienen fecha límite». La
+respuesta perezosa es copiar la clase entera y añadirle el campo; con tres requisitos más tendrías cuatro copias de
+`completar()` y la regla buena se arreglaría en una sola de ellas. Segunda situación, dos semanas después: «al completar
+una tarea hay que avisar», y el aviso a veces es la consola, a veces el correo, a veces el historial. Con copias
+acabarías en `TareaConAvisoConsola`, `TareaConFechaYAvisoConsola`, `TareaConAvisoGuardado`… una clase por cada
+combinación, que es exactamente la forma en que un programa deja de ser mantenible. Las dos situaciones tienen respuestas
+distintas, y confundirlas es el error de diseño más caro de la programación orientada a objetos: la primera es
+**herencia**, la segunda es **composición**. Y para que la segunda no se rompa en producción hace falta un contrato que
+`abc` puede imponer al crear el objeto.
 
-#### Subtema 7.1: Herencia y `super()`: una tarea con fecha límite · 13 min
+#### Paso 3 · Teoría, modelo mental y analogía
+**Herencia.** `class TareaConFecha(Tarea):` declara que `TareaConFecha` hereda de `Tarea`: recibe sus métodos sin
+escribirlos. Si define otro método con el mismo nombre, lo **sobrescribe**, y `super().describir()` llama a la versión de
+la clase base para no repetirla. `super().__init__(titulo)` dentro del `__init__` propio hace lo mismo con la
+construcción: sin esa línea, los atributos que creaba la clase base nunca existen. El bucle que llama a
+`tarea.describir()` no pregunta el tipo de cada objeto: cada uno responde con su propia versión. Eso es **polimorfismo**.
 
-**1. Contexto**
-Algunas tareas tienen fecha límite. Siguen siendo tareas (se completan igual), pero se describen distinto. Copiar la clase entera duplicaría `completar`; la **herencia** permite escribir solo lo que cambia.
+**Composición.** Guardar otro objeto como atributo (`self.aviso = aviso`) y pedirle que haga parte del trabajo
+(`self.aviso.enviar(...)`) es **delegación**. Las dos partes cambian por separado: un aviso nuevo no obliga a crear otra
+subclase de tarea, y el aviso se elige al crear cada objeto.
 
-**2. Hazlo tú**
-En `ejemplo-clases`, crea `herencia.py`:
+**Contrato.** Una clase que hereda de `ABC` y marca un método con `@abstractmethod` no se puede instanciar, y sus
+subclases tampoco hasta que implementen ese método: el error aparece en el `AvisoCorreo()` de turno y nombra lo que falta.
+El `@` de la línea de arriba es un **decorador** (se desmonta en el módulo de patrones).
+
+**Analogía:** la herencia es un familiar: te parece a tus padres, y para explicar quién eres puedes decir «soy como él,
+pero con gafas». La composición es un compañero de trabajo: no compartes su ascendencia, le pides una tarea concreta y
+puedes cambiar de compañero sin cambiar de empleo. **Su límite:** las dos relaciones se escriben con la misma facilidad,
+el código no te avisa si elegiste mal; la prueba real es la frase que dices en voz alta —«una tarea con fecha **es una**
+tarea» se sostiene; «una tarea **es un** aviso» es falsa, y aunque compilara, el diseño estaría torcido—.
+
+**Conceptos clave:** herencia, subclase, sobrescritura, `super()`, polimorfismo, `isinstance`, composición, delegación,
+*duck typing*, clase abstracta (`ABC`), `@abstractmethod`.
+
+**Cuándo no usarlo:** hereda solo si la relación «es un» es cierta siempre y para siempre; si heredas para reutilizar
+cuatro líneas estás comprando un acoplamiento: la subclase se rompe cuando cambia un detalle de la base. Si lo único que
+varía es un comportamiento (el canal del aviso), compón: guarda el objeto y llámalo. Y si la jerarquía se te está haciendo de dos niveles solo
+para compartir código, mira `@dataclass` (módulo 8) o una función que reciba el comportamiento como argumento antes de
+abrir una subclase.
+
+**Diagrama:**
+
+```mermaid
+flowchart TB
+    T["class Tarea<br/>__init__ · completar · describir"]
+    F["class TareaConFecha(Tarea)<br/>fecha_limite y su propio describir"]
+    A["class Aviso(ABC)<br/>enviar abstracto · enviar_varios concreto"]
+    C["AvisoConsola"]
+    M["AvisoMemoria"]
+    LAV["tarea con aviso<br/>Tarea('Lavar la loza', AvisoConsola())"]
+    F -->|"hereda: ES una Tarea"| T
+    LAV -->|"guarda como atributo: TIENE un aviso"| A
+    A -->|"subclase obligada a implementar enviar"| C
+    A -->|"subclase obligada a implementar enviar"| M
+```
+
+Las cuatro puntas del diagrama son los objetos que se crean en el Paso 4: `src/herencia.py` construye una `Tarea` y una
+`TareaConFecha` y responde `¿es una Tarea? True` para la segunda; `src/composicion.py` crea la tarea pasándole el aviso
+por parámetro; `src/abstractas.py` responde `¿AvisoMemoria es un Aviso? True`. La diferencia entre la flecha «ES una» y
+la flecha «TIENE un» es la decisión que este tema te pide tomar.
+
+**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** añade a la `Tarea` del Tema 6 un `Aviso`
+compuesto que informe cada tarea completada, con una clase abstracta `Aviso` y dos implementaciones (consola y memoria).
+Escribe en el README por qué elegiste composición y no una subclase por canal, y qué pasaría con `TareaConFecha` si
+`Tarea` cambiara el nombre de un atributo.
+
+#### Paso 4 · Demostración guiada desde cero
+**Desde cero:** continúa dentro de la carpeta `ejemplo-clases` del Tema 6, donde los archivos ya están en `src/`.
+Si vienes de una carpeta vacía, estos tres comandos son válidos en PowerShell, macOS y Linux:
+
+```bash
+mkdir ejemplo-clases
+cd ejemplo-clases
+mkdir src
+```
+
+Todo se ejecuta con `python3.14` y la ruta `src/`, igual que en el Tema 6.
+
+**Parte A · herencia y `super()`.** Guarda `src/herencia.py`:
 
 ```python
 class Tarea:
@@ -1569,7 +1644,15 @@ print("¿es una Tarea?", isinstance(tareas[1], Tarea))
 print("¿es una TareaConFecha?", isinstance(tareas[0], TareaConFecha))
 ```
 
-Ejecuta `python3 herencia.py`.
+**Explicación por bloques:** el primer bloque es la clase base: tres métodos, ninguno sabe que existirán subclases. El
+segundo define la subclase: su `__init__` recibe un argumento más, encarga el `titulo` a la base con
+`super().__init__(titulo)` y se queda con `fecha_limite`; su `describir` reconstruye el texto **reutilizando** el de la
+base con `super().describir()`, en vez de copiarlo. El tercer bloque es el polimorfismo: el `for` llama a `describir()`
+sin preguntar el tipo y obtiene dos frases distintas; `completar()` ni siquiera está escrito en la subclase y funciona.
+Las dos últimas líneas miden la relación: `isinstance(tareas[1], Tarea)` es `True` (la subclase **es** la base) y
+`isinstance(tareas[0], TareaConFecha)` es `False` (la base no es la subclase: la relación apunta en un solo sentido).
+
+Ejecuta `python3.14 src/herencia.py`.
 
 **Resultado esperado:**
 
@@ -1580,21 +1663,38 @@ Pagar el arriendo (hecha) vence 2026-12-05
 ¿es una TareaConFecha? False
 ```
 
-**Fallo deliberado:** borra la línea `super().__init__(titulo)`. **Error esperado:** después de imprimir la primera tarea, `AttributeError: 'TareaConFecha' object has no attribute 'titulo'`. **Diagnóstico:** al definir su propio `__init__`, la subclase reemplaza el de `Tarea`; si no lo llama con `super()`, los atributos que creaba la clase base nunca existen.
+**Fallo deliberado 1:** borra la línea `super().__init__(titulo)` en una copia llamada `src/herencia-sin-super.py` y
+ejecuta `python3.14 src/herencia-sin-super.py`:
 
-**3. Entiende**
-`class TareaConFecha(Tarea)` declara que `TareaConFecha` **hereda** de `Tarea`: recibe `completar` sin escribirlo. Al definir otra vez `describir`, la **sobrescribe**, y `super().describir()` llama a la versión de la clase base para no repetirla. El bucle llama a `describir()` sin preguntar el tipo de cada tarea: cada objeto responde con su propia versión (eso se llama **polimorfismo**). **Límite:** la herencia ata la subclase a los detalles de la base; si `Tarea` cambia un atributo, todas las subclases pueden romperse. Úsala cuando la frase «X **es una** Y» sea cierta siempre, no solo para reutilizar código.
+```python
+class TareaConFecha(Tarea):
+    def __init__(self, titulo, fecha_limite):
+        self.fecha_limite = fecha_limite
+```
 
-**4. Cierra**
-Escribe en tu cuaderno qué métodos tiene `TareaConFecha` (heredados y propios) y cuál de ellos llama a `super()`.
+```text
+Lavar la loza (pendiente)
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t7/src/herencia-sin-super.py", line 24, in <module>
+    print(tarea.describir())
+          ~~~~~~~~~~~~~~~^^
+  File "/private/tmp/f1m1/t7/src/herencia-sin-super.py", line 18, in describir
+    return f"{super().describir()} vence {self.fecha_limite}"
+              ~~~~~~~~~~~~~~~~~^^
+  File "/private/tmp/f1m1/t7/src/herencia-sin-super.py", line 10, in describir
+    return f"{self.titulo} ({self.estado})"
+              ^^^^^^^^^^^
+AttributeError: 'TareaConFecha' object has no attribute 'titulo'
+```
 
-#### Subtema 7.2: Composición: la tarea *tiene* un aviso · 14 min
+**Diagnóstico:** al definir su propio `__init__`, la subclase **reemplaza** el de `Tarea`: si no lo llama con `super()`,
+`self.titulo` y `self.estado` nunca se crean. Fíjate en las tres llamadas del *traceback*: la 24 es el bucle, la 18 es el
+`describir` de la subclase y la 10 es el de la base, que es donde el atributo brilla por su ausencia. La primera tarea se
+imprime bien; el programa solo muere al llegar a la segunda. Salidas literales de las dos ejecuciones:
 
-**1. Contexto**
-Al completar una tarea quieres avisar: a veces por consola, a veces guardando el mensaje. Con herencia necesitarías `TareaConAvisoConsola`, `TareaConFechaYAvisoConsola`, `TareaConAvisoGuardado`… una clase por cada combinación. La **composición** separa las dos variaciones: la tarea guarda un objeto aviso y le encarga el envío.
+![Captura de terminal: src/herencia.py imprime las dos descripciones, True y False; src/herencia-sin-super.py imprime la primera descripción y termina en AttributeError: 'TareaConFecha' object has no attribute 'titulo'](content/figures/foundations/herencia-super.svg)
 
-**2. Hazlo tú**
-Crea `composicion.py`:
+**Parte B · composición: la tarea *tiene* un aviso.** Guarda `src/composicion.py`:
 
 ```python
 class AvisoConsola:
@@ -1628,7 +1728,13 @@ Tarea("Estudiar", memoria).completar()
 print("en memoria:", memoria.mensajes)
 ```
 
-Ejecuta `python3 composicion.py`.
+**Explicación por bloques:** los dos primeros bloques son avisos que no conocen a las tareas: comparten el nombre del
+método (`enviar`) y nada más. El tercero es la tarea, que en `completar` **delega**: cambia su estado y le pasa el texto
+al objeto que le dieron. El cuarto bloque muestra las dos ventajas: cada tarea decide su canal al crearse, y `memoria`
+se reutiliza —acumula los dos mensajes porque el mismo objeto se pasó dos veces—. No hay ninguna subclase de tarea para
+cada combinación: si mañana aparecen fecha límite y dos canales, se combinan solos.
+
+Ejecuta `python3.14 src/composicion.py`.
 
 **Resultado esperado:**
 
@@ -1637,21 +1743,26 @@ Ejecuta `python3 composicion.py`.
 en memoria: ['Pagar el arriendo: hecha', 'Estudiar: hecha']
 ```
 
-**Fallo deliberado:** cambia `Tarea("Estudiar", memoria)` por `Tarea("Estudiar", "correo")`. **Error esperado:** `AttributeError: 'str' object has no attribute 'enviar'`, y aparece al llamar a `completar()`, no al crear la tarea. **Diagnóstico:** la tarea confía en que su aviso tenga un método `enviar`, pero nada lo comprobó al construirla. El subtema 7.3 convierte esa promesa en un contrato que falla antes.
+**Fallo deliberado 2:** en una copia `src/aviso-texto.py` pasa un texto donde va el aviso: `Tarea("Estudiar", "correo")`.
+Con `python3.14 src/aviso-texto.py`:
 
-**3. Entiende**
-**Composición** es guardar otro objeto como atributo; **delegación** es pedirle que haga parte del trabajo (`self.aviso.enviar(...)`). Ahora la tarea y el aviso cambian por separado: un aviso nuevo no obliga a crear otra subclase de `Tarea`, y puedes elegirlo al crear cada objeto. Python acepta cualquier objeto que tenga `enviar` (se le llama *duck typing*: «si hace cua como un pato…»). **Decisión:** prefiere composición cuando el comportamiento que varía es independiente de la identidad del objeto; reserva la herencia para relaciones «es un» estables. **Límite:** hay más objetos que conectar y el error de un aviso inválido aparece tarde.
+```text
+[consola] Lavar la loza: hecha
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t7/src/aviso-texto.py", line 28, in <module>
+    Tarea("Estudiar", "correo").completar()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/private/tmp/f1m1/t7/src/aviso-texto.py", line 22, in completar
+    self.aviso.enviar(f"{self.titulo}: hecha")
+    ^^^^^^^^^^^^^^^^^
+AttributeError: 'str' object has no attribute 'enviar'
+```
 
-**4. Cierra**
-Dibuja dos cajas, `Tarea` y `AvisoMemoria`, con una flecha «tiene un», y escribe qué clase tendrías que tocar para agregar un aviso por correo.
+**Diagnóstico:** la creación de la tarea no protestó: Python acepta cualquier objeto, y el error aparece hasta que alguien
+completa la tarea —línea 22, dentro de `completar`, disparada desde la 28—. En un programa grande eso puede tardar días
+en verse. La Parte C convierte esa promesa tácita en un contrato que falla al crear el aviso.
 
-#### Subtema 7.3: Clases abstractas con `abc`: un contrato que se comprueba al crear el objeto · 13 min
-
-**1. Contexto**
-Todos los avisos deben tener `enviar`. Quieres que olvidarlo falle en cuanto alguien cree el aviso, no cuando una tarea por fin se complete. El módulo `abc` (*abstract base classes*) de la biblioteca estándar resuelve exactamente eso.
-
-**2. Hazlo tú**
-Crea `abstractas.py`:
+**Parte C · `abc`: el contrato se comprueba al crear el objeto.** Guarda `src/abstractas.py`:
 
 ```python
 from abc import ABC, abstractmethod
@@ -1689,7 +1800,15 @@ print("en memoria:", memoria.mensajes)
 print("¿AvisoMemoria es un Aviso?", isinstance(memoria, Aviso))
 ```
 
-Ejecuta `python3 abstractas.py`.
+**Explicación por bloques:** el primer bloque declara el contrato. `Aviso(ABC)` la hace abstracta y `@abstractmethod`
+marca `enviar` como obligatorio; el cuerpo es solo el *docstring*. `enviar_varios` es un método **concreto** de la clase
+abstracta: recorre una lista y llama a `enviar` sin saber qué subclase lo implementa —esa es la idea que el patrón
+Template Method lleva a nombre—. Los dos bloques siguientes implementan el contrato por caminos distintos. El último
+bloque usa `enviar_varios` con ambos avisos: la consola imprime dos líneas y la memoria guarda una; `enviados` vale `2`
+porque el método concreto cuenta lo enviado, y `isinstance(memoria, Aviso)` es `True` porque la subclase **es un** aviso
+aunque no comparten una sola línea de código.
+
+Ejecuta `python3.14 src/abstractas.py`.
 
 **Resultado esperado:**
 
@@ -1701,7 +1820,8 @@ en memoria: ['Pagar el arriendo: hecha']
 ¿AvisoMemoria es un Aviso? True
 ```
 
-**Fallo deliberado:** al final del archivo agrega una subclase que se equivoca de nombre y trata de crearla:
+**Fallo deliberado 3:** al final de una copia llamada `src/aviso-mandar.py` agrega un aviso que escribe el método mal
+llamado e instáncialo:
 
 ```python
 class AvisoCorreo(Aviso):
@@ -1712,27 +1832,101 @@ class AvisoCorreo(Aviso):
 AvisoCorreo()
 ```
 
-**Error esperado en Python 3.14:** `TypeError: Can't instantiate abstract class AvisoCorreo without an implementation for abstract method 'enviar'`. Lo mismo ocurre con `Aviso()`. **Diagnóstico:** el error aparece al **crear** el objeto y nombra el método que falta; renombra `mandar` a `enviar` y el programa vuelve a funcionar.
+`python3.14 src/aviso-mandar.py` repite la salida anterior y termina así (la captura corta la última línea a 96
+columnas; el mensaje real es un solo renglón):
 
-**3. Entiende**
-Una clase que hereda de `ABC` y marca métodos con `@abstractmethod` es una **clase abstracta**: no se puede instanciar, y sus subclases tampoco hasta que implementen todos los métodos abstractos. La línea `@abstractmethod` es un **decorador**: modifica la función que está debajo (verás cómo funcionan en el Módulo 13). La clase abstracta también puede traer métodos concretos que se heredan, como `enviar_varios`, que usa `enviar` sin saber qué subclase lo implementa: esa idea es el núcleo del patrón Template Method (Módulo 13, Tema 3). **Límite:** `abc` solo comprueba que el método exista; no revisa sus parámetros ni lo que hace. Eso sigue siendo trabajo de las pruebas (Módulo 5).
+```text
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t7/src/aviso-mandar.py", line 41, in <module>
+    AvisoCorreo()
+    ~~~~~~~~~~~^^
+TypeError: Can't instantiate abstract class AvisoCorreo without an implementation for abstract method 'enviar'
+```
 
-**4. Cierra**
-En `composicion.py` (subtema 7.2), copia la clase `Aviso`, haz que `AvisoConsola` y `AvisoMemoria` hereden de ella y reemplaza `"correo"` por `AvisoCorreo()`. Anota en qué línea aparece ahora el error y compáralo con el `AttributeError` del subtema 7.2.
+**Diagnóstico:** el error llega al **crear** el objeto, no al usarlo, y nombra el método que falta. Intenta instanciar la
+clase base directamente (`src/aviso-base.py`, con `Aviso()` en la línea 10) y obtienes el mismo `TypeError` con el nombre
+de `Aviso`: una clase abstracta no es un atajo para no escribir código, es una prohibición. Renombra `mandar` a `enviar`
+en la copia y el programa vuelve a terminar en `exit 0`. Salida literal de las cuatro ejecuciones de la Parte B y la C:
 
-**Hito del tema:**
+![Captura de terminal: src/composicion.py imprime la consola y los dos mensajes guardados; src/aviso-texto.py termina en AttributeError: 'str' object has no attribute 'enviar'; src/abstractas.py imprime enviados: 2 y isinstance True; src/aviso-mandar.py termina en TypeError: Can't instantiate abstract class AvisoCorreo without an implementation for abstract method 'enviar'](content/figures/foundations/composicion-abc.svg)
 
-- [ ] Hice una subclase que reutiliza un método heredado y sobrescribe otro con `super()`.
-- [ ] Provoqué el `AttributeError` de olvidar `super().__init__` y lo expliqué.
-- [ ] Cambié el aviso de una tarea sin crear otra subclase.
-- [ ] Provoqué el `TypeError` de una clase abstracta incompleta y expliqué qué comprueba `abc` y qué no.
+**Fallo deliberado 4 — el límite del contrato:** `abc` comprueba el **nombre**, no la firma ni el contenido. Guarda
+`src/firma-mal.py`:
 
-**Ejercicios.** Antes de abrir cada solución, escribe tu predicción o el error que obtuviste.
+```python
+from abc import ABC, abstractmethod
 
-1. Crea `TareaRecurrente`, subclase de la `Tarea` del subtema 7.1, con un atributo `cada_dias`. Al completarla no se cierra: cuenta cuántas veces se hizo y sigue pendiente. `describir()` debe terminar en `cada N días, hecha K veces`.
+
+class Aviso(ABC):
+    @abstractmethod
+    def enviar(self, mensaje):
+        """Entrega un mensaje por un canal concreto."""
+
+
+class AvisoSinParametro(Aviso):
+    def enviar(self):                 # abc no mira la firma: esto se crea bien
+        print("enviado")
+
+
+aviso = AvisoSinParametro()
+aviso.enviar("pagar el arriendo hoy")
+```
+
+Con `python3.14 src/firma-mal.py` la construcción pasa y muere la llamada:
+
+```text
+Traceback (most recent call last):
+  File "/private/tmp/f1m1/t7/src/firma-mal.py", line 16, in <module>
+    aviso.enviar("pagar el arriendo hoy")
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: AvisoSinParametro.enviar() takes 1 positional argument but 2 were given
+```
+
+**Diagnóstico:** `AvisoSinParametro()` se creó sin queja porque `enviar` existe; el `TypeError` llega al llamarlo con el
+mensaje. Lo que `abc` no garantiza lo garantizan las pruebas (módulo 5): un `assert` que envíe un mensaje por cada aviso
+y compruebe el resultado habría cazado esto en un segundo. Y en el otro extremo, el contrato es opcional: ejecutado, un
+objeto que no hereda de `Aviso` pero tiene `enviar` funciona igual con la tarea (`src/pato.py`); eso es *duck typing*, y
+`typing.Protocol` (módulo 7) es la forma de documentarlo sin herencia.
+
+#### Paso 5 · Práctica guiada
+Antes de ejecutar, predice qué imprime `src/recurrente.py` y qué hace con el contrato de la clase base. Copia las clases
+de la Parte A y escribe `TareaRecurrente(Tarea)` con un atributo `cada_dias` y un contador `veces`; en `completar`
+aumenta el contador y **no** cambia el estado. Pista: si una suposición que la base hacía («después de `completar()` la
+tarea queda hecha») deja de ser cierta en la subclase, tienes un problema de diseño, no de sintaxis —la sustitución de
+Liskov del módulo de patrones es justamente esa regla, y aquí la vas a romper a propósito—.
+
+#### Paso 6 · Práctica independiente
+Resuelve los tres ejercicios del final del tema (`src/recurrente.py`, `src/mayusculas.py` y el contrato incompleto), en
+ese orden: el primero reproduce una violación del contrato, el segundo mezcla herencia y composición en una sola clase, y
+el tercero te hace decidir qué garantiza `abc` y qué te deja a ti. Escribe la predicción antes de ejecutar en cada uno.
+
+#### Paso 7 · Cierre
+**Checklist de salida:** marca solo lo que ejecutaste en tu máquina.
+
+- [ ] Escribí una subclase que reutiliza `completar` y sobrescribe `describir` con `super()`.
+- [ ] Reproduje el `AttributeError: 'TareaConFecha' object has no attribute 'titulo'` por borrar `super().__init__`.
+- [ ] Cambié el canal de aviso de una tarea sin tocar la clase `Tarea` ni crear una subclase.
+- [ ] Reproduje el `TypeError` de instanciar una clase abstracta incompleta, y el de `Aviso()` a secas.
+- [ ] Comprobé que `abc` no mira la firma (`src/firma-mal.py`) y que el *duck typing* funciona sin contrato.
+
+**Errores comunes:** heredar para reutilizar dos líneas; sobrescribir `__init__` sin `super().__init__`; cambiar el
+significado de un método heredado y dejar que la base mienta; pasar un objeto sin `enviar` y enterarse al completar la
+tarea; creer que `@abstractmethod` valida parámetros o resultados. **Siguiente paso:** aquí se cierra el capítulo 1, y en
+el Módulo 2 (estructuras de datos) vas a escribir el árbol binario de búsqueda y la tabla hash con esta misma forma: una
+clase con el estado dentro y los métodos que lo protegen. El módulo de patrones convierte la decisión «heredo o compone» en
+nombres que ya están resueltos: Decorator (composición con la misma interfaz), State (herencia con contrato) y Template
+Method (`enviar_varios` de este tema). **Fuentes oficiales consultadas el 2026-11-21:**
+[herencia en el tutorial de Python](https://docs.python.org/es/3/tutorial/classes.html),
+[`super()`](https://docs.python.org/3/library/functions.html#super), [módulo `abc`](https://docs.python.org/3/library/abc.html)
+y [errores y *tracebacks*](https://docs.python.org/3/tutorial/errors.html).
+
+**Ejercicios.** Antes de abrir cada solución, escribe tu predicción o pega el error que obtuviste.
+
+1. **(Guiado.)** Crea `TareaRecurrente`, subclase de la `Tarea` de la Parte A, con `cada_dias`. Al completarla no se
+   cierra: cuenta cuántas veces se hizo y sigue pendiente. `describir()` debe terminar en `cada N días, hecha K veces`.
 
 <details>
-<summary>Solución del ejercicio 1</summary>
+<summary>Solución del ejercicio 1: `src/recurrente.py`</summary>
 
 ```python
 class Tarea:
@@ -1767,14 +1961,19 @@ regar.completar()
 print(regar.describir())
 ```
 
-Imprime `Regar las plantas (pendiente) cada 3 días, hecha 2 veces`. Fíjate en el riesgo: `TareaRecurrente` cambia el significado de `completar`. Si otra parte del programa supone que, tras `completar()`, toda `Tarea` queda `hecha`, esta subclase rompe esa suposición; es la señal de que quizá «tarea recurrente» debería ser una tarea que *tiene* una regla de repetición (composición).
+Salida literal con `python3.14 src/recurrente.py`: `Regar las plantas (pendiente) cada 3 días, hecha 2 veces`.
+El riesgo está medido, no supuesto: `TareaRecurrente` es una `Tarea` para `isinstance`, pero viola la promesa de
+`completar()`. Cualquier parte del programa que después de `completar()` dé la tarea por cerrada se equivoca con esta y
+solo con esta. La alternativa honesta es que la tarea **tenga** una regla de repetición (composición) en vez de ser una
+subclase que miente.
 
 </details>
 
-2. Escribe `AvisoMayusculas`, subclase de `Aviso` (subtema 7.3), que reciba otro aviso al crearse y le reenvíe cada mensaje en mayúsculas. Pruébalo con un `AvisoMemoria`.
+2. **(Intermedio.)** Escribe `AvisoMayusculas`, subclase de `Aviso` (Parte C), que reciba otro aviso al crearse y le
+   reenvíe cada mensaje en mayúsculas. Pruébalo con un `AvisoMemoria` y predice qué guarda la memoria.
 
 <details>
-<summary>Solución del ejercicio 2</summary>
+<summary>Solución del ejercicio 2: `src/mayusculas.py`</summary>
 
 ```python
 from abc import ABC, abstractmethod
@@ -1809,13 +2008,57 @@ memoria.enviar("estudiar")
 print(memoria.mensajes)
 ```
 
-Imprime `['PAGAR EL ARRIENDO HOY', 'estudiar']`. `AvisoMayusculas` **es un** `Aviso` (herencia de la clase abstracta) y **tiene un** `Aviso` (composición): esa combinación es el patrón Decorator del Módulo 13, Tema 1.
+Salida literal con `python3.14 src/mayusculas.py`: `['PAGAR EL ARRIENDO HOY', 'estudiar']`. `AvisoMayusculas` **es un**
+`Aviso` (hereda de la abstracta, así que se puede pasar a cualquier código que pida un aviso) y **tiene un** `Aviso`
+(compone el canal real). Esa combinación —mismo contrato, objeto envuelto— es el patrón Decorator del módulo de patrones.
 
 </details>
 
-**Fuentes oficiales consultadas el 2026-11-18:** [Herencia, en el tutorial de Python](https://docs.python.org/es/3/tutorial/classes.html#inheritance), [`super()`](https://docs.python.org/3/library/functions.html#super) y [módulo `abc`](https://docs.python.org/3/library/abc.html).
+3. **(Avanzado.)** Responde con código, no con opiniones: (a) escribe `src/pato.py` con una clase que **no** herede de
+   `Aviso` pero tenga `enviar` y pásasela a una tarea —¿funciona?, (b) escribe una subclase de `Aviso` cuyo `enviar` no
+   reciba `mensaje` —¿`abc` la deja crearse?, (c) decide qué harías tú para que el canal por correo no pueda olvidarse de
+   `enviar` y a la vez no pueda tener la firma equivocada.
 
-**Transferencia al proyecto integrador «Fundamentos: gestor de tareas»:** añade a la `Tarea` del Tema 6 un `Aviso` compuesto que informe cada tarea completada, y escribe en el README por qué elegiste composición y no una subclase por canal.
+<details>
+<summary>Solución del ejercicio 3: `src/pato.py`, `src/firma-mal.py` y una prueba</summary>
+
+(a) `src/pato.py`, ejecutado:
+
+```python
+class Tarea:
+    def __init__(self, titulo, aviso):
+        self.titulo = titulo
+        self.aviso = aviso
+
+    def completar(self):
+        self.aviso.enviar(f"{self.titulo}: hecha")
+
+
+class SinHeredar:                      # no hereda de nada, solo tiene enviar
+    def __init__(self):
+        self.registro = []
+
+    def enviar(self, mensaje):
+        self.registro.append(mensaje.upper())
+
+
+registro = SinHeredar()
+Tarea("Estudiar", registro).completar()
+print(registro.registro)
+```
+
+`python3.14 src/pato.py` imprime `['ESTUDIAR: HECHA']`: la tarea nunca preguntó el tipo, solo usó `enviar`. El contrato
+de `abc` es una **intención documentada y verificable al instanciar**, no una condición para que el código funcione.
+
+(b) Con `src/firma-mal.py` (Parte C, fallo deliberado 4): `abc` la deja crearse y el `TypeError` aparece al llamar
+`enviar("...")` —`AvisoSinParametro.enviar() takes 1 positional argument but 2 were given`—.
+
+(c) La respuesta es una prueba parametrizada, no más tipos: una lista `[AvisoConsola(), AvisoMemoria(), AvisoCorreo()]`
+recorrida en una prueba que envíe un mensaje a cada aviso y compruebe el resultado. Esa prueba falla en el mismo segundo
+en que alguien escriba `mandar`, `enviar()` sin parámetro o un `enviar` que no entregue nada —los tres casos que este tema
+ya ejecutó—. El módulo 5 escribe esa prueba; `typing.Protocol` (módulo 7) añade el chequeo estático sin imponer herencia.
+
+</details>
 
 ## Construcción guiada del capítulo
 

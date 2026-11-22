@@ -7,7 +7,7 @@ El proyecto anterior demuestra integración técnica, pero una aplicación produ
 
 Cada tema verifica su garantía con herramientas reales del ecosistema: `vitest-axe` para accesibilidad automatizada, `DomSanitizer` real de Angular para sanitización, `Intl.PluralRules` real para pluralización correcta, y la API oficial de test de bloques `@defer` para rendimiento diferido.
 
-### Tema 1: Accesibilidad es comportamiento, no una puntuación
+### Tema 1: Accesibilidad es comportamiento, no una puntuación · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -143,7 +143,7 @@ Ya confirmas con una auditoría automatizada real que un componente no tiene vio
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Completa la asignación de una entrega solo con teclado. Verifica orden de foco, mensajes de validación y devolución del foco al cerrar el diálogo; conserva una prueba del recorrido completo.
 
-### Tema 2: La seguridad automática tiene fronteras explícitas
+### Tema 2: La seguridad automática tiene fronteras explícitas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -275,7 +275,7 @@ Ya confirmas con un test real las fronteras exactas de la sanitización automát
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Muestra observaciones de entregas con interpolación segura y prueba texto con etiquetas HTML. Comprueba además la autorización en la API: ocultar una acción del panel no debe conceder ni revocar permisos.
 
-### Tema 3: Internacionalizar implica significado, no reemplazo de texto
+### Tema 3: Internacionalizar implica significado, no reemplazo de texto · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -389,7 +389,7 @@ Ya usas `Intl.PluralRules` real para seleccionar la forma gramatical correcta de
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Localiza fechas, distancias y cantidades del panel con datos de dos regiones. Revisa nombres largos y lectura por teclado; las traducciones no deben alterar el identificador utilizado en las operaciones.
 
-### Tema 4: Rendimiento y actualización son contratos de experiencia
+### Tema 4: Rendimiento y actualización son contratos de experiencia · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

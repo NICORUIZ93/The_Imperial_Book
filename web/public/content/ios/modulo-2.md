@@ -185,7 +185,7 @@ Quitá el `Text(vm.conductorActivo)` innecesario del Paso 5, y agregá una segun
 #### Paso 7 · Cierre
 Entregá el redibujado granular confirmado del Paso 4, el redibujado de más provocado del Paso 5, y las dos vistas independientes del Paso 6; explicá por qué `@Observable` mejora sobre el viejo `ObservableObject`+`@Published`, que notificaba a cualquier observador del objeto completo. Siguiente paso: estudia async/await. Errores comunes: estado duplicado, Environment oculto, observar valor equivocado y referencias fuertes innecesarias. Fuentes oficiales: https://developer.apple.com/documentation/swiftui/state-and-data-flow y https://developer.apple.com/documentation/observation.
 
-### Tema 3: @Environment y identidad vs valor · Intermedio · 50 min
+### Tema 3: @Environment y identidad vs valor · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a inyectar un `ServicioAPI` de RutaFlow vía `@Environment`, llegando a una vista profunda sin pasarlo por cada inicializador intermedio. Prerrequisitos: Tema 2 de este módulo.

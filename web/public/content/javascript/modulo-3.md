@@ -378,7 +378,7 @@ Completaste objetos y clases con invariantes impuestas por el motor. El siguient
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Protege el controlador de peticiones pendientes con un campo privado. Prueba su interfaz pública y confirma que consultar una nueva guía cancela la anterior sin exponer el mecanismo interno.
 
-### Tema 5: Symbol y objetos iterables propios · Avanzado · 50 min
+### Tema 5: Symbol y objetos iterables propios · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear claves únicas con `Symbol`, implementar el protocolo de iteración con `Symbol.iterator` y con generadores, y lograr que tus objetos funcionen con `for...of`, spread y desestructuración. Prerrequisitos: Tema 2 de este módulo (clases) y Módulo 6, Tema 5 (generadores).

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Streams vs colas
+### Tema 1: Streams vs colas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a transmitir la ubicación GPS real de un conductor de RutaFlow por un stream que dos consumidores distintos leen de forma independiente. Prerrequisitos: Módulo 4 completo.
@@ -58,7 +58,7 @@ Pedí un segundo iterador independiente con `TRIM_HORIZON` (simulando el consumi
 #### Paso 7 · Cierre
 Entregá el ping leído con `TRIM_HORIZON`, el ping perdido por `LATEST` del Paso 5, y la lectura independiente del Paso 6; explicá por qué SQS no podría alimentar dos consumidores independientes con el mismo ping. Siguiente paso: offsets. Errores comunes: borrar eventos y confundir stream con cola. Fuente oficial: https://docs.aws.amazon.com/streams/latest/dev/introduction.html.
 
-### Tema 2: MSK (Kafka gestionado) y consumer groups
+### Tema 2: MSK (Kafka gestionado) y consumer groups · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a modelar el mismo topic de ubicaciones del Tema 1 sobre MSK, con dos consumer groups independientes (mapa en vivo y alertas de desvío). Prerrequisitos: Tema 1 de este módulo.
@@ -123,7 +123,7 @@ Creá el grupo `alertas-desvio` leyendo el mismo topic `ubicacion-conductores`, 
 #### Paso 7 · Cierre
 Entregá el offset por grupo del Paso 4, el reset accidental del Paso 5 y la independencia confirmada en el Paso 6; explicá por qué un offset compartido entre grupos rompería el aislamiento que este Tema busca demostrar. Siguiente paso: Firehose. Errores comunes: compartir offset entre grupos y no hacer commit. Fuente oficial: https://docs.aws.amazon.com/kinesis/latest/dev/key-concepts.html.
 
-### Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka
+### Tema 3: Kinesis Data Streams vs Firehose, y GCP Managed Kafka · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir qué parte del flujo de ubicaciones de RutaFlow necesita Kinesis Data Streams y cuál puede resolverse con Firehose. Prerrequisitos: Tema 1 de este módulo.

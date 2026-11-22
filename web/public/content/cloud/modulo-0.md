@@ -62,7 +62,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo
+### Tema 1: Fundamentos absolutos — qué es una terminal, un comando y un sistema operativo · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear una carpeta, entrar en ella y guardar un archivo. **Conocimiento previo:** ninguno. Abre Terminal en macOS/Linux o PowerShell en Windows. No necesitas saber programar ni instalar Docker.
@@ -127,7 +127,7 @@ Luego cambia a la carpeta anterior e intenta leer `nota.txt`; vuelve a `ejemplo-
 **Fuente oficial:** [AWS CLI desde una terminal en Windows, macOS y Linux](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html).
 
 
-### Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs
+### Tema 2: Fundamentos de redes — direcciones IP, puertos, HTTP y APIs · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar distinguirás un servidor apagado de una ruta que no existe. **Prerrequisitos:** Node.js instalado y una terminal. Comprueba `node --version`; en Windows usa `curl.exe`. Este ejemplo independiente empieza en una carpeta vacía.
@@ -208,7 +208,7 @@ Reinicia el servidor y comprueba `/version` y `/no-existe`. Espera `200` con `{"
 **Fuentes oficiales:** [servidor HTTP de Node.js](https://nodejs.org/api/http.html) y [códigos de respuesta](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status).
 
 
-### Tema 3: Qué vas a aprender y cómo está estructurado el curso
+### Tema 3: Qué vas a aprender y cómo está estructurado el curso · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar tendrás una bitácora corta para recordar qué probaste y qué sigue. **Conocimiento previo:** ninguno. No necesitas memorizar los servicios antes de comenzar.
@@ -274,7 +274,7 @@ Agrega el resultado real de `/salud` o `/otra`. Si algo falló, apunta el mensaj
 **Fuente oficial:** [guía oficial de AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html).
 
 
-### Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack
+### Tema 4: Qué es Floci — definición, propósito y comparativa con LocalStack · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al terminar podrás reconocer qué hace Floci y comprobar si está respondiendo en tu computador. Necesitas Docker Desktop abierto y una terminal. En la carpeta principal del proyecto ejecuta `docker --version`.
@@ -319,7 +319,7 @@ En `ejemplo-floci.md`, anota qué comando lo inició, qué puerto usaste y qué 
 #### Paso 7 · Cierre y evidencia
 En `ejemplo-floci.md` incluye la salida de `revisar.mjs`, la consulta con puerto incorrecto y explica por qué falló. Después sigue al tema 5 para conocer los tres puertos. **Fuente:** [instalación oficial de Floci](https://floci.io/floci/getting-started/installation/) y [README oficial de Floci CLI](https://github.com/floci-io/floci-cli/blob/main/README.md). El comando de este ejercicio usa el Compose del proyecto, por lo que ejecútalo desde su carpeta principal.
 
-### Tema 5: Servicios que emula Floci — AWS, Azure y GCP
+### Tema 5: Servicios que emula Floci — AWS, Azure y GCP · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al terminar podrás ubicar qué proveedor responde en cada puerto. No necesitas instalar tres herramientas: el Compose del proyecto ya describe los tres servicios.
@@ -362,7 +362,7 @@ Después busca cada número en la sección `ports:`. No confundas el puerto publ
 #### Paso 7 · Cierre y evidencia
 Guarda `proveedores.md` y la salida de `docker compose ps`. Explica con tus palabras por qué `localhost:4566` y `localhost:4577` son puertas distintas. Si no tienes Docker, completa la tabla leyendo el archivo; anota que falta ejecutar la comprobación. **Fuente:** [Compose del proyecto](https://github.com/NICORUIZ93/The_Imperial_Book/blob/main/docker-compose.yml) y [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
 
-### Tema 6: Ventajas y limitaciones de practicar con un emulador local
+### Tema 6: Ventajas y limitaciones de practicar con un emulador local · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al terminar podrás distinguir qué confirma una prueba local y qué todavía no confirma. Necesitas la carpeta principal del proyecto y puedes hacer el ejercicio aunque Docker no esté instalado.
@@ -392,7 +392,7 @@ Puedes usar estas preguntas para completar el archivo: ¿qué URL consultaste?, 
 #### Paso 7 · Cierre y evidencia
 Entrega `limites.md` con la respuesta correcta para el puerto, el fallo esperado en el incorrecto y una frase sobre lo que cada prueba no demuestra. El siguiente tema organiza la forma de estudiar. **Fuente:** [guía oficial de servicios Floci](https://github.com/floci-io/floci/blob/main/docs/services/index.md).
 
-### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo
+### Tema 7: Metodología de estudio — teoría, laboratorio y evaluación en cada módulo · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás estudiar cada módulo del curso con el mismo ciclo de tres fases y dejar evidencia de cada una en una bitácora versionada. **Conceptos clave:** ciclo teoría-práctica-evaluación, entregable verificable, autoevaluación con criterios de éxito. **Prerrequisitos:** una terminal, un editor y Git; comprueba `git --version` antes de empezar.

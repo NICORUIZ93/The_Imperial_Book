@@ -11,11 +11,11 @@ Sistemas mecánicos, motores, hornos y tanques se describen con las mismas ecuac
 
 ## Aprende construyendo
 
-### Tema 1: Mecánico de traslación
+### Tema 1: Mecánico de traslación · Avanzado · 40 min
 
 **¿Por qué es importante?** La masa-resorte-amortiguador es el modelo de suspensiones, estructuras y sensores, y tiene la misma forma que un RLC.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 | Elemento | Ley | En Laplace |
 |---|---|---|
@@ -149,11 +149,11 @@ cambia `m, b, k` a `2, 8, 50` y confirma \(\omega_n=5\), \(\zeta=0{,}4\) (práct
 
 **Límite:** estas fórmulas valen para un sistema lineal de un solo grado de libertad; con dos masas acopladas (Ejemplo 5) el sistema es de cuarto orden y \(\zeta\), \(\omega_n\) ya no se leen de un solo término cuadrático.
 
-### Tema 2: Mecánico de rotación
+### Tema 2: Mecánico de rotación · Avanzado · 40 min
 
 **¿Por qué es importante?** Los sistemas rotacionales modelan ejes, brazos robóticos y antenas.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 Las mismas leyes con ángulo \(\theta\) y torque \(T\): inercia \(J\) (\(J\ddot\theta\)), fricción viscosa \(B\) (\(B\dot\theta\)) y resorte torsional \(K\) (\(K\theta\)):
 
@@ -256,11 +256,11 @@ cambia `J, K` a `2, 8` y confirma \(\omega_n=2\) (Ejemplo 4). Confírmalo modifi
 
 **Límite:** esto asume el eje rígido conectado directamente a la carga; con engranajes (Ejemplo 5) la inercia y la fricción de la carga deben reflejarse multiplicando por el cuadrado de la relación de transmisión antes de aplicar esta fórmula.
 
-### Tema 3: Motor DC (electromecánico)
+### Tema 3: Motor DC (electromecánico) · Avanzado · 40 min
 
 **¿Por qué es importante?** El motor DC es el actuador más común en control; su función de transferencia aparece en casi todos los proyectos.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 Un motor DC une un circuito (la armadura) con un sistema rotacional (el eje). Dos leyes los conectan: el torque es proporcional a la corriente, \(T = K_t i\), y el motor genera un voltaje que se opone, proporcional a la velocidad, \(e_b = K_b\omega\).
 
@@ -393,11 +393,11 @@ usa los valores del Ejemplo 3 (\(R_a=2,\ K=0{,}5,\ J=0{,}05,\ B=0{,}01\), sin in
 
 **Límite:** cuando \(L\) no es despreciable el sistema es de segundo orden con dos polos (eléctrico y mecánico); la aproximación de primer orden de los Ejemplos 2 a 5 solo es válida si el polo eléctrico \(R/L\) es mucho más rápido que el mecánico.
 
-### Tema 4: Sistemas térmicos e hidráulicos
+### Tema 4: Sistemas térmicos e hidráulicos · Avanzado · 40 min
 
 **¿Por qué es importante?** Hornos y tanques son los procesos típicos de la industria y se modelan como sistemas de primer orden.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 - Térmico (horno)Capacidad térmica \(C\) y resistencia térmica \(R\) hacia el ambiente. Balance de energía: lo que entra menos lo que sale se acumula.
   
@@ -504,11 +504,11 @@ cambia `A, R` a los del horno del Ejemplo 2 (\(C_t=500\), \(R_t=0{,}2\), usando 
 
 **Conexión con el proyecto integrador:** el proyecto `examples/control-1-tanque/` usa exactamente este modelo lineal, con \(A=2\) m² y salida \(q=0{,}5h\) (es decir \(R=1/0{,}5=2\) s/m²). Calcula \(G(s)=R/(ARs+1)\) con esos valores (\(K=2\), \(\tau=4\) s) y anótalo como el primer dato de tu bitácora antes de ejecutar `simular.py`.
 
-### Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos
+### Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos · Avanzado · 40 min
 
 **¿Por qué es importante?** Las analogías te permiten reutilizar lo aprendido en un dominio para entender cualquier otro.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 | Eléctrico | Traslación | Rotación | Hidráulico | Térmico |
 |---|---|---|---|---|

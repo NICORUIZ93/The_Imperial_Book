@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Terraform avanzado y CI/CD cloud
+### Tema 1: Terraform avanzado y CI/CD cloud · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a versionar como código `ShipmentEvents` (Módulo 4) y `confirmar-entrega` (Módulo 5), con estado remoto bloqueado, y a engancharlo al pipeline real del Módulo 24. Prerrequisitos: Módulos 4, 5 y 24 completos.
@@ -72,7 +72,7 @@ Agregá una fase `terraform plan` al `buildspec` de `demo-build` (Módulo 24) qu
 #### Paso 7 · Cierre
 Entregá el estado remoto bloqueado del Paso 4, la corrupción evitable sin lock del Paso 5, y la fase de CI del Paso 6; explicá por qué declarar `ShipmentEvents` en Terraform no sustituye todo lo que ya aprendiste del servicio en el Módulo 4, solo cambia cómo se crea y se versiona. Siguiente paso: Kubernetes y Service Mesh. Errores comunes: secretos en Git y probar solo el camino feliz. Fuente oficial: https://developer.hashicorp.com/terraform/language/state/locking.
 
-### Tema 2: Kubernetes administrado, ECS y Service Mesh
+### Tema 2: Kubernetes administrado, ECS y Service Mesh · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir si el planificador de rutas (Módulo 14, ECS) necesitaría EKS o un service mesh, y por qué todavía no. Prerrequisitos: Módulo 14 completo.
@@ -150,7 +150,7 @@ Documentá la condición concreta que justificaría migrar: "si RutaFlow tuviera
 #### Paso 7 · Cierre
 Entregá el estado real de `demo-planificador-service` del Paso 4, el sidecar innecesario del Paso 5, y la condición de migración documentada del Paso 6; explicá por qué "está de moda" nunca es la razón correcta para adoptar Kubernetes o un service mesh. Siguiente paso: EC2, VPC, RDS, S3 y DynamoDB avanzados. Errores comunes: adoptar un mesh sin múltiples servicios y confundir ECS con Kubernetes. Fuente oficial: https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html.
 
-### Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados
+### Tema 3: EC2, VPC, RDS, S3 y DynamoDB avanzados · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregarle a `ShipmentEvents` una tabla global multi-región y a `rutaflow-facturacion` una réplica de lectura, dos técnicas avanzadas que ningún módulo anterior cubrió. Prerrequisitos: Módulos 4 y 13 completos.
@@ -225,7 +225,7 @@ Documentá qué pasaría con la tabla global de `ShipmentEvents` si las dos regi
 #### Paso 7 · Cierre
 Entregá la tabla global y la réplica de lectura creadas del Paso 4, el rechazo de escritura del Paso 5, y la resolución de conflictos documentada del Paso 6; explicá por qué ninguna de las dos técnicas se justificaba en los módulos anteriores, cuando RutaFlow corría en una sola región. Siguiente paso: Lambda, API Gateway y observabilidad avanzada. Errores comunes: escribir en una réplica de lectura y asumir orden global en tablas multi-región. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GlobalTables.html.
 
-### Tema 4: Lambda, API Gateway y observabilidad avanzada
+### Tema 4: Lambda, API Gateway y observabilidad avanzada · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reducir el cold start de `confirmar-entrega` con concurrencia aprovisionada, y a trazar con X-Ray una petición completa a través de API Gateway. Prerrequisitos: Módulos 5, 6 y 12 completos.
@@ -283,7 +283,7 @@ Habilitá X-Ray sobre `confirmar-entrega` y sobre el método `POST /entregas` de
 #### Paso 7 · Cierre
 Entregá la invocación sin cold start del Paso 4, el cold start real de la tercera invocación simultánea del Paso 5, y la traza X-Ray desglosada del Paso 6; explicá por qué la concurrencia aprovisionada tiene un costo fijo incluso sin tráfico, a diferencia del modelo de pago por invocación del Módulo 5. Siguiente paso: seguridad, auditoría y FinOps. Errores comunes: aprovisionar de más sin medir tráfico real y no instrumentar X-Ray en toda la cadena. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/provisioned-concurrency.html.
 
-### Tema 5: Seguridad, auditoría y FinOps
+### Tema 5: Seguridad, auditoría y FinOps · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar una alarma de presupuesto real sobre el gasto sintetizado de RutaFlow (Módulo 29) con una auditoría de qué rol la dispararía. Prerrequisitos: Módulos 7 y 29 completos.
@@ -339,7 +339,7 @@ Documentá qué pasaría si ese presupuesto se cruzara de verdad: ¿quién lo re
 #### Paso 7 · Cierre
 Entregá el presupuesto con alarma del Paso 4, el permiso excesivo detectado del Paso 5, y el plan de respuesta del Paso 6; explicá por qué auditoría y FinOps son, en el fondo, la misma disciplina de "ver lo que está pasando antes de que sea demasiado tarde" aplicada a dos cosas distintas (permisos, costo). Siguiente paso: microservicios, Big Data, AI/ML y multi-cloud. Errores comunes: alarmas sin responsable y permisos financieros amplios. Fuente oficial: https://docs.aws.amazon.com/cost-management/latest/userguide/budgets-managing-costs.html.
 
-### Tema 6: Microservicios, Big Data, AI/ML y multi-cloud
+### Tema 6: Microservicios, Big Data, AI/ML y multi-cloud · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a trazar, en un solo diagrama real, cómo los microservicios de RutaFlow, su analítica de Big Data y su capa de IA ya conviven hoy, módulo por módulo. Prerrequisitos: Módulos 11, 19, 20 y 31 completos.

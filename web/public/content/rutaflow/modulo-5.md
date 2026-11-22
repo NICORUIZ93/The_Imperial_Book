@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Grafos y problema de rutas
+### Tema 1: Grafos y problema de rutas · Avanzado · 45 min
 
 **Conceptos clave:** matriz de coste, VRP, capacidad, ventanas, heurísticas y restricciones.
 
@@ -117,7 +117,7 @@ Entrega el archivo `rutas.py`, la salida de ambas rutas y una breve explicación
 
 **Transferencia al proyecto integrador «RutaFlow»:** Construye una ruta pequeña con restricciones de capacidad y tiempo conocidas. Verifica cada parada y compara con una solución manual, diferenciando una solución válida de una supuesta óptima.
 
-### Tema 2: Geocoding y map matching
+### Tema 2: Geocoding y map matching · Avanzado · 45 min
 
 **Conceptos clave:** calidad de dirección, candidatos, snapping, error y fallback humano.
 
@@ -221,7 +221,7 @@ Entrega `geocoding.py`, la salida correcta, la salida del fallo deliberado (coor
 
 **Límites y decisión de uso:** Una coincidencia de geocoding puede corresponder a otra calle con el mismo nombre. Usa contexto y confirmación cuando haya ambigüedad; map matching ajusta una trayectoria probable, no demuestra que el vehículo recorrió esa calle.
 
-### Tema 3: Streaming y ETA con incertidumbre
+### Tema 3: Streaming y ETA con incertidumbre · Avanzado · 45 min
 
 **Conceptos clave:** orden, partición, backpressure, datos tardíos, percentiles e intervalos.
 
@@ -347,7 +347,7 @@ Entrega `eta.py`, las dos salidas (ETA correcto y el ingenuo) con la diferencia 
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
 
 
-### Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil
+### Tema 4: Socket.IO extremo a extremo: un gateway compatible con el cliente móvil · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar conectarás un cliente Socket.IO a un servidor compatible y comprobarás recepción, secuencia y rechazo de credenciales inválidas. **Prerrequisitos:** HTTP, JSON, eventos y Node 24 con npm. Para el cliente Dart, SDK Dart 3. El ejemplo es independiente desde una carpeta vacía; no necesitas Kafka ni una cuenta cloud.
@@ -509,7 +509,7 @@ El siguiente tema conecta las posiciones con una ruta calculada. En el proyecto 
 **Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/) y [compatibilidad Dart/servidor](https://pub.dev/packages/socket_io_client).
 
 
-### Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable
+### Tema 5: OSRM: del contrato de coordenadas a una respuesta de ruta verificable · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar construirás una petición OSRM y validarás unidades, geometría y ausencia de ruta. **Prerrequisitos:** coordenadas, HTTP, JSON y Python 3. Ejemplo independiente desde carpeta vacía; la primera fase usa una respuesta sintética declarada para aislar el contrato sin descargar mapas ni depender de Internet.

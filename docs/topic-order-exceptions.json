@@ -1,19 +1,4 @@
 {
   "schemaVersion": 1,
-  "modules": [
-    "control-1/28",
-    "java/0",
-    "java/15",
-    "java/2",
-    "java/20",
-    "react/1",
-    "react/9",
-    "spring-boot/11",
-    "spring-boot/15",
-    "spring-boot/2",
-    "spring-boot/20",
-    "spring-boot/6",
-    "spring-boot/7",
-    "spring-boot/9"
-  ]
+  "modules": []
 }

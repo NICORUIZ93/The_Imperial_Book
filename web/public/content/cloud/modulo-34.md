@@ -16,7 +16,7 @@ Las fuentes principales son la [portada multi-nube](https://floci.io/), [Floci A
 
 ## Aprende construyendo
 
-### Tema 1: Instalación en macOS, Linux y Windows
+### Tema 1: Instalación en macOS, Linux y Windows · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar instalarás el entorno desde cero. Prerrequisitos: Docker y terminal; verifica `docker --version`.
@@ -76,7 +76,7 @@ floci doctor
 #### Paso 7 · Cierre
 Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: modelo mental. Errores comunes: PATH, daemon detenido y credenciales reales. Fuente oficial: https://floci.io/.
 
-### Tema 2: Modelo mental de la plataforma
+### Tema 2: Modelo mental de la plataforma · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar explicarás la plataforma desde cero. Prerrequisitos: Docker y terminal; verifica `docker --version`.
@@ -155,7 +155,7 @@ Dibuja proveedores, servicios y puertos.
 #### Paso 7 · Cierre
 Entrega diagrama, salida, fallo y corrección; explica el resultado. Siguiente paso: CLI y SDK. Errores comunes: confundir API y UI. Fuente oficial: https://floci.io/.
 
-### Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK
+### Tema 3: AWS CLI y SDK, Azure CLI y SDK, GCP CLI y SDK · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a confirmar, en una sola sesión, que las tres CLI oficiales (AWS, Azure, GCP) apuntan de verdad a Floci y no a la nube real. Prerrequisitos: Módulo 0 completo.
@@ -216,7 +216,7 @@ echo "GCP storage -> $STORAGE_EMULATOR_HOST"
 #### Paso 7 · Cierre
 Entregá los tres endpoints confirmados del Paso 4, el override ausente del Paso 5, y la comparación de sintaxis del Paso 6; explicá por qué "imprimir el endpoint antes de destruir nada" es el hábito de seguridad más simple de este módulo. Siguiente paso: ciclo de vida. Errores comunes: endpoint equivocado y perfiles mezclados. Fuente oficial: https://floci.io/aws/.
 
-### Tema 4: Configuración avanzada y ciclo de vida
+### Tema 4: Configuración avanzada y ciclo de vida · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar administrarás configuración desde cero. Prerrequisitos: Docker y terminal; verifica `docker --version`.
@@ -282,7 +282,7 @@ Prueba iniciar, reiniciar y limpiar.
 #### Paso 7 · Cierre
 Entrega configuración, salida, fallo y corrección; explica el resultado. Siguiente paso: automatización. Errores comunes: datos accidentales y limpieza destructiva. Fuente oficial: https://floci.io/labs/.
 
-### Tema 5: Automatización, UI y agentes
+### Tema 5: Automatización, UI y agentes · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a darle a un agente de programación un entorno local seguro para operar sobre RutaFlow, con un contrato verificable y sin credenciales reales. Prerrequisitos: Tema 3 de este módulo.
@@ -363,7 +363,7 @@ Agregá a las instrucciones del agente una regla comprobable: "detente si el end
 #### Paso 7 · Cierre
 Entregá el bucket creado y verificado del Paso 4, el fallo sin endpoint del Paso 5, y la regla del agente del Paso 6; explicá por qué montar el socket Docker le da a un agente más control del que debería tener fuera de un runner aislado y efímero. Siguiente paso: servicios AWS. Errores comunes: confiar solo en UI y no versionar scripts. Fuente oficial: https://floci.io/.
 
-### Tema 6: Servicios AWS incorporados en la documentación actual
+### Tema 6: Servicios AWS incorporados en la documentación actual · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a probar un servicio AWS que ningún módulo anterior cubrió (AWS Batch), aplicando el mismo patrón crear→describir que ya usaste una docena de veces en este track. Prerrequisitos: Módulo 14 completo.
@@ -433,7 +433,7 @@ Elegí otro servicio de la tabla (por ejemplo Cloud Map o CloudWatch Metrics) qu
 #### Paso 7 · Cierre
 Entregá el entorno de AWS Batch confirmado del Paso 4, la asunción de paridad corregida del Paso 5, y el segundo servicio probado del Paso 6; explicá por qué relacionar cada servicio nuevo con un problema real de RutaFlow evita memorizar un catálogo sin entenderlo. Siguiente paso: Azure. Errores comunes: asumir paridad total y no consultar fuentes. Fuente oficial: https://floci.io/aws/.
 
-### Tema 7: Servicios Azure que completan el recorrido
+### Tema 7: Servicios Azure que completan el recorrido · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a guardar y recuperar una evidencia real de entrega (`RF-101`) en Azure Blob Storage, confirmando que el ciclo completo funciona local. Prerrequisitos: Módulo 8 completo.
@@ -505,7 +505,7 @@ Agregale metadatos `tipo=evidencia` y `guia=RF-101` al blob, y recuperalos con `
 #### Paso 7 · Cierre
 Entregá el ciclo completo subir/bajar/comparar del Paso 4, el contenedor inexistente del Paso 5, y los metadatos agregados del Paso 6; explicá qué cambiaría y qué seguiría igual si esta misma evidencia viviera en S3 en vez de Blob Storage. Siguiente paso: GCP. Errores comunes: traducir nombres literalmente y omitir límites. Fuente oficial: https://floci.io/az/.
 
-### Tema 8: Servicios GCP que completan el recorrido
+### Tema 8: Servicios GCP que completan el recorrido · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a guardar y recuperar el evento `RF-102` en Cloud Storage con un proyecto local explícito, sin que `gcloud` intente autenticarse contra GCP real. Prerrequisitos: Módulo 8 completo.
@@ -581,7 +581,7 @@ Confirmá explícitamente que el endpoint de Storage contiene `localhost:4588` d
 #### Paso 7 · Cierre
 Entregá el ciclo completo del evento `RF-102` del Paso 4, la señal de alerta de login real del Paso 5, y la comparación de los tres proveedores del Paso 6; explicá por qué GCP necesita un proyecto local explícito además del endpoint, a diferencia de AWS. Siguiente paso: floci-ui, el explorador visual multi-nube. Errores comunes: confundir documento con tabla. Fuente oficial: https://floci.io/gcp/.
 
-### Tema 9: floci-ui — explorador visual multi-nube
+### Tema 9: floci-ui — explorador visual multi-nube · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar `floci-ui` (el panel oficial, un repositorio separado del propio Floci) al runtime local que ya tenés corriendo, crear un secreto en Secrets Manager desde CLI, y editarlo visualmente con el editor JSON clave-valor de la UI — confirmando que ambas vías operan sobre el mismo estado real, no datos de muestra. Prerrequisitos: Tema 3 de este módulo (Floci corriendo); Docker.
@@ -629,7 +629,7 @@ Corregí esa asunción documentando en `floci-ui-reglas.md` qué cambios son ace
 #### Paso 7 · Cierre
 Entregá el secreto creado por CLI y visible en la UI del Paso 4, la edición cruzada desde la UI del Paso 5, y la corrección documentada del Paso 6; explicá por qué una herramienta visual que también permite escribir necesita una regla explícita de "qué se edita ahí y qué se edita en código", igual que cualquier consola de administración de un proveedor real. Siguiente paso: laboratorios oficiales reconstruidos en español. Errores comunes: asumir que una consola visual es solo de lectura cuando también permite escribir; tratar un cambio hecho desde la UI como si estuviera versionado o fuera reproducible por otra persona del equipo. Fuentes oficiales: https://floci.io/ y https://github.com/floci-io/floci-ui.
 
-### Tema 10: Laboratorios oficiales reconstruidos en español
+### Tema 10: Laboratorios oficiales reconstruidos en español · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar completarás un laboratorio desde cero. Prerrequisitos: Docker y terminal; verifica `docker --version`.
@@ -699,7 +699,7 @@ curl -s -o /dev/null -w "%{http_code}\n" "$URL"
 #### Paso 7 · Cierre
 Entrega bitácora, salida, fallo y corrección; explica el resultado. Siguiente paso: límites. Errores comunes: copiar comandos sin observar y no guardar logs. Fuente oficial: https://floci.io/labs/.
 
-### Tema 11: Límites y transferencia a producción
+### Tema 11: Límites y transferencia a producción · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás decidir qué validar en producción desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.

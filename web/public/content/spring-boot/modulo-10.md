@@ -266,7 +266,7 @@ Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la sal
 
 **Transferencia al proyecto integrador:** define reintentos según el tipo de fallo y envía los eventos irrecuperables a un DLT monitoreado con un procedimiento de revisión.
 
-### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once · Avanzado · 50 min
+### Tema 3: Transacciones Kafka y SQL: idempotencia y límites de exactly-once · Avanzado · 45 min
 
 **Duración estimada:** 50 min.
 **¿Por qué es importante?** Un productor puede repetir un envío y un consumidor puede volver a recibir un evento. Evita duplicar el efecto y distingue la transacción del broker de la transacción de la base de datos.
@@ -700,7 +700,7 @@ Anota una situación apropiada para membresía estática, el costo de un timeout
 
 **Fuentes oficiales:** [Rebalance listeners en Spring Kafka 4.0](https://docs.spring.io/spring-kafka/reference/4.0/kafka/receiving-messages/rebalance-listeners.html), [configuración de consumidores Apache Kafka 4.2](https://kafka.apache.org/42/generated/consumer_config.html) y [protocolo de rebalanceo Apache Kafka 4.3](https://kafka.apache.org/43/operations/consumer-rebalance-protocol/).
 
-### Tema 6: Kafka Streams con Spring para transformar eventos · Avanzado · 50 min
+### Tema 6: Kafka Streams con Spring para transformar eventos · Avanzado · 45 min
 
 **Duración estimada:** 50 min.
 **Resultado:** filtras eventos, conservas su clave, agregas por ventana y ejecutas la topología con Spring.
@@ -848,7 +848,7 @@ Enumera los tópicos visibles y explica por qué una aplicación aislada necesit
 
 **Aplicación y decisión:** Límite del test driver: observa registros y estado con tiempo controlado, sin broker, rebalanceo o ACL. Usa el conteo por ventana en el proyecto integrador solo después de definir tiempo de evento, retención y política para llegadas tardías.
 
-### Tema 7: Avro y Schema Registry para contratos de eventos · Avanzado · 50 min
+### Tema 7: Avro y Schema Registry para contratos de eventos · Avanzado · 45 min
 
 **Duración estimada:** 50 min.
 **Resultado:** lees datos Avro con un esquema escritor y otro lector, pruebas una evolución y compruebas compatibilidad en Schema Registry.

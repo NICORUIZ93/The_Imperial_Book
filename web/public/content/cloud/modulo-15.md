@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI
+### Tema 1: Stack, Template y por qué no crear recursos manualmente con la CLI · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás declarar infraestructura desde cero. Prerrequisitos: Floci corriendo y `eval "$(floci env)"` cargado (Laboratorio 1.2); verifica `aws --version`.
@@ -86,7 +86,7 @@ Añade variables, outputs y un módulo.
 #### Paso 7 · Cierre
 Entrega archivos, salida, fallo y corrección; explica el resultado. Siguiente paso: change sets. Errores comunes: plantillas sin versionar y secretos en parámetros. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/deploy/index.html.
 
-### Tema 2: Change sets
+### Tema 2: Change sets · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás revisar un plan desde cero. Prerrequisitos: el stack `rutaflow-evidencias` del Tema 1; verifica `aws --version`.
@@ -149,7 +149,7 @@ Guarda plan y revisa cambios peligrosos.
 #### Paso 7 · Cierre
 Entrega el change set, su salida, el fallo y la corrección; explica el resultado. Siguiente paso: drift. Errores comunes: aplicar sin revisar y no fijar versiones. Fuente oficial: https://docs.aws.amazon.com/cli/latest/reference/cloudformation/describe-change-set.html.
 
-### Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta
+### Tema 3: Drift detection, Terraform/CDK, y compatibilidad multi-herramienta · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás detectar drift desde cero. Prerrequisitos: el stack `rutaflow-evidencias` del Tema 2; verifica `aws --version`.

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Bases de datos de grafos — cuando las relaciones son el dato
+### Tema 1: Bases de datos de grafos — cuando las relaciones son el dato · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reconocer, con el caso real de sugerir repartidores de respaldo, por qué esa pregunta no tiene una forma natural en DynamoDB. Prerrequisitos: Módulo 4 completo.
@@ -67,7 +67,7 @@ Escribí una tercera pregunta puramente de clave (por ejemplo, "el nombre del re
 #### Paso 7 · Cierre
 Entregá las dos preguntas comparadas del Paso 4, el intento fallido de forzarla en DynamoDB del Paso 5, y la pregunta de clave del Paso 6; explicá por qué forzar una consulta multi-salto dentro de una base relacional o NoSQL simple sería deuda técnica, no una solución. Siguiente paso: motor. Errores comunes: ciclos no controlados y recorridos sin límite. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/intro.html.
 
-### Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación
+### Tema 2: Neptune en Floci — un servidor Gremlin real, no una simulación · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear el clúster real donde RutaFlow modela qué repartidores cubrieron qué zonas (Tema 1). Prerrequisitos: Tema 1 de este módulo.
@@ -123,7 +123,7 @@ Corregí la consulta y ejecutá `g.V().count()` contra el clúster recién cread
 #### Paso 7 · Cierre
 Entregá el contenedor Gremlin real confirmado del Paso 4, el error de sintaxis del Paso 5, y el grafo vacío confirmado del Paso 6; explicá por qué que el motor sea real te deja aprender el lenguaje de consulta sin riesgo de que se comporte distinto contra un Neptune real. Siguiente paso: emulación. Errores comunes: conexiones abiertas y traversals costosos. Fuente oficial: https://tinkerpop.apache.org/gremlin.html.
 
-### Tema 3: OpenSearch — modo simulado y modo real
+### Tema 3: OpenSearch — modo simulado y modo real · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a indexar la descripción de un paquete real de RutaFlow en OpenSearch y a confirmar la diferencia entre modo simulado y modo real. Prerrequisitos: Módulo 9 (los paquetes/tareas del proyecto final).
@@ -185,7 +185,7 @@ Consultá `/_cluster/health` contra el dominio en modo real y registrá el estad
 #### Paso 7 · Cierre
 Entregá la búsqueda real exitosa del Paso 4, el `_search` sin respuesta en modo mock del Paso 5, y el health/versión registrados del Paso 6; explicá cuándo cada modo es la herramienta con el costo justo para la pregunta que estás respondiendo. Siguiente paso: patrones. Errores comunes: asumir que mock cubre latencia real y no verificar salud. Fuente oficial: https://docs.aws.amazon.com/neptune/latest/userguide/health-status.html.
 
-### Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB
+### Tema 4: Eligiendo entre Neptune, OpenSearch y DynamoDB · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mapear las tres preguntas reales de RutaFlow (buscar por guía, por relación, por texto) a los tres almacenes correctos. Prerrequisitos: Temas 1-3 de este módulo.
@@ -251,7 +251,7 @@ Construí una tabla de tres filas (clave exacta / relación multi-salto / texto 
 #### Paso 7 · Cierre
 Entregá las tres consultas nativas del Paso 4, el Scan forzado y lento del Paso 5, y la tabla de decisión del Paso 6; explicá por qué en sistemas reales es común usar los tres almacenes a la vez para distintas partes del mismo dominio, en vez de elegir uno solo "para todo". Siguiente paso: búsqueda. Errores comunes: modelar sin medir y olvidar cardinalidad. Fuente oficial: https://docs.aws.amazon.com/architecture-well-architected/latest/framework/welcome.html.
 
-### Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Intermedio · 40 min
+### Tema 5: Datos de series temporales: escritura por tiempo, reducción de resolución y retención · Avanzado · 40 min
 
 **Prerrequisito:** tema «Eligiendo entre Neptune, OpenSearch…» de este módulo.
 

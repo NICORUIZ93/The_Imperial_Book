@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Compose Multiplatform vs Jetpack Compose
+### Tema 1: Compose Multiplatform vs Jetpack Compose · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -135,7 +135,7 @@ Ya distingues qué significa `@Composable` en código compartido y por qué el m
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Comparte una pantalla simple de lista donde la experiencia sea equivalente. Prueba navegación y entrada en cada plataforma y documenta qué interacción exige un adaptador nativo.
 
-### Tema 2: Estado y recomposición — mutableStateOf y por qué la UI se redibuja
+### Tema 2: Estado y recomposición — mutableStateOf y por qué la UI se redibuja · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -313,7 +313,7 @@ Ya distingues estado observable de una variable plana, y confirmas con `runCompo
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Conecta el estado observable del repositorio con la lista compartida. Cambia una entrega y verifica el resultado visual sin mutar una colección que la UI no pueda observar.
 
-### Tema 3: Theming y navegación compartidos
+### Tema 3: Theming y navegación compartidos · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -459,7 +459,7 @@ Ya defines un theme y (conceptualmente) un grafo de navegación una única vez e
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Define destinos por identidad de guía y aplica el tema común. Abre un detalle desde ambos clientes y comprueba que regresar mantiene la selección sin compartir objetos nativos entre plataformas.
 
-### Tema 4: Limitaciones en iOS y otros targets
+### Tema 4: Limitaciones en iOS y otros targets · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -595,7 +595,7 @@ Ya aplicas un criterio explícito para decidir cuándo una integración necesita
 
 ---
 
-### Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Intermedio · 40 min
+### Tema 5: Recursos y localización en Compose Multiplatform: textos, imágenes y plurales comunes · Avanzado · 40 min
 
 **Prerrequisito:** tema «Theming y navegación compartidos» de este módulo.
 
@@ -737,7 +737,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** duplicar textos por
 
 **Fuente oficial:** [Kotlin — Multiplatform resources](https://kotlinlang.org/docs/multiplatform/compose-multiplatform-resources.html).
 
-### Tema 6: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Intermedio · 40 min
+### Tema 6: Accesibilidad en Compose Multiplatform: semántica que funciona con TalkBack y VoiceOver · Avanzado · 40 min
 
 **Prerrequisito:** tema «Estado y recomposición» de este módulo.
 
@@ -882,7 +882,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** describir íconos d
 
 **Fuente oficial:** [Kotlin — Accessibility in Compose Multiplatform](https://kotlinlang.org/docs/multiplatform/compose-accessibility.html) y [Android Developers — Semantics in Compose](https://developer.android.com/develop/ui/compose/accessibility/semantics).
 
-### Tema 7: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Intermedio · 30 min
+### Tema 7: Compose Hot Reload: ver cambios de la interfaz sin reiniciar la app · Avanzado · 30 min
 
 **Prerrequisito:** tema «Compose Multiplatform vs Jetpack Compose» de este módulo.
 

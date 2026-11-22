@@ -9,8 +9,14 @@ export const routes: Routes = [
     path: 'catalogo',
     loadComponent: () => import('./catalog/course-catalog').then(m => m.CourseCatalogComponent),
   },
+  // Rutas históricas del laboratorio: se conservan aunque el resto de URLs desconocidas den 404.
   {
     path: 'laboratorio/cloud-local',
+    redirectTo: '',
+    pathMatch: 'full',
+  },
+  {
+    path: 'laboratorio/floci',
     redirectTo: '',
     pathMatch: 'full',
   },
@@ -32,5 +38,8 @@ export const routes: Routes = [
       { path: ':moduleId', loadComponent: () => import('./course/lesson-viewer').then(m => m.LessonViewerComponent) },
     ],
   },
-  { path: '**', redirectTo: '' },
+  {
+    path: '**',
+    loadComponent: () => import('./not-found').then(m => m.NotFoundComponent),
+  },
 ];

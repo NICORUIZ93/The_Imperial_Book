@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Blue-green deployment
+### Tema 1: Blue-green deployment · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -99,7 +99,7 @@ Ya cortas tráfico de golpe entre dos entornos idénticos, con rollback casi ins
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Mantén dos versiones del servicio y cambia el destino del tráfico en laboratorio. Verifica salud antes del cambio y practica el retorno conservando compatibilidad con la base compartida.
 
-### Tema 2: Canary releases
+### Tema 2: Canary releases · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -194,7 +194,7 @@ Ya limitas el radio de impacto exponiendo gradualmente una nueva versión. El si
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Dirige una fracción controlada de peticiones a la versión candidata. Compara tasa de errores y latencia por versión; una degradación deliberada debe detener el avance del despliegue.
 
-### Tema 3: Rolling updates
+### Tema 3: Rolling updates · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -276,7 +276,7 @@ Ya reemplazas instancias sin interrupción de servicio, controlando el margen de
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Actualiza réplicas progresivamente mientras envías peticiones de prueba. Registra disponibilidad y versiones observadas, y comprueba que el servicio soporta la coexistencia temporal de ambas versiones.
 
-### Tema 4: Feature flags vs branches por entorno
+### Tema 4: Feature flags vs branches por entorno · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -358,7 +358,7 @@ Ya despliegas código con frecuencia sin exponer funcionalidad incompleta, activ
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Activa una función para un grupo de usuarios de prueba sin recompilar. Desactívala al provocar un error y verifica que el estado persistido sigue siendo compatible con la función apagada.
 
-### Tema 5: Rollback automático por métricas
+### Tema 5: Rollback automático por métricas · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -483,7 +483,7 @@ Ya diseñas y simulas un rollback que actúa más rápido que cualquier supervis
 - **El feature flag requiere reiniciar la aplicación completa.** Si lees la variable solo al arrancar, necesitas recarga en caliente o aceptar el reinicio.
 - **No sabes qué métrica usar para el rollback automático.** Empieza con la tasa de error HTTP 5xx como señal de partida razonable.
 
-### Tema 6: Rollback ensayado y compatibilidad del artefacto anterior
+### Tema 6: Rollback ensayado y compatibilidad del artefacto anterior · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar ensayarás una promoción de versión con una comprobación automática y retorno a un artefacto conocido si falla. **Prerrequisitos:** procesos, códigos de salida, archivos y Python 3. Ejemplo independiente desde una carpeta vacía; no requiere Kubernetes.
@@ -538,7 +538,7 @@ Haz una candidata válida que conserve la salida requerida y registre una versi�
 El siguiente paso es repetir el procedimiento con el orquestador y una migración expand/contract. **Errores comunes:** sobrescribir el artefacto anterior, no comprobar la recuperación y suponer que rollback restaura datos. **Límites y decisión de uso:** `active.txt` no es un mecanismo de producción; sirve para comprender la decisión antes de automatizarla en CI/CD.
 
 **Fuente oficial:** [Google SRE: canarying releases](https://sre.google/workbook/canarying-releases/).
-### Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas
+### Tema 7: A/B testing y shadow traffic: medir sin convertir usuarios en cobayas · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 

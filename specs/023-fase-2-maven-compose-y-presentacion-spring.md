@@ -42,7 +42,8 @@ pero no el `up --build` completo: marcarlos juntos habría ocultado la parte sin
 - **C4** `hecho` — El starter Maven contiene descriptor, código ejecutable, prueba y README que explica el
   orden de construcción desde una carpeta vacía. Ejecutado en esta máquina el 2026-11-21 con Maven 3.10.0 y
   JDK 27: 5 pruebas (`ProductoServiceTest` 2, `ProductoTest` 3), 0 fallos, 0 errores.
-  Verificación: `python3 -c "import xml.etree.ElementTree as ET;ET.parse('examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml')" && mvn -o -q -f examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml test`
+  Verificación: `python3 -c "import xml.etree.ElementTree as ET;ET.parse('examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml')" && mvn -q -f examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml test`
+  (se quita `-o`: el CI ya calienta dependencias con caché Maven, specs/025 C14)
 - **C5** `hecho` — El `docker-compose.yml` del starter es válido para el cliente de Compose de esta máquina
   (daemon arriba, 2026-11-21).
   Verificación: `docker compose -f examples/microservicios-spring/fase-1/proyecto-maven-tienda/docker-compose.yml config -q`

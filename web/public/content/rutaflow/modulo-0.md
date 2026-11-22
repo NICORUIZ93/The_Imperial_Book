@@ -47,7 +47,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: El proceso logístico como sistema
+### Tema 1: El proceso logístico como sistema · Básico · 45 min
 
 **Conceptos clave:** actores, comandos, eventos, estados, invariantes y límites.
 
@@ -146,7 +146,7 @@ Entregá la secuencia completa de transiciones válidas del Paso 4, el error de 
 
 **Transferencia al proyecto integrador «RutaFlow»:** Versiona la máquina de estados del envío con una prueba por transición permitida y rechazada. La confirmación debe producir un hecho identificable y nunca permitir volver de entregado a tránsito silenciosamente.
 
-### Tema 2: Entorno reproducible en Windows, macOS y Linux
+### Tema 2: Entorno reproducible en Windows, macOS y Linux · Básico · 45 min
 
 **Conceptos clave:** Git, editor, runtimes, contenedores, variables y diagnóstico.
 
@@ -245,7 +245,7 @@ Entregá la conexión exitosa por `localhost` desde el host del Paso 4, el fallo
 
 **Transferencia al proyecto integrador «RutaFlow»:** Levanta API y base desde la configuración de laboratorio y ejecuta una consulta de salud desde host y contenedor. Conserva las URLs correctas y comprueba que otro equipo puede repetir el arranque.
 
-### Tema 3: Arquitectura, privacidad y amenazas
+### Tema 3: Arquitectura, privacidad y amenazas · Básico · 45 min
 
 **Conceptos clave:** monolito modular, límites, PII, mínimo privilegio y ADR.
 

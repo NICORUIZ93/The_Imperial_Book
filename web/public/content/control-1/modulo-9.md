@@ -9,11 +9,11 @@ Todo lo que ves en este curso supone sistemas lineales. Los reales casi nunca lo
 
 ## Aprende construyendo
 
-### Tema 1: La idea de la linealización: aproximar con la recta tangente
+### Tema 1: La idea de la linealización: aproximar con la recta tangente · Avanzado · 45 min
 
 **¿Por qué es importante?** Casi ningún sistema real es lineal; linealizar alrededor del punto de operación es lo que permite usar todo este curso con ellos.
 
-**Fuentes oficiales:** [Espacio de estados, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [Espacio de estados, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
 
 > **Idea clave.** Cerca de un punto, cualquier curva suave se parece a su recta tangente. Si el sistema trabaja con variaciones pequeñas alrededor de ese punto, la recta basta.
 

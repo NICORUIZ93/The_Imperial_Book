@@ -9,7 +9,7 @@ una evidencia independiente y termina integrándose en RutaFlow.
 
 > **Dependencias de este módulo** (catálogo del Módulo 0, Tema 3), dentro de `dependencies { }` de `app/build.gradle.kts`: Tema 2, `implementation(libs.androidx.datastore.preferences)`; Tema 3, `implementation(libs.androidx.paging.runtime)` e `implementation(libs.androidx.paging.compose)`; Tema 4, `implementation(platform(libs.firebase.bom))` e `implementation(libs.firebase.messaging)`, más el plugin `alias(libs.plugins.google.services)` (raíz con `apply false`) y el `google-services.json` de tu proyecto de Firebase en `app/`; Tema 6, `implementation(libs.androidx.credentials)` e `implementation(libs.androidx.credentials.play.services.auth)`; Tema 7, `implementation(libs.play.integrity)`.
 
-### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso
+### Tema 1: Permisos en tiempo de ejecución y alternativas sin permiso · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás pedir un permiso solo cuando una acción lo necesita, manejar
@@ -98,7 +98,7 @@ se copia al almacenamiento controlado por la app antes de subirlo. **Fuentes ofi
 [solicitar permisos](https://developer.android.com/training/permissions/requesting) y
 [minimizar permisos](https://developer.android.com/privacy-and-security/minimize-permission-requests).
 
-### Tema 2: DataStore para preferencias consistentes y migrables
+### Tema 2: DataStore para preferencias consistentes y migrables · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás guardar una preferencia con DataStore, observarla como `Flow` y
@@ -180,7 +180,7 @@ usa Room para entregas y Android Keystore más almacenamiento apropiado para sec
 **Transferencia al proyecto integrador «RutaFlow»:** persiste filtros y preferencias,
 no el historial de entregas. **Fuente oficial:** [DataStore](https://developer.android.com/topic/libraries/architecture/datastore).
 
-### Tema 3: Paging 3, estados de carga y RemoteMediator
+### Tema 3: Paging 3, estados de carga y RemoteMediator · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás cargar entregas por páginas, mostrar carga/error/reintento y explicar
@@ -264,7 +264,7 @@ acotada no necesita Paging.
 sincronizado por RemoteMediator. **Fuentes oficiales:** [Paging 3](https://developer.android.com/topic/libraries/architecture/paging/v3-overview) y
 [red + base de datos](https://developer.android.com/topic/libraries/architecture/paging/v3-network-db).
 
-### Tema 4: FCM, permiso de notificaciones y sincronización confiable
+### Tema 4: FCM, permiso de notificaciones y sincronización confiable · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás recibir un mensaje FCM, renovar el token, pedir permiso en Android
@@ -353,7 +353,7 @@ transaccional.
 WorkManager reconcilia Room. **Fuentes oficiales:** [configurar FCM](https://firebase.google.com/docs/cloud-messaging/android/get-started) y
 [recibir mensajes](https://firebase.google.com/docs/cloud-messaging/android/receive-messages).
 
-### Tema 5: Interfaces adaptativas para teléfono, tablet y foldable
+### Tema 5: Interfaces adaptativas para teléfono, tablet y foldable · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás elegir navegación y paneles por espacio disponible, preservar estado
@@ -436,7 +436,7 @@ la tarea; adapta según contenido y evidencia.
 tablet muestra ambos con selección compartida. **Fuentes oficiales:** [calidad adaptativa](https://developer.android.com/develop/adaptive-apps/quality-guidelines/core-app-quality) y
 [calidad técnica](https://developer.android.com/quality/technical).
 
-### Tema 6: Credential Manager, passkeys y verificación en servidor
+### Tema 6: Credential Manager, passkeys y verificación en servidor · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás iniciar sesión con Credential Manager, explicar el reto criptográfico
@@ -529,7 +529,7 @@ un fallback seguro y medido.
 verifica y entrega sesión con autorización por envío. **Fuente oficial:**
 [Credential Manager y form factors](https://developer.android.com/identity/form-factors).
 
-### Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Experto · 50 min
+### Tema 7: Play Integrity API: comprobar en el servidor que la petición viene de tu app real · Avanzado · 45 min
 
 **Prerrequisito:** tema «Credential Manager, passkeys y verificación en servidor» de este módulo.
 

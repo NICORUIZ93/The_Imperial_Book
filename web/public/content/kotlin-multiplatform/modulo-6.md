@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Esquemas SQLDelight y queries tipadas
+### Tema 1: Esquemas SQLDelight y queries tipadas · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -159,7 +159,7 @@ Ya declaras esquemas y queries tipadas en SQL real, confirmando contra SQLite re
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Define consultas tipadas para entregas y operaciones pendientes. Prueba insertar, consultar y confirmar una guía en una base temporal, comprobando que una operación inexistente no se inventa por defecto.
 
-### Tema 2: Drivers por plataforma
+### Tema 2: Drivers por plataforma · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -302,7 +302,7 @@ Ya distingues las queries compartidas del driver específico de plataforma, conf
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Inyecta el driver de base adecuado por plataforma y uno temporal para pruebas. Reinicia el repositorio y verifica persistencia real en dispositivo, diferenciándola de la base en memoria del test.
 
-### Tema 3: Migraciones de esquema
+### Tema 3: Migraciones de esquema · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -427,7 +427,7 @@ Ya escribes migraciones versionadas que evolucionan el esquema sin perder datos 
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Añade un campo de sincronización mediante migración versionada. Abre una base antigua con entregas pendientes y demuestra que la actualización conserva registros y valores compatibles.
 
-### Tema 4: Transacciones: atomicidad en operaciones multi-tabla
+### Tema 4: Transacciones: atomicidad en operaciones multi-tabla · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 

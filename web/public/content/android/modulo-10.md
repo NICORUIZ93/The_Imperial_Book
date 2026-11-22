@@ -7,7 +7,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**. En particular, la «medición» de Baseline Profiles con Python es solo un modelo del concepto: la generación real de un perfil con el plugin `androidx.baselineprofile` y su medición con Macrobenchmark están en el Módulo 18; hasta entonces no presentes la cifra del script como resultado de tu app.
 
-### Tema 1: Detectar y corregir recomposición innecesaria
+### Tema 1: Detectar y corregir recomposición innecesaria · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -159,7 +159,7 @@ Ya identificas por qué una lambda recreada rompe la skippability de un composab
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Mide las recomposiciones de la lista al actualizar una sola entrega. Conserva el registro antes y después del cambio y comprueba que el filtro sigue funcionando; reducir recomposiciones no debe ocultar datos nuevos.
 
-### Tema 2: Baseline Profiles y ciclo de efectos
+### Tema 2: Baseline Profiles y ciclo de efectos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -280,7 +280,7 @@ Ya explicas cómo un Baseline Profile acelera el arranque, y eliges el efecto co
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Incluye abrir la ruta y consultar una entrega en el recorrido del perfil de inicio. Compara tiempos con la misma compilación y dispositivo, y verifica que salir de la pantalla cancela sus efectos.
 
-### Tema 3: Accesibilidad e interop con Views
+### Tema 3: Accesibilidad e interop con Views · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

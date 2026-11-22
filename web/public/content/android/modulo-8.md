@@ -15,7 +15,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas de WorkManager.** Escribir un JSON en `/tmp` ilustra la idea de «persistir la solicitud», pero no demuestra que WorkManager lo haga. La evidencia real es la **Verificación real en Android** del Tema 1: una prueba instrumentada del `Worker` y la consulta del planificador del sistema con `adb`.
 
-### Tema 1: CoroutineWorker y garantía de ejecución
+### Tema 1: CoroutineWorker y garantía de ejecución · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -183,7 +183,7 @@ Ya escribes un `CoroutineWorker` y explicas por qué WorkManager garantiza su ej
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Envía la outbox de confirmaciones mediante un CoroutineWorker. Interrumpe un intento y vuelve a programarlo; la entrega debe conservar su clave de idempotencia y quedar confirmada una sola vez.
 
-### Tema 2: Constraints y trabajo periódico
+### Tema 2: Constraints y trabajo periódico · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -293,7 +293,7 @@ Ya configuras constraints de red y batería para un trabajo periódico, y explic
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Exige conectividad para sincronizar evidencias y separa esa tarea del refresco periódico. Con modo avión, verifica que el trabajo espera y que la interfaz sigue mostrando los cambios guardados localmente.
 
-### Tema 3: Notificaciones desde background work
+### Tema 3: Notificaciones desde background work · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

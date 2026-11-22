@@ -1,0 +1,16 @@
+# Dependencias Python que no vienen con la biblioteca estándar (specs/025 C14).
+# Los auditorios, generadores y validadores de scripts/ solo usan la biblioteca
+# estándar; la excepción es scripts/render_control1_figures.py, que importa:
+#
+#   import control as ct   -> python-control
+#   import numpy as np     -> numpy
+#
+# Instalación:
+#   python3 -m pip install -r scripts/requirements.txt
+#
+# Verificado el 2026-11-21: numpy 1.26.4 está disponible en la máquina del
+# proyecto; `control` no lo está, por lo que ese render no se ejecutó en este
+# lote. Las figuras de Control 1 ya publicadas no se regeneraron.
+
+python-control>=0.9,<1
+numpy>=1.24,<3

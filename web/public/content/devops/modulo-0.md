@@ -71,7 +71,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Sistema de archivos y permisos (chmod/chown)
+### Tema 1: Sistema de archivos y permisos (chmod/chown) · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -160,7 +160,7 @@ Ya distingues cuándo usar `600`, `644` o `754` según quién necesita leer, esc
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Ajusta permisos del script de despliegue y del archivo de configuración privada. Guarda la salida de inspección y demuestra que el usuario del servicio puede leer lo necesario sin conceder escritura a otros usuarios.
 
-### Tema 2: Procesos, señales y jobs en segundo plano
+### Tema 2: Procesos, señales y jobs en segundo plano · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -237,7 +237,7 @@ Ya distingues cuándo un proceso puede protegerse con `trap` y cuándo el kernel
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Añade apagado ordenado al servicio desplegado. Envía SIGTERM durante una petición de prueba y registra si termina antes del cierre; documenta qué ocurriría al agotar el plazo de parada.
 
-### Tema 3: Pipes, redirección y filtros (grep, awk, sed)
+### Tema 3: Pipes, redirección y filtros (grep, awk, sed) · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -318,7 +318,7 @@ Ya filtras, transformas y cuentas texto sin escribir un programa dedicado. El si
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Extrae de los logs del servicio las peticiones fallidas de un intervalo. Contrasta el conteo con un conjunto de entradas conocido y conserva stderr separado para no confundir errores del filtro con datos.
 
-### Tema 4: Variables de entorno y scripts bash robustos (set -euo pipefail)
+### Tema 4: Variables de entorno y scripts bash robustos (set -euo pipefail) · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -399,7 +399,7 @@ Ya conviertes un script frágil en uno resistente a fallos silenciosos. El sigui
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Haz que el script de despliegue valide variables requeridas antes de cambiar recursos. Ejecuta una copia con una variable ausente y verifica que termina con error antes de publicar el artefacto.
 
-### Tema 5: Cron y tareas programadas
+### Tema 5: Cron y tareas programadas · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -479,7 +479,7 @@ Ya programas tareas periódicas y sabes diagnosticar el entorno mínimo de cron.
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Programa una comprobación periódica del servicio con rutas y entorno explícitos. Ejecuta el mismo comando con un entorno mínimo y demuestra que registra tanto éxito como fallo sin depender de tu terminal.
 
-### Tema 6: Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor
+### Tema 6: Hardening básico — SSH sin contraseña, firewalls, SELinux/AppArmor · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -552,7 +552,7 @@ Ya generas y autorizas claves SSH, y entiendes por qué el firewall deniega por 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Documenta los accesos indispensables del servidor de pruebas y aplica restricciones conservando una vía de recuperación. Verifica acceso autorizado y rechazo del puerto no requerido desde otra máquina del laboratorio.
 
-### Tema 7: Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga
+### Tema 7: Redes — modelo OSI, TCP/IP, DNS y balanceadores de carga · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -623,7 +623,7 @@ Ya diagnosticas problemas de red separando resolución DNS de conectividad de ca
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Sigue una petición desde DNS hasta el servicio desplegado. Introduce por separado host erróneo y puerto cerrado; el runbook debe localizar la capa que falla antes de reiniciar la aplicación.
 
-### Tema 8: Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor
+### Tema 8: Cultura DevOps y el ciclo Plan→Code→Build→Test→Release→Deploy→Operate→Monitor · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -695,7 +695,7 @@ Ya tienes el mapa mental completo sobre el que colocarás cada herramienta del r
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Traza un cambio pequeño desde commit hasta observación en producción simulada. Asigna una evidencia a build, prueba, despliegue y monitorización, e identifica quién actúa si la verificación posterior falla.
 
-### Tema 9: NGINX y proxies desde cero
+### Tema 9: NGINX y proxies desde cero · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -849,7 +849,7 @@ Ya sabes levantar un proxy inverso, leer sus logs estructurados y diagnosticar u
 
 ---
 
-### Tema 10: Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio
+### Tema 10: Usuarios, grupos, permisos compartidos y sudo con mínimo privilegio · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás crear usuarios y grupos, compartir una carpeta entre un equipo con permisos de grupo y el bit setgid, comprobar quién puede leer qué y conceder `sudo` solo para un comando concreto. Prerrequisitos: Temas 1 y 6 de este módulo (permisos y hardening).
@@ -968,7 +968,7 @@ Escribe una regla de sudo que permita a todo el grupo `despacho` (`%despacho`) v
 #### Paso 7 · Cierre
 
 
-### Tema 11: systemd: servicios, timers y logs con journalctl
+### Tema 11: systemd: servicios, timers y logs con journalctl · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás escribir una unidad de servicio y un timer de systemd, validarlos sin arrancarlos, calcular sus próximas ejecuciones y operar el servicio con `systemctl` y `journalctl`. Prerrequisitos: Temas 2, 5 y 10 de este módulo (procesos, cron y usuarios).

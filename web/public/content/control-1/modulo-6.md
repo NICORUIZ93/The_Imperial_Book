@@ -11,11 +11,11 @@ Los diagramas reales tienen lazos dentro de lazos y señales que se cruzan. Aqu�
 
 ## Aprende construyendo
 
-### Tema 1: Reglas para mover bloques en un diagrama
+### Tema 1: Reglas para mover bloques en un diagrama · Intermedio · 45 min
 
 **¿Por qué es importante?** Mover bloques correctamente permite simplificar diagramas que no se pueden reducir con solo serie y paralelo.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 > **Idea clave.** Mover un bloque es válido si cada señal sigue llegando al mismo lugar multiplicada por lo mismo. Para compensar, agregas el bloque (o su inverso) en la rama que cambió.
 
@@ -117,11 +117,11 @@ repite el Ejemplo 1 (tres bloques, dos realimentaciones) construyendo `T` paso a
 
 **Límite:** estas reglas de movimiento valen para diagramas de una sola entrada y una sola salida (SISO); con varias entradas (referencia y perturbación juntas, Tema 4) hay que aplicar superposición, no mover bloques a ciegas.
 
-### Tema 2: Grafos de flujo de señal
+### Tema 2: Grafos de flujo de señal · Intermedio · 45 min
 
 **¿Por qué es importante?** El grafo de flujo de señal es la representación que usa la regla de Mason; sin él no puedes contar caminos y lazos.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 Un grafo de flujo de señal es otra forma de dibujar lo mismo: las señales son **nodos** y los bloques son **ramas** con su ganancia. Un punto de suma es un nodo al que llegan varias ramas. Vocabulario:
 
@@ -230,11 +230,11 @@ arma el sistema de ecuaciones del Ejemplo 2 (\(E=R-Y\), \(Y=GE\)) y confirma que
 
 **Límite:** este método de resolver el sistema lineal de nodos es exacto pero no escala a mano para grafos grandes; por eso existe la regla de Mason (Tema 3), que cuenta trayectorias y lazos sin resolver el sistema completo.
 
-### Tema 3: Regla de Mason
+### Tema 3: Regla de Mason · Intermedio · 45 min
 
 **¿Por qué es importante?** Mason resuelve de una vez diagramas con varios lazos, donde la reducción paso a paso es larga y propensa a errores.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 \[T = \frac{Y}{R} = \frac{1}{\Delta}\sum_k P_k\,\Delta_k\]
 
@@ -405,11 +405,11 @@ cambia `L1, L2` por lazos que sí se tocan (por ejemplo ambos con el factor `G2`
 
 **Límite:** el término \(+L_iL_j\) de \(\Delta\) solo aparece entre lazos que **no comparten ningún nodo**; contar un producto entre lazos que sí se tocan es el error más común de Mason (ver "Errores comunes" más abajo).
 
-### Tema 4: Referencia y perturbación juntas
+### Tema 4: Referencia y perturbación juntas · Intermedio · 45 min
 
 **¿Por qué es importante?** Calcular el efecto de una perturbación muestra con números por qué vale la pena cerrar el lazo.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 Con varias entradas se usa superposición: se calcula la salida para cada entrada con las demás en cero, y se suman.
 

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Log groups, log streams y correlation ID
+### Tema 1: Log groups, log streams y correlation ID · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a usar `shipmentId` como correlation ID real para seguir una entrega a través de `confirmar-entrega` (Módulo 5), API Gateway (Módulo 6) y SQS (Módulo 5 Tema 6). Prerrequisitos: Módulo 5 completo.
@@ -73,7 +73,7 @@ Emití logs para dos envíos distintos (`env-4471` y `env-5002`) intercalados en
 #### Paso 7 · Cierre
 Entregá el log correlacionado por `shipmentId`, el log sin ID del Paso 5 y su diagnóstico, y la separación limpia del Paso 6; explicá por qué `shipmentId` es un correlation ID mejor que un UUID genérico para este caso. Siguiente paso: métricas. Errores comunes: datos sensibles en logs y texto no estructurado. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/WhatIsCloudWatchLogs.html.
 
-### Tema 2: Metric filters y alarmas
+### Tema 2: Metric filters y alarmas · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a convertir el error de validación real de `confirmar-entrega` (Módulo 5, "comando de entrega inválido") en una métrica con alarma. Prerrequisitos: Tema 1 de este módulo.
@@ -127,7 +127,7 @@ Creá una alarma sobre `ComandosInvalidos` con `aws cloudwatch put-metric-alarm 
 #### Paso 7 · Cierre
 Entregá el metric filter funcionando, el error que no coincidió en el Paso 5, y la alarma del Paso 6; explicá por qué el patrón de texto exacto es tanto la fortaleza como el punto débil de un metric filter. Siguiente paso: trazas. Errores comunes: umbral sin objetivo y alarmas ruidosas. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/CloudWatch_Metric_Streams.html.
 
-### Tema 3: Diagnóstico sistemático y X-Ray
+### Tema 3: Diagnóstico sistemático y X-Ray · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás investigar incidentes desde cero. Prerrequisitos: Node.js y Docker; verifica `node --version`.

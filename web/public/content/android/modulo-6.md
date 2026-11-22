@@ -34,7 +34,7 @@
 >
 > **Los scripts `python3` con `sqlite3` de este módulo son modelos del SQL, no pruebas de Room.** Demuestran qué hace la sentencia SQL, pero no que tu `@Entity`, tu DAO o tu `Migration` compilen y se apliquen. La evidencia real es la **Verificación real en Android** de cada tema: la compilación con KSP, el esquema exportado y la app en el emulador.
 
-### Tema 1: Entities, DAOs y Database
+### Tema 1: Entities, DAOs y Database · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -168,7 +168,7 @@ Ya declaras `@Entity`, `@Dao` y `@Database` de Room, y explicas cómo verifica l
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Persiste guías y eventos de sincronización mediante entidades y DAOs separados. Reinicia la app sin red y verifica que la ruta guardada sigue disponible con sus estados pendientes.
 
-### Tema 2: Room + Flow reactivo, y migraciones
+### Tema 2: Room + Flow reactivo, y migraciones · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -292,7 +292,7 @@ Ya explicas por qué un `Flow` de Room mantiene la UI sincronizada automáticame
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Añade una columna de intento de entrega mediante migración. Abre una base de la versión anterior y verifica tanto los registros conservados como la actualización reactiva de la lista después de escribir.
 
-### Tema 3: Estrategia offline-first
+### Tema 3: Estrategia offline-first · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

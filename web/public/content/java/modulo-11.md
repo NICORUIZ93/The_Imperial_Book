@@ -101,7 +101,7 @@ java -cp out Memoria
 
 Modifica `src/Memoria.java` para crear el arreglo dentro de un bucle de 50 iteraciones sin retenerlo en ninguna variable externa, y compara la salida de `GC.heap_info` antes y después de que el GC recoja esos arreglos temporales.
 
-### Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 50 min
+### Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 40 min
 
 **¿Por qué es importante?** JFR registra actividad de la JVM con bajo esfuerzo; el JIT compila código caliente y vuelve engañosa una medición sin calentamiento.
 

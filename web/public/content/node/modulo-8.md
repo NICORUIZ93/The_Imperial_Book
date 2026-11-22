@@ -229,7 +229,7 @@ Sustituye el texto por ese número, verifica que corresponde a esta práctica y 
 
 **Fuentes oficiales:** [`cluster`](https://nodejs.org/api/cluster.html) y [`os.availableParallelism`](https://nodejs.org/api/os.html#osavailableparallelism).
 
-### Tema 3: Redis para caché, idempotencia y Pub/Sub · Avanzado · 50 min
+### Tema 3: Redis para caché, idempotencia y Pub/Sub · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, Docker, operaciones asíncronas y conceptos básicos de Redis.
 
@@ -381,7 +381,7 @@ docker rm -f redis-practica-patrones
 
 **Fuentes oficiales:** [node-redis](https://github.com/redis/node-redis), [`SET` options](https://redis.io/docs/latest/commands/set/), [Pub/Sub](https://redis.io/docs/latest/develop/pubsub/) y [Redis para Node.js](https://redis.io/docs/latest/develop/clients/nodejs/).
 
-### Tema 4: Colas de trabajo con BullMQ · Avanzado · 50 min
+### Tema 4: Colas de trabajo con BullMQ · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, Docker, Redis básico y funciones asíncronas.
 
@@ -520,7 +520,7 @@ docker rm -f redis-practica-bullmq
 
 **Fuentes oficiales:** [BullMQ](https://docs.bullmq.io/), [Redis](https://redis.io/docs/latest/) y [reintentos](https://docs.bullmq.io/guide/retrying-failing-jobs).
 
-### Tema 5: PM2, memory leaks y heap snapshots · Avanzado · 50 min
+### Tema 5: PM2, memory leaks y heap snapshots · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, procesos locales y Chrome DevTools para la inspección visual.
 

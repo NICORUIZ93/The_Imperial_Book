@@ -1454,7 +1454,7 @@ Guarda la estructura final y anota qué datos se usaron como elemento, clave o g
 
 **Hito de 4 puntos:** crea una lista; crea un mapa sin duplicados; agrupa por ciudad; une textos con separador. **Proyecto integrador (RutaFlow):** produce un resumen de destinos por lote. Fuente: [Collectors de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/stream/Collectors.html).
 
-### Tema 11: Streams paralelos: comparar antes de acelerarlos · Avanzado · 50 min
+### Tema 11: Streams paralelos: comparar antes de acelerarlos · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -1712,7 +1712,7 @@ Guarda la entrada, el resultado calculado y el punto donde ocurre el efecto exte
 
 **Hito de 4 puntos:** muestra que la lista de entrada no cambia; realiza el registro después del cálculo; repite una entrada y obtiene la misma salida; señala qué línea produce el efecto. **Proyecto integrador (RutaFlow):** separa el costo de envío del envío de notificaciones. **Límite:** mantén la lambda pura (sin leer ni escribir estado externo) mientras calcula; cuando el paso realmente necesite guardar, notificar o imprimir, sepáralo en una llamada aparte después del cálculo en vez de mezclar cómputo y efecto en la misma función. Fuente: [java.util.function de Java 25](https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/util/function/package-summary.html).
 
-### Tema 13: Flow API: publicar datos con demanda y cierre · Avanzado · 50 min
+### Tema 13: Flow API: publicar datos con demanda y cierre · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

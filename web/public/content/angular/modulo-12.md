@@ -4,7 +4,7 @@ Este capítulo enseña a reconocer la época de un proyecto, comprobar compatibi
 
 ## Aprende construyendo
 
-### Tema 1: Reconocer la versión y la arquitectura de un proyecto
+### Tema 1: Reconocer la versión y la arquitectura de un proyecto · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -91,7 +91,7 @@ Ya puedes separar “última versión” de “versión instalada y soportada”
 
 **Límites y decisión de uso:** La versión declarada en package.json expresa un rango; no demuestra qué quedó instalado. Contrasta el lockfile y la herramienta del proyecto antes de elegir migraciones. Reconocer standalone tampoco prueba que todos los providers tengan alcance correcto.
 
-### Tema 2: Leer la guía de actualización antes de modificar archivos
+### Tema 2: Leer la guía de actualización antes de modificar archivos · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -153,7 +153,7 @@ Este mismo procedimiento (línea base verde, `ng update --dry-run`, clasificar a
 
 **Fuente oficial:** [Angular CLI — ng update](https://angular.dev/cli/update) y [Angular Update Guide](https://angular.dev/update-guide).
 
-### Tema 3: Migrar una versión mayor a la vez y verificar cada salto
+### Tema 3: Migrar una versión mayor a la vez y verificar cada salto · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

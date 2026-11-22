@@ -11,11 +11,11 @@ Con impedancias en Laplace, un circuito se resuelve como si solo tuviera resiste
 
 ## Aprende construyendo
 
-### Tema 1: Impedancias de resistencia, bobina y condensador en s
+### Tema 1: Impedancias de resistencia, bobina y condensador en s · Intermedio · 45 min
 
 **¿Por qué es importante?** Con impedancias resuelves un circuito como si solo tuviera resistencias; es el atajo que faltó en el punto 2 del Parcial 1.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 > **Idea clave.** En Laplace, el voltaje sobre un componente es su impedancia por la corriente: \(V = Z\,I\). Es la ley de Ohm generalizada.
 
@@ -167,11 +167,11 @@ usa sympy (`from sympy import symbols, simplify, Rational`) para construir \(Z =
 
 **Límite:** la tabla de impedancias asume condiciones iniciales cero; un capacitor con carga inicial o una bobina con corriente inicial aportan una fuente extra en serie que esta fórmula no incluye.
 
-### Tema 2: Circuitos pasivos: divisor de voltaje
+### Tema 2: Circuitos pasivos: divisor de voltaje · Intermedio · 45 min
 
 **¿Por qué es importante?** El divisor de voltaje en Laplace da la función de transferencia de los circuitos RC y RLC en una línea.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 \[\frac{V_o}{V_i} = \frac{Z_{\text{salida}}}{Z_{\text{total}}}\]
 
@@ -302,11 +302,11 @@ cambia a la red RLC del Ejemplo 3 (\(L=1\), \(R=2\), \(C=\)`Rational(1, 5)`) con
 
 **Límite:** el divisor de voltaje asume que no se extrae corriente en la salida (carga de impedancia infinita); si conectas una carga comparable a \(Z_{salida}\), hay que incluirla en el cálculo o el resultado deja de ser válido.
 
-### Tema 3: El op-amp inversor
+### Tema 3: El op-amp inversor · Intermedio · 45 min
 
 **¿Por qué es importante?** Los controladores P, I, D, PI y PD se construyen con op-amps; saber leer el circuito te dice qué acción implementa.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 Con la entrada \(+\) a tierra, el op-amp ideal cumple dos reglas:
 

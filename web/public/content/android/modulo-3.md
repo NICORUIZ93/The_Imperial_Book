@@ -7,7 +7,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas.** La evidencia real es la que aparece como **Verificación real en Android**: la app en el emulador y comandos `adb` con salida esperada.
 
-### Tema 1: NavHost y NavController
+### Tema 1: NavHost y NavController · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -123,7 +123,7 @@ Ya declaras un grafo de navegación con `NavHost` y explicas cómo `NavControlle
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Conecta lista, detalle y confirmación mediante NavHost. Abre una guía, confirma y regresa; verifica que la pila no acumula pantallas de confirmación y que la lista refleja el estado nuevo.
 
-### Tema 2: Argumentos tipados y deep links
+### Tema 2: Argumentos tipados y deep links · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -269,7 +269,7 @@ Ya declaras argumentos tipados y configuras deep links que mapean URIs externas 
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Navega pasando únicamente el identificador tipado de la guía. Abre un deep link con un identificador inválido y comprueba que muestra un error controlado sin consultar ni exponer otra entrega.
 
-### Tema 3: Navegación anidada con stacks independientes
+### Tema 3: Navegación anidada con stacks independientes · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -398,7 +398,7 @@ Ya estructuras una app con bottom navigation donde cada sección mantiene su pro
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Separa las pilas de Ruta y Perfil. Abre una entrega, cambia de pestaña y vuelve: el detalle debe mantenerse; cerrar sesión debe eliminar los destinos que requieren autenticación.
 
-### Tema 4: Predictive Back — gesto del sistema con preview animado
+### Tema 4: Predictive Back — gesto del sistema con preview animado · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

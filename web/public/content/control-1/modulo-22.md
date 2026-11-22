@@ -4,11 +4,11 @@ Un parcial nuevo con el estilo de los anteriores y el formulario completo para e
 
 ## Aprende construyendo
 
-### Tema 1: Simulacro con solución
+### Tema 1: Simulacro con solución · Avanzado · 45 min
 
 **¿Por qué es importante?** Hacer un simulacro con tiempo es la mejor prueba de que puedes resolver sin mirar las soluciones.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Lugar de las raíces, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior) y [Lugar de las raíces, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Design).
 
 Un parcial nuevo con el mismo estilo de los dos anteriores. Ponte 90 minutos, usa solo el formulario y después compara.
 

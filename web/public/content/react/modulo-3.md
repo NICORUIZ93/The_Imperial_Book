@@ -185,7 +185,7 @@ Corrige el Paso 5 devolviendo `destinatario` a `register`, y agrega un campo nue
 #### Paso 7 · Cierre
 Entrega el formulario sin re-renders por tecla del Paso 4, el campo controlado mezclado del Paso 5, y el campo adicional del Paso 6; explica por qué mezclar un campo controlado dentro de un formulario de React Hook Form reintroduce exactamente el costo que React Hook Form existe para evitar. Siguiente paso: estudia cómo validar ese formulario con un schema de zod. Errores comunes: mezclar campos controlados y no controlados en el mismo formulario sin necesidad, no medir realmente el costo de render antes de migrar a React Hook Form, y olvidar `{...register(...)}` en algún input dejándolo sin conectar. Fuentes oficiales: https://react-hook-form.com/get-started y https://react.dev/learn/sharing-state-between-components.
 
-### Tema 3: Validación con zod y formularios multi-paso · Intermedio · 50 min
+### Tema 3: Validación con zod y formularios multi-paso · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a validar el formulario de registro de envíos con un schema de zod, y a dividirlo en dos pasos (datos del paquete, datos de entrega) sin perder información al retroceder. Prerrequisitos: Tema 2 de este módulo.

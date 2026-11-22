@@ -5,7 +5,7 @@ Hasta ahora construiste un inventario, lo protegiste con pruebas y seguridad y s
 
 ## Aprende construyendo
 
-### Tema 1: El sistema operativo como administrador y frontera
+### Tema 1: El sistema operativo como administrador y frontera · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un cálculo de ruta mínimo, lanzarlo como proceso real, inspeccionarlo con `ps` y detenerlo con una señal. Prerrequisitos: Python 3 instalado.
@@ -127,7 +127,7 @@ Cambiá `lento.py` para que registre una señal con `signal.signal(signal.SIGTER
 
 #### Paso 7 · Cierre
 Entregá la salida de `ps` del Paso 4, los códigos de salida de SIGKILL y SIGTERM del Paso 5, y el manejador de señal del Paso 6; explicá la diferencia entre ambas señales en términos de qué puede y qué no puede hacer tu código antes de terminar. Como siguiente paso, aplicá el mismo diagnóstico a un proceso que escribe en SQLite y comprobá qué deja a medio hacer un SIGKILL. Errores comunes: usar `kill -9` como primer recurso en vez de SIGTERM, asumir que un proceso terminado liberó sus recursos de forma ordenada sin confirmarlo, y no revisar el código de salida que un proceso deja al terminar. Fuentes oficiales: https://man7.org/linux/man-pages/man7/signal.7.html.
-### Tema 2: Memoria y concurrencia sin magia
+### Tema 2: Memoria y concurrencia sin magia · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a provocar una condición de carrera real sobre el contador de capacidad de un vehículo de reparto, y a corregirla con un lock. Prerrequisitos: Python 3 instalado.
@@ -243,7 +243,7 @@ Corregí el Paso 4 envolviendo la lectura-cálculo-escritura en un `Lock()` (com
 #### Paso 7 · Cierre
 Entregá el resultado inconsistente del Paso 4-5, y el resultado corregido y determinista del Paso 6; explicá por qué un lock en un solo proceso no alcanzaría si la asignación de vehículos corriera en dos procesos o instancias distintas. Errores comunes: asumir que una línea de código como `capacidad -= 1` es atómica, proteger con un lock de un solo proceso una operación que en realidad corre en varios procesos distintos, y bloquear una sección más grande de la necesaria sacrificando rendimiento sin motivo. Fuentes oficiales: https://docs.python.org/3/library/threading.html.
 
-### Tema 3: Linux como entorno observable
+### Tema 3: Linux como entorno observable · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a diagnosticar, con herramientas reales de Linux, un servicio mínimo que expone la lógica de `domain.py` como endpoint de salud. Prerrequisitos: Python 3 instalado; Tema 1 de este módulo.
@@ -321,7 +321,7 @@ Repetí el Paso 4 redirigiendo la salida del servidor a un log (`> servicio.log 
 
 #### Paso 7 · Cierre
 Entregá los tres ángulos de diagnóstico del Paso 4, el código de salida del `curl` tras el fallo del Paso 5, y el log seguido en vivo del Paso 6; explicá por qué reiniciar sin esta evidencia previa puede ocultar la causa raíz de un fallo real. Como siguiente paso, repetí el diagnóstico con un servicio que exponga `/health` y compará qué responde cuando el proceso vive pero la base no. Errores comunes: reiniciar el servicio antes de capturar `ps`, `lsof` o los logs, confundir que el proceso exista con que el servicio funcione correctamente, y no diferenciar falta de CPU de espera de I/O antes de diagnosticar. Fuentes oficiales: https://man7.org/linux/man-pages/man8/lsof.8.html y https://man7.org/linux/man-pages/man8/ss.8.html.
-### Tema 4: Contenedores: aislamiento reproducible
+### Tema 4: Contenedores: aislamiento reproducible · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a contenerizar `domain.py` de RutaFlow con un usuario sin privilegios y a confirmar que los datos sobreviven a recrear el contenedor. Prerrequisitos: Docker instalado; Tema 3 de este módulo.
@@ -471,7 +471,7 @@ Corregí el Paso 5 restaurando `USER rutaflow`, escribí un archivo dentro de `/
 Entregá el contenedor corriendo como usuario no root del Paso 4, el root innecesario detectado del Paso 5, y la persistencia confirmada del Paso 6; explicá por qué "funciona en mi máquina" suele ocultar justo estas diferencias de identidad y filesystem. Errores comunes: correr el proceso del contenedor como root por omisión, guardar datos que deben persistir en la capa escribible del contenedor en vez de un volumen, y asumir que `EXPOSE` publica un puerto cuando solo lo documenta. Fuentes oficiales: https://docs.docker.com/develop/develop-images/dockerfile_best-practices/.
 **Implicación práctica:** Un contenedor que corre como root o guarda sus datos en la capa efímera funciona igual en una demo y pierde la base de datos (o amplifica una vulnerabilidad) en el primer `docker rm` real.
 
-### Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores
+### Tema 5: Problemas clásicos de concurrencia: filósofos y lectores-escritores · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás reproducir un interbloqueo (deadlock) con la cena de los filósofos, evitarlo imponiendo un orden global de recursos y permitir lecturas concurrentes con exclusión de escritores. Prerrequisito: Tema 2 de este módulo (memoria y concurrencia).

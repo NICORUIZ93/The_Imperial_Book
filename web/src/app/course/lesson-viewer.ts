@@ -210,11 +210,12 @@ export class LessonViewerComponent implements OnDestroy {
   readonly moduleIndex = computed(() => this.track()?.modules.findIndex(m => m.id === this.moduleId()) ?? -1);
   readonly levelLabel = courseLevelLabel;
   readonly isCloudIntroduction = computed(() => this.trackId() === 'cloud' && this.moduleId() === 0);
+  // Cifras comprobadas y citadas en README.md:34-57 (macOS, 2026-11-20).
   readonly flociMetrics = [
-    { value: '24 ms', label: 'Arranque de referencia', detail: 'Binario nativo' },
-    { value: '13 MiB', label: 'Memoria en reposo', detail: 'Huella local reducida' },
-    { value: '68', label: 'Servicios AWS', detail: 'Sin niveles de pago' },
-    { value: '1.925/1.925', label: 'Pruebas SDK', detail: 'Suite publicada por Floci' },
+    { value: '4', label: 'Servicios locales', detail: 'AWS, Azure, GCP y panel' },
+    { value: '4566', label: 'Puerto de AWS local', detail: 'Endpoint para CLI y SDK' },
+    { value: '200', label: 'Health de AWS', detail: '/_floci/health en el Mac del proyecto' },
+    { value: '15–45 s', label: 'Arranque de AWS', detail: 'Hasta responder el health' },
   ];
   readonly flociCapabilities = [
     { icon: Zap, title: 'Ciclo de trabajo inmediato', text: 'Levanta, prueba y destruye recursos dentro del mismo ciclo de edición, sin esperar una cuenta remota.' },
@@ -1745,10 +1746,16 @@ export class LessonViewerComponent implements OnDestroy {
     if (!button) return;
     const pre = button.closest('.code-example')?.querySelector<HTMLPreElement>('pre');
     const code = pre?.dataset['rawCode'] ?? pre?.querySelector('code')?.textContent ?? '';
-    await navigator.clipboard.writeText(code);
+    let label = 'Copiado';
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      // Contexto no seguro o permiso denegado: el botón lo dice en vez de dejar una promesa rechazada.
+      label = 'No se pudo copiar';
+    }
     const id = button.dataset['copyCode'] ?? '';
     this.copiedCode.set(id);
-    button.textContent = 'Copiado';
+    button.textContent = label;
     if (this.copyTimer) clearTimeout(this.copyTimer);
     this.copyTimer = setTimeout(() => {
       button.textContent = 'Copiar';

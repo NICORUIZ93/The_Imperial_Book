@@ -107,7 +107,7 @@ java -cp out Inventario
 
 Modifica `reservar()` para que la comprobación `disponibles > 0` quede fuera del bloque `synchronized` y solo el decremento esté protegido; lanza varios hilos y explica por qué `disponibles` puede terminar en negativo.
 
-### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 50 min
+### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
 
 **¿Por qué es importante?** el resultado de una medición puede incluir calentamiento o trabajo que el compilador elimina; usa JMH para organizar las mediciones.
 

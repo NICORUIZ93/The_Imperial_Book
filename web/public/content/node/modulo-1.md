@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: package.json y semver · Básico · 50 min
+### Tema 1: package.json y semver · Básico · 45 min
 
 **Prerrequisito:** Node LTS y npm. Comprueba `node --version` y `npm --version`; no necesitas archivos de otros temas.
 
@@ -134,7 +134,7 @@ Entrega la salida de `npm pkg get scripts engines` y explica en un comentario de
 
 ---
 
-### Tema 2: Lockfiles e instalación reproducible · Básico · 50 min
+### Tema 2: Lockfiles e instalación reproducible · Básico · 45 min
 
 **Prerrequisito:** Node, npm y comprensión de rangos, dependencias directas y transitivas. El ejercicio vuelve a empezar en una carpeta vacía.
 
@@ -243,7 +243,7 @@ npm ls vitest --depth=0
 
 ---
 
-### Tema 3: ESM y CommonJS en el mismo proyecto · Intermedio · 60 min
+### Tema 3: ESM y CommonJS en el mismo proyecto · Básico · 45 min
 
 **Prerrequisito:** Node 22.12 o superior para el ejemplo de `require()` de ESM y un editor. Comprueba `node --version`; no necesitas archivos de otros temas.
 
@@ -399,7 +399,7 @@ Crea dentro de esta misma carpeta un paquete `dual` que exponga una versión ESM
 
 ---
 
-### Tema 4: Scripts de ciclo de vida · Intermedio · 50 min
+### Tema 4: Scripts de ciclo de vida · Básico · 45 min
 
 **Prerrequisito:** Node, npm y conocimiento de scripts, lockfiles y paquetes. La demostración es independiente y parte de una carpeta vacía.
 
@@ -510,7 +510,7 @@ Como reto independiente, compara una instalación normal con otra usando `--igno
 
 ---
 
-### Tema 5: Workspaces — monorepos con npm/pnpm · Intermedio · 60 min
+### Tema 5: Workspaces — monorepos con npm/pnpm · Básico · 45 min
 
 **Prerrequisito:** Node, npm, imports ESM y conocimiento de `package.json` e instalación reproducible. No reutilizarás proyectos de temas anteriores.
 
@@ -653,7 +653,7 @@ Crea `packages/tracking` con su propio manifiesto y una función pura que valide
 
 ---
 
-### Tema 6: Publicar y versionar un paquete npm (público o privado) · Intermedio · 60 min
+### Tema 6: Publicar y versionar un paquete npm (público o privado) · Básico · 45 min
 
 **Prerrequisito:** Node 22 o superior, npm y conocimiento de `package.json`, semver y lockfiles. Este tema no consume archivos creados en otros temas.
 

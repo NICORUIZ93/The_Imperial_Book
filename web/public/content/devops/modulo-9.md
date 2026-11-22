@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram
+### Tema 1: Modelo de métricas de Prometheus — counter, gauge, histogram · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -91,7 +91,7 @@ Ya distingues cuándo usar cada tipo de métrica según su patrón de comportami
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Instrumenta peticiones, operaciones en curso y duración con tipos de métrica adecuados. Envía una carga conocida y comprueba conteos y unidades, evitando etiquetas con identificadores de usuarios o guías.
 
-### Tema 2: PromQL esencial
+### Tema 2: PromQL esencial · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -174,7 +174,7 @@ Ya conviertes contadores acumulados en tasas y proporciones interpretables direc
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Construye consultas para tasa de errores y latencia del servicio. Valídalas con un periodo sin tráfico y con un fallo controlado para evitar divisiones inválidas o promedios engañosos.
 
-### Tema 3: Dashboards en Grafana
+### Tema 3: Dashboards en Grafana · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -262,7 +262,7 @@ Ya visualizas consultas PromQL en tiempo real organizadas en torno a preguntas o
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Crea un panel que permita decidir si el despliegue funciona: tráfico, errores y latencia. Relaciona cada gráfico con una acción y comprueba que sus unidades y filtros corresponden al mismo servicio.
 
-### Tema 4: Alertmanager y reglas de alerta
+### Tema 4: Alertmanager y reglas de alerta · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -354,7 +354,7 @@ Ya diseñas reglas de alerta que solo notifican ante problemas sostenidos y real
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Dispara una alerta con una degradación controlada y verifica recepción, agrupación y resolución. El aviso debe enlazar el runbook y señalar el servicio y entorno afectados.
 
-### Tema 5: SLI, SLO, SLA
+### Tema 5: SLI, SLO, SLA · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -437,7 +437,7 @@ Ya mides un SLI real, defines un SLO con margen interno, y calculas el presupues
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Define un objetivo de disponibilidad con numerador, denominador y ventana explícitos. Calcula el presupuesto de error con datos de prueba y documenta qué despliegues se detendrían al agotarlo.
 
-### Tema 6: OpenTelemetry como estándar de instrumentación
+### Tema 6: OpenTelemetry como estándar de instrumentación · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -528,7 +528,7 @@ Ya instrumentas código de forma neutral al backend de observabilidad elegido. E
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Propaga contexto entre API y consumidor mediante instrumentación del laboratorio. Una petición de prueba debe producir una traza correlacionada sin incorporar credenciales ni direcciones personales como atributos.
 
-### Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate
+### Tema 7: Métricas DORA — Lead Time, Deployment Frequency, MTTR, Change Failure Rate · Avanzado · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -611,7 +611,7 @@ Ya calculas Lead Time real a partir de tu propio historial de Git, y sabes qué 
 
 ---
 
-### Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Experto · 50 min
+### Tema 8: Chaos engineering: experimentos controlados para comprobar que el sistema resiste fallos · Avanzado · 20 min
 
 **Prerrequisito:** temas «SLI, SLO, SLA» y «Alertmanager y reglas de alerta» de este módulo.
 

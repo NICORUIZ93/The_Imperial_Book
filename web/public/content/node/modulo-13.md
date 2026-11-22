@@ -6,7 +6,7 @@ Una API puede compilar, pasar pruebas y aun romper consumidores o duplicar cobro
 
 Cada tema comienza en una carpeta vacía y constituye un proyecto independiente. Escribe manualmente todos los archivos indicados: no copies ni abras ejemplos de la academia y no reutilices archivos de otros temas. Las pruebas de concurrencia son locales y acotadas; no necesitan credenciales reales, servicios externos, CI ni despliegues.
 
-### Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera · Intermedio · 90 min
+### Tema 1: Tipos estáticos dentro, datos desconocidos en la frontera · Avanzado · 45 min
 
 #### Aprende
 
@@ -197,7 +197,7 @@ flowchart LR
 
 **Fuentes oficiales:** [zod](https://zod.dev/) y [TypeScript: uso de `unknown` en variables `catch`](https://www.typescriptlang.org/docs/handbook/release-notes/typescript-4-4.html#using-unknown-in-catch-variables).
 
-### Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 90 min
+### Tema 2: Un contrato HTTP es comportamiento, no solo documentación · Avanzado · 45 min
 
 #### Aprende
 
@@ -497,7 +497,7 @@ flowchart LR
 
 **Fuentes oficiales:** [OpenAPI Specification](https://swagger.io/specification/) y [RFC 9457: Problem Details for HTTP APIs](https://www.rfc-editor.org/rfc/rfc9457).
 
-### Tema 3: OpenAPI como contrato ejecutable · Avanzado · 100 min
+### Tema 3: OpenAPI como contrato ejecutable · Avanzado · 45 min
 
 #### Aprende
 
@@ -815,7 +815,7 @@ flowchart LR
 
 **Fuentes oficiales:** [OpenAPI Specification 3.1](https://spec.openapis.org/oas/v3.1.0.html), [OpenAPI Specification, versión vigente](https://spec.openapis.org/oas/latest.html) y [Redocly CLI](https://redocly.com/docs/cli/).
 
-### Tema 4: Reintentar sin duplicar el efecto · Avanzado · 120 min
+### Tema 4: Reintentar sin duplicar el efecto · Avanzado · 45 min
 
 #### Aprende
 
@@ -1185,7 +1185,7 @@ flowchart TD
 
 **Fuentes oficiales:** [Stripe: idempotent requests](https://docs.stripe.com/idempotency) y [node-postgres: transactions](https://node-postgres.com/features/transactions).
 
-### Tema 5: Webhooks verificables y recuperación por reconciliación · Avanzado · 100 min
+### Tema 5: Webhooks verificables y recuperación por reconciliación · Avanzado · 45 min
 
 #### Aprende
 

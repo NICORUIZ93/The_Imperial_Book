@@ -10,37 +10,37 @@
 > ilustrativo. C1, C2, C5 y C6 son las que cita literalmente el prompt maestro y las que hay
 > que bajar. La lista de trabajo está en el CSV, con la ruta concreta de cada incidencia.
 
-Temas sin ninguna incidencia: **1276/1608** (79 %).
+Temas sin ninguna incidencia: **1284/1608** (80 %).
 
 | Comprobación | Qué significa | Temas con incidencia | Incidencias |
 |---|---|---:|---:|
 | C1 | ruta usada que ningún tema del curso crea y que no existe en el repo | 39/1608 | 63 |
 | C2 | la carpeta que crean los comandos no es donde vive el código | 22/1608 | 22 |
-| C3 | estructura de archivos dibujada que el tema no crea | 2/1608 | 5 |
-| C4 | bloque de código largo sin declarar su archivo | 262/1608 | 358 |
-| C5 | laboratorio citado cuya ruta no existe en el repo | 4/1608 | 6 |
+| C3 | estructura de archivos dibujada que el tema no crea | 1/1608 | 4 |
+| C4 | bloque de código largo sin declarar su archivo | 257/1608 | 353 |
+| C5 | laboratorio citado cuya ruta no existe en el repo | 0/1608 | 0 |
 | C6 | ruta que sí está versionada en `examples/` pero ningún tema manda crear | 26/1608 | 30 |
 
 ## Por curso
 
 | Curso | Temas | C1 | C2 | C3 | C4 | C5 | C6 | Sin incidencia |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|
-| android | 83 | 0 | 0 | 0 | 2 | 0 | 0 | 81/83 |
-| angular | 78 | 4 | 0 | 1 | 32 | 0 | 0 | 47/78 |
+| android | 83 | 0 | 0 | 0 | 1 | 0 | 0 | 82/83 |
+| angular | 78 | 4 | 0 | 0 | 31 | 0 | 0 | 48/78 |
 | cloud | 168 | 3 | 0 | 0 | 10 | 0 | 0 | 158/168 |
 | control-1 | 105 | 0 | 0 | 0 | 0 | 0 | 0 | 105/105 |
 | devops | 139 | 6 | 1 | 0 | 5 | 0 | 3 | 128/139 |
 | flutter | 119 | 1 | 2 | 0 | 3 | 0 | 0 | 114/119 |
-| foundations | 88 | 2 | 0 | 0 | 37 | 0 | 0 | 63/88 |
+| foundations | 88 | 2 | 0 | 0 | 36 | 0 | 0 | 64/88 |
 | ios | 69 | 7 | 0 | 4 | 63 | 0 | 0 | 34/69 |
-| java | 120 | 1 | 2 | 0 | 4 | 2 | 0 | 112/120 |
+| java | 120 | 1 | 2 | 0 | 2 | 0 | 0 | 116/120 |
 | javascript | 92 | 14 | 9 | 0 | 16 | 0 | 0 | 61/92 |
 | kotlin-multiplatform | 66 | 1 | 0 | 0 | 7 | 0 | 0 | 58/66 |
-| microservices | 187 | 24 | 4 | 0 | 52 | 1 | 24 | 117/187 |
+| microservices | 187 | 24 | 4 | 0 | 52 | 0 | 24 | 118/187 |
 | node | 78 | 0 | 1 | 0 | 13 | 0 | 0 | 65/78 |
 | react | 64 | 0 | 1 | 0 | 67 | 0 | 0 | 17/64 |
 | rutaflow | 29 | 0 | 0 | 0 | 10 | 0 | 0 | 22/29 |
-| spring-boot | 123 | 0 | 2 | 0 | 37 | 3 | 3 | 94/123 |
+| spring-boot | 123 | 0 | 2 | 0 | 37 | 0 | 3 | 94/123 |
 
 ## Cómo se usa
 

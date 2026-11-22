@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: suspend functions y concurrencia estructurada
+### Tema 1: suspend functions y concurrencia estructurada · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -148,7 +148,7 @@ Ya combinas dos llamadas asíncronas en paralelo dentro de un `coroutineScope`, 
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Haz que cancelar la pantalla cancele también la consulta de entregas hija. Prueba cancelación y fallo usando un scope controlado; ningún trabajo debe continuar por un scope global accidental.
 
-### Tema 2: Flow, StateFlow y SharedFlow
+### Tema 2: Flow, StateFlow y SharedFlow · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -277,7 +277,7 @@ Ya distingues `Flow`, `StateFlow` y `SharedFlow` según si existe un valor actua
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Expón el estado durable de sincronización como StateFlow y separa avisos transitorios. Suscribe un nuevo consumidor y verifica que puede reconstruir la pantalla sin haber recibido eventos anteriores.
 
-### Tema 3: Manejo de errores y exclusión mutua
+### Tema 3: Manejo de errores y exclusión mutua · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -445,7 +445,7 @@ Ya transformas errores de llamadas `suspend` en estados explícitos, y confirmas
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Protege la actualización concurrente de la outbox y modela errores recuperables. Lanza dos confirmaciones de la misma guía en pruebas compartidas y comprueba que no duplica la operación pendiente.
 
-### Tema 4: Dispatchers y withContext: en qué hilo corre tu código
+### Tema 4: Dispatchers y withContext: en qué hilo corre tu código · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

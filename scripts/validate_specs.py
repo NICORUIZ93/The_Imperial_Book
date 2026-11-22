@@ -68,7 +68,16 @@ def parse(spec: Path) -> tuple[list[Criterion], list[str]]:
 
 def run(item: Criterion) -> bool:
     """Ejecuta la verificación desde la raíz del repo y devuelve si pasó."""
-    result = subprocess.run(item.command, shell=True, cwd=ROOT, capture_output=True, text=True)
+    try:
+        # Cada verificación tiene un límite: una comprobación colgada no puede
+        # dejar `--run` esperando indefinidamente (specs/026 C10).
+        result = subprocess.run(
+            item.command, shell=True, cwd=ROOT, capture_output=True, text=True,
+            timeout=300,
+        )
+    except subprocess.TimeoutExpired:
+        print(f"  {item.spec} {item.ident}: FALLA (timeout de 300 s)")
+        return False
     status = "ok" if result.returncode == 0 else f"FALLA (código {result.returncode})"
     print(f"  {item.spec} {item.ident}: {status}")
     if result.returncode != 0:

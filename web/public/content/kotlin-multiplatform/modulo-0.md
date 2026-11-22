@@ -108,7 +108,7 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Null safety real
+### Tema 1: Null safety real · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -237,7 +237,7 @@ Ya distingues un tipo nullable de uno no-nullable en cualquier firma, y eliges e
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Modela la ausencia de ubicación del repartidor sin forzar una referencia no nula. Prueba permisos denegados y primera apertura; el dominio debe producir un estado recuperable, no una excepción por !!.
 
-### Tema 2: data class y funciones de extensión
+### Tema 2: data class y funciones de extensión · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -362,7 +362,7 @@ Ya generas igualdad estructural y copia inmutable con `data class`, y agregas co
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Representa una entrega como valor y añade una extensión de presentación sin estado oculto. Prueba copia e igualdad y verifica que cambiar el estado no modifica snapshots anteriores.
 
-### Tema 3: when como expresión
+### Tema 3: when como expresión · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -509,7 +509,7 @@ Ya usas `when` como expresión que devuelve un valor directamente, y aprovechas 
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Modela éxito, error y ausencia de una consulta como variantes explícitas. Una prueba por variante debe exigir una decisión de presentación sin convertir errores en una entrega vacía.
 
-### Tema 4: Destructuring declarations y rangos
+### Tema 4: Destructuring declarations y rangos · Básico · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

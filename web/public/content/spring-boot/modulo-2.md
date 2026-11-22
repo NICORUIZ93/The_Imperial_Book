@@ -1268,7 +1268,7 @@ Page es útil si la interfaz necesita total y número de páginas. Para una list
 
 **Fuentes primarias:** [Spring Data: repositorios y paginación](https://docs.spring.io/spring-data/commons/reference/repositories/core-concepts.html), [Spring Data: uso de Pageable y Page](https://docs.spring.io/spring-data/commons/reference/repositories/query-methods-details.html), [Spring MVC: validación de parámetros](https://docs.spring.io/spring-framework/reference/web/webmvc/mvc-controller/ann-validation.html).
 
-### Tema 7: JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos · Intermedio · 35 min
+### Tema 7: JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos · Avanzado · 35 min
 
 Al terminar, podrás serializar y leer los DTO de la API con Jackson 3, el motor JSON que Spring Boot 4 usa por defecto, y reconocer los cambios que rompen código escrito para Jackson 2.
 
@@ -1444,7 +1444,7 @@ Ignorar campos desconocidos permite que un cliente nuevo hable con un servidor v
 
 **Proyecto integrador:** en RutaFlow, decide si la API pública ignora o rechaza propiedades desconocidas y documéntalo en el contrato OpenAPI. **Límite:** springdoc puede traer Jackson 2 como dependencia transitiva; eso no cambia el motor que usan tus controladores, que es el `JsonMapper` de Boot.
 
-### Tema 8: Versionado de API nativo de Spring Framework 7 · Intermedio · 40 min
+### Tema 8: Versionado de API nativo de Spring Framework 7 · Avanzado · 40 min
 
 Al terminar, podrás servir dos versiones del mismo recurso desde un controlador, elegir la versión por cabecera, rechazar versiones desconocidas y avisar a los clientes de que una versión será retirada con las cabeceras `Deprecation` y `Sunset`.
 

@@ -52,7 +52,7 @@ Instala una versión **LTS** de Node.js, Git y Visual Studio Code. Un administra
 
 Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente todos los archivos indicados; no necesitas copiar código del repositorio de la academia ni reutilizar archivos de otro tema. `npm init -y` crea el `package.json` de cada proyecto. Nunca copies `node_modules` ni lo subas a Git: se reconstruye con `npm install`. Si npm muestra `EACCES`, no uses `sudo`; corrige la instalación de Node mediante el administrador de versiones.
 
-### Tema 1: Node no es "JavaScript en el servidor" sin más · Básico · 75 min
+### Tema 1: Node no es "JavaScript en el servidor" sin más · Básico · 45 min
 
 #### Aprende
 
@@ -147,7 +147,7 @@ En el **[Proyecto integrador: runtime observable de entregas](#proyecto-0-runtim
 
 **Fuentes oficiales:** [Node.js: Event Loop](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`fs/promises`](https://nodejs.org/api/fs.html#promises-api).
 
-### Tema 2: process, global y módulos core · Básico · 75 min
+### Tema 2: process, global y módulos core · Básico · 45 min
 
 #### Aprende
 
@@ -276,7 +276,7 @@ Lleva esta frontera al **[Proyecto integrador: configuración de la API operativ
 
 **Fuentes oficiales:** [`process`](https://nodejs.org/api/process.html), [`os`](https://nodejs.org/api/os.html) y [`path`](https://nodejs.org/api/path.html).
 
-### Tema 3: Fases del Event Loop de Node · Intermedio · 75 min
+### Tema 3: Fases del Event Loop de Node · Básico · 45 min
 
 #### Aprende
 
@@ -367,7 +367,7 @@ En el **[Proyecto integrador: traza de confirmación](#proyecto-0-runtime-observ
 
 **Fuentes oficiales:** [Event Loop, timers y `nextTick`](https://nodejs.org/en/learn/asynchronous-work/event-loop-timers-and-nexttick) y [`process.nextTick`](https://nodejs.org/api/process.html#processnexttickcallback-args).
 
-### Tema 4: Event-driven architecture y non-blocking I/O · Intermedio · 75 min
+### Tema 4: Event-driven architecture y non-blocking I/O · Básico · 45 min
 
 #### Aprende
 

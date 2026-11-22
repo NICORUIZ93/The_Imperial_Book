@@ -5,7 +5,7 @@
 
 Este módulo reúne cuatro técnicas que no aparecen antes en el curso, cada una verificada con la herramienta real (Vitest, Playwright, transiciones CSS con `prefers-reduced-motion` y `TransferState`). `TestBed` y `ComponentFixture` se enseñan en el Módulo 10, Tema 1; SSR, hidratación e `isPlatformBrowser`, en el Módulo 11, Temas 1 y 2.
 
-### Tema 1: Pruebas de Signals
+### Tema 1: Pruebas de Signals · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -129,7 +129,7 @@ Ya confirmas con un spy real que `computed()` memoiza correctamente y solo reeje
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Prueba el total de entregas pendientes derivado de Signals. Añade, completa y elimina una guía; el valor debe cambiar por actualización inmutable sin mutar el arreglo almacenado.
 
-### Tema 2: Cypress y Playwright
+### Tema 2: Cypress y Playwright · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -220,7 +220,7 @@ Ya escribes tests E2E reales con locators accesibles y auto-waiting, verificando
 
 **Cuándo no usarlo:** para lógica de negocio pura sin ninguna interacción de UI real, un test E2E completo es una herramienta desproporcionadamente costosa (lenta, frágil ante cambios de infraestructura); un test unitario o de integración más acotado es más apropiado.
 
-### Tema 3: Animaciones accesibles
+### Tema 3: Animaciones accesibles · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -349,7 +349,7 @@ Ya confirmas con un test real que una animación respeta la preferencia de movim
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Anima la apertura del detalle manteniendo el foco en un control útil. Con movimiento reducido, comprueba que la información y las acciones permanecen disponibles sin esperar una transición.
 
-### Tema 4: SSR y TransferState
+### Tema 4: SSR y TransferState · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

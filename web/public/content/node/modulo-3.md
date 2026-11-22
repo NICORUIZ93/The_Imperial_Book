@@ -4,7 +4,7 @@
 
 Cada tema comienza en una carpeta vacía y usa únicamente Node.js LTS y `curl`. Escribe manualmente los archivos indicados; no necesitas Express, código prefabricado de la academia ni archivos de otros temas.
 
-### Tema 1: El modelo request/response · Básico · 60 min
+### Tema 1: El modelo request/response · Intermedio · 45 min
 
 #### Aprende
 
@@ -90,7 +90,7 @@ En el **[Proyecto integrador: API nativa de tareas](#proyecto-3-api-http-nativa-
 
 **Fuentes oficiales:** [`node:http`](https://nodejs.org/api/http.html), [`http.createServer`](https://nodejs.org/api/http.html#httpcreateserveroptions-requestlistener) y [códigos de estado HTTP de MDN](https://developer.mozilla.org/es/docs/Web/HTTP/Status).
 
-### Tema 2: Routing manual · Básico · 75 min
+### Tema 2: Routing manual · Intermedio · 45 min
 
 #### Aprende
 
@@ -199,7 +199,7 @@ En el **[Proyecto integrador: routing de tareas](#proyecto-3-api-http-nativa-de-
 
 **Fuentes oficiales:** [métodos HTTP en MDN](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Methods), [estado `201`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/201), [estado `404`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/404) y [`IncomingMessage`](https://nodejs.org/api/http.html#class-httpincomingmessage).
 
-### Tema 3: Parsing de body y headers · Intermedio · 75 min
+### Tema 3: Parsing de body y headers · Intermedio · 45 min
 
 #### Aprende
 
@@ -307,9 +307,9 @@ En el **[Proyecto integrador: entrada acotada](#proyecto-3-api-http-nativa-de-ta
 
 **Errores comunes:** asumir `req.body`, omitir límite, validar el tipo después de consumir el cuerpo, responder `500` a errores del cliente y medir caracteres en lugar de bytes.
 
-**Fuentes oficiales:** [`IncomingMessage.headers`](https://nodejs.org/api/http.html#messageheaders), [estado `400`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/400), [estado `413`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/413) y [estado `415`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/415).
+**Fuentes oficiales:** [`IncomingMessage.headers`](https://nodejs.org/api/http.html#messageheaders), [estado `400`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/400), [estado `413`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/413) y [estado `415`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/415).
 
-### Tema 4: Códigos de estado y content negotiation · Intermedio · 75 min
+### Tema 4: Códigos de estado y content negotiation · Intermedio · 45 min
 
 #### Aprende
 
@@ -402,9 +402,9 @@ En el **[Proyecto integrador: representaciones de tareas](#proyecto-3-api-http-n
 
 **Cuándo no usarlo:** si solo existe un consumidor y un formato fijo, fija `Content-Type` y evita negociación manual. No inventes formatos que el servidor no pueda serializar correctamente.
 
-**Fuentes oficiales:** [negociación de contenido en MDN](https://developer.mozilla.org/es/docs/Web/HTTP/Content_negotiation), [cabecera `Accept`](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Headers/Accept), [cabecera `Vary`](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Headers/Vary) y [estado `406`](https://developer.mozilla.org/es/docs/Web/HTTP/Status/406).
+**Fuentes oficiales:** [negociación de contenido en MDN](https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Content_negotiation), [cabecera `Accept`](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Headers/Accept), [cabecera `Vary`](https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Headers/Vary) y [estado `406`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/406).
 
-### Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 60 min
+### Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 45 min
 
 #### Aprende
 

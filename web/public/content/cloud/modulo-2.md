@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Objetos, buckets y su nomenclatura
+### Tema 1: Objetos, buckets y su nomenclatura · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás almacenar un objeto desde cero. Prerrequisitos: Docker y AWS CLI; verifica `aws --version`.
@@ -101,7 +101,7 @@ Sube, descarga y verifica un archivo.
 #### Paso 7 · Cierre
 Entrega comandos, salida, fallo y corrección; explica el resultado. Siguiente paso: claves y metadatos. Errores comunes: confundir key y ruta local. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Welcome.html.
 
-### Tema 2: Claves y metadatos
+### Tema 2: Claves y metadatos · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás subir un objeto con metadatos reales y entender por qué el `Content-Type`
@@ -171,7 +171,7 @@ Entregá el `head-object` de antes y después del arreglo, mostrando el cambio d
 Siguiente paso: versionado. Errores comunes: confiar en la extensión del archivo en vez de
 declarar el tipo explícito. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMetadata.html.
 
-### Tema 3: Versionado y ciclo de vida
+### Tema 3: Versionado y ciclo de vida · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás activar versionado y recuperar una versión reemplazada por error.
@@ -243,7 +243,7 @@ de `recuperada.jpg`. Siguiente paso: clases de almacenamiento. Errores comunes: 
 versionado activo la foto equivocada se podría haber recuperado — sin este paso, la
 sobrescritura es irreversible. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/Versioning.html.
 
-### Tema 4: Transición entre capas de almacenamiento
+### Tema 4: Transición entre capas de almacenamiento · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás configurar y verificar una regla de ciclo de vida real. Prerrequisitos:
@@ -304,7 +304,7 @@ con `get-bucket-lifecycle-configuration`.
 Entregá la regla JSON, el error del valor inválido y la configuración final corregida.
 Siguiente paso: seguridad. Errores comunes: optimizar solo el costo de almacenamiento sin
 considerar el costo y tiempo de recuperación. Fuente oficial: https://docs.aws.amazon.com/AmazonS3/latest/userguide/storage-class-intro.html.
-### Tema 5: Políticas de bucket, ACL y URLs pre-firmadas
+### Tema 5: Políticas de bucket, ACL y URLs pre-firmadas · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás generar una URL temporal para que un cliente vea su prueba de entrega sin

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: ELB v2 — balanceadores, grupos objetivo y reglas
+### Tema 1: ELB v2 — balanceadores, grupos objetivo y reglas · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar `demo-alb` para repartir tráfico entre los nodos de reparto de `demo-asg` (Módulo 21). Prerrequisitos: Módulo 21 completo.
@@ -66,7 +66,7 @@ Agregá una regla de enrutamiento por ruta (`aws elbv2 create-rule --listener-ar
 #### Paso 7 · Cierre
 Entregá `demo-alb` con su listener y grupo objetivo, el target inválido del Paso 5, y la regla de ruta del Paso 6; explicá qué parte de este flujo es idéntica a como lo harías con Terraform contra un ALB real. Siguiente paso: certificados. Errores comunes: healthcheck superficial y reglas solapadas. Fuente oficial: https://docs.aws.amazon.com/elasticloadbalancing/latest/application/introduction.html.
 
-### Tema 2: ACM — certificados TLS con criptografía real
+### Tema 2: ACM — certificados TLS con criptografía real · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a emitir el certificado TLS que `demo-alb` (Tema 1) va a necesitar para su listener HTTPS. Prerrequisitos: Tema 1 de este módulo.
@@ -126,7 +126,7 @@ Documentá, para `api.demo.example.com`, cuándo ACM intentaría renovar automá
 #### Paso 7 · Cierre
 Entregá el certificado emitido del Paso 4, el escenario de validación pendiente del Paso 5, y la renovación documentada del Paso 6; explicá por qué la emisión instantánea de Floci es útil para practicar pero no para medir tiempos reales. Siguiente paso: caché. Errores comunes: certificados vencidos y claves expuestas. Fuente oficial: https://docs.aws.amazon.com/acm/latest/userguide/acm-overview.html.
 
-### Tema 3: CloudFront — distribución de contenido y control de acceso al origen
+### Tema 3: CloudFront — distribución de contenido y control de acceso al origen · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a distribuir las fotos de entrega de `pruebas-entrega` (Módulo 2) por CDN, en vez de servirlas directamente desde S3. Prerrequisitos: Módulo 2 completo.
@@ -185,7 +185,7 @@ Creá una invalidación sobre `/envio-4471/*` (`aws cloudfront create-invalidati
 #### Paso 7 · Cierre
 Entregá la distribución creada sobre `pruebas-entrega`, el error de borrado sin deshabilitar del Paso 5, y la invalidación del Paso 6; explicá por qué nunca deberías cachear sin control de acceso al origen una foto de entrega que podría ser sensible. Siguiente paso: DNS. Errores comunes: cachear datos privados y olvidar invalidación. Fuente oficial: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/Introduction.html.
 
-### Tema 4: Route53 — zonas alojadas y registros de recursos
+### Tema 4: Route53 — zonas alojadas y registros de recursos · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear la zona DNS de `demo.example.com` y apuntar `fotos.demo.example.com` hacia la distribución CloudFront del Tema 3. Prerrequisitos: Tema 3 de este módulo.
@@ -242,7 +242,7 @@ Agregá un health check HTTP sobre el destino real, y documentá qué TTL elegir
 #### Paso 7 · Cierre
 Entregá la zona y el `CNAME` creados, el intento de borrar el `SOA` del Paso 5, y la decisión de TTL del Paso 6; explicá por qué Floci no puede confirmar que `fotos.demo.example.com` resuelva de verdad desde tu navegador. Siguiente paso: TLS. Errores comunes: TTL excesivo y healthcheck ausente. Fuente oficial: https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/resource-record-sets-choosing-alias-non-alias.html.
 
-### Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real
+### Tema 5: Cómo se integran los cuatro servicios en una arquitectura de borde real · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a encadenar los cuatro servicios de este módulo: `demo-alb` (Tema 1) con el certificado de `api.demo.example.com` (Tema 2), y el `CNAME` de Route53 apuntando al balanceador mientras `fotos.demo.example.com` sigue apuntando a CloudFront. Prerrequisitos: Temas 1-4 de este módulo.

@@ -146,7 +146,7 @@ Anota la regla: cancelación polo-cero en \(G(s)\) ⇒ la realización de orden 
 - [ ] Mostré que la controlabilidad depende de la realización.
 - [ ] Expliqué la relación entre cancelación polo-cero y realización mínima.
 
-**Fuentes oficiales:** [ctrb, python-control](https://python-control.readthedocs.io/en/latest/generated/control.ctrb.html) y [Diseño en espacio de estados, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [ctrb, python-control](https://python-control.readthedocs.io/en/latest/generated/control.ctrb.html) y [Diseño en espacio de estados, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
 
 ### Tema 2: Observabilidad · Intermedio · 30 min
 
@@ -271,7 +271,7 @@ Completa la tabla: forma canónica controlable ⇒ siempre controlable; forma ca
 - [ ] Diagnostiqué el error de apilar columnas en vez de filas.
 - [ ] Usé la dualidad para verificar observabilidad con `ctrb`.
 
-**Fuentes oficiales:** [obsv, python-control](https://python-control.readthedocs.io/en/latest/generated/control.obsv.html) y [Diseño en espacio de estados, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [obsv, python-control](https://python-control.readthedocs.io/en/latest/generated/control.obsv.html) y [Diseño en espacio de estados, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).
 
 ### Tema 3: Ubicación de polos por realimentación de estados · Avanzado · 40 min
 
@@ -415,4 +415,4 @@ Registra \(K\), \(\bar N\), \(M_p\) y \(t_s\). Tu controlador completo es \(u = 
 - [ ] Diagnostiqué el error de signo \(A + BK\) y el de polos repetidos en `place`.
 - [ ] Ajusté \(\bar N = 25\) y verifiqué \(M_p = 9{,}47\,\%\).
 
-**Fuentes oficiales:** [place y acker, python-control](https://python-control.readthedocs.io/en/latest/generated/control.place.html) y [Diseño en espacio de estados, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace).
+**Fuentes oficiales:** [place y acker, python-control](https://python-control.readthedocs.io/en/latest/generated/control.place.html) y [Diseño en espacio de estados, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/State_Feedback).

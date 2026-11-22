@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, HostListener, Injector, afterNextRender, computed, inject, signal, viewChild } from '@angular/core';
+import { Component, ElementRef, HostListener, Injector, OnDestroy, afterNextRender, computed, effect, inject, signal, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LucideAngularModule, Search, X } from 'lucide-angular';
@@ -16,17 +16,14 @@ interface SearchEntry {
   fragment?: string;
 }
 
-const isMac = typeof navigator !== 'undefined' && /mac/i.test(navigator.platform ?? navigator.userAgent ?? '');
-
 @Component({
   selector: 'app-command-palette',
   imports: [CommonModule, FormsModule, LucideAngularModule],
   templateUrl: './command-palette.html',
   styleUrl: './command-palette.scss',
 })
-export class CommandPaletteComponent {
+export class CommandPaletteComponent implements OnDestroy {
   readonly icons = { Search, X };
-  readonly shortcutLabel = isMac ? '⌘K' : 'Ctrl+K';
   readonly query = signal('');
   readonly activeIndex = signal(0);
   readonly activeResultId = computed(() => this.results().length ? `palette-result-${this.activeIndex()}` : null);
@@ -69,17 +66,34 @@ export class CommandPaletteComponent {
   constructor(
     readonly paletteService: CommandPaletteService,
     private readonly router: Router,
-  ) {}
+  ) {
+    // Toda apertura (botón o atajo) pasa por el servicio; el efecto mantiene foco, estado y fondo.
+    let wasOpen = false;
+    effect(() => {
+      const open = this.paletteService.isOpen();
+      if (open === wasOpen) return;
+      wasOpen = open;
+      if (open) {
+        this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+        this.query.set('');
+        this.activeIndex.set(0);
+        this.setBackgroundInert(true);
+        afterNextRender(() => this.paletteInput()?.nativeElement.focus(), { injector: this.injector });
+      } else {
+        this.setBackgroundInert(false);
+        const previousFocus = this.previousFocus;
+        this.previousFocus = null;
+        if (previousFocus) requestAnimationFrame(() => previousFocus.focus());
+      }
+    });
+  }
 
   @HostListener('window:keydown', ['$event'])
   onKeydown(event: KeyboardEvent): void {
     if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
       event.preventDefault();
-      this.previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-      this.paletteService.toggle();
-      this.query.set('');
-      this.activeIndex.set(0);
-      if (this.paletteService.isOpen()) afterNextRender(() => this.paletteInput()?.nativeElement.focus(), { injector: this.injector });
+      if (this.paletteService.isOpen()) this.close();
+      else this.paletteService.open();
     } else if (this.paletteService.isOpen() && event.key === 'ArrowDown' && this.results().length) {
       event.preventDefault();
       this.activeIndex.update(index => (index + 1) % this.results().length);
@@ -116,15 +130,22 @@ export class CommandPaletteComponent {
   select(entry: SearchEntry): void {
     const fragment = entry.fragment;
     this.router.navigate(entry.route, fragment ? { fragment } : undefined);
-    this.paletteService.close();
-    this.query.set('');
-    this.activeIndex.set(0);
-    const previousFocus = this.previousFocus;
-    this.previousFocus = null;
-    requestAnimationFrame(() => previousFocus?.focus());
+    this.close();
   }
 
   close(): void {
     this.paletteService.close();
+  }
+
+  /** `aria-modal` debe ir acompañado del atributo `inert` en el resto de la página. */
+  private setBackgroundInert(inert: boolean): void {
+    for (const child of document.querySelectorAll('app-root > :not(app-command-palette)')) {
+      if (inert) child.setAttribute('inert', '');
+      else child.removeAttribute('inert');
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.setBackgroundInert(false);
   }
 }

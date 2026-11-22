@@ -7,7 +7,7 @@
 
 Este módulo explora un proyecto experimental del ecosistema (no oficial de Google ni del equipo de Angular) que renderiza componentes Angular directamente como vistas nativas de iOS/Android sobre el renderer Fabric de React Native, sin que React participe en el render. Cada tema usa el código y los requisitos reales del proyecto (alpha, versión `0.x`), sin inflar su madurez ni ocultar sus límites: el objetivo es que evalúes la tecnología con el mismo criterio técnico con el que evaluarías cualquier dependencia nueva para un proyecto real.
 
-### Tema 1: Qué renderiza Angular Native y por qué no es un WebView
+### Tema 1: Qué renderiza Angular Native y por qué no es un WebView · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -119,7 +119,7 @@ Ya confirmas, con un proyecto corriendo en un simulador/dispositivo real, que An
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** diseña `rutaflow-conductor` como la app complementaria para el conductor (el dashboard web ya cubierto en los módulos 1-15 queda para el operador en oficina). Documenta qué lógica de dominio (tipos de envío, estados de una entrega) podría compartirse entre ambos sin compartir componentes de UI, ya que las vistas nativas y el DOM no son intercambiables.
 
-### Tema 2: Signals, estilos nativos compilados y el preset de Tailwind
+### Tema 2: Signals, estilos nativos compilados y el preset de Tailwind · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -231,7 +231,7 @@ Ya confirmas que el modelo de signals (`computed()`, actualización inmutable) e
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** construye la lista real de entregas asignadas al conductor autenticado, con el mismo criterio de "urgente" (fecha límite próxima) que ya usa el dashboard web, documentando explícitamente que la lógica de negocio se puede compartir como función pura TypeScript, pero la plantilla no.
 
-### Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular
+### Tema 3: Router nativo y servicios de Expo inyectados como servicios Angular · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -359,7 +359,7 @@ Ya confirmas que `@angular/router` y el patrón `inject()` de servicios son los 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** navega de la lista de entregas asignadas al detalle de una guía específica, y usa el servicio de ubicación para registrar las coordenadas reales donde el conductor confirma la entrega — el mismo dato que el dashboard web (Módulo 4) ya muestra en el mapa de seguimiento.
 
-### Tema 4: Evaluar la madurez de una tecnología alpha con criterio
+### Tema 4: Evaluar la madurez de una tecnología alpha con criterio · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

@@ -631,7 +631,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** registrar el analiz
 
 **Fuente oficial:** [Spring Boot — Create Your Own FailureAnalyzer](https://docs.spring.io/spring-boot/how-to/application.html#howto.application.failure-analyzer).
 
-### Tema 5: Actuator y health checks personalizados · Intermedio · 30 min
+### Tema 5: Actuator y health checks personalizados · Avanzado · 30 min
 
 **¿Por qué es importante?** Actuator permite distinguir la salud del proceso de una dependencia que dejó de responder. Este ejemplo continúa `com.example.demo`, con seguridad JWT y MockMvc de los módulos anteriores.
 
@@ -826,7 +826,7 @@ Archivo concreto: `src/main/java/com/example/demo/ServicioExternoHealthIndicator
 
 **Aplicación y decisión:** En el proyecto integrador, define qué dependencia afecta readiness y qué indicador informa solo diagnóstico. Prueba la caída sin reiniciar el proceso; una bandera de test no mide la latencia de un proveedor real.
 
-### Tema 6: Contar operaciones de negocio con Micrometer · Intermedio · 30 min
+### Tema 6: Contar operaciones de negocio con Micrometer · Avanzado · 30 min
 
 **¿Por qué es importante?** La cantidad de tareas creadas responde una pregunta del negocio. Sin un contador visible, el equipo solo ve detalles técnicos y no puede seguir esa actividad durante una ventana de tiempo.
 
@@ -1002,7 +1002,7 @@ Archivo concreto: `src/main/java/com/example/demo/ServicioExternoHealthIndicator
 
 **Aplicación y decisión:** En el proyecto integrador, usa el contador para observar creaciones y conserva la tabla como fuente de verdad. Límite: la métrica en memoria no se revierte necesariamente con un rollback y no es un libro contable durable.
 
-### Tema 7: Liveness y readiness sin reinicios en cadena · Intermedio · 25 min
+### Tema 7: Liveness y readiness sin reinicios en cadena · Avanzado · 25 min
 
 **¿Por qué es importante?** Si falla un servicio externo, una sonda de liveness mal configurada puede reiniciar todas las instancias al mismo tiempo. Primero separa las dos preguntas: «¿el proceso puede seguir vivo?» y «¿esta instancia debe recibir tráfico ahora?». Al terminar, configurarás ambas señales y demostrarás su independencia con pruebas.
 
@@ -1173,7 +1173,7 @@ Ejecuta solo esta prueba:
 
 **Aplicación y decisión:** En el proyecto integrador, conserva liveness independiente de la pasarela externa y prueba readiness con esa dependencia caída. Este límite evita reinicios en cadena, pero el test no acredita comportamiento del kubelet ni balanceo del clúster.
 
-### Tema 8: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Intermedio · 40 min
+### Tema 8: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Avanzado · 40 min
 
 **Prerrequisito:** tema «Actuator y health checks personalizados» de este módulo.
 

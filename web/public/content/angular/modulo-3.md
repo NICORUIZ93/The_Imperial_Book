@@ -5,7 +5,7 @@
 
 Cada tema verifica su garantía con comparaciones reales de identidad de objeto (`toBe`) y errores genuinos de Angular: el singleton real de `providedIn: 'root'`, el error real `NG0203` al usar `inject()` fuera de contexto, la jerarquía real de inyectores con overrides a nivel de componente, y `NG0201` (*No provider found*) real al faltar un `InjectionToken`.
 
-### Tema 1: @Injectable y providedIn: root
+### Tema 1: @Injectable y providedIn: root · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -162,7 +162,7 @@ Ya confirmas, con una comparación real de identidad de objeto, que `providedIn:
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Centraliza el acceso a entregas en un servicio inyectable. Lista y detalle deben consultar la misma política de acceso; en pruebas reemplaza el servicio sin cambiar las plantillas.
 
-### Tema 2: inject() frente a inyección por constructor
+### Tema 2: inject() frente a inyección por constructor · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -274,7 +274,7 @@ Ya confirmas, con el error real `NG0203`, que `inject()` requiere un contexto de
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Inyecta el repositorio en el componente de búsqueda dentro de un contexto válido. Prueba la creación mediante TestBed y evita trasladar inject a callbacks que se ejecutan fuera de ese contexto.
 
-### Tema 3: Jerarquía de inyectores
+### Tema 3: Jerarquía de inyectores · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -406,7 +406,7 @@ Ya confirmas, con comparaciones reales de identidad (`toBe`/`not.toBe`), la regl
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Aísla un borrador de asignación en el inyector de su pantalla. Abre dos instancias y comprueba que sus selecciones no se mezclan, mientras el cliente HTTP compartido conserva el alcance previsto.
 
-### Tema 4: Tokens de inyección y decoradores de resolución
+### Tema 4: Tokens de inyección y decoradores de resolución · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 

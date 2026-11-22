@@ -11,11 +11,11 @@ El sistema más simple: un tanque que se llena, un condensador que se carga o un
 
 ## Aprende construyendo
 
-### Tema 1: Forma estándar de primer orden: K y τ
+### Tema 1: Forma estándar de primer orden: K y τ · Intermedio · 45 min
 
 **¿Por qué es importante?** La forma estándar de primer orden te deja leer la ganancia y la constante de tiempo sin hacer cuentas.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 \[G(s) = \frac{K}{\tau s+1}\]
 
@@ -144,11 +144,11 @@ cambia `num, den` por `10, s + 5` y confirma \(K=2\), \(\tau=1/5\) (Ejemplo 3). 
 
 **Límite:** esto exige que el denominador sea de primer grado en \(s\); con dos o más polos (segundo orden o mayor) \(K\) sigue siendo \(G(0)\), pero ya no hay un único \(\tau\) — aparecen varias constantes de tiempo (módulo 12).
 
-### Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso
+### Tema 2: Respuestas de primer orden al escalón, la rampa y el impulso · Intermedio · 45 min
 
 **¿Por qué es importante?** Las respuestas al impulso, al escalón y a la rampa son las que se piden en los exámenes y las que se miden en el laboratorio.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 | Entrada | \(Y(s)\) | \(y(t)\) |
 |---|---|---|
@@ -340,11 +340,11 @@ cambia `K, tau` por `1, 1` y la entrada a rampa (`Y = K/(s**2*(tau*s+1))`) y con
 
 **Límite:** `inverse_laplace_transform` asume condiciones iniciales cero y una entrada estándar (impulso, escalón, rampa); con una entrada arbitraria medida en laboratorio hay que calcular su transformada primero, no se puede invertir directamente una señal sin fórmula cerrada.
 
-### Tema 3: Retardo o tiempo muerto
+### Tema 3: Retardo o tiempo muerto · Intermedio · 45 min
 
 **¿Por qué es importante?** El retardo aparece en procesos reales (bandas, tuberías, hornos) y en el punto 3 del Parcial 1.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 Un factor \(e^{-Ts}\) significa que la misma respuesta empieza \(T\) segundos tarde. Pasa en bandas transportadoras, tuberías largas y procesos térmicos.
 
@@ -466,11 +466,11 @@ cambia `K, tau` a `4, 5` con retardo `1` s y confirma el Ejemplo 3: \(y(t)=2(1-e
 
 **Límite:** este script calcula la forma \(y_0(t-T)\) pero no impone que valga cero antes de \(T\); olvidar el factor \(u(t-T)\) a mano (como aquí) es exactamente el error común de esta sección — la expresión sin el escalón unitario predice una salida que no existe antes del retardo.
 
-### Tema 4: Identificación desde una gráfica
+### Tema 4: Identificación desde una gráfica · Intermedio · 45 min
 
 **¿Por qué es importante?** Identificar \(K\), \(\tau\) y el retardo desde una curva es como se modela una planta real a partir de un experimento.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 **Procedimiento**
 

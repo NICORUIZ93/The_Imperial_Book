@@ -7,7 +7,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas de Android.** Ilustran el razonamiento, pero no ejecutan tu app. La evidencia real es la indicada en cada tema como **Verificación real en Android**: para ver la recomposición de verdad, muestra el composable con `setContent { … }` desde `MainActivity`, ejecuta la app y abre **Layout Inspector** con el contador de recomposiciones activado; el número de `TarjetaTarea` solo sube cuando cambia un parámetro que lee.
 
-### Tema 1: Composables y recomposición
+### Tema 1: Composables y recomposición · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -110,7 +110,7 @@ Ya explicas qué activa `@Composable` y predices cuándo Compose recompone una f
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Divide la lista de entregas en composables que reciben datos. Actualiza un estado desde el repositorio falso y verifica que solo se muestra el nuevo valor, sin ejecutar una confirmación durante la composición.
 
-### Tema 2: State hoisting
+### Tema 2: State hoisting · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -221,7 +221,7 @@ Ya elevas el estado de un composable hijo hacia su padre, dejándolo como una fu
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Eleva el filtro de estado al contenedor de la lista. Dos controles que modifican el mismo filtro deben permanecer sincronizados; la tarjeta recibe el valor y comunica eventos sin mantener una copia divergente.
 
-### Tema 3: remember, rememberSaveable y layout básico
+### Tema 3: remember, rememberSaveable y layout básico · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

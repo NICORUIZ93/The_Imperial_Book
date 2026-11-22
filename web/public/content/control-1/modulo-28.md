@@ -279,7 +279,7 @@ Anota \(C\), \(M\) y el error.
 
 **Fuentes oficiales:** [ctrb, obsv y acker, python-control](https://python-control.readthedocs.io/en/latest/generated/control.obsv.html).
 
-### Tema 3: Corrige con python-control y planea el repaso · Intermedio · 30 min
+### Tema 3: Corrige con python-control y planea el repaso · Avanzado · 30 min
 
 **¿Por qué es importante?** Corregir solo mirando la solución esconde los errores de cuenta. Un script que recalcula todo te muestra exactamente dónde te desviaste. **Modelo mental:** el script es el profesor que revisa paso a paso.
 

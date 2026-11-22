@@ -147,7 +147,7 @@ Corregí el Paso 5 volviendo a `actor`, y agregá un método `reiniciar()` al ac
 #### Paso 7 · Cierre
 Entregá el contador correcto con `actor` del Paso 4, la condición de carrera real con `class` del Paso 5, y el método `reiniciar()` del Paso 6; explicá por qué el compilador rechaza acceder a `confirmadasHoy` sin `await` desde fuera del actor. Siguiente paso: estudia networking. Errores comunes: bloquear MainActor, ignorar cancellation, compartir clase mutable y capturar self fuerte. Fuentes oficiales: https://developer.apple.com/documentation/swift/concurrency y https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/.
 
-### Tema 3: TaskGroup y MainActor · Avanzado · 50 min
+### Tema 3: TaskGroup y MainActor · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a traer en paralelo los datos de envío y de conductor con `TaskGroup`, y a confirmar que `@MainActor` protege la actualización de la UI. Prerrequisitos: Tema 2 de este módulo.
@@ -459,7 +459,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** no detener la fuent
 
 **Fuente oficial:** [Apple — AsyncStream](https://developer.apple.com/documentation/swift/asyncstream) y [Apple — AsyncSequence](https://developer.apple.com/documentation/swift/asyncsequence).
 
-### Tema 6: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Experto · 50 min
+### Tema 6: Swift 6: aislamiento, Sendable y data races detectadas al compilar · Avanzado · 30 min
 
 **Prerrequisito:** temas «Actors para estado mutable seguro» y «TaskGroup y MainActor» de este módulo.
 

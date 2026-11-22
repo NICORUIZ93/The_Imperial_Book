@@ -5,7 +5,7 @@
 
 Cada tema verifica su garantía con la API real correspondiente: `renderApplication` de `@angular/platform-server` para SSR real, un contraste determinista/no-determinista para hidratación, la API oficial de bloques `@defer` (estado `Error`) y `provideZonelessChangeDetection()` real para el modo sin Zone.js.
 
-### Tema 1: Server-Side Rendering
+### Tema 1: Server-Side Rendering · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -123,7 +123,7 @@ Ya confirmas con `renderApplication` real que Angular genera HTML completo en el
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Renderiza en servidor la página pública de seguimiento con datos no sensibles. Inspecciona el HTML inicial y confirma que contiene el estado de la guía sin depender de ejecutar JavaScript.
 
-### Tema 2: Hidratación
+### Tema 2: Hidratación · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -338,7 +338,7 @@ Ya demuestras, con una comparación de texto real entre dos renders, exactamente
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Hidrata la página de seguimiento sin sustituir sus controles. Prueba la primera interacción y revisa avisos de discrepancias; servidor y cliente deben partir de los mismos datos visibles.
 
-### Tema 3: `@defer` — estados reales, incluyendo error
+### Tema 3: `@defer` — estados reales, incluyendo error · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -464,7 +464,7 @@ Ya confirmas, forzando el estado real `Error` con la API oficial de test, que un
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Difiere el mapa operativo y prueba sus estados de carga y error. Bloquea su descarga: la lista de entregas debe seguir disponible y ofrecer una forma explícita de reintentar.
 
-### Tema 4: Zoneless
+### Tema 4: Zoneless · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -587,7 +587,7 @@ Ya confirmas con `provideZonelessChangeDetection()` real que el estado modelado 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Actualiza el estado de una guía desde una operación asíncrona en modo zoneless. Verifica que Signals notifica el cambio y que la pantalla no depende de un evento incidental para refrescarse.
 
-### Tema 5: OnPush por defecto (Angular 22): qué se revisa y cuándo usar `Eager` · Intermedio · 40 min
+### Tema 5: OnPush por defecto (Angular 22): qué se revisa y cuándo usar `Eager` · Avanzado · 40 min
 
 **Duración estimada:** 40 min (4 subtemas de 10 min).
 

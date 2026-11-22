@@ -82,7 +82,7 @@ flutter analyze
 flutter test
 ```
 
-**Resultado esperado:** un producto encontrado incluye nombre/precio de la tienda; el ID mal escrito no aparece. **Errores comunes:** empezar a escuchar después de iniciar compra y no completar transacción procesada. Diagrama: `catálogo -> purchaseStream -> validación -> entitlement -> completePurchase`. Fuentes oficiales: [plugin Flutter](https://pub.dev/packages/in_app_purchase), [in-app purchase Apple/Google](https://docs.flutter.dev/platform-integration/ios/ios-faq).
+**Resultado esperado:** un producto encontrado incluye nombre/precio de la tienda; el ID mal escrito no aparece. **Errores comunes:** empezar a escuchar después de iniciar compra y no completar transacción procesada. Diagrama: `catálogo -> purchaseStream -> validación -> entitlement -> completePurchase`. Fuentes oficiales: [plugin Flutter](https://pub.dev/packages/in_app_purchase), [in-app purchase Apple/Google](https://docs.flutter.dev/platform-integration/ios/apple-frameworks).
 
 **Proyecto propio:** `rutaflow_iap_lab`. **Cuándo llamar éxito:** cuando la transacción llegó y se verificó; no al cerrar la hoja de pago. Evidencia de aprendizaje: entrega el log con estados pending, canceled y purchased usando sandbox.
 
@@ -251,7 +251,7 @@ Entrega matriz con resultado y target por fila. El siguiente tema conecta valida
 flutter test test/features/purchases
 ```
 
-**Resultado esperado:** los tests fake pasan; Android/iOS sandbox se reporta por separado con su sistema operativo. **Errores comunes:** contar prueba de widget como prueba de Play/App Store y omitir el estado pending. Fuentes oficiales: [Flutter in_app_purchase](https://pub.dev/packages/in_app_purchase), [Play test tracks](https://developer.android.com/google/play/billing/test), [StoreKit testing](https://developer.apple.com/documentation/storekit/in-app_purchase/testing-in-app-purchases-with-sandbox).
+**Resultado esperado:** los tests fake pasan; Android/iOS sandbox se reporta por separado con su sistema operativo. **Errores comunes:** contar prueba de widget como prueba de Play/App Store y omitir el estado pending. Fuentes oficiales: [Flutter in_app_purchase](https://pub.dev/packages/in_app_purchase), [Play test tracks](https://developer.android.com/google/play/billing/test), [StoreKit testing](https://developer.apple.com/documentation/storekit/testing-in-app-purchases-with-sandbox).
 
 **Proyecto propio:** `iap_test_lab`. **Cuándo promover a producción:** después de reconciliar todas las filas de la matriz y la revisión de pricing/políticas. Evidencia de aprendizaje: entrega tests fake y capturas de sandbox.
 
@@ -391,5 +391,5 @@ sequenceDiagram
 
 - Flutter `in_app_purchase` [paquete y API](https://pub.dev/packages/in_app_purchase) y [cambios](https://pub.dev/packages/in_app_purchase/changelog)
 - Android [integración Play Billing](https://developer.android.com/google/play/billing/integrate), [seguridad](https://developer.android.com/google/play/billing/security) y [pruebas](https://developer.android.com/google/play/billing/test)
-- Apple [StoreKit](https://developer.apple.com/documentation/storekit/in-app-purchase), [App Store Server API](https://developer.apple.com/documentation/appstoreserverapi) y [Sandbox](https://developer.apple.com/documentation/storekit/in-app_purchase/testing-in-app-purchases-with-sandbox)
+- Apple [StoreKit](https://developer.apple.com/documentation/storekit/in-app-purchase), [App Store Server API](https://developer.apple.com/documentation/appstoreserverapi) y [Sandbox](https://developer.apple.com/documentation/storekit/testing-in-app-purchases-with-sandbox)
 - Google Play [política de pagos](https://support.google.com/googleplay/android-developer/answer/9858738?hl=en)

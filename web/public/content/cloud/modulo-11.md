@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: El patrón fan-out con SNS
+### Tema 1: El patrón fan-out con SNS · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a distribuir el evento real "envío entregado" de RutaFlow a dos consumidores independientes sin que `confirmar-entrega` conozca a ninguno de los dos. Prerrequisitos: Módulo 5 completo.
@@ -72,7 +72,7 @@ Agregá una tercera cola `auditoria-entregas`, suscribila al mismo topic, public
 #### Paso 7 · Cierre
 Entregá las dos colas recibiendo el mismo mensaje del Paso 4, la desuscripción silenciosa del Paso 5, y la tercera cola del Paso 6; explicá por qué `confirmar-entrega` nunca necesitó cambiar su código al agregar o quitar consumidores. Siguiente paso: filtrado. Errores comunes: asumir orden global y no monitorizar suscriptores. Fuente oficial: https://docs.aws.amazon.com/sns/latest/dg/welcome.html.
 
-### Tema 2: EventBridge: bus de eventos con filtrado declarativo
+### Tema 2: EventBridge: bus de eventos con filtrado declarativo · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a filtrar los eventos de `ShipmentEvents` (Módulo 4) para que solo "entregado" dispare la notificación SMS, sin que `creado` o `en_ruta` la activen por error. Prerrequisitos: Tema 1 de este módulo.
@@ -138,7 +138,7 @@ Definí tres eventos de prueba con `estado`: `"entregado"` (válido, dispara la 
 #### Paso 7 · Cierre
 Entregá la regla creada, el evento filtrado correctamente del Paso 4, el patrón inválido del Paso 5, y los tres casos del Paso 6; explicá por qué EventBridge compara el string exacto y no el significado. Siguiente paso: combinar SNS y SQS. Errores comunes: filtros demasiado amplios y eventos sin versión. Fuente oficial: https://docs.aws.amazon.com/eventbridge/latest/userguide/eb-event-patterns.html.
 
-### Tema 3: SNS + SQS juntos, y Azure Event Hubs
+### Tema 3: SNS + SQS juntos, y Azure Event Hubs · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar que `notificaciones-cliente` (Tema 1) no pierde ningún mensaje aunque nadie lo esté leyendo por un rato. Prerrequisitos: Tema 1 de este módulo.

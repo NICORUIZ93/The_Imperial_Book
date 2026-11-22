@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: State machine y Task states
+### Tema 1: State machine y Task states · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar como state machine el mismo flujo que `confirmar-entrega` (Módulo 5) ya hace en código: validar, guardar el evento, notificar. Prerrequisitos: Módulos 5 y 11 completos.
@@ -76,7 +76,7 @@ Agregale un `TimeoutSeconds: 10` al estado `GuardarEvento`, y documentá qué pa
 #### Paso 7 · Cierre
 Entregá la state machine completa ejecutándose, el estado faltante del Paso 5 y el timeout del Paso 6; explicá qué visibilidad ganaste frente a la misma lógica escrita como código imperativo en `confirmar-entrega`. Siguiente paso: errores. Errores comunes: estados sin timeout y efectos duplicados. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/welcome.html.
 
-### Tema 2: Choice state, Retry y Catch
+### Tema 2: Choice state, Retry y Catch · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a agregarle a `ConfirmarEntregaFlow` (Tema 1) manejo explícito de errores: reintentar si DynamoDB está ocupado, y una rama de error que no oculte la causa. Prerrequisitos: Tema 1 de este módulo.
@@ -145,7 +145,7 @@ Agregá una rama de compensación real: que `RegistrarFalloEntrega` publique tam
 #### Paso 7 · Cierre
 Entregá el `Retry`/`Catch` agregados, el fallo sin cobertura del Paso 5, y la compensación real del Paso 6; explicá por qué `Catch: States.ALL` sin pensar qué hacer después solo oculta el error, no lo resuelve. Siguiente paso: elección de servicio. Errores comunes: Catch demasiado amplio y reintentos infinitos. Fuente oficial: https://docs.aws.amazon.com/step-functions/latest/dg/concepts-error-handling.html.
 
-### Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente
+### Tema 3: Express vs Standard, y cuándo EventBridge Pipes es suficiente · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a decidir, con números reales, si `ConfirmarEntregaFlow` debería ser Standard o Express — y si el planificador de rutas (Módulo 14) necesita Step Functions en absoluto. Prerrequisitos: Módulo 14, Temas 1-2 de este módulo.

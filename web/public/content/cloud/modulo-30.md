@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Qué resuelve Transfer Family
+### Tema 1: Qué resuelve Transfer Family · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear el servidor SFTP que un socio logístico externo usaría para depositar manifiestos sin tocar directamente el bucket de RutaFlow. Prerrequisitos: Módulo 2 completo.
@@ -56,7 +56,7 @@ Documentá qué directorio de inicio, qué rol IAM de mínimo privilegio (Módul
 #### Paso 7 · Cierre
 Entregá el servidor y el bucket creados del Paso 4, el error de usuario sin rol del Paso 5, y el diseño de aislamiento del Paso 6; explicá por qué Transfer Family es la herramienta correcta aquí y no, por ejemplo, URLs pre-firmadas de S3 directamente. Siguiente paso: servidor. Errores comunes: compartir claves y rutas sin aislamiento. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/what-is-aws-transfer-family.html.
 
-### Tema 2: Ciclo de vida del servidor y modelo de usuarios
+### Tema 2: Ciclo de vida del servidor y modelo de usuarios · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear el usuario `socio-logistico` sobre `demo-transfer` y a confirmar que no podés borrar un servidor todavía activo. Prerrequisitos: Tema 1 de este módulo.
@@ -118,7 +118,7 @@ Agregá un segundo usuario (`otro-socio`) con un `--home-directory` distinto sob
 #### Paso 7 · Cierre
 Entregá el usuario y el estado `OFFLINE` del Paso 4, el borrado rechazado del Paso 5, y los dos usuarios aislados del Paso 6; explicá por qué un servidor debe estar `OFFLINE` antes de poder eliminarse. Siguiente paso: claves. Errores comunes: usuario sin home y estado no esperado. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/create-server.html.
 
-### Tema 3: Claves públicas SSH y autenticación de usuarios
+### Tema 3: Claves públicas SSH y autenticación de usuarios · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a importar la clave pública real de `socio-logistico` (Tema 2), para que se autentique sin contraseña. Prerrequisitos: Tema 2 de este módulo.
@@ -183,7 +183,7 @@ Documentá, para `socio-logistico`, cada cuánto correspondería rotar su clave 
 #### Paso 7 · Cierre
 Entregá la clave importada del Paso 4, la clave inválida aceptada sin validar del Paso 5, y el plan de rotación/revocación del Paso 6; explicá por qué Floci no necesita validar criptográficamente para que practiques la lógica de gestión de usuarios. Siguiente paso: límites del emulador. Errores comunes: compartir privada y asumir validación local completa. Fuente oficial: https://docs.aws.amazon.com/transfer/latest/userguide/requirements-roles.html.
 
-### Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente
+### Tema 4: Los límites de la Fase 1 — plano de gestión completo, plano de datos pendiente · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a confirmar en vivo, intentando una conexión SFTP real contra `demo-transfer`, dónde termina el plano de gestión y dónde falta el plano de datos. Prerrequisitos: Temas 1-3 de este módulo.

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: AppSync — APIs GraphQL gestionadas
+### Tema 1: AppSync — APIs GraphQL gestionadas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás definir una API GraphQL desde cero. Prerrequisitos: Node.js y Docker; verifica `node --version`.
@@ -67,7 +67,7 @@ Añade tipo, query y autenticación.
 #### Paso 7 · Cierre
 Entrega esquema, salida, fallo y corrección; explica el resultado. Siguiente paso: resolvers. Errores comunes: esquema sin límites y consultas costosas. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/what-is-appsync.html.
 
-### Tema 2: Fuentes de datos y resolvers
+### Tema 2: Fuentes de datos y resolvers · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar el campo `estadoEntrega` de `demo-api` (Tema 1) a un resolver local, antes de tener lista la tabla DynamoDB real detrás. Prerrequisitos: Tema 1 de este módulo.
@@ -125,7 +125,7 @@ Corregí la forma de la respuesta para que coincida con el esquema, y documentá
 #### Paso 7 · Cierre
 Entregá el resolver local funcionando del Paso 4, el error de tipo del Paso 5, y la validación propuesta del Paso 6; explicá por qué "maqueta funcional primero" le permitió al frontend avanzar sin esperar al backend. Siguiente paso: correo. Errores comunes: lógica sin autorización y respuestas inconsistentes. Fuente oficial: https://docs.aws.amazon.com/appsync/latest/devguide/resolver-mapping-template-reference.html.
 
-### Tema 3: SES — identidades, envío y plantillas
+### Tema 3: SES — identidades, envío y plantillas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear la plantilla real que RutaFlow usa para notificar por correo cuando un paquete se marca `entregado`. Prerrequisitos: Módulo 20 (ya viste SMS vía Bedrock; esto es el equivalente por correo).
@@ -183,7 +183,7 @@ Reenviá la plantilla con datos distintos (`{"guia":"RF-002","nombre":"Luis"}`) 
 #### Paso 7 · Cierre
 Entregá la plantilla creada y el envío exitoso del Paso 4, el rechazo por identidad no verificada del Paso 5, y los dos correos distintos del Paso 6; explicá por qué una plantilla evita inconsistencias frente a concatenar HTML a mano en cada envío. Siguiente paso: simulador. Errores comunes: destinatarios sin consentimiento y logs con PII. Fuente oficial: https://docs.aws.amazon.com/ses/latest/dg/Welcome.html.
 
-### Tema 4: El simulador de buzones y el punto de inspección local
+### Tema 4: El simulador de buzones y el punto de inspección local · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a provocar a propósito un rebote de correo real para probar el manejador de rebotes de RutaFlow, sin depender de una dirección inválida real. Prerrequisitos: Tema 3 de este módulo.

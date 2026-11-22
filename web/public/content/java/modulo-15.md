@@ -181,7 +181,7 @@ gradle wrapper --gradle-version 9.1.0
 
 Modifica `build.gradle.kts` para incluir la hora actual (`System.currentTimeMillis()`) en el manifest del JAR, ejecuta `./gradlew clean build` dos veces y compara los hashes SHA-256 antes y después de revertir el cambio.
 
-### Tema 3: Proyectos multi-módulo sin ciclos · Intermedio · 40 min
+### Tema 3: Proyectos multi-módulo sin ciclos · Avanzado · 40 min
 
 **¿Por qué es importante?** límites protegidos evitan que reglas de negocio dependan directamente de bases de datos y frameworks.
 
@@ -280,7 +280,7 @@ Ejecuta:
 
 Modifica una clase de `domain` para que importe algo de `infrastructure` a propósito, ejecuta `./gradlew test` y confirma que el mensaje de fallo señala exactamente el origen y destino de la dependencia prohibida.
 
-### Tema 4: JUnit 6, Mockito y assertions expresivas
+### Tema 4: JUnit 6, Mockito y assertions expresivas · Avanzado · 35 min
 
 **¿Por qué es importante?** las pruebas detectan regresiones del comportamiento sin acoplar la suite a cada llamada interna.
 
@@ -488,7 +488,7 @@ Ejecuta:
 
 Modifica el nombre de la columna `monto` a `montoo` en la consulta JDBC del Subtema 6.2, ejecuta `./gradlew integrationTest` y confirma que PostgreSQL real reporta la columna inexistente con un mensaje distinto al que daría un mock.
 
-### Tema 6: SLF4J, Logback, MDC y logging estructurado · Intermedio · 40 min
+### Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 40 min
 
 **¿Por qué es importante?** logs correlacionados ayudan a seguir una solicitud sin registrar secretos ni mezclar operaciones en hilos reutilizados.
 

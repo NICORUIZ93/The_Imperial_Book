@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Infraestructura y entrega segura
+### Tema 1: Infraestructura y entrega segura · Avanzado · 45 min
 
 **Conceptos clave:** Terraform, Kubernetes, CI/CD, artefactos, secretos, SBOM y firma.
 
@@ -166,7 +166,7 @@ Entrega `main.tf`, el `plan.tfplan`, `ci-firmar.sh`, `deploy.sh` con el gate de 
 
 **Transferencia al proyecto integrador «RutaFlow»:** Despliega un artefacto identificado, verifica salud y practica rollback con datos compatibles. Conserva el plan, la versión y el resultado de la prueba para reconstruir qué se ejecutó.
 
-### Tema 2: SLO y respuesta a incidentes
+### Tema 2: SLO y respuesta a incidentes · Avanzado · 45 min
 
 **Conceptos clave:** SLI, presupuesto de error, alertas por burn rate, trazas, runbooks y postmortem.
 
@@ -280,7 +280,7 @@ Entregá `slo.md`, el `deployment.yaml` con el bug y el corregido, y la evidenci
 
 **Límites y decisión de uso:** Un SLO resume un objetivo, no garantiza cada petición ni reemplaza respuesta a incidentes. Define qué usuarios y operaciones cuenta y prueba ventanas sin tráfico; una métrica incompleta puede ocultar impacto real.
 
-### Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend)
+### Tema 3: Pruebas end-to-end del sistema completo (app ↔ backend) · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás escribir una prueba end-to-end que ejercite el flujo real cruzando la app (Flutter) y el backend (Spring Boot): login → crear entrega → asignar repartidor → confirmar, contra servicios reales levantados con Docker. Prerrequisitos: Temas 1-2 de este módulo; testing de cada lado en sus tracks (Flutter M9, Spring Boot M6).
@@ -356,7 +356,7 @@ Desde el lado Flutter, escribe una prueba de integración (`integration_test`) q
 #### Paso 7 · Cierre
 Entrega la prueba E2E en verde, el fallo por contrato roto y la prueba desde Flutter. **¿Por qué es importante?** En un sistema de dos partes (app + backend) desarrolladas a menudo por equipos distintos, los bugs más caros viven en la frontera: un campo renombrado, un token mal propagado, un código de estado inesperado. La prueba E2E de sistema es la red de seguridad que atrapa esos fallos antes de producción. Fuentes: [Testcontainers](https://testcontainers.com/) y [Flutter integration testing](https://docs.flutter.dev/testing/integration-tests).
 
-### Tema 4: Continuidad, costes y proyecto final
+### Tema 4: Continuidad, costes y proyecto final · Avanzado · 45 min
 
 **Conceptos clave:** backup, restore, RPO, RTO, game day, DR y coste por entrega.
 

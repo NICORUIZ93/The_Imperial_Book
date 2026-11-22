@@ -6,7 +6,7 @@ Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escri
 
 Los laboratorios permiten comprobar mecanismos concretos en local. **Una demostración que responde correctamente no es por ello una API productiva.** Esa afirmación exige evidencia adicional de seguridad, capacidad, recuperación, observabilidad y operación, además de revisión humana.
 
-### Tema 1: Arquitectura por capas · Intermedio · 90 min
+### Tema 1: Arquitectura por capas · Avanzado · 45 min
 
 #### Aprende
 
@@ -257,7 +257,7 @@ En el proyecto integrador independiente del final, crea los puertos `Repositorio
 
 **Fuentes oficiales:** [Node.js — módulos ES](https://nodejs.org/api/esm.html), [Node.js — HTTP](https://nodejs.org/api/http.html) y [Clean Architecture](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html).
 
-### Tema 2: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 150 min
+### Tema 2: Posiciones espaciales y Socket.IO con orden recuperable · Avanzado · 45 min
 
 #### Aprende
 
@@ -600,7 +600,7 @@ En el proyecto integrador independiente del final, almacena posiciones en PostGI
 
 **Fuentes oficiales:** [Socket.IO](https://socket.io/docs/v4/), [RFC 7946 — GeoJSON](https://www.rfc-editor.org/rfc/rfc7946), [PostGIS — ST_MakePoint](https://postgis.net/docs/ST_MakePoint.html) y [PostgreSQL — unique constraints](https://www.postgresql.org/docs/current/ddl-constraints.html).
 
-### Tema 3: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 150 min
+### Tema 3: Archivos y notificaciones push sin convertirlos en autorización · Avanzado · 45 min
 
 #### Aprende
 
@@ -889,7 +889,7 @@ En el proyecto integrador independiente del final, incorpora evidencias PNG con 
 
 **Fuentes oficiales:** [Node.js — fs](https://nodejs.org/api/fs.html), [Node.js — crypto](https://nodejs.org/api/crypto.html), [OWASP File Upload Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html), [Firebase Admin — mensajería](https://firebase.google.com/docs/cloud-messaging/send-message) y [pngjs](https://github.com/pngjs/pngjs).
 
-### Tema 4: Uniendo cada módulo del track · Avanzado · 180 min
+### Tema 4: Uniendo cada módulo del track · Avanzado · 45 min
 
 #### Aprende
 
@@ -1314,7 +1314,7 @@ En el proyecto integrador independiente del final, conecta registro, login, refr
 
 **Fuentes oficiales:** [Express](https://expressjs.com/), [Prisma](https://www.prisma.io/docs), [jose](https://github.com/panva/jose), [Pino](https://getpino.io/), [Testcontainers para Node](https://node.testcontainers.org/) y [Docker multi-stage](https://docs.docker.com/build/building/multi-stage/).
 
-### Tema 5: Qué le falta a esta API para producción real · Avanzado · 75 min
+### Tema 5: Qué le falta a esta API para producción real · Avanzado · 45 min
 
 #### Aprende
 
@@ -1478,7 +1478,7 @@ En el proyecto integrador independiente del final, entrega una matriz de prepara
 
 **Fuentes oficiales:** [OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/), [Google SRE Workbook](https://sre.google/workbook/) y [The Twelve-Factor App](https://12factor.net/).
 
-### Tema 6: Próximos pasos — microservicios, colas de mensajes y TypeScript · Avanzado · 75 min
+### Tema 6: Próximos pasos — microservicios, colas de mensajes y TypeScript · Avanzado · 45 min
 
 #### Aprende
 

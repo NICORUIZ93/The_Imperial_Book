@@ -721,7 +721,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** prometer horarios e
 
 **Fuente oficial:** [pub.dev — workmanager](https://pub.dev/packages/workmanager) y [Flutter — Background processes](https://docs.flutter.dev/packages-and-plugins/background-processes).
 
-### Tema 6: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Experto · 50 min
+### Tema 6: Add-to-app: integrar una pantalla Flutter en una app Android o iOS existente · Avanzado · 20 min
 
 **Prerrequisito:** temas «MethodChannel» y «Plugins federados» de este módulo.
 

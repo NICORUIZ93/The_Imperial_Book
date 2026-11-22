@@ -57,11 +57,11 @@ flowchart LR
 
 ## Aprende construyendo
 
-### Tema 1: Cómo está armado cada capítulo
+### Tema 1: Cómo está armado cada capítulo · Básico · 30 min
 
 **¿Por qué es importante?** Si sabes cómo está armado cada capítulo, puedes estudiar los ejemplos en el orden correcto y no solo leer resultados.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 Todos los capítulos siguen el mismo orden:
 
@@ -205,4 +205,4 @@ Dónde está cada bloque del curso (capítulos de esas ediciones; en otras edici
 
 **Cómo usarlos:** después de cada tema, lee la sección equivalente del libro y resuelve dos problemas del final del capítulo sin mirar la solución. Si el libro usa otra notación (por ejemplo \(G_c\) en vez de \(C\)), anótala en tu formulario.
 
-**Fuentes de los índices:** [Ogata en Pearson](https://www.pearson.com/us/higher-education/program/Ogata-Modern-Control-Engineering-5th-Edition/PGM100186.html), [Dorf y Bishop en Pearson](https://www.pearson.com/en-us/subject-catalog/p/nonlinear-systems/P200000003484/9780137307098), [Nise (8.ª ed.)](https://www.schweitzer-online.de/en/buch/Nise/Control-Systems-Engineering/9781119721406/A57290836/), [Golnaraghi y Kuo (10.ª ed.)](https://www.mheducation.com/highered/mhp/product/automatic-control-systems-tenth-edition.html) y [Chen](https://www.schweitzer-online.de/en/buch/Chen/Analog-Digital-Control-System-Design/9780030940705/A406123/).
+**Fuentes de los índices:** [Ogata en Pearson](https://www.pearson.com/us/higher-education/program/Ogata-Modern-Control-Engineering-5th-Edition/PGM100186.html), [Dorf y Bishop en Pearson](https://www.pearson.com/en-us/subject-catalog/p/nonlinear-systems/P200000003484/9780137307098), [Nise (8.ª ed.)](https://www.wiley.com/en-us/Control+Systems+Engineering-p-9781119721406), [Golnaraghi y Kuo (10.ª ed.)](https://www.mheducation.com/highered/mhp/product/automatic-control-systems-tenth-edition.html) y [Chen](https://books.google.com/books?vid=ISBN9780030940705).

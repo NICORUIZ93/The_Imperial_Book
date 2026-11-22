@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Servicios, dependencias y healthchecks
+### Tema 1: Servicios, dependencias y healthchecks · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -96,7 +96,7 @@ Ya coordinas el arranque real de servicios dependientes, no solo su orden. El si
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Define healthchecks útiles para API y base en Compose. Retrasa el arranque de la base y comprueba que la API tolera la dependencia no disponible y recupera su estado posteriormente.
 
-### Tema 2: Variables de entorno y .env
+### Tema 2: Variables de entorno y .env · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -175,7 +175,7 @@ Ya separas configuración versionable de secretos reales, con valores por defect
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Documenta variables obligatorias y valores locales en .env.example sin secretos. Prueba una configuración incompleta y confirma que el servicio explica el dato ausente antes de aceptar peticiones.
 
-### Tema 3: Redes y descubrimiento por nombre de servicio
+### Tema 3: Redes y descubrimiento por nombre de servicio · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -256,7 +256,7 @@ Ya explicas por qué el descubrimiento por nombre funciona dentro de un proyecto
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Conecta API y base mediante sus nombres de servicio. Cambia la dirección IP recreando la base y verifica que no hay ninguna IP fija almacenada en la configuración de la API.
 
-### Tema 4: Perfiles para distintos entornos
+### Tema 4: Perfiles para distintos entornos · Básico · 30 min
 
 #### Paso 1 · Objetivo y preparación
 

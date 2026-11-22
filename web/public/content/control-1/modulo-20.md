@@ -10,11 +10,11 @@ Otra forma de ver un sistema: qué le hace a una entrada senoidal de cada frecue
 
 ## Aprende construyendo
 
-### Tema 1: Qué es la respuesta en frecuencia
+### Tema 1: Qué es la respuesta en frecuencia · Avanzado · 45 min
 
 **¿Por qué es importante?** La respuesta en frecuencia describe cómo responde un sistema a vibraciones y señales periódicas.
 
-**Fuentes oficiales:** [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 \[u(t) = \sin\omega t \quad\Longrightarrow\quad y_{ss}(t) = |G(j\omega)|\,\sin\big(\omega t + \angle G(j\omega)\big)\]
 
@@ -111,11 +111,11 @@ cambia `s` a `1*I` con `G = 5/(s+1)` y confirma el Ejemplo 2 (\(|G|\approx3{,}53
 
 **Límite:** esta fórmula solo describe la salida en **régimen permanente** (\(y_{ss}\)); no incluye el transitorio inicial, que depende de las condiciones iniciales y se apaga con el tiempo (módulo 12).
 
-### Tema 2: Decibeles y la escala logarítmica
+### Tema 2: Decibeles y la escala logarítmica · Avanzado · 45 min
 
 **¿Por qué es importante?** Los decibeles y la escala logarítmica convierten productos en sumas y permiten dibujar Bode a mano.
 
-**Fuentes oficiales:** [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 Se dibuja \(|G|\) en decibeles, \(20\log_{10}|G|\), contra \(\omega\) en escala logarítmica. La ventaja: el logaritmo de un producto es la suma de logaritmos, así que el Bode de \(G_1G_2\) es la suma de los Bode de cada factor. Los ángulos también se suman.
 
@@ -252,11 +252,11 @@ cambia `log(10, 10)` a `log(50, 10)` y confirma `dB: 33.98` (Ejemplo 6). Confír
 
 **Límite:** esta conversión es exacta pero solo para la **magnitud**; los ángulos no se convierten a dB, se suman directamente en grados (o radianes) al combinar bloques en serie.
 
-### Tema 3: Los bloques básicos del diagrama de Bode
+### Tema 3: Los bloques básicos del diagrama de Bode · Avanzado · 45 min
 
 **¿Por qué es importante?** Con los bloques básicos trazas el Bode asintótico de cualquier función de transferencia.
 
-**Fuentes oficiales:** [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 | Factor | Magnitud | Fase |
 |---|---|---|
@@ -365,11 +365,11 @@ calcula en cuántos dB se cruza el eje 0 dB el integrador \(1/s\) del Ejemplo 2:
 
 **Límite:** esta tabla da las **asíntotas** (rectas aproximadas); el valor real en la esquina del polo/cero se desvía hasta 3 dB (demostración de este tema), y la curva real es suave, no angulosa como la asíntota.
 
-### Tema 4: Márgenes de estabilidad
+### Tema 4: Márgenes de estabilidad · Avanzado · 45 min
 
 **¿Por qué es importante?** El margen de fase mide qué tan lejos está un sistema de la inestabilidad y se relaciona con \(\zeta\).
 
-**Fuentes oficiales:** [Respuesta en frecuencia, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency).
+**Fuentes oficiales:** [Respuesta en frecuencia, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis).
 
 - **Frecuencia de cruce de ganancia \(\omega_c\):** donde \(|G(j\omega)| = 1\) (0 dB).
 - **Margen de fase:** \(MF = 180° + \angle G(j\omega_c)\). Cuánto atraso adicional aguanta antes de volverse inestable.

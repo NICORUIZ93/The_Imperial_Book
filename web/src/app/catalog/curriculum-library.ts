@@ -27,24 +27,18 @@ const STACK_NAMES: Record<string, string> = {
   flutter: 'Flutter',
   devops: 'DevOps',
   cloud: 'Cloud',
+  'control-1': 'Control 1',
   rutaflow: 'RutaFlow',
-  python: 'Python',
-  cpp: 'C++',
-  'data-ai': 'Datos e inteligencia artificial',
-  cybersecurity: 'Ciberseguridad',
-  databases: 'Bases de datos',
-  'iot-embedded': 'IoT y sistemas embebidos',
-  'robotics-drones': 'Robótica y drones',
-  'ui-ux': 'Diseño UI/UX',
-  'game-development': 'Desarrollo de videojuegos',
-  'quantum-computing': 'Computación cuántica',
-  electronics: 'Electrónica',
-  'math-science': 'Matemáticas y ciencias',
-  'general-technical': 'Temas técnicos generales',
 };
 
 function normalize(value: string): string {
   return value.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().trim();
+}
+
+/** La ruta del visor espera un índice 1-based numérico, no el fragmento `tema-N`. */
+export function topicRoute(stackId: string, topic: CurriculumTopic): string[] | null {
+  if (!topic.current) return null;
+  return ['/curso', stackId, topic.current.module, 'tema', String(topic.current.order)];
 }
 
 @Component({
@@ -204,8 +198,7 @@ export class CurriculumStackComponent {
   }
 
   topicLink(topic: CurriculumTopic): string[] | null {
-    if (!topic.current) return null;
-    return ['/curso', this.stackId(), topic.current.module, 'tema', `tema-${topic.current.order}`];
+    return topicRoute(this.stackId(), topic);
   }
 
   moduleLabel(moduleId: string): string {

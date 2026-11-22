@@ -2,8 +2,7 @@ import { CourseModule, createModule as m } from '../course-module.model';
 
 export const ANGULAR_MODULES: CourseModule[] = [
   m(0, 'Fundamentos y Angular CLI', 'Fundamentos', 'Fundamentos', '2 h', '#dd0031',
-    'Arranca con Angular 22 (la versión activa, zoneless y con Vitest) y entiende qué genera realmente el CLI antes de tocar código.',
-    ['ng new, ng generate y estructura de proyecto', 'Standalone components por defecto (desde Angular 17+)', 'Interpolación y property binding', 'Ciclo de build y dev server', 'TypeScript a fondo: unknown vs any vs never, uniones/intersecciones, utility types (Partial, Pick, Omit, Record)', 'ng generate component/service/directive/pipe/guard/interceptor', 'Compilador AOT vs JIT'],
+    'Arranca con Angular 22 (la versión activa, zoneless y con Vitest) y entiende qué genera realmente el CLI antes de tocar código.',['El CLI ya no genera NgModules', 'Interpolación y property binding', 'TypeScript a fondo — unknown, any, never y utility types', 'Compilador AOT frente a JIT'],
     [
       'Crea un proyecto con ng new mi-app y recorre la estructura generada: src/app, angular.json, tsconfig',
       'Genera un componente con ng generate component tarjeta y observa que NO se crea ningún NgModule',
@@ -15,8 +14,7 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['Angular CLI'],
     'Proyecto Angular nuevo con un componente propio renderizando datos dinámicos.'),
   m(1, 'Componentes, plantillas y data binding', 'Componentes', 'Fundamentos', '2 h 30 min', '#dd0031',
-    'El componente es la unidad básica de Angular: input, output y la sintaxis de control de flujo moderna.',
-    ['@Input/@Output e input()/output() basados en signals', 'Control de flujo nativo (@if/@for/@switch)', 'Content projection (ng-content)', 'Ciclo de vida de un componente', 'Hooks completos: ngOnChanges, ngDoCheck, ngAfterContentInit/Checked, ngAfterViewInit/Checked', 'Pipes integrados (Date, Currency, Async, Json) y pipes personalizados con @Pipe', 'Directivas personalizadas', 'Consultas signal (viewChild, contentChild) y afterNextRender'],
+    'El componente es la unidad básica de Angular: input, output y la sintaxis de control de flujo moderna.',['input()/output() basados en signals', 'Control de flujo nativo — @if, @for, @switch', 'Content projection con ng-content', 'Ciclo de vida completo de un componente', 'Consultas signal y trabajo posterior al render', 'Directivas y pipes personalizados', 'Pipes puros e impuros, AsyncPipe y signals'],
     [
       'Crea un componente Tarjeta con un input() titulo y un output() click que el padre pueda escuchar',
       'Reemplaza un *ngFor/*ngIf antiguo por la sintaxis nativa @for/@if y observa la mejora de legibilidad',
@@ -27,9 +25,8 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['¿Por qué @for exige (o recomienda fuertemente) una clave de track?', '¿Qué ventaja tiene input()/output() basado en signals sobre los decoradores @Input/@Output clásicos?'],
     ['Angular'],
     'Componente reutilizable (tarjeta/lista) parametrizado con inputs y outputs.'),
-  m(2, 'Signals: reactividad, linkedSignal y resource()', 'Signals', 'Fundamentos', '3 h 30 min', '#dd0031',
-    'Desde Angular 17, signals reemplazan gran parte del rol histórico de Zone.js; linkedSignal y resource() completan el modelo con estado derivado sobrescribible y datos asíncronos reactivos.',
-    ['signal(), computed() y effect()', 'Mutación vs actualización inmutable', 'Signals vs Observables: cuándo usar cada uno', 'Camino hacia zoneless change detection', 'WritableSignal: set(), update() y asReadonly()', 'linkedSignal para estado derivado y reseteable', 'resource() y httpResource(): datos asíncronos reactivos sin condición de carrera', 'model() para two-way binding basado en signals'],
+  m(2, 'Signals — el nuevo modelo de reactividad', 'Signals', 'Fundamentos', '3 h 30 min', '#dd0031',
+    'Desde Angular 17, signals reemplazan gran parte del rol histórico de Zone.js; linkedSignal y resource() completan el modelo con estado derivado sobrescribible y datos asíncronos reactivos.',['signal(), computed() y effect()', 'Mutación frente a actualización inmutable', 'Signals frente a Observables', 'Hacia zoneless change detection', 'linkedSignal — estado derivado que el usuario puede sobrescribir', 'resource() y httpResource — datos asíncronos reactivos'],
     [
       'Crea un signal contador = signal(0) y dos botones que llamen a contador.update(v => v + 1) y contador.set(0)',
       'Deriva un computed() doble a partir de contador y verifica que se recalcula solo cuando contador cambia',
@@ -43,8 +40,7 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['Angular Signals'],
     'Componente con estado derivado completamente con signals, computed, linkedSignal y resource(), sin RxJS.'),
   m(3, 'Servicios e inyección de dependencias', 'DI', 'Fundamentos', '2 h', '#dd0031',
-    'Comparte lógica y estado entre componentes sin acoplarlos directamente.',
-    ['@Injectable y providedIn: root', 'inject() function vs inyección por constructor', 'Jerarquía de inyectores', 'Tokens de inyección personalizados', 'Opciones de resolución: optional, skipSelf, self y host (y sus decoradores @Optional, @SkipSelf, @Self y @Host)'],
+    'Comparte lógica y estado entre componentes sin acoplarlos directamente.',['@Injectable y providedIn: root', 'inject() frente a inyección por constructor', 'Jerarquía de inyectores', 'Tokens de inyección y decoradores de resolución'],
     [
       'Crea un TareasService con @Injectable({ providedIn: "root" }) que mantenga un signal de tareas compartido',
       'Consume ese servicio desde 3 componentes distintos usando inject(TareasService) en vez de inyección por constructor',
@@ -56,9 +52,14 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['Angular DI'],
     'Servicio compartido de estado consumido por al menos tres componentes distintos.'),
   m(4, 'Routing y navegación', 'Routing', 'Aplicación', '2 h 30 min', '#dd0031',
-    'Estructura una aplicación con múltiples vistas, carga perezosa y rutas protegidas.',
-    [
-      'CanDeactivate: proteger un borrador sin confundir navegación con autorización','Router config con rutas standalone', 'Guards funcionales (CanActivate)', 'Lazy loading con loadComponent', 'Parámetros de ruta y query params', 'CanDeactivateFn, CanMatchFn, canActivateChild y ResolveFn', 'ActivatedRouteSnapshot, RouterStateSnapshot y fragment'],
+    'Estructura una aplicación con múltiples vistas, carga perezosa y rutas protegidas.',[
+      'Router config con rutas standalone',
+      'Guards funcionales',
+      'Lazy loading con loadComponent',
+      'Parámetros de ruta, query params y capacidades avanzadas de routing',
+      'CanDeactivate: proteger un borrador sin confundir navegación con autorización',
+      'Resolvers funcionales: datos listos antes de mostrar la ruta'
+      ],
     [
       'Define al menos 4 rutas en app.routes.ts: home, lista, detalle/:id y una 404 con redirectTo',
       'Carga una de las rutas de forma perezosa con loadComponent y verifica en la pestaña Network que solo se descarga al navegar',
@@ -69,9 +70,8 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['¿Qué ventaja real da loadComponent frente a importar todos los componentes de forma estática?', '¿Por qué un guard funcional es más simple de testear que una clase guard clásica?'],
     ['Angular Router'],
     'Aplicación con al menos 4 rutas, una protegida por guard y una cargada de forma perezosa.'),
-  m(5, 'Formularios: Reactive, template-driven y Signal Forms', 'Formularios', 'Aplicación', '3 h 45 min', '#dd0031',
-    'Valida entradas de usuario de forma predecible y testeable, con las APIs clásicas y con Signal Forms, estable desde Angular 22.',
-    ['Reactive Forms: FormGroup, FormControl, FormArray', 'Validadores síncronos y asíncronos', 'Formularios anidados y dinámicos', 'Template-driven forms: cuándo siguen siendo válidos', 'Signal Forms: form(), [formField], reglas con mensaje y [formRoot]'],
+  m(5, 'Formularios reactivos y template-driven', 'Formularios', 'Aplicación', '3 h 45 min', '#dd0031',
+    'Valida entradas de usuario de forma predecible y testeable, con las APIs clásicas y con Signal Forms, estable desde Angular 22.',['Reactive Forms — FormGroup y FormControl', 'Validadores asíncronos', 'FormArray para campos dinámicos', 'Template-driven forms — cuándo siguen siendo válidos', 'Signal Forms: formularios basados en signals (Angular 22)'],
     [
       'Crea un FormGroup con nombre, email y contraseña, cada uno con Validators.required y Validators.email donde aplique',
       'Muestra mensajes de error específicos por campo según qué validador falló (required vs email vs minlength)',
@@ -84,8 +84,7 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['Angular Forms'],
     'Formulario multi-paso con validación reactiva y mensajes de error claros.'),
   m(6, 'RxJS esencial para Angular', 'RxJS', 'Aplicación', '3 h', '#dd0031',
-    'Angular sigue apoyándose en RxJS para flujos asíncronos complejos. Aprende lo justo y necesario.',
-    ['Observable vs Promise', 'Operadores clave: map, switchMap, debounceTime, combineLatest', 'Manejo de suscripciones (async pipe, takeUntilDestroyed)', 'toSignal/toObservable como puente con Signals', 'Subject, BehaviorSubject, ReplaySubject y AsyncSubject', 'mergeMap, concatMap, exhaustMap y shareReplay'],
+    'Angular sigue apoyándose en RxJS para flujos asíncronos complejos. Aprende lo justo y necesario.',['Observable frente a Promise', 'Operadores clave — debounceTime, distinctUntilChanged, switchMap, combineLatest', 'Manejo de suscripciones sin fugas de memoria', 'Subjects y operadores de aplanamiento avanzados'],
     [
       'Crea un buscador: un input cuyo valueChanges pase por debounceTime(300) y distinctUntilChanged antes de disparar la búsqueda',
       'Usa switchMap para cancelar automáticamente la petición anterior cuando el usuario escribe una nueva búsqueda',
@@ -97,8 +96,7 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['RxJS'],
     'Buscador con debounce y cancelación de peticiones previas usando switchMap.'),
   m(7, 'HttpClient e interceptores', 'HttpClient', 'Aplicación', '2 h', '#dd0031',
-    'Consume APIs reales con manejo centralizado de errores y autenticación.',
-    ['HttpClient: fetch es el transporte por defecto (withFetch() obsoleto en Angular 22)', 'Interceptores funcionales', 'Manejo centralizado de errores HTTP', 'Tipado de respuestas con interfaces', 'HttpParams, HttpHeaders y observe: "response"', 'GET, POST, PUT, DELETE, PATCH y responseType'],
+    'Consume APIs reales con manejo centralizado de errores y autenticación.',['HttpClient (fetch por defecto) y peticiones tipadas', 'Interceptores funcionales', 'Registro de interceptores y centralización del manejo de errores'],
     [
       'Configura provideHttpClient() y haz un GET tipado, probado con HttpTestingController',
       'Define una interface para la respuesta y verifica que TypeScript marca error si accedes a un campo que no existe',
@@ -110,8 +108,7 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['Angular HttpClient'],
     'Cliente HTTP con interceptor de autenticación y manejo centralizado de errores 401/500.'),
   m(8, 'Standalone components y arquitectura sin NgModules', 'Standalone', 'Integración', '2 h', '#dd0031',
-    'La arquitectura moderna de Angular eliminó NgModule como requisito. Entiende cómo se organiza un proyecto hoy.',
-    ['Bootstrap de aplicación standalone', 'Providers a nivel de ruta vs aplicación', 'Organización por features sin módulos', 'Migración de NgModules a standalone'],
+    'La arquitectura moderna de Angular eliminó NgModule como requisito. Entiende cómo se organiza un proyecto hoy.',['Bootstrap sin NgModules', 'Organización por feature', 'Migración desde NgModules', 'Librerías y monorepos con Angular CLI: un workspace, varias aplicaciones y código compartido', 'Microfrontends con criterio: Native Federation y cuándo no usarlos'],
     [
       'Revisa main.ts y app.config.ts de un proyecto generado por el CLI reciente — identifica que no hay un solo NgModule',
       'Organiza componentes por feature (carpetas tareas/, usuarios/) en vez de por tipo (components/, services/)',
@@ -122,8 +119,7 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['Angular'],
     'Proyecto reorganizado 100% standalone, sin un solo NgModule.'),
   m(9, 'Gestión de estado', 'Estado', 'Integración', '3 h', '#dd0031',
-    'Compara el enfoque nativo con signals contra una librería de estado dedicada.',
-    ['Estado local con signals vs estado global', 'Patrón store con signals', 'NgRx: cuándo se justifica su complejidad', 'Selectors y derivación de estado'],
+    'Compara el enfoque nativo con signals contra una librería de estado dedicada.',['Store propio con signals', 'NgRx — actions, reducers y selectors', 'Cuándo NgRx justifica su complejidad'],
     [
       'Implementa un store propio basado en signals (estado, computed derivados, métodos de actualización) para una feature de carrito',
       'Conecta el store a 3 componentes distintos sin pasar props manualmente entre ellos',
@@ -135,8 +131,7 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['NgRx'],
     'Store de estado propio basado en signals para una feature con varias vistas.'),
   m(10, 'Testing en Angular', 'Testing', 'Integración', '2 h 30 min', '#dd0031',
-    'Prueba componentes, servicios y signals de forma rápida y mantenible.',
-    ['TestBed y ComponentFixture: setInput, inputBinding, detectChanges y whenStable', 'Pruebas de output() con un spy', 'Testing Library para pruebas centradas en el usuario', 'Mocking de HttpClient y el builder de Vitest (en lugar de Karma/Jasmine)', 'Harnesses de Angular Material y CDK'],
+    'Prueba componentes, servicios y signals de forma rápida y mantenible.',['TestBed y componentes standalone', 'Angular Testing Library', 'Mockear HttpClient y el builder predeterminado basado en Vitest', 'Angular Material y CDK: componentes accesibles probados con harnesses'],
     [
       'Escribe un test con TestBed que cree un componente y verifique que renderiza el texto esperado',
       'Escribe un test de un servicio con signals: actualiza el estado y verifica el valor del signal directamente',
@@ -147,9 +142,8 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['¿Por qué Testing Library empuja a probar "lo que el usuario ve" en vez de detalles de implementación?', '¿Qué ventaja de velocidad ofrece Vitest sobre Karma para este tipo de proyecto?'],
     ['Vitest', 'Testing Library'],
     'Suite de pruebas de componentes y servicios con cobertura razonable.'),
-  m(11, 'Performance, SSR, zoneless y OnPush', 'Performance y SSR', 'Experto', '4 h 30 min', '#dd0031',
-    'Angular moderno apunta a aplicaciones rápidas desde el primer render: SSR con @angular/ssr, hidratación, zoneless y OnPush por defecto (Angular 22).',
-    ['Server-Side Rendering con @angular/ssr', 'Hidratación, isPlatformBrowser y provideClientHydration()', 'Deferred views (@defer) y sus estados', 'Detección de cambios zoneless (sin Zone.js)', 'OnPush por defecto en Angular 22, markForCheck() y ChangeDetectionStrategy.Eager', 'Modos de render por ruta: SSR, prerender y CSR', 'Hidratación incremental (por defecto en Angular 22) con @defer (hydrate on ...)'],
+  m(11, 'Performance, SSR y zoneless', 'Performance y SSR', 'Experto', '4 h 30 min', '#dd0031',
+    'Angular moderno apunta a aplicaciones rápidas desde el primer render: SSR con @angular/ssr, hidratación, zoneless y OnPush por defecto (Angular 22).',['Server-Side Rendering', 'Hidratación', '`@defer` — estados reales, incluyendo error', 'Zoneless', 'OnPush por defecto (Angular 22): qué se revisa y cuándo usar `Eager`', 'Modos de render por ruta: SSR, prerender (SSG) y CSR con app.routes.server.ts', 'Hidratación incremental: @defer con hydrate on para despertar solo lo que se usa'],
     [
       'Habilita SSR en un proyecto existente con ng add @angular/ssr y verifica que el HTML inicial llega ya renderizado (ver curl al servidor)',
       'Observa en DevTools cómo ocurre la hydration: el HTML estático se vuelve interactivo sin re-renderizar todo',
@@ -161,9 +155,8 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['¿Qué problema de rendimiento percibido resuelve SSR que el CSR puro no resuelve?', '¿Qué gana una aplicación al eliminar Zone.js del bundle?', '¿Qué cambios repintan un componente OnPush y cuándo usarías Eager?'],
     ['Angular SSR'],
     'Aplicación con SSR activado y al menos una vista usando @defer.'),
-  m(12, 'Apéndice: qué cambió entre versiones mayores', 'Migraciones', 'Experto', '2 h', '#dd0031',
-    'Angular evoluciona rápido. Esta lección resume los saltos que importan para mantener proyectos vivos.',
-    ['AngularJS → Angular 2: reescritura total', 'Angular 9: motor de renderizado Ivy', 'Angular 14-17: standalone components y Signals', 'Cómo leer un Angular Update Guide y planear una migración'],
+  m(12, 'Versiones, compatibilidad y migraciones de Angular', 'Migraciones', 'Experto', '2 h', '#dd0031',
+    'Angular evoluciona rápido. Esta lección resume los saltos que importan para mantener proyectos vivos.',['Reconocer la versión y la arquitectura de un proyecto', 'Leer la guía de actualización antes de modificar archivos', 'Migrar una versión mayor a la vez y verificar cada salto'],
     [
       'Lee la tabla comparativa de este apéndice y ubica en qué versión se introdujo cada feature que usaste en módulos anteriores',
       'Usa update.angular.io con un proyecto "desde" una versión antigua hasta la actual y lee el plan de migración generado',
@@ -173,9 +166,8 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['¿Por qué Angular recomienda migrar una versión mayor a la vez y no saltar varias de golpe?', '¿Qué cambio entre versiones mayores tuvo el impacto más grande en cómo se escribe Angular hoy?'],
     ['Angular'],
     'Plan de migración documentado de un proyecto Angular antiguo hacia la versión actual.'),
-  m(13, 'Proyecto integrador: aplicación standalone completa', 'Proyecto final', 'Experto', '6 h', '#dd0031',
-    'Une signals, routing, formularios y HttpClient en una aplicación real.',
-    ['Arquitectura por features standalone', 'Estado con signals', 'Consumo de API real con interceptores', 'Tests de componentes clave'],
+  m(13, 'Proyecto integrador — aplicación standalone completa', 'Proyecto final', 'Experto', '6 h', '#dd0031',
+    'Une signals, routing, formularios y HttpClient en una aplicación real.',['Estructura del proyecto integrador', 'Integrando routing, store y formularios', 'TareasStore — combinando signals, computed y HttpClient'],
     [
       'Diseña la estructura de carpetas por feature para una app de gestión de tareas',
       'Implementa routing con al menos una ruta protegida por guard y una cargada de forma perezosa',
@@ -186,13 +178,14 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['¿Qué decisión de arquitectura cambiarías si reescribieras este proyecto desde cero?', '¿Qué parte de Angular moderno (signals, standalone, @defer) tuvo el mayor impacto en tu código?'],
     ['Angular', 'RxJS', 'Vitest'],
     'Aplicación Angular standalone con routing, formularios, consumo de API y tests.'),
-  m(14, 'Angular en producción: accesibilidad, seguridad e i18n', 'Producción frontend', 'Experto', '7 h', '#dd0031',
-    'Audita y endurece la aplicación standalone para usuarios, idiomas, dispositivos y amenazas reales mediante semántica y foco correctos, sanitización contextual, CSP, traducciones verificadas y presupuestos de entrega.',
-    [
-      'Accesibilidad: HTML nativo, foco, routing, formularios, CDK/Angular Aria y pruebas',
-      'Seguridad: sanitización, contextos DOM, CSP, Trusted Types, auth y SSR',
-      'i18n: mensajes, ICU, locales, RTL, fechas, moneda y traducciones',
-      'Performance budgets, Core Web Vitals, caché, service worker y releases observables',
+  m(14, 'Angular en producción — accesibilidad, seguridad e internacionalización', 'Producción frontend', 'Experto', '7 h', '#dd0031',
+    'Audita y endurece la aplicación standalone para usuarios, idiomas, dispositivos y amenazas reales mediante semántica y foco correctos, sanitización contextual, CSP, traducciones verificadas y presupuestos de entrega.',[
+      'Accesibilidad es comportamiento, no una puntuación',
+      'La seguridad automática tiene fronteras explícitas',
+      'Internacionalizar implica significado, no reemplazo de texto',
+      'Rendimiento y actualización son contratos de experiencia',
+      'Perfilar con Angular DevTools y el panel Performance de Chrome',
+      'CSP con nonce y Trusted Types en Angular'
     ],
     [
       'Completa un flujo solo con teclado y lector, corrige foco y anuncia navegación',
@@ -208,13 +201,11 @@ export const ANGULAR_MODULES: CourseModule[] = [
     ['Angular', 'Angular CDK', 'Angular Aria', 'Playwright', 'Lighthouse'],
     'Aplicación Angular auditada con flujo accesible, CSP y Trusted Types, dos locales, RTL, budgets de build, estrategia de actualización y evidencia de rendimiento real.'),
   m(15, 'Pruebas de signals, E2E, animación y TransferState', 'Pruebas, E2E y TransferState', 'Experto', '3 h', '#dd0031',
-    'Prueba la memoización de signals, automatiza flujos E2E, diseña movimiento que respeta prefers-reduced-motion y evita peticiones repetidas con TransferState. TestBed está en el Módulo 10 y la hidratación en el Módulo 11.',
-    ['Pruebas de signals: memoización de computed()', 'Cypress y Playwright E2E con locators accesibles', 'Animaciones accesibles y prefers-reduced-motion', 'TransferState: no repetir en el cliente la petición del servidor'],
+    'Prueba la memoización de signals, automatiza flujos E2E, diseña movimiento que respeta prefers-reduced-motion y evita peticiones repetidas con TransferState. TestBed está en el Módulo 10 y la hidratación en el Módulo 11.',['Pruebas de Signals', 'Cypress y Playwright', 'Animaciones accesibles', 'SSR y TransferState'],
     ['Prueba signal derivada', 'Automatiza flujo', 'Respeta reduced motion', 'Evita doble fetch'],
     ['¿Qué debe probarse sin TestBed?', '¿Por qué SSR no garantiza rendimiento?'], ['Angular','Vitest','Playwright','Cypress','TransferState'], 'Aplicación Angular con pruebas de signals y E2E, animación accesible y datos transferidos del servidor sin doble petición.'),
   m(16, 'Opcional: Angular Native, componentes Angular como vistas nativas reales', 'Angular Native (opcional)', 'Experto', '5 h', '#dd0031',
-    'MÓDULO OPCIONAL, fuera de la ruta principal: depende de un proyecto alpha (0.x) no oficial. Explora el proyecto experimental (no oficial) que renderiza componentes Angular directamente como vistas nativas iOS/Android sobre el renderer Fabric de React Native, sin WebView intermedio, evaluando con criterio técnico explícito qué tan lista está para producción.',
-    ['Fabric renderer vs WebView (Capacitor/Ionic) vs puente nativo (NativeScript)', 'Signals, computed() y estilos nativos compilados en build time', 'Preset de Tailwind con variantes ios:/android:', '@angular/router sobre stacks/tabs nativos', 'Módulos de Expo inyectados como servicios Angular (inject())', 'Testing sin simulador con API estilo Testing Library', 'Evaluación de madurez de dependencias en versión 0.x'],
+    'MÓDULO OPCIONAL, fuera de la ruta principal: depende de un proyecto alpha (0.x) no oficial. Explora el proyecto experimental (no oficial) que renderiza componentes Angular directamente como vistas nativas iOS/Android sobre el renderer Fabric de React Native, sin WebView intermedio, evaluando con criterio técnico explícito qué tan lista está para producción.',['Qué renderiza Angular Native y por qué no es un WebView', 'Signals, estilos nativos compilados y el preset de Tailwind', 'Router nativo y servicios de Expo inyectados como servicios Angular', 'Evaluar la madurez de una tecnología alpha con criterio'],
     [
       'Levanta el template oficial con npx create-expo-app --template @ng-native/template y confirma en simulador que renderiza vistas nativas, no un WebView',
       'Construye una lista de entregas con computed() derivado y estilos del preset de Tailwind con variantes ios:/android:',

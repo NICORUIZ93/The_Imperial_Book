@@ -4,7 +4,7 @@
 
 Cada Tema parte de una carpeta vacía y se verifica con comandos reales.
 
-### Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa
+### Tema 1: El borde: balanceo, proxy inverso, CDN y límites de tasa · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -174,7 +174,7 @@ Siguiente paso: el Tema 2 cambia de plano y ataca el crecimiento de los datos, d
 
 **Fuente oficial:** [nginx — ngx_http_limit_req_module](https://nginx.org/en/docs/http/ngx_http_limit_req_module.html) y [nginx — Load Balancing](https://nginx.org/en/docs/http/load_balancing.html).
 
-### Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL
+### Tema 2: Datos que crecen: índices, réplicas, sharding y la elección SQL/NoSQL · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -341,7 +341,7 @@ Siguiente paso: el Tema 3 trata lo que estas piezas cuestan cuando algo falla a 
 
 **Fuente oficial:** [PostgreSQL — CREATE INDEX](https://www.postgresql.org/docs/current/sql-createindex.html) y [PostgreSQL — Logical Replication](https://www.postgresql.org/docs/current/logical-replication.html).
 
-### Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión
+### Tema 3: CAP, consistencia e idempotencia: lo que se paga en cada decisión · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -476,7 +476,7 @@ Siguiente paso: el Tema 4 mide lo que todo esto cuesta cuando el sistema está b
 
 **Fuente oficial:** [Redis — SET](https://redis.io/docs/latest/commands/set/) y [PostgreSQL — INSERT](https://www.postgresql.org/docs/current/sql-insert.html).
 
-### Tema 4: Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga
+### Tema 4: Capacidad y observabilidad: latencia, throughput, SLO y pruebas de carga · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

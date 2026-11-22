@@ -5,7 +5,7 @@
 
 Cada tema verifica su garantía con pruebas de integración reales: `RouterTestingHarness` oficial de Angular navegando rutas realmente protegidas, la identidad singleton real de un store inyectado en dos componentes distintos, y `HttpTestingController` real interceptando la petición HTTP genuina de `TareasStore`.
 
-### Tema 1: Estructura del proyecto integrador
+### Tema 1: Estructura del proyecto integrador · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -165,7 +165,7 @@ Ya confirmas, con navegación real del router de Angular, que la separación `ta
 
 **Cuándo no usarlo:** para una aplicación completamente pública sin ningún concepto de sesión de usuario (por ejemplo, un catálogo de solo lectura sin autenticación), un guard de sesión y la separación `auth/` no tienen ningún propósito real que cumplir.
 
-### Tema 2: Integrando routing, store y formularios
+### Tema 2: Integrando routing, store y formularios · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -302,7 +302,7 @@ Ya confirmas, con una comparación de identidad de objeto real, que `providedIn:
 
 **Cuándo no usarlo:** para un estado que genuinamente pertenece a una sola pantalla y no necesita compartirse entre componentes (por ejemplo, el estado de apertura de un menú desplegable local), un store raíz compartido es una capa de indirección innecesaria frente a un signal local del propio componente.
 
-### Tema 3: TareasStore — combinando signals, computed y HttpClient
+### Tema 3: TareasStore — combinando signals, computed y HttpClient · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

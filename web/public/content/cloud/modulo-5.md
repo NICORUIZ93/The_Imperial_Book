@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Qué es serverless — ventajas y desventajas
+### Tema 1: Qué es serverless — ventajas y desventajas · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a desplegar la función `confirmar-entrega` del proyecto integrador RutaFlow y a medir con números reales la diferencia entre su primera invocación y las siguientes. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`).
@@ -163,7 +163,7 @@ Invocá `confirmar-entrega` tres veces seguidas y cronometrá cada una con `time
 #### Paso 7 · Cierre
 Entregá los tiempos de las tres invocaciones y el error del zip vacío del Paso 5; explicá cuál invocación fue el cold start y por qué. Siguiente paso: la estructura del handler. Errores comunes: asumir estado persistente y ocultar errores. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/welcome.html.
 
-### Tema 2: Estructura de una función Lambda
+### Tema 2: Estructura de una función Lambda · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a hacer que `confirmar-entrega` reciba y valide un comando real de entrega con el contrato `shipmentId` + `recipientPin` que escribirás en tu propio handler. Prerrequisitos: Tema 1 de este módulo.
@@ -316,7 +316,7 @@ Invocá sin `shipmentId` en el payload y confirmá que también falla, con un `e
 #### Paso 7 · Cierre
 Entregá la invocación exitosa, el error de PIN corto y el error de `shipmentId` ausente; explicá qué parte de `event` corresponde a cada validación. Siguiente paso: runtimes. Errores comunes: depender de memoria global y no validar event. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-handler.html.
 
-### Tema 3: Runtimes — Node.js, Python, Java, Go
+### Tema 3: Runtimes — Node.js, Python, Java, Go · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar en vivo qué pasa cuando el código de `confirmar-entrega` necesita una dependencia que el runtime de Node.js no trae incluida, y aprenderás a empaquetar correctamente con dependencias REALES del proyecto integrador. Prerrequisitos: Tema 2 de este módulo.
@@ -445,7 +445,7 @@ Confirmá con `unzip -l funcion.zip` que `node_modules/@aws-sdk/client-dynamodb`
 #### Paso 7 · Cierre
 Entregá el error `Import ModuleError` del Paso 5, la confirmación de `unzip` del Paso 6 y el resultado exitoso de la Lambda escribiendo en ShipmentEvents; explicá por qué el empaquetado correcto de dependencias es lo que conecta esta función con Módulo 4. Siguiente paso: payload. Errores comunes: versiones flotantes y tamaños de zip muy grandes. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html.
 
-### Tema 4: Payload de entrada y respuesta
+### Tema 4: Payload de entrada y respuesta · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a envolver `confirmar-entrega` en el formato de respuesta que va a exigir API Gateway en el Módulo 6, siempre dentro del proyecto integrador RutaFlow. Prerrequisitos: Temas 2-3 de este módulo.
@@ -577,7 +577,7 @@ Invocá con `recipientPin` de 4 dígitos y confirmá que esta vez la función s�
 #### Paso 7 · Cierre
 Entregá la respuesta 200, el error de parseo de payload del Paso 5 y la respuesta 400 del Paso 6; explicá la diferencia entre los tres. Siguiente paso: versiones. Errores comunes: mensajes ambiguos y no distinguir 4xx de 5xx. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/lambda-invocation.html.
 
-### Tema 5: Versionado y alias
+### Tema 5: Versionado y alias · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a publicar una versión fija de `confirmar-entrega` y a mover un alias `produccion` entre versiones, simulando un rollback real en el proyecto integrador. Prerrequisitos: Temas 1-4 de este módulo.
@@ -669,7 +669,7 @@ Modificá `index.js` otra vez (cualquier cambio chico), `update-function-code`, 
 #### Paso 7 · Cierre
 Entregá la publicación de la versión 1, el error de versión inexistente del Paso 5 y el rollback del Paso 6; explicá por qué mover un alias es más seguro que editar `$LATEST` directamente en producción. Siguiente paso: triggers. Errores comunes: editar $LATEST en producción y no registrar cambios. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/configuration-versions.html.
 
-### Tema 6: Integración con S3, DynamoDB Streams y API Gateway
+### Tema 6: Integración con S3, DynamoDB Streams y API Gateway · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a cerrar el ciclo completo del proyecto integrador RutaFlow: conectar `DeliveryCommands` (Módulo 3) para que dispare `confirmar-entrega` automáticamente, sin que nadie la invoque a mano. Prerrequisitos: Módulo 3 completo, Temas 1-5 de este módulo.
@@ -756,7 +756,7 @@ Compará esta integración (asíncrona, SQS invoca sin esperar respuesta) contra
 #### Paso 7 · Cierre
 Entregá la creación del mapping, el item nuevo en `ShipmentEvents` sin invocación manual, y el comportamiento del mensaje inválido del Paso 5; explicá por qué esta es la forma real en que RutaFlow conecta su cola con esta función. Siguiente paso: API Gateway. Errores comunes: duplicados y no configurar reintentos. Fuente oficial: https://docs.aws.amazon.com/lambda/latest/dg/with-s3.html.
 
-### Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Intermedio · 35 min
+### Tema 7: Deprecaciones en la nube: encontrar a tiempo runtimes y versiones que dejan de tener soporte · Avanzado · 35 min
 
 **Prerrequisito:** tema «Runtimes — Node.js, Python, Java…» de este módulo.
 

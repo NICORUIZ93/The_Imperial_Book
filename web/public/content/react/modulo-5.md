@@ -246,7 +246,7 @@ Corrige el Paso 5 devolviendo la URL correcta, y agrega un `errorElement` espec�
 #### Paso 7 · Cierre
 Entrega el loader sin parpadeo del Paso 4, el error de ruta provocado en el Paso 5, y el `errorElement` específico del Paso 6; explica por qué un loader cambia cuándo se cargan los datos (antes de renderizar, no después de montar), y por qué eso elimina el parpadeo que un `useEffect` siempre tiene. Siguiente paso: estudia rutas protegidas. Errores comunes: no definir un `errorElement` para rutas con loader, loaders sin manejo del caso en que la petición falla, y mezclar fetching por loader y por `useEffect` para el mismo dato en la misma vista. Fuentes oficiales: https://reactrouter.com/start/framework/data-loading y https://reactrouter.com/how-to/error-boundary.
 
-### Tema 3: Rutas protegidas
+### Tema 3: Rutas protegidas · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a proteger la ruta `/admin` de RutaFlow (solo para supervisores) y a explicar por qué esa protección mejora la experiencia de usuario pero no reemplaza la autorización del servidor. Prerrequisitos: Tema 2 de este módulo.

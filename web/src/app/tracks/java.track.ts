@@ -2,8 +2,7 @@ import { CourseModule, createModule as m } from '../course-module.model';
 
 export const JAVA_MODULES: CourseModule[] = [
   m(0, 'Sintaxis, tipos y el modelo de la JVM', 'Fundamentos', 'Fundamentos', '6 h 30 min', '#5382a1',
-    'Java compila a bytecode y corre sobre una máquina virtual. Entiende ese modelo antes de escribir tu primera clase.',
-    ['Del código fuente a la JVM', 'public static void main — qué significa cada palabra', 'JDK, JRE y JVM', 'Tipos primitivos vs referencias', 'Variables, conversiones y String', 'Operadores, precedencia y control de flujo', 'Arreglos, wrappers y paso de argumentos', 'Entrada, java.time y por qué evitar las APIs obsoletas (Date/Calendar)', 'Java 25 para programas pequeños: IO, archivos compactos e import module'],
+    'Java compila a bytecode y corre sobre una máquina virtual. Entiende ese modelo antes de escribir tu primera clase.',['Del código fuente a la JVM', 'JDK, JRE y JVM', 'public static void main — qué significa cada palabra', 'Tipos primitivos vs referencias', 'Variables, conversiones y `String`', 'Operadores, precedencia y control de flujo', 'Arreglos, wrappers y paso de argumentos', 'Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`)', 'Java 25 para programas pequeños: `IO`, archivos compactos e `import module`'],
     [
       'Escribe un Hola.java con public static void main, compílalo con javac y ejecútalo con java — observa el .class generado',
       'Declara variables de los 8 tipos primitivos de Java (int, long, double, char, boolean, etc.) y un String (tipo referencia)',
@@ -15,7 +14,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Por qué Java compila a bytecode en vez de código máquina nativo directamente?', '¿Qué significa cada palabra de public static void main(String[] args)?'],
     ['Java'],
     'Programa de consola que procesa entrada del usuario con validación de tipos.'),
-  m(1, 'Programación orientada a objetos, records y constructores flexibles', 'POO y records', 'Fundamentos', '4 h 10 min', '#5382a1',
+  m(1, 'Programación orientada a objetos', 'POO y records', 'Fundamentos', '4 h 10 min', '#5382a1',
     'Las cuatro bases de la POO aplicadas con la sintaxis y convenciones reales de Java.',
     ['Clases, objetos, constructores y encapsulación', 'Herencia y sobreescritura', 'Interfaces, clases abstractas y cuándo usar cada una', 'Sobrecarga vs sobreescritura, y modificadores de acceso', 'record — modelos inmutables sin boilerplate', 'Constructores flexibles (Java 25): validar y preparar antes de super(...)'],
     [
@@ -30,7 +29,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Qué diferencia hay entre sobrecargar (overload) y sobreescribir (override) un método?', '¿Cuándo usarías una clase abstracta y cuándo una interfaz?', '¿Qué boilerplate elimina record comparado con una clase tradicional?', '¿Qué puedes y qué no puedes hacer antes de super(...) en Java 25?'],
     ['Java'],
     'Jerarquía de clases con al menos una interfaz y una clase abstracta.'),
-  m(2, 'Colecciones, igualdad, genéricos y colas', 'Colecciones', 'Fundamentos', '4 h 30 min', '#5382a1',
+  m(2, 'Colecciones y genéricos', 'Colecciones', 'Fundamentos', '4 h 30 min', '#5382a1',
     'Elige la colección según cómo consultas los datos, define igualdad correcta para las claves, escribe código genérico y usa colas y pilas.',
     ['List, Set, Map y sus implementaciones', 'El contrato de equals y hashCode', 'Claves mutables y el mapa que pierde entradas', 'Genéricos, wildcards y type erasure', 'Comparable vs Comparator, e iteración', 'Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue'],
     [
@@ -58,9 +57,8 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Por qué el compilador obliga a manejar las checked exceptions y no las unchecked?', '¿Qué problema causa un catch vacío que "traga" la excepción?'],
     ['Java'],
     'Lector de archivos con manejo robusto de excepciones y try-with-resources.'),
-  m(4, 'Streams, programación funcional y Stream Gatherers', 'Streams', 'Aplicación', '2 h 30 min', '#5382a1',
-    'Desde Java 8, procesa colecciones con un estilo declarativo cercano al funcional; desde Java 24, Stream Gatherers cubre lo que map/filter/reduce no pueden expresar.',
-    ['Stream API — map, filter, reduce, collect', 'Optional — evitar null explícitamente', 'Streams paralelos y referencias a métodos', 'Stream Gatherers (Java 24)'],
+  m(4, 'Streams y programación funcional', 'Streams', 'Aplicación', '2 h 30 min', '#5382a1',
+    'Desde Java 8, procesa colecciones con un estilo declarativo cercano al funcional; desde Java 24, Stream Gatherers cubre lo que map/filter/reduce no pueden expresar.',['Stream API — map, filter, reduce, collect', 'Optional — evitar null explícitamente', 'Stream Gatherers (Java 24)', 'Streams paralelos y referencias a métodos'],
     [
       'Dada una lista de Personas, usa stream().filter().map().collect(Collectors.toList()) para obtener los nombres de los mayores de 18',
       'Usa reduce() para sumar los salarios de una lista de empleados',
@@ -72,7 +70,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Por qué Optional reemplaza con ventaja a devolver null directamente?', '¿Cuándo un stream paralelo realmente mejora el rendimiento y cuándo lo empeora?', '¿Qué tipo de lógica puede expresar un Gatherer que filter/map no pueden?'],
     ['Java Streams', 'Java 24'],
     'Pipeline de procesamiento de datos con Streams y Gatherers que reemplaza loops manuales.'),
-  m(5, 'Concurrencia: hilos, virtual threads y structured concurrency', 'Concurrencia', 'Aplicación', '4 h 40 min', '#5382a1',
+  m(5, 'Concurrencia — hilos y virtual threads', 'Concurrencia', 'Aplicación', '4 h 40 min', '#5382a1',
     'Java moderno (21-25) cambia el juego de la concurrencia con virtual threads de bajo costo, structured concurrency y scoped values.',
     ['ExecutorService y gestión de hilos', 'CompletableFuture', 'Virtual threads', 'Condiciones de carrera y sincronización', 'Structured Concurrency (StructuredTaskScope, Java 25)', 'Scoped Values frente a ThreadLocal (Java 25)', 'Timeouts y cancelación cooperativa sin abandonar recursos'],
     [
@@ -101,7 +99,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Qué ventaja da java.nio.file.Path sobre la antigua clase File?', '¿Por qué leer un archivo grande con buffer evita problemas de memoria que readAllBytes no evita?'],
     ['Jackson'],
     'Utilidad que lee/escribe JSON desde y hacia disco con manejo de errores.'),
-  m(7, 'Sealed classes, pattern matching y unnamed patterns', 'Sealed y patterns', 'Integración', '1 h 50 min', '#5382a1',
+  m(7, 'Sealed classes y pattern matching', 'Sealed y patterns', 'Integración', '1 h 50 min', '#5382a1',
     'Las features de Java 17-22 reducen boilerplate y hacen el modelado de datos más expresivo.',
     ['sealed — jerarquías cerradas y exhaustividad', 'Pattern matching exhaustivo y para instanceof', 'Unnamed variables y patterns (_, Java 22)'],
     [
@@ -115,7 +113,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Qué garantiza el compilador cuando usas switch exhaustivo sobre una sealed interface?', '¿Por qué _ elimina la ambigüedad entre "deliberadamente ignorado" y "olvidado"?'],
     ['Java 21', 'Java 22'],
     'Modelo de dominio inmutable usando records, sealed interfaces, pattern matching y unnamed patterns.'),
-  m(8, 'Build tools: Maven y Gradle', 'Maven/Gradle', 'Integración', '2 h 30 min', '#5382a1',
+  m(8, 'Build tools — Maven y Gradle', 'Maven/Gradle', 'Integración', '2 h 30 min', '#5382a1',
     'Gestiona dependencias y el ciclo de build de un proyecto Java real.',
     ['pom.xml vs build.gradle.kts', 'Ciclo de vida de build y scopes', 'Proyectos multi-módulo', 'Maven y Gradle lado a lado — el mismo proyecto en dos herramientas'],
     [
@@ -153,7 +151,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Qué encapsulación adicional da JPMS que los modificadores public/private de Java no daban antes?', '¿En qué tipo de proyecto JPMS realmente aporta valor frente a uno donde es complejidad innecesaria?'],
     ['Java Platform Module System'],
     'Proyecto dividido en al menos dos módulos JPMS con dependencias explícitas.'),
-  m(11, 'JVM interna: GC, profiling, JIT y Foreign Function & Memory API', 'JVM interna', 'Experto', '2 h 30 min', '#5382a1',
+  m(11, 'JVM interna — GC, profiling y JIT', 'JVM interna', 'Experto', '2 h 30 min', '#5382a1',
     'Entiende qué hace la JVM por debajo para poder diagnosticar problemas de memoria y rendimiento, y cómo invocar código nativo de forma segura desde Java 22+.',
     ['Generaciones de memoria y recolectores', 'Java Flight Recorder y JIT compilation', 'Referencias especiales y heap dumps', 'Foreign Function & Memory API (Java 22)'],
     [
@@ -184,8 +182,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['Java'],
     'Refactor de un módulo propio aplicando al menos dos patrones de diseño justificados.'),
   m(13, 'Proyecto integrador', 'Proyecto final', 'Experto', '1 h 50 min', '#5382a1',
-    'Une POO, concurrencia, testing y build reproducible en una aplicación real de consola o servicio.',
-    ['Arquitectura por capas del proyecto integrador', 'Integrando concurrencia, modelado y testing', 'Build reproducible y cierre del track'],
+    'Une POO, concurrencia, testing y build reproducible en una aplicación real de consola o servicio.',['Arquitectura por capas del proyecto integrador', 'Build reproducible y cierre del track', 'Integrando concurrencia, modelado y testing'],
     [
       'Diseña la arquitectura por capas de una aplicación de consola o servicio simple (ej. procesador de pedidos)',
       'Implementa procesamiento concurrente de tareas usando virtual threads',
@@ -196,7 +193,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Qué decisión de diseño cambiarías si tuvieras que escalar esta aplicación a 10x el volumen de datos?', '¿Qué parte del proyecto te hizo apreciar más una feature de Java moderna (records, virtual threads, pattern matching)?'],
     ['Java 25', 'JUnit 6', 'Gradle'],
     'Aplicación Java con lógica concurrente, tests y build reproducible documentado.'),
-  m(14, 'Java en producción: memoria, benchmarks y runtime seguro', 'Producción JVM', 'Experto', '4 h 20 min', '#5382a1',
+  m(14, 'Java en producción — memoria, benchmarks y runtime seguro', 'Producción JVM', 'Experto', '4 h 20 min', '#5382a1',
     'Endurece el proyecto integrador comprendiendo visibilidad y publicación en el Java Memory Model, midiendo con JMH sin engañar al JIT, defendiendo fronteras de datos y construyendo un runtime mínimo, observable y actualizable.',
     ['Compartir memoria requiere orden y visibilidad', 'La JVM optimiza y puede invalidar un cronómetro ingenuo', 'Deserializar es permitir construcción y comportamiento', 'El runtime es parte del artefacto y necesita ciclo de vida', 'Arranque más rápido: archivos CDS y la caché AOT', 'Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps'],
     [
@@ -208,7 +205,7 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Por qué volatile aporta visibilidad pero no vuelve atómico a counter++?', '¿Cómo puede el JIT eliminar justamente el trabajo que intentas medir?', '¿Quién actualiza las vulnerabilidades de una imagen creada con jlink?'],
     ['Java', 'JMH', 'jcstress', 'JFR', 'jlink'],
     'Servicio Java con publicación segura, pruebas de estrés concurrente, benchmark válido, entrada deserializada defensivamente, runtime modular mínimo y runbook de actualización/diagnóstico.'),
-  m(15, 'Java Master: builds, testing y logging operacional', 'Java Master', 'Experto', '3 h 40 min', '#5382a1',
+  m(15, 'Java Master — builds, pruebas y observabilidad', 'Java Master', 'Experto', '3 h 40 min', '#5382a1',
     'Domina Maven/Gradle multi-módulo, una estrategia de pruebas completa y observabilidad mediante SLF4J, Logback, MDC y logs estructurados.',
     ['Maven avanzado', 'Gradle y builds reproducibles', 'Proyectos multi-módulo sin ciclos', 'JUnit 6, Mockito y assertions expresivas', 'Pruebas de integración reproducibles', 'SLF4J, Logback, MDC y logging estructurado'],
     [
@@ -222,9 +219,8 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Por qué MDC debe limpiarse?', '¿Qué prueba pertenece a unit y cuál a integration?'],
     ['Maven', 'Gradle', 'JUnit 6', 'Mockito', 'SLF4J'],
     'Aplicación multi-módulo con build reproducible, pirámide de pruebas y logs correlacionados.'),
-  m(16, 'JPA, Hibernate, consultas y persistencia en producción', 'JPA & Hibernate', 'Integración', '5 h', '#5382a1',
-    'Modela relaciones y herencia, entiende el ciclo de vida de entidades, construye consultas, controla concurrencia y lleva el esquema a pruebas reproducibles.',
-    ['Entidades y relaciones JPA', 'FetchType.LAZY, EAGER y el problema N+1', 'Relaciones uno a uno, muchos a muchos y herencia', 'Ciclo de vida, EntityManager y consultas tipadas', 'Búsquedas dinámicas con Criteria y Querydsl', 'EntityGraph y cachés de persistencia', 'Concurrencia, transacciones y propagación', 'Migraciones y pruebas JPA con Testcontainers'],
+  m(16, 'JPA, Hibernate y FetchType.LAZY vs EAGER', 'JPA & Hibernate', 'Integración', '5 h', '#5382a1',
+    'Modela relaciones y herencia, entiende el ciclo de vida de entidades, construye consultas, controla concurrencia y lleva el esquema a pruebas reproducibles.',['Entidades y relaciones JPA', 'Relaciones uno a uno, muchos a muchos y herencia', 'Ciclo de vida, EntityManager y consultas tipadas', 'Búsquedas dinámicas con Criteria y Querydsl', 'FetchType.LAZY, EAGER y el problema N+1', 'EntityGraph y cachés de persistencia', 'Concurrencia, transacciones y propagación', 'Migraciones y pruebas JPA con Testcontainers'],
     [
       'Crea entidades Cliente y Pedido con claves foráneas, y prueba una relación OneToOne con restricción única',
       'Modela una asociación con atributos como entidad intermedia y compara SINGLE_TABLE con JOINED observando las tablas',
@@ -263,9 +259,8 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Qué aporta un JWT sobre una sesión tradicional en una API stateless?', '¿Por qué no basta con validar la URL del cliente contra SSRF?', '¿Qué problema resuelve un timeout y un retry controlado en llamadas externas?'],
     ['Java', 'HttpClient', 'JWT', 'HTTPS', 'OWASP'],
     'Backend Java seguro y resiliente con HTTP, tokens, validación de entrada y trazabilidad real.'),
-  m(19, 'Java del día a día: reflexión, regex, dinero, contratos, plugins e i18n', 'Java del día a día', 'Integración', '6 h 20 min', '#6d5dfc',
-    'Cubre las APIs que los libros de referencia (Core Java, Java a fondo) tratan como capítulo propio y que todo backend usa: reflexión y anotaciones, expresiones regulares, BigDecimal, assertions, ServiceLoader, proxies dinámicos e internacionalización.',
-    ['Reflexión y anotaciones en tiempo de ejecución', 'Expresiones regulares con Pattern y Matcher', 'Dinero exacto con BigDecimal', 'Assertions y diseño por contrato', 'ServiceLoader: plugins sin acoplar implementaciones', 'Proxies dinámicos: así funcionan @Transactional y los mocks', 'Internacionalización: números, monedas, fechas y orden de texto', 'Carga de clases: cargadores, delegación y plugins con URLClassLoader', 'MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado'],
+  m(19, 'Java del día a día — reflexión, regex, dinero, contratos, plugins e i18n', 'Java del día a día', 'Integración', '6 h 20 min', '#6d5dfc',
+    'Cubre las APIs que los libros de referencia (Core Java, Java a fondo) tratan como capítulo propio y que todo backend usa: reflexión y anotaciones, expresiones regulares, BigDecimal, assertions, ServiceLoader, proxies dinámicos e internacionalización.',['Reflexión y anotaciones en tiempo de ejecución', 'Expresiones regulares con Pattern y Matcher', 'Dinero exacto con BigDecimal', 'Assertions y diseño por contrato', 'ServiceLoader: plugins sin acoplar implementaciones', 'Internacionalización: números, monedas, fechas y orden de texto', 'Proxies dinámicos: así funcionan @Transactional y los mocks', 'Carga de clases: cargadores, delegación y plugins con URLClassLoader', 'MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado'],
     [
       'Valida campos obligatorios con anotaciones propias',
       'Extrae y enmascara guías con grupos con nombre',
@@ -277,9 +272,8 @@ export const JAVA_MODULES: CourseModule[] = [
     ['¿Por qué una anotación propia puede no ser visible por reflexión?', '¿Por qué no se usa double para dinero?', '¿Por qué @Transactional no aplica en una auto-invocación?'],
     ['JDK 25', 'java.lang.reflect', 'java.util.regex', 'java.math', 'java.text'],
     'Librería de utilidades de producción para el motor de asignación con validación por anotaciones, regex, dinero exacto, invariantes, plugins, proxy de registro y formatos localizados.'),
-  m(20, 'Java funcional: interfaces que componen comportamiento', 'Java funcional', 'Aplicación', '8 h 10 min', '#6d5dfc',
-    'Aprende las formas funcionales del JDK con archivos Java ejecutables: transforma y combina valores, maneja ausencias y procesa datos con Streams y Flow. El módulo mantiene los tres temas base y amplía el inventario a trece temas; cada tema incluye tres subtemas atómicos de 5–15 minutos.',
-    ['Las cuatro formas: Predicate, Function, Consumer y Supplier', 'Componer sin anidar: andThen, compose, negate y reglas encadenadas', 'Streams como composición: pereza, orden y efectos que se esconden', 'Function y BiFunction: transformar uno o dos datos', 'UnaryOperator y BinaryOperator: la salida conserva el tipo', 'Referencias a métodos: escribir la operación sin repetirla', 'Optional: buscar un envío que puede no existir', 'Streams intermedios: filtrar, transformar, aplanar y ordenar', 'Streams terminales: encontrar, contar y combinar resultados', 'Collectors: formar listas, mapas, grupos y texto', 'Streams paralelos: comparar antes de acelerarlos', 'Pureza y efectos: calcular separado de guardar o imprimir', 'Flow API: publicar datos con demanda y cierre'],
+  m(20, 'Java funcional — interfaces que componen comportamiento', 'Java funcional', 'Aplicación', '8 h 10 min', '#6d5dfc',
+    'Aprende las formas funcionales del JDK con archivos Java ejecutables: transforma y combina valores, maneja ausencias y procesa datos con Streams y Flow. El módulo mantiene los tres temas base y amplía el inventario a trece temas; cada tema incluye tres subtemas atómicos de 5–15 minutos.',['Las cuatro formas: Predicate, Function, Consumer y Supplier', 'Function y BiFunction: transformar uno o dos datos', 'Componer sin anidar: andThen, compose, negate y reglas encadenadas', 'Streams como composición: pereza, orden y efectos que se esconden', 'UnaryOperator y BinaryOperator: la salida conserva el tipo', 'Referencias a métodos: escribir la operación sin repetirla', 'Optional: buscar un envío que puede no existir', 'Streams intermedios: filtrar, transformar, aplanar y ordenar', 'Streams terminales: encontrar, contar y combinar resultados', 'Collectors: formar listas, mapas, grupos y texto', 'Streams paralelos: comparar antes de acelerarlos', 'Pureza y efectos: calcular separado de guardar o imprimir', 'Flow API: publicar datos con demanda y cierre'],
     [
       'Modela una regla de revisión como Predicate y compruébala con dos envíos',
       'Crea una interfaz funcional propia y demuestra cómo el tipo objetivo determina una lambda',

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Cotización y facturación reproducible
+### Tema 1: Cotización y facturación reproducible · Avanzado · 45 min
 
 **Conceptos clave:** Money, moneda, redondeo, vigencia, impuestos y versiones.
 
@@ -128,7 +128,7 @@ Entrega `CotizadorEnvio.java`, la salida reproducible para RF-4471, la comparaci
 
 **Transferencia al proyecto integrador «RutaFlow»:** Versiona la tarifa usada al cotizar y conserva sus entradas. Recalcula una cotización histórica después de cambiar precios y comprueba que sigue explicándose con la versión original.
 
-### Tema 2: Recaudo, liquidación y conciliación
+### Tema 2: Recaudo, liquidación y conciliación · Avanzado · 45 min
 
 **Conceptos clave:** doble partida, efectivo contra entrega, pagos, settlement, reversos y diferencias.
 
@@ -254,7 +254,7 @@ Entrega el esquema SQL, `ConciliadorRecaudo.java`, la secuencia del fallo delibe
 
 **Transferencia al proyecto integrador «RutaFlow»:** Concilia cobros del conductor con movimientos registrados y reporta diferencias identificables. Prueba un pago repetido y uno ausente; el proceso debe generar una revisión sin corregir saldos a mano.
 
-### Tema 3: Fraude responsable
+### Tema 3: Fraude responsable · Avanzado · 45 min
 
 **Conceptos clave:** señales, reglas, modelos, explicabilidad, revisión, sesgo y privacidad.
 
@@ -376,7 +376,7 @@ Entrega `DetectorSenalFraude.java`, el caso encolado real para RF-7788, la versi
 **Límites y decisión de uso:** Una puntuación de riesgo no prueba fraude y puede perjudicar a usuarios legítimos. Evalúa errores por grupos relevantes, conserva revisión humana y limita los datos usados; no conviertas una señal incierta en sanción automática.
 
 
-### Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación
+### Tema 4: Tokenización de pagos: un identificador opaco no sustituye autorización ni confirmación · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar definirás una frontera de cobro que recibe un identificador de prueba y un importe entero, sin recoger datos de tarjeta. **Prerrequisitos:** contratos, validación, dinero en unidades menores e idempotencia; Node 24. Ejemplo independiente desde carpeta vacía. No se procesan pagos ni se llama a un proveedor.

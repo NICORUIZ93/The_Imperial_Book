@@ -2,7 +2,7 @@
   <header class="topbar">
     <a class="brand" routerLink="/"><span class="brand-mark"><lucide-icon [img]="icons.BookOpen" /></span><span class="brand-text"><strong>The Imperial Book<span class="brand-dot">.</span></strong><small>Academia técnica en español</small></span></a>
     <nav class="top-links" aria-label="Navegación principal"><a href="#tracks-title">Cursos</a><a routerLink="/temario">Temario</a><a href="#beginner-title">Cómo estudiar</a></nav>
-    <div class="top-actions"><button class="global-search" (click)="palette.open()" aria-label="Buscar cursos, módulos y temas"><lucide-icon [img]="icons.Search" /><span>Buscar un tema</span><kbd>⌘K</kbd></button><button class="theme-toggle" (click)="themeService.toggle()" [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"><lucide-icon [img]="themeService.isDark() ? icons.Sun : icons.Moon" /></button></div>
+    <div class="top-actions"><button class="global-search" (click)="palette.open()" aria-label="Buscar cursos, módulos y temas"><lucide-icon [img]="icons.Search" /><span>Buscar un tema</span><kbd>{{ palette.shortcutLabel }}</kbd></button><button class="theme-toggle" (click)="themeService.toggle()" [attr.aria-label]="themeService.isDark() ? 'Activar modo claro' : 'Activar modo oscuro'"><lucide-icon [img]="themeService.isDark() ? icons.Sun : icons.Moon" /></button></div>
   </header>
   <div class="workspace">
     <aside class="catalog-sidebar" aria-label="Áreas de aprendizaje">

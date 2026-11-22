@@ -241,7 +241,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     ['¿Por qué una llamada interna con this deja un método sin transacción?', '¿Qué garantiza Kafka exactly-once y qué queda fuera?', '¿Por qué event sourcing no es auditoría gratuita?'],
     ['Spring Boot', 'PostgreSQL', 'Kafka', 'Spring Cloud Contract'],
     'Servicio con límites transaccionales probados, idempotencia, saga con compensación y recuperación ensayada.'),
-  m(18, 'Spring Security II: OIDC, autorización por recurso y SAML', 'Spring Security II', 'Experto', '2 h 30 min', '#6db33f',
+  m(18, 'Autenticación y backend seguro con Spring Security', 'Spring Security II', 'Experto', '2 h 30 min', '#6db33f',
     'Valida tokens de un proveedor OIDC, autoriza por recurso además de por rol y federa el inicio de sesión con SAML 2.0.',
     ['SecurityFilterChain y autorización', 'DTO validation, CORS, JWT/OIDC y clientes HTTP', 'SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa'],
     [

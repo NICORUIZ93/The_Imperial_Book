@@ -6,7 +6,7 @@ Un microservicio no es «un proyecto pequeño»: es una unidad desplegable con u
 
 Cada tema se ejecuta con `node --test` y no requiere Docker; el Módulo 22 lleva estos conceptos a un laboratorio con Floci, contenedores y Terraform. **Conocimiento previo:** Módulos 19 y 20, Node.js, HTTP y JSON. Si trabajas con Spring Boot, los Módulos 16 (bulkhead y rate limiter) y 17 (saga) lo muestran en Java; aquí el foco está en los contratos y en las decisiones que puedes verificar sin framework.
 
-### Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato
+### Tema 1: Descomponer por capacidad de negocio: dos servicios, un contrato · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque dividir por capas técnicas («servicio de controladores», «servicio de base de datos») produce servicios que cambian juntos y se despliegan juntos, sin ganar autonomía. Dividir por **capacidad de negocio** —envíos, facturación, notificaciones— alinea cada despliegue con un equipo y un ciclo de cambio, y permite definir un contrato que sobreviva a la implementación interna.
 
@@ -143,7 +143,7 @@ Siguiente paso: el Tema 2 aborda el problema que aparece cuando cada servicio ti
 
 **Fuentes oficiales:** [microservices.io — Decompose by business capability](https://microservices.io/patterns/decomposition/decompose-by-business-capability.html) y [OpenAPI Specification](https://spec.openapis.org/oas/latest.html).
 
-### Tema 2: Datos por servicio: propiedad, composición y réplicas
+### Tema 2: Datos por servicio: propiedad, composición y réplicas · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque compartir una base de datos entre servicios crea un acoplamiento invisible: un cambio de esquema en uno rompe al otro aunque los contratos HTTP no cambien. La propiedad de datos permite que cada servicio evolucione su modelo interno, pero obliga a resolver las consultas que cruzan contextos con composición, eventos o réplicas explícitas.
 
@@ -271,7 +271,7 @@ Siguiente paso: el Tema 3 añade límites de tiempo y cortacircuitos para que un
 
 **Fuentes oficiales:** [microservices.io — Database per service](https://microservices.io/patterns/data/database-per-service.html) y [microservices.io — API composition](https://microservices.io/patterns/data/api-composition.html).
 
-### Tema 3: Resiliencia: timeouts, reintentos y cortacircuitos
+### Tema 3: Resiliencia: timeouts, reintentos y cortacircuitos · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque en un sistema distribuido la falla no es una excepción rara: es el estado normal de una dependencia remota. Sin timeout, una petición lenta consume un hilo o una conexión indefinidamente; sin reintentos bien diseñados, un fallo transitorio se convierte en un error visible; sin cortacircuitos, todos los clientes siguen golpeando un servicio caído y agravan la caída.
 
@@ -437,7 +437,7 @@ Siguiente paso: el Tema 4 añade la pieza que permite diagnosticar una petición
 
 **Fuentes oficiales:** [AWS Builders' Library — Timeouts, retries and backoff with jitter](https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/) y [Martin Fowler — CircuitBreaker](https://martinfowler.com/bliki/CircuitBreaker.html).
 
-### Tema 4: Observabilidad distribuida: trazas, correlación y SLO
+### Tema 4: Observabilidad distribuida: trazas, correlación y SLO · Avanzado · 45 min
 
 **¿Por qué es importante?** Porque cuando una petición cruza tres servicios, un log aislado no explica dónde se perdió el tiempo ni por qué falló. Un identificador de traza propagado permite reconstruir el recorrido; un SLO convierte la confiabilidad en una medida acordada con el negocio, en lugar de una sensación. Sin ambos, la operación depende de adivinar.
 

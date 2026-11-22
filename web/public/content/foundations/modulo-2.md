@@ -4,7 +4,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Elegir estructuras según las operaciones
+### Tema 1: Elegir estructuras según las operaciones · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comparar guardar las tareas de tu gestor en una `list` contra guardarlas en un `dict` indexado por id, para la operación "buscar la tarea con id X", y vas a reproducir un bug real de confundir la posición de una lista con la identidad de una tarea. **Prerrequisitos:** Python instalado; comprobá `python3 --version` (o `py --version` en Windows).
@@ -168,7 +168,7 @@ Ejecuta `python3 src/medir_busqueda.py` (en Windows, `py src/medir_busqueda.py`)
 Guarda ambos archivos, reproduce el cambio de identidad aparente en la lista y compara la tendencia del benchmark. Como siguiente paso, en el Tema 2 vas a usar pilas y colas para las funciones "deshacer" y "procesar en orden" del mismo gestor de tareas. Errores comunes: guardar un índice de lista como identidad estable; olvidar mantener sincronizadas la lista y la tabla por id; tratar una medición puntual como demostración de complejidad. Fuentes oficiales: https://docs.python.org/es/3/tutorial/datastructures.html y https://docs.python.org/es/3/library/stdtypes.html#dict.
 **Implicación práctica:** Un id guardado en el lugar equivocado —una posición en vez de una clave— produce errores que no lanzan excepción: la tarea que "aparece" es simplemente otra.
 
-### Tema 2: Pilas, colas y abstracciones de comportamiento
+### Tema 2: Pilas, colas y abstracciones de comportamiento · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar un "deshacer" (undo) con una pila y un "procesar en el orden en que llegaron" con una cola, y vas a medir por qué usar una lista como cola (con `pop(0)`) es una trampa de rendimiento que no se nota hasta que la cola crece. **Prerrequisitos:** Tema 1 de este módulo.
@@ -313,7 +313,7 @@ Repetí la medición del Paso 4 con `pendientes_lista` y `pendientes_deque` de 1
 Guardá el código de la pila de deshacer, la cola de pendientes y la medición de `list.pop(0)` contra `deque.popleft()`; como siguiente paso, en el Tema 3 vas a necesitar que esas mismas tareas estén ordenadas para poder buscarlas con búsqueda binaria. Errores comunes: usar `list.pop(0)` para una cola y no notar el costo porque con pocos elementos no se nota; desapilar o desencolar sin comprobar antes si la estructura está vacía. Fuentes oficiales: https://docs.python.org/es/3/library/collections.html#collections.deque y https://docs.python.org/es/3/tutorial/datastructures.html#using-lists-as-stacks.
 **Implicación práctica:** Elegir mal entre lista y deque no se nota con 10 elementos ni con 100 — se nota cuando la cola de pendientes crece, y para entonces ya está en producción.
 
-### Tema 3: Búsqueda, precondiciones y demostración de corrección
+### Tema 3: Búsqueda, precondiciones y demostración de corrección · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar búsqueda binaria sobre una lista de tareas ordenada por fecha límite, y vas a reproducir el fallo silencioso de aplicarla sobre una lista que no cumple esa precondición. **Prerrequisitos:** Tema 2 de este módulo.
@@ -462,7 +462,7 @@ Generá 1000 tareas con fechas aleatorias, ordenalas con `.sort(key=...)` antes 
 Guardá `buscar_binaria_por_fecha`, la versión que falla sobre la lista desordenada y la corrección (ordenar antes o usar búsqueda lineal); como siguiente paso, en el Tema 4 vas a medir cuánto cuesta ese orden previo —y el resto de las operaciones— a medida que crece el número de tareas. Errores comunes: aplicar búsqueda binaria sin verificar que la lista esté ordenada por la misma clave que usás para comparar; confundir "no la encontró" con "no existe" cuando en realidad la precondición estaba rota. Fuentes oficiales: https://docs.python.org/es/3/library/bisect.html y https://opendsa-server.cs.vt.edu/.
 **Implicación práctica:** Un algoritmo que exige una precondición y la da por sentada sin verificarla no está mal "a veces": está mal siempre que alguien la rompa, y el síntoma es un resultado incorrecto sin ningún aviso.
 
-### Tema 4: Complejidad, medición, ordenamiento y recursión
+### Tema 4: Complejidad, medición, ordenamiento y recursión · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir con `time.perf_counter()` cuánto tarda ordenar una lista de tareas con `sorted()` comparado con una implementación propia de bubble sort, en varios tamaños, y vas a ver en números reales por qué O(n²) deja de ser aceptable mucho antes de lo que parece. **Prerrequisitos:** Tema 3 de este módulo.
@@ -633,7 +633,7 @@ Agregá un tercer tamaño (10 000) a la medición del Paso 4, y una función de 
 Guardá la tabla de tiempos de `sorted()` contra `bubble_sort()` en los tres tamaños medidos; con esto cerrás el Módulo 2. Como siguiente paso, en el Módulo 3 vas a aplicar este mismo tipo de razonamiento —medir antes de asumir— a cómo viaja una petición desde una URL hasta un servidor. Errores comunes: concluir con una sola medición; comparar tamaños demasiado parecidos para notar la diferencia entre O(n log n) y O(n²); usar bubble sort (o cualquier O(n²)) sobre una entrada que puede crecer sin límite. Fuentes oficiales: https://docs.python.org/es/3/library/time.html#time.perf_counter y https://docs.python.org/es/3/howto/sorting.html.
 **Implicación práctica:** La teoría (Big O) predice la forma del crecimiento, pero solo medir con reloj real confirma si esa diferencia importa en tu caso concreto —y cuánto—.
 
-### Tema 5: Árboles y árboles binarios de búsqueda (BST)
+### Tema 5: Árboles y árboles binarios de búsqueda (BST) · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás implementar un árbol binario de búsqueda que inserta y busca elementos manteniendo un orden, y explicar por qué una búsqueda en un BST equilibrado cuesta O(log n) en vez de O(n). Prerrequisitos: Temas 1-4 de este módulo (recursión y complejidad) y Módulo 1, Tema 6 (clases, `__init__` y `self`), porque el árbol se escribe con dos clases: `Nodo` y `BST`.
@@ -735,7 +735,7 @@ Implementa `eliminar(valor)` para el caso de un nodo hoja y un nodo con un solo 
 #### Paso 7 · Cierre
 Entrega la búsqueda con conteo de pasos, el árbol degenerado del fallo deliberado y el recorrido en orden. **¿Por qué es importante?** los BST (y sus variantes balanceadas) son la base de los índices de bases de datos, los mapas ordenados (`TreeMap` en Java, `std::map` en C++) y los sistemas de autocompletado. Entender por qué el equilibrio importa es lo que separa usar la estructura de elegirla bien. Fuentes: [Binary Search Tree (Wikipedia)](https://en.wikipedia.org/wiki/Binary_search_tree).
 
-### Tema 6: Tablas hash — búsqueda en tiempo constante
+### Tema 6: Tablas hash — búsqueda en tiempo constante · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás implementar una tabla hash con manejo de colisiones por encadenamiento, y explicar por qué el acceso promedio es O(1) y qué lo degrada a O(n). Prerrequisitos: Temas 1-4 de este módulo.
@@ -814,7 +814,7 @@ Mide cuántas claves caen en cada cubeta al insertar 1000 claves con `capacidad=
 #### Paso 7 · Cierre
 Entrega la tabla funcionando, la distribución de cubetas y el fallo deliberado con capacidad 1. **¿Por qué es importante?** las tablas hash son probablemente la estructura más usada en programación real — todo `dict`, `Map`, `HashMap`, caché o índice en memoria es una. Entender colisiones y factor de carga explica por qué a veces un `dict` "se pone lento" y cómo evitarlo. Fuentes: [Hash table (Wikipedia)](https://en.wikipedia.org/wiki/Hash_table).
 
-### Tema 7: Grafos y recorridos BFS/DFS
+### Tema 7: Grafos y recorridos BFS/DFS · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás representar un grafo y recorrerlo en anchura (BFS) y en profundidad (DFS), y decidir cuál usar según el problema. Prerrequisitos: Temas 2 (pilas/colas) y 5 (árboles) de este módulo.
@@ -909,7 +909,7 @@ Añade una ciudad aislada (sin aristas) y confirma que no aparece en el recorrid
 #### Paso 7 · Cierre
 Entrega los recorridos BFS y DFS, el camino más corto y el bucle infinito del fallo deliberado. **¿Por qué es importante?** los grafos y sus recorridos están detrás de los mapas (rutas), las redes sociales (amigos de amigos), los planificadores de tareas (orden de dependencias) y los rastreadores web. BFS para "el más cercano", DFS para "explorar todo" es una decisión que tomarás muchas veces. Fuentes: [Graph traversal (Wikipedia)](https://en.wikipedia.org/wiki/Graph_traversal).
 
-### Tema 8: Programación dinámica — resolver una vez, recordar el resultado
+### Tema 8: Programación dinámica — resolver una vez, recordar el resultado · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás reconocer un problema con subproblemas repetidos y resolverlo con memoización, convirtiendo una solución exponencial en una lineal. Prerrequisitos: Tema 4 (recursión y complejidad) de este módulo.

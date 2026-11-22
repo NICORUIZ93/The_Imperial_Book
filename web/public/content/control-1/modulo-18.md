@@ -11,11 +11,11 @@ El controlador decide cuánta acción aplicar según el error. Aquí verás qué
 
 ## Aprende construyendo
 
-### Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia
+### Tema 1: La idea de las acciones P, I y D: presente, pasado y tendencia · Avanzado · 45 min
 
 **¿Por qué es importante?** Entender qué mira cada acción (presente, pasado, tendencia) explica para qué sirve cada término del PID.
 
-**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
+**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
 
 > **Idea clave.** El controlador mira el error de tres maneras: cuánto hay ahora (P), cuánto se ha acumulado (I) y hacia dónde va (D).
 
@@ -116,11 +116,11 @@ cambia `Kp, Ki, Kd` a `2, 0.5, 1` y calcula \(T_i\) y \(T_d\) para ese controlad
 
 **Límite:** esta conversión entre \((K_p,K_i,K_d)\) y \((K_p,T_i,T_d)\) es solo notación; ninguna de las dos formas dice todavía si esas ganancias son buenas — eso depende de cómo responde el lazo cerrado (Tema 3).
 
-### Tema 2: Error en estado estacionario
+### Tema 2: Error en estado estacionario · Avanzado · 45 min
 
 **¿Por qué es importante?** El error estacionario muestra con números por qué la acción integral es necesaria en la mayoría de procesos.
 
-**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
+**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
 
 Con realimentación unitaria, el error final ante un escalón unitario depende de cuántos integradores (polos en \(s=0\)) tiene \(C(s)G(s)\). A ese número se le llama **tipo** del sistema.
 
@@ -230,11 +230,11 @@ cambia `C` a `4 + 2/s` (PI) y confirma `e_ss: 0` (Ejemplo 3): la integral lo eli
 
 **Límite:** este cálculo solo da el error en **estado estacionario**; no dice nada sobre el sobrepico o el tiempo de establecimiento del transitorio, que hay que revisar aparte (Tema 3).
 
-### Tema 3: Cada acción, con números
+### Tema 3: Cada acción, con números · Avanzado · 45 min
 
 **¿Por qué es importante?** Ver el efecto de cada acción con un ejemplo numérico te da argumentos reales para el punto 4 del Parcial 1.
 
-**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
+**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
 
 #### ON/OFF (dos posiciones)
 
@@ -405,11 +405,11 @@ cambia `Kp` a `99` y confirma `e_ss: 1/100` (el mismo ejemplo con ganancia mayor
 
 **Límite:** la fórmula \(1/(1+K_p)\) solo aplica a sistemas tipo 0 (sin integrador en la planta); con un integrador en la planta misma, el error ante escalón ya es cero incluso con solo P (como en el Ejemplo 4 de este tema, donde la planta es \(1/s^2\)).
 
-### Tema 4: Ventajas y desventajas (punto 4 del Parcial 1)
+### Tema 4: Ventajas y desventajas (punto 4 del Parcial 1) · Avanzado · 45 min
 
 **¿Por qué es importante?** Las ventajas y desventajas son la pregunta teórica más repetida de los parciales.
 
-**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
+**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
 
 | Acción | Ventajas | Desventajas |
 |---|---|---|
@@ -518,11 +518,11 @@ cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\),
 
 **Conexión con el proyecto integrador:** la bitácora de `examples/control-1-tanque/` pide justamente esta decisión con datos, no solo con la tabla. Con los dos CSV que genera `simular.py` (P y PI), argumenta por escrito por qué el PI es la elección correcta para un tanque que no puede quedarse con error permanente, y qué desventaja del PI (windup, si el caudal se satura en 1,5 m³/s) habría que vigilar en la planta real.
 
-### Tema 5: Sintonía de Ziegler-Nichols
+### Tema 5: Sintonía de Ziegler-Nichols · Avanzado · 45 min
 
 **¿Por qué es importante?** Ziegler-Nichols es el método práctico para sintonizar un PID cuando no hay un modelo exacto.
 
-**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
+**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
 
 > **Idea clave.** Cuando no tienes un modelo exacto, Ziegler-Nichols da valores iniciales de \(K_p\), \(T_i\) y \(T_d\) a partir de un experimento. Después se ajustan a mano.
 

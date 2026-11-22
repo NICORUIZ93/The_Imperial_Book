@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Providers, resources y data sources
+### Tema 1: Providers, resources y data sources · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -90,7 +90,7 @@ Ya distingues cuándo declarar un `resource` gestionado y cuándo solo consultar
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Declara recursos y consultas de datos de la infraestructura del servicio. Ejecuta un plan limpio y verifica que no intenta recrear un recurso que solo debía consultar.
 
-### Tema 2: State remoto y locking
+### Tema 2: State remoto y locking · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -176,7 +176,7 @@ Ya entiendes por qué el estado compartido con locking es indispensable para tra
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Configura un backend de estado compartido con control de acceso y bloqueo compatible. Simula dos operaciones concurrentes en laboratorio y verifica que no escriben el estado simultáneamente.
 
-### Tema 3: Módulos reutilizables
+### Tema 3: Módulos reutilizables · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -277,7 +277,7 @@ Ya reutilizas la misma infraestructura parametrizada sin duplicar definiciones e
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Extrae la infraestructura repetida de dos servicios a un módulo con entradas explícitas. Cambia una instancia y comprueba en el plan que la otra conserva sus recursos.
 
-### Tema 4: terraform plan vs apply
+### Tema 4: terraform plan vs apply · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -360,7 +360,7 @@ Ya revisas el impacto exacto de cualquier cambio antes de comprometerte a aplica
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Genera un plan para el cambio de tamaño del servicio, revísalo y aplica ese artefacto. Compara el estado final con las acciones previstas y registra cualquier divergencia antes de continuar.
 
-### Tema 5: Workspaces para múltiples entornos
+### Tema 5: Workspaces para múltiples entornos · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -447,7 +447,7 @@ Ya mantienes entornos paralelos con el mismo código sin arriesgar mezclar sus e
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Prueba separación de nombres, estado y credenciales entre entornos. Un plan en pruebas no debe mencionar recursos productivos; documenta por qué un workspace por sí solo no establece permisos.
 
-### Tema 6: Ansible — playbooks, roles, inventory y módulos
+### Tema 6: Ansible — playbooks, roles, inventory y módulos · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -533,7 +533,7 @@ Ya configuras software dentro de máquinas ya existentes de forma idempotente, c
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Configura el host de laboratorio mediante un playbook idempotente. Ejecútalo dos veces y comprueba que la segunda no introduce cambios innecesarios ni reinicia el servicio sin causa.
 
-### Tema 7: Pulumi como alternativa a HCL
+### Tema 7: Pulumi como alternativa a HCL · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -649,7 +649,7 @@ Ya conoces el compromiso explícito entre HCL declarativo y un lenguaje de progr
 
 ## Ampliación de la página 17 del PDF
 
-### Tema 8: OpenTofu, plan y estado sin recursos cloud
+### Tema 8: OpenTofu, plan y estado sin recursos cloud · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás observar un cambio declarativo en un estado local antes de usar un proveedor cloud. **Prerrequisitos:** conceptos HCL y estado de este módulo; OpenTofu instalado desde su documentación oficial y `tofu version` funcionando. Este laboratorio no fue ejecutado en la revisión porque el binario no estaba disponible; se publica con comandos y comportamiento esperado contrastados con la documentación.

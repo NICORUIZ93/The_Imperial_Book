@@ -29,7 +29,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos del principio de inyección, no pruebas de Hilt.** La evidencia real es que KSP genere el grafo al compilar (los errores `[Dagger/MissingBinding]` aparecen en compilación) y la prueba instrumentada del Tema 3.
 
-### Tema 1: Configuración básica de Hilt
+### Tema 1: Configuración básica de Hilt · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -145,7 +145,7 @@ Ya anotas una `Application` y un `ViewModel` con Hilt, y explicas por qué centr
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Inyecta el repositorio de entregas en el ViewModel. Sustitúyelo en pruebas sin modificar la pantalla y comprueba que la versión de producción utiliza la implementación persistente configurada.
 
-### Tema 2: @Provides y @Binds
+### Tema 2: @Provides y @Binds · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -289,7 +289,7 @@ Ya decides entre `@Provides` y `@Binds` según si una dependencia es externa o u
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Proporciona el cliente HTTP y enlaza la interfaz del repositorio con su implementación. Una prueba debe resolver el grafo y consultar una guía falsa sin construir dependencias dentro del composable.
 
-### Tema 3: Scopes y testing con Hilt
+### Tema 3: Scopes y testing con Hilt · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

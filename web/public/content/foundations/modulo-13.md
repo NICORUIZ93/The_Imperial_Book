@@ -8,7 +8,7 @@ Este módulo es la referencia de patrones del curso; el Módulo 7 (Tema 3) solo 
 
 ## Aprende construyendo
 
-### Tema 1: Decorator: agregar comportamiento sin heredar
+### Tema 1: Decorator: agregar comportamiento sin heredar · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás envolver un objeto con decoradores apilables, distinguir el patrón Decorator del decorador `@` de Python y decidir cuándo preferirlo a la herencia. Prerrequisitos: Módulo 7, Tema 3 (diseño modular y principios).
@@ -117,7 +117,7 @@ Escribe un decorador de función `@reintentar(veces=3)` que repita la llamada si
 #### Paso 7 · Cierre
 
 
-### Tema 2: State: un objeto que cambia de comportamiento según su estado
+### Tema 2: State: un objeto que cambia de comportamiento según su estado · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás reemplazar cadenas de `if estado == ...` por objetos estado, impedir transiciones inválidas y dibujar la máquina de estados de un envío. Prerrequisitos: Tema 1 de este módulo, que a su vez usa las clases del Módulo 1. La máquina de estados se define aquí, en el Paso 3; su versión con entradas eléctricas se estudia en el curso Control 1, módulo 29, tema 4.
@@ -223,7 +223,7 @@ Guarda en el contexto un historial de transiciones con fecha y hora, e imprímel
 #### Paso 7 · Cierre
 
 
-### Tema 3: Template Method: un algoritmo fijo con pasos variables
+### Tema 3: Template Method: un algoritmo fijo con pasos variables · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás definir el esqueleto de un algoritmo en una clase base, dejar pasos obligatorios abstractos y pasos opcionales con valor por defecto (ganchos). Prerrequisito: herencia y clases abstractas con `abc` (Módulo 1, Tema 7).
@@ -340,7 +340,7 @@ Reescribe los dos reportes sin herencia, pasando funciones como parámetros (`ge
 #### Paso 7 · Cierre
 
 
-### Tema 4: Chain of Responsibility: una cadena de validadores
+### Tema 4: Chain of Responsibility: una cadena de validadores · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás encadenar manejadores independientes, cortar la cadena en el primer error y razonar sobre el orden de la cadena. Prerrequisito: Tema 1 de este módulo.
@@ -448,7 +448,7 @@ Haz que la cadena devuelva **todos** los errores en lugar de cortar en el primer
 #### Paso 7 · Cierre
 
 
-### Tema 5: Mediator: coordinar objetos sin que se conozcan
+### Tema 5: Mediator: coordinar objetos sin que se conozcan · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás centralizar la coordinación entre objetos en un mediador, reducir dependencias cruzadas y reconocer cuándo el mediador se vuelve demasiado grande. Prerrequisito: Tema 4 de este módulo.
@@ -553,7 +553,7 @@ Agrega el evento `"libre"`: cuando un mensajero termina, avisa a la Central y es
 #### Paso 7 · Cierre
 
 
-### Tema 6: Memento: guardar y restaurar estado para deshacer
+### Tema 6: Memento: guardar y restaurar estado para deshacer · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás implementar deshacer con instantáneas inmutables, separar a quien guarda el estado de quien lo produce y explicar por qué una copia superficial rompe el historial. Prerrequisito: Módulo 2, Tema 2 (pilas).
@@ -663,7 +663,7 @@ Limita el historial a 20 instantáneas y mide cuánta memoria ahorras con `sys.g
 #### Paso 7 · Cierre
 
 
-### Tema 7: Visitor: operaciones nuevas sin tocar las clases
+### Tema 7: Visitor: operaciones nuevas sin tocar las clases · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás separar operaciones (tarifa, etiqueta) de una jerarquía estable de clases usando doble despacho, y reconocer su costo cuando la jerarquía cambia. Prerrequisitos: Temas 1 y 3 de este módulo.
@@ -760,7 +760,7 @@ Reescribe `CalculoTarifa` con `functools.singledispatch` o `match` por tipo y co
 #### Paso 7 · Cierre
 
 
-### Tema 8: Flyweight: compartir estado para ahorrar memoria
+### Tema 8: Flyweight: compartir estado para ahorrar memoria · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás separar estado intrínseco (compartido) de extrínseco (propio), compartir objetos con una fábrica y medir el ahorro de memoria. Prerrequisito: Módulo 2, Tema 6 (tablas hash).

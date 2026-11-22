@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: AWS Config — rastrear reglas sobre tus recursos
+### Tema 1: AWS Config — rastrear reglas sobre tus recursos · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar la regla que, contra AWS real, vigilaría que el bucket de evidencias de entrega de RutaFlow (`pruebas-entrega`, Módulo 2) siempre tenga versionado activo. Prerrequisitos: Módulo 2 completo.
@@ -56,7 +56,7 @@ Agrupá esta regla dentro de un paquete de conformidad (`put-conformance-pack`) 
 #### Paso 7 · Cierre
 Entregá la regla creada, el `INSUFFICIENT_DATA` del Paso 5, y el paquete de conformidad del Paso 6; explicá por qué `INSUFFICIENT_DATA` nunca debería reportarse como "cumple" en ningún dashboard real. Siguiente paso: AppConfig. Errores comunes: reglas sin responsable y falsos positivos. Fuente oficial: https://docs.aws.amazon.com/config/latest/developerguide/WhatIsConfig.html.
 
-### Tema 2: AppConfig — desplegar configuración sin redeployar código
+### Tema 2: AppConfig — desplegar configuración sin redeployar código · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear un feature flag real para activar el modo mantenimiento del servicio de seguimiento (Módulo 24), sin recompilar ni redesplegar nada. Prerrequisitos: Módulo 24 completo.
@@ -116,7 +116,7 @@ Creá una segunda versión con `"modo_mantenimiento": true`, desplegala al entor
 #### Paso 7 · Cierre
 Entregá la aplicación/entorno/perfil creados, el JSON inválido rechazado del Paso 5, y el despliegue más rollback del Paso 6; explicá por qué separar "cambios de configuración" de "cambios de código" permite reaccionar en minutos. Siguiente paso: sesiones. Errores comunes: configuración global y sin validación. Fuente oficial: https://docs.aws.amazon.com/appconfig/latest/userguide/what-is-appconfig.html.
 
-### Tema 3: AppConfigData — el plano de datos que consume tu aplicación
+### Tema 3: AppConfigData — el plano de datos que consume tu aplicación · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a leer el feature flag del Tema 2 exactamente como lo leería el servicio de seguimiento en ejecución, sin reiniciarse. Prerrequisitos: Tema 2 de este módulo.
@@ -183,7 +183,7 @@ Llamá `get-latest-configuration` dos veces seguidas con el token correcto (enca
 #### Paso 7 · Cierre
 Entregá la lectura real del flag del Paso 4, el error de reusar un token viejo del Paso 5, y la respuesta vacía por no-cambio del Paso 6; explicá por qué el servicio de seguimiento debería abrir una sola sesión y reusar el token, no abrir una sesión nueva en cada petición. Siguiente paso: backups. Errores comunes: polling excesivo y tokens compartidos. Fuente oficial: https://docs.aws.amazon.com/appconfig/latest/userguide/appconfig-retrieving-simplified.html.
 
-### Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios
+### Tema 4: AWS Backup — centralizar la política de respaldo de múltiples servicios · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a centralizar el respaldo diario de `ShipmentEvents` (Módulo 4) en un plan de AWS Backup, en vez de gestionar snapshots sueltos servicio por servicio. Prerrequisitos: Módulo 4 completo.
@@ -243,7 +243,7 @@ Documentá, para `ShipmentEvents`, qué retención tendría sentido (pista: `Lif
 #### Paso 7 · Cierre
 Entregá el plan y selección creados sobre `ShipmentEvents`, el plan sin recursos del Paso 5, y el RPO/RTO documentados del Paso 6; explicá por qué centralizar el respaldo reduce el riesgo de que un servicio quede sin protección por descuido. Siguiente paso: jobs. Errores comunes: backup sin restore y selección incompleta. Fuente oficial: https://docs.aws.amazon.com/aws-backup/latest/devguide/whatisbackup.html.
 
-### Tema 5: El ciclo de vida de un trabajo de respaldo
+### Tema 5: El ciclo de vida de un trabajo de respaldo · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a disparar un respaldo bajo demanda de `ShipmentEvents` antes de una migración riesgosa, sin esperar al cron diario del Tema 4. Prerrequisitos: Tema 4 de este módulo.
@@ -350,7 +350,7 @@ Entregá el job completado del Paso 4, la cancelación irreversible del Paso 5, 
 
 ## Laboratorio de transferencia
 
-### Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup
+### Tema 6: Simulacro de restauración: comprobar contenido, no solo la existencia del backup · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar restaurarás una copia en un destino separado y detectarás una corrupción con un hash. **Prerrequisitos:** archivos, JSON, terminal y Python 3. Es un ejemplo independiente local desde una carpeta vacía; no necesita credenciales ni servicios cloud.

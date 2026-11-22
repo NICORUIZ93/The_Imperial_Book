@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Dockerfile multi-stage
+### Tema 1: Dockerfile multi-stage · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -103,7 +103,7 @@ Ya separas compilación de ejecución para producir imágenes mínimas. El sigui
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Separa compilación y ejecución del servicio en el Dockerfile. Inspecciona la imagen final y ejecuta su prueba de humo; no debe depender de herramientas presentes únicamente en la etapa de build.
 
-### Tema 2: Capas e invalidación de caché
+### Tema 2: Capas e invalidación de caché · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -191,7 +191,7 @@ Ya ordenas un Dockerfile para maximizar el caché reutilizable. El siguiente tem
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Ordena las capas para reutilizar dependencias al cambiar una ruta HTTP. Compara dos builds y registra tiempos y capas reconstruidas; cambiar el lockfile sí debe invalidar la instalación.
 
-### Tema 3: Imágenes base distroless/alpine
+### Tema 3: Imágenes base distroless/alpine · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -259,7 +259,7 @@ Ya eliges la imagen base según el balance correcto entre depuración y segurida
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Prueba el mismo servicio con la imagen base seleccionada y sus dependencias nativas. Conserva el resultado de arranque y salud, y documenta cómo diagnosticarás fallos si la imagen no incluye shell.
 
-### Tema 4: Volúmenes vs bind mounts
+### Tema 4: Volúmenes vs bind mounts · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -338,7 +338,7 @@ Ya eliges bind mount para iterar rápido en desarrollo y volumen gestionado para
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Persiste los datos del servicio en un volumen y usa un bind mount solo en desarrollo. Recrea el contenedor y verifica los datos; documenta qué comando de limpieza sí los eliminaría.
 
-### Tema 5: Redes en Docker
+### Tema 5: Redes en Docker · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -407,7 +407,7 @@ Ya conectas contenedores por nombre usando redes definidas por el usuario, y sab
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Separa las redes pública e interna del servicio y su base. Verifica acceso de la API a la base por nombre y demuestra que no publicaste el puerto de datos innecesariamente.
 
-### Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor
+### Tema 6: Registries — Docker Hub, AWS ECR, Azure Container Registry, Harbor · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -484,7 +484,7 @@ Ya publicas y recuperas imágenes desde un registry propio, y entiendes qué cam
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Publica el artefacto probado en un registry y registra el digest en el despliegue. Descárgalo en un entorno limpio y demuestra que es la misma imagen que pasó la prueba de humo.
 
-### Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes
+### Tema 7: Operación diaria: inspect, stats, events y respaldo de volúmenes · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás inspeccionar un contenedor y sus montajes, medir su consumo, revisar los eventos del motor de Docker y respaldar y restaurar un volumen con un contenedor auxiliar. Prerrequisito: Tema 4 de este módulo (volúmenes).

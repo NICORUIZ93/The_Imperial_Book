@@ -17,7 +17,7 @@
 >
 > **Los scripts `python3` de este módulo son modelos, no pruebas de tu app.** La evidencia real son las pruebas Kotlin de cada tema ejecutadas con Gradle y su informe en `app/build/reports/tests/`.
 
-### Tema 1: Testing de ViewModels con fakes y runTest
+### Tema 1: Testing de ViewModels con fakes y runTest · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -169,7 +169,7 @@ Ya testeas un `ViewModel` con un repositorio fake, y explicas por qué es más r
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Prueba el ViewModel de ruta con reloj y repositorio controlados. Simula dos búsquedas en orden inverso y comprueba que prevalece la última selección, sin depender de esperas reales.
 
-### Tema 2: Compose UI Testing
+### Tema 2: Compose UI Testing · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -286,7 +286,7 @@ Ya escribes un test de Compose UI que verifica lo efectivamente renderizado, cer
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Escribe una prueba de usuario que busque una guía, abra el detalle y encuentre su estado. Cambiar el texto del estado o retirar su semántica debe producir un fallo comprensible.
 
-### Tema 3: Testing end-to-end con Activity real, y fakes vs mocks
+### Tema 3: Testing end-to-end con Activity real, y fakes vs mocks · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

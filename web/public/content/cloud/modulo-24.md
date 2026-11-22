@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: CodeBuild — compilaciones reales dentro de contenedores Docker
+### Tema 1: CodeBuild — compilaciones reales dentro de contenedores Docker · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a compilar el servicio de seguimiento de RutaFlow dentro de un contenedor real, con un proyecto `demo-build` que sube el artefacto a S3. Prerrequisitos: Módulo 2 completo.
@@ -81,7 +81,7 @@ Corregí el comando y, además de `salida.txt`, generá un checksum del artefact
 #### Paso 7 · Cierre
 Entregá el build exitoso del Paso 4, el `FAILED` real del Paso 5, y el checksum agregado del Paso 6; explicá por qué que la compilación sea real (no fabricada) importa para confiar en que un buildspec que funciona en Floci va a funcionar igual en CodeBuild real. Siguiente paso: artefactos. Errores comunes: dependencias flotantes y builds no reproducibles. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/welcome.html.
 
-### Tema 2: buildspec.yml — fases y artefactos
+### Tema 2: buildspec.yml — fases y artefactos · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás definir fases y artefactos desde cero. Prerrequisitos: Docker y Node.js; verifica `node --version`.
@@ -174,7 +174,7 @@ artifacts:
 #### Paso 7 · Cierre
 Entrega YAML, salida, fallo y corrección; explica el resultado. Siguiente paso: despliegue. Errores comunes: incluir archivos secretos y rutas relativas incorrectas. Fuente oficial: https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html.
 
-### Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas
+### Tema 3: CodeDeploy — aplicaciones, grupos y configuraciones predefinidas · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear `demo-app`, la aplicación CodeDeploy que va a gestionar los despliegues canary del servicio de seguimiento compilado en el Tema 1. Prerrequisitos: Tema 1 de este módulo.
@@ -231,7 +231,7 @@ Listá las 17 configuraciones predefinidas con `aws deploy list-deployment-confi
 #### Paso 7 · Cierre
 Entregá `demo-app`/`demo-grupo` creados con canary, el error de plataforma incompatible del Paso 5, y la comparación de riesgo del Paso 6; explicá por qué elegir la estrategia de despliegue es una decisión de riesgo, no solo un parámetro técnico. Siguiente paso: hooks. Errores comunes: grupo sin healthcheck y ventanas de mantenimiento ausentes. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments.html.
 
-### Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias
+### Tema 4: Despliegue Blue/Green de Lambda — cambio de tráfico por alias · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a mover el alias `live` del servicio de seguimiento de la versión 1 a la versión 2 con el canary de `demo-grupo` (Tema 3), y a confirmar que un hook fallido revierte solo. Prerrequisitos: Tema 3 de este módulo, Módulo 5 (versiones y alias).
@@ -287,7 +287,7 @@ Confirmá con `aws lambda get-alias --function-name demo-tracking --name live` q
 #### Paso 7 · Cierre
 Entregá el despliegue canary exitoso del Paso 4, el rollback automático del Paso 5, y la confirmación del alias revertido del Paso 6; explicá por qué este patrón es más seguro que cambiar el alias a mano con un script propio. Siguiente paso: ECS. Errores comunes: no validar métricas y rollback manual tardío. Fuente oficial: https://docs.aws.amazon.com/codedeploy/latest/userguide/deployments-lambda.html.
 
-### Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB
+### Tema 5: Despliegue Blue/Green de ECS — cambio de tráfico por listener ELB · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a desplegar una nueva definición de tarea del servicio de seguimiento en ECS usando el listener de `demo-alb` (Módulo 22) para cambiar tráfico de azul a verde. Prerrequisitos: Módulo 22 completo, Módulo 14 (ECS).

@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Requisitos, stakeholders y criterios verificables
+### Tema 1: Requisitos, stakeholders y criterios verificables · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a convertir "confirmar una entrega debe ser seguro" en un criterio de aceptación verificable, usando la regla de confirmación `recipientPin`: debe tener exactamente 6 dígitos. Prerrequisitos: ninguno adicional.
@@ -114,7 +114,7 @@ Escribí 5 criterios verificables para el CLI del proyecto integrador Fundamento
 
 #### Paso 7 · Cierre
 Entregá los tres criterios verificables del Paso 4, la salida del criterio vago y su corrección del Paso 5, y los cinco criterios del Paso 6; explicá por qué código correcto para un requisito mal escrito sigue siendo un fracaso. Como siguiente paso, usá estos criterios en el proyecto del módulo antes de escribir el código correspondiente. Errores comunes: escribir requisitos sin métrica ni umbral ("debe ser rápido"), confundir una historia de usuario con una especificación completa, y no registrar los supuestos ni las exclusiones del alcance. Fuente oficial primaria: https://www.rfc-editor.org/rfc/rfc2119.
-### Tema 2: Arquitectura guiada por atributos de calidad
+### Tema 2: Arquitectura guiada por atributos de calidad · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir el escenario de calidad que justifica una línea real de `confirm-delivery.ts`: la restricción `UNIQUE(command_id)`. Prerrequisitos: Tema 1 de este módulo.
@@ -236,7 +236,7 @@ Restaurá la restricción y agregá un segundo escenario para otro atributo, por
 
 #### Paso 7 · Cierre
 Entregá el escenario verificado y las dos corridas del Paso 4, la fila duplicada del Paso 5, y el segundo escenario del Paso 6; explicá por qué los atributos de calidad compiten (durabilidad frente a velocidad) y cómo la arquitectura hace explícito ese trade-off. Como siguiente paso, llevá el escenario al ADR del Tema 4 y dejá registrada la restricción que lo hace cumplir. Errores comunes: diagramar la arquitectura sin un escenario de calidad medible detrás, tratar una restricción de base de datos como detalle de implementación en vez de una decisión arquitectónica, y agregar una fitness function nueva sin decidir si debe bloquear o solo advertir. Fuentes oficiales: https://c4model.com/.
-### Tema 3: Diseño modular, principios, patrones y refactoring
+### Tema 3: Diseño modular, principios, patrones y refactoring · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a definir el puerto `DeliveryRepository`, implementar `confirmDelivery` y escribir un segundo adaptador sin tocar el caso de uso. Prerrequisitos: Node.js 24 o posterior para ejecutar TypeScript con borrado de tipos, y Python 3 para el verificador estructural.
@@ -403,7 +403,7 @@ Escribí una prueba caracterizadora sobre `confirmDelivery` usando el adaptador 
 
 #### Paso 7 · Cierre
 Entregá la salida del contrato verificada en el Paso 4, el adaptador con su contador de confirmaciones del Paso 5, y la prueba caracterizadora del Paso 6; explicá por qué escribir ese segundo adaptador sin tocar `confirmDelivery` demuestra que el diseño real separó dominio de infraestructura. Como siguiente paso, escribí la prueba caracterizadora sobre el repositorio real antes de refactorizarlo. Errores comunes: introducir una interfaz antes de que exista una segunda implementación real, aplicar un patrón de diseño porque "es lo profesional" sin identificar el problema que resuelve, y refactorizar código heredado sin antes escribir una prueba caracterizadora. Fuentes oficiales: https://refactoring.com/catalog/.
-### Tema 4: Decisiones, documentación, deuda y evolución
+### Tema 4: Decisiones, documentación, deuda y evolución · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir el ADR real que justifica por qué RutaFlow usa DynamoDB para `ShipmentEvents` en vez de una base relacional. Prerrequisitos: ninguno adicional (el Módulo 4 del track Cloud profundiza la decisión en sí).
@@ -470,7 +470,7 @@ Como **siguiente** paso, usá ese estándar en el proyecto del módulo: requisit
 
 ## Aplicación del material de referencia
 
-### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda
+### Tema 5: Records de C#: igualdad por valor no implica inmutabilidad profunda · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar ejecutarás un record C#, crearás una copia con `with` y demostrarás qué ocurre con una lista compartida. **Prerrequisitos:** objetos, referencias y colecciones; es una comparación de diseño, no un curso completo de C#. Instala el SDK .NET 10 y comprueba `dotnet --version`. El ejemplo independiente parte de carpeta vacía.
@@ -534,7 +534,7 @@ El siguiente paso es decidir ownership de colecciones en tus DTOs. **Errores com
 
 **Fuente oficial:** [Microsoft: records de C#](https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/record).
 
-### Tema 6: Desarrollo guiado por especificación con agentes de IA
+### Tema 6: Desarrollo guiado por especificación con agentes de IA · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir una especificación pequeña con criterios numerados, pedir a un agente de IA un cambio contra esa especificación y comprobar con un script que cada criterio quedó cubierto por una prueba. **Prerrequisitos:** el Tema 1 de este módulo (criterios dado/cuando/entonces), pruebas con `unittest` del Módulo 5 y Git básico.
@@ -663,7 +663,7 @@ Entregá la salida del verificador con `C3` sin prueba, la salida corregida con 
 
 **Fuente oficial:** [GitHub Docs — Prácticas recomendadas para usar Copilot en tareas](https://docs.github.com/en/copilot/how-tos/agents/copilot-coding-agent/best-practices-for-using-copilot-to-work-on-tasks).
 
-### Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Intermedio · 40 min
+### Tema 7: Evaluar una skill de agente antes de usarla: validar, deduplicar y medir · Avanzado · 40 min
 
 **Prerrequisito:** tema «Desarrollo guiado por especificación con agentes de IA» de este módulo.
 

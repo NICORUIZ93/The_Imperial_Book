@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Pod, ReplicaSet, Deployment
+### Tema 1: Pod, ReplicaSet, Deployment · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -98,7 +98,7 @@ Ya distingues qué nivel de la jerarquía consultar para cada pregunta de diagn�
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Despliega la API con réplicas declaradas y elimina un pod de prueba. Comprueba que el controlador recupera la cantidad deseada sin crear manualmente una instancia sustituta.
 
-### Tema 2: Service (ClusterIP, NodePort, LoadBalancer)
+### Tema 2: Service (ClusterIP, NodePort, LoadBalancer) · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -186,7 +186,7 @@ Ya expones aplicaciones de forma estable sin depender de IPs de Pods efímeros. 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Expón la API con el tipo de Service requerido por el laboratorio. Verifica conectividad desde dentro y fuera del clúster y documenta por qué la base permanece accesible solo internamente.
 
-### Tema 3: ConfigMaps y Secrets
+### Tema 3: ConfigMaps y Secrets · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -266,7 +266,7 @@ Ya externalizas configuración y entiendes la limitación real de los Secrets na
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Separa configuración pública de credenciales del servicio. Rota una credencial de prueba y verifica cómo se actualiza el proceso; no asumas que cambiar el objeto reinicia automáticamente la aplicación.
 
-### Tema 4: kubectl esencial
+### Tema 4: kubectl esencial · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -344,7 +344,7 @@ Ya diagnosticas cualquier objeto del clúster con las herramientas correctas par
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Escribe un diagnóstico reproducible usando estado, eventos y logs del deployment. Provoca una imagen inexistente y demuestra que puedes identificar la causa sin editar el pod manualmente.
 
-### Tema 5: Namespaces
+### Tema 5: Namespaces · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -422,7 +422,7 @@ Ya aíslas lógicamente entornos dentro del mismo clúster físico, y verificas 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Aísla recursos de desarrollo y prueba en namespaces diferentes. Verifica el contexto antes de aplicar y comprueba que una cuenta del pipeline no puede modificar el otro entorno.
 
-### Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs
+### Tema 6: StatefulSets, DaemonSets, Jobs y CronJobs · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -525,7 +525,7 @@ Ya eliges el objeto correcto según el patrón real de tu carga de trabajo, no s
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Clasifica API, migración y tarea periódica según el controlador adecuado. Ejecuta una migración de prueba y registra su finalización, evitando tratarla como un servicio que debe reiniciarse indefinidamente.
 
-### Tema 7: Persistent Volumes, PVCs y StorageClasses
+### Tema 7: Persistent Volumes, PVCs y StorageClasses · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -632,7 +632,7 @@ Ya separas la solicitud de almacenamiento de una aplicación de los detalles fí
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Declara el almacenamiento de la base de laboratorio mediante un PVC. Recrea su consumidor y verifica persistencia, documentando política de recuperación y el efecto de eliminar el claim.
 
-### Tema 8: Clúster local con Minikube: perfiles, addons e Ingress
+### Tema 8: Clúster local con Minikube: perfiles, addons e Ingress · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a levantar un clúster con Minikube, activar el addon de Ingress, publicar el Deployment `mi-api` del Tema 1 por un nombre de host y explicar cuándo conviene Minikube frente a `kind`. **Conocimiento previo:** Temas 1, 2 y 4 de este módulo; Docker en ejecución, `kubectl` y `minikube` instalados (`brew install minikube` en macOS).
@@ -719,7 +719,7 @@ Entregá la salida de `kubectl get ingress mi-api`, la respuesta del `curl` con 
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Publica la API del proyecto por un host local con Ingress en Minikube y documenta en el README los dos caminos de arranque (`kind` para CI, Minikube para desarrollo).
 
-### Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Intermedio · 40 min
+### Tema 9: Arquitectura de Kubernetes: plano de control, nodos y el ciclo de reconciliación · Avanzado · 40 min
 
 **Prerrequisito:** tema «Pod, ReplicaSet, Deployment» de este módulo.
 

@@ -5,7 +5,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ## Aprende construyendo
 
-### Tema 1: Source sets
+### Tema 1: Source sets · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -101,7 +101,7 @@ Ya decides en qué source set pertenece un archivo según si depende o no de API
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Ubica reglas de entrega en commonMain y adaptadores nativos en su source set. Compila ambos destinos y verifica que el dominio no importa APIs exclusivas de Android o iOS.
 
-### Tema 2: expect/actual
+### Tema 2: expect/actual · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -200,7 +200,7 @@ Ya declaras contratos `expect` en `commonMain` y verificas que cada plataforma i
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Expón una capacidad nativa mínima, como obtener una marca temporal o identificador de instalación. Prueba el contrato común y documenta las diferencias observables de cada implementación actual.
 
-### Tema 3: Gradle multiplataforma y targets disponibles
+### Tema 3: Gradle multiplataforma y targets disponibles · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -324,7 +324,7 @@ Ya configuras los targets de un proyecto KMP y declaras dependencias en el bloqu
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Configura `androidTarget()` y los tres targets de iOS para el módulo `shared`, y declara Ktor en `commonMain.dependencies` para que el cliente HTTP de consulta de envíos sea el mismo código consumido por la app Android y la app iOS.
 
-### Tema 4: Jerarquía de source sets intermedios
+### Tema 4: Jerarquía de source sets intermedios · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 

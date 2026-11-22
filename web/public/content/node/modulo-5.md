@@ -4,7 +4,7 @@
 
 Cada tema es un proyecto independiente que comienza en una carpeta vacía. Escribe manualmente los archivos fuente y de configuración indicados; no copies proyectos prefabricados ni reutilices archivos o bases de datos de otros temas. `npm init -y` crea el `package.json`, que después editas para declarar ESM. Las migraciones y el cliente de Prisma sí se generan con sus comandos, pero siempre a partir del schema que escribiste en este tema.
 
-### Tema 1: PostgreSQL desde Node con el driver puro · Básico · 90 min
+### Tema 1: PostgreSQL desde Node con el driver puro · Intermedio · 45 min
 
 #### Aprende
 
@@ -173,7 +173,7 @@ En el **[proyecto integrador «API operativa de entregas»](#laboratorio-practic
 
 **Fuentes oficiales:** [node-postgres](https://node-postgres.com/), [queries parametrizadas de `pg`](https://node-postgres.com/features/queries), [imagen oficial de PostgreSQL](https://hub.docker.com/_/postgres) y [PostgreSQL: sintaxis SQL](https://www.postgresql.org/docs/current/sql-syntax-lexical.html).
 
-### Tema 2: Prisma — schema, migraciones y queries tipadas · Intermedio · 90 min
+### Tema 2: Prisma — schema, migraciones y queries tipadas · Intermedio · 45 min
 
 #### Aprende
 
@@ -355,7 +355,7 @@ En el **[proyecto integrador «API operativa de entregas»](#laboratorio-practic
 
 **Fuentes oficiales:** [quickstart Prisma con SQLite](https://www.prisma.io/docs/prisma-orm/quickstart/sqlite), [Prisma Migrate](https://www.prisma.io/docs/orm/prisma-migrate), [`migrate dev`](https://docs.prisma.io/docs/cli/migrate/dev) y [SQLite connector](https://docs.prisma.io/docs/orm/core-concepts/supported-databases/sqlite).
 
-### Tema 3: Pool de conexiones y transacciones · Intermedio · 90 min
+### Tema 3: Pool de conexiones y transacciones · Intermedio · 45 min
 
 #### Aprende
 
@@ -541,7 +541,7 @@ En el **[proyecto integrador «API operativa de entregas»](#laboratorio-practic
 
 **Fuentes oficiales:** [node-postgres pools](https://node-postgres.com/features/pooling), [node-postgres transactions](https://node-postgres.com/features/transactions), [PostgreSQL transactions](https://www.postgresql.org/docs/current/tutorial-transactions.html) y [`UPDATE`](https://www.postgresql.org/docs/current/sql-update.html).
 
-### Tema 4: MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 75 min
+### Tema 4: MongoDB con Mongoose y otras alternativas de ORM · Intermedio · 45 min
 
 #### Aprende
 

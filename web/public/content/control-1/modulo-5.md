@@ -10,11 +10,11 @@ Qué es un sistema de control, cuáles son sus partes y cómo combinar bloques p
 
 ## Aprende construyendo
 
-### Tema 1: ¿Qué es un sistema de control?
+### Tema 1: ¿Qué es un sistema de control? · Básico · 45 min
 
 **¿Por qué es importante?** Saber distinguir lazo abierto de lazo cerrado es la base para entender por qué se controla con realimentación.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 > **Idea clave.** Un conjunto de elementos que hace que una variable llegue a un valor deseado y se quede ahí, aunque haya perturbaciones.
 
@@ -209,11 +209,11 @@ if __name__ == "__main__":
 
 Desde `academia-labs/control-1`, con el entorno del módulo 0 activo, ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` (en PowerShell, `.\.venv\Scripts\python.exe examples\control-1-tanque\simular.py --salida salida-tanque`). Debes ver `P: altura_final=1.308 m; error_final=0.192 m` y `PI: altura_final=1.500 m; error_final=0.000 m`. Anota en tu bitácora cuál es la referencia (1,5 m), la perturbación (el caudal de salida, que depende de la altura) y por qué este es un sistema de lazo cerrado real, no solo un ejemplo de pizarrón.
 
-### Tema 2: Los elementos de un lazo de control
+### Tema 2: Los elementos de un lazo de control · Básico · 45 min
 
 **¿Por qué es importante?** Nombrar y definir cada elemento es exactamente lo que pedía el punto 1 del Parcial 1.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 | Elemento | Definición técnica |
 |---|---|
@@ -388,11 +388,11 @@ construye el mismo diccionario para «nivel de un tanque de agua» (Ejemplo 3) y
 
 **Límite:** esta lista nombra los elementos pero no es el diagrama de bloques del Tema 1; dos sistemas pueden compartir los mismos nombres de elementos y tener dinámicas (funciones de transferencia) completamente distintas.
 
-### Tema 3: Álgebra de bloques
+### Tema 3: Álgebra de bloques · Básico · 45 min
 
 **¿Por qué es importante?** Con el álgebra de bloques reduces cualquier sistema a una sola función de transferencia que luego puedes analizar.
 
-**Fuentes oficiales:** [Modelado de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling).
+**Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 - Serie (cascada)
   

@@ -319,7 +319,7 @@ mvn -q -pl app -am package
 
 **Límite:** `-pl -am` solo construye lo que falta en el reactor actual; en CI, sin repositorio local ya poblado, hay que construir el árbol completo al menos una vez o declarar explícitamente qué módulos se cachean entre builds.
 
-### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 50 min
+### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 40 min
 
 **¿Por qué es importante?** elegir build requiere comparar resultados y mantenimiento, no solo la longitud de la configuración.
 

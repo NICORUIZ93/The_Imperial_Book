@@ -433,7 +433,7 @@ Ya puedes integrar red sin estados contradictorios. El siguiente tema ensamblar�
 
 **Transferencia al proyecto integrador «Seguimiento público accesible»:** Implementa el cliente de seguimiento con estados separados para 404, red caída y éxito. Prueba respuestas desordenadas y demuestra que un fallo antiguo no reemplaza la última consulta exitosa.
 
-### Tema 4: Conectando todo — el patrón completo de una SPA · Experto · 50 min
+### Tema 4: Conectando todo — el patrón completo de una SPA · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

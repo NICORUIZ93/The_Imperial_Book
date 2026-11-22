@@ -5,7 +5,7 @@ Cada tema de este módulo se practica hasta que la sintaxis sale sin pensarla, c
 
 ## Aprende construyendo
 
-### Tema 1: Funciones de orden superior
+### Tema 1: Funciones de orden superior · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -123,7 +123,7 @@ Ya declaras funciones que reciben comportamiento como parámetro, usas la sintax
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Inyecta la regla de ordenamiento de entregas como función en un caso de uso. Prueba prioridad y distancia con entradas iguales, conservando un resultado determinista para empates.
 
-### Tema 2: Scope functions
+### Tema 2: Scope functions · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -251,7 +251,7 @@ Ya distingues las cuatro scope functions según qué devuelven y cómo referenci
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Configura el cliente y transforma una entrega con funciones de alcance legibles. Prueba el valor devuelto por cada operación para evitar retornar accidentalmente el objeto de configuración en lugar del resultado.
 
-### Tema 3: Sealed classes y colecciones funcionales
+### Tema 3: Sealed classes y colecciones funcionales · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -393,7 +393,7 @@ Ya modelas estados exhaustivos con sealed classes y encadenas `filter`/`map`/`fo
 
 **Transferencia al proyecto integrador «Núcleo móvil compartido»:** Expresa estados de sincronización mediante una jerarquía sellada y transforma la cola sin mutarla. Las pruebas compartidas deben cubrir pendiente, confirmado y rechazado explícitamente.
 
-### Tema 4: Lambdas con receptor y builders tipo DSL
+### Tema 4: Lambdas con receptor y builders tipo DSL · Básico · 25 min
 
 #### Paso 1 · Objetivo y preparación
 

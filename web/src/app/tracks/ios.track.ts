@@ -2,8 +2,7 @@ import { CourseModule, createModule as m } from '../course-module.model';
 
 export const IOS_MODULES: CourseModule[] = [
   m(0, 'Fundamentos de Swift', 'Fundamentos', 'Fundamentos', '2 h 30 min', '#0a84ff',
-    'Swift es un lenguaje moderno con tipado fuerte y seguridad ante nil incorporada desde el diseño.',
-    ['Optionals y unwrapping seguro', 'struct vs class: value types vs reference types', 'Protocolos y extensiones', 'Enums con valores asociados'],
+    'Swift es un lenguaje moderno con tipado fuerte y seguridad ante nil incorporada desde el diseño.',['Optionals y unwrapping seguro', 'struct vs class', 'Protocolos y enums con valores asociados', 'Closures, colecciones y genéricos con propósito', 'Ownership en Swift: borrowing, consuming y tipos ~Copyable'],
     [
       'Declara una variable opcional (String?) e intenta usarla sin desenvolverla — observa el error del compilador',
       'Desenvuelve un optional de forma segura con if let, guard let y el operador ?? (nil coalescing)',
@@ -15,8 +14,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['Swift'],
     'Modelo de dominio usando structs, enums con valores asociados y sin force-unwrap.'),
   m(1, 'SwiftUI: vistas y layout declarativo', 'SwiftUI', 'Fundamentos', '3 h', '#0a84ff',
-    'Describe la UI como una función del estado, con la sintaxis declarativa nativa de Apple.',
-    ['View protocol y composición de vistas', 'Modificadores y orden de aplicación', 'Layout con VStack/HStack/ZStack', 'Previews para iterar rápido', 'didSet/willSet y @propertyWrapper personalizados', 'LazyVGrid y ScrollView'],
+    'Describe la UI como una función del estado, con la sintaxis declarativa nativa de Apple.',['El protocolo View y composición', 'Orden de modificadores y layout con stacks', 'Previews, LazyVGrid/ScrollView y property wrappers'],
     [
       'Crea una vista TarjetaTarea que reciba un título como parámetro y la componga dentro de otra vista',
       'Aplica dos modificadores en distinto orden (.padding().background() vs .background().padding()) y observa la diferencia visual',
@@ -28,8 +26,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['SwiftUI'],
     'Pantalla SwiftUI compuesta a partir de al menos 3 vistas reutilizables propias.'),
   m(2, 'Estado y data flow', 'Estado', 'Fundamentos', '2 h 30 min', '#0a84ff',
-    'SwiftUI reacciona a cambios de estado de forma automática; entiende qué property wrapper usar en cada caso.',
-    ['@State, @Binding', '@Observable (Observation framework moderno)', '@Environment para inyección de dependencias', 'Identidad vs valor en SwiftUI'],
+    'SwiftUI reacciona a cambios de estado de forma automática; entiende qué property wrapper usar en cada caso.',['@State y @Binding', '@Observable', '@Environment y identidad vs valor'],
     [
       'Usa @State en una vista para un contador local y verifica que la vista se redibuja al cambiarlo',
       'Pasa ese estado a una vista hija con @Binding y modifícalo desde el hijo',
@@ -40,8 +37,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['SwiftUI'],
     'Formulario con estado compartido entre vistas padre/hijo usando @Binding.'),
   m(3, 'Navegación', 'Navegación', 'Aplicación', '2 h', '#0a84ff',
-    'Estructura una app con múltiples pantallas usando las APIs de navegación modernas.',
-    ['NavigationStack y NavigationPath', 'Sheets y full screen covers', 'TabView', 'Deep linking', 'Form, Picker, DatePicker, Toggle y Slider', '.swipeActions() y .onDelete() en listas'],
+    'Estructura una app con múltiples pantallas usando las APIs de navegación modernas.',['NavigationStack y NavigationPath', 'Sheets, full screen covers y TabView', 'Deep linking y controles de formulario'],
     [
       'Construye un NavigationStack con al menos 3 niveles de profundidad (lista → detalle → sub-detalle)',
       'Usa NavigationPath para navegar programáticamente sin depender de NavigationLink en cada vista',
@@ -52,9 +48,14 @@ export const IOS_MODULES: CourseModule[] = [
     ['SwiftUI Navigation'],
     'App con navegación tipo stack, una tab bar y al menos un sheet modal.'),
   m(4, 'Concurrencia moderna: async/await', 'Concurrencia', 'Aplicación', '3 h', '#0a84ff',
-    'Swift Concurrency reemplaza GCD y callbacks con un modelo estructurado y seguro ante data races.',
-    [
-      'Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red','async/await y Task', 'Actors para aislar estado mutable', 'Structured concurrency (TaskGroup)', 'MainActor y actualización segura de UI'],
+    'Swift Concurrency reemplaza GCD y callbacks con un modelo estructurado y seguro ante data races.',[
+      'async/await y Task',
+      'Actors para estado mutable seguro',
+      'TaskGroup y MainActor',
+      'Cancelación cooperativa: distinguir una tarea cancelada de un fallo de red',
+      'AsyncSequence y AsyncStream: recibir valores en el tiempo con for await',
+      'Swift 6: aislamiento, Sendable y data races detectadas al compilar'
+      ],
     [
       'Escribe una función async que simule una llamada de red con Task.sleep',
       'Lánzala desde una vista con .task { } y muestra el resultado cuando llega',
@@ -66,8 +67,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['Swift Concurrency'],
     'Función async que combina dos llamadas de red en paralelo con TaskGroup.'),
   m(5, 'Networking con URLSession', 'Networking', 'Aplicación', '2 h 30 min', '#0a84ff',
-    'Consume APIs REST reales con manejo de errores tipado.',
-    ['URLSession con async/await', 'Codable para parsear JSON', 'Manejo de errores con tipos propios', 'Reintentos y cancelación de tareas'],
+    'Consume APIs REST reales con manejo de errores tipado.',['URLSession con async/await y Codable', 'Errores tipados', 'Reintentos y cancelación'],
     [
       'Haz una petición GET con URLSession.shared.data(from:) usando async/await contra una API pública',
       'Define un struct Codable que represente la respuesta y decodifícala con JSONDecoder',
@@ -79,8 +79,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['URLSession'],
     'Cliente de red que consume una API real con manejo de errores tipado.'),
   m(6, 'Persistencia con SwiftData', 'SwiftData', 'Integración', '2 h 30 min', '#0a84ff',
-    'Persiste datos localmente con el framework moderno de Apple sobre Core Data.',
-    ['@Model y el esquema de SwiftData', 'Queries con @Query', 'Migraciones de esquema', 'Relación con Core Data (cuándo usar cada uno)'],
+    'Persiste datos localmente con el framework moderno de Apple sobre Core Data.',['@Model y ModelContainer', '@Query y operaciones de escritura', 'Migraciones y SwiftData vs Core Data', 'Archivos en iOS: FileManager, carpetas de la app y fileImporter', 'CloudKit con SwiftData: sincronizar datos entre los dispositivos del usuario'],
     [
       'Define un modelo con @Model (ej. Tarea) y configura el ModelContainer en el punto de entrada de la app',
       'Usa @Query en una vista para observar automáticamente los cambios en los datos persistidos',
@@ -91,8 +90,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['SwiftData'],
     'App con persistencia local en SwiftData y una vista que reacciona a cambios.'),
   m(7, 'Combine y programación reactiva', 'Combine', 'Integración', '2 h', '#0a84ff',
-    'Antes de async/await, Combine resolvía flujos de datos asíncronos en el ecosistema Apple — sigue presente en mucho código real.',
-    ['Publishers y Subscribers', 'Operadores clave (map, debounce, combineLatest)', 'Combine vs async/await: cuándo usar cada uno', 'Integración de Combine con SwiftUI'],
+    'Antes de async/await, Combine resolvía flujos de datos asíncronos en el ecosistema Apple — sigue presente en mucho código real.',['Publishers y Subscribers', 'Operadores: debounce y combineLatest', 'Combine vs async/await'],
     [
       'Crea un @Published var texto: String en un ObservableObject y observa sus cambios con un sink',
       'Implementa un buscador con debounce(for:scheduler:) sobre los cambios de un campo de texto',
@@ -103,8 +101,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['Combine'],
     'Buscador con debounce implementado con Combine.'),
   m(8, 'Arquitectura MVVM', 'MVVM', 'Integración', '2 h 30 min', '#0a84ff',
-    'Organiza una app SwiftUI de tamaño real sin mezclar lógica de negocio con vistas.',
-    ['ViewModel observable en SwiftUI', 'Separación de capas (vista, dominio, datos)', 'Inyección de dependencias en SwiftUI', 'Cuándo MVVM es suficiente y cuándo no'],
+    'Organiza una app SwiftUI de tamaño real sin mezclar lógica de negocio con vistas.',['De una vista "gorda" a MVVM', 'Capas del proyecto e inyección por inicializador', 'Cuándo MVVM no alcanza'],
     [
       'Extrae la lógica de una vista "gorda" (con fetching y validación mezclados con UI) a un @Observable ViewModel',
       'Separa el proyecto en capas: Vistas, ViewModels, Servicios/Repositorios',
@@ -115,8 +112,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['Swift'],
     'App reestructurada en capas (vista/viewmodel/datos) con dependencias inyectadas.'),
   m(9, 'Testing en iOS', 'Testing', 'Experto', '2 h 30 min', '#0a84ff',
-    'Prueba lógica y vistas con las herramientas nativas de Xcode.',
-    ['XCTest: unit tests clásicos', 'Swift Testing (el nuevo framework de pruebas)', 'Testing de código async/await', 'UI Tests básicos'],
+    'Prueba lógica y vistas con las herramientas nativas de Xcode.',['XCTest clásico y Swift Testing', 'Testing de código async', 'UI Tests con XCUITest'],
     [
       'Escribe un test con XCTest para una función pura de tu capa de dominio',
       'Reescribe el mismo test con el nuevo framework Swift Testing (@Test, #expect) y compara la sintaxis',
@@ -127,8 +123,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['XCTest', 'Swift Testing'],
     'Suite de tests sobre la capa de dominio usando Swift Testing.'),
   m(10, 'Performance, accesibilidad y HIG', 'Performance y HIG', 'Experto', '2 h', '#0a84ff',
-    'Una app rápida y accesible que respeta las Human Interface Guidelines se siente "nativa" de verdad.',
-    ['Instruments para medir performance', 'Accesibilidad con VoiceOver', 'Human Interface Guidelines esenciales', 'Dynamic Type y dark mode', '@ViewBuilder y .matchedGeometryEffect()', 'Interop con UIKit: UIViewRepresentable y UIViewControllerRepresentable', 'Novedades recientes: Liquid Glass, layouts volumétricos y WebView nativo'],
+    'Una app rápida y accesible que respeta las Human Interface Guidelines se siente "nativa" de verdad.',['Instruments', 'Accesibilidad con VoiceOver', 'Human Interface Guidelines, Dynamic Type e interop con UIKit', 'Localización con String Catalogs: textos, plurales y formatos por idioma', 'UIKit desde cero para mantener aplicaciones reales'],
     [
       'Graba una sesión con Instruments (Time Profiler) sobre una interacción lenta de tu app',
       'Activa VoiceOver en el simulador y navega tu app solo con gestos de accesibilidad',
@@ -139,8 +134,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['Instruments'],
     'Auditoría de accesibilidad (VoiceOver) de una pantalla con mejoras aplicadas.'),
   m(11, 'Publicación en App Store', 'Publicación', 'Experto', '2 h', '#0a84ff',
-    'Lleva tu app del simulador a usuarios reales a través de TestFlight y la App Store.',
-    ['Certificados y provisioning profiles', 'TestFlight para pruebas beta', 'App Store Connect: metadata y revisión', 'Versionado y builds'],
+    'Lleva tu app del simulador a usuarios reales a través de TestFlight y la App Store.',['Certificados y provisioning profiles', 'Archivar, subir y TestFlight', 'Metadata y versionado'],
     [
       'Configura un certificado de distribución y un provisioning profile en tu cuenta de desarrollador',
       'Archiva la app en Xcode (Product > Archive) y súbela a App Store Connect',
@@ -152,8 +146,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['App Store Connect'],
     'Build subido a TestFlight listo para pruebas internas.'),
   m(12, 'Proyecto integrador: app SwiftUI completa', 'Proyecto final', 'Experto', '7 h', '#0a84ff',
-    'Une SwiftUI, concurrencia moderna, networking y persistencia en una app real.',
-    ['Arquitectura MVVM', 'Networking con async/await', 'Persistencia con SwiftData', 'Tests de la capa de dominio'],
+    'Une SwiftUI, concurrencia moderna, networking y persistencia en una app real.',['Arquitectura del proyecto integrador', 'Sincronización entre red y persistencia local', 'Swift Package Manager: separar la app en paquetes locales y declarar dependencias', 'Cierre del track'],
     [
       'Diseña la arquitectura MVVM completa: Vistas SwiftUI, ViewModels @Observable, Servicios/Repositorios',
       'Implementa networking real con URLSession + async/await y manejo de errores tipado',
@@ -164,9 +157,8 @@ export const IOS_MODULES: CourseModule[] = [
     ['¿Qué decisión de arquitectura te resultó más natural en SwiftUI comparado con otros frameworks que conozcas?', '¿Qué parte del proyecto (concurrencia, persistencia, testing) requirió más iteración para sentirse "correcta"?'],
     ['SwiftUI', 'Swift Concurrency', 'SwiftData'],
     'App iOS con SwiftUI, datos reales, persistencia local y tests.'),
-  m(13, 'iOS en producción: seguridad, sincronización y operación', 'Producción', 'Experto', '4 h', '#0a84ff',
-    'Endurece y opera una app iOS real ante enlaces hostiles, pérdida de red, datos sensibles y releases imperfectos.',
-    ['Sandbox, entitlements y Universal Links', 'Keychain, Data Protection y privacidad', 'Sincronización offline y conflictos', 'MetricKit, Instruments y releases seguros', 'Keychain: guardar secretos de forma segura', 'Permisos y privacidad: pedir acceso con criterio', 'Notificaciones push con APNs'],
+  m(13, 'iOS en producción — seguridad, sincronización y operación', 'Producción', 'Experto', '4 h', '#0a84ff',
+    'Endurece y opera una app iOS real ante enlaces hostiles, pérdida de red, datos sensibles y releases imperfectos.',['El sandbox reduce superficie, pero no valida intenciones', 'Proteger datos es controlar todas sus copias', 'Keychain — guardar secretos de forma segura', 'Permisos y privacidad — pedir acceso con criterio', 'Face ID y Touch ID con LocalAuthentication: confirmar acciones sensibles', 'Notificaciones push con APNs', 'Offline-first es un protocolo, no una caché', 'Operar significa detectar, limitar y aprender del fallo', 'Core Location moderno: CLLocationUpdate, permisos y precisión', 'BackgroundTasks: actualizar datos y sincronizar cuando el sistema lo permite'],
     [
       'Construye un modelo de amenazas y audita entitlements, permisos y Universal Links',
       'Protege credenciales con Keychain y define una política de datos, logs, backups y capturas',
@@ -178,8 +170,7 @@ export const IOS_MODULES: CourseModule[] = [
     ['Keychain', 'BackgroundTasks', 'MetricKit', 'Instruments'],
     'Dossier de preparación para producción con amenaza, sincronización, telemetría y plan de release.'),
   m(14, 'SwiftUI Master: pruebas, animación e interoperabilidad', 'SwiftUI Master', 'Experto', '9 h', '#0a84ff',
-    'Prueba flujos SwiftUI, domina Combine e integra UIKit con animaciones accesibles y rendimiento medido.',
-    ['XCTest, expectations y Swift Testing', 'ViewInspector con criterio', 'Combine publishers, operators y schedulers', 'withAnimation, transition y matchedGeometryEffect', 'UIViewRepresentable', 'UIViewControllerRepresentable y coordinators'],
+    'Prueba flujos SwiftUI, domina Combine e integra UIKit con animaciones accesibles y rendimiento medido.',['Animaciones y matchedGeometryEffect', 'Gestos en SwiftUI: arrastrar, mantener presionado y combinar gestos', 'Swift Testing y pruebas asíncronas', 'ViewInspector con criterio', 'Combine avanzado', 'UIViewRepresentable', 'UIViewControllerRepresentable y Coordinator', 'Core ML y Vision — inferencia en el dispositivo', 'WidgetKit: un widget con las entregas pendientes del día', 'App Intents: acciones de la app en Siri, Atajos y Spotlight'],
     ['Prueba async', 'Inspecciona estado', 'Controla scheduler', 'Anima transición', 'Integra vista UIKit', 'Evita ciclo de retención'],
     ['¿Qué prueba es frágil con ViewInspector?', '¿Quién posee el coordinator?'], ['XCTest','Combine','ViewInspector','UIKit','SwiftUI'], 'Feature SwiftUI probada con Combine controlado, transición e interoperabilidad UIKit.'),
 ];

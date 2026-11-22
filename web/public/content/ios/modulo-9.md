@@ -186,7 +186,7 @@ Corregí el Paso 5 restaurando `async`, y agregá un segundo test que llame a `c
 #### Paso 7 · Cierre
 Entregá el test async del Paso 4, el error de compilación del Paso 5, y el test del PIN incorrecto del Paso 6; explicá por qué testear una función `async throws` con `await` directo en el test es más simple que el modelo de callbacks + `XCTestExpectation`. Siguiente paso: estudia UI Tests con XCUITest. Errores comunes: olvidar `async` en la firma del test, testear solo el camino feliz sin el camino de error, y usar timeouts arbitrariamente largos "por si acaso". Fuentes oficiales: https://developer.apple.com/documentation/testing y https://developer.apple.com/documentation/swift/concurrency.
 
-### Tema 3: UI Tests con XCUITest · Avanzado · 50 min
+### Tema 3: UI Tests con XCUITest · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un XCUITest que lance la app de RutaFlow, complete guía y PIN en la pantalla de confirmación de entrega, y verifique que aparece "Entrega confirmada". Prerrequisitos: Tema 2 de este módulo.

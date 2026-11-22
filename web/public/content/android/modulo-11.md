@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Firma de la app
+### Tema 1: Firma de la app · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -122,7 +122,7 @@ Ya generas una clave de subida fuera del repositorio, la configuras desde variab
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Prepara una variante de prueba firmada y registra la huella del certificado sin guardar la clave en Git. Instala dos versiones consecutivas con esa firma y comprueba que la actualización conserva las entregas locales.
 
-### Tema 2: App Bundle vs APK
+### Tema 2: App Bundle vs APK · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -214,7 +214,7 @@ Ya explicas por qué Google Play requiere un App Bundle en vez de un APK univers
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Genera el App Bundle de la app de reparto con `./gradlew bundleRelease` y revisa con App Bundle Explorer que los recursos de idioma/densidad no se dupliquen entre variantes. Verifica con un número real cuánto pesa la APK que Play entregaría a un conductor con un dispositivo de gama media en español, frente al universal.
 
-### Tema 3: Versionado, tracks y políticas
+### Tema 3: Versionado, tracks y políticas · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 

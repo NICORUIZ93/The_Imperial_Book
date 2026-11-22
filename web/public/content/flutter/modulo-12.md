@@ -211,7 +211,7 @@ Pista: reemplazá `.when(...)` por `.maybeWhen(data: ..., orElse: () => Text('Ca
 Corregí el Paso 5 devolviendo `.when(...)` con un caso `error` explícito con un mensaje específico de RutaFlow, y agregá un botón de "reintentar" que invalide `enviosProvider` dentro de ese caso de error.
 
 #### Paso 7 · Cierre
-Entregá la pantalla integrando los tres módulos del Paso 4, la diferencia entre `.when` exhaustivo y `.maybeWhen` genérico del Paso 5, y el botón de reintentar del Paso 6; explicá por qué integrar varios módulos del track en una sola pantalla expone si realmente encajan como un sistema coherente. Siguiente paso: cierra el proyecto integrador reflexionando sobre el costo y beneficio de Flutter como ecosistema propio. Errores comunes: usar `.maybeWhen` con un `orElse` genérico que oculta diferencias reales entre estados, no ofrecer ninguna acción de recuperación en el estado de error, y mezclar lógica de negocio directamente dentro del `build()`. Fuentes oficiales: https://riverpod.dev/docs/case_studies/pull_to_refresh y https://docs.flutter.dev/app-architecture/design-patterns.
+Entregá la pantalla integrando los tres módulos del Paso 4, la diferencia entre `.when` exhaustivo y `.maybeWhen` genérico del Paso 5, y el botón de reintentar del Paso 6; explicá por qué integrar varios módulos del track en una sola pantalla expone si realmente encajan como un sistema coherente. Siguiente paso: cierra el proyecto integrador reflexionando sobre el costo y beneficio de Flutter como ecosistema propio. Errores comunes: usar `.maybeWhen` con un `orElse` genérico que oculta diferencias reales entre estados, no ofrecer ninguna acción de recuperación en el estado de error, y mezclar lógica de negocio directamente dentro del `build()`. Fuentes oficiales: https://riverpod.dev/docs/how_to/pull_to_refresh y https://docs.flutter.dev/app-architecture/design-patterns.
 **Implicación práctica:** Integrar cada módulo del track en un proyecto real demuestra que los conceptos estudiados por separado se combinan naturalmente en un sistema coherente.
 
 ### Tema 3: Retrospectiva del proyecto integrador · Avanzado · 35 min
@@ -292,7 +292,7 @@ Corregí el Paso 5 reescribiendo la afirmación para incluir ese costo explícit
 Entregá la retrospectiva del Paso 4, la afirmación incompleta corregida del Paso 5-6, y una lista de al menos tres decisiones más de RutaFlow en Flutter que repetirías igual en otra plataforma aunque el motor de renderizado cambie. Siguiente paso: aplicá esta misma retrospectiva al terminar el proyecto integrador de otro track. Errores comunes: presentar una decisión de plataforma como ventaja incondicional sin mencionar su costo real, confundir una ventaja de consistencia visual con una ventaja fundamental de capacidad, y cerrar el track sin conectar explícitamente los módulos entre sí. Fuentes oficiales: https://docs.flutter.dev/resources/architectural-overview y https://docs.flutter.dev/platform-integration.
 **Implicación práctica:** Flutter logra apariencia y rendimiento consistentes gracias a su motor gráfico propio, a costa de requerir un ecosistema de widgets propio y no heredar automáticamente actualizaciones visuales nativas.
 
-### Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 50 min
+### Tema 4: Arquitectura recomendada de Flutter: views, view models, repositories y services · Avanzado · 45 min
 
 **Prerrequisito:** tema «Arquitectura por features y Clean Architecture» de este módulo y «Riverpod» (módulo 4).
 

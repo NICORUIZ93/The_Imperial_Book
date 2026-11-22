@@ -71,8 +71,14 @@ python3 scripts/validate_official_sources.py --check
 
 echo "== Specs"
 echo "== Formato único (specs/021)"
-python3 scripts/validate_formato.py --check > /tmp/validate_formato.out || { tail -1 /tmp/validate_formato.out; exit 1; }
-tail -1 /tmp/validate_formato.out
+tmp_formato="$(mktemp)"
+trap 'rm -f "$tmp_formato"' EXIT
+python3 scripts/validate_formato.py --check > "$tmp_formato" || { tail -1 "$tmp_formato"; exit 1; }
+tail -1 "$tmp_formato"
+echo "== Nivel y duración de los temas y títulos de módulo (specs/026 C5-C6)"
+python3 scripts/check_tiempos.py --check
+python3 scripts/audit_track_lesson_titles.py --check
+python3 scripts/check_deuda.py --check
 python3 scripts/build_estado_temas.py --check
 
 # Guarda contra recursión: hay criterios cuya verificación es este mismo script.

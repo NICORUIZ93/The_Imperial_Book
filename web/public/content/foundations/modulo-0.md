@@ -106,7 +106,7 @@ Los 17 temas de Electrónica, sensores y control para software e IoT que hasta e
 
 ## Aprende construyendo
 
-### Tema 1: Computador, sistema operativo, programa y proceso · Básico · 90 min
+### Tema 1: Computador, sistema operativo, programa y proceso · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -958,7 +958,7 @@ ni en Linux: allí el lanzador `py` puede responder con su propio texto, y en es
 el mensaje cambia a `unknown option --opcion-inexistente`.
 
 
-### Tema 5: Primer programa, primer error y primera evidencia · Básico · 60 min
+### Tema 5: Primer programa, primer error y primera evidencia · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

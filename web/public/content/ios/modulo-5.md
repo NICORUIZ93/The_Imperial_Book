@@ -234,7 +234,7 @@ Corregí el Paso 5 restaurando `ErrorEntrega`, y agregá un cuarto caso `decodif
 #### Paso 7 · Cierre
 Entregá el `switch` exhaustivo sobre `ErrorEntrega` del Paso 4, el error genérico indiferenciado del Paso 5, y el cuarto caso agregado del Paso 6; explicá por qué el compilador puede obligarte a manejar cada caso de un enum propio, pero no de un `NSError` genérico. Siguiente paso: estudia persistencia. Errores comunes: ignorar status HTTP, decodificar en MainActor, retry de 4xx y ocultar PII en logs. Fuentes oficiales: https://developer.apple.com/documentation/foundation/urlsession y https://developer.apple.com/documentation/swift/codable.
 
-### Tema 3: Reintentos y cancelación · Avanzado · 50 min
+### Tema 3: Reintentos y cancelación · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reintentar `confirmarEntrega` con backoff solo ante fallos transitorios, nunca ante un PIN inválido, y a cancelar la tarea si el conductor cierra la pantalla. Prerrequisitos: Tema 2 de este módulo.

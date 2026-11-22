@@ -1,9 +1,8 @@
 import { CourseModule, createModule as m } from '../course-module.model';
 
 export const JAVASCRIPT_MODULES: CourseModule[] = [
-  m(0, 'Fundamentos del lenguaje y el entorno', 'Fundamentos', 'Fundamentos', '2 h', '#e9b400',
-    'El primer contacto con JavaScript: consola del navegador, Node REPL, variables, tipos primitivos y coerción.',
-    ['let/const vs var', 'Tipos primitivos y typeof', 'Coerción implícita y ===  vs ==', 'Plantillas de string (template literals)', 'Entorno: navegador vs Node.js', 'Truthy/falsy y operadores lógicos (&&, ||, ??)', 'Scope global, de función y de bloque; shadowing'],
+  m(0, 'Fundamentos de JavaScript con ejemplos independientes', 'Fundamentos', 'Fundamentos', '2 h', '#e9b400',
+    'El primer contacto con JavaScript: consola del navegador, Node REPL, variables, tipos primitivos y coerción.',['Variables — `const`, `let` y `var`', 'Tipos primitivos y `typeof`', 'Conversión, coerción e igualdad', 'Template literals y mensajes seguros', 'JavaScript en navegador y Node.js'],
     [
       'Abre la consola del navegador (F12) y declara una variable con let y otra con const; intenta reasignar ambas y observa el error',
       'Crea un archivo fundamentos.mjs y ejecútalo con node fundamentos.mjs — declara variables de los 7 tipos primitivos (string, number, boolean, null, undefined, symbol, bigint)',
@@ -16,8 +15,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['JavaScript'],
     'Script ejecutado en navegador y en Node que produce el mismo resultado.'),
   m(1, 'Operadores, control de flujo y funciones', 'Funciones', 'Fundamentos', '2 h', '#e9b400',
-    'Las funciones son ciudadanos de primera clase en JavaScript: se pasan, se devuelven y se componen.',
-    ['Funciones declaradas vs expresiones vs arrow functions', 'Parámetros por defecto y rest/spread', 'Funciones de orden superior', 'Control de flujo: if/switch/loops', 'IIFE y el objeto arguments', 'for...of, for...in y for await...of'],
+    'Las funciones son ciudadanos de primera clase en JavaScript: se pasan, se devuelven y se componen.',['Control de flujo — if, switch y loops', 'Tres formas de escribir una función', 'Parámetros por defecto y rest/spread', 'Desestructuración, valores por defecto y rest', 'Funciones de orden superior', 'IIFE y el objeto arguments'],
     [
       'Escribe la misma función (sumar dos números) como function declaration, function expression y arrow function',
       'Crea una función con un parámetro por defecto y otra que reciba un número variable de argumentos con rest (...args)',
@@ -44,8 +42,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['JavaScript'],
     'Implementación de un contador privado y un módulo con estado usando closures.'),
   m(3, 'Objetos, prototipos y clases', 'Objetos y clases', 'Fundamentos', '2 h 30 min', '#e9b400',
-    'JavaScript es prototipal por debajo de la sintaxis de clases. Aprende ambos modelos y cuándo usar cada uno.',
-    ['Prototype chain y Object.create', 'class, extends y super', 'Getters/setters y propiedades computadas', 'Encapsulación con campos privados (#campo)', 'Object.freeze, Object.seal y destructuring anidado', 'Object.groupBy y Object.fromEntries'],
+    'JavaScript es prototipal por debajo de la sintaxis de clases. Aprende ambos modelos y cuándo usar cada uno.',['Prototype chain y Object.create', 'class, extends y super', 'Getters, setters y propiedades computadas', 'Encapsulación con campos privados (#campo)', 'Symbol y objetos iterables propios'],
     [
       'Crea un objeto con Object.create(prototipo) y demuestra que hereda un método sin copiarlo',
       'Define una clase Animal con un método hablar() y una clase Perro extends Animal que sobreescribe hablar() llamando a super.hablar()',
@@ -58,8 +55,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['JavaScript'],
     'Jerarquía de clases con herencia y encapsulación real (campos privados).'),
   m(4, 'Arrays y estructuras de datos funcionales', 'Arrays funcionales', 'Fundamentos', '2 h', '#e9b400',
-    'Transforma colecciones de datos sin loops manuales: map/filter/reduce como bloque base de la programación funcional.',
-    ['map, filter, reduce, find, some/every', 'Set y Map vs Array y Object', 'Inmutabilidad y spread para actualizar datos', 'Estructuras anidadas y normalización', 'WeakMap y WeakSet para prevenir memory leaks', 'Métodos inmutables modernos: toSorted, toReversed, toSpliced, with'],
+    'Transforma colecciones de datos sin loops manuales: map/filter/reduce como bloque base de la programación funcional.',['map, filter, reduce, find, some/every', 'Set y Map frente a Array y Object', 'Inmutabilidad y actualización de estructuras anidadas', 'Métodos inmutables modernos', 'WeakMap y WeakSet'],
     [
       'Dado un array de 20 pedidos {cliente, monto}, usa reduce para calcular el total agrupado por cliente',
       'Usa filter + map encadenados para obtener los nombres de los clientes con monto > 100, en una sola expresión',
@@ -71,9 +67,8 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['¿Cuándo reduce es la herramienta correcta y cuándo es exceso de ingeniería?', '¿Qué ventaja real tiene Map sobre un objeto para claves dinámicas?', '¿Por qué la inmutabilidad facilita encontrar bugs?'],
     ['JavaScript'],
     'Pipeline de transformación de datos (CSV→JSON agregado) usando solo métodos funcionales.'),
-  m(5, 'Asincronía I: Event Loop y Promesas', 'Event Loop', 'Aplicación', '3 h', '#e9b400',
-    'El modelo de concurrencia de JavaScript es single-threaded pero no bloqueante. Entiende microtasks vs macrotasks.',
-    ['Event Loop, call stack y task queue', 'Microtasks (Promesas) vs macrotasks (setTimeout)', 'Promise.all/allSettled/race', 'De callbacks a promesas', 'El motor V8: compilación JIT (Ignition + TurboFan) y AST', 'Stack vs Heap y Garbage Collection (Mark and Sweep, generacional)', 'queueMicrotask() y Promise.any()'],
+  m(5, 'Asincronía I — Event Loop y Promesas', 'Event Loop', 'Aplicación', '3 h', '#e9b400',
+    'El modelo de concurrencia de JavaScript es single-threaded pero no bloqueante. Entiende microtasks vs macrotasks.',['El Event Loop', 'Promesas', 'Promise.all, allSettled, race y any', 'El motor V8 — JIT y AST', 'Stack, Heap y Garbage Collection'],
     [
       'Escribe un script con console.log, setTimeout(...,0) y Promise.resolve().then(...) mezclados — predice el orden de salida antes de ejecutarlo',
       'Convierte una función basada en callback (estilo Node clásico) a una que devuelve una Promise con new Promise((resolve, reject) => ...)',
@@ -85,9 +80,8 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['¿Por qué una Promise resuelta se ejecuta antes que un setTimeout(fn, 0)?', '¿Qué diferencia hay entre Promise.all y Promise.allSettled?', '¿Qué significa que JavaScript sea "single-threaded pero no bloqueante"?'],
     ['JavaScript'],
     'Diagrama y demo ejecutable que predice el orden exacto de ejecución de un script asíncrono.'),
-  m(6, 'Asincronía II: async/await y fetch', 'Async/await', 'Aplicación', '2 h 30 min', '#e9b400',
-    'Escribe código asíncrono que se lee como código síncrono, con manejo de errores explícito.',
-    ['async/await sobre promesas', 'try/catch en flujos asíncronos', 'fetch API y AbortController', 'Reintentos y timeouts manuales', 'Generadores: function*, yield y yield*', 'Proxies y Reflect: traps get/set/has'],
+  m(6, 'Asincronía II — async/await y fetch', 'Async/await', 'Aplicación', '2 h 30 min', '#e9b400',
+    'Escribe código asíncrono que se lee como código síncrono, con manejo de errores explícito.',['async/await sobre promesas', 'try/catch en flujos asíncronos', 'fetch API y AbortController', 'Reintentos y timeouts manuales', 'Generadores — function*, yield y yield*', 'Proxies y Reflect', 'Streams web: leer una respuesta de fetch por partes'],
     [
       'Reescribe una cadena de .then().then().catch() como una función async con try/catch equivalente',
       'Consume una API pública (por ejemplo https://jsonplaceholder.typicode.com/users) con fetch y muestra los resultados en consola',
@@ -100,8 +94,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['Fetch API'],
     'Cliente que consume una API pública con reintentos, timeout y cancelación.'),
   m(7, 'Módulos modernos y herramientas de build', 'Módulos y build', 'Aplicación', '2 h 30 min', '#e9b400',
-    'Organiza código en módulos reales y entiende qué hace un bundler antes de usarlo a ciegas.',
-    ['ESM (import/export) vs CommonJS (require)', 'Tree-shaking y code-splitting', 'Vite/esbuild: dev server y build de producción', 'package.json: exports, type, scripts', 'import() dinámico e import.meta', 'Webpack, Rollup y Babel/SWC: cuándo cada herramienta tiene sentido'],
+    'Organiza código en módulos reales y entiende qué hace un bundler antes de usarlo a ciegas.',['ESM frente a CommonJS', 'Tree-shaking y code-splitting', 'Vite y esbuild', 'package.json — exports, type y scripts', 'import() dinámico e import.meta', 'Webpack, Rollup y Babel/SWC', 'Módulos ES a fondo: top-level await, ciclos de importación e import maps', 'Cadena de suministro npm: lockfile, integridad y paquetes alterados'],
     [
       'Crea 3 archivos ESM (math.mjs, format.mjs, main.mjs) con exports nombrados y un export default, e impórtalos entre sí',
       'Crea el mismo ejemplo con CommonJS (require/module.exports) y compara la sintaxis y el momento de resolución',
@@ -114,9 +107,15 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['Vite', 'ESM'],
     'Proyecto multi-módulo construido con Vite con bundle final auditado.'),
   m(8, 'El DOM y eventos del navegador', 'DOM y eventos', 'Aplicación', '2 h 30 min', '#e9b400',
-    'Antes de cualquier framework, entiende cómo JavaScript manipula la página real.',
-    [
-      'Formularios accesibles: validar, anunciar y conservar la entrada','Selección y manipulación del DOM', 'Delegación de eventos', 'Formularios y validación nativa', 'Web APIs: localStorage, IntersectionObserver', 'ResizeObserver y MutationObserver', 'requestAnimationFrame y requestIdleCallback'],
+    'Antes de cualquier framework, entiende cómo JavaScript manipula la página real.',[
+      'Selección y manipulación del DOM',
+      'Delegación de eventos',
+      'Formularios y validación nativa',
+      'Formularios accesibles: validar, anunciar y conservar la entrada',
+      'Web APIs — localStorage e IntersectionObserver',
+      'ResizeObserver y MutationObserver',
+      'requestAnimationFrame y requestIdleCallback'
+      ],
     [
       'Crea una lista <ul> vacía y agrégale 20 <li> dinámicamente desde un array con createElement y appendChild',
       'En vez de agregar un listener a cada <li>, agrega uno solo al <ul> padre y usa event.target para delegación de eventos',
@@ -129,8 +128,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['DOM API'],
     'Componente de UI interactivo (lista filtrable) sin frameworks, solo DOM API.'),
   m(9, 'Testing y calidad de código', 'Testing', 'Integración', '2 h 30 min', '#e9b400',
-    'El código sin pruebas es un borrador. Aprende a escribir pruebas rápidas y confiables.',
-    ['Unit testing con Vitest/Jest', 'Mocks, spies y fakes', 'ESLint y Prettier en el flujo de trabajo', 'Cobertura de código: qué medir y qué ignorar'],
+    'El código sin pruebas es un borrador. Aprende a escribir pruebas rápidas y confiables.',['Unit testing con Vitest', 'ESLint, Prettier y cobertura de código', 'Mocks, spies y fakes', 'Mockear fetch'],
     [
       'Instala Vitest en un proyecto y escribe el primer test: expect(sumar(2,3)).toBe(5)',
       'Escribe tests para debounce() del módulo 1 usando vi.useFakeTimers() para simular el paso del tiempo sin esperar de verdad',
@@ -143,8 +141,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['Vitest', 'ESLint'],
     'Suite de pruebas con cobertura >80% sobre la biblioteca de funciones del módulo 1.'),
   m(10, 'Patrones avanzados y rendimiento', 'Rendimiento', 'Integración', '3 h', '#e9b400',
-    'Cuando el código funciona pero es lento: identifica el cuello de botella antes de optimizar a ciegas.',
-    ['Debounce y throttle', 'Memoización', 'Web Workers para trabajo pesado', 'Profiling con DevTools Performance tab', 'Core Web Vitals: LCP, CLS, INP', 'preload, prefetch, preconnect y carga async/defer de scripts', 'Seguridad básica: XSS, CSRF, CSP y CORS'],
+    'Cuando el código funciona pero es lento: identifica el cuello de botella antes de optimizar a ciegas.',['Debounce y throttle', 'Memoización', 'Web Workers para trabajo pesado', 'Profiling con DevTools', 'Core Web Vitals'],
     [
       'Implementa throttle(fn, ms) (distinto de debounce) y demuestra la diferencia con un evento de scroll',
       'Escribe memoize(fn) genérico que cachee resultados por argumentos, y aplícalo a una función recursiva costosa (ej. fibonacci)',
@@ -157,8 +154,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['Web Workers'],
     'Optimización medible (antes/después con métricas) de una función costosa.'),
   m(11, 'TypeScript esencial para devs de JavaScript', 'TypeScript', 'Experto', '3 h', '#e9b400',
-    'El puente hacia Angular, React con tipos y Node tipado: aprende lo justo para ser productivo desde el día uno.',
-    ['Tipos básicos, interfaces y type aliases', 'Generics', 'Narrowing y union types', 'tsconfig esencial y modo strict'],
+    'El puente hacia Angular, React con tipos y Node tipado: aprende lo justo para ser productivo desde el día uno.',['Tipos básicos, interfaces y type aliases', 'Narrowing y union types', 'tsconfig esencial y modo strict', 'Generics', 'Decoradores estándar de TypeScript 5', 'TypeScript avanzado: sobrecargas, tipos mapeados, condicionales y satisfies'],
     [
       'Convierte un archivo .js a .ts y corrige todos los errores que aparezcan con strict: true activado',
       'Define una interface Usuario y un type alias EstadoPedido = "pendiente" | "enviado" | "entregado", y úsalos en una función',
@@ -170,9 +166,8 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['¿Qué pierdes realmente si usas any en vez de tipar correctamente?', '¿Cuándo usarías un type alias en vez de una interface?', '¿Por qué TypeScript no protege contra datos mal formados que vienen de una API en runtime?'],
     ['TypeScript'],
     'Migración de un módulo JavaScript existente a TypeScript estricto sin usar any.'),
-  m(12, 'Proyecto integrador: SPA sin framework', 'Proyecto final', 'Experto', '6 h', '#e9b400',
-    'Demuestra que entiendes los fundamentos construyendo una aplicación real sin la ayuda de Angular, React ni Vue.',
-    ['Routing manual con History API', 'Estado de aplicación con un store propio', 'Consumo de una API real con manejo de errores', 'Build de producción optimizado'],
+  m(12, 'Proyecto integrador — SPA sin framework', 'Proyecto final', 'Experto', '6 h', '#e9b400',
+    'Demuestra que entiendes los fundamentos construyendo una aplicación real sin la ayuda de Angular, React ni Vue.',['Routing manual con History API', 'Estado de aplicación con un store propio', 'Consumo de una API real con manejo de errores', 'Conectando todo — el patrón completo de una SPA'],
     [
       'Implementa un router manual con history.pushState y window.onpopstate para al menos 3 rutas (/inicio, /detalle/:id, /404)',
       'Construye un store propio (objeto + listeners) que notifique a la UI cuando el estado cambia, sin ninguna librería',
@@ -184,13 +179,12 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['¿Qué hace exactamente un framework como Angular/React que tú tuviste que construir a mano aquí?', '¿Qué fue lo más difícil de mantener sincronizados estado y DOM sin un framework?', '¿En qué punto del proyecto un framework te habría ahorrado más tiempo?'],
     ['JavaScript', 'Vite'],
     'SPA funcional (varias vistas, estado compartido, datos reales) sin ningún framework de UI.'),
-  m(13, 'JavaScript en producción: seguridad, memoria y compatibilidad', 'Producción', 'Experto', '6 h', '#e9b400',
-    'Convierte la SPA funcional en software operable: delimita datos no confiables, previene XSS y contaminación de prototipos, encuentra fugas de memoria, captura errores con contexto y entrega una experiencia compatible e internacionalizada.',
-    [
-      'Modelo de amenazas del navegador, XSS, CSP, Trusted Types y dependencias',
-      'Garbage collection, retención, listeners, timers y análisis de heap',
-      'Errores síncronos/asíncronos, Error.cause, telemetría y source maps',
-      'Feature detection, progressive enhancement, Intl y zonas horarias',
+  m(13, 'JavaScript en producción — seguridad, memoria y compatibilidad', 'Producción', 'Experto', '6 h', '#e9b400',
+    'Convierte la SPA funcional en software operable: delimita datos no confiables, previene XSS y contaminación de prototipos, encuentra fugas de memoria, captura errores con contexto y entrega una experiencia compatible e internacionalizada.',[
+      'Datos no confiables y seguridad en el navegador',
+      'Memoria administrada no significa memoria infinita',
+      'Errores útiles sin convertir usuarios en sensores involuntarios',
+      'Compatibilidad, idioma y tiempo son requisitos de datos'
     ],
     [
       'Explota y corrige una inserción insegura sin ocultar el problema con sanitización casera',
@@ -206,8 +200,7 @@ export const JAVASCRIPT_MODULES: CourseModule[] = [
     ['JavaScript', 'DevTools', 'CSP', 'Intl', 'Vitest'],
     'SPA endurecida con threat model, CSP, render seguro, auditoría de dependencias, prueba de memoria, telemetría de errores, compatibilidad e internacionalización verificadas.'),
   m(14, 'JavaScript Master: TypeScript, WASM y cómputo emergente', 'JavaScript Master', 'Experto', '10 h', '#e9b400',
-    'Amplía JavaScript con TypeScript avanzado, workers, bundlers, accesibilidad, WebAssembly, Web3 y ML responsable en navegador.',
-    ['TypeScript avanzado', 'Web Workers y Service Workers', 'Vite, Rollup, webpack y esbuild', 'ARIA y navegación por teclado', 'WebAssembly con Rust/C', 'Web3 y TensorFlow.js/ONNX/WebNN', 'Geolocalización y permisos', 'sessionStorage, cookies e IndexedDB', 'Expresiones regulares y Unicode', 'Patrones Factory, Strategy, Observer y Pub/Sub', 'Service Workers y PWA offline', 'WebSocket y tiempo real', 'Typed Arrays, ArrayBuffer y DataView', 'Temporal, iterator helpers y ECMAScript moderno'],
+    'Amplía JavaScript con TypeScript avanzado, workers, bundlers, accesibilidad, WebAssembly, Web3 y ML responsable en navegador.',['TypeScript avanzado', 'Workers y ejecución fuera del hilo principal', 'Bundlers y optimización', 'Accesibilidad web', 'Web3 y machine learning en navegador', 'Geolocalización, permisos y precisión GPS', 'sessionStorage, cookies e IndexedDB', 'Expresiones regulares avanzadas y Unicode', 'Patrones Factory, Strategy, Observer y Pub/Sub', 'WebSocket y comunicación en tiempo real', 'Typed Arrays, ArrayBuffer y DataView', 'ECMAScript moderno, Temporal e iterator helpers', 'Gestión explícita de recursos: using, await using y DisposableStack', 'WebAssembly con Rust o C', 'Service Workers, PWA y estrategias de caché'],
     ['Modela tipos condicionales', 'Mueve CPU a worker', 'Compara bundles', 'Audita teclado', 'Mide frontera WASM', 'Evalúa modelo local y amenaza Web3'],
     ['¿Cuándo WASM no mejora rendimiento?', '¿Qué riesgos introduce firmar una transacción desde la web?'], ['TypeScript','WebAssembly','Vite','ARIA','TensorFlow.js'], 'Aplicación web accesible con workers, bundle medido y laboratorios aislados WASM, Web3 y ML.'),
 ];

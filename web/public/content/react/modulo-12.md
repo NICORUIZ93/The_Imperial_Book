@@ -5,7 +5,7 @@
 
 **Servidor del módulo:** el integrador es un proyecto TypeScript nuevo, `rutaflow-react`, creado en el Tema 1 con la plantilla `react-ts` (React 19, Vite 8, TypeScript 7) y Vitest configurado como en el Módulo 0. `npm run dev` lo sirve en `http://localhost:5173`, `npm test` ejecuta la prueba del flujo crítico y `npm run build` revisa los tipos con `tsc -b` antes de empaquetar. Si el puerto cambia, usa el que imprima la terminal. Todo el integrador usa un único dominio: envíos. Aplica lo que aprendiste en el Módulo 11.
 
-### Tema 1: Estructura del proyecto integrador · Avanzado · 55 min
+### Tema 1: Estructura del proyecto integrador · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a organizar el proyecto integrador de RutaFlow en `features/envios/` y `features/auth/`, separando ambos del store de Zustand reservado solo para UI. Prerrequisitos: módulos 0-11 completos.
@@ -450,7 +450,7 @@ Corrige el Paso 5 quitando el estado de sesión de `uiStore.ts`, dejando que `us
 #### Paso 7 · Cierre
 Entrega la estructura organizada por feature del Paso 4, la duplicación de fuente de verdad provocada en el Paso 5, y la revisión del Paso 6; explica por qué integrar todos los módulos del track en un solo proyecto expone violaciones de organización que un módulo aislado nunca mostraría. Siguiente paso: integra rutas, TanStack Query y Zustand coordinadamente. Errores comunes: mezclar features sin un punto de integración explícito, duplicar en un store de UI un dato que ya tiene una fuente de verdad propia, y organizar carpetas por tipo de archivo en vez de por dominio. Fuentes oficiales: https://react.dev/learn/thinking-in-react y https://tanstack.com/query/latest/docs/framework/react/overview.
 
-### Tema 2: Integrando rutas, TanStack Query y Zustand · Experto · 50 min
+### Tema 2: Integrando rutas, TanStack Query y Zustand · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a proteger las rutas de `features/envios/` con `RutaProtegida` (que usa `useAuth`), mientras `useEnvios` (Tema 3) gestiona su propio ciclo de cache sin ninguna interferencia del store de Zustand. Prerrequisitos: Tema 1 de este módulo.

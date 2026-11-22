@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Arquitectura Flutter por capacidades
+### Tema 1: Arquitectura Flutter por capacidades · Avanzado · 45 min
 
 **Conceptos clave:** features, dominio, repositorios, estado, navegación y pruebas.
 
@@ -154,7 +154,7 @@ Entregá la estructura de carpetas por capacidades, la salida `OK pendientes=2` 
 
 **Límites y decisión de uso:** Las capas no justifican duplicar modelos y adaptadores sin una frontera real. Separa dominio de dispositivo y transporte donde facilite pruebas y sustitución; conserva un flujo simple para decisiones puramente visuales.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-### Tema 2: GPS, permisos y batería
+### Tema 2: GPS, permisos y batería · Avanzado · 45 min
 
 **Conceptos clave:** precisión, frecuencia, distancia, background, consentimiento y muestreo adaptativo.
 
@@ -320,7 +320,7 @@ Entregá `politica_ubicacion.dart` con el manejo explícito de `deniedForever`, 
 
 **Transferencia al proyecto integrador «RutaFlow»:** Solicita ubicación con una explicación vinculada a la función activa. Prueba permiso revocado y ejecución en segundo plano, registrando precisión y consumo observado sin prometer seguimiento continuo.
 Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el proyecto integrador del track.
-### Tema 3: Offline-first y prueba de entrega
+### Tema 3: Offline-first y prueba de entrega · Avanzado · 45 min
 
 **Conceptos clave:** SQLite, outbox local, estados de sincronización, conflictos y evidencia.
 

@@ -4,11 +4,11 @@ Los dos parciales del curso, resueltos paso a paso. Intenta cada punto en papel 
 
 ## Aprende construyendo
 
-### Tema 1: Parcial 1 resuelto paso a paso
+### Tema 1: Parcial 1 resuelto paso a paso · Avanzado · 45 min
 
 **¿Por qué es importante?** Resolver el Parcial 1 completo muestra cómo se combinan los capítulos en una sola evaluación.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis) y [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior) y [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control).
 
 Intenta cada punto en papel antes de abrir la solución. Al lado de cada punto está la lección que lo explica.
 

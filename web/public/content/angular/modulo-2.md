@@ -5,7 +5,7 @@
 
 Cada tema verifica su garantía con espías reales contando invocaciones: memoización real de `computed()`, detección real de mutación in-place vs referencia nueva, los puentes oficiales `toSignal`/`toObservable`, y la precisión real del grafo de dependencias que hace viable eliminar Zone.js.
 
-### Tema 1: signal(), computed() y effect()
+### Tema 1: signal(), computed() y effect() · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -143,7 +143,7 @@ Ya confirmas, con un conteo real y exacto de invocaciones, que `computed()` memo
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Modela guías y filtro con Signals y deriva la lista visible con computed. Cambia el filtro sin solicitudes de red adicionales y reserva effect para una interacción externa verificable.
 
-### Tema 2: Mutación frente a actualización inmutable
+### Tema 2: Mutación frente a actualización inmutable · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -282,7 +282,7 @@ Ya confirmas, con un conteo real de invocaciones, que los signals detectan cambi
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Actualiza una entrega reemplazando su objeto dentro de la colección. Una prueba debe confirmar que cambia el total pendiente y que la referencia anterior conserva sus datos para comparación.
 
-### Tema 3: Signals frente a Observables
+### Tema 3: Signals frente a Observables · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -419,7 +419,7 @@ Ya confirmas, con los puentes oficiales reales `toSignal()`/`toObservable()`, qu
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Usa un Observable para búsquedas cancelables y Signals para el estado visible del panel. Resuelve una búsqueda antigua después de la nueva y comprueba que no reemplaza sus resultados.
 
-### Tema 4: Hacia zoneless change detection
+### Tema 4: Hacia zoneless change detection · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -549,7 +549,7 @@ Ya confirmas, con un conteo real de invocaciones sobre dos signals independiente
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Elimina la dependencia de refrescos implícitos en la lista operativa. Simula una respuesta HTTP y verifica que el estado visible se actualiza en una ejecución sin Zone.js.
 
-### Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir
+### Tema 5: linkedSignal — estado derivado que el usuario puede sobrescribir · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -636,7 +636,7 @@ Ya usas `linkedSignal` para estado derivado pero sobrescribible, confirmado con 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Usa `linkedSignal` para la cantidad de paquetes asignados a una ruta, sugerida a partir de la capacidad del vehículo pero editable por el operador, y que se resetee automáticamente si la capacidad del vehículo asignado cambia.
 
-### Tema 6: resource() y httpResource — datos asíncronos reactivos
+### Tema 6: resource() y httpResource — datos asíncronos reactivos · Básico · 35 min
 
 #### Paso 1 · Objetivo y preparación
 

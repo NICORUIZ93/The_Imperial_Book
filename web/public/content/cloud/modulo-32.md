@@ -5,7 +5,7 @@ Una colección de servicios funcionales todavía puede fallar como sistema. La a
 
 ## Aprende construyendo
 
-### Tema 1: Una red segura empieza por flujos, no por subredes
+### Tema 1: Una red segura empieza por flujos, no por subredes · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a declarar el flujo real que `demo-nodo` (Módulo 21) necesita hacia la base de datos de facturación (Módulo 13), por referencia de grupo, no por rango abierto. Prerrequisitos: Módulos 13 y 21 completos.
@@ -72,7 +72,7 @@ Documentá, para `rutaflow-db-interna`, por qué una regla con `--cidr 0.0.0.0/0
 #### Paso 7 · Cierre
 Entregá la regla por referencia de grupo del Paso 4, el CIDR solapado del Paso 5, y la explicación del riesgo de `0.0.0.0/0` del Paso 6; explicá por qué "público" significa que existe una ruta desde Internet, no que todo el tráfico esté permitido. Siguiente paso: gobierno. Errores comunes: subnets sin rutas y 0.0.0.0/0 innecesario. Fuente oficial: https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html.
 
-### Tema 2: Una landing zone convierte gobierno en una base repetible
+### Tema 2: Una landing zone convierte gobierno en una base repetible · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir el guardrail real que impediría que alguien desactive CloudTrail en la cuenta de producción de RutaFlow. Prerrequisitos: Módulo 29 (STS, cuentas).
@@ -149,7 +149,7 @@ Documentá, para la organización de RutaFlow, a dónde iría el destino central
 #### Paso 7 · Cierre
 Entregá el guardrail simulado del Paso 4, la cuenta sin protección del Paso 5, y el diseño de logging/cuotas/break-glass del Paso 6; explicá por qué un compromiso de una sola cuenta no debería poder controlar toda la organización. Siguiente paso: resiliencia. Errores comunes: cuentas sin dueño y privilegio global. Fuente oficial: https://docs.aws.amazon.com/organizations/latest/userguide/orgs_introduction.html.
 
-### Tema 3: Disponibilidad y recuperación responden preguntas distintas
+### Tema 3: Disponibilidad y recuperación responden preguntas distintas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a asignar un RTO y un RPO reales a tres servicios concretos de RutaFlow, no un "lo más rápido posible" genérico. Prerrequisitos: Módulos 4 y 13 completos.
@@ -213,7 +213,7 @@ Compará, para `ShipmentEvents`, qué cambiaría si en vez de PITR + réplica us
 #### Paso 7 · Cierre
 Entregá la tabla de RTO/RPO real del Paso 4, el punto de recuperación faltante del Paso 5, y la comparación de estrategias del Paso 6; explicá por qué alinear estos objetivos con el impacto de negocio, no con el entusiasmo técnico, es la decisión central de este Tema. Siguiente paso: recuperación. Errores comunes: replicar sin probar y confundir RPO con RTO. Fuente oficial: https://docs.aws.amazon.com/wellarchitected/latest/reliability-pillar/welcome.html.
 
-### Tema 4: Un backup solo existe operativamente después de restaurarlo
+### Tema 4: Un backup solo existe operativamente después de restaurarlo · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a restaurar de verdad el snapshot de `rutaflow-facturacion` (Módulo 13) y a medir si el RTO del Tema 3 se cumple en la práctica, no solo en la tabla. Prerrequisitos: Módulo 13 Tema 2, Tema 3 de este módulo.

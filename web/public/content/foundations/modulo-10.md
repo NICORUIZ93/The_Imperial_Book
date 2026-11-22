@@ -5,7 +5,7 @@ Una aplicación local puede asumir que una llamada termina o falla de forma visi
 
 ## Aprende construyendo
 
-### Tema 1: La red convierte el resultado en una incertidumbre
+### Tema 1: La red convierte el resultado en una incertidumbre · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a simular un timeout real al confirmar una entrega de RutaFlow, y a comprobar por qué el cliente no puede saber qué pasó del otro lado. Prerrequisitos: Python 3 instalado.
@@ -136,7 +136,7 @@ Corregí el Paso 5 reenviando el comando con el MISMO `command_id` original, y d
 #### Paso 7 · Cierre
 Entregá el timeout real devolviendo estado desconocido del Paso 4, el duplicado provocado por generar un ID nuevo del Paso 5, y la corrección reusando el ID original del Paso 6; explicá por qué tratar un timeout como "falló con certeza" es tan equivocado como tratarlo como "funcionó con certeza". Siguiente paso: estudiar consistencia. Errores comunes: asumir orden y reintentar sin límite. Fuente oficial: https://sre.google/sre-book.
 
-### Tema 2: Replicación, consistencia y decisiones explícitas
+### Tema 2: Replicación, consistencia y decisiones explícitas · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a simular una lectura obsoleta real sobre una réplica de `ShipmentEvents` de RutaFlow, y a decidir si ese envío específico tolera esa inconsistencia. Prerrequisitos: ninguno adicional.
@@ -255,7 +255,7 @@ Identificá, para RutaFlow, una operación que SÍ toleraría leer de la réplic
 #### Paso 7 · Cierre
 Entregá la lectura obsoleta real del Paso 4, el uso incorrecto para facturación del Paso 5, y la clasificación de operaciones del Paso 6; explicá por qué "elegir una base AP o CP" no sustituye decidir, operación por operación, qué inconsistencia tolera el negocio. Siguiente paso: estudiar mensajes. Errores comunes: prometer consistencia sin coste y ocultar lecturas obsoletas. Fuentes oficiales y de contraste: [patrones de sistemas distribuidos de Martin Fowler](https://martinfowler.com/articles/patterns-of-distributed-systems) y [niveles de consistencia documentados por Azure Cosmos DB](https://learn.microsoft.com/azure/cosmos-db/consistency-levels). La segunda fuente muestra compromisos concretos entre consistencia, latencia, disponibilidad y throughput; no convierte el comportamiento de Cosmos DB en una garantía universal.
 
-### Tema 3: Mensajes que se procesan con efectos exactamente una vez
+### Tema 3: Mensajes que se procesan con efectos exactamente una vez · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar y ejecutar `confirmDelivery` para comprobar que logra el efecto "exactamente una vez" aunque el comando llegue duplicado. Prerrequisitos: Node.js 24 o posterior para ejecutar TypeScript con borrado de tipos.
@@ -422,7 +422,7 @@ Agregá un `console.log` dentro de `repo.confirm` para contar cuántas veces se 
 #### Paso 7 · Cierre
 Entregá la deduplicación real confirmada del Paso 4, el duplicado por ID distinto del Paso 5, y el contador en 1 tras cinco reintentos del Paso 6; explicá por qué la garantía es "exactamente una vez por `commandId`", no "exactamente una vez por envío" en términos absolutos. Siguiente paso: estudiar resiliencia. Errores comunes: confundir entrega con efecto y reintentar operaciones no idempotentes. Fuentes oficiales y de contraste: [descripción del patrón por Chris Richardson](https://microservices.io/patterns/data/transactional-outbox.html) y [guía de transactional outbox de AWS](https://docs.aws.amazon.com/prescriptive-guidance/latest/cloud-design-patterns/transactional-outbox.html). AWS advierte sobre mensajes duplicados, orden e idempotencia; la guía no acredita por sí sola esta implementación.
 
-### Tema 4: Resiliencia y observabilidad orientadas a objetivos
+### Tema 4: Resiliencia y observabilidad orientadas a objetivos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a definir un SLI/SLO real para `confirmar-entrega` de RutaFlow, y a medir cuánto presupuesto de error consume una dependencia lenta. Prerrequisitos: Python 3 instalado.
@@ -544,7 +544,7 @@ Agregá una alerta que dispare solo cuando el SLI caiga por debajo de un umbral 
 #### Paso 7 · Cierre
 Entregá el SLI real calculado del Paso 4, el promedio engañoso del Paso 5, y la alerta con acción concreta del Paso 6; explicá por qué medir "lo que le importa al usuario" (confirmaciones a tiempo) es distinto de medir "lo que es fácil de medir" (CPU, promedio). Siguiente paso: estudiar sistemas operativos. Errores comunes: alertar sin acción y medir solo promedios. Fuente oficial: https://sre.google/sre-book/monitoring-distributed-systems/.
 
-### Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases
+### Tema 5: Tiempo, coordinación y acuerdo: Lamport, elección de líder y commit en dos fases · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás ordenar eventos sin reloj global con relojes lógicos de Lamport, elegir un coordinador cuando el anterior falla con el algoritmo del matón (bully) y explicar cómo el commit en dos fases (2PC) logra que todos confirmen o nadie lo haga. Prerrequisitos: Temas 1 a 3 de este módulo.
@@ -713,7 +713,7 @@ No dividas el sistema en muchos microservicios. Conserva el núcleo modular y a�
 
 ## Aplicación del material de referencia
 
-### Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada
+### Tema 6: Latencia y throughput: medir concurrencia sin confundirla con capacidad ilimitada · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar medirás latencia p95 y peticiones por segundo en dos niveles de concurrencia, conservando el número total de peticiones. **Prerrequisitos:** Node 24, HTTP, promesas y noción de percentil. Es un ejemplo independiente desde carpeta vacía, con servidor local y sin paquetes.
@@ -803,7 +803,7 @@ El siguiente paso es un ensayo con carga representativa y un presupuesto de recu
 
 **Fuente oficial:** [Node performance hooks](https://nodejs.org/api/perf_hooks.html).
 
-### Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella
+### Tema 7: Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a convertir los requisitos de una función del inventario en números (peticiones por segundo, almacenamiento, ancho de banda), identificar qué componente se satura primero y justificar una decisión de diseño con esa estimación. **Prerrequisitos:** el Tema 6 de este módulo (latencia y throughput), el Tema 2 (replicación) y el Módulo 7 (requisitos y atributos de calidad).

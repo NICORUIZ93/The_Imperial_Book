@@ -10,11 +10,11 @@ Las fórmulas de \(M_p\), \(t_p\) y \(t_s\) son exactas solo para el segundo ord
 
 ## Aprende construyendo
 
-### Tema 1: Polos dominantes
+### Tema 1: Polos dominantes · Avanzado · 45 min
 
 **¿Por qué es importante?** Los sistemas reales tienen más de dos polos; saber cuáles dominan te deja usar las fórmulas de segundo orden con confianza.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 > **Idea clave.** Cada polo aporta un término \(e^{pt}\). Los polos muy a la izquierda se apagan rápido y dejan de importar. Los que quedan cerca del eje imaginario dominan la respuesta.
 
@@ -157,11 +157,11 @@ repite el cálculo del Ejemplo 6 (tercer polo en \(-3\), solo 3 veces más a la 
 
 **Límite:** la regla de "5 veces más a la izquierda" es heurística, no exacta; con una relación de 3 a 4 veces (Ejemplos 4 y 6) el error ya es significativo, así que siempre conviene comparar contra la respuesta exacta antes de confiar en la aproximación.
 
-### Tema 2: Efecto de un cero
+### Tema 2: Efecto de un cero · Avanzado · 45 min
 
 **¿Por qué es importante?** Un cero cambia el sobrepico aunque los polos sean los mismos; ignorarlo lleva a diseños que se pasan.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 Un cero en \(-a\) se puede escribir como \(G_z = \left(1 + \dfrac{s}{a}\right)G_0\), donde \(G_0\) es el sistema sin cero.
 
@@ -285,11 +285,11 @@ cambia `a` a `10` y confirma que da \(\dfrac{2s}{5}+4\) sobre el mismo denominad
 
 **Límite:** esta fórmula asume un cero real simple en \(-a\) sobre un sistema de segundo orden; con un sistema de orden mayor o un cero complejo, el efecto sobre \(M_p\) ya no sigue esta tabla exacta y hay que simular la respuesta completa.
 
-### Tema 3: Cero de fase no mínima
+### Tema 3: Cero de fase no mínima · Avanzado · 45 min
 
 **¿Por qué es importante?** Los ceros de fase no mínima explican respuestas que primero van al revés y limitan qué tan rápido se puede controlar.
 
-**Fuentes oficiales:** [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 Si el cero está en el semiplano derecho (\(a<0\)), la derivada entra con signo menos: la salida primero se va en la dirección contraria. Se llama **respuesta inversa**.
 

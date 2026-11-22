@@ -284,7 +284,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** cortar 
 
 **Fuente oficial:** [Node.js — Buffer](https://nodejs.org/api/buffer.html) y [Node.js — Web APIs globales](https://nodejs.org/api/globals.html).
 
-### Tema 3: Streams básicos: Readable, Writable y Transform · Intermedio · 60 min
+### Tema 3: Streams básicos: Readable, Writable y Transform · Intermedio · 35 min
 
 **Prerrequisito:** Node.js LTS y capacidad para reconocer una función callback. Comprueba `node --version`; no necesitas archivos del tema anterior.
 
@@ -571,7 +571,7 @@ Si fallas dos o más, vuelve a la sección Aprende. **Errores comunes:** usar `g
 
 **Fuente oficial:** [Node.js — Zlib](https://nodejs.org/api/zlib.html) y [Node.js — stream.pipeline](https://nodejs.org/api/stream.html#streampipelinesource-transforms-destination-options).
 
-### Tema 5: Backpressure: write() y el evento drain · Avanzado · 55 min
+### Tema 5: Backpressure: write() y el evento drain · Intermedio · 35 min
 
 **Prerrequisito:** Node.js LTS y conocimiento básico de `Writable`. El laboratorio crea su propio destino y no reutiliza streams de otros temas.
 
@@ -723,7 +723,7 @@ Ejecuta esta versión con `highWaterMark: 12` y compárala con `highWaterMark: 4
 
 ---
 
-### Tema 6: pipeline() para componer streams de forma segura · Avanzado · 60 min
+### Tema 6: pipeline() para componer streams de forma segura · Intermedio · 35 min
 
 **Prerrequisito:** Node.js LTS y conocimiento básico de `Readable`, `Transform` y `Writable`. Crearás una entrada, una transformación y una salida nuevas en este tema.
 

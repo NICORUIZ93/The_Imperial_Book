@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: El pipeline completo — de commit a producción verificada
+### Tema 1: El pipeline completo — de commit a producción verificada · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a validar, con un script, que el pipeline de RutaFlow encadena sus etapas con gates bloqueantes y etiqueta la imagen con el hash del commit. Prerrequisitos: módulos 1-12 completos y Python 3 con PyYAML (`python3 -m pip install pyyaml`); no necesitas un clúster real para comprobar la configuración.
@@ -162,7 +162,7 @@ Restaurá `exit-code: "1"` y agregá un job `verify` que dependa de `deploy` y f
 #### Paso 7 · Cierre
 Entregá la salida del Paso 4, el fallo del gate del Paso 5 y el flujo ampliado del Paso 6; explicá la diferencia entre informar un hallazgo y bloquear el despliegue. Siguiente paso: unir la trazabilidad de todas las etapas en el Tema 2. Errores comunes: escanear sin bloquear, desplegar sin verificación y documentar un rollback que nunca se ejecutó. **Fuentes oficiales:** https://docs.github.com/es/actions/using-jobs/using-jobs-in-a-workflow y https://trivy.dev/latest/docs/configuration/others/.
 
-### Tema 2: Uniendo cada módulo del track en un solo flujo
+### Tema 2: Uniendo cada módulo del track en un solo flujo · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reconstruir la cadena commit → imagen → escaneo → despliegue a partir de eventos trazables y a detectar cuándo un pipeline perdió esa trazabilidad. Prerrequisitos: Tema 1 de este módulo y Python 3.
@@ -265,9 +265,9 @@ Pista: cambiá el digest del evento `deploy` por `registry.rutaflow.app/api:late
 Restaurá el digest y agregá un evento `rollback` que también comparta el correlation ID y el commit. Verificá que la cadena siga completa y documentá cómo localizarías el commit de origen si el incidente ocurriera después de tres despliegues. Aplicá la misma regla al proyecto integrador: cada etapa del pipeline de RutaFlow debe registrar el digest y un correlation ID, no solo un mensaje humano.
 
 #### Paso 7 · Cierre
-Entregá la salida del Paso 4, el fallo por tag mutable del Paso 5 y la cadena con rollback del Paso 6; explicá por qué un digest es más útil que un número de versión para atribuir un incidente. Siguiente paso: cerrar el track con el checklist del Tema 3. Errores comunes: etiquetar solo con `latest`, no propagar el correlation ID y asumir que el commit visible en el panel es el que está corriendo. **Fuentes oficiales:** https://docs.docker.com/engine/reference/commandline/pull/ y https://www.sre.google/sre-book/postmortem-culture/.
+Entregá la salida del Paso 4, el fallo por tag mutable del Paso 5 y la cadena con rollback del Paso 6; explicá por qué un digest es más útil que un número de versión para atribuir un incidente. Siguiente paso: cerrar el track con el checklist del Tema 3. Errores comunes: etiquetar solo con `latest`, no propagar el correlation ID y asumir que el commit visible en el panel es el que está corriendo. **Fuentes oficiales:** https://docs.docker.com/engine/reference/commandline/pull/ y https://sre.google/sre-book/postmortem-culture/.
 
-### Tema 3: Cierre del track — checklist final y reflexión
+### Tema 3: Cierre del track — checklist final y reflexión · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a responder un checklist de decisiones reales del pipeline de RutaFlow y a comprobar, con un evaluador, si tus respuestas están ancladas en artefactos concretos. Prerrequisitos: Temas 1-2 de este módulo y Python 3.
@@ -367,7 +367,7 @@ Pista: reemplazá la respuesta de GitOps por “GitOps es usar Git como fuente d
 Reescribí la respuesta de GitOps conectándola con una decisión real del proyecto integrador: el operador dentro del clúster no guarda credenciales de despliegue externas, mientras que un runner de CD tradicional sí las necesita. Agregá una cuarta pregunta sobre rollback y respondela con una métrica y un umbral concretos.
 
 #### Paso 7 · Cierre
-Entregá el checklist del Paso 4, el fallo del Paso 5 y las respuestas ampliadas del Paso 6; explicá por qué una respuesta de libro sin conexión a una decisión real no demuestra dominio. Siguiente paso: aplicar este pipeline a un proyecto personal y registrar qué partes se ejecutaron y cuáles quedaron documentadas. Errores comunes: confundir haber visto un tema con haberlo dominado, no declarar límites de ejecución y cerrar el track sin poder explicar las decisiones propias. **Fuentes oficiales:** https://www.sre.google/sre-book/postmortem-culture/ y https://12factor.net/.
+Entregá el checklist del Paso 4, el fallo del Paso 5 y las respuestas ampliadas del Paso 6; explicá por qué una respuesta de libro sin conexión a una decisión real no demuestra dominio. Siguiente paso: aplicar este pipeline a un proyecto personal y registrar qué partes se ejecutaron y cuáles quedaron documentadas. Errores comunes: confundir haber visto un tema con haberlo dominado, no declarar límites de ejecución y cerrar el track sin poder explicar las decisiones propias. **Fuentes oficiales:** https://sre.google/sre-book/postmortem-culture/ y https://12factor.net/.
 
 ## Laboratorio práctico
 

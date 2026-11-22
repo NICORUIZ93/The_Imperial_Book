@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Trunk-based development vs GitFlow
+### Tema 1: Trunk-based development vs GitFlow · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -85,7 +85,7 @@ Ya distingues cuándo la integración frecuente supera a la estructura de GitFlo
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Define cómo integrar un cambio de healthcheck en la rama principal con revisión y pruebas. Mide cuánto permanece abierta la rama y documenta cómo mantener funcional el servicio durante la integración.
 
-### Tema 2: Rebase interactivo vs merge
+### Tema 2: Rebase interactivo vs merge · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -170,7 +170,7 @@ Ya limpias tu propio historial local sin arriesgar el de otros. El siguiente tem
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Integra dos cambios del pipeline en una rama de laboratorio y compara merge con rebase. Verifica el resultado funcional y explica qué historial conservarías sin reescribir commits ya compartidos.
 
-### Tema 3: Bisect para encontrar regresiones
+### Tema 3: Bisect para encontrar regresiones · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -252,7 +252,7 @@ Ya conviertes una búsqueda manual de horas en un proceso de minutos con búsque
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Introduce una regresión reproducible en el healthcheck y localízala con bisect. Guarda el comando que clasifica cada revisión; debe devolver éxito o fallo sin depender de inspección manual.
 
-### Tema 4: Hooks de Git y commits firmados
+### Tema 4: Hooks de Git y commits firmados · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -335,7 +335,7 @@ Ya bloqueas localmente commits con contenido prohibido y entiendes que los hooks
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Añade una comprobación local previa al commit y su equivalente obligatorio en CI. Demuestra que saltarse el hook local no permite integrar un pipeline inválido; verifica aparte la identidad de una firma.
 
-### Tema 5: Monorepos vs polyrepos
+### Tema 5: Monorepos vs polyrepos · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -412,7 +412,7 @@ Ya distingues cuándo el cambio atómico de un monorepo compensa la ceremonia de
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Compara el cambio conjunto de API y pipeline en un repositorio único y en repositorios separados. Documenta qué artefacto vincula ambas versiones y cómo evitar desplegar una combinación incompatible.
 
-### Tema 6: git cherry-pick, git stash, git reset vs git revert
+### Tema 6: git cherry-pick, git stash, git reset vs git revert · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -489,7 +489,7 @@ Ya eliges la herramienta correcta según si el historial es local o ya compartid
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Reproduce un hotfix en una rama aislada y transpórtalo mediante cherry-pick. Practica su reversión con un nuevo commit, conservando evidencia de que el historial compartido sigue accesible.
 
-### Tema 7: git reflog, git worktree y git submodule
+### Tema 7: git reflog, git worktree y git submodule · Básico · 20 min
 
 #### Paso 1 · Objetivo y preparación
 

@@ -5,7 +5,7 @@ Automatizar despliegues es el comienzo, no el final. Un sistema profesional defi
 
 ## Aprende construyendo
 
-### Tema 1: Confiabilidad es una expectativa cuantificada
+### Tema 1: Confiabilidad es una expectativa cuantificada · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a definir un SLI/SLO para el viaje "crear un envío y verlo confirmado" en la API de RutaFlow, y a calcular cuánto presupuesto de error queda disponible en la ventana actual. Prerrequisitos: Módulo 9 completo.
@@ -77,7 +77,7 @@ Corregí el Paso 5 volviendo a `slo = 0.999` y calculá explícitamente cuántos
 #### Paso 7 · Cierre
 Entregá el `sli.py` con la salida del Paso 4, la salida `presupuesto de error agotado` del SLO de 100% del Paso 5, y el cálculo de minutos del Paso 6; explicá por qué un SLO de 100% no es "más seguro" sino contraproducente en la práctica. Siguiente paso: estudia cómo una alerta debe conducir a una acción. Errores comunes: definir SLOs sin basarse en el comportamiento histórico real del servicio, confundir SLO con SLA, y no definir explícitamente qué eventos cuentan como "válidos" antes de medir. Límites y decisión de uso: un SLI no captura todo lo que el usuario percibe; no conviene usarlo como única señal si el viaje depende de una experiencia que las métricas del servidor no observan. Fuentes oficiales: https://sre.google/sre-book/service-level-objectives/ y https://prometheus.io/docs/practices/instrumentation/.
 
-### Tema 2: Una alerta debe conducir a una acción
+### Tema 2: Una alerta debe conducir a una acción · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a configurar una alerta de "fast burn" sobre el presupuesto de error de `/envios`, con labels y annotations correctamente separados, y un runbook vinculado. Prerrequisitos: Tema 1 de este módulo.
@@ -207,7 +207,7 @@ Movés `request_id` a `annotations`, donde no participa de agrupación ni enruta
 #### Paso 7 · Cierre
 Entregá la salida del verificador del Paso 4, el fallo de cardinalidad del Paso 5, y la corrección y segunda alerta del Paso 6; explicá por qué un identificador de alta cardinalidad multiplica series en un label pero no en una annotation. Como siguiente paso, aplicá el mismo verificador a las otras alertas del servicio antes de conectarlas a Alertmanager. Errores comunes: colocar identificadores de alta cardinalidad en labels en vez de annotations, alertas sin runbook vinculado, y alertar por causa interna en vez de por síntoma observado por el usuario. Fuentes oficiales: https://prometheus.io/docs/practices/naming/ y https://sre.google/workbook/alerting-on-slos/.
 
-### Tema 3: Construir una imagen no demuestra de dónde proviene
+### Tema 3: Construir una imagen no demuestra de dónde proviene · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a generar el SBOM de la imagen de RutaFlow y a firmarla con `cosign`, verificando que solo se acepte una imagen firmada por el pipeline de CI real. Prerrequisitos: Tema 2 de este módulo.
@@ -333,7 +333,7 @@ Restaurá `subject` con el repositorio `rutaflow/api` y agregá una regla que re
 #### Paso 7 · Cierre
 Entregá la salida del verificador del Paso 4, el fallo sin `subject` del Paso 5, y la política ampliada del Paso 6; explicá por qué una firma criptográficamente válida no es lo mismo que una firma del origen específicamente autorizado. Como siguiente paso, conectá esta política al webhook de admisión del clúster y probá el rechazo con una imagen sin firma. Errores comunes: verificar solo que una firma es válida sin restringir de qué identidad debe provenir, reconstruir "la misma versión" para producción en vez de promover el mismo digest exacto, y conceder excepciones de vulnerabilidad sin fecha de vencimiento. Fuentes oficiales: https://docs.sigstore.dev/cosign/verifying/verify/ y https://slsa.dev/.
 
-### Tema 4: Una plataforma interna es un producto con límites
+### Tema 4: Una plataforma interna es un producto con límites · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir una política Rego que rechace en el clúster de RutaFlow cualquier Pod que corra como root, y a medir el tiempo hasta el primer deploy exitoso de un desarrollador nuevo usando el golden path. Prerrequisitos: Tema 3 de este módulo.

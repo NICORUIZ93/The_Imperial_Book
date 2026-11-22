@@ -153,7 +153,7 @@ Agrega la guía RF-999 con estado `EN_RUTA`, observa qué devuelve `getOrDefault
 
 **Transferencia al proyecto integrador:** almacena guías en una lista ordenada, usa un Set para rechazar importaciones duplicadas y conserva el estado actual en un Map por código. **Límite:** usa `ArrayList` cuando el orden de llegada importa y habrá lecturas frecuentes por índice; usa `HashSet` solo para descartar duplicados sin importar el orden; si necesitas orden de inserción y descarte de duplicados a la vez, usa `LinkedHashSet` en vez de combinar las dos estructuras a mano. **Práctica:** modifica `ColeccionesDemo.java` para usar `getOrDefault("RF-999", "SIN_REGISTRO")` en vez de `get`, y confirma que ya no se produce `NullPointerException`.
 
-### Tema 2: El contrato de equals y hashCode · Básico · 35 min
+### Tema 2: El contrato de equals y hashCode · Intermedio · 35 min
 
 **Prerrequisito:** Tema 1 de este módulo (`HashSet` y `HashMap`) y Módulo 1 (sobreescritura y `record`).
 **Al terminar podrás:** implementar `equals` y `hashCode` que cumplan las cinco reglas del contrato, demostrar con un `HashSet` real qué ocurre cuando ambos métodos usan campos incompatibles, y decidir cuándo un `record` resuelve el problema sin escribirlos.
@@ -773,7 +773,7 @@ Entrega las tres líneas de salida y explica qué dato sí conserva el objeto, y
 
 **Transferencia al proyecto integrador:** implementa un repositorio genérico que use tipos concretos seguros y consulta con wildcards cuando el consumidor solo necesite leer o agregar datos. **Práctica:** agrega un segundo tipo de parámetro a `Caja<T>` (por ejemplo una etiqueta `Caja<T, E>`) y confirma con `instanceof Caja<?, ?>` que ambos parámetros siguen borrados en tiempo de ejecución.
 
-### Tema 5: Comparable vs Comparator, e iteración · Intermedio · 35 min
+### Tema 5: Comparable vs Comparator, e iteración · Avanzado · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** El orden natural sirve cuando una clase tiene un criterio principal; un Comparator permite cambiarlo para una vista concreta. La iteración permite procesar colecciones sin depender de su implementación.
@@ -971,7 +971,7 @@ Guarda el mapa antes y después, e identifica la entrada que quitó el iterador.
 
 **Transferencia al proyecto integrador:** ordena las guías por el criterio natural acordado, agrega vistas alternativas con Comparator y elimina del registro entradas completadas durante su recorrido seguro. **Límite:** implementa `Comparable` solo cuando la clase tiene un único orden natural y obvio (por ejemplo el código de guía); si necesitas varios criterios de orden distintos según la pantalla o el reporte, usa `Comparator` externos en vez de forzar varios "órdenes naturales" en la misma clase.
 
-### Tema 6: Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue` · Básico · 35 min
+### Tema 6: Colas y pilas: `Queue`, `Deque`, `ArrayDeque` y `PriorityQueue` · Avanzado · 35 min
 
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Muchas reglas del motor de entregas dependen del **orden de salida**, no de la posición: las paradas se visitan en el orden en que llegan, el último cambio es el primero que se deshace y un envío urgente pasa delante de uno normal. `List` puede imitar esas reglas, pero `Queue` y `Deque` las expresan en el tipo y evitan errores de índice. El examen 1Z0-830 incluye «Lists, Sets, Maps, and Deques».

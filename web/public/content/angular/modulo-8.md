@@ -5,7 +5,7 @@
 
 Cada tema verifica su garantía con código real: un error de DI genuino de Angular al faltar un provider, un script Node con `fs` real que audita cohesión de carpetas, y el esquema oficial `ng generate @angular/core:standalone` junto con un error real de plantilla al migrar de forma incompleta.
 
-### Tema 1: Bootstrap sin NgModules
+### Tema 1: Bootstrap sin NgModules · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -145,7 +145,7 @@ Ya confirmas, con un `NG0201` real y reproducible, que `bootstrapApplication` y 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Arranca el panel con bootstrapApplication y providers explícitos. El build y una prueba de navegación directa deben funcionar sin depender de un AppModule residual.
 
-### Tema 2: Organización por feature
+### Tema 2: Organización por feature · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -274,7 +274,7 @@ Ya confirmas, con un script Node real basado en `fs`, que una carpeta de feature
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Agrupa lista, detalle y asignación dentro de la funcionalidad de entregas. Revisa imports: una pantalla de perfil no debe acceder a archivos internos del store de esa funcionalidad.
 
-### Tema 3: Migración desde NgModules
+### Tema 3: Migración desde NgModules · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -549,7 +549,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** exportar todo desde
 
 **Fuente oficial:** [Angular — Creating libraries](https://angular.dev/tools/libraries/creating-libraries) y [Angular — Workspace and project file structure](https://angular.dev/reference/configs/file-structure).
 
-### Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Experto · 50 min
+### Tema 5: Microfrontends con criterio: Native Federation y cuándo no usarlos · Avanzado · 25 min
 
 **Prerrequisito:** tema «Librerías y monorepos con Angular CLI» de este módulo.
 

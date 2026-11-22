@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Bedrock Runtime y respuestas stub deterministas
+### Tema 1: Bedrock Runtime y respuestas stub deterministas · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a usar Bedrock para redactar el texto del SMS de confirmación de entrega (Módulo 10-11), y a comprobar qué parte de eso es realmente verificable en local. Prerrequisitos: Módulos 10 y 11 completos.
@@ -56,7 +56,7 @@ Probá qué pasa si el prompt pide explícitamente algo fuera del `max_tokens` c
 #### Paso 7 · Cierre
 Entregá el stub determinista del Paso 4, el error de contrato mal asumido del Paso 5, y el manejo de truncamiento del Paso 6; explicá qué de todo esto seguiría siendo cierto contra el Bedrock real, y qué no. Siguiente paso: extracción. Errores comunes: probar solo texto feliz y filtrar datos sensibles. Fuente oficial: https://docs.aws.amazon.com/bedrock/latest/userguide/what-is-bedrock.html.
 
-### Tema 2: Textract y Transcribe
+### Tema 2: Textract y Transcribe · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a extraer automáticamente cliente y monto de una factura escaneada (Módulo 13) con Textract, y a transcribir el reporte de voz de un conductor con Transcribe. Prerrequisitos: Módulo 13 completo.
@@ -115,7 +115,7 @@ Escribí la regla de negocio que faltaría en el código: si `Confidence` de cua
 #### Paso 7 · Cierre
 Entregá la extracción exitosa del Paso 4, el campo de baja confianza del Paso 5, y la regla de revisión humana del Paso 6; explicá por qué "Textract respondió algo" no es lo mismo que "Textract respondió algo confiable". Siguiente paso: límites. Errores comunes: aceptar extracción sin confianza y no conservar original. Fuente oficial: https://docs.aws.amazon.com/textract/latest/dg/what-is.html.
 
-### Tema 3: Stub vs mock, y qué probar localmente
+### Tema 3: Stub vs mock, y qué probar localmente · Avanzado · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a documentar, para los SMS generados (Tema 1) y las facturas extraídas (Tema 2), qué se puede confiar probando en Floci y qué necesita el servicio real de AWS. Prerrequisitos: Temas 1-2 de este módulo.

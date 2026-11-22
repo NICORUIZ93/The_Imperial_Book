@@ -12,7 +12,7 @@ Este capítulo conecta programación con mediciones físicas. Empieza por unidad
 
 ## Aprende construyendo
 
-### Tema 1: Matemáticas aplicadas: derivada, integral y modelos
+### Tema 1: Matemáticas aplicadas: derivada, integral y modelos · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás integrar muestras de corriente y contrastar la carga estimada con un resultado analítico. **En una frase:** Las matemáticas convierten una variación física en un modelo calculable para predecir corriente, energía o movimiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `matematicas.py`.
@@ -66,7 +66,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Single Variable Calculus](https://ocw.mit.edu/courses/18-01sc-single-variable-calculus-fall-2010/). La integración numérica y la suma de Riemann se consultan allí; la sintaxis de Python, en [docs.python.org](https://docs.python.org/3/).
 
-### Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton
+### Tema 2: Circuitos DC y AC: Kirchhoff, Thévenin y Norton · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás calcular el efecto de una carga usando el equivalente de Thévenin. **En una frase:** Un circuito distribuye tensiones y corrientes según sus conexiones y permite alimentar o medir dispositivos sin adivinar sus cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `circuitos.py`.
@@ -120,7 +120,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). El curso cubre superposición, Thévenin y Norton con las convenciones de signo usadas en el tema.
 
-### Tema 3: Electrónica analógica: diodos, transistores y amplificadores
+### Tema 3: Electrónica analógica: diodos, transistores y amplificadores · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás estimar ganancia de un operacional y detectar saturación por alimentación. **En una frase:** La electrónica analógica controla señales continuas para amplificar sensores, limitar tensiones y accionar cargas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `analogica.py`.
@@ -174,7 +174,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Circuits and Electronics](https://ocw.mit.edu/courses/6-002-circuits-and-electronics-spring-2007/). Los amplificadores operacionales, la realimentación negativa y la saturación se desarrollan en ese curso.
 
-### Tema 4: Electrónica digital: lógica y máquinas de estados
+### Tema 4: Electrónica digital: lógica y máquinas de estados · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás construir una tabla de verdad y detectar un despacho no autorizado. **En una frase:** La electrónica digital representa decisiones mediante niveles discretos para construir controladores verificables. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `digital.py`.
@@ -230,7 +230,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Computation Structures](https://ocw.mit.edu/courses/6-004-computation-structures-spring-2017/). Lógica combinacional, tablas de verdad y temporización digital se cubren en ese curso.
 
-### Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones
+### Tema 5: Microcontroladores: GPIO, ADC, PWM e interrupciones · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás cuantizar una tensión y medir el error de reconstrucción de un ADC. **En una frase:** Un microcontrolador combina procesador, memoria y periféricos para interactuar con sensores y actuadores. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `microcontroladores.py`.
@@ -284,7 +284,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [Arduino: entradas analógicas](https://docs.arduino.cc/learn/microcontrollers/analog-input/). La referencia describe `analogRead`, la tensión de referencia y cómo la resolución depende de la placa; el ejemplo usa 12 bits, así que su divisor es 4096.
 
-### Tema 6: Comunicaciones: modulación y detección de errores
+### Tema 6: Comunicaciones: modulación y detección de errores · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás detectar un cambio de bit y demostrar una limitación de la paridad. **En una frase:** Una comunicación codifica información sobre un canal para reconstruirla pese a ruido y limitaciones de ancho de banda. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `comunicaciones.py`.
@@ -338,7 +338,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Digital Communication Systems](https://ocw.mit.edu/courses/6-02-introduction-to-eecs-ii-digital-communication-systems-fall-2012/). Detección de errores, codificación y capacidad del canal se tratan con el formalismo que el tema solo introduce.
 
-### Tema 7: Señales y sistemas: muestreo, Fourier y convolución
+### Tema 7: Señales y sistemas: muestreo, Fourier y convolución · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás reproducir aliasing y justificar una frecuencia de muestreo. **En una frase:** Una señal describe una magnitud que cambia y un sistema transforma esa señal para medir o controlar algo. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `senales.py`.
@@ -394,7 +394,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Diagrama interactivo:** [Muestreo y aliasing: 7 Hz y 3 Hz a 10 muestras/s](/visuals/temas/control-1/modulo-29-tema-7-aliasing.html).
 
-### Tema 8: DSP: filtros digitales y compresión
+### Tema 8: DSP: filtros digitales y compresión · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás cuantificar el efecto y el retardo de una media móvil causal. **En una frase:** El procesamiento digital de señales transforma muestras para reducir ruido, extraer información o reducir almacenamiento. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `dsp.py`.
@@ -450,7 +450,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Diagrama interactivo:** [Media móvil causal: ventanas, salida y retardo](/visuals/temas/control-1/modulo-29-tema-8-media-movil.html).
 
-### Tema 9: Instrumentación: calibración, DAQ e incertidumbre
+### Tema 9: Instrumentación: calibración, DAQ e incertidumbre · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás calibrar una lectura con dos referencias y comprobar un tercer punto. **En una frase:** La instrumentación convierte una magnitud física en una medición con unidades, calibración y límites conocidos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `sensores.py`.
@@ -504,7 +504,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [NIST Technical Note 1297: incertidumbre de medida](https://www.nist.gov/pml/nist-technical-note-1297). Es la guía de referencia para expresar incertidumbre; la calibración concreta depende del certificado y del instrumento patrón.
 
-### Tema 10: Control automático: realimentación, PID y estabilidad
+### Tema 10: Control automático: realimentación, PID y estabilidad · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás simular un lazo proporcional y explicar su error estacionario. **En una frase:** El control automático compara una medición con una referencia y ajusta una acción para reducir el error. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `control.py`.
@@ -561,7 +561,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Diagrama interactivo:** [Lazo proporcional: realimentación y error estacionario](/visuals/temas/control-1/modulo-29-tema-10-lazo-p.html).
 
-### Tema 11: Potencia: conversión, eficiencia y disipación
+### Tema 11: Potencia: conversión, eficiencia y disipación · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás calcular relación de conversión y pérdidas de una fuente DC. **En una frase:** La electrónica de potencia transforma energía eléctrica para alimentar cargas dentro de límites eléctricos y térmicos. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `potencia.py`.
@@ -615,7 +615,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Power Electronics](https://ocw.mit.edu/courses/6-334-power-electronics-spring-2007/). Convertidores buck y boost, conmutación y pérdidas se analizan allí; inductancia, MOSFET y lazo de compensación exigen el diseño completo del convertidor.
 
-### Tema 12: PCB: esquemático, ERC, DRC y fabricación
+### Tema 12: PCB: esquemático, ERC, DRC y fabricación · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás evaluar una separación de pistas y distinguirla de una revisión DRC completa. **En una frase:** El diseño de PCB convierte un circuito en conexiones físicas fabricables con reglas eléctricas y geométricas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `pcb.py`.
@@ -667,7 +667,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [Documentación de KiCad](https://docs.kicad.org/). Allí se describen el editor de PCB, las reglas de diseño y el DRC; los valores de clearance de fabricación se contrastan con la capacidad del fabricante, no con el ejemplo.
 
-### Tema 13: Sistemas embebidos: RTOS, buses y firmware
+### Tema 13: Sistemas embebidos: RTOS, buses y firmware · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás estimar utilización de tareas y separar ese cálculo de garantías temporales. **En una frase:** Un sistema embebido ejecuta una tarea dedicada y coordina hardware y software con restricciones de tiempo, memoria y energía. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `embebidos.py`.
@@ -741,7 +741,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [Zephyr: planificación del kernel](https://docs.zephyrproject.org/latest/kernel/services/scheduling/index.html). La documentación describe prioridades, preempción y planificación; garantías temporales de un sistema concreto exigen medir WCET, jitter y bloqueos.
 
-### Tema 14: Programación de bajo nivel: C, memoria y depuración
+### Tema 14: Programación de bajo nivel: C, memoria y depuración · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás codificar una medición de 16 bits y diagnosticar un desacuerdo de endianness. **En una frase:** La programación de bajo nivel controla representación y memoria para implementar firmware y diagnosticar errores cercanos al hardware. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `bajo-nivel.py`.
@@ -794,7 +794,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [Python: módulo `struct`](https://docs.python.org/3/library/struct.html). La tabla de formatos define tamaño y alineación; para C, el contrato equivalente se consulta en la norma del lenguaje y en la documentación del compilador.
 
-### Tema 15: Electromagnetismo: Faraday y líneas de transmisión
+### Tema 15: Electromagnetismo: Faraday y líneas de transmisión · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás estimar tensión inducida y explicar cómo influye el área de un lazo. **En una frase:** El electromagnetismo relaciona cargas, campos y ondas para entender interferencia, antenas y señales rápidas. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `electromagnetismo.py`.
@@ -846,7 +846,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Electricity and Magnetism](https://ocw.mit.edu/courses/8-02-physics-ii-electricity-and-magnetism-spring-2007/). Ley de Faraday, flujo e inducción se desarrollan allí; el comportamiento de una pista rápida exige además simulación electromagnética.
 
-### Tema 16: Gestión profesional: requisitos, riesgos y evidencia
+### Tema 16: Gestión profesional: requisitos, riesgos y evidencia · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás evaluar un criterio de aceptación y documentar cobertura de medida. **En una frase:** La gestión técnica convierte una necesidad en entregables comprobables y decisiones documentadas que un equipo puede mantener. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `gestion.py`.
@@ -899,7 +899,7 @@ Entrega el archivo, salida normal, fallo diagnosticado y resultado de la prácti
 
 **Fuente oficial:** [MIT OpenCourseWare: Fundamentals of Systems Engineering](https://ocw.mit.edu/courses/16-842-fundamentals-of-systems-engineering-fall-2015/). El curso cubre requisitos, verificación y gestión de riesgos; la aceptación formal de un producto se rige además por el contrato y la norma aplicable.
 
-### Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3
+### Tema 17: PLC y control industrial: ciclo de scan e IEC 61131-3 · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás reproducir un interlock de control y verificar una orden de marcha. **En una frase:** Un PLC lee entradas, ejecuta lógica y actualiza salidas cíclicamente para controlar procesos industriales. **Prerrequisitos:** Python, variables, funciones y unidades SI; para temas de señales repasa circuitos y matemáticas. Ubicación: `plc.py`.

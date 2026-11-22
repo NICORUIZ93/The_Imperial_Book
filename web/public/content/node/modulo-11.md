@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Dockerfile multi-stage para Node · Intermedio · 75 min
+### Tema 1: Dockerfile multi-stage para Node · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, npm y Docker instalados; conocimientos básicos de terminal y de la diferencia entre `dependencies` y `devDependencies`.
 
@@ -154,7 +154,7 @@ docker image inspect --format '{{.Size}}' api-multistage:1.0
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** empaqueta una versión de la API que arranque únicamente desde sus artefactos de producción. Ejecuta una prueba de humo contra esa imagen y conserva la evidencia de usuario no root, lockfile y ausencia de herramientas de desarrollo.
 
-### Tema 2: Variables de entorno por ambiente y healthchecks · Intermedio · 70 min
+### Tema 2: Variables de entorno por ambiente y healthchecks · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, npm y Docker; comprensión básica de HTTP y de códigos de estado.
 
@@ -329,7 +329,7 @@ flowchart TD
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** valida las variables de base de datos, almacenamiento e identidad al arrancar. Demuestra por separado una configuración ausente y una dependencia no disponible: la primera impide iniciar; la segunda retira readiness sin convertir liveness en un chequeo de base de datos.
 
-### Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 85 min
+### Tema 3: PM2, contenedores y zero-downtime deploys · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS y npm; nociones de procesos, señales POSIX, HTTP y contenedores. No se necesita un clúster remoto.
 
@@ -495,7 +495,7 @@ VERSION=v2 FAIL_READINESS=false npx pm2 reload entregas-local --update-env
 
 **Transferencia al proyecto integrador «API operativa de entregas»:** implementa un apagado que deje de aceptar confirmaciones nuevas y permita terminar las que están en curso. Diseña el despliegue con al menos dos instancias, readiness antes de admitir tráfico y una versión anterior recuperable; documenta el plazo de drenaje y las migraciones que harían imposible el rollback.
 
-### Tema 4: Nginx como reverse proxy y serverless · Avanzado · 85 min
+### Tema 4: Nginx como reverse proxy y serverless · Avanzado · 45 min
 
 **Prerrequisito:** Node.js LTS, Docker y conocimientos básicos de HTTP, puertos y JSON.
 

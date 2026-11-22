@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket
+### Tema 1: Qué es API Gateway y tipos de API — REST, HTTP, WebSocket · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear el contenedor de API REST que, en los siguientes Temas, va a exponer `confirmar-entrega` (Módulo 5) como endpoint HTTP. Prerrequisitos: Módulo 5 completo.
@@ -60,7 +60,7 @@ Corré `aws apigateway get-rest-apis` y confirmá que "API RutaFlow" aparece en 
 #### Paso 7 · Cierre
 Entregá la creación de la API, el error de ruta inexistente del Paso 5 y la confirmación del Paso 6; explicá qué falta todavía para que `/entregas` responda algo. Siguiente paso: recursos. Errores comunes: exponer rutas internas y no limitar tráfico. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/welcome.html.
 
-### Tema 2: Recursos, métodos y stages
+### Tema 2: Recursos, métodos y stages · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear el recurso `/entregas` con el único método que necesita: `POST`. Prerrequisitos: Tema 1 de este módulo.
@@ -162,7 +162,7 @@ Confirmá con `aws apigateway get-resource --rest-api-id "$API_ID" --resource-id
 #### Paso 7 · Cierre
 Entregá la creación de `/entregas` con `POST`, el `GET` agregado por error y su borrado; explicá por qué `POST` es el verbo correcto acá y no `GET`. Siguiente paso: integraciones. Errores comunes: mezclar stages y verbos; no diagnosticar el `GET` agregado como fallo deliberado antes de borrarlo. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/apigateway-api-definition.html.
 
-### Tema 3: Integración con Lambda (proxy)
+### Tema 3: Integración con Lambda (proxy) · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a conectar `POST /entregas` con la función `confirmar-entrega` del Módulo 5 mediante integración proxy, y a otorgar el permiso que esa conexión necesita de verdad. Prerrequisitos: Tema 2 de este módulo, Módulo 5 completo.
@@ -238,7 +238,7 @@ Pista: comentá mentalmente (o probá de verdad) qué pasaría si NO hubieras co
 Confirmá el permiso ya otorgado con `aws lambda get-policy --function-name confirmar-entrega`, y ubicá dentro del JSON el `Sid: apigw-entregas` con el `Resource` apuntando a tu `API_ID` — esa es la diferencia concreta entre "configurado" y "autorizado".
 #### Paso 7 · Cierre
 Entregá la integración creada, el permiso otorgado y el diagnóstico del error 500 que ocurriría sin ese permiso; explicá por qué ese error no apunta directamente a "falta un permiso". Siguiente paso: modelos. Errores comunes: permisos implícitos y payload incompatible. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html.
-### Tema 4: Mapeo de entrada/salida y validación con modelos
+### Tema 4: Mapeo de entrada/salida y validación con modelos · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a rechazar un comando de entrega malformado en API Gateway mismo, antes de que `confirmar-entrega` siquiera se invoque. Prerrequisitos: Tema 3 de este módulo.
@@ -295,7 +295,7 @@ Confirmá con `aws apigateway get-model --rest-api-id "$API_ID" --model-name Ent
 #### Paso 7 · Cierre
 Entregá el modelo y el validador creados, el 400 del Paso 5 sin invocar la Lambda, y el patrón agregado en el Paso 6; explicá la diferencia entre el 400 de este Tema y el 400 que ya devolvía el propio handler en el Módulo 5. Siguiente paso: despliegue. Errores comunes: validar solo en frontend y aceptar tipos ambiguos. Fuente oficial: https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-method-request-validation.html.
 
-### Tema 5: Despliegue y variables de stage
+### Tema 5: Despliegue y variables de stage · Avanzado · 35 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a publicar `POST /entregas` en un stage real y a probar el endpoint completo de punta a punta. Prerrequisitos: Temas 1-4 de este módulo.

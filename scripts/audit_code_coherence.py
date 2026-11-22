@@ -214,8 +214,8 @@ CREAR_CODIGO = re.compile(
 # comentario dentro del bloque: `// app.ts: arma el servidor`. Ninguno lleva verbo y ambos son ancla.
 ANCLA_RENGOLON = re.compile(r"^\s*(?:[-*]\s*)?`([^`]*\." + EXT + r")`\s*[:—–-]", re.M | re.I)
 ANCLA_COMENTARIO = re.compile(
-    r"^\s*(?://|#|--|/?\*)\s*(?:archivo|fichero|file|ruta|path|script)?\s*[:\-]?\s*"
-    r"([\w./@+-]*\." + EXT + r")\s*[:.\s—–\-]", re.M | re.I)
+    r"^\s*(?://|#|<!--|--|/?\*)\s*(?:archivo|fichero|file|ruta|path|script)?\s*[:\-]?\s*"
+    r"([\w./@+-]*\." + EXT + r")\s*(?:[:.\s—–\-]|$)", re.M | re.I)
 EJEMPLO = re.compile(r"examples/[\w./@+-]+|[\w./@+-]*verify\.sh|[\w./@+-]*verificar\.sh", re.I)
 # AWS escribe archivos locales sin redirección: `aws s3 cp s3://bucket/clave descarga.txt` y
 # `aws lambda invoke … respuesta.json` terminan creando ese archivo. Son destinos, no insumos, así que
@@ -524,7 +524,16 @@ def medir(bloque: dict, previas: set[str], carpetas_previas: set[str],
     # `…/modulo-7/f034-pact-` + renglón nuevo + `consumidor/` es una palabra partida por el salto de
     # línea del markdown: sin reunirla, la cita apunta a una carpeta que no existe.
     citas = re.sub(r"(?<=\w)-\n(?=\w)", "-", texto_sin_fence)
-    for cruce in EJEMPLO.findall(citas):
+    for hallazgo in EJEMPLO.finditer(citas):
+        cruce = hallazgo.group()
+        # Un `examples/...` que el tema manda CREAR no es un puntero a un laboratorio existente:
+        # `Crea **…/PerfilEntrega.java**` es una instrucción, no una cita rota. Tampoco lo es un
+        # patrón con comodín (`f034-pact-*`), que nombra un conjunto, no una ruta.
+        antes = citas[max(0, hallazgo.start() - 60):hallazgo.start()]
+        if re.search(r"\b(?:crea|crear|creas|cread|escribe|escribir|añade|agrega|genera)\b\s+(?:el|la|los|las|un|una|nuevo|nueva)?\s*[*`\-]*$", antes, re.I):
+            continue
+        if citas[hallazgo.end():hallazgo.end() + 1] == "*":
+            continue
         # El punto final de una frase («ejecutá ./mvnw desde examples/java-jpa-lab.») no forma parte del
         # nombre, y un guiño partido por el renglón («f034-pact-\nconsumidor/») deja un prefijo: si ese
         # prefijo identifica un laboratorio único, la cita es buena y el renglón la escribió mal.

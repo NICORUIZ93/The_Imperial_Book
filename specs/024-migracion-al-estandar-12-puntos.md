@@ -38,6 +38,11 @@ de 28 a 34, P12 de 74 a 79 y P1 de 350 a 355 al cerrar los seis temas de `founda
 dos detectores. La intersección sigue siendo cero porque ningún tema de los otros 15 cursos tiene a la vez
 captura real (P8) y fuentes con fecha (P12).
 
+**Medición al 2026-11-21, al cierre del lote de `specs/025`** (informe regenerado
+`docs/auditoria/prompt-maestro-items.json`): P1 360, P2 1317, P3 1421, P4 1283, P5 947, P6 1605,
+P7 1217, P8 40, P9 1543, P10 1101, P11 1291, P12 82. El trinquete de `scripts/check_deuda.py`
+toma como suelo la medición anterior de esta sección; ningún contador retrocedió.
+
 ## 1. Reglas de ejecución
 
 1. **Una ruta por lote** (sección 7). Dentro de la ruta, un capítulo por entrega, y cada entrega se sube a

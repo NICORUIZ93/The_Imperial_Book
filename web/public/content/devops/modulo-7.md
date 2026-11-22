@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Helm charts y values
+### Tema 1: Helm charts y values · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -103,7 +103,7 @@ Ya parametrizas el mismo conjunto de manifiestos para múltiples entornos sin du
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Empaqueta el despliegue del servicio en un chart con valores locales y de prueba. Renderiza ambas configuraciones y comprueba que cambian parámetros previstos sin duplicar los manifiestos completos.
 
-### Tema 2: Ingress Controllers y reglas de enrutamiento
+### Tema 2: Ingress Controllers y reglas de enrutamiento · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -199,7 +199,7 @@ Ya enrutas múltiples servicios HTTP compartiendo un único punto de entrada ext
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Enruta /api hacia el servicio y valida el nombre de host configurado. Prueba una ruta inexistente y conserva la respuesta que permite distinguir un 404 del ingress de uno de la aplicación.
 
-### Tema 3: HorizontalPodAutoscaler
+### Tema 3: HorizontalPodAutoscaler · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -274,7 +274,7 @@ Ya escalas automáticamente según demanda real, con límites explícitos que ev
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Genera carga controlada sobre la API y observa réplicas y métrica de escalado. Al retirar la carga, verifica reducción estable y registra los límites de recursos que condicionan el resultado.
 
-### Tema 4: Probes de liveness y readiness
+### Tema 4: Probes de liveness y readiness · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -384,7 +384,7 @@ Ya distingues cuándo un problema requiere reiniciar un contenedor y cuándo sol
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Distingue proceso vivo de servicio listo para recibir tráfico. Interrumpe una dependencia y demuestra que la política elegida evita un bucle de reinicios sin anunciar disponibilidad falsa.
 
-### Tema 5: RBAC en Kubernetes
+### Tema 5: RBAC en Kubernetes · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -477,7 +477,7 @@ Ya aplicas mínimo privilegio real a las identidades que operan dentro del clús
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Crea una cuenta de despliegue limitada al namespace de prueba. Comprueba con permisos efectivos que puede actualizar el servicio pero no leer secretos ni modificar recursos de otro namespace.
 
-### Tema 6: Service Mesh — Istio, Linkerd, Envoy y mTLS
+### Tema 6: Service Mesh — Istio, Linkerd, Envoy y mTLS · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -572,7 +572,7 @@ Ya entiendes el mecanismo estructural de un service mesh (sidecar compartiendo r
 
 **Transferencia al proyecto integrador «Plataforma de entrega continua»:** Protege la comunicación entre dos servicios de laboratorio mediante identidad de la malla. Prueba un cliente autorizado y otro ajeno, y compara latencia y complejidad con la configuración previa.
 
-### Tema 7: Estrategias de despliegue — Recreate vs RollingUpdate
+### Tema 7: Estrategias de despliegue — Recreate vs RollingUpdate · Avanzado · 25 min
 
 #### Paso 1 · Objetivo y preparación
 

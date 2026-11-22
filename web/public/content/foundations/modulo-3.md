@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: De una URL al servidor: red, DNS, IP y puertos
+### Tema 1: De una URL al servidor: red, DNS, IP y puertos · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a levantar un servidor HTTP local, confirmar con `curl` que responde en el puerto correcto y reproducir el error de conexión rechazada cuando pedís un puerto donde no hay nada escuchando. **Prerrequisitos:** terminal, Python 3 y curl; comprueba `python3 --version` (Windows: `py --version`; en PowerShell usa `curl.exe`).
@@ -136,7 +136,7 @@ Inicia el servidor en un puerto distinto con `python3 -m http.server 8080 --bind
 Entrega la respuesta `200` del Paso 4, el fallo de conexión al puerto equivocado y la verificación del Paso 6 con el servidor en `8080`; explica por qué no hubo una respuesta HTTP y cómo comprobar el puerto usado. Como siguiente paso, en el Tema 2 vas a usar `curl -v` sobre un servidor real para observar el contrato HTTP completo: método, headers, código de estado y cuerpo. Errores comunes: confundir "conexión rechazada" con un error HTTP; asumir que `localhost` necesita consultar DNS público; no verificar en qué puerto quedó escuchando el servidor antes de probarlo. Fuentes oficiales: [documentación de `http.server`](https://docs.python.org/3/library/http.server.html#security-considerations), [MDN Learn](https://developer.mozilla.org/es/docs/Learn) y [WAI](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
 **Implicación práctica:** Diagnosticar "no carga" exige separar tres capas distintas — resolución de nombre, conexión TCP a un puerto y respuesta HTTP — y en desarrollo local casi siempre falla la segunda, no la primera.
 
-### Tema 2: HTTP como contrato observable
+### Tema 2: HTTP como contrato observable · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a usar `curl -v` contra un servidor real para observar línea por línea una petición y una respuesta HTTP completas, y vas a reproducir un `404` real para confirmar que el servidor respondió correctamente aunque el recurso no exista. **Prerrequisitos:** Tema 1 de este módulo.
@@ -288,7 +288,7 @@ Repite el experimento pidiendo el método `HEAD` en vez de `GET` (`curl -v -I ht
 #### Paso 7 · Cierre
 Entrega las respuestas `200` y `404` del Paso 4 con su línea de estado, y la comparación de métodos del Paso 6; explica qué garantiza el código y qué información todavía puede requerir el cuerpo. Como siguiente paso, en el Tema 3 vas a construir el HTML real que un servidor como este sirve, con formularios que un lector de pantalla pueda interpretar. Errores comunes: asumir que una respuesta con cuerpo siempre significa éxito; ignorar el código de estado y confiar solo en que "algo se mostró en pantalla"; no revisar las cabeceras de respuesta al depurar una API. Fuentes oficiales: [semántica HTTP (RFC 9110)](https://www.rfc-editor.org/rfc/rfc9110.html), [MDN Learn](https://developer.mozilla.org/es/docs/Learn) y [WAI](https://www.w3.org/WAI/fundamentals/accessibility-intro/es).
 
-### Tema 3: HTML semántico, formularios y el DOM
+### Tema 3: HTML semántico, formularios y el DOM · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a construir un formulario HTML real y vas a reproducir qué se rompe concretamente cuando un campo no tiene `<label>`: no es solo "menos accesible" en abstracto, es que el valor queda sin nombre para quien lo necesita. **Prerrequisitos:** Tema 2 de este módulo.
@@ -470,7 +470,7 @@ Agregá un segundo campo (`<select id="prioridad" name="prioridad">` con opcione
 Entregá la captura de DevTools con el input sin nombre accesible del Paso 4, la corrección con `label` y `name`, y el segundo campo corregido del Paso 6; explicá qué se rompe en términos concretos (nombre accesible ausente, dato sin clave al enviarse) cuando falta un `label`, no solo que "es menos accesible". Como siguiente paso, en el Tema 4 vas a darle estilos responsive a este mismo formulario y vas a verificar que el contraste de color no excluya a quien ya podés identificar por nombre accesible. Errores comunes: usar solo el `placeholder` como si fuera un label; relacionar un `label` con un `id` que no coincide exactamente; omitir `name` en inputs que después se envían a un servidor. Fuentes oficiales: https://developer.mozilla.org/es/docs/Learn y https://www.w3.org/WAI/fundamentals/accessibility-intro/es.
 **Implicación práctica:** Un campo sin nombre accesible no es un detalle visual: para quien usa lector de pantalla directamente no existe, y para un backend que lee `name`, su valor directamente no llega.
 
-### Tema 4: CSS, layout responsive y accesibilidad verificable
+### Tema 4: CSS, layout responsive y accesibilidad verificable · Básico · 45 min
 
 **Qué es maquetación (y por qué es la puerta de entrada al frontend):** en la industria de habla hispana, se llama **maquetación** (o "maquetado") al trabajo de convertir un diseño visual (una imagen, un boceto, un archivo de Figma) en una página real con HTML semántico (Tema 3) y CSS que la organiza en pantalla: qué va arriba, qué al lado, cómo se reordena en un celular, qué contraste de color cumple accesibilidad. Maquetar no es "hacer que se vea bien": es un ejercicio de estructura — primero el contenido con sentido (HTML), después su presentación y disposición espacial (CSS). Cualquier framework de frontend (Angular, React, Vue) termina produciendo HTML y CSS reales en el navegador; por eso maquetar a mano, sin depender de un framework, es el fundamento que distingue a quien solo copia componentes de quien entiende por qué un layout se rompe y cómo corregirlo.
 
@@ -660,7 +660,7 @@ Fases:
 
 ## Laboratorio de transferencia
 
-### Tema 5: Proyecto integrador — sitio de seguimiento accesible
+### Tema 5: Proyecto integrador — sitio de seguimiento accesible · Básico · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar construirás una página de seguimiento con un formulario etiquetado y dos columnas que se adaptan al espacio. **Prerrequisitos:** guardar archivos y ejecutar Python; no necesitas JavaScript ni un framework. Es un ejemplo independiente desde una carpeta vacía.

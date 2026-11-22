@@ -10,7 +10,7 @@
     </nav>
   </header>
 
-  <main class="curriculum-main">
+  <main id="main-content" class="curriculum-main">
     <p class="breadcrumbs"><a routerLink="/temario"><lucide-icon [img]="icons.ArrowLeft" /> Todas las rutas</a><span aria-hidden="true">/</span>{{ stackName() }}</p>
 
     <ng-container *ngIf="summary() as stackSummary; else unavailable">
@@ -18,8 +18,8 @@
         <p class="eyebrow">Temario de la ruta</p>
         <h1 id="stack-title">{{ stackName() }}</h1>
         <p class="curriculum-intro">
-          Cada tema abre su lección. Si un tema coincide con un libro de la biblioteca, verás el libro
-          y la página como referencia.
+          Cada tema abre su lección. Cuando un tema tiene referencias bibliográficas, se muestran
+          debajo del título.
         </p>
         <div class="curriculum-stats" aria-label="Cobertura de esta ruta">
           <div><strong>{{ number(stackSummary.currentTopicCount) }}</strong><span>temas con lección</span></div>
@@ -78,8 +78,8 @@
               <div class="topic-heading">
                 <h3>{{ item.topic.title }}</h3>
               </div>
-              <p class="topic-placement">
-                {{ moduleLabel(item.topic.current!.module) }}
+              <p class="topic-placement" *ngIf="item.topic.current as current">
+                {{ moduleLabel(current.module) }}
               </p>
               <div class="topic-actions">
                 <a *ngIf="topicLink(item.topic) as link" [routerLink]="link">Abrir lección <span aria-hidden="true">↗</span></a>

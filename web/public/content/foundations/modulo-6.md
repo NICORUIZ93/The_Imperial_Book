@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Activos, amenazas, riesgos y límites de confianza
+### Tema 1: Activos, amenazas, riesgos y límites de confianza · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a producir el primer artefacto de una auditoría de seguridad real: un registro de riesgos STRIDE para RutaFlow y un verificador de límites de confianza. El registro no es una lista de miedos: cada fila tendrá activo, escenario, impacto, probabilidad, control, efectividad, propietario y tratamiento, y el verificador rechazará el archivo si falta cualquiera de esos datos o si un flujo cruza una zona sin límite declarado.
@@ -269,7 +269,7 @@ Conectá el resultado con el proyecto integrador Fundamentos: `ALLOWED_TRANSITIO
 #### Paso 7 · Cierre
 Entregá el registro ordenado, el verificador de límites, el error controlado del Paso 5 y el registro ampliado del Paso 6. Explicá por qué `S-02` supera a `T-01` en prioridad y por qué el riesgo residual de `T-01` sigue siendo 6 aunque `ALLOWED_TRANSITIONS` esté implementado. **Errores comunes:** listar amenazas sin escenario concreto, asignar efectividad 1,0, olvidar actores internos y dibujar flujos sin declarar límites. **Autoevaluación:** ¿qué diferencia hay entre riesgo inherente y residual? (el residual es lo que queda tras el control); ¿por qué una amenaza sin dueño es deuda y no un dato? (nadie la controla ni acepta el residual); ¿qué flujo no necesita límite? (el que no cruza zonas). **Fuentes oficiales:** https://cheatsheetseries.owasp.org/cheatsheets/Threat_Modeling_Cheat_Sheet.html y https://learn.microsoft.com/es-es/azure/security/develop/threat-modeling-tool-threats. Siguiente paso: separar autenticación de autorización y construir el registro de accesos del Tema 2.
 
-### Tema 2: Identidad, contraseñas, sesiones y autorización
+### Tema 2: Identidad, contraseñas, sesiones y autorización · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a implementar y auditar el control de acceso de RutaFlow: registrar contraseñas sin guardarlas en claro, emitir sesiones que expiran y se revocan, autorizar una acción sobre un recurso concreto y dejar un rastro verificable de lo ocurrido. El entregable es un programa que demuestra los seis casos que importan —conductor asignado, conductor ajeno, anónimo, administrador, sesión vencida y sesión revocada— y un registro de auditoría encadenado que detecta si alguien alteró el historial.
@@ -575,7 +575,7 @@ Criterios de aceptación: la matriz cubre los seis casos con su salida; la caden
 #### Paso 7 · Cierre
 Entregá la salida del control de acceso, la cadena de auditoría con sus dos fallos detectados, el fallo de autorización por objeto y la matriz ampliada. Explicá por qué la autenticación correcta no impide el fraude de `c-999`, por qué la cadena no protege contra un atacante que la recalcula y por qué el evento denegado también se audita. **Errores comunes:** comparar contraseñas con `==`, usar SHA-256 para contraseñas, devolver mensajes distintos para usuario inexistente y contraseña incorrecta, confiar en el rol sin comprobar el recurso, y guardar tokens en `localStorage` sin expiración ni revocación. **Autoevaluación:** ¿qué control impide que `c-999` confirme `RF-4471`? (la autorización por objeto, no la autenticación); ¿qué hace revocable una sesión? (estado del lado del servidor); ¿qué falta para que la cadena de hashes sea evidencia frente a un atacante con control total? (anclar el hash final fuera del sistema). **Fuentes oficiales:** https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html y https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html. Siguiente paso: proteger el comando en tránsito y gestionar claves y secretos en el Tema 3.
 
-### Tema 3: Criptografía aplicada, TLS, claves y secretos
+### Tema 3: Criptografía aplicada, TLS, claves y secretos · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a proteger el comando de confirmación de RutaFlow con una firma HMAC que detecte manipulación y replay, a verificar de verdad el certificado TLS de un servidor local —incluido el nombre de host— y a comprobar por qué borrar un secreto del árbol de trabajo no lo borra del historial de Git. Los tres artefactos son ejecutables y sus salidas quedan registradas.
@@ -939,7 +939,7 @@ Criterios de aceptación: la rotación acepta ambas claves durante el solapamien
 #### Paso 7 · Cierre
 Entregá la firma válida con sus cuatro rechazos, la verificación TLS con nombre de host y CA, el secreto que sobrevive al borrado y el plan de rotación. Explicá por qué el orden de verificación (firma, ventana, nonce) importa, por qué TLS no reemplaza la firma del mensaje y por qué rotar es distinto de borrar. **Errores comunes:** guardar la clave junto al dato, desactivar la verificación de TLS para "que funcione", confundir Base64 con cifrado, reutilizar el mismo nonce, y creer que borrar un archivo del último commit elimina el secreto. **Autoevaluación:** ¿qué detecta un HMAC que un hash simple no detecta? (autenticidad: exige el secreto); ¿qué dos comprobaciones hace TLS además de cifrar? (cadena de confianza y nombre de host); ¿cuál es el primer paso ante un secreto filtrado? (revocar y rotar, no borrar). **Fuentes oficiales:** https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html y https://www.rfc-editor.org/rfc/rfc2104. Siguiente paso: validar entradas, neutralizar inyección y definir la respuesta a incidentes en el Tema 4.
 
-### Tema 4: Validación, vulnerabilidades web, privacidad y respuesta
+### Tema 4: Validación, vulnerabilidades web, privacidad y respuesta · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a endurecer el campo de nota que un conductor escribe al entregar un envío: validar su dominio al guardar, impedir que una consulta concatenada se convierta en inyección SQL, codificar la salida según el contexto donde se muestra y redactar datos personales antes de escribirlos en un log. Cerrás con el runbook de respuesta que convierte estos controles en un procedimiento cuando algo falla.
@@ -1194,7 +1194,7 @@ Criterios de aceptación: los payloads devuelven cero filas en la versión param
 #### Paso 7 · Cierre
 Entregá las cuatro salidas, la inyección que devuelve dos filas y el runbook con sus seis fases. Explicá por qué validar no es lo mismo que escapar, por qué la parametrización corrige la estructura y por qué la redacción no es anonimización. **Errores comunes:** concatenar entrada en SQL, usar `innerHTML` con datos de terceros, escapar HTML para una cadena JavaScript, validar solo en el navegador, registrar la petición completa y creer que un WAF corrige una consulta mal armada. **Autoevaluación:** ¿qué capa impide el `UNION`? (la consulta parametrizada); ¿qué herramienta corresponde a una cadena JavaScript? (`json.dumps`, no `html.escape`); ¿qué fase del incidente preserva evidencia antes de reiniciar? (contención y preservación, antes de erradicar). **Fuentes oficiales:** https://cheatsheetseries.owasp.org/cheatsheets/Cross_Site_Scripting_Prevention_Cheat_Sheet.html y https://cheatsheetseries.owasp.org/cheatsheets/SQL_Injection_Prevention_Cheat_Sheet.html. Siguiente paso: reconocer ingeniería social y phishing, y cerrar la auditoría del módulo en el Tema 5.
 
-### Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo
+### Tema 5: Ingeniería social, phishing y respuesta: analizar el correo, no solo mirarlo · Avanzado · 45 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a analizar un correo sospechoso con código: comparar el remitente visible con las cabeceras reales, detectar enlaces cuyo destino no coincide con el texto, distinguir un dominio parecido de uno legítimo por su dominio registrable, interpretar el resultado de SPF, DKIM y DMARC y medir el efecto de una campaña de concienciación sin inventar conclusiones con muestras pequeñas. Cerrás el módulo uniendo estas piezas en la auditoría de seguridad de RutaFlow.

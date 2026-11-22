@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: kotlin.test en commonTest
+### Tema 1: kotlin.test en commonTest · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un test en `commonTest` que verifique `ObtenerTareasPendientesUseCase` (Módulo 4) una sola vez y lo ejecutes contra el target Android y el target iOS sin duplicar código. Prerrequisitos: JDK 25 y el Gradle Wrapper del proyecto (módulo 0, «Antes de comenzar»; comprueba con `./gradlew --version`).
@@ -79,7 +79,7 @@ Corregí el Paso 5 eliminando las dos suites duplicadas específicas de platafor
 Entregá el test en `commonTest` del Paso 4, la triple duplicación detectada en el Paso 5, y la eliminación de las suites redundantes del Paso 6; explicá por qué una prueba de lógica compartida vive naturalmente en `commonTest` y no en cada plataforma. Siguiente paso: reemplazá cualquier mock específico de JVM por un fake compatible con todos los targets. Errores comunes: escribir el mismo test por separado en cada plataforma "por las dudas", no ejecutar `allTests` contra ambos targets antes de confiar en un cambio, y dejar pruebas obsoletas verdes que ya no reflejan el comportamiento real. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/api/latest/kotlin.test/.
 **Implicación práctica:** Las pruebas compartidas reducen duplicación y detectan regresiones en todas las plataformas.
 
-### Tema 2: Fakes en vez de mocks
+### Tema 2: Fakes en vez de mocks · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a reemplazar un mock generado dinámicamente por un `TareaRepositoryFake` escrito a mano, compatible con cualquier target de Kotlin Multiplatform. Prerrequisitos: Tema 1 de este módulo.
@@ -145,7 +145,7 @@ Corregí el Paso 5 quitando esa dependencia del módulo `shared` y restaurando e
 Entregá el fake del Paso 4, el fallo de compilación de iOS del Paso 5, y la corrección del Paso 6; explicá por qué una dependencia de testing "conveniente" en un módulo `shared` puede bloquear la compilación de un target completo. Siguiente paso: usá `runTest` para probar específicamente la parte asíncrona de ese mismo repositorio. Errores comunes: agregar dependencias de testing específicas de JVM al módulo `shared`, escribir fakes con lógica tan compleja que necesitan sus propias pruebas, y no verificar la compilación de todos los targets después de agregar una dependencia nueva. Fuentes oficiales: https://kotlinlang.org/docs/multiplatform-run-tests.html y https://kotlinlang.org/docs/multiplatform-set-up-targets.html.
 **Implicación práctica:** Un fake escrito a mano es código Kotlin ordinario compatible con todos los targets, mientras que un mock generado dinámicamente depende de mecanismos específicos de la JVM que pueden bloquear la compilación completa de un target como iOS.
 
-### Tema 3: runTest para coroutines
+### Tema 3: runTest para coroutines · Avanzado · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a escribir un test con `runTest` que verifique una función `suspend` con `delay()` interno, corriendo instantáneamente en tiempo real. Prerrequisitos: Tema 2 de este módulo.

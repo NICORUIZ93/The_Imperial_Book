@@ -5,7 +5,7 @@
 
 Cada tema verifica su garantía con navegación real (`RouterTestingHarness` oficial de Angular): el orden real del array de rutas, la invocación directa de un guard como función pura, un espía real confirmando que `loadComponent` no descarga hasta navegar, y el input binding real de parámetros de ruta.
 
-### Tema 1: Router config con rutas standalone
+### Tema 1: Router config con rutas standalone · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -167,7 +167,7 @@ Ya confirmas, con navegación real del router de Angular, que el orden del array
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Define rutas para lista, detalle y asignación de entregas. Abre directamente una URL de detalle y comprueba que una guía inexistente presenta recuperación hacia la lista.
 
-### Tema 2: Guards funcionales
+### Tema 2: Guards funcionales · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -309,7 +309,7 @@ Ya confirmas, invocando un guard funcional directamente como función pura, la v
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Impide entrar al panel operativo sin sesión mediante un guard funcional. Prueba también una petición directa a la API: la autorización debe mantenerse aunque el navegador omita el guard.
 
-### Tema 3: Lazy loading con loadComponent
+### Tema 3: Lazy loading con loadComponent · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -444,7 +444,7 @@ Ya confirmas, con un espía real sobre la función de importación dinámica, qu
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Carga la pantalla de administración bajo demanda. Inspecciona la red al abrir únicamente seguimiento y verifica que ese recorrido no descarga el componente administrativo.
 
-### Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing
+### Tema 4: Parámetros de ruta, query params y capacidades avanzadas de routing · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -599,7 +599,7 @@ Ya confirmas, navegando con `RouterTestingHarness` hacia una URL con parámetro 
 
 ## Laboratorio de transferencia
 
-### Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización
+### Tema 5: CanDeactivate: proteger un borrador sin confundir navegación con autorización · Intermedio · 25 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar protegerás texto sin guardar al navegar a otra ruta y comprobarás las dos decisiones de salida. **Prerrequisitos:** componentes standalone, signals, eventos y Router. Node compatible con Angular 21 y npm. Es un ejemplo independiente desde un proyecto nuevo.

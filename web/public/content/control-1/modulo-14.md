@@ -10,11 +10,11 @@ Después de que pasa el transitorio, ¿la salida llega exactamente a la referenc
 
 ## Aprende construyendo
 
-### Tema 1: Fórmula general del error en estado estacionario
+### Tema 1: Fórmula general del error en estado estacionario · Intermedio · 45 min
 
 **¿Por qué es importante?** El error final dice si el sistema llega exactamente a la referencia, que es lo que más le importa a quien usa el sistema.
 
-**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID) y [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control) y [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 \[e_{ss} = \lim_{s\to0}\, s\,\frac{R(s)}{1+G(s)}\]
 
@@ -143,11 +143,11 @@ cambia `G` a `10/(s*(s+2))` y `R` a `1/s**2` (rampa) y confirma \(e_{ss}=1/5\) (
 
 **Límite:** esta fórmula exige confirmar primero que el lazo cerrado es estable; en el Ejemplo 5 de este tema el número que da el límite (\(1/4\)) es engañoso porque el sistema en lazo cerrado en realidad es inestable — el error final no tiene sentido físico ahí.
 
-### Tema 2: Tipo de sistema y constantes
+### Tema 2: Tipo de sistema y constantes · Intermedio · 45 min
 
 **¿Por qué es importante?** El tipo de sistema y las constantes \(K_p\), \(K_v\), \(K_a\) te dicen el error sin simular y orientan qué acción de control agregar.
 
-**Fuentes oficiales:** [Controladores PID, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID) y [Análisis de sistemas, Control Tutorials (U. de Michigan)](https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis).
+**Fuentes oficiales:** [Controladores PID, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/PID_Control) y [Análisis de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/Dynamic_Behavior).
 
 Escribe \(G(s) = \dfrac{K(s+z_1)\cdots}{s^N(s+p_1)\cdots}\). El **tipo** es \(N\): cuántos integradores puros tiene.
 

@@ -4,7 +4,7 @@
   "curso": "todos",
   "temas": {
     "con_region": 772,
-    "con_fecha": 9,
+    "con_fecha": 8,
     "sin_fecha": 693,
     "sin_enlace": 5,
     "caducos": 0,
@@ -12,9 +12,9 @@
     "locales": 0,
     "porcentaje_sin_fecha": 43.4
   },
-  "urls_distintas": 1182,
+  "urls_distintas": 1181,
   "urls_sin_comprobar": 0,
-  "urls_rotas": 39,
+  "urls_rotas": 0,
   "urls": {
     "https://12factor.net/": {
       "estado": 200,
@@ -421,6 +421,11 @@
       "final": "https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html",
       "comprobada": "2026-11-21"
     },
+    "https://books.google.com/books?vid=ISBN9780030940705": {
+      "estado": 200,
+      "final": "https://books.google.com.co/books?vid=ISBN9780030940705&redir_esc=y",
+      "comprobada": "2026-11-21"
+    },
     "https://c4model.com/": {
       "estado": 200,
       "final": "https://c4model.com/",
@@ -431,9 +436,9 @@
       "final": "https://central.sonatype.com/artifact/io.temporal/temporal-spring-boot-starter",
       "comprobada": "2026-11-21"
     },
-    "https://central.sonatype.org/publish/": {
-      "estado": 404,
-      "final": "https://central.sonatype.org/publish/",
+    "https://central.sonatype.org/publish/publish-portal-guide/": {
+      "estado": 200,
+      "final": "https://central.sonatype.org/publish/publish-portal-guide/",
       "comprobada": "2026-11-21"
     },
     "https://cheatsheetseries.owasp.org/": {
@@ -524,36 +529,6 @@
     "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf": {
       "estado": 200,
       "final": "https://cs.brown.edu/courses/csci1810/fall-2023/resources/ch2_readings/kmp_strings.pdf",
-      "comprobada": "2026-11-21"
-    },
-    "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency": {
-      "estado": 403,
-      "final": "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlFrequency",
-      "comprobada": "2026-11-21"
-    },
-    "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID": {
-      "estado": 403,
-      "final": "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlPID",
-      "comprobada": "2026-11-21"
-    },
-    "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus": {
-      "estado": 403,
-      "final": "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlRootLocus",
-      "comprobada": "2026-11-21"
-    },
-    "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace": {
-      "estado": 403,
-      "final": "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=ControlStateSpace",
-      "comprobada": "2026-11-21"
-    },
-    "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis": {
-      "estado": 403,
-      "final": "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemAnalysis",
-      "comprobada": "2026-11-21"
-    },
-    "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling": {
-      "estado": 403,
-      "final": "https://ctms.engin.umich.edu/CTMS/index.php?example=Introduction&section=SystemModeling",
       "comprobada": "2026-11-21"
     },
     "https://cwe.mitre.org/": {
@@ -684,26 +659,6 @@
     "https://dev.java/learn/interfaces/": {
       "estado": 200,
       "final": "https://dev.java/learn/interfaces/",
-      "comprobada": "2026-11-21"
-    },
-    "https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html": {
-      "estado": 403,
-      "final": "https://dev.mysql.com/doc/refman/8.0/en/gis-wkt-functions.html",
-      "comprobada": "2026-11-21"
-    },
-    "https://dev.mysql.com/doc/refman/8.0/en/spatial-convenience-functions.html": {
-      "estado": 403,
-      "final": "https://dev.mysql.com/doc/refman/8.0/en/spatial-convenience-functions.html",
-      "comprobada": "2026-11-21"
-    },
-    "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html": {
-      "estado": 403,
-      "final": "https://dev.mysql.com/doc/refman/8.0/en/spatial-type-overview.html",
-      "comprobada": "2026-11-21"
-    },
-    "https://dev.mysql.com/doc/refman/8.4/en/spatial-index-optimization.html": {
-      "estado": 403,
-      "final": "https://dev.mysql.com/doc/refman/8.4/en/spatial-index-optimization.html",
       "comprobada": "2026-11-21"
     },
     "https://developer.android.com/build/dependencies": {
@@ -941,19 +896,14 @@
       "final": "https://developer.apple.com/documentation/storekit/in-app-purchase",
       "comprobada": "2026-11-21"
     },
-    "https://developer.apple.com/documentation/storekit/in-app_purchase/testing-in-app-purchases-with-sandbox": {
-      "estado": 404,
-      "final": "https://developer.apple.com/documentation/storekit/in-app_purchase/testing-in-app-purchases-with-sandbox",
+    "https://developer.apple.com/documentation/storekit/testing-in-app-purchases-with-sandbox": {
+      "estado": 200,
+      "final": "https://developer.apple.com/documentation/storekit/testing-in-app-purchases-with-sandbox",
       "comprobada": "2026-11-21"
     },
     "https://developer.apple.com/documentation/swift": {
       "estado": 200,
       "final": "https://developer.apple.com/documentation/swift",
-      "comprobada": "2026-11-21"
-    },
-    "https://developer.apple.com/documentation/swift/automaticreferencecounting": {
-      "estado": 404,
-      "final": "https://developer.apple.com/documentation/swift/automaticreferencecounting",
       "comprobada": "2026-11-21"
     },
     "https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes": {
@@ -971,24 +921,9 @@
       "final": "https://developer.apple.com/documentation/swift/concurrency",
       "comprobada": "2026-11-21"
     },
-    "https://developer.apple.com/documentation/swift/generics": {
-      "estado": 404,
-      "final": "https://developer.apple.com/documentation/swift/generics",
-      "comprobada": "2026-11-21"
-    },
     "https://developer.apple.com/documentation/swift/optional": {
       "estado": 200,
       "final": "https://developer.apple.com/documentation/swift/optional",
-      "comprobada": "2026-11-21"
-    },
-    "https://developer.apple.com/documentation/swift/protocol": {
-      "estado": 404,
-      "final": "https://developer.apple.com/documentation/swift/protocol",
-      "comprobada": "2026-11-21"
-    },
-    "https://developer.apple.com/documentation/swift/switch": {
-      "estado": 404,
-      "final": "https://developer.apple.com/documentation/swift/switch",
       "comprobada": "2026-11-21"
     },
     "https://developer.apple.com/documentation/swift/task": {
@@ -1086,9 +1021,9 @@
       "final": "https://developer.apple.com/documentation/vision/recognizing-text-in-images",
       "comprobada": "2026-11-21"
     },
-    "https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-swift-code": {
-      "estado": 404,
-      "final": "https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-swift-code",
+    "https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-shipping-app": {
+      "estado": 200,
+      "final": "https://developer.apple.com/documentation/xcode/analyzing-the-performance-of-your-shipping-app",
       "comprobada": "2026-11-21"
     },
     "https://developer.apple.com/documentation/xcode/building-your-app-to-include-debugging-information": {
@@ -1391,9 +1326,24 @@
       "final": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Cookies",
       "comprobada": "2026-11-21"
     },
+    "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Content_negotiation": {
+      "estado": 200,
+      "final": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Guides/Content_negotiation",
+      "comprobada": "2026-11-21"
+    },
     "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status": {
       "estado": 200,
       "final": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status",
+      "comprobada": "2026-11-21"
+    },
+    "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/406": {
+      "estado": 200,
+      "final": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/406",
+      "comprobada": "2026-11-21"
+    },
+    "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/415": {
+      "estado": 200,
+      "final": "https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/415",
       "comprobada": "2026-11-21"
     },
     "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Memory_management": {
@@ -1501,11 +1451,6 @@
       "final": "https://developer.mozilla.org/es/docs/Web/API/WebSockets_API",
       "comprobada": "2026-11-21"
     },
-    "https://developer.mozilla.org/es/docs/Web/HTTP/Content_negotiation": {
-      "estado": 404,
-      "final": "https://developer.mozilla.org/es/docs/Web/HTTP/Content_negotiation",
-      "comprobada": "2026-11-21"
-    },
     "https://developer.mozilla.org/es/docs/Web/HTTP/Cookies": {
       "estado": 200,
       "final": "https://developer.mozilla.org/es/docs/Web/HTTP/Guides/Cookies",
@@ -1551,19 +1496,9 @@
       "final": "https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Status/404",
       "comprobada": "2026-11-21"
     },
-    "https://developer.mozilla.org/es/docs/Web/HTTP/Status/406": {
-      "estado": 404,
-      "final": "https://developer.mozilla.org/es/docs/Web/HTTP/Status/406",
-      "comprobada": "2026-11-21"
-    },
     "https://developer.mozilla.org/es/docs/Web/HTTP/Status/413": {
       "estado": 200,
       "final": "https://developer.mozilla.org/es/docs/Web/HTTP/Reference/Status/413",
-      "comprobada": "2026-11-21"
-    },
-    "https://developer.mozilla.org/es/docs/Web/HTTP/Status/415": {
-      "estado": 404,
-      "final": "https://developer.mozilla.org/es/docs/Web/HTTP/Status/415",
       "comprobada": "2026-11-21"
     },
     "https://developer.mozilla.org/es/docs/Web/HTTP/Status/500": {
@@ -1916,14 +1851,9 @@
       "final": "https://docs.flutter.dev/interop/bind-native-code",
       "comprobada": "2026-11-21"
     },
-    "https://docs.flutter.dev/platform-integration/ios/ios-faq": {
-      "estado": 404,
-      "final": "https://docs.flutter.dev/platform-integration/ios/ios-faq",
-      "comprobada": "2026-11-21"
-    },
-    "https://docs.flutter.dev/platform-integration/ios/platform-adaptations": {
-      "estado": 404,
-      "final": "https://docs.flutter.dev/platform-integration/ios/platform-adaptations",
+    "https://docs.flutter.dev/platform-integration/ios/apple-frameworks": {
+      "estado": 200,
+      "final": "https://docs.flutter.dev/platform-integration/ios/apple-frameworks",
       "comprobada": "2026-11-21"
     },
     "https://docs.flutter.dev/platform-integration/legacy-ffi-plugin": {
@@ -1969,6 +1899,11 @@
     "https://docs.flutter.dev/ui/accessibility-and-internationalization/internationalization": {
       "estado": 200,
       "final": "https://docs.flutter.dev/ui/internationalization",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.flutter.dev/ui/adaptive-responsive/platform-adaptations": {
+      "estado": 200,
+      "final": "https://docs.flutter.dev/ui/adaptive-responsive/platform-adaptations",
       "comprobada": "2026-11-21"
     },
     "https://docs.flutter.dev/ui/animations": {
@@ -2194,6 +2129,26 @@
     "https://docs.npmjs.com/creating-and-publishing-scoped-public-packages": {
       "estado": 200,
       "final": "https://docs.npmjs.com/creating-and-publishing-scoped-public-packages/",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/gis-wkt-functions.html": {
+      "estado": 200,
+      "final": "https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/gis-wkt-functions.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/spatial-convenience-functions.html": {
+      "estado": 200,
+      "final": "https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/spatial-convenience-functions.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/spatial-type-overview.html": {
+      "estado": 200,
+      "final": "https://docs.oracle.com/cd/E17952_01/mysql-8.0-en/spatial-type-overview.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.oracle.com/cd/E17952_01/mysql-8.4-en/spatial-index-optimization.html": {
+      "estado": 200,
+      "final": "https://docs.oracle.com/cd/E17952_01/mysql-8.4-en/spatial-index-optimization.html",
       "comprobada": "2026-11-21"
     },
     "https://docs.oracle.com/en/java/javase/25/docs/api/java.base/java/io/BufferedReader.html": {
@@ -2534,11 +2489,6 @@
     "https://docs.python.org/es/3/tutorial/classes.html": {
       "estado": 200,
       "final": "https://docs.python.org/es/3/tutorial/classes.html",
-      "comprobada": "2026-11-21"
-    },
-    "https://docs.python.org/es/3/tutorial/classes.html#inheritance": {
-      "estado": 200,
-      "final": "https://docs.python.org/es/3/tutorial/classes.html#inheritance",
       "comprobada": "2026-11-21"
     },
     "https://docs.python.org/es/3/tutorial/controlflow.html": {
@@ -3261,6 +3211,11 @@
       "final": "https://docs.stripe.com/api/idempotent_requests",
       "comprobada": "2026-11-21"
     },
+    "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting/": {
+      "estado": 200,
+      "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/automaticreferencecounting/",
+      "comprobada": "2026-11-21"
+    },
     "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/classesandstructures/": {
       "estado": 200,
       "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/classesandstructures/",
@@ -3276,14 +3231,29 @@
       "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/concurrency/",
       "comprobada": "2026-11-21"
     },
+    "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/controlflow/": {
+      "estado": 200,
+      "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/controlflow/",
+      "comprobada": "2026-11-21"
+    },
     "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/enumerations/": {
       "estado": 200,
       "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/enumerations/",
       "comprobada": "2026-11-21"
     },
-    "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/the-basics/#Optionals": {
-      "estado": 404,
-      "final": "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/the-basics/#Optionals",
+    "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/generics/": {
+      "estado": 200,
+      "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/generics/",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/": {
+      "estado": 200,
+      "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/protocols/",
+      "comprobada": "2026-11-21"
+    },
+    "https://docs.swift.org/swift-book/documentation/the-swift-programming-language/thebasics/#Optionals": {
+      "estado": 200,
+      "final": "https://docs.swift.org/latest/documentation/the-swift-programming-language/thebasics/",
       "comprobada": "2026-11-21"
     },
     "https://docs.sympy.org/latest/modules/polys/reference.html": {
@@ -3441,9 +3411,39 @@
       "final": "https://fastify.dev/docs/latest/Reference/Validation-and-Serialization/",
       "comprobada": "2026-11-21"
     },
+    "https://fbswiki.org/wiki/index.php/Dynamic_Behavior": {
+      "estado": 200,
+      "final": "https://fbswiki.org/wiki/index.php/Dynamic_Behavior",
+      "comprobada": "2026-11-21"
+    },
     "https://fbswiki.org/wiki/index.php/Feedback_Systems:_An_Introduction_for_Scientists_and_Engineers": {
       "estado": 200,
       "final": "https://fbswiki.org/wiki/index.php/Feedback_Systems:_An_Introduction_for_Scientists_and_Engineers",
+      "comprobada": "2026-11-21"
+    },
+    "https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis": {
+      "estado": 200,
+      "final": "https://fbswiki.org/wiki/index.php/Frequency_Domain_Analysis",
+      "comprobada": "2026-11-21"
+    },
+    "https://fbswiki.org/wiki/index.php/Frequency_Domain_Design": {
+      "estado": 200,
+      "final": "https://fbswiki.org/wiki/index.php/Frequency_Domain_Design",
+      "comprobada": "2026-11-21"
+    },
+    "https://fbswiki.org/wiki/index.php/PID_Control": {
+      "estado": 200,
+      "final": "https://fbswiki.org/wiki/index.php/PID_Control",
+      "comprobada": "2026-11-21"
+    },
+    "https://fbswiki.org/wiki/index.php/State_Feedback": {
+      "estado": 200,
+      "final": "https://fbswiki.org/wiki/index.php/State_Feedback",
+      "comprobada": "2026-11-21"
+    },
+    "https://fbswiki.org/wiki/index.php/System_Modeling": {
+      "estado": 200,
+      "final": "https://fbswiki.org/wiki/index.php/System_Modeling",
       "comprobada": "2026-11-21"
     },
     "https://firebase.google.com/docs/cloud-messaging": {
@@ -3586,9 +3586,19 @@
       "final": "https://github.com/panva/jose",
       "comprobada": "2026-11-21"
     },
+    "https://github.com/pmndrs/jotai": {
+      "estado": 200,
+      "final": "https://github.com/pmndrs/jotai",
+      "comprobada": "2026-11-21"
+    },
     "https://github.com/pngjs/pngjs": {
       "estado": 200,
       "final": "https://github.com/pngjs/pngjs",
+      "comprobada": "2026-11-21"
+    },
+    "https://github.com/postmanlabs/newman": {
+      "estado": 200,
+      "final": "https://github.com/postmanlabs/newman",
       "comprobada": "2026-11-21"
     },
     "https://github.com/postmanlabs/newman#newman-run-options": {
@@ -3711,9 +3721,9 @@
       "final": "https://jakarta.ee/specifications/persistence/3.2/apidocs/jakarta.persistence/jakarta/persistence/ManyToOne.html",
       "comprobada": "2026-11-21"
     },
-    "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph": {
-      "estado": 404,
-      "final": "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/entitygraph",
+    "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/EntityGraph.html": {
+      "estado": 200,
+      "final": "https://jakarta.ee/specifications/persistence/4.0/apidocs/jakarta.persistence/jakarta/persistence/EntityGraph.html",
       "comprobada": "2026-11-21"
     },
     "https://java.testcontainers.org/modules/databases/mysql/": {
@@ -3739,11 +3749,6 @@
     "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/": {
       "estado": 200,
       "final": "https://java.testcontainers.org/test_framework_integration/manual_lifecycle_control/",
-      "comprobada": "2026-11-21"
-    },
-    "https://jotai.org/docs/introduction": {
-      "estado": "error: URLError",
-      "final": "https://jotai.org/docs/introduction",
       "comprobada": "2026-11-21"
     },
     "https://kafka.apache.org/28/design/design/": {
@@ -3796,14 +3801,14 @@
       "final": "https://kotlinlang.org/api/core/kotlin-stdlib/kotlin.time/-clock/",
       "comprobada": "2026-11-21"
     },
+    "https://kotlinlang.org/api/core/kotlin-stdlib/kotlinx.cinterop/use-pinned.html": {
+      "estado": 200,
+      "final": "https://kotlinlang.org/api/core/kotlin-stdlib/kotlinx.cinterop/use-pinned.html",
+      "comprobada": "2026-11-21"
+    },
     "https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-test/": {
       "estado": 200,
       "final": "https://kotlinlang.org/api/kotlinx.coroutines/kotlinx-coroutines-test/",
-      "comprobada": "2026-11-21"
-    },
-    "https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.native/-pinned/": {
-      "estado": 404,
-      "final": "https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.native/-pinned/",
       "comprobada": "2026-11-21"
     },
     "https://kotlinlang.org/api/latest/kotlin.test/": {
@@ -3866,11 +3871,6 @@
       "final": "https://kotlinlang.org/docs/lambdas.html",
       "comprobada": "2026-11-21"
     },
-    "https://kotlinlang.org/docs/multiplatform-architect-your-app.html": {
-      "estado": 404,
-      "final": "https://kotlinlang.org/docs/multiplatform-architect-your-app.html",
-      "comprobada": "2026-11-21"
-    },
     "https://kotlinlang.org/docs/multiplatform-build-native-binaries.html": {
       "estado": 200,
       "final": "https://kotlinlang.org/docs/multiplatform-build-native-binaries.html",
@@ -3891,11 +3891,6 @@
       "final": "https://kotlinlang.org/docs/multiplatform-expect-actual.html",
       "comprobada": "2026-11-21"
     },
-    "https://kotlinlang.org/docs/multiplatform-publish-lib-setup.html": {
-      "estado": 404,
-      "final": "https://kotlinlang.org/docs/multiplatform-publish-lib-setup.html",
-      "comprobada": "2026-11-21"
-    },
     "https://kotlinlang.org/docs/multiplatform-run-tests.html": {
       "estado": 200,
       "final": "https://kotlinlang.org/docs/multiplatform-run-tests.html",
@@ -3911,14 +3906,24 @@
       "final": "https://kotlinlang.org/docs/multiplatform-share-on-platforms.html",
       "comprobada": "2026-11-21"
     },
-    "https://kotlinlang.org/docs/multiplatform-swift-export-overview.html": {
-      "estado": 404,
-      "final": "https://kotlinlang.org/docs/multiplatform-swift-export-overview.html",
-      "comprobada": "2026-11-21"
-    },
     "https://kotlinlang.org/docs/multiplatform.html": {
       "estado": 200,
       "final": "https://kotlinlang.org/docs/multiplatform.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://kotlinlang.org/docs/multiplatform/multiplatform-ios-integration-overview.html": {
+      "estado": 200,
+      "final": "https://kotlinlang.org/docs/multiplatform/multiplatform-ios-integration-overview.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://kotlinlang.org/docs/multiplatform/multiplatform-project-configuration.html": {
+      "estado": 200,
+      "final": "https://kotlinlang.org/docs/multiplatform/multiplatform-project-configuration.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://kotlinlang.org/docs/multiplatform/multiplatform-publish-lib-setup.html": {
+      "estado": 200,
+      "final": "https://kotlinlang.org/docs/multiplatform/multiplatform-publish-lib-setup.html",
       "comprobada": "2026-11-21"
     },
     "https://kotlinlang.org/docs/native-c-interop.html": {
@@ -3939,6 +3944,11 @@
     "https://kotlinlang.org/docs/native-overview.html": {
       "estado": 200,
       "final": "https://kotlinlang.org/docs/native-overview.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://kotlinlang.org/docs/native-swift-export.html": {
+      "estado": 200,
+      "final": "https://kotlinlang.org/docs/native-swift-export.html",
       "comprobada": "2026-11-21"
     },
     "https://kotlinlang.org/docs/null-safety.html": {
@@ -4761,11 +4771,6 @@
       "final": "https://python-control.readthedocs.io/en/latest/",
       "comprobada": "2026-11-21"
     },
-    "https://python-control.readthedocs.io/en/latest/generated/control.acker.html": {
-      "estado": 404,
-      "final": "https://python-control.readthedocs.io/en/latest/generated/control.acker.html",
-      "comprobada": "2026-11-21"
-    },
     "https://python-control.readthedocs.io/en/latest/generated/control.bandwidth.html": {
       "estado": 200,
       "final": "https://python-control.readthedocs.io/en/latest/generated/control.bandwidth.html",
@@ -4814,6 +4819,11 @@
     "https://python-control.readthedocs.io/en/latest/generated/control.place.html": {
       "estado": 200,
       "final": "https://python-control.readthedocs.io/en/latest/generated/control.place.html",
+      "comprobada": "2026-11-21"
+    },
+    "https://python-control.readthedocs.io/en/latest/generated/control.place_acker.html": {
+      "estado": 200,
+      "final": "https://python-control.readthedocs.io/en/latest/generated/control.place_acker.html",
       "comprobada": "2026-11-21"
     },
     "https://python-control.readthedocs.io/en/latest/generated/control.ss.html": {
@@ -5166,11 +5176,6 @@
       "final": "https://riverpod.dev/",
       "comprobada": "2026-11-21"
     },
-    "https://riverpod.dev/docs/case_studies/pull_to_refresh": {
-      "estado": 404,
-      "final": "https://riverpod.dev/docs/case_studies/pull_to_refresh",
-      "comprobada": "2026-11-21"
-    },
     "https://riverpod.dev/docs/concepts2/overrides": {
       "estado": 200,
       "final": "https://riverpod.dev/docs/concepts2/overrides",
@@ -5186,6 +5191,11 @@
       "final": "https://riverpod.dev/docs/concepts2/refs",
       "comprobada": "2026-11-21"
     },
+    "https://riverpod.dev/docs/how_to/pull_to_refresh": {
+      "estado": 200,
+      "final": "https://riverpod.dev/docs/how_to/pull_to_refresh",
+      "comprobada": "2026-11-21"
+    },
     "https://rollupjs.org/configuration-options/": {
       "estado": 200,
       "final": "https://rollupjs.org/configuration-options/",
@@ -5199,11 +5209,6 @@
     "https://rustwasm.github.io/docs/book/": {
       "estado": 200,
       "final": "https://rustwasm.github.io/docs/book/",
-      "comprobada": "2026-11-21"
-    },
-    "https://rustwasm.github.io/wasm-bindgen/": {
-      "estado": 404,
-      "final": "https://rustwasm.github.io/wasm-bindgen/",
       "comprobada": "2026-11-21"
     },
     "https://rxjs.dev/api/operators/exhaustMap": {
@@ -5279,6 +5284,11 @@
     "https://sqldelight.github.io/sqldelight/2.1.0/": {
       "estado": 200,
       "final": "https://sqldelight.github.io/sqldelight/2.1.0/",
+      "comprobada": "2026-11-21"
+    },
+    "https://sre.google/sre-book/postmortem-culture/": {
+      "estado": 200,
+      "final": "https://sre.google/sre-book/postmortem-culture/",
       "comprobada": "2026-11-21"
     },
     "https://sre.google/sre-book/service-level-objectives/": {
@@ -5396,6 +5406,11 @@
       "final": "https://testing-library.com/docs/react-testing-library/intro/",
       "comprobada": "2026-11-21"
     },
+    "https://tiswww.case.edu/php/chet/bash/bashref.html#Pipelines": {
+      "estado": 200,
+      "final": "https://tiswww.case.edu/php/chet/bash/bashref.html#Pipelines",
+      "comprobada": "2026-11-21"
+    },
     "https://trivy.dev/latest/docs/configuration/others/": {
       "estado": 200,
       "final": "https://trivy.dev/docs/latest/configuration/others/",
@@ -5481,6 +5496,11 @@
       "final": "https://vitest.dev/guide/mocking/timers",
       "comprobada": "2026-11-21"
     },
+    "https://wasm-bindgen.github.io/wasm-bindgen/": {
+      "estado": 200,
+      "final": "https://wasm-bindgen.github.io/wasm-bindgen/",
+      "comprobada": "2026-11-21"
+    },
     "https://web.dev/articles/reduce-javascript-payloads-with-code-splitting": {
       "estado": 200,
       "final": "https://web.dev/articles/reduce-javascript-payloads-with-code-splitting",
@@ -5491,9 +5511,9 @@
       "final": "https://web.dev/articles/vitals",
       "comprobada": "2026-11-21"
     },
-    "https://web.dev/learn/design-patterns/": {
-      "estado": 404,
-      "final": "https://web.dev/learn/design-patterns/",
+    "https://web.dev/learn/javascript": {
+      "estado": 200,
+      "final": "https://web.dev/learn/javascript",
       "comprobada": "2026-11-21"
     },
     "https://web.dev/learn/pwa/": {
@@ -5526,11 +5546,6 @@
       "final": "https://www.cisa.gov/secure-our-world/recognize-and-report-phishing",
       "comprobada": "2026-11-21"
     },
-    "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html": {
-      "estado": "error: URLError",
-      "final": "https://www.gnu.org/software/bash/manual/html_node/Pipelines.html",
-      "comprobada": "2026-11-21"
-    },
     "https://www.graalvm.org/reference-manual/native-image/": {
       "estado": 200,
       "final": "https://www.graalvm.org/reference-manual/native-image/",
@@ -5559,11 +5574,6 @@
     "https://www.jenkins.io/doc/pipeline/steps/": {
       "estado": 200,
       "final": "https://www.jenkins.io/doc/pipeline/steps/",
-      "comprobada": "2026-11-21"
-    },
-    "https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ios-framework.html": {
-      "estado": 404,
-      "final": "https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-ios-framework.html",
       "comprobada": "2026-11-21"
     },
     "https://www.jetbrains.com/help/kotlin-multiplatform-dev/multiplatform-publish-libraries.html": {
@@ -5604,11 +5614,6 @@
     "https://www.nist.gov/itl/ai-risk-management-framework": {
       "estado": 200,
       "final": "https://www.nist.gov/itl/ai-risk-management-framework",
-      "comprobada": "2026-11-21"
-    },
-    "https://www.npmjs.com/package/newman": {
-      "estado": 403,
-      "final": "https://www.npmjs.com/package/newman",
       "comprobada": "2026-11-21"
     },
     "https://www.openpolicyagent.org/docs/latest/": {
@@ -5751,16 +5756,6 @@
       "final": "https://www.rfc-editor.org/info/rfc9700/",
       "comprobada": "2026-11-21"
     },
-    "https://www.schweitzer-online.de/en/buch/Chen/Analog-Digital-Control-System-Design/9780030940705/A406123/": {
-      "estado": 429,
-      "final": "https://www.schweitzer-online.de/en/buch/Chen/Analog-Digital-Control-System-Design/9780030940705/A406123/",
-      "comprobada": "2026-11-21"
-    },
-    "https://www.schweitzer-online.de/en/buch/Nise/Control-Systems-Engineering/9781119721406/A57290836/": {
-      "estado": 429,
-      "final": "https://www.schweitzer-online.de/en/buch/Nise/Control-Systems-Engineering/9781119721406/A57290836/",
-      "comprobada": "2026-11-21"
-    },
     "https://www.sqlite.org/atomiccommit.html": {
       "estado": 200,
       "final": "https://www.sqlite.org/atomiccommit.html",
@@ -5794,11 +5789,6 @@
     "https://www.sqlite.org/lang_transaction.html": {
       "estado": 200,
       "final": "https://www.sqlite.org/lang_transaction.html",
-      "comprobada": "2026-11-21"
-    },
-    "https://www.sre.google/sre-book/postmortem-culture/": {
-      "estado": 404,
-      "final": "https://www.sre.google/sre-book/postmortem-culture/",
       "comprobada": "2026-11-21"
     },
     "https://www.tensorflow.org/js/guide": {
@@ -5909,6 +5899,11 @@
     "https://www.w3.org/WAI/fundamentals/accessibility-intro/es": {
       "estado": 200,
       "final": "https://www.w3.org/WAI/fundamentals/accessibility-intro/es",
+      "comprobada": "2026-11-21"
+    },
+    "https://www.wiley.com/en-us/Control+Systems+Engineering-p-9781119721406": {
+      "estado": 200,
+      "final": "https://www.wiley.com/en-us/Control+Systems+Engineering-p-9781119721406",
       "comprobada": "2026-11-21"
     },
     "https://zod.dev/": {

@@ -72,7 +72,7 @@ def main() -> int:
                 else:
                     ok += 1
         filas.append((d.name, total, ok)); detalle[d.name] = falt
-    declarados = json.loads(DECLARADOS.read_text())["cursos"] if DECLARADOS.exists() else []
+    declarados = json.loads(DECLARADOS.read_text(encoding="utf-8"))["cursos"] if DECLARADOS.exists() else []
     lineas = ["| Curso | Temas | En formato | % | Lo que más falta |", "|---|---|---|---|---|"]
     for c, t, ok in filas:
         top = ", ".join(f"{k} ({v})" for k, v in sorted(detalle[c].items(), key=lambda kv: -kv[1])[:3]) or "—"
@@ -84,10 +84,21 @@ def main() -> int:
         AVANCE.write_text("# Avance del formato único (specs/021)\n\nGenerado por `python3 scripts/validate_formato.py --write`. "
                           "Cursos declarados «en formato»: " + (", ".join(declarados) or "ninguno todavía") + ".\n\n" + "\n".join(lineas) + "\n", encoding="utf-8")
     if a.check:
-        malos = [c for c, t, ok in filas if c in declarados and ok != t]
+        por_curso = {c: (t, ok) for c, t, ok in filas}
+        # Un curso declarado sin temas reconocidos no puede aprobar por vacío (specs/025 C6).
+        malos = [c for c in declarados
+                 if c not in por_curso or por_curso[c][0] == 0 or por_curso[c][0] != por_curso[c][1]]
         if malos:
             print("validate_formato: cursos declarados «en formato» que no están al 100 %: " + ", ".join(malos)); return 1
-        print(f"validate_formato: ok ({len(declarados)} curso(s) declarados en formato)")
+        # specs/026 C7: el suelo lo fija scripts/umbrales.json y sube lote a lote.
+        umbrales_path = ROOT / "scripts" / "umbrales.json"
+        umbrales = json.loads(umbrales_path.read_text(encoding="utf-8")) if umbrales_path.exists() else {}
+        minimo = umbrales.get("mas_es_mejor", {}).get("cursos_en_formato", 1)
+        completos = [c for c, t, ok in filas if t and t == ok]
+        if len(completos) < minimo:
+            print(f"validate_formato: {len(completos)} curso(s) completos, se exigen {minimo}")
+            return 1
+        print(f"validate_formato: ok ({len(completos)} de {len(filas)} cursos completos; suelo {minimo})")
     return 0
 
 

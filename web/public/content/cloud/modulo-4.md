@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Qué es NoSQL y cuándo usarlo
+### Tema 1: Qué es NoSQL y cuándo usarlo · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás comprobar en vivo, con datos reales, por qué DynamoDB no obliga a un esquema fijo. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`).
@@ -93,7 +93,7 @@ Agregá un tercer evento (`sequence: 3`, `tipo: en_ruta`) con un atributo que ni
 #### Paso 7 · Cierre
 Entregá los tres `put-item`, el error de clave incompleta del Paso 5, y una frase explicando por qué ninguno de los tres eventos tiene la misma forma. Siguiente paso: tablas, items y atributos en detalle. Errores comunes: modelar como SQL sin patrón de acceso. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Introduction.html.
 
-### Tema 2: Tablas, items y atributos
+### Tema 2: Tablas, items y atributos · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a distinguir, sobre la tabla `ShipmentEvents` que ya creaste, qué es obligatorio en un item y qué no. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Tema 1 de este módulo.
@@ -190,7 +190,7 @@ Entregá el `describe-table`, el `get-item` vacío del Paso 5 y el `get-item` co
 
 **Proyecto integrador:** crea la tabla `ShipmentEvents` de RutaFlow con `shipmentId` y `sequence`, inserta un evento con un atributo opcional y demuestra que su recuperación no exige alterar el esquema de la tabla.
 
-### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M
+### Tema 3: Tipos de datos — S, N, B, BOOL, NULL, L, M · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás modelar un evento de entrega real con tipos anidados (lista y mapa). Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Temas 1-2 de este módulo.
@@ -389,7 +389,7 @@ Agregá un evento con una lista de incidencias (`L` de strings, por ejemplo `["d
 #### Paso 7 · Cierre
 Entregá el `get-item` del evento con `ubicacion`/`fotos`, el intento con `lat` como string y una frase explicando por qué DynamoDB lo acepta sin error aunque sea un problema real. Siguiente paso: claves. Errores comunes: mezclar tipos y no validar nulos. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.NamingFormat.html.
 
-### Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE)
+### Tema 4: Clave primaria simple (HASH) vs compuesta (HASH + RANGE) · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a comprobar en la propia tabla `ShipmentEvents` por qué necesita clave compuesta y no una clave simple. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Temas 1-3 de este módulo.
@@ -473,7 +473,7 @@ Creá un segundo envío completo (`shipmentId: env-5002`, con sus propios `seque
 #### Paso 7 · Cierre
 Entregá el `query` de `env-4471`, la sobrescritura silenciosa del Paso 5 y el `query` que separa ambos envíos; explicá qué patrón de acceso justifica la clave compuesta acá. Siguiente paso: índices. Errores comunes: clave caliente y consultas no previstas. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html.
 
-### Tema 5: Índices secundarios globales (GSI) y locales (LSI)
+### Tema 5: Índices secundarios globales (GSI) y locales (LSI) · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a crear y usar el índice `EstadoIndex` que ya está declarado en `template.yaml` sobre `ShipmentEvents`. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Tema 4 de este módulo.
@@ -560,7 +560,7 @@ Agregá un evento `entregado` para `env-5002` y confirmá con la misma `query` s
 #### Paso 7 · Cierre
 Entregá la creación del índice, la `query` exitosa, el error de índice inexistente del Paso 5 y la `query` con dos envíos del Paso 6; explicá qué pregunta resuelve `EstadoIndex` que la clave primaria no resuelve. Siguiente paso: consultas. Errores comunes: indexar todo y olvidar capacidad. Fuente oficial: https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/GSI.html.
 
-### Tema 6: Query vs Scan
+### Tema 6: Query vs Scan · Intermedio · 30 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar vas a medir, con números reales, la diferencia de costo entre Query y Scan sobre `ShipmentEvents`. Prerrequisitos: Módulo 1 (`floci start`, `eval $(floci env)`), Temas 2 y 4 de este módulo.

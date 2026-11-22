@@ -31,7 +31,7 @@
 >
 > **Los scripts `python3` y `curl` de este módulo prueban el servidor, no tu app.** La evidencia de que Retrofit funciona es la **Verificación real en Android** del Tema 1: la app en el emulador llama al servidor y `logcat` muestra el resultado. Desde el emulador, tu ordenador no es `localhost` sino `10.0.2.2`.
 
-### Tema 1: Retrofit con coroutines
+### Tema 1: Retrofit con coroutines · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -174,7 +174,7 @@ Ya declaras un endpoint HTTP con Retrofit como función `suspend`, leíble de fo
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Implementa la consulta de entregas del repartidor con una API de prueba. Cancela al salir de la pantalla y verifica que la respuesta tardía no reemplaza los datos de otra ruta.
 
-### Tema 2: Manejo de errores HTTP
+### Tema 2: Manejo de errores HTTP · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -278,7 +278,7 @@ Ya distingues `HttpException` de `IOException` en un `ViewModel`, dando mensajes
 
 **Transferencia al proyecto integrador «Aplicación del repartidor Android»:** Distingue una guía inexistente, una sesión vencida y un servidor no disponible. Prueba cada respuesta HTTP y comprueba que solo los fallos recuperables ofrecen reintentar la misma operación.
 
-### Tema 3: Interceptores de OkHttp
+### Tema 3: Interceptores de OkHttp · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

@@ -1,9 +1,8 @@
 import { CourseModule, createModule as m } from '../course-module.model';
 
 export const NODE_MODULES: CourseModule[] = [
-  m(0, 'El runtime de Node: V8, libuv y el Event Loop', 'Runtime de Node', 'Fundamentos', '5 h', '#3c873a',
-    'Node no es "JavaScript en el servidor" sin más: es un runtime con I/O no bloqueante construido sobre libuv.',
-    ['Diferencias entre el Event Loop del navegador y el de Node', 'Fases del Event Loop (timers, poll, check)', 'process, global y módulos core', 'npx y la CLI de Node', 'Módulos core: os, buffer, crypto, util, child_process y cluster', 'Event-driven architecture y non-blocking I/O'],
+  m(0, 'El runtime de Node — V8, libuv y el Event Loop', 'Runtime de Node', 'Fundamentos', '5 h', '#3c873a',
+    'Node no es "JavaScript en el servidor" sin más: es un runtime con I/O no bloqueante construido sobre libuv.',['Node no es "JavaScript en el servidor" sin más', 'process, global y módulos core', 'Fases del Event Loop de Node', 'Event-driven architecture y non-blocking I/O'],
     [
       'Crea un script y ejecútalo con node script.js — luego abre el REPL con node a secas y prueba comandos sueltos',
       'Escribe un script que mezcle console.log, setTimeout, setImmediate y process.nextTick y predice el orden antes de ejecutarlo',
@@ -15,8 +14,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['Node.js'],
     'Script que demuestra el orden de ejecución entre setImmediate, setTimeout y process.nextTick.'),
   m(1, 'Módulos, npm/pnpm y gestión de dependencias', 'npm/pnpm', 'Fundamentos', '5 h 30 min', '#3c873a',
-    'Gestiona dependencias de forma reproducible y entiende qué instala realmente cada comando.',
-    ['package.json y semver', 'Lockfiles y instalación reproducible', 'Workspaces (monorepo) con npm/pnpm', 'Scripts de ciclo de vida (postinstall, etc.)'],
+    'Gestiona dependencias de forma reproducible y entiende qué instala realmente cada comando.',['package.json y semver', 'Lockfiles e instalación reproducible', 'ESM y CommonJS en el mismo proyecto', 'Scripts de ciclo de vida', 'Workspaces — monorepos con npm/pnpm', 'Publicar y versionar un paquete npm (público o privado)'],
     [
       'Inicializa un proyecto con npm init -y y observa la estructura mínima de package.json generada',
       'Instala una dependencia con npm install y otra como devDependency con npm install -D — explica la diferencia en package.json',
@@ -29,8 +27,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['npm', 'pnpm'],
     'Monorepo con dos paquetes propios enlazados vía workspaces.'),
   m(2, 'Sistema de archivos y streams', 'FS y streams', 'Fundamentos', '3 h 40 min', '#3c873a',
-    'Procesa archivos grandes sin cargarlos completos en memoria: el patrón que usa Node por dentro para todo.',
-    ['fs/promises vs callbacks', 'Streams básicos: Readable, Writable y Transform', 'Backpressure: write() y el evento drain', 'pipeline() para componer streams de forma segura', 'Separar líneas correctamente entre chunks con un Transform propio', 'Medir pausas y memoria bajo backpressure'],
+    'Procesa archivos grandes sin cargarlos completos en memoria: el patrón que usa Node por dentro para todo.',['fs/promises frente a callbacks', 'Buffer, Blob y las Web APIs de Node: bytes, codificaciones y código compartido con el navegador', 'Streams básicos: Readable, Writable y Transform', 'Compresión con zlib: gzip y Brotli por streams', 'Backpressure: write() y el evento drain', 'pipeline() para componer streams de forma segura'],
     [
       'Lee un archivo con fs.readFileSync, luego con fs/promises y luego con el callback clásico fs.readFile — compara las tres formas',
       'Genera un archivo CSV de 500k líneas con un script y mide cuánta memoria usa leerlo completo con readFileSync',
@@ -43,9 +40,15 @@ export const NODE_MODULES: CourseModule[] = [
     ['Node.js streams'],
     'Script que transforma un archivo CSV grande a JSON usando streams, sin cargarlo completo en RAM.'),
   m(3, 'Servidores HTTP nativos', 'HTTP nativo', 'Aplicación', '5 h 45 min', '#3c873a',
-    'Antes de Express, entiende qué hace un framework por debajo construyendo un servidor con el módulo http puro.',
-    [
-      'Paginación por cursor y límites de entrada comprobables','Modelo request/response', 'Routing manual', 'Parsing de body y headers', 'Códigos de estado y content negotiation'],
+    'Antes de Express, entiende qué hace un framework por debajo construyendo un servidor con el módulo http puro.',[
+      'El modelo request/response',
+      'Routing manual',
+      'Parsing de body y headers',
+      'Códigos de estado y content negotiation',
+      'Paginación por cursor y límites de entrada comprobables',
+      'Debajo de HTTP: TCP con net, UDP con dgram y resolución DNS',
+      'HTTPS y HTTP/2 con TLS: certificados, ALPN y varias peticiones por conexión'
+      ],
     [
       'Crea un servidor con node:http que responda "Hola Node" en GET / y arráncalo con node servidor.js',
       'Agrega routing manual: GET /tareas devuelve un array JSON, POST /tareas agrega un elemento al array en memoria',
@@ -57,9 +60,8 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Qué hace exactamente Express que tú tuviste que escribir a mano aquí?', '¿Por qué el body de un POST llega como stream y no como objeto ya parseado?', '¿Qué decide el código de estado HTTP correcto para cada situación?'],
     ['Node.js http'],
     'Servidor HTTP nativo con 3 rutas y manejo de errores, sin frameworks.'),
-  m(4, 'Express/Fastify: routing y middleware', 'Express/Fastify', 'Aplicación', '7 h 30 min', '#3c873a',
-    'El patrón middleware es la base de casi todos los frameworks web de Node.',
-    ['Middleware: orden de ejecución y next()', 'Routers anidados', 'Manejo centralizado de errores', 'Validación de entrada (zod/joi)', 'express-validator como alternativa', 'Diferencias clave Express vs Fastify: hooks y JSON Schema nativo', 'WebSocket: tiempo real bidireccional', 'Subida de archivos: multipart y validación segura'],
+  m(4, 'Express/Fastify — routing y middleware', 'Express/Fastify', 'Aplicación', '7 h 30 min', '#3c873a',
+    'El patrón middleware es la base de casi todos los frameworks web de Node.',['Middleware — orden de ejecución y next()', 'Routers anidados', 'Validación de entrada con Zod y manejo centralizado de errores', 'Express frente a Fastify', 'WebSocket — comunicación en tiempo real bidireccional', 'Subida de archivos — multipart y validación segura'],
     [
       'Crea una API Express con GET /tareas y POST /tareas, usando express.json() como middleware',
       'Escribe un middleware de logging propio que imprima método, ruta y tiempo de respuesta de cada request',
@@ -71,9 +73,8 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué el orden en que declaras middleware en Express importa tanto?', '¿Qué pasa si olvidas llamar next() dentro de un middleware?', '¿Qué ventaja real ofrece validar con zod en vez de revisar el body a mano?'],
     ['Express', 'Fastify'],
     'API REST con middleware de logging, validación y manejo de errores centralizado.'),
-  m(5, 'Bases de datos: drivers y ORMs', 'Bases de datos', 'Aplicación', '5 h 45 min', '#3c873a',
-    'Conecta tu API a una base real y aprende cuándo un ORM ayuda y cuándo estorba.',
-    ['PostgreSQL/MongoDB desde Node', 'Prisma: schema, migraciones y queries tipadas', 'Pool de conexiones', 'Transacciones', 'Mongoose: Schemas, Models y population', 'Sequelize y TypeORM como alternativas a Prisma'],
+  m(5, 'Bases de datos — drivers y ORMs', 'Bases de datos', 'Aplicación', '5 h 45 min', '#3c873a',
+    'Conecta tu API a una base real y aprende cuándo un ORM ayuda y cuándo estorba.',['PostgreSQL desde Node con el driver puro', 'Prisma — schema, migraciones y queries tipadas', 'Pool de conexiones y transacciones', 'MongoDB con Mongoose y otras alternativas de ORM'],
     [
       'Levanta PostgreSQL en Docker y conéctate con el driver pg puro ejecutando un SELECT 1',
       'Instala Prisma, define un modelo Tarea en schema.prisma y corre prisma migrate dev para crear la tabla',
@@ -86,8 +87,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['Prisma', 'PostgreSQL'],
     'API con persistencia real en PostgreSQL usando Prisma y migraciones versionadas.'),
   m(6, 'Autenticación y autorización', 'Auth', 'Integración', '9 h 15 min', '#3c873a',
-    'Implementa login seguro sin reinventar criptografía desde cero.',
-    ['Hashing de contraseñas (bcrypt/argon2)', 'JWT: access y refresh tokens', 'Sesiones vs tokens', 'OAuth 2.0 con un proveedor externo', 'Passport.js y sus estrategias de autenticación', 'Cookies seguras, sesiones y protección CSRF', 'Flujo de login completo: de /api/auth/login a una ruta protegida'],
+    'Implementa login seguro sin reinventar criptografía desde cero.',['Hashing de contraseñas', 'JWT — access y refresh tokens', 'Middleware de autenticación y control de roles', 'OAuth 2.0 y Passport.js', 'Sesiones, cookies seguras y protección CSRF', 'Flujo de login completo — de `/api/auth/login` a una ruta protegida'],
     [
       'Implementa registro de usuario con contraseña hasheada usando bcrypt — nunca guardes contraseñas en texto plano',
       'Implementa login que verifica la contraseña con bcrypt.compare y devuelve un access token JWT de corta duración',
@@ -100,8 +100,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['JWT', 'OAuth2'],
     'API protegida con JWT, refresh tokens y rutas con control de roles.'),
   m(7, 'Testing e integración continua', 'Testing', 'Integración', '5 h', '#3c873a',
-    'Prueba endpoints HTTP reales, no solo funciones aisladas.',
-    ['Vitest + Supertest', 'Bases de datos de prueba (Testcontainers)', 'Mocks de servicios externos', 'Pipeline de CI para una API Node', 'Jest, Mocha, Chai y Sinon como alternativas', 'Debugging con --inspect y Chrome DevTools'],
+    'Prueba endpoints HTTP reales, no solo funciones aisladas.',['node:test — test runner nativo sin dependencias', 'TDD práctico: rojo, verde y refactor con node:test', 'Cobertura de pruebas con node:test: líneas, ramas y umbrales', 'Vitest y Supertest — pruebas de integración HTTP reales', 'Testcontainers — bases de datos de prueba reales y efímeras', 'Mocks de servicios externos y CI', 'Alternativas de testing y debugging'],
     [
       'Escribe un test con Supertest que haga un GET /tareas real contra tu app Express y verifique el código de estado y el body',
       'Escribe un test que haga POST /tareas con un body inválido y verifique que responde 400 con el mensaje de error esperado',
@@ -114,8 +113,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['Vitest', 'Supertest'],
     'Suite de pruebas de integración que levanta la API contra una base de datos real en Docker.'),
   m(8, 'Patrones asíncronos avanzados', 'Async avanzado', 'Experto', '4 h', '#3c873a',
-    'Cuando una sola instancia de Node no alcanza: workers, clustering y colas de trabajo.',
-    ['Worker threads para CPU-bound', 'Cluster module y balanceo entre procesos', 'Colas de trabajo con BullMQ + Redis', 'Procesamiento en background', 'pm2 en modo cluster y --max-old-space-size', 'Heap snapshots y detección de memory leaks', 'Redis: cache-aside, idempotencia y Pub/Sub'],
+    'Cuando una sola instancia de Node no alcanza: workers, clustering y colas de trabajo.',['Worker Threads para trabajo CPU-bound', 'Cluster module y balanceo entre procesos', 'Redis para caché, idempotencia y Pub/Sub', 'Colas de trabajo con BullMQ', 'PM2, memory leaks y heap snapshots'],
     [
       'Identifica una tarea CPU-bound (ej. procesar una imagen grande) y muévela a un worker_thread para no bloquear el event loop principal',
       'Usa el módulo cluster para levantar un proceso por núcleo de CPU y balancear requests entre ellos',
@@ -128,8 +126,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['BullMQ', 'Redis'],
     'Cola de procesamiento en background (envío de emails) con reintentos y backoff.'),
   m(9, 'Observabilidad y manejo de errores en producción', 'Observabilidad', 'Experto', '4 h 40 min', '#3c873a',
-    'Diagnostica un proceso Node en producción sin adivinar.',
-    ['Logging estructurado (pino/winston)', 'Correlation ID por request', 'Manejo de excepciones no capturadas', 'Health checks y graceful shutdown', 'process.on("unhandledRejection") y manejo de promesas sin catch', 'Diseño de APIs: REST vs GraphQL (Apollo Server) vs gRPC', 'Métricas Prometheus y trazas distribuidas con OpenTelemetry'],
+    'Diagnostica un proceso Node en producción sin adivinar.',['Logging estructurado', 'Correlation ID por request', 'REST, GraphQL y gRPC', 'Excepciones no capturadas y graceful shutdown', 'Contexto por petición con AsyncLocalStorage y eventos con diagnostics_channel', 'Métricas Prometheus y trazas distribuidas con OpenTelemetry'],
     [
       'Reemplaza console.log por pino y configura logs en formato JSON estructurado',
       'Agrega un middleware que genere un correlation ID (uuid) por request y lo incluya en todos los logs de esa request',
@@ -142,8 +139,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['Pino'],
     'API con logging estructurado, correlation ID y apagado controlado (graceful shutdown).'),
   m(10, 'Seguridad en Node', 'Seguridad', 'Experto', '5 h 10 min', '#3c873a',
-    'Los errores de seguridad más comunes en APIs Node y cómo evitarlos sistemáticamente.',
-    ['OWASP API Security Top 10', 'helmet y cabeceras seguras', 'Rate limiting', 'Validación y sanitización de entrada'],
+    'Los errores de seguridad más comunes en APIs Node y cómo evitarlos sistemáticamente.',['Cabeceras seguras con helmet', 'Rate limiting', 'Inyección SQL y sanitización contra XSS', 'OWASP API Security Top 10 y auditoría de dependencias', 'CVE, CWE y npm audit en el pipeline', 'Modelo de permisos de Node: limitar archivos, procesos y workers'],
     [
       'Instala helmet en tu API Express y verifica con curl -I qué cabeceras de seguridad agrega',
       'Implementa rate limiting (ej. express-rate-limit) y prueba que tras N requests en poco tiempo, la API responde 429',
@@ -156,8 +152,7 @@ export const NODE_MODULES: CourseModule[] = [
     ['Helmet'],
     'API con rate limiting, cabeceras seguras y validación estricta de entrada.'),
   m(11, 'Despliegue y contenedores', 'Despliegue', 'Experto', '5 h 15 min', '#3c873a',
-    'Empaqueta y despliega tu API Node de forma reproducible (conecta directo con el track DevOps).',
-    ['Dockerfile para Node (multi-stage)', 'Variables de entorno por ambiente', 'PM2 vs contenedores para gestión de procesos', 'Zero-downtime deploys', 'Nginx como reverse proxy y balanceador', 'Serverless: AWS Lambda, Vercel y Azure Functions'],
+    'Empaqueta y despliega tu API Node de forma reproducible (conecta directo con el track DevOps).',['Dockerfile multi-stage para Node', 'Variables de entorno por ambiente y healthchecks', 'PM2, contenedores y zero-downtime deploys', 'Nginx como reverse proxy y serverless'],
     [
       'Escribe un Dockerfile multi-stage: una etapa de build (npm install + build) y una etapa final solo con node_modules de producción',
       'Construye la imagen y compara su tamaño con una versión de una sola etapa sin optimizar',
@@ -169,9 +164,8 @@ export const NODE_MODULES: CourseModule[] = [
     ['¿Por qué una imagen Docker multi-stage es más segura y liviana que una de una sola etapa?', '¿Qué ventaja da un healthcheck a nivel de Docker/Kubernetes?', '¿Qué necesitas para lograr un despliegue sin downtime?'],
     ['Docker'],
     'Imagen Docker de producción de la API, optimizada y sin dependencias de desarrollo.'),
-  m(12, 'Proyecto integrador: API productiva', 'Proyecto final', 'Experto', '12 h', '#3c873a',
-    'Une todo lo aprendido en una API lista para producción real.',
-    ['Arquitectura por capas', 'Autenticación, persistencia y testing integrados', 'Observabilidad básica', 'Contenedor listo para desplegar', 'Posiciones geoespaciales con PostGIS (Postgres) y eventos en tiempo real con Socket.IO', 'Carga de archivos con rutas seguras y notificaciones push (Firebase Admin) desacopladas de la autorización', 'Qué sigue: microservicios, message queues (Kafka/RabbitMQ) y TypeScript con ts-node/tsx'],
+  m(12, 'Proyecto integrador — API productiva', 'Proyecto final', 'Experto', '12 h', '#3c873a',
+    'Une todo lo aprendido en una API lista para producción real.',['Arquitectura por capas', 'Posiciones espaciales y Socket.IO con orden recuperable', 'Archivos y notificaciones push sin convertirlos en autorización', 'Uniendo cada módulo del track', 'Qué le falta a esta API para producción real', 'Próximos pasos — microservicios, colas de mensajes y TypeScript'],
     [
       'Diseña la arquitectura por capas: rutas → controladores → servicios → repositorio de datos, sin mezclar responsabilidades',
       'Implementa autenticación JWT completa (login, refresh, rutas protegidas) integrada con tu base de datos real',
@@ -184,13 +178,12 @@ export const NODE_MODULES: CourseModule[] = [
     ['Express', 'Prisma', 'Docker'],
     'API REST con auth, base de datos real, tests de integración y Dockerfile de producción.'),
   m(13, 'TypeScript, contratos e integraciones confiables', 'Contratos y resiliencia', 'Experto', '8 h 20 min', '#3c873a',
-    'Evoluciona la API productiva hacia un servicio con tipos estrictos, contratos HTTP verificables y efectos seguros frente a reintentos, caídas y entregas duplicadas.',
-    [
-      'TypeScript strict, tipos de dominio, Result y fronteras de datos',
-      'OpenAPI, compatibilidad, versionado y contract testing',
-      'OpenAPI como contrato ejecutable y documentación verificable',
-      'Idempotency keys, concurrencia, transactional outbox y consumers',
-      'Webhooks firmados, reintentos, deduplicación y reconciliación',
+    'Evoluciona la API productiva hacia un servicio con tipos estrictos, contratos HTTP verificables y efectos seguros frente a reintentos, caídas y entregas duplicadas.',[
+      'Tipos estáticos dentro, datos desconocidos en la frontera',
+      'Un contrato HTTP es comportamiento, no solo documentación',
+      'OpenAPI como contrato ejecutable',
+      'Reintentar sin duplicar el efecto',
+      'Webhooks verificables y recuperación por reconciliación'
     ],
     [
       'Migra una vertical completa a TypeScript estricto sin any ni casts que oculten validación',

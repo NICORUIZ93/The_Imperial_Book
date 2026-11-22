@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Reactive Forms — FormGroup y FormControl
+### Tema 1: Reactive Forms — FormGroup y FormControl · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -149,7 +149,7 @@ Ya confirmas, con un `FormGroup` evaluado directamente sin renderizar HTML, que 
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Construye el formulario de asignación con controles tipados para guía y conductor. Prueba campos vacíos y una selección válida; solo el segundo caso debe generar el comando de asignación.
 
-### Tema 2: Validadores asíncronos
+### Tema 2: Validadores asíncronos · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -305,7 +305,7 @@ Ya confirmas, con el reloj simulado de Vitest, el ciclo completo de estado `VALI
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Valida disponibilidad del conductor mediante una consulta cancelable. Escribe dos identificadores seguidos y devuelve las respuestas al revés; el formulario debe conservar la validez correspondiente al último valor.
 
-### Tema 3: FormArray para campos dinámicos
+### Tema 3: FormArray para campos dinámicos · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 
@@ -444,7 +444,7 @@ Ya confirmas, con `push`/`removeAt` reales, que un `FormArray` gestiona un núme
 
 **Transferencia al proyecto integrador «Centro de control logístico»:** Representa paradas adicionales con FormArray. Añade y retira una parada intermedia y verifica que los errores y los valores enviados permanecen asociados a la parada correcta.
 
-### Tema 4: Template-driven forms — cuándo siguen siendo válidos
+### Tema 4: Template-driven forms — cuándo siguen siendo válidos · Intermedio · 45 min
 
 #### Paso 1 · Objetivo y preparación
 

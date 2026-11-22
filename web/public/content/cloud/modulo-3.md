@@ -3,7 +3,7 @@
 
 ## Aprende construyendo
 
-### Tema 1: Colas, productores y consumidores
+### Tema 1: Colas, productores y consumidores · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás enviar y recibir un mensaje real en una cola SQS. Prerrequisitos:
@@ -62,7 +62,7 @@ que la cola sigue teniendo el mensaje — todavía no lo borraste, eso es el Tem
 Entregá el `send-message`, el `receive-message`, y el error de la cola inexistente. Siguiente
 paso: visibilidad. Errores comunes: asumir que `receive-message` borra el mensaje. Fuente
 oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/welcome.html.
-### Tema 2: Ciclo de vida de un mensaje
+### Tema 2: Ciclo de vida de un mensaje · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás procesar un mensaje sin perderlo ni duplicarlo por accidente.
@@ -135,7 +135,7 @@ Entregá los 2 intentos de `receive-message` (antes y después del timeout) most
 mensaje reapareció solo. Siguiente paso: DLQ. Errores comunes: borrar el mensaje antes de
 terminar de procesarlo de verdad. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-visibility-timeout.html.
 
-### Tema 3: Dead Letter Queues (DLQ)
+### Tema 3: Dead Letter Queues (DLQ) · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás comprobar que un mensaje problemático termina aislado en una DLQ real, sin
@@ -206,7 +206,7 @@ Entregá la configuración de RedrivePolicy, y el mensaje apareciendo en la DLQ.
 colas FIFO. Errores comunes: poner `maxReceiveCount` en 1, moviendo a la DLQ mensajes que
 habrían funcionado en un segundo intento. Fuente oficial: https://docs.aws.amazon.com/AWSSimpleQueueService/latest/SQSDeveloperGuide/sqs-dead-letter-queues.html.
 
-### Tema 4: Colas FIFO vs Standard
+### Tema 4: Colas FIFO vs Standard · Intermedio · 40 min
 
 #### Paso 1 · Objetivo y preparación
 Al finalizar podrás decidir y probar cuándo RutaFlow necesita orden garantizado.

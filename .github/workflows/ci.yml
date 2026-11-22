@@ -10,8 +10,22 @@ on:
 jobs:
   build-and-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          # specs/023 C7 compara contra un SHA fijo: un clon superficial no lo tiene.
+          fetch-depth: 0
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+          cache: maven
+          cache-dependency-path: examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml
+      - name: Calentar caché Maven (specs/023 C4)
+        run: |
+          mvn -q -f examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml dependency:go-offline
+          mvn -q -f examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml test
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:

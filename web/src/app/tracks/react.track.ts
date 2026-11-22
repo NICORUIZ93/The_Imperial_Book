@@ -2,8 +2,7 @@ import { CourseModule, createModule as m } from '../course-module.model';
 
 export const REACT_MODULES: CourseModule[] = [
   m(0, 'JSX, componentes y props', 'JSX y componentes', 'Fundamentos', '2 h', '#149eca',
-    'React describe la UI como una función del estado. JSX es solo azúcar sintáctica sobre createElement.',
-    ['JSX: expresiones embebidas y listas con key', 'Componentes de función y props', 'Composición vs herencia', 'Renderizado condicional', 'Fragments (<> </>) y children', 'Estilos: CSS Modules y Tailwind'],
+    'React describe la UI como una función del estado. JSX es solo azúcar sintáctica sobre createElement.',['JSX es azúcar sintáctica sobre createElement', 'Listas con key estable', 'Composición sobre herencia, y Fragments', 'Renderizado condicional y estilos'],
     [
       'Crea un componente Boton que reciba texto y onClick como props y renderícenlo en App',
       'Renderiza una lista de 5 elementos con .map() y asigna una key estable (id, no el índice)',
@@ -15,8 +14,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['React'],
     'Set de componentes de presentación reutilizables (botón, tarjeta, lista).'),
   m(1, 'Estado local y el ciclo de render', 'Estado y render', 'Fundamentos', '3 h 10 min', '#149eca',
-    'Entiende cuándo y por qué React vuelve a renderizar un componente.',
-    ['useState y actualizaciones funcionales', 'Render vs commit', 'Batching de actualizaciones', 'Componentes controlados', 'Componentes puros y el estado como instantánea', 'Compartir estado: levantar el estado al padre común'],
+    'Entiende cuándo y por qué React vuelve a renderizar un componente.',['useState y actualizaciones funcionales', 'Render frente a commit', 'Batching de actualizaciones', 'Componentes controlados', 'Componentes puros y el estado como instantánea', 'Compartir estado: levantar el estado al padre común'],
     [
       'Crea un contador con useState y demuestra el bug de usar setCount(count + 1) tres veces seguidas vs la forma funcional setCount(c => c + 1)',
       'Construye un input controlado (value + onChange) y muestra el valor en tiempo real en otro lugar de la pantalla',
@@ -28,9 +26,16 @@ export const REACT_MODULES: CourseModule[] = [
     ['React'],
     'Formulario controlado con validación en tiempo real basada en useState.'),
   m(2, 'Hooks esenciales', 'Hooks', 'Fundamentos', '3 h 40 min', '#149eca',
-    'Los hooks son el mecanismo para "engancharse" al ciclo de vida y memoria de un componente de función.',
-    [
-      'useEffect: dependencias y limpieza', 'Cuándo NO usar un Effect: estado derivado, eventos y reinicio con key', 'useRef para valores mutables sin re-render', 'useMemo y useCallback: cuándo realmente ayudan', 'Reglas de los hooks', 'useReducer: reducers, dispatch y action types', 'useImperativeHandle con ref como prop (React 19)', 'Error Boundaries: contener errores de render', 'Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual', 'useLayoutEffect y useEffectEvent'],
+    'Los hooks son el mecanismo para "engancharse" al ciclo de vida y memoria de un componente de función.',[
+      'useEffect — dependencias y limpieza',
+      'Cuándo NO usar un Effect: estado derivado, eventos y reinicio con `key`',
+      'useRef — valores mutables sin re-render',
+      'useMemo y useCallback con criterio',
+      'Reglas de los hooks, useReducer y useImperativeHandle',
+      'Error Boundaries — contener errores de render sin romper toda la app',
+      'Efectos cancelables: impedir que una respuesta antigua sobrescriba la selección actual',
+      'useLayoutEffect y useEffectEvent: medir antes de pintar y leer valores sin reconectar'
+      ],
     [
       'Crea un useEffect que se suscriba a un evento de window (resize) y verifica que se limpia correctamente al desmontar el componente',
       'Reemplaza un efecto que filtra una lista por un cálculo en el render y mide con <Profiler> que pasa de dos commits a uno',
@@ -43,8 +48,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['React Hooks'],
     'Componente con un efecto de suscripción externa correctamente limpiado al desmontar.'),
   m(3, 'Formularios y eventos', 'Formularios', 'Aplicación', '2 h', '#149eca',
-    'Maneja entradas de usuario complejas sin perder el control del estado.',
-    ['Componentes controlados', 'Validación con bibliotecas (React Hook Form)', 'Manejo de eventos sintéticos', 'Formularios multi-paso'],
+    'Maneja entradas de usuario complejas sin perder el control del estado.',['Eventos sintéticos', 'React Hook Form y el problema del re-render por tecla', 'Validación con zod y formularios multi-paso', 'Formularios con Actions: useActionState y useOptimistic'],
     [
       'Construye un formulario de registro con React Hook Form (register, handleSubmit, errors)',
       'Agrega validación con un schema de zod conectado a React Hook Form (resolver)',
@@ -55,8 +59,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['React Hook Form'],
     'Formulario multi-paso con validación y persistencia de datos entre pasos.'),
   m(4, 'Context API y composición', 'Context', 'Aplicación', '2 h', '#149eca',
-    'Comparte estado entre componentes lejanos sin pasar props manualmente en cada nivel.',
-    ['createContext y useContext', 'Cuándo Context es suficiente y cuándo no', 'Patrón de componentes compuestos', 'Render props vs hooks personalizados'],
+    'Comparte estado entre componentes lejanos sin pasar props manualmente en cada nivel.',['createContext y useContext', 'Cuándo Context es suficiente y cuándo no', 'Componentes compuestos, render props y hooks personalizados'],
     [
       'Crea un ThemeContext con valores "claro"/"oscuro" y un ThemeProvider que envuelva la app',
       'Consume el contexto desde un componente anidado 3 niveles abajo sin pasar props intermedias (sin prop drilling)',
@@ -66,9 +69,8 @@ export const REACT_MODULES: CourseModule[] = [
     ['¿Por qué Context no es un reemplazo completo de un gestor de estado global como Redux?', '¿Cuándo el prop drilling es aceptable y cuándo es momento de usar Context?'],
     ['React Context'],
     'Theme switcher (claro/oscuro) implementado con Context, sin prop drilling.'),
-  m(5, 'React Router: navegación', 'React Router', 'Aplicación', '2 h 30 min', '#149eca',
-    'Estructura una SPA con múltiples vistas, rutas anidadas y carga perezosa.',
-    ['Rutas anidadas y layouts compartidos', 'Loaders y acciones de datos', 'Rutas protegidas (experiencia de usuario, no autorización)'],
+  m(5, 'React Router — navegación', 'React Router', 'Aplicación', '2 h 30 min', '#149eca',
+    'Estructura una SPA con múltiples vistas, rutas anidadas y carga perezosa.',['Rutas anidadas y layouts compartidos', 'Loaders — datos antes de renderizar', 'Rutas protegidas'],
     [
       'Define rutas anidadas: un layout compartido (con navbar) que envuelva /tareas y /tareas/:id',
       'Usa un loader de React Router para cargar datos antes de renderizar una ruta',
@@ -79,8 +81,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['React Router'],
     'Aplicación con rutas anidadas, un loader y una ruta protegida probada.'),
   m(6, 'Data fetching moderno', 'Data fetching', 'Integración', '3 h', '#149eca',
-    'Deja de manejar loading/error a mano: usa una capa de datos pensada para eso.',
-    ['TanStack Query: queries y mutations', 'Cache, invalidación y refetch', 'Estados de carga, error y datos obsoletos', 'Optimistic updates'],
+    'Deja de manejar loading/error a mano: usa una capa de datos pensada para eso.',['useQuery y el problema que resuelve', 'Mutations e invalidación', 'Optimistic updates'],
     [
       'Reemplaza un useEffect + useState manual de fetching por useQuery de TanStack Query',
       'Observa en React Query Devtools cómo se cachea la respuesta y cuándo se vuelve "obsoleta" (stale)',
@@ -91,8 +92,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['TanStack Query'],
     'Lista de datos con fetching, cache y mutaciones optimistas usando TanStack Query.'),
   m(7, 'Gestión de estado global', 'Estado global', 'Integración', '2 h 30 min', '#149eca',
-    'Cuando el estado ya no cabe en un componente ni en Context, elige una herramienta dedicada.',
-    ['Zustand: stores mínimos sin boilerplate', 'Redux Toolkit: slices y RTK Query', 'Cuándo NO necesitas una librería de estado global', 'Estado del servidor vs estado de cliente', 'Jotai (atoms) como alternativa atómica', 'XState para máquinas de estado complejas'],
+    'Cuando el estado ya no cabe en un componente ni en Context, elige una herramienta dedicada.',['Zustand — stores mínimos sin boilerplate', 'Redux Toolkit — slices y ceremonia', 'Estado de servidor vs estado de cliente, y cuándo no necesitas nada de esto', 'Jotai y XState como alternativas'],
     [
       'Crea un store de Zustand para un carrito de compras (items, agregar, quitar, total)',
       'Consume el store de Zustand desde dos componentes no relacionados directamente',
@@ -103,8 +103,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['Zustand', 'Redux Toolkit'],
     'Store global propio (carrito de compras o similar) con Zustand.'),
   m(8, 'Testing en React', 'Testing', 'Integración', '2 h 30 min', '#149eca',
-    'Prueba componentes desde la perspectiva del usuario, no de la implementación.',
-    ['React Testing Library: queries por rol/texto', 'Mocking de requests HTTP (MSW)', 'Testing de hooks personalizados', 'Vitest como runner'],
+    'Prueba componentes desde la perspectiva del usuario, no de la implementación.',['Queries por rol, no por clase CSS', 'Mock Service Worker (MSW)', 'Testing de hooks personalizados'],
     [
       'Escribe un test con React Testing Library que renderice un componente y lo consulte por getByRole, no por clase CSS',
       'Simula un click de usuario con userEvent y verifica el resultado visible en pantalla',
@@ -116,8 +115,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['React Testing Library', 'Vitest'],
     'Suite de pruebas de un flujo completo (formulario + fetching) con MSW.'),
   m(9, 'Performance en React', 'Performance', 'Experto', '2 h 30 min', '#149eca',
-    'Identifica y corrige renders innecesarios antes de optimizar a ciegas.',
-    ['React DevTools Profiler', 'memo, useMemo y useCallback con criterio', 'Virtualización de listas largas', 'useTransition, useDeferredValue y startTransition', 'Fiber architecture y Reconciliation (algoritmo de diff)', 'Suspense y React.lazy: carga diferida de componentes y rutas (único tema del curso)', 'El hook use', 'React Compiler'],
+    'Identifica y corrige renders innecesarios antes de optimizar a ciegas.',['Medir antes de optimizar', 'React.memo con criterio', 'Virtualización de listas largas', 'useTransition, useDeferredValue y Fiber', 'Suspense y React.lazy: carga diferida de componentes y rutas', 'El hook use: leer una promesa con Suspense y un contexto de forma condicional', 'React Compiler y las reglas de React: memoización automática'],
     [
       'Graba una interacción con React DevTools Profiler y encuentra qué componente se re-renderiza sin necesidad',
       'Envuelve ese componente con React.memo y confirma con el Profiler que el render innecesario desaparece',
@@ -128,8 +126,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['React DevTools'],
     'Optimización medible (antes/después con el Profiler) de una vista con listas largas.'),
   m(10, 'Server Components y Next.js', 'Next.js', 'Experto', '3 h', '#149eca',
-    'El ecosistema React se mueve hacia renderizado en servidor por defecto.',
-    ['Server Components vs Client Components', 'App Router de Next.js', 'Streaming y Suspense en el servidor', 'Server Actions'],
+    'El ecosistema React se mueve hacia renderizado en servidor por defecto.',['Server Components por defecto', 'use client para interactividad', 'Streaming con Suspense en el servidor', 'Server Actions'],
     [
       'Crea un proyecto Next.js con App Router y observa que los componentes son Server Components por defecto',
       'Marca un componente interactivo con "use client" y explica por qué lo necesita',
@@ -140,8 +137,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['Next.js'],
     'Aplicación Next.js con App Router, Server Components y al menos una Server Action.'),
   m(11, 'TypeScript con React', 'TypeScript + React', 'Experto', '2 h', '#149eca',
-    'Tipa props, estado y hooks personalizados para detectar errores antes de ejecutar.',
-    ['Tipado de props y children', 'Generics en hooks personalizados', 'Tipado de eventos sintéticos', 'Componentes polimórficos tipados'],
+    'Tipa props, estado y hooks personalizados para detectar errores antes de ejecutar.',['Tipado de props y children', 'Hooks genéricos', 'Eventos tipados y componentes polimórficos'],
     [
       'Tipa las props de un componente con una interface, incluyendo children: React.ReactNode',
       'Escribe un hook personalizado genérico useLocalStorage<T> que funcione para cualquier tipo de dato',
@@ -151,9 +147,8 @@ export const REACT_MODULES: CourseModule[] = [
     ['¿Qué gana tu equipo al tipar props en vez de confiar en PropTypes o nada?', '¿Por qué un hook genérico es más reutilizable que uno con tipos fijos?'],
     ['TypeScript'],
     'Migración de un componente complejo a TypeScript estricto sin any.'),
-  m(12, 'Proyecto integrador: SPA con datos reales', 'Proyecto final', 'Experto', '6 h', '#149eca',
-    'Une routing, estado global y data fetching en una aplicación real con TypeScript.',
-    ['Proyecto react-ts que compila con tsc -b', 'Arquitectura por features', 'Estado de servidor con TanStack Query y datos validados con zod', 'Rutas protegidas y layouts', 'Tests de los flujos críticos'],
+  m(12, 'Proyecto integrador — SPA con datos reales', 'Proyecto final', 'Experto', '6 h', '#149eca',
+    'Une routing, estado global y data fetching en una aplicación real con TypeScript.',['Estructura del proyecto integrador', 'Integrando rutas, TanStack Query y Zustand', 'useEnvios — hook dedicado con TanStack Query'],
     [
       'Organiza el proyecto por features (envios/, auth/) en vez de por tipo de archivo, con archivos .ts/.tsx',
       'Implementa rutas protegidas con React Router y un layout compartido',
@@ -165,13 +160,13 @@ export const REACT_MODULES: CourseModule[] = [
     ['¿Qué decisión de arquitectura te costó más definir: la separación de estado de cliente vs servidor?', '¿Qué parte del ecosistema React (Query, Router, TypeScript) tuvo el mayor impacto en la calidad del código final?'],
     ['React', 'TypeScript', 'TanStack Query', 'Zustand', 'zod', 'Vitest', 'MSW'],
     'SPA en React + TypeScript (archivos .ts/.tsx) que compila con tsc -b, con rutas protegidas, datos validados con zod y tests del flujo crítico.'),
-  m(13, 'React en producción: resiliencia, accesibilidad y seguridad', 'Producción React', 'Experto', '7 h', '#149eca',
-    'Endurece la SPA y su variante servidor: define fronteras de Suspense/error, evita estados y efectos inconsistentes, completa flujos accesibles, protege render y acciones, estabiliza hidratación e internacionaliza sin divergencias.',
-    [
-      'Pureza, efectos, Suspense, Error Boundaries, recuperación y telemetría',
-      'Accesibilidad de componentes, routing, foco, formularios y pruebas de usuario',
-      'XSS, dangerouslySetInnerHTML, CSP, Server Components/Actions y secretos',
-      'Hidratación determinista, i18n, RTL, performance budgets y releases',
+  m(13, 'React en producción — resiliencia, accesibilidad y seguridad', 'Producción React', 'Experto', '7 h', '#149eca',
+    'Endurece la SPA y su variante servidor: define fronteras de Suspense/error, evita estados y efectos inconsistentes, completa flujos accesibles, protege render y acciones, estabiliza hidratación e internacionaliza sin divergencias.',[
+      'Diseñar estados de carga, error y recuperación',
+      'La composición visual debe conservar semántica y foco',
+      'Cliente y servidor forman una sola frontera de seguridad',
+      'Hidratación determinista, idioma y releases medibles',
+      'Migrar a React 19: codemods, cambios que rompen y verificación'
     ],
     [
       'Diseña fronteras de carga/error y prueba recuperación sin perder estado válido',
@@ -187,8 +182,7 @@ export const REACT_MODULES: CourseModule[] = [
     ['React', 'Next.js', 'Testing Library', 'Playwright', 'axe'],
     'Aplicación React resiliente con boundaries, flujo accesible, CSP, acciones autorizadas, hidratación estable, dos locales, medición por release y rollback probado.'),
   m(14, 'Next.js en producción: caché, Proxy, imágenes, React Aria e i18n', 'Next.js en producción', 'Experto', '3 h', '#149eca',
-    'Completa lo que no cubren los Módulos 10 y 13: regeneración de HTML público, metadatos y Proxy, imágenes y fuentes sin saltos de layout, diálogos accesibles con React Aria y mensajes ICU con plurales y RTL.',
-    ['ISR, generateMetadata y Proxy (antes Middleware)', 'next/image y next/font: CLS y FCP medidos', 'React Aria: useDialog, foco y jest-axe', 'next-intl: plurales CLDR, dir por locale y paridad de claves'],
+    'Completa lo que no cubren los Módulos 10 y 13: regeneración de HTML público, metadatos y Proxy, imágenes y fuentes sin saltos de layout, diálogos accesibles con React Aria y mensajes ICU con plurales y RTL.',['Next.js ISR, Metadata y Proxy (antes Middleware)', 'Optimización de imágenes y fuentes', 'Accesibilidad y React Aria', 'i18n, pluralización y RTL'],
     ['Distingue Proxy de autorización y valida la regeneración ISR con npm start', 'Mide CLS con y sin dimensiones de imagen', 'Comprueba role=dialog y el atrapado de foco', 'Rompe la build con una clave de traducción faltante'],
     ['¿Por qué Proxy no autoriza?', '¿Cuándo ISR sirve datos obsoletos?', '¿Por qué una clave de traducción faltante debe romper la build?'], ['Next.js','React Aria','next-intl','Lighthouse'], 'Proyecto Next.js con página pública regenerada, panel privado, imágenes y fuentes medidas, diálogo accesible y dos locales con plurales y RTL.'),
 ];

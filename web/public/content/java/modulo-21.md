@@ -698,7 +698,7 @@ ____ void enviarLote(List<String> destinos, String mensaje) { ... }
 
 **Transferencia al proyecto integrador:** la política de retirada documentada aquí es la que el proyecto integrador aplicará a su propia interfaz de repositorios antes de publicar la versión 2.0 del dominio.
 
-### Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 50 min
+### Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 45 min
 
 **Prerrequisito:** Módulo 2 (genéricos y type erasure) y Tema 2 de este módulo.
 **Al terminar podrás:** diagnosticar un choque de borrado al compilar, inspeccionar el método puente que genera el compilador, y explicar por qué cambiar un parámetro genérico puede romper la fuente sin romper el binario.
@@ -906,7 +906,7 @@ javap ____ -cp out io.academia.envios.CotizadorBase
 
 **Transferencia al proyecto integrador:** la API de exportación con varianza correcta es la que usará el proyecto integrador para generar informes sin acoplarse a un tipo concreto de colección.
 
-### Tema 5: Verificar la compatibilidad en el build · Avanzado · 50 min
+### Tema 5: Verificar la compatibilidad en el build · Avanzado · 45 min
 
 **Prerrequisito:** Temas 1 a 4 de este módulo.
 **Al terminar podrás:** escribir un verificador que compile un cliente congelado contra el JAR actual usando `javax.tools.JavaCompiler`, y usarlo como puerta del build que falla antes de publicar una ruptura.
