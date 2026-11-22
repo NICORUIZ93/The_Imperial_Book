@@ -4354,14 +4354,6 @@
     ],
     "17": [
       {
-        "title": "Opción A — H2 en memoria (rápida, sin Docker)",
-        "fragment": "opcion-a-h2-en-memoria-rapida-sin-docker"
-      },
-      {
-        "title": "Opción B — PostgreSQL con Docker (entorno real)",
-        "fragment": "opcion-b-postgresql-con-docker-entorno-real"
-      },
-      {
         "title": "JDBC, PreparedStatement y DAO",
         "fragment": "tema-1-jdbc-preparedstatement-y-dao"
       },
@@ -4380,8 +4372,8 @@
         "fragment": "tema-2-tokens-validacion-y-limites-de-seguridad"
       },
       {
-        "title": "Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos",
-        "fragment": "tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm-sin-inventar-algoritmos"
+        "title": "Criptografía con la JCA: SHA-256, HMAC y AES-GCM",
+        "fragment": "tema-3-criptografia-con-la-jca-sha-256-hmac-y-aes-gcm"
       }
     ],
     "19": [
@@ -4410,16 +4402,16 @@
         "fragment": "tema-6-internacionalizacion-numeros-monedas-fechas-y-orden-de-texto"
       },
       {
-        "title": "Proxies dinámicos: así funcionan @Transactional y los mocks",
-        "fragment": "tema-7-proxies-dinamicos-asi-funcionan-transactional-y-los-mocks"
+        "title": "Proxies dinámicos",
+        "fragment": "tema-7-proxies-dinamicos"
       },
       {
-        "title": "Carga de clases: cargadores, delegación y plugins con URLClassLoader",
-        "fragment": "tema-8-carga-de-clases-cargadores-delegacion-y-plugins-con-urlclassloader"
+        "title": "Carga de clases",
+        "fragment": "tema-8-carga-de-clases"
       },
       {
-        "title": "MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
-        "fragment": "tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
+        "title": "MethodHandles y VarHandles",
+        "fragment": "tema-9-methodhandles-y-varhandles"
       }
     ],
     "2": [
@@ -4470,8 +4462,8 @@
         "fragment": "tema-4-streams-como-composicion-pereza-orden-y-efectos-que-se-esconden"
       },
       {
-        "title": "UnaryOperator y BinaryOperator: la salida conserva el tipo",
-        "fragment": "tema-5-unaryoperator-y-binaryoperator-la-salida-conserva-el-tipo"
+        "title": "UnaryOperator y BinaryOperator",
+        "fragment": "tema-5-unaryoperator-y-binaryoperator"
       },
       {
         "title": "Referencias a métodos: escribir la operación sin repetirla",
@@ -4494,12 +4486,12 @@
         "fragment": "tema-10-collectors-formar-listas-mapas-grupos-y-texto"
       },
       {
-        "title": "Streams paralelos: comparar antes de acelerarlos",
-        "fragment": "tema-11-streams-paralelos-comparar-antes-de-acelerarlos"
+        "title": "Streams paralelos",
+        "fragment": "tema-11-streams-paralelos"
       },
       {
-        "title": "Pureza y efectos: calcular separado de guardar o imprimir",
-        "fragment": "tema-12-pureza-y-efectos-calcular-separado-de-guardar-o-imprimir"
+        "title": "Pureza y efectos",
+        "fragment": "tema-12-pureza-y-efectos"
       },
       {
         "title": "Flow API: publicar datos con demanda y cierre",
