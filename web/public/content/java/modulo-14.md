@@ -1,402 +1,220 @@
-# Módulo 14: Java en producción — memoria, benchmarks y runtime seguro
+# Módulo 14: Mecánica de JVM y evolución de plataforma
 
-El proyecto integrador ya funciona; en producción aparecen otras fronteras: visibilidad de memoria entre hilos, mediciones engañosas por optimizaciones del JIT, deserialización insegura, y el runtime como parte del artefacto. Este módulo trabaja estas fronteras con evidencia.
+Este módulo profundiza en aspectos donde Java sorprende a quien solo conoce la superficie: visibilidad de memoria, optimizaciones JIT, serialización, ciclo de vida del runtime, CDS/AOT y migración entre LTS. Son temas avanzados porque los errores son sutiles y a veces solo aparecen en producción o bajo carga.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Herramientas `jdeprscan`, `jdeps`, `jfr` disponibles en el JDK.
 
 ## Aprende construyendo
 
 ### Tema 1: Compartir memoria requiere orden y visibilidad · Avanzado · 45 min
 
-Un hilo escribe `data` y `ready`; otro espera `ready`. Sin happens-before, puede ver estado inconsistente.
+Caso guía: un hilo escribe una bandera; otro la lee. Sin sincronización, puedes ver valores obsoletos.
 
-#### Visibilidad
+#### Java Memory Model, `volatile`, happens-before
 
-**Definición formal.** Garantía de que una escritura realizada por un hilo es observable por otro hilo.
+**Definición formal.** El JMM define qué escrituras son visibles para qué lecturas en concurrencia. `volatile` garantiza visibilidad y orden de ciertos accesos; `synchronized` y locks establecen happens-before.
 
-**Para qué sirve.** Evita lecturas obsoletas o estados imposibles.
-
-**Cuándo usarlo.** Siempre que haya estado compartido entre hilos.
+```mermaid
+sequenceDiagram
+  participant W as Writer
+  participant V as volatile flag
+  participant R as Reader
+  W->>V: write true (happens-before)
+  R->>V: read true
+  Note over R: ve también escrituras previas al write volatile
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m14-t1-vis && cd /tmp/java-m14-t1-vis
+mkdir -p java-m14-jmm
+cd java-m14-jmm
 ```
+
+Crea el archivo `DemoVolatile.java`:
 
 ```java
-public class DemoVis {
-    static volatile boolean ready = false; static int data = 0;
-    public static void main(String[] args) throws Exception {
-        Thread t = new Thread(() -> { data = 42; ready = true; });
-        t.start(); while (!ready) Thread.onSpinWait(); System.out.println(data); t.join();
-    }
+public class DemoVolatile {
+  static volatile boolean ready = false;
+  static int value = 0;
+  public static void main(String[] args) throws Exception {
+    Thread t = new Thread(() -> { while (!ready) {} System.out.println(value); });
+    t.start();
+    value = 42;
+    ready = true;
+    t.join();
+  }
 }
 ```
-
-**Caso de uso real.** Flag de parada en worker.
-
-**Error común.** Flag no volátil/sin sincronización. Síntoma: bucle infinito o dato obsoleto. Corrección: `volatile`, lock o utilidades concurrentes.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `42`.
-
-#### Happens-before y JMM
-
-**Definición formal.** El Java Memory Model define relaciones happens-before que garantizan orden y visibilidad entre acciones.
-
-**Para qué sirve.** Razonar correctamente la concurrencia.
-
-**Cuándo usarlo.** Al diseñar comunicación entre hilos.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m14-t1-hb && cd /tmp/java-m14-t1-hb
+javac DemoVolatile.java
+java DemoVolatile
 ```
 
-```java
-public class DemoHB {
-    public static void main(String[] args) throws Exception {
-        final int[] box = {0};
-        Thread t = new Thread(() -> box[0] = 5);
-        t.start(); t.join(); // join establece happens-before
-        System.out.println(box[0]);
-    }
-}
-```
+**Error común.** Usar un boolean no volátil para señalizar entre hilos. Síntoma: loop infinito o valor obsoleto. Corrección: `volatile`, lock o utilidades concurrentes.
 
-**Caso de uso real.** Hilo principal lee resultado tras `join`.
-
-**Error común.** Asumir orden por “parece que corre en orden”. Corrección: usar garantías HB.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `5`.
-
-#### `volatile` y sincronización
-
-**Definición formal.** `volatile` da visibilidad y orden para una variable; `synchronized`/locks dan exclusión mutua y happens-before para secciones críticas.
-
-**Para qué sirve.** `volatile` para flags/publicación simple; locks para invariantes compuestos.
-
-**Cuándo usarlo y cuándo no.** No uses `volatile` para `count++` (RMW compuesto).
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p /tmp/java-m14-t1-sync && cd /tmp/java-m14-t1-sync
-```
-
-```java
-public class DemoSync {
-    static int c=0; static synchronized void inc(){ c++; }
-    public static void main(String[] args) throws Exception {
-        Thread a=new Thread(() -> { for(int i=0;i<1000;i++) inc(); });
-        Thread b=new Thread(() -> { for(int i=0;i<1000;i++) inc(); });
-        a.start(); b.start(); a.join(); b.join(); System.out.println(c);
-    }
-}
-```
-
-**Caso de uso real.** Proteger contador/invariante compartido.
-
-**Error común.** Usar volatile para operación compuesta. Corrección: `AtomicInteger` o lock.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `2000`.
+**Verificación (JDK 27, 2026-05-22).** `42`.
 
 ### Tema 2: La JVM optimiza y puede invalidar un cronómetro ingenuo · Avanzado · 45 min
 
-Un microbenchmark marca 0ms porque JIT eliminó el trabajo.
+Caso guía: medir rendimiento con un loop simple puede dar resultados falsos por optimización JIT.
 
-#### Optimizaciones JIT
+#### JIT y benchmarks ingenuos
 
-**Definición formal.** La JVM JIT compila código caliente a nativo y aplica optimizaciones como inlining, escape analysis y eliminación de código muerto.
+**Definición formal.** El JIT optimiza código caliente. Puede eliminar código muerto, hacer constant folding o inlining, invalidando microbenchmarks mal escritos.
 
-**Para qué sirve.** Mejora rendimiento, pero puede invalidar mediciones ingenuas.
-
-**Cuándo tenerlo en cuenta.** Benchmarks y performance tuning.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo enfocado (conceptual ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m14-t2-jit && cd /tmp/java-m14-t2-jit
+mkdir -p java-m14-jit
+cd java-m14-jit
 ```
 
+Crea el archivo `DemoNaive.java`:
+
 ```java
-public class DemoJit { static long work(int n){ long s=0; for(int i=0;i<n;i++) s+=i; return s; }
-    public static void main(String[] args){ for(int i=0;i<3;i++){ long t1=System.nanoTime(); System.out.println(work(1_000_000)); System.out.println((System.nanoTime()-t1)/1_000_000); } }
+public class DemoNaive {
+  public static void main(String[] args) {
+    long t = System.nanoTime();
+    long s = 0;
+    for (int i = 0; i < 1_000_000; i++) s += i;
+    System.out.println(s);
+    System.out.println(System.nanoTime() - t >= 0);
+  }
 }
 ```
 
-**Caso de uso real.** Calentamiento de servicio.
-
-**Error común.** Comparar primera iteración cold con hot sin control. Corrección: warmup y JMH.
-
-**Verificación (JDK 27, 2026-05-22).** Imprime resultados y tiempos; tiempos varían.
-
-#### Dead Code Elimination (DCE)
-
-**Definición formal.** Optimización donde la JVM elimina cómputo cuyo resultado no tiene efecto observable.
-
-**Para qué sirve.** Rendimiento; pero arruina benchmarks mal escritos.
-
-**Cuándo tenerlo en cuenta.** Al medir microbenchmarks.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
 ```bash
-mkdir -p /tmp/java-m14-t2-dce && cd /tmp/java-m14-t2-dce
+javac DemoNaive.java
+java DemoNaive
 ```
 
-```java
-public class DemoDce {
-    static int work(){ int s=0; for(int i=0;i<1_000_000;i++) s+=i; return s; }
-    public static void main(String[] args){ long t1=System.nanoTime(); work(); long t2=System.nanoTime(); System.out.println((t2-t1)>=0); }
-}
-```
+**Error común.** Concluir rendimiento por un nanoTime ingenuo. Corrección: usar JMH, warmup, blackholes, múltiples forks.
 
-**Caso de uso real.** Benchmark que parece “demasiado rápido”.
-
-**Error común.** Ignorar el resultado. Corrección: consumir resultado (`Blackhole` en JMH).
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `true`.
-
-#### JMH
-
-**Definición formal.** Java Microbenchmark Harness, herramienta oficial para escribir microbenchmarks controlando warmup, forks, y consumo de resultados.
-
-**Para qué sirve.** Medir micro-rendimiento con rigor.
-
-**Cuándo usarlo.** Solo cuando un microbenchmark es necesario. Para sistemas, medir end-to-end.
-
-**Ejemplo mínimo enfocado (ejecutable como dependencia/comando).**
-
-```bash
-# En un proyecto Maven con dependencia jmh-core/jmh-generator-annprocess
-mvn -q -DskipTests package
-java -jar target/benchmarks.jar
-```
-
-**Caso de uso real.** Comparar dos algoritmos de serialización.
-
-**Error común.** Usar `System.nanoTime` casero. Corrección: JMH.
-
-**Verificación.** JMH genera reporte; **nota**: requiere proyecto con dependencias JMH.
+**Verificación (JDK 27, 2026-05-22).** `499999500000` y `true` (el tiempo es >=0, pero no es benchmark válido).
 
 ### Tema 3: Deserializar es permitir construcción y comportamiento · Avanzado · 45 min
 
-Deserializar input no confiable puede crear objetos inválidos o explotar gadgets.
+Caso guía: deserializar datos no confiables puede crear objetos inesperados o ejecutar rutas peligrosas.
 
-#### Deserialización segura
+#### Serialización Java y riesgos
 
-**Definición formal.** Reconstruir datos externos validando tipo, esquema e invariantes antes de confiar en ellos.
+**Definición formal.** La serialización nativa de Java convierte objetos en bytes; deserializar reconstruye objetos. Es poderosa pero peligrosa si el input no es confiable.
 
-**Para qué sirve.** Evita objetos inválidos y reduce superficie de ataque.
+**Contrato/riesgo.** No deserialices datos no confiables con `ObjectInputStream` sin filtros. Preferir JSON/Protobuf con esquemas explícitos cuando sea posible.
 
-**Cuándo usarlo.** Toda entrada externa: JSON, CSV, mensajes, sockets.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo enfocado (ejecutable, controlado).**
 
 ```bash
-mkdir -p /tmp/java-m14-t3-sec && cd /tmp/java-m14-t3-sec
+mkdir -p java-m14-ser
+cd java-m14-ser
 ```
 
+Crea el archivo `DemoSer.java`:
+
 ```java
-record Guia(String id, int pesoKg) {
-    static Guia parse(String csv){
-        var p=csv.split(","); if(p.length!=2) throw new IllegalArgumentException("formato");
-        String id=p[0].trim(); int peso=Integer.parseInt(p[1].trim());
-        if(id.isBlank()||peso<=0) throw new IllegalArgumentException("invalido");
-        return new Guia(id,peso);
+import java.io.*;
+class Msg implements Serializable { static final long serialVersionUID = 1L; String v="ok"; }
+public class DemoSer {
+  public static void main(String[] args) throws Exception {
+    byte[] bytes;
+    try (ByteArrayOutputStream bos = new ByteArrayOutputStream(); ObjectOutputStream out = new ObjectOutputStream(bos)) {
+      out.writeObject(new Msg()); bytes = bos.toByteArray();
     }
+    try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(bytes))) {
+      Msg m = (Msg) in.readObject(); System.out.println(m.v);
+    }
+  }
 }
-public class DemoSec { public static void main(String[] args){ System.out.println(Guia.parse("G-1,2")); } }
 ```
-
-**Caso de uso real.** Validar payload antes de usarlo.
-
-**Error común.** Deserializar Java nativo desde fuentes no confiables. Corrección: formatos de datos (JSON) con allowlist y validación.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `Guia[id=G-1, pesoKg=2]`.
-
-#### Superficie de ataque y contrato de datos
-
-**Definición formal.** Superficie de ataque son tipos/operaciones alcanzables durante parseo; contrato de datos es el esquema esperado.
-
-**Para qué sirve.** Minimizar riesgo y rechazar input inesperado.
-
-**Cuándo usarlo.** Fronteras de sistema.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m14-t3-attack && cd /tmp/java-m14-t3-attack
+javac DemoSer.java
+java DemoSer
 ```
 
-```java
-public class DemoAttack {
-    static int parsePeso(String s){ int p=Integer.parseInt(s); if(p<=0) throw new IllegalArgumentException("peso"); return p; }
-    public static void main(String[] args){ try { parsePeso("-1"); } catch(Exception e){ System.out.println("rechazado"); } }
-}
-```
+**Error común.** Aceptar serialización Java desde la red. Corrección: evitarla; si es inevitable, usar `ObjectInputFilter`.
 
-**Caso de uso real.** Rechazar tipo/campo inesperado en JSON.
-
-**Error común.** Aceptar “lo que venga”. Corrección: allowlist y validación.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `rechazado`.
+**Verificación (JDK 27, 2026-05-22).** `ok`.
 
 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min
 
-La app funciona local pero falla en contenedor por JRE distinto.
+Caso guía: tu app depende de hooks de shutdown, señales y recursos abiertos.
 
-#### Runtime como artefacto
+#### Shutdown hooks y ciclo de vida
 
-**Definición formal.** El JDK/JRE/runtime image usado para ejecutar es parte del entregable y debe versionarse y probarse.
-
-**Para qué sirve.** Evita divergencias “en mi máquina”.
-
-**Cuándo usarlo.** CI/CD, contenedores, jlink.
+**Definición formal.** Un shutdown hook es un hilo registrado con `Runtime.getRuntime().addShutdownHook(...)` que la JVM intenta ejecutar al apagarse normalmente.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m14-t4-rt && cd /tmp/java-m14-t4-rt
+mkdir -p java-m14-hook
+cd java-m14-hook
 ```
+
+Crea el archivo `DemoHook.java`:
 
 ```java
-public class DemoRt { public static void main(String[] args){ System.out.println(System.getProperty("java.version")); } }
+public class DemoHook {
+  public static void main(String[] args) {
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> System.out.println("shutdown")));
+    System.out.println("run");
+  }
+}
 ```
-
-**Caso de uso real.** Fijar imagen base JDK en Dockerfile.
-
-**Error común.** Usar runtime del host. Corrección: fijar versión en CI/contenedor.
-
-**Verificación (JDK 27, 2026-05-22).** Imprime la versión del JDK (ej. `27...`).
-
-#### Ciclo de vida y compatibilidad
-
-**Definición formal.** Planificar upgrades, parches, EOL y rollback del runtime junto con app y dependencias.
-
-**Para qué sirve.** Operación segura.
-
-**Cuándo usarlo.** Antes de entrar a producción y en mantenimiento.
-
-**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-java -version
+javac DemoHook.java
+java DemoHook
 ```
 
-**Caso de uso real.** Migrar de 17 a 21 o 25 LTS.
+**Error común.** Hacer trabajo largo/no confiable en shutdown hook. Corrección: cerrar rápido, idempotente, sin depender de servicios ya apagados.
 
-**Error común.** Runtime EOL sin plan. Corrección: política de upgrade.
-
-**Verificación (2026-05-22).** `java -version` muestra runtime instalado.
+**Verificación (JDK 27, 2026-05-22).** `run` y `shutdown`.
 
 ### Tema 5: Arranque más rápido: archivos CDS y la caché AOT · Avanzado · 40 min
 
-Una CLI arranca lento; CDS/AppCDS puede reducir startup.
+Caso guía: un CLI Java arranca lento; CDS/AOT pueden ayudar en arranques repetidos.
 
-#### CDS/AppCDS
+#### CDS/AOT cache
 
-**Definición formal.** Class Data Sharing permite compartir metadata de clases preprocesada en un archive; AppCDS extiende a clases de aplicación.
+**Definición formal.** CDS (Class Data Sharing) y cachés AOT almacenan metadatos/clases preprocesadas para acelerar arranque. La disponibilidad y flags dependen de la versión de JDK.
 
-**Para qué sirve.** Mejorar tiempo de arranque.
-
-**Cuándo usarlo.** CLIs, serverless, procesos de vida corta. Medir antes/después.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo (nota honesta).**
 
 ```bash
-mkdir -p /tmp/java-m14-t5-cds && cd /tmp/java-m14-t5-cds
+java -Xshare:off -version
 ```
 
-```java
-public class App { public static void main(String[] args){ System.out.println("hola"); } }
-```
-
-```bash
-javac App.java && jar cf app.jar App.class
-java -Xshare:dump -XX:SharedArchiveFile=app.jsa -cp app.jar App
-java -XX:SharedArchiveFile=app.jsa -cp app.jar App
-```
-
-**Caso de uso real.** Acelerar arranque de herramientas CLI.
-
-**Error común.** Archive incompatible con classpath/JDK. Corrección: regenerar con mismo runtime y classpath.
-
-**Verificación (JDK 27, 2026-05-22).** Ambas ejecuciones imprimen `hola`. **Nota:** flags pueden variar por JDK.
-
-#### Caché AOT
-
-**Definición formal.** Artefactos de compilación/caché ahead-of-time que pueden acelerar arranque según capacidades del JDK.
-
-**Para qué sirve.** Reducir warmup/startup en escenarios soportados.
-
-**Cuándo usarlo.** Cuando el JDK objetivo lo soporte y la mejora sea medible.
-
-**Ejemplo mínimo enfocado (ejecutable como verificación de versión).**
-
-```bash
-java -XX:+UnlockDiagnosticVMOptions -XX:+PrintFlagsFinal -version | head -1
-```
-
-**Caso de uso real.** Optimización de arranque en servicios.
-
-**Error común.** Confundir con GraalVM native image. Corrección: verificar tecnología y límites.
-
-**Verificación.** Validar flags disponibles en el JDK en uso; **nota** de compatibilidad por versión.
+**Nota de verificación.** La configuración AOT/CDS varía por JDK y build. En JDK 27 se verificó `java -version`; la generación de caché específica depende del flujo de la distribución. No inventar métricas de arranque sin medir en el mismo host.
 
 ### Tema 6: Migrar entre versiones LTS: de 17 a 21 y 25 con jdeprscan y jdeps · Avanzado · 45 min
 
-Migras de 17 a 21/25 y necesitas detectar APIs removidas y dependencias internas.
-
-#### Migración LTS
-
-**Definición formal.** Proceso planificado de mover app/deps/build/runtime a una versión LTS soportada.
-
-**Para qué sirve.** Seguridad, soporte y acceso a mejoras del lenguaje/plataforma.
-
-**Cuándo usarlo.** Antes del EOL o por requisitos de plataforma.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-java -version
-javac -version
-```
-
-**Caso de uso real.** 17 → 21 → 25.
-
-**Error común.** Saltar sin tests. Corrección: matriz de CI y pruebas de regresión.
-
-**Verificación (2026-05-22).** JDK 27 instalado.
+Caso guía: migrar un jar viejo a JDK nuevo.
 
 #### `jdeprscan` y `jdeps`
 
-**Definición formal.** `jdeprscan` analiza uso de APIs deprecated/for removal; `jdeps` analiza dependencias de clases/paquetes/módulos.
+**Definición formal.** `jdeprscan` analiza uso de APIs deprecadas/removidas. `jdeps` analiza dependencias de módulos/paquetes y acceso a APIs internas.
 
-**Para qué sirve.** Detectar riesgos de migración y uso de APIs internas.
-
-**Cuándo usarlo.** Antes y durante la migración.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo enfocado.**
 
 ```bash
-mkdir -p /tmp/java-m14-t6 && cd /tmp/java-m14-t6
-cat > App.java << 'JAVA'
-public class App { public static void main(String[] args){ System.out.println("ok"); } }
-JAVA
-javac App.java && jar cf app.jar App.class
-jdeprscan app.jar || true
-jdeps -summary app.jar
+jdeps --version
+jdeprscan --version || true
 ```
 
-**Caso de uso real.** Detectar dependencia a `sun.*` o API removida.
+**Error común.** Migrar solo cambiando versión de compilación sin revisar deprecaciones/uso interno. Corrección: ejecutar `jdeprscan`, `jdeps`, tests y runtime smoke.
 
-**Error común.** Ignorar warnings. Corrección: remediar antes del upgrade.
+**Verificación (JDK 27, 2026-05-22).** Herramientas presentes en el JDK; salida exacta depende de instalación.
 
-**Verificación (JDK 27, 2026-05-22).** `jdeps -summary` muestra dependencias; `jdeprscan` puede no reportar elementos para este jar simple.
+## Cierre
 
-## Cierre del módulo
+La mecánica de JVM y la evolución de plataforma son de “modo senior”: cuando algo falla de forma rara, estos fundamentos explican por qué.
 
-Producción exige evidencia: visibilidad correcta, benchmarks fiables, deserialización defensiva, runtime controlado y migraciones planificadas.
+## Checklist
+
+- Entiendo visibilidad/happens-before.
+- No confío en microbenchmarks ingenuos.
+- Evito serialización Java no confiable.
+- Uso `jdeprscan/jdeps` en migraciones.
