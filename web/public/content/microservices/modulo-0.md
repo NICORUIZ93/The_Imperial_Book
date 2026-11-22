@@ -87,7 +87,7 @@ Y casi todos los programas que escribirás al principio **terminan**: hacen su t
 
 #### 7. EXPLICACIÓN INTERMEDIA
 
-Cuando escribes `node programa/receta.js`, el sistema operativo crea un **proceso**: un espacio de memoria
+Cuando escribes `node receta.js`, el sistema operativo crea un **proceso**: un espacio de memoria
 propio donde Node.js lee el archivo, lo traduce a instrucciones de máquina y las ejecuta en orden. Dentro del
 programa:
 
@@ -248,7 +248,7 @@ ninguna vez.)*
 **Síntoma:** escribes `node receta.js` desde la carpeta equivocada y ves:
 
 ```text
-Error: Cannot find module '/…/modulo-0/receta.js'
+Error: Cannot find module '/…/mi-programa/receta.js'
   code: 'MODULE_NOT_FOUND'
 ```
 
