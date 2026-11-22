@@ -22,19 +22,13 @@ La concurrencia permite que un programa avance en varias tareas. Bien usada, mej
 
 Necesitas procesar varias guías en paralelo sin crear un hilo nuevo por tarea manualmente. Quieres limitar el número de hilos, esperar resultados y cerrar el pool correctamente.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Crear `new Thread(...).start()` por tarea es simple pero no escala bien. `ExecutorService` separa la tarea del hilo que la ejecuta.
+**Definición formal.** Un *hilo* (thread) es la unidad de ejecución dentro de un proceso. `ExecutorService` es una abstracción de ejecución que desacopla el envío de tareas (`Runnable`/`Callable`) de la política de hilos. `Future<T>` representa el resultado pendiente de una computación asíncrona.
 
-| API | Uso |
-|---|---|
-| `Executors.newFixedThreadPool(n)` | Pool con límite fijo |
-| `submit(Callable)` | Envía tarea que devuelve resultado (`Future`) |
-| `shutdown()` | No acepta nuevas tareas |
-| `awaitTermination(...)` | Espera cierre |
-| `close()` (Java 19+) | `ExecutorService` es `AutoCloseable` |
+**Contrato / invariantes / reglas.** `submit`/`invokeAll` aceptan tareas y devuelven futuros. `shutdown()` inicia cierre ordenado: no acepta nuevas tareas, pero completa las ya encoladas. `awaitTermination` espera cierre. `ExecutorService` es `AutoCloseable` desde Java 19. `Future.get()` bloquea y puede lanzar `ExecutionException` (falla de tarea), `InterruptedException` (interrupción) o `CancellationException`.
 
-`Future.get()` bloquea hasta que hay resultado o error.
+**Modelo mental.** El executor es una oficina con un número fijo de escritorios: tú entregas tareas a la bandeja; los trabajadores las toman; tú recoges el comprobante (`Future`).
 
 **Implementación desde cero**
 
@@ -50,7 +44,6 @@ public class DemoExecutor {
                 () -> "procesada G-2 en " + Thread.currentThread().getName(),
                 () -> "procesada G-3 en " + Thread.currentThread().getName()
             );
-
             List<Future<String>> futuros = executor.invokeAll(tareas);
             for (Future<String> futuro : futuros) {
                 System.out.println(futuro.get());
@@ -65,8 +58,8 @@ public class DemoExecutor {
 
 - `newFixedThreadPool(2)` limita concurrencia a dos hilos.
 - `Callable<String>` permite devolver valor y lanzar excepciones comprobadas.
-- `invokeAll` envía todas las tareas y devuelve futuros en el mismo orden.
-- `try-with-resources` llama `close()`, que cierra el executor de forma ordenada.
+- `invokeAll` devuelve futuros en el mismo orden de las tareas.
+- `try-with-resources` llama `close()`, cerrando el executor de forma ordenada.
 - `future.get()` propaga errores de la tarea envueltos en `ExecutionException`.
 
 **Ejecución y salida real**
@@ -102,17 +95,13 @@ Cambia el pool a 1 y observa que las tareas se ejecutan secuencialmente en un so
 
 Necesitas consultar el precio de un producto y el tipo de cambio, combinar ambos resultados y manejar fallos sin bloquear manualmente cada paso con `Future.get()`.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-`CompletableFuture` representa un resultado asíncrono que puede componerse. Permite encadenar pasos, combinar futuros y definir recuperación ante errores.
+**Definición formal.** `CompletableFuture<T>` es una implementación de `Future<T>` y `CompletionStage<T>` que permite componer, combinar y manejar asincronía mediante callbacks/pipelines declarativos.
 
-| Método | Propósito |
-|---|---|
-| `supplyAsync` | Ejecuta tarea que devuelve valor |
-| `thenApply` | Transforma resultado |
-| `thenCompose` | Encadena otro futuro dependiente |
-| `thenCombine` | Combina dos futuros independientes |
-| `exceptionally` | Recupera ante error |
+**Contrato / invariantes / reglas.** Las etapas pueden ejecutarse en el pool común, en un executor dado o en el hilo que completa, según el método (`*Async`). `thenCompose` aplana dependencias de futuros (monadic flatMap); `thenCombine` combina futuros independientes. Excepciones se propagan por la cadena; `exceptionally/handle/whenComplete` permiten recuperación u observación. `join()` es similar a `get()` pero lanza excepción unchecked.
+
+**Modelo mental.** Es una cadena de promesas: cuando llega un resultado, se activa la siguiente etapa; si falla, se desvía al manejador de error.
 
 **Implementación desde cero**
 
@@ -129,13 +118,10 @@ public class DemoCompletable {
     }
 
     public static void main(String[] args) {
-        CompletableFuture<Double> precioEur = precioUsd()
-            .thenCombine(tipoCambio(), (precio, cambio) -> precio * cambio);
-
+        CompletableFuture<Double> precioEur = precioUsd().thenCombine(tipoCambio(), (p, c) -> p * c);
         CompletableFuture<String> mensaje = precioEur
             .thenApply(eur -> "Precio EUR: " + eur)
             .exceptionally(ex -> "Error: " + ex.getMessage());
-
         System.out.println(mensaje.join());
     }
 }
@@ -146,8 +132,8 @@ public class DemoCompletable {
 - `supplyAsync` ejecuta en el `ForkJoinPool.commonPool()` por defecto.
 - `thenCombine` es ideal cuando dos tareas son independientes.
 - `thenCompose` se usaría si el segundo futuro depende del valor del primero.
-- `exceptionally` ofrece una ruta de recuperación; evita dejar la excepción sin manejo.
-- `join()` espera resultado y lanza excepción unchecked si falla.
+- `exceptionally` ofrece una ruta de recuperación.
+- `join()` espera resultado al final.
 
 **Ejecución y salida real**
 
@@ -177,14 +163,13 @@ Simula un fallo en `tipoCambio()` lanzando `RuntimeException` y verifica que `ex
 
 Un servicio debe atender miles de solicitudes que pasan mucho tiempo esperando I/O. Con hilos de plataforma, cada hilo bloqueado consume recursos caros. Los virtual threads permiten modelar una tarea por solicitud con bajo costo.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Los virtual threads (Java 21+) son hilos ligeros gestionados por la JVM. Son adecuados para tareas con mucho bloqueo (I/O, espera de red). No hacen más rápido el CPU puro; hacen más barata la espera.
+**Definición formal.** Un *virtual thread* (Java 21+) es un hilo ligero gestionado por la JVM, montado sobre hilos de plataforma (carrier threads). Mantiene la semántica de `Thread` pero con costo de creación/cambio mucho menor para cargas I/O-bound.
 
-| Tipo | Bueno para | Límite |
-|---|---|---|
-| Hilo de plataforma | CPU, tareas nativas, pocos hilos | Caro en miles de bloqueos |
-| Virtual thread | Muchas tareas bloqueantes | No reemplaza diseño; cuidado con pinning/synchronized |
+**Contrato / invariantes / reglas.** Los virtual threads son apropiados para alta concurrencia con bloqueos frecuentes. No incrementan CPU; no sustituyen el diseño concurrente correcto. Operaciones bloqueantes en I/O soportado desmontan el virtual thread del carrier. Se debe evitar fijar (pinning) prolongado por secciones críticas nativas o sincronizadas problemáticas. El estado compartido mutable sigue requiriendo sincronización.
+
+**Modelo mental.** Hilo de plataforma: un camión por entrega. Virtual thread: muchos paquetes con pocos camiones, donde los paquetes bajan del camión mientras esperan en la puerta.
 
 **Implementación desde cero**
 
@@ -212,7 +197,7 @@ public class DemoVirtualThreads {
 **Desglose del código**
 
 - `newVirtualThreadPerTaskExecutor()` crea un virtual thread por tarea.
-- `Thread.sleep` simula bloqueo; con virtual threads, el hilo de plataforma puede liberarse mientras la tarea espera.
+- `Thread.sleep` simula bloqueo; el carrier puede liberarse mientras la tarea espera.
 - El executor es `AutoCloseable`; ciérralo para esperar el trabajo pendiente.
 - Los virtual threads no eliminan la necesidad de sincronización ante estado compartido.
 
@@ -239,7 +224,7 @@ La salida exacta varía.
 javac DemoVirtualThreads.java && java DemoVirtualThreads
 ```
 
-Comprueba que ambas tareas completan y el proceso termina. Para carga real, mide con muchas tareas y I/O simulado.
+Comprueba que ambas tareas completan y el proceso termina.
 
 ### Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min
 
@@ -247,18 +232,13 @@ Comprueba que ambas tareas completan y el proceso termina. Para carga real, mide
 
 Dos hilos incrementan el mismo contador. A veces el resultado es correcto, a veces menor. El bug no siempre aparece, lo que lo hace peligroso.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Una condición de carrera ocurre cuando el resultado depende del orden de intercalación de hilos sobre estado compartido mutable. `count++` no es atómico: lee, suma y escribe.
+**Definición formal.** Una *condición de carrera* (data race / race condition, según contexto) ocurre cuando la corrección depende del orden no determinista de acceso concurrente a estado compartido. Una *sección crítica* es una región que debe ejecutarse con exclusión o disciplina de sincronización para preservar invariantes.
 
-Herramientas comunes:
+**Contrato / invariantes / reglas.** `count++` es una operación compuesta (leer-modificar-escribir), no atómica. El Java Memory Model define *happens-before*: sin una relación happens-before, no hay garantías de visibilidad/orden esperadas. `synchronized`, `volatile`, `Lock`, y clases atómicas establecen garantías distintas. `volatile` garantiza visibilidad/orden de lecturas-escrituras de la variable, pero no atomicidad de operaciones compuestas.
 
-| Herramienta | Cuándo usarla |
-|---|---|
-| `synchronized` | Proteger sección crítica simple |
-| `AtomicInteger/Long` | Contadores y actualizaciones atómicas simples |
-| `Lock` | Control más fino que `synchronized` |
-| Inmutabilidad/confined state | Evitar compartir estado mutable |
+**Modelo mental.** Dos personas editan el mismo saldo en papeles distintos: ambos leen 100, ambos escriben 110; se perdió una operación.
 
 **Implementación desde cero**
 
@@ -287,7 +267,7 @@ public class DemoRace {
 - `noSeguro++` puede perder incrementos cuando dos hilos leen el mismo valor antes de escribir.
 - `AtomicInteger.incrementAndGet()` realiza la operación atómica.
 - El `try-with-resources` espera el cierre del executor antes de imprimir.
-- Para invariantes más complejos, un simple atómico puede no bastar; usa bloqueos o diseña el estado compartido.
+- Para invariantes más complejos, un atómico simple puede no bastar.
 
 **Ejecución y salida real**
 
@@ -322,15 +302,13 @@ Para responder una solicitud necesitas consultar usuario y pedidos. Son tareas r
 
 > **Nota de versión:** Structured Concurrency ha evolucionado entre previews. En JDK 27 (con preview habilitado) este ejemplo compila con `--release 27 --enable-preview`. Verifica la API exacta de tu JDK antes de usarla en producción.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Structured concurrency trata tareas concurrentes como una unidad de trabajo con alcance claro. El scope abre, lanza subtareas, espera y cierra. Si el scope termina, las subtareas no quedan sueltas.
+**Definición formal.** La *concurrencia estructurada* es un modelo donde las subtareas concurrentes tienen un alcance léxico bien definido: se inician, esperan y terminan dentro de un bloque/scope, formando una unidad de trabajo.
 
-Beneficios:
+**Contrato / invariantes / reglas.** El scope establece la política de inicio, unión, propagación de fallos y cancelación. Las subtareas no deben sobrevivir al scope. Esto mejora observabilidad, manejo de errores y cancelación respecto a futuros no estructurados. Como la API ha sido preview en versiones recientes, el contrato exacto depende de la versión del JDK.
 
-- ciclo de vida claro;
-- cancelación y errores propagados por estructura;
-- código más fácil de razonar que futuros sueltos.
+**Modelo mental.** Es como un equipo que entra a una sala a resolver un caso: nadie se va hasta que el caso se cierra o se cancela formalmente.
 
 **Implementación desde cero**
 
@@ -353,7 +331,6 @@ public class DemoStructured {
             var u = scope.fork(DemoStructured::usuario);
             var p = scope.fork(DemoStructured::pedidos);
             scope.join();
-
             System.out.println(u.get() + " - " + p.get());
         }
     }
@@ -366,11 +343,10 @@ public class DemoStructured {
 - `fork` lanza subtareas relacionadas.
 - `join()` espera la finalización del scope según su política.
 - El `try-with-resources` asegura el cierre del scope.
-- Si una subtarea falla, la política del scope determina cancelación/propagación; revisa la configuración para tu caso.
 
 **Ejecución y salida real**
 
-En JDK 25 con esta API:
+En JDK 27 con preview habilitado:
 
 ```text
 Ada - 3 pedidos
@@ -380,9 +356,9 @@ Ada - 3 pedidos
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| `cannot find symbol StructuredTaskScope` | JDK no soporta esa API/versión | Verifica JDK 25 y ajusta al API disponible |
+| `cannot find symbol StructuredTaskScope` | JDK no soporta esa API/versión | Verifica JDK y flags preview |
 | Subtareas huérfanas | Usaste futuros sin estructura | Agrupa tareas relacionadas en un scope |
-| Ignoras fallos parciales | No definiste política de error | Elige join/fallo/cancelación según el caso de negocio |
+| Ignoras fallos parciales | No definiste política de error | Elige join/fallo/cancelación según el caso |
 
 **Verificación rápida**
 
@@ -399,21 +375,15 @@ Si tu JDK no tiene esta API exacta, conserva el concepto y usa el equivalente di
 
 Quieres propagar un `requestId` a código llamado dentro de la misma tarea, incluso si se ejecuta en otros hilos/vthreads. Con `ThreadLocal` es fácil olvidar la limpieza o filtrar contexto.
 
-> **Nota de versión:** Scoped Values es una característica final en Java 25. Requiere JDK 25.
+> **Nota de versión:** Scoped Values es una característica final en Java 25. Requiere JDK 25+.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-`ScopedValue` permite vincular un valor inmutable a un ámbito de ejecución. A diferencia de `ThreadLocal`:
+**Definición formal.** Un `ScopedValue` es una variable de contexto inmutable ligada a un alcance de ejecución dinámico. A diferencia de `ThreadLocal`, su valor se enlaza para la ejecución de un bloque y no se muta arbitrariamente.
 
-- el valor no se muta; se enlaza por alcance;
-- el alcance es visible en el código;
-- funciona bien con virtual threads y structured concurrency.
+**Contrato / invariantes / reglas.** `ScopedValue.where(k,v).run(...)` establece el binding en el alcance. `get()` requiere que el valor esté ligado en el contexto actual; si no, lanza excepción. El valor se desliga al salir del scope. Esto evita fugas típicas de `ThreadLocal` en pools y favorece un modelo funcional/inmutable de contexto.
 
-| `ThreadLocal` | `ScopedValue` |
-|---|---|
-| Mutable, set/get | Enlazado por scope |
-| Requiere `remove()` | Se limpia al salir del scope |
-| Fácil de filtrar en pools | Modelo de alcance más seguro |
+**Modelo mental.** `ThreadLocal` es una mochila que cada hilo carga y puede olvidar vaciar; `ScopedValue` es un pase temporal que solo vale dentro de una sala.
 
 **Implementación desde cero**
 
@@ -429,7 +399,6 @@ public class DemoScopedValue {
         ScopedValue.where(REQUEST_ID, "req-123").run(() -> {
             procesar();
         });
-
         System.out.println("fuera=" + REQUEST_ID.isBound());
     }
 }
@@ -444,7 +413,7 @@ public class DemoScopedValue {
 
 **Ejecución y salida real**
 
-En JDK 25:
+En JDK 25+:
 
 ```text
 request=req-123
@@ -473,16 +442,13 @@ Prueba llamar `REQUEST_ID.get()` fuera del scope y captura la excepción para en
 
 Una llamada externa puede tardar demasiado. Quieres limitar el tiempo, cancelar la tarea y asegurarte de que archivos/conexiones se cierren aunque haya timeout.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-La cancelación en Java es normalmente **cooperativa**: interrumpir un hilo no mata mágicamente la tarea; la tarea debe observar la interrupción o comprobar una condición.
+**Definición formal.** Un *timeout* es un límite temporal máximo para una operación. La *cancelación cooperativa* es un mecanismo donde la tarea observa una señal de cancelación/interrupción y termina limpiamente; no es terminación forzada inmediata del hilo.
 
-Buenas prácticas:
+**Contrato / invariantes / reglas.** `Future.cancel(true)` solicita interrupción. El código debe responder a `InterruptedException`, a `Thread.interrupted()/isInterrupted()` o a APIs sensibles a interrupción. Ignorar interrupciones puede dejar tareas colgadas. Los recursos deben cerrarse en `try-with-resources` o `finally`. Al capturar `InterruptedException`, se debe restaurar el estado de interrupción (`Thread.currentThread().interrupt()`) o salir de forma controlada.
 
-- usa timeouts (`get(timeout)`, `orTimeout`, APIs con deadline);
-- maneja `InterruptedException` restaurando la interrupción o saliendo limpiamente;
-- cierra recursos con `try-with-resources`;
-- evita tragar interrupciones.
+**Modelo mental.** Cancelar es tocar el timbre y pedir salir; la tarea debe escuchar el timbre y recoger sus cosas antes de irse.
 
 **Implementación desde cero**
 
@@ -522,7 +488,7 @@ public class DemoTimeout {
 - `future.cancel(true)` solicita interrupción.
 - La tarea revisa `isInterrupted()` y usa `sleep`, que también responde a interrupción.
 - `shutdownNow()` intenta detener tareas pendientes al cerrar.
-- La tarea devuelve o termina limpiamente; los recursos que abra deben ir en `try-with-resources` dentro de la tarea.
+- Los recursos abiertos dentro de la tarea deben ir en `try-with-resources`.
 
 **Ejecución y salida real**
 
