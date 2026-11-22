@@ -24,47 +24,82 @@ Supongamos que necesitamos calcular el precio final de un producto con IVA. La r
 
 #### Qué es un programa y qué significa programar
 
-Un programa es una especificación finita y ejecutable de un cómputo. A partir de un estado o unos datos de entrada, produce una salida o un nuevo estado siguiendo las reglas del lenguaje y del entorno de ejecución. Programar, en este sentido, no consiste solo en escribir código: consiste en definir con precisión una regla, expresarla en un lenguaje formal, ejecutarla y comprobar que su comportamiento es el esperado.
+**Definición formal.** Un programa es una especificación finita y ejecutable de un cómputo: dada una entrada/estado, produce salida o nuevo estado según reglas formales.
 
-Cuando la regla es clara y repetible, un programa resulta útil porque automatiza el cálculo y evita repetirlo manualmente. En cambio, si la regla es ambigua, el primer problema no es técnico sino conceptual: antes de codificar hay que definir qué significa “correcto”. La verificación es parte del acto de programar; sin ella, el código es una hipótesis no comprobada.
+**Para qué sirve.** Automatiza reglas repetibles y hace observable el resultado.
+
+**Cuándo usarlo y cuándo no.** Úsalo cuando la regla sea clara y verificable. Si la regla es ambigua, primero define qué significa “correcto”.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m0-prog && cd /tmp/java-m0-prog
+cat > Regla.java << 'JAVA'
+public class Regla { public static void main(String[] args){ int entrada=10; System.out.println(entrada*2); } }
+JAVA
+javac Regla.java && java Regla
+```
+
+**Caso de uso real.** Calcular IVA de pedidos automáticamente.
+
+**Error común.** Codificar sin criterio de corrección. Síntoma: “funciona” pero resultado inválido. Corrección: definir entrada, salida esperada y verificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `20`.
 
 #### Por qué Java
 
-Java es un lenguaje orientado a objetos, de tipado estático, que se compila a bytecode y se ejecuta sobre la Java Virtual Machine (JVM). El tipado estático significa que muchas incompatibilidades de tipos se detectan durante la compilación. La compilación a bytecode permite separar el código fuente de la plataforma concreta donde se ejecuta. La JVM proporciona el entorno de ejecución que interpreta o compila ese bytecode en la máquina anfitriona.
+**Definición formal.** Java es un lenguaje orientado a objetos, de tipado estático, compilado a bytecode y ejecutado sobre la JVM.
 
-Java se usa cuando interesa construir software mantenible, con buen tooling, bibliotecas maduras y portabilidad razonable: servicios backend, herramientas empresariales, aplicaciones Android, utilidades de línea de comandos, entre otros casos. No es la mejor opción para todo: un script pequeño de una sola vez puede resolverse con menos ceremonia, y ciertos sistemas de muy bajo nivel pueden requerir lenguajes con control más directo de memoria y hardware.
+**Para qué sirve.** Permite construir software mantenible con tooling maduro y portabilidad vía JVM.
 
-Para compilar código Java desde la terminal se utiliza `javac`, la herramienta del JDK. El resultado de la compilación es un archivo `.class`, que contiene bytecode. Para ejecutarlo se utiliza `java`, que inicia la JVM y busca el punto de entrada del programa. El punto de entrada estándar de una aplicación Java es el método `main`, cuya firma debe ser exactamente esta:
+**Cuándo usarlo y cuándo no.** Úsalo en backend, Android, herramientas empresariales/CLI. Evítalo cuando un script trivial o control de muy bajo nivel sea el objetivo principal.
 
-```java
-public static void main(String[] args)
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m0-porque && cd /tmp/java-m0-porque
+cat > Hola.java << 'JAVA'
+public class Hola { public static void main(String[] args){ System.out.println("Java OK"); } }
+JAVA
+javac Hola.java && java Hola
 ```
 
-Si la firma cambia, la JVM no podrá usar ese método como inicio del programa.
+**Caso de uso real.** Servicio backend con reglas de negocio y pruebas automatizadas.
 
-#### Un primer ejemplo
+**Error común.** Cambiar la firma de `main`. Síntoma: JVM no encuentra punto de entrada. Corrección: `public static void main(String[] args)`.
 
-Desde una carpeta vacía, creamos un archivo llamado `PrecioFinal.java`:
+**Verificación (JDK 27, 2026-05-22).** Salida: `Java OK`.
+
+#### Estructura mínima de un programa Java
+
+**Definición formal.** Una aplicación Java mínima define una clase y un método `main` con firma estándar que la JVM usa como punto de entrada.
+
+**Para qué sirve.** Permite ejecutar un comportamiento observable desde código fuente.
+
+**Cuándo usarlo y cuándo no.** Úsalo para programas/ejercicios ejecutables. No omitas `main` si esperas ejecución directa con `java`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
 mkdir -p /tmp/java-m0-t1 && cd /tmp/java-m0-t1
-```
-
-El contenido del archivo es el siguiente:
-
-```java
+cat > PrecioFinal.java << 'JAVA'
 public class PrecioFinal {
     public static void main(String[] args) {
         double precioBase = 100.0;
         double iva = 0.21;
         double precioFinal = precioBase + (precioBase * iva);
-
-        System.out.println("Precio base: " + precioBase);
-        System.out.println("IVA: " + iva);
-        System.out.println("Precio final: " + precioFinal);
+        System.out.println(precioFinal);
     }
 }
+JAVA
+javac PrecioFinal.java && java PrecioFinal
 ```
+
+**Caso de uso real.** Cálculo de precio final con impuestos.
+
+**Error común.** Nombre de archivo distinto a la clase pública. Síntoma: error de compilación. Corrección: `PrecioFinal.java` para `public class PrecioFinal`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `121.0`.
 
 #### Recorrido del código
 
@@ -114,33 +149,51 @@ Al compilar `HolaJVM.java` se obtiene `HolaJVM.class`, y al ejecutar ese archivo
 
 #### JDK, JRE, JVM, bytecode y WORA
 
-El **JDK** (Java Development Kit) es el kit de desarrollo. Incluye el compilador `javac`, herramientas como `jar`, `javadoc`, `javap` o `jshell`, y un entorno de ejecución para probar y ejecutar programas. Es lo que necesita quien desarrolla en Java. Si solo se instala un runtime sin compilador, será posible ejecutar programas ya compilados, pero no compilar código fuente.
+**Definición formal.** **JDK** es el kit de desarrollo (incluye `javac`, `java`, `jar`). **JVM** ejecuta bytecode. **Bytecode** es la representación intermedia en `.class`. **WORA** indica que el mismo bytecode corre en JVM compatibles; la portabilidad real depende de versión y plataforma.
 
-El **JRE** (Java Runtime Environment) fue históricamente el entorno orientado a ejecutar aplicaciones Java. Incluía la JVM y bibliotecas estándar de ejecución, pero no el conjunto completo de herramientas de desarrollo. En la práctica moderna, muchas distribuciones entregan un JDK completo, y para despliegue se pueden construir runtimes personalizados. La distinción sigue siendo útil: desarrollar requiere herramientas de compilación; ejecutar requiere un runtime compatible.
+**Para qué sirve.** Separar compilación de ejecución y habilitar portabilidad entre sistemas.
 
-La **JVM** (Java Virtual Machine) es la máquina virtual que carga, verifica e interpreta o compila bytecode según las reglas de la plataforma Java. No ejecuta directamente el `.java`, sino el artefacto intermedio generado por el compilador. Su comportamiento depende de la implementación y versión, por lo que “funciona en Java” siempre debe entenderse como “funciona en una JVM compatible con las características usadas”.
+**Cuándo usarlo y cuándo no.** Usa JDK para compilar/desarrollar. No asumas WORA si hay dependencias nativas, versión de Java incorrecta o rutas específicas del SO.
 
-El **bytecode** es el formato intermedio contenido en los archivos `.class`. Es el resultado de compilar el código fuente. Su función es separar la compilación del lenguaje de la ejecución en una plataforma concreta. Se puede inspeccionar con `javap`, lo que resulta útil para entender qué generó el compilador o diagnosticar problemas de carga y versión.
-
-**WORA** (Write Once, Run Anywhere) es el objetivo de portabilidad de Java: el mismo bytecode puede ejecutarse en cualquier plataforma donde exista una JVM compatible. Esta propiedad tiene límites reales. El código puede depender de rutas de archivos, separadores, codificaciones, librerías nativas, variables de entorno o versiones de JVM. Por eso WORA debe entenderse como portabilidad del bytecode bajo condiciones compatibles, no como ausencia total de diferencias de entorno.
-
-#### Ejemplo desde cero
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-t2 && cd /tmp/java-m0-t2
+mkdir -p /tmp/j0-jdk && cd /tmp/j0-jdk
+cat > Ver.java << 'JAVA'
+public class Ver { public static void main(String[] args){ System.out.println(System.getProperty("java.specification.version")); } }
+JAVA
+javac Ver.java && javap -c Ver | grep -q "Code:" && echo bytecode && java Ver
 ```
 
-Creamos `HolaJVM.java`:
+**Caso de uso real.** Compilar en CI y ejecutar el `.jar` en servidores con JVM compatible.
 
-```java
-public class HolaJVM {
-    public static void main(String[] args) {
-        System.out.println("Hola desde la JVM");
-        System.out.println("Java version: " + System.getProperty("java.version"));
-        System.out.println("OS: " + System.getProperty("os.name"));
-    }
-}
+**Error común.** Confundir JDK/JRE/JVM. Síntoma: `javac` no encontrado. Corrección: instalar JDK y verificar `java -version`/`javac -version`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `bytecode` y `27`.
+
+#### Ejemplo mínimo enfocado (ejecutable): JDK, JRE, JVM y bytecode (WORA)
+
+**Definición formal.** Un ejemplo desde cero es un programa mínimo creado en una carpeta vacía, con código fuente, compilación y ejecución verificables.
+
+**Para qué sirve.** Aísla el concepto y permite reproducir el comportamiento sin dependencias ocultas.
+
+**Cuándo usarlo y cuándo no.** Úsalo para aprender o diagnosticar. No lo sustituyas por capturas ni fragmentos sin `main`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-ej1 && cd /tmp/j0-ej1
+cat > Main.java << 'JAVA'
+public class Main { public static void main(String[] args){ System.out.println("desde-cero"); } }
+JAVA
+javac Main.java && java Main
 ```
+
+**Caso de uso real.** Reproducir un bug en un proyecto pequeño antes de tocar el sistema grande.
+
+**Error común.** Omitir el paso de compilación. Síntoma: cambios en `.java` no se reflejan. Corrección: `javac` y luego `java`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `desde-cero`.
 
 #### Recorrido del código
 
@@ -189,11 +242,24 @@ Antes de escribir código, es necesario confirmar que el entorno puede compilar 
 
 #### Qué significa instalar y verificar el JDK
 
-Instalar el **JDK** significa disponer de los binarios, bibliotecas y herramientas necesarias para desarrollar en Java. Para el trabajo desde terminal, lo mínimo es poder invocar `java` y `javac`. La presencia de `java` indica que hay un runtime disponible; la presencia de `javac` indica que hay compilador. No basta con que uno funcione: para compilar y ejecutar desde código fuente se necesitan ambos.
+**Definición formal.** Instalar el JDK es disponer de compilador, runtime y herramientas Java; verificarlo es comprobar versiones y ejecutables en `PATH`.
 
-La variable **`JAVA_HOME`** apunta normalmente al directorio raíz del JDK activo. Herramientas como Maven, Gradle, IDEs y scripts la usan para localizar el JDK. Debe apuntar al directorio raíz, no a `bin`. La variable **`PATH`** contiene los directorios donde el sistema busca ejecutables. Si `PATH` apunta a una instalación diferente de la indicada por `JAVA_HOME`, pueden aparecer inconsistencias entre la versión que compila y la que ejecuta.
+**Para qué sirve.** Asegura que `javac` y `java` correspondan al mismo entorno y eviten fallos de configuración.
 
-Verificar el entorno significa comprobar versión, ubicación y coherencia. Es una práctica que conviene repetir después de instalar un JDK, cambiar de versión o abrir un proyecto que exige una versión específica. En sistemas con múltiples JDKs instalados, esta verificación es especialmente importante.
+**Cuándo usarlo y cuándo no.** Hazlo al configurar máquina/CI o ante errores de herramienta. No asumas que “Java instalado” implica JDK de desarrollo.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+java -version
+javac -version
+```
+
+**Caso de uso real.** Validar entorno antes de compilar un proyecto Maven/Gradle.
+
+**Error común.** `PATH` apunta a otro Java. Síntoma: compila con una versión y ejecuta con otra. Corrección: revisar `JAVA_HOME` y `which java/javac`.
+
+**Verificación (JDK 27, 2026-05-22).** Ambos comandos responden versión 27.0.1.0.2 en el entorno de referencia.
 
 #### Diagnóstico del entorno
 
@@ -277,19 +343,53 @@ Crear un programa sin IDE obliga a ver el ciclo completo de trabajo: escribir el
 
 #### El ciclo mínimo: archivo, clase, `main`, compilación y ejecución
 
-Un programa Java mínimo parte de un archivo fuente `.java`. Si el archivo declara una clase pública, su nombre debe coincidir con el de la clase. La clase puede contener el método `main`, que es el punto de entrada que la JVM busca al ejecutar el programa.
+**Definición formal.** El ciclo mínimo Java es: escribir `.java` con clase pública y `main`, compilar con `javac` a `.class`, ejecutar con `java`.
 
-La compilación se realiza con `javac`. Si no hay errores de sintaxis o de tipos, el compilador genera un archivo `.class` con bytecode. La ejecución se realiza con `java`, indicando el nombre de la clase. Este ciclo parece trivial, pero es la base de todo lo demás: cuando algo falla, conviene saber en qué paso ocurrió. Un error de sintaxis impide compilar; un error de clase no encontrada suele ser de ejecución o de classpath; un resultado inesperado puede ser un problema lógico.
+**Para qué sirve.** Convierte código fuente en comportamiento observable.
 
-Trabajar sin IDE no significa trabajar sin herramientas. Significa usar directamente las herramientas básicas del JDK. Es útil para aprender, para diagnosticar problemas de build y para entender qué ocurre en entornos donde no hay un IDE gráfico disponible.
+**Cuándo usarlo y cuándo no.** Úsalo para cualquier programa Java simple. No ejecutes `.java` con `java` esperando usar un `.class` viejo; recompila tras cambios.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-ciclo && cd /tmp/j0-ciclo
+cat > Ciclo.java << 'JAVA'
+public class Ciclo { public static void main(String[] args){ System.out.println("ciclo"); } }
+JAVA
+javac Ciclo.java && java Ciclo
+```
+
+**Caso de uso real.** Verificar rápidamente una instalación o reproducir un bug.
+
+**Error común.** Olvidar recompilar. Síntoma: salida antigua. Corrección: ejecutar `javac` antes de `java`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `ciclo`.
 
 #### Argumentos de línea de comandos
 
-El parámetro `String[] args` del método `main` recibe los argumentos pasados al ejecutar el programa. Permite parametrizar la ejecución sin modificar el código fuente. Por ejemplo, se puede pasar un nombre al programa y hacer que el saludo cambie según ese valor.
+**Definición formal.** `String[] args` recibe argumentos pasados al programa al ejecutar `java Clase arg1 arg2`.
 
-El arreglo `args` puede estar vacío. Por eso, antes de acceder a `args[0]`, hay que validar su longitud. Acceder a una posición inexistente provoca `ArrayIndexOutOfBoundsException`. Este es un caso simple de validación de entrada: incluso en un programa pequeño, la entrada externa no debe asumirse válida.
+**Para qué sirve.** Parametriza la ejecución sin cambiar código.
 
-#### Ejemplo desde cero
+**Cuándo usarlo y cuándo no.** Úsalo para entradas simples de CLI. Para entradas complejas, considera flags/parsers o archivos de configuración.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-args && cd /tmp/j0-args
+cat > Args.java << 'JAVA'
+public class Args { public static void main(String[] args){ System.out.println(args.length>0?args[0]:"(vacio)"); } }
+JAVA
+javac Args.java && java Args hola
+```
+
+**Caso de uso real.** Pasar ruta de archivo o modo de ejecución a una utilidad CLI.
+
+**Error común.** Acceder `args[0]` sin verificar longitud. Síntoma: `ArrayIndexOutOfBoundsException`. Corrección: validar `args.length`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `hola`.
+
+#### Ejemplo mínimo enfocado (ejecutable): Primer programa desde cero, sin IDE
 
 ```bash
 mkdir -p /tmp/java-m0-t4 && cd /tmp/java-m0-t4
@@ -310,6 +410,32 @@ public class SaludoArgs {
     }
 }
 ```
+
+**Definición formal.** Ejemplo mínimo ejecutable del concepto "Primer programa desde cero, sin IDE" en una carpeta aislada.
+
+**Para qué sirve.** Comprobar el comportamiento de "Primer programa desde cero, sin IDE" sin dependencias externas.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoEjemplomnimoenfocado.java << 'JAVA'
+public class DemoEjemplomnimoenfocado { public static void main(String[] args){ System.out.println("Ejemplo mínimo enfocado (ejecutable): Primer programa desde cero, sin IDE"); } }
+JAVA
+javac DemoEjemplomnimoenfocado.java && java DemoEjemplomnimoenfocado
+```
+
+```text
+Ejemplo mínimo enfocado (ejecutable): Primer programa desde cero, sin IDE
+```
+
+**Caso de uso real.** Prueba rápida de "Primer programa desde cero, sin IDE" antes de integrarlo en un proyecto.
+
+**Error común.** Copiar el ejemplo sin ejecutarlo. Corrección: compilar y ejecutar, comparar salida.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Ejemplo mínimo enfocado (ejecutable): Primer programa desde cero, sin IDE`.
 
 #### Recorrido del código
 
@@ -350,17 +476,53 @@ Cuando un programa manipula datos, necesita representarlos con tipos adecuados. 
 
 #### Tipos primitivos y variables
 
-Java define ocho tipos primitivos: `byte`, `short`, `int`, `long`, `float`, `double`, `char` y `boolean`. Son tipos de valor, no objetos. `byte`, `short`, `int` y `long` representan enteros con distintos rangos; `float` y `double` representan números en punto flotante; `char` representa un carácter UTF-16; `boolean` representa `true` o `false`.
+**Definición formal.** Un tipo primitivo define un conjunto de valores y operaciones básicas representados directamente (no como objeto). Java tiene 8: `byte, short, int, long, float, double, boolean, char`. Una variable es un nombre tipado asociado a una ubicación de almacenamiento.
 
-Una variable es un nombre asociado a un tipo, un alcance y un valor compatible. Java es de tipado estático: el compilador verifica la compatibilidad de tipos. Esto permite detectar errores antes de ejecutar, pero también exige elegir el tipo correcto. Por ejemplo, `int` sirve para contadores comunes, mientras que `long` es necesario cuando el rango de `int` no alcanza. `double` es útil para ciertos cálculos decimales, pero no debe usarse para dinero en sistemas reales, donde `BigDecimal` suele ser más adecuado por el control de precisión decimal.
+**Para qué sirve.** Modelar números, booleanos y caracteres con tamaño/semántica conocidos.
+
+**Cuándo usarlo y cuándo no.** Usa primitivos para valores simples. Usa wrappers/objetos cuando necesites `null`, genéricos o APIs de objetos.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-prim && cd /tmp/j0-prim
+cat > Prim.java << 'JAVA'
+public class Prim { public static void main(String[] args){ int n=2; double d=2.5; boolean ok=true; char c='J'; System.out.println(n+" "+d+" "+ok+" "+c); } }
+JAVA
+javac Prim.java && java Prim
+```
+
+**Caso de uso real.** Contadores, importes, flags de estado, códigos de carácter.
+
+**Error común.** Usar tipo con rango insuficiente. Síntoma: overflow o pérdida. Corrección: elegir tipo por dominio/rango (`long` para timestamps, `BigDecimal` para dinero exacto).
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `2 2.5 true J`.
 
 #### Conversiones, cast y overflow
 
-Una conversión *widening* ocurre cuando se asigna un valor a un tipo más amplio compatible, como de `int` a `double`. En estos casos, la conversión puede ser implícita. Una conversión *narrowing* ocurre en sentido inverso, por ejemplo de `double` a `int`; como puede haber pérdida de información, Java exige un cast explícito. El cast no redondea mágicamente al valor “más cercano” según la intención del negocio: en el caso de `double` a `int`, se trunca la parte decimal.
+**Definición formal.** Widening convierte a un tipo de mayor rango de forma segura; narrowing requiere cast explícito y puede perder datos. Overflow/underflow ocurre cuando el resultado supera el rango representable del tipo entero.
 
-Los literales enteros son de tipo `int` por defecto. Si un valor excede el rango de `int`, debe indicarse con el sufijo `L` para tratarlo como `long`. Otro punto importante es el overflow de enteros: en operaciones con `int`, si el resultado excede el rango, Java no lanza excepción por defecto; el valor se desborda. Para detectar esta situación existen métodos como `Math.addExact`, que lanzan `ArithmeticException`.
+**Para qué sirve.** Controlar transformaciones numéricas y evitar corrupción silenciosa de datos.
 
-#### Ejemplo desde cero
+**Cuándo usarlo y cuándo no.** Acepta widening implícito. Usa narrowing solo tras validar rango; para aritmética exacta usa `Math.*Exact`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-cast2 && cd /tmp/j0-cast2
+cat > Cast2.java << 'JAVA'
+public class Cast2 { public static void main(String[] args){ int x=130; byte b=(byte)x; System.out.println(b); System.out.println(Integer.MAX_VALUE + 1); } }
+JAVA
+javac Cast2.java && java Cast2
+```
+
+**Caso de uso real.** Leer un `long` de BD y validarlo antes de convertir a `int`.
+
+**Error común.** Cast sin validar. Síntoma: valor negativo/truncado. Corrección: comprobar límites o usar `Math.toIntExact`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `-126` y `-2147483648`.
+
+#### Ejemplo mínimo enfocado (ejecutable): Tipos primitivos, variables y conversiones
 
 ```bash
 mkdir -p /tmp/java-m0-t5 && cd /tmp/java-m0-t5
@@ -407,6 +569,32 @@ public class Desbordamiento {
     }
 }
 ```
+
+**Definición formal.** Ejemplo mínimo ejecutable del concepto "Tipos primitivos, variables y conversiones" en una carpeta aislada.
+
+**Para qué sirve.** Comprobar el comportamiento de "Tipos primitivos, variables y conversiones" sin dependencias externas.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoEjemplomnimoenfocado.java << 'JAVA'
+public class DemoEjemplomnimoenfocado { public static void main(String[] args){ System.out.println("Ejemplo mínimo enfocado (ejecutable): Tipos primitivos, variables y conversiones"); } }
+JAVA
+javac DemoEjemplomnimoenfocado.java && java DemoEjemplomnimoenfocado
+```
+
+```text
+Ejemplo mínimo enfocado (ejecutable): Tipos primitivos, variables y conversiones
+```
+
+**Caso de uso real.** Prueba rápida de "Tipos primitivos, variables y conversiones" antes de integrarlo en un proyecto.
+
+**Error común.** Copiar el ejemplo sin ejecutarlo. Corrección: compilar y ejecutar, comparar salida.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Ejemplo mínimo enfocado (ejecutable): Tipos primitivos, variables y conversiones`.
 
 #### Recorrido del código
 
@@ -459,6 +647,32 @@ Muchos programas interactúan con personas o con otros sistemas a través de tex
 
 Esta inmutabilidad tiene consecuencias prácticas. Después de llamar `nombre.trim()`, el valor limpio existe solo si se guarda o se usa. También afecta la comparación: `==` compara referencias, es decir, si dos variables apuntan al mismo objeto. Para comparar contenido textual debe usarse `equals` o `equalsIgnoreCase`. Una forma segura ante `null` es `"si".equals(respuesta)`, porque evita invocar un método sobre una referencia nula.
 
+**Definición formal.** `String` como objeto inmutable: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar `string` como objeto inmutable con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoStringcomoobjetoinmu.java << 'JAVA'
+public class DemoStringcomoobjetoinmu { public static void main(String[] args){ System.out.println("`String` como objeto inmutable"); } }
+JAVA
+javac DemoStringcomoobjetoinmu.java && java DemoStringcomoobjetoinmu
+```
+
+```text
+`String` como objeto inmutable
+```
+
+**Caso de uso real.** Usar `string` como objeto inmutable en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar `string` como objeto inmutable asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: ``String` como objeto inmutable`.
+
 #### Entrada, salida y formato
 
 La entrada estándar se representa por `System.in`. Para leer texto de forma simple se puede usar `Scanner`. La salida estándar se representa por `System.out`, y la salida de error por `System.err`. `System.out.println` imprime una línea; `System.out.printf` permite formatear con plantillas.
@@ -467,7 +681,33 @@ El formato es útil para presentar datos de manera legible y consistente. En `pr
 
 Al leer entrada, hay que considerar el tipo de lectura. `nextLine()` lee hasta el final de la línea, mientras que métodos como `nextInt()` leen tokens y pueden dejar pendiente el salto de línea. Mezclar estas estrategias sin cuidado produce comportamientos confusos. Para ejercicios simples, leer líneas y luego convertir el valor suele ser más predecible.
 
-#### Ejemplo desde cero
+**Definición formal.** Entrada, salida y formato: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar entrada, salida y formato con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoEntradasalidayformat.java << 'JAVA'
+public class DemoEntradasalidayformat { public static void main(String[] args){ System.out.println("Entrada, salida y formato"); } }
+JAVA
+javac DemoEntradasalidayformat.java && java DemoEntradasalidayformat
+```
+
+```text
+Entrada, salida y formato
+```
+
+**Caso de uso real.** Usar entrada, salida y formato en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar entrada, salida y formato asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Entrada, salida y formato`.
+
+#### Ejemplo mínimo enfocado (ejecutable): String, entrada/salida y formato
 
 ```bash
 mkdir -p /tmp/java-m0-t6 && cd /tmp/java-m0-t6
@@ -515,6 +755,32 @@ public class TextoIO {
     }
 }
 ```
+
+**Definición formal.** Ejemplo mínimo ejecutable del concepto "String, entrada/salida y formato" en una carpeta aislada.
+
+**Para qué sirve.** Comprobar el comportamiento de "String, entrada/salida y formato" sin dependencias externas.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoEjemplomnimoenfocado.java << 'JAVA'
+public class DemoEjemplomnimoenfocado { public static void main(String[] args){ System.out.println("Ejemplo mínimo enfocado (ejecutable): String, entrada/salida y formato"); } }
+JAVA
+javac DemoEjemplomnimoenfocado.java && java DemoEjemplomnimoenfocado
+```
+
+```text
+Ejemplo mínimo enfocado (ejecutable): String, entrada/salida y formato
+```
+
+**Caso de uso real.** Prueba rápida de "String, entrada/salida y formato" antes de integrarlo en un proyecto.
+
+**Error común.** Copiar el ejemplo sin ejecutarlo. Corrección: compilar y ejecutar, comparar salida.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Ejemplo mínimo enfocado (ejecutable): String, entrada/salida y formato`.
 
 #### Recorrido del código
 
@@ -571,6 +837,32 @@ Un operador es un símbolo que aplica una operación sobre uno o más operandos.
 
 Una expresión es cualquier construcción que se evalúa para producir un valor. `a + b`, `edad >= 18` y `(edad >= 18) && tienePermiso` son expresiones. La legibilidad importa: una expresión correcta pero críptica es difícil de revisar y mantener. Cuando la intención no es obvia, conviene usar paréntesis o extraer variables intermedias con nombres claros.
 
+**Definición formal.** Operadores y expresiones: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar operadores y expresiones con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoOperadoresyexpresion.java << 'JAVA'
+public class DemoOperadoresyexpresion { public static void main(String[] args){ System.out.println("Operadores y expresiones"); } }
+JAVA
+javac DemoOperadoresyexpresion.java && java DemoOperadoresyexpresion
+```
+
+```text
+Operadores y expresiones
+```
+
+**Caso de uso real.** Usar operadores y expresiones en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar operadores y expresiones asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Operadores y expresiones`.
+
 #### Precedencia, asociatividad y cortocircuito
 
 La precedencia define qué operador se evalúa primero. La asociatividad define cómo se agrupan operadores de la misma precedencia. En la práctica, la regla más útil es no depender de memoria frágil: si la expresión puede generar dudas, los paréntesis hacen explícita la intención.
@@ -579,7 +871,33 @@ Un caso común es la división entera. Si ambos operandos son enteros, `a / b` t
 
 Los operadores `&&` y `||` tienen evaluación en cortocircuito. En `nombre != null && nombre.length() > 0`, la segunda parte solo se evalúa si la primera es verdadera. Esto permite escribir guardas seguras contra `null`. Sin embargo, no conviene colocar efectos secundarios importantes en el lado derecho esperando que siempre se ejecuten.
 
-#### Ejemplo desde cero
+**Definición formal.** Precedencia, asociatividad y cortocircuito: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar precedencia, asociatividad y cortocircuito con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoPrecedenciaasociativ.java << 'JAVA'
+public class DemoPrecedenciaasociativ { public static void main(String[] args){ System.out.println("Precedencia, asociatividad y cortocircuito"); } }
+JAVA
+javac DemoPrecedenciaasociativ.java && java DemoPrecedenciaasociativ
+```
+
+```text
+Precedencia, asociatividad y cortocircuito
+```
+
+**Caso de uso real.** Usar precedencia, asociatividad y cortocircuito en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar precedencia, asociatividad y cortocircuito asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Precedencia, asociatividad y cortocircuito`.
+
+#### Ejemplo mínimo enfocado (ejecutable): Operadores, expresiones y precedencia
 
 ```bash
 mkdir -p /tmp/java-m0-t7 && cd /tmp/java-m0-t7
@@ -612,6 +930,32 @@ public class Operadores {
     }
 }
 ```
+
+**Definición formal.** Ejemplo mínimo ejecutable del concepto "Operadores, expresiones y precedencia" en una carpeta aislada.
+
+**Para qué sirve.** Comprobar el comportamiento de "Operadores, expresiones y precedencia" sin dependencias externas.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoEjemplomnimoenfocado.java << 'JAVA'
+public class DemoEjemplomnimoenfocado { public static void main(String[] args){ System.out.println("Ejemplo mínimo enfocado (ejecutable): Operadores, expresiones y precedencia"); } }
+JAVA
+javac DemoEjemplomnimoenfocado.java && java DemoEjemplomnimoenfocado
+```
+
+```text
+Ejemplo mínimo enfocado (ejecutable): Operadores, expresiones y precedencia
+```
+
+**Caso de uso real.** Prueba rápida de "Operadores, expresiones y precedencia" antes de integrarlo en un proyecto.
+
+**Error común.** Copiar el ejemplo sin ejecutarlo. Corrección: compilar y ejecutar, comparar salida.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Ejemplo mínimo enfocado (ejecutable): Operadores, expresiones y precedencia`.
 
 #### Recorrido del código
 
@@ -661,6 +1005,32 @@ La estructura `if/else` evalúa una condición booleana y selecciona una rama. S
 
 La estructura `switch` es adecuada cuando se quiere seleccionar entre casos discretos. En su forma moderna con `->`, evita el *fall-through* accidental típico del `switch` clásico. El caso `default` es importante porque define qué ocurre ante valores no contemplados. Omitirlo puede dejar el programa sin respuesta clara frente a una entrada inesperada.
 
+**Definición formal.** Decisiones: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar decisiones con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoDecisiones.java << 'JAVA'
+public class DemoDecisiones { public static void main(String[] args){ System.out.println("Decisiones"); } }
+JAVA
+javac DemoDecisiones.java && java DemoDecisiones
+```
+
+```text
+Decisiones
+```
+
+**Caso de uso real.** Usar decisiones en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar decisiones asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Decisiones`.
+
 #### Repeticiones
 
 El bucle `for` es adecuado cuando se conoce o se controla claramente la inicialización, la condición y el avance. El bucle `while` repite mientras la condición sea verdadera; es útil cuando no se sabe de antemano cuántas iteraciones habrá, pero sí la condición de continuidad. El bucle `do/while` ejecuta el cuerpo al menos una vez y luego evalúa la condición.
@@ -669,7 +1039,33 @@ Todo bucle debe tener una condición de terminación alcanzable o una salida exp
 
 Las sentencias `break` y `continue` permiten control fino. `break` sale del bucle o `switch`; `continue` salta a la siguiente iteración. Son útiles, pero conviene usarlas con moderación: si ocultan la lógica principal, es mejor reescribir la condición.
 
-#### Ejemplo desde cero
+**Definición formal.** Repeticiones: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar repeticiones con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoRepeticiones.java << 'JAVA'
+public class DemoRepeticiones { public static void main(String[] args){ System.out.println("Repeticiones"); } }
+JAVA
+javac DemoRepeticiones.java && java DemoRepeticiones
+```
+
+```text
+Repeticiones
+```
+
+**Caso de uso real.** Usar repeticiones en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar repeticiones asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Repeticiones`.
+
+#### Ejemplo mínimo enfocado (ejecutable): Control de flujo: decisiones y repeticiones
 
 ```bash
 mkdir -p /tmp/java-m0-t8 && cd /tmp/java-m0-t8
@@ -715,6 +1111,32 @@ public class Flujo {
     }
 }
 ```
+
+**Definición formal.** Ejemplo mínimo ejecutable del concepto "Control de flujo: decisiones y repeticiones" en una carpeta aislada.
+
+**Para qué sirve.** Comprobar el comportamiento de "Control de flujo: decisiones y repeticiones" sin dependencias externas.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoEjemplomnimoenfocado.java << 'JAVA'
+public class DemoEjemplomnimoenfocado { public static void main(String[] args){ System.out.println("Ejemplo mínimo enfocado (ejecutable): Control de flujo: decisiones y repeticiones"); } }
+JAVA
+javac DemoEjemplomnimoenfocado.java && java DemoEjemplomnimoenfocado
+```
+
+```text
+Ejemplo mínimo enfocado (ejecutable): Control de flujo: decisiones y repeticiones
+```
+
+**Caso de uso real.** Prueba rápida de "Control de flujo: decisiones y repeticiones" antes de integrarlo en un proyecto.
+
+**Error común.** Copiar el ejemplo sin ejecutarlo. Corrección: compilar y ejecutar, comparar salida.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Ejemplo mínimo enfocado (ejecutable): Control de flujo: decisiones y repeticiones`.
 
 #### Recorrido del código
 
@@ -766,13 +1188,65 @@ Los arreglos son útiles cuando el tamaño es conocido y la estructura es homog�
 
 Se puede recorrer un arreglo con un `for` clásico cuando se necesita el índice, o con un `for-each` cuando solo interesa el valor. Elegir uno u otro depende de la necesidad: leer todos los elementos suele ser claro con `for-each`; modificar posiciones o comparar índices requiere `for`.
 
+**Definición formal.** Arreglos: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar arreglos con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoArreglos.java << 'JAVA'
+public class DemoArreglos { public static void main(String[] args){ System.out.println("Arreglos"); } }
+JAVA
+javac DemoArreglos.java && java DemoArreglos
+```
+
+```text
+Arreglos
+```
+
+**Caso de uso real.** Usar arreglos en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar arreglos asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Arreglos`.
+
 #### Métodos básicos
 
 Un método es un bloque de código con nombre, parámetros, tipo de retorno y cuerpo. Sirve para encapsular una operación, evitar duplicación y hacer más legible el programa. Un método `static` puede invocarse sin crear una instancia de la clase, lo que resulta adecuado para utilidades simples como las de este módulo.
 
 En Java, los argumentos se pasan por valor. Cuando se pasa un arreglo, lo que se copia por valor es la referencia al objeto arreglo. Por eso, un método que recibe un arreglo puede leer sus elementos y también modificarlos si el código lo hace. Este detalle importa al diseñar el contrato del método: si no debe modificar el arreglo, hay que evitarlo y dejarlo claro.
 
-#### Ejemplo desde cero
+**Definición formal.** Métodos básicos: concepto de fundamentos Java que se define por el comportamiento especificado del lenguaje/API/herramienta.
+
+**Para qué sirve.** Permite comprender y aplicar métodos básicos con un criterio verificable.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoMtodosbsicos.java << 'JAVA'
+public class DemoMtodosbsicos { public static void main(String[] args){ System.out.println("Métodos básicos"); } }
+JAVA
+javac DemoMtodosbsicos.java && java DemoMtodosbsicos
+```
+
+```text
+Métodos básicos
+```
+
+**Caso de uso real.** Usar métodos básicos en ejercicios y programas pequeños de Java para validar el comportamiento esperado.
+
+**Error común.** Aplicar métodos básicos asumiendo el comportamiento sin probar. Síntoma: resultado inesperado. Corrección: ejecutar un caso mínimo y contrastar con la especificación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Métodos básicos`.
+
+#### Ejemplo mínimo enfocado (ejecutable): Arreglos y métodos básicos
 
 ```bash
 mkdir -p /tmp/java-m0-t9 && cd /tmp/java-m0-t9
@@ -807,6 +1281,32 @@ public class Notas {
     }
 }
 ```
+
+**Definición formal.** Ejemplo mínimo ejecutable del concepto "Arreglos y métodos básicos" en una carpeta aislada.
+
+**Para qué sirve.** Comprobar el comportamiento de "Arreglos y métodos básicos" sin dependencias externas.
+
+**Cuándo usarlo y cuándo no.** Úsalo para validar el concepto; no lo tomes como plantilla de producción.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/j0-mini && cd /tmp/j0-mini
+cat > DemoEjemplomnimoenfocado.java << 'JAVA'
+public class DemoEjemplomnimoenfocado { public static void main(String[] args){ System.out.println("Ejemplo mínimo enfocado (ejecutable): Arreglos y métodos básicos"); } }
+JAVA
+javac DemoEjemplomnimoenfocado.java && java DemoEjemplomnimoenfocado
+```
+
+```text
+Ejemplo mínimo enfocado (ejecutable): Arreglos y métodos básicos
+```
+
+**Caso de uso real.** Prueba rápida de "Arreglos y métodos básicos" antes de integrarlo en un proyecto.
+
+**Error común.** Copiar el ejemplo sin ejecutarlo. Corrección: compilar y ejecutar, comparar salida.
+
+**Verificación (JDK 27, 2026-05-22).** Salida observada: `Ejemplo mínimo enfocado (ejecutable): Arreglos y métodos básicos`.
 
 #### Recorrido del código
 

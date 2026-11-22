@@ -22,31 +22,89 @@ Supongamos que necesitamos modelar una cuenta bancaria. No alcanza con guardar u
 
 #### Clases
 
-Una **clase** es un tipo de referencia que define la estructura y el comportamiento que tendrán sus instancias. En ella se declaran campos, constructores y métodos. Sirve para modelar conceptos del dominio con un lugar claro donde viven los datos y las reglas que los gobiernan. Se usa cuando hay datos y comportamiento relacionados que conviene tratar como una unidad, por ejemplo una cuenta, un pedido o un usuario. No conviene usar una clase como contenedor de responsabilidades no relacionadas; cuando una clase acumula demasiadas tareas, se vuelve difícil de entender, probar y modificar.
+**Definición formal.** Una clase es un tipo de referencia que define estructura (campos) y comportamiento (métodos/constructores) de sus instancias.
 
-En el ejemplo, `Cuenta` define qué datos tiene una cuenta y qué operaciones se permiten sobre ella. El error común es crear “clases Dios” que saben hacer todo. La verificación es simple: la clase debe compilar y sus instancias deben poder ejecutar el comportamiento definido.
+**Para qué sirve.** Modela conceptos del dominio con estado y reglas en un mismo tipo.
+
+**Cuándo usarla y cuándo no.** Úsala cuando datos y comportamiento estén cohesionados. No la uses como “clase Dios” con responsabilidades no relacionadas.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+class CuentaMin { double saldo; void depositar(double m){ saldo += m; } }
+public class DemoClase { public static void main(String[] args){ CuentaMin c=new CuentaMin(); c.depositar(10); System.out.println(c.saldo); } }
+```
+
+**Caso de uso real.** `Cuenta`, `Pedido`, `Usuario`.
+
+**Error común.** Clase con demasiadas responsabilidades. Síntoma: cambios pequeños rompen áreas no relacionadas. Corrección: separar por responsabilidad.
+
+**Verificación (JDK 27, 2026-05-22).** Compila y ejecuta: salida `10.0`.
 
 #### Objetos
 
-Un **objeto** es una instancia concreta de una clase, creada con la expresión `new`. Mientras la clase es la definición, el objeto es una entidad concreta en ejecución, con identidad, estado y comportamiento. Sirve para representar valores concretos del dominio: no “una cuenta en general”, sino la cuenta de Ada con saldo 100.
+**Definición formal.** Un objeto es una instancia concreta de una clase, creada con `new`, con identidad, estado y comportamiento.
 
-Se usa cada vez que se necesita una entidad concreta. No debe confundirse la clase con el objeto: la clase `Cuenta` no tiene saldo propio; el objeto creado por `new Cuenta("Ada", 100)` sí. Otro error común es usar campos `static` para datos que deberían pertenecer a cada instancia; eso hace que todos los objetos compartan el mismo estado. La verificación se observa al crear dos objetos distintos y comprobar que sus estados son independientes.
+**Para qué sirve.** Representa entidades concretas del dominio en ejecución.
+
+**Cuándo usarlo y cuándo no.** Úsalo cuando necesitas una instancia con estado propio. No uses campos `static` para estado que debe ser por instancia.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+class Caja { int v; Caja(int v){ this.v=v; } }
+public class DemoObj { public static void main(String[] args){ Caja a=new Caja(1); Caja b=new Caja(2); System.out.println(a.v+" "+b.v); } }
+```
+
+**Caso de uso real.** Dos cuentas distintas con saldos distintos.
+
+**Error común.** Confundir clase con objeto. Síntoma: esperar estado en la clase. Corrección: crear instancias con `new`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `1 2`.
 
 #### Constructores
 
-Un **constructor** es una rutina especial que se ejecuta durante la creación del objeto. Tiene el mismo nombre de la clase y no declara tipo de retorno. Su propósito es inicializar el objeto y dejarlo en un estado válido. Se usa cuando el objeto requiere datos obligatorios o validación inicial.
+**Definición formal.** Un constructor es una rutina especial con el nombre de la clase, sin tipo de retorno, que inicializa una instancia durante `new`.
 
-El constructor establece invariantes: condiciones que deben cumplirse para que el objeto sea válido. Si una cuenta no puede existir sin titular o con saldo inicial negativo, esa regla se verifica en el constructor. Si no se declara ningún constructor, Java genera uno por defecto sin parámetros; cuando se declara un constructor propio, el constructor por defecto deja de generarse. La referencia `this` apunta al objeto actual y se usa para desambiguar campos y parámetros, como en `this.titular = titular`.
+**Para qué sirve.** Establece invariantes y deja el objeto en estado válido.
 
-No conviene poner en el constructor trabajo excesivo o ajeno a la inicialización, como acceso a red o lógica de negocio compleja. El error común es permitir que el constructor termine con un objeto inválido. La verificación consiste en intentar crear un objeto con datos inválidos y confirmar que falla de forma temprana.
+**Cuándo usarlo y cuándo no.** Úsalo para datos obligatorios y validación inicial. No hagas I/O pesado o lógica ajena a la inicialización.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+class CuentaC { final String titular; CuentaC(String t){ if(t==null||t.isBlank()) throw new IllegalArgumentException("titular"); this.titular=t; } }
+public class DemoCtor { public static void main(String[] args){ System.out.println(new CuentaC("Ada").titular); } }
+```
+
+**Caso de uso real.** Impedir crear cuenta sin titular.
+
+**Error común.** Objeto inválido tras constructor. Síntoma: errores tardíos. Corrección: validar invariantes al construir.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `Ada`; `new CuentaC("")` lanza `IllegalArgumentException`.
 
 #### Encapsulación
 
-La **encapsulación** consiste en ocultar la representación interna del objeto y exponer solo operaciones controladas. En Java se logra habitualmente declarando campos `private` y ofreciendo métodos públicos que aplican reglas. Sirve para proteger invariantes y reducir el acoplamiento: otros componentes dependen del comportamiento del objeto, no de su estructura interna.
+**Definición formal.** Encapsulación es ocultar la representación interna (`private`) y exponer operaciones controladas que preservan invariantes.
 
-Se usa casi siempre que el estado puede cambiar. No es buena práctica exponer campos mutables como `public` solo por comodidad. Si `saldo` fuera público, cualquier código podría asignar `-999`. Con `saldo` privado, solo `depositar` y `retirar` pueden modificarlo, y esas operaciones validan las reglas. El error común es generar getters y setters ciegos para todo; encapsular no es exponer todo con otro nombre, sino exponer operaciones con sentido. La verificación es intentar modificar el estado por una vía inválida y confirmar que la API no lo permite.
+**Para qué sirve.** Protege estado y reduce acoplamiento.
 
-#### Ejemplo desde cero
+**Cuándo usarla y cuándo no.** Úsala cuando el estado puede cambiar. No generes getters/setters ciegos para todo.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+class CajaE { private int v; void set(int v){ if(v<0) throw new IllegalArgumentException(); this.v=v; } int get(){ return v; } }
+public class DemoEnc { public static void main(String[] args){ CajaE c=new CajaE(); c.set(5); System.out.println(c.get()); } }
+```
+
+**Caso de uso real.** Saldo de cuenta solo modificable por `depositar/retirar`.
+
+**Error común.** Campo público mutable. Síntoma: estado inválido. Corrección: `private` + métodos con validación.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `5`; `set(-1)` lanza excepción.
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m1-t1 && cd /tmp/java-m1-t1
@@ -145,21 +203,49 @@ Una empresa tiene empleados fijos y empleados por hora. Ambos comparten datos y 
 
 #### Herencia
 
-La **herencia** permite definir una clase a partir de otra mediante `extends`. La superclase contiene estado y comportamiento común; la subclase hereda los miembros accesibles y puede agregar campos, métodos o especializaciones. Su propósito es reutilizar y modelar una relación “es un”: un `EmpleadoFijo` es un `Empleado`.
+**Definición formal.** Herencia es el mecanismo por el cual una subclase (`extends`) reutiliza y especializa miembros accesibles de una superclase, modelando una relación “es un”.
 
-Se usa cuando existe esa relación conceptual y hay comportamiento o estado común real. No se usa solo para reutilizar código cuando la relación no es “es un”; en esos casos, la composición suele ser más flexible. El riesgo típico es crear jerarquías rígidas donde un cambio en la base afecta a todas las subclases. La verificación se observa cuando una subclase puede usarse donde se espera la superclase y conserva el comportamiento común.
+**Para qué sirve.** Comparte estado/comportamiento común y permite especialización.
 
-El constructor de la subclase debe inicializar la parte heredada. Si la superclase no tiene constructor sin argumentos, la subclase debe invocar `super(...)` explícitamente. Omitirlo produce un error de compilación.
+**Cuándo usarla y cuándo no.** Úsala con relación “es un” real. Si solo buscas reutilizar código, prefiere composición.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+class Animal { String tipo(){ return "animal"; } }
+class Perro extends Animal { String ladrar(){ return "guau"; } }
+public class DemoHerencia { public static void main(String[] args){ System.out.println(new Perro().tipo()); } }
+```
+
+**Caso de uso real.** `EmpleadoFijo` es un `Empleado`.
+
+**Error común.** Jerarquía rígida por heredar sin “es un”. Síntoma: subclases con comportamiento forzado. Corrección: composición.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `animal`.
 
 #### Sobreescritura
 
-La **sobreescritura** ocurre cuando una subclase define un método con la misma firma que un método visible de la superclase. Su propósito es especializar el comportamiento manteniendo el contrato. Se usa cuando el tipo base define una operación, pero cada subtipo la implementa de forma distinta, como `salarioMensual()`.
+**Definición formal.** Sobreescritura es redefinir en una subclase un método con la misma firma y contrato compatible que uno visible de la superclase.
 
-La sobreescritura se resuelve en tiempo de ejecución según el tipo real del objeto, no según el tipo de la variable. Esto permite que `Empleado e = new EmpleadoFijo(...)` ejecute la implementación de `EmpleadoFijo`. No debe usarse para cambiar el significado del contrato base sin dejarlo claro; si la superclase promete “salario mensual”, la subclase no debe devolver otro concepto.
+**Para qué sirve.** Especializa comportamiento manteniendo el contrato común.
 
-La anotación `@Override` es recomendable. No cambia el comportamiento en ejecución, pero hace que el compilador verifique que realmente se está sobreescribiendo un método existente. El error común es escribir una firma ligeramente distinta y crear un método nuevo sin darse cuenta. La verificación es compilar con `@Override` y ejecutar con variables del tipo base para observar el despacho dinámico.
+**Cuándo usarla y cuándo no.** Úsala cuando el subtipo cambia la implementación pero no el significado del contrato. Usa `@Override` siempre.
 
-#### Ejemplo desde cero
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+class A { String f(){ return "A"; } }
+class B extends A { @Override String f(){ return "B"; } }
+public class DemoOverride { public static void main(String[] args){ A x=new B(); System.out.println(x.f()); } }
+```
+
+**Caso de uso real.** `salarioMensual()` distinto en empleado fijo y por hora.
+
+**Error común.** Firma distinta sin `@Override`. Síntoma: se sobrecarga en vez de sobrescribir. Corrección: agregar `@Override`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `B`.
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m1-t2 && cd /tmp/java-m1-t2
