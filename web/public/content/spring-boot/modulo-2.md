@@ -1,10 +1,10 @@
 # Módulo 2: REST APIs con Spring Web
 
-Cada tema separa el contrato HTTP de la persistencia interna, valida la entrada en la frontera y hace que los errores sean predecibles para quien consume la API.
+Una API REST no es solo un conjunto de endpoints que devuelven JSON. Es un contrato: define qué datos acepta, qué datos expone, cómo comunica errores y cómo evoluciona sin romper a sus consumidores. En este módulo construimos esa frontera con cuidado. Cada tema parte de un problema concreto y muestra la decisión técnica que lo resuelve, con código desde cero y verificación observable.
 
-**Ruta del proyecto base**: `~/academia-spring/academia-spring` (M0). Ejecuta comandos Maven desde la carpeta con `pom.xml`. Detén `spring-boot:run` con `Ctrl+C` antes de cambiar de experimento.
+**Ruta base de práctica.** Cuando un ejemplo reutiliza el proyecto del módulo anterior, se asume la ruta `~/academia-spring/academia-spring` creada en M0. Para experimentos aislados, cada tema indica cómo crear un proyecto temporal. Los comandos Maven se ejecutan desde la carpeta que contiene `pom.xml`. Antes de cambiar de experimento, detén `spring-boot:run` con `Ctrl+C`.
 
-**Entorno verificado (2026-05-22, esta máquina)**:
+**Entorno verificado en esta máquina (2026-05-22):**
 
 ```bash
 java --version
@@ -18,77 +18,27 @@ Apache Maven 3.10.0
 Docker version 29.9.3
 ```
 
-Las pruebas de comportamiento de este módulo se verificaron con proyectos temporales Spring Boot 4.1.2 en `/tmp` usando JDK 27 y Maven 3.10.0.
+Las pruebas de comportamiento de este módulo se verificaron con proyectos temporales Spring Boot 4.1.2 en `/tmp`, usando JDK 27 y Maven 3.10.0.
 
 ## Aprende construyendo
 
 ### Tema 1: Por qué DTOs en vez de entidades directamente · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Supongamos que RutaFlow expone `GET /api/tareas/1`. La implementación más rápida sería devolver directamente la entidad JPA `Tarea`. El problema aparece cuando esa entidad contiene `ubicacionInterna`, un dato operativo que no debe salir de la API, o cuando una relación LAZY intenta serializarse fuera de la sesión de persistencia. Lo que parecía una comodidad se convierte en una fuga de datos, en un acoplamiento innecesario o en un error en tiempo de ejecución.
 
-#### Caso guía
+#### El contrato de la API y el modelo de persistencia
 
-RutaFlow expone `GET /api/tareas/1`. Si el controller devuelve la entidad JPA `Tarea`, el JSON puede incluir `ubicacionInterna`, un campo operativo que no debe salir. Además, un cambio de persistencia (renombrar columna, agregar auditoría, relación LAZY) puede romper clientes o provocar errores de serialización. El problema es confundir modelo de persistencia con contrato público.
+Una entidad JPA es un objeto de persistencia. Su función es representar el estado que se guarda y se consulta en la base de datos, con identidad, mapeo de columnas y ciclo de vida administrado por el contexto de persistencia. Ese modelo responde a necesidades internas: tablas, relaciones, estrategias de carga, auditoría, columnas técnicas.
 
-#### Fundamento técnico y modelo mental
+Un DTO (Data Transfer Object) cumple otra función. Es un objeto diseñado para cruzar una frontera: una respuesta HTTP, una petición, un mensaje o el límite entre módulos. Su forma es explícita y forma parte del contrato. Si el contrato dice que una tarea expone `id`, `titulo` y `prioridad`, eso es lo que debe salir, aunque internamente la entidad tenga más campos.
 
-**DTO (Data Transfer Object)**
-- Definición formal: Objeto de transferencia con forma explícita para cruzar una frontera (HTTP, capa, proceso).
-- Para qué sirve: Desacoplar contrato de implementación interna.
-- Cuándo usarlo: APIs HTTP, límites entre módulos/servicios.
-- Cuándo NO / riesgo: No crear DTOs sin propósito; evitar duplicación accidental.
-- Verificación: Respuesta JSON contiene solo campos del DTO.
+El mapeo entre entidad y DTO es la traducción entre ambos mundos. Puede hacerse con un método `from(...)`, con un mapper dedicado o con una biblioteca como MapStruct. Lo importante no es la herramienta, sino la regla: la decisión de qué datos salen debe ser visible y controlada. Cuando el controller devuelve la entidad directamente, esa decisión queda implícita y suele ser peligrosa.
 
-**Entidad JPA**
-- Definición formal: Objeto administrado por persistencia con identidad, mapeo ORM y ciclo de vida en contexto de persistencia.
-- Para qué sirve: Persistir y consultar estado en BD.
-- Cuándo usarlo: Capa de persistencia/dominio.
-- Cuándo NO / riesgo: No exponerla por defecto en API pública.
-- Verificación: Cambios internos no alteran contrato; sin `LazyInitializationException` por serialización.
+También conviene separar DTOs de entrada y de salida cuando sus reglas son distintas. Un `CrearTareaRequest` puede recibir `titulo` y `prioridad`, pero no `id` ni `ubicacionInterna`. La respuesta puede incluir el `id` generado, pero nunca el campo interno. Forzar un mismo objeto para ambos casos suele producir contratos confusos.
 
-**Mapeo entidad↔DTO**
-- Definición formal: Conversión explícita entre modelo interno y contrato.
-- Para qué sirve: Controlar qué entra/sale.
-- Cuándo usarlo: Toda frontera API-persistencia.
-- Cuándo NO / riesgo: Mapeo manual disperso puede divergir.
-- Verificación: Test/unit o inspección confirma campos mapeados.
+#### Ejemplo desde cero
 
-**Contrato de API**
-- Definición formal: Forma estable acordada: campos, tipos, códigos, semántica, errores.
-- Para qué sirve: Permitir evolución segura.
-- Cuándo usarlo: Cualquier endpoint consumido por otro cliente.
-- Cuándo NO / riesgo: Cambiarlo sin versionar rompe consumidores.
-- Verificación: Test de contrato/OpenAPI detecta drift.
-
-**Contrato / invariantes / reglas.** El DTO define la superficie pública; la entidad define persistencia. El controller debe recibir/devolver DTOs o tipos de contrato, no entidades JPA. Campos sensibles/internos no se incluyen en DTO de salida. Mapeos deben ser explícitos y deterministas.
-
-**Modelo mental.** La entidad es la ficha interna de bodega; el DTO es la etiqueta de envío al cliente. La etiqueta no debe incluir notas internas ni la ubicación del estante.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **JSON expone `ubicacionInterna`**. Causa probable: Se retornó entidad. Corrección: Retornar DTO con campos explícitos.
-- **`LazyInitializationException` al serializar**. Causa probable: Jackson tocó relación LAZY fuera de sesión. Corrección: DTO/proyección; nunca serializar entidad.
-- **Cambio de BD rompe frontend**. Causa probable: Contrato acoplado a entidad. Corrección: Versionar DTO/contrato.
-- **Mapeo inconsistente entre endpoints**. Causa probable: Lógica duplicada. Corrección: `from(...)`, mapper dedicado, MapStruct + test.
-
-#### ► CUÁNDO NO USARLO
-
-No conviertas DTO en burocracia ciega. En prototipos desechables internos puede ser aceptable un modelo simple, pero ante persistencia real, relaciones, datos sensibles o múltiples consumidores, usa DTO. No uses el mismo DTO para request y response si sus reglas difieren.
-
-#### Verificación rápida
-
-- [ ] Respuesta HTTP no incluye campos internos.
-- [ ] Controller no retorna entidad JPA.
-- [ ] Existe mapeo explícito y localizable.
-- [ ] Serialización no navega relaciones LAZY.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Prerequisitos y bootstrap
+Creamos un proyecto temporal con Spring Initializr:
 
 ```bash
 mkdir -p /tmp/sb-m2-t1 && cd /tmp/sb-m2-t1
@@ -100,7 +50,7 @@ curl -s https://start.spring.io/starter.zip \
 unzip -q demo.zip && cd demo
 ```
 
-`src/main/resources/application.properties`
+Configuramos una base en memoria en `src/main/resources/application.properties`:
 
 ```properties
 spring.datasource.url=jdbc:h2:mem:demo;DB_CLOSE_DELAY=-1
@@ -109,9 +59,7 @@ spring.datasource.password=
 spring.jpa.hibernate.ddl-auto=create-drop
 ```
 
-#### Implementación desde cero
-
-`src/main/java/com/example/demo/Tarea.java`
+La entidad contiene un campo interno que no debe exponerse:
 
 ```java
 package com.example.demo;
@@ -149,7 +97,7 @@ public class Tarea {
 }
 ```
 
-`src/main/java/com/example/demo/TareaDTO.java`
+El DTO de salida define el contrato público. El DTO de entrada define lo que el cliente puede enviar:
 
 ```java
 package com.example.demo;
@@ -161,15 +109,13 @@ public record TareaDTO(Long id, String titulo, int prioridad) {
 }
 ```
 
-`src/main/java/com/example/demo/CrearTareaRequest.java`
-
 ```java
 package com.example.demo;
 
 public record CrearTareaRequest(String titulo, int prioridad) { }
 ```
 
-`src/main/java/com/example/demo/TareaRepository.java`
+El repositorio y el controller usan DTOs en la frontera HTTP:
 
 ```java
 package com.example.demo;
@@ -178,8 +124,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TareaRepository extends JpaRepository<Tarea, Long> { }
 ```
-
-`src/main/java/com/example/demo/TareaController.java`
 
 ```java
 package com.example.demo;
@@ -213,24 +157,23 @@ public class TareaController {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`@Entity` `Tarea`**: Modelo persistente. Por qué importa: Representa tabla/estado BD. Si lo omites/cambias: No hay mapeo JPA.
-- **`ubicacionInterna` solo en entidad**: Dato interno. Por qué importa: Muestra necesidad de frontera. Si lo omites/cambias: Exponerlo filtra información.
-- **`record TareaDTO`**: Contrato de salida. Por qué importa: Campos públicos explícitos. Si lo omites/cambias: Entidad expone todo.
-- **`TareaDTO.from`**: Mapeo centralizado. Por qué importa: Evita divergencia. Si lo omites/cambias: Mapeo disperso e inconsistente.
-- **`ResponseEntity.status(CREATED)`**: 201 al crear. Por qué importa: Semántica HTTP correcta. Si lo omites/cambias: 200 es menos preciso.
-- **`map(TareaDTO::from)`**: Conversión antes de responder. Por qué importa: Protege contrato. Si lo omites/cambias: Se filtran campos/relaciones.
+La entidad `Tarea` tiene cuatro campos, pero el DTO de salida solo expone tres. El campo `ubicacionInterna` existe en la persistencia y puede ser necesario para la operación interna del sistema, pero no forma parte del contrato HTTP. El método `TareaDTO.from(...)` centraliza la conversión y deja explícita la decisión: solo se copian `id`, `titulo` y `prioridad`.
+
+El controller recibe `CrearTareaRequest`, no la entidad. Esto evita que el cliente envíe campos que no debería controlar, como `id` o datos internos. Al crear, el servicio o controller asigna `BODEGA-7` como dato interno; al responder, devuelve un DTO. El cliente nunca ve ese valor.
+
+El endpoint de creación responde con `ResponseEntity.status(HttpStatus.CREATED)`. El código 201 comunica que se creó un recurso. Aunque devolver 200 no rompe la funcionalidad básica, 201 expresa mejor la semántica HTTP.
 
 #### Ejecución y salida real
 
-Comando (desde `demo/`):
+Desde la carpeta `demo/`:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Otra terminal:
+En otra terminal:
 
 ```bash
 curl -s -X POST http://localhost:8080/api/tareas \
@@ -239,98 +182,44 @@ curl -s -X POST http://localhost:8080/api/tareas \
 curl -s http://localhost:8080/api/tareas
 ```
 
-Salida real observada en verificación equivalente (2026-05-22, Boot 4.1.2, `/tmp`):
+Salida real observada en una verificación equivalente con Spring Boot 4.1.2 (2026-05-22, `/tmp`):
 
 ```json
 {"id":1,"titulo":"Entregar paquete","prioridad":1}
 ```
 
-La respuesta **no** contiene `ubicacionInterna` ni `BODEGA-7`.
+La respuesta no incluye `ubicacionInterna` ni el valor `BODEGA-7`. Esa ausencia es la verificación importante: el contrato público quedó separado del modelo interno.
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **Campo interno aparece en JSON**. Causa probable: Devolviste entidad. Corrección: Devuelve DTO.
-- **`LazyInitializationException`**. Causa probable: Serializaste relación LAZY. Corrección: Usa DTO/proyección.
-- **Contrato cambia al cambiar BD**. Causa probable: Entidad expuesta. Corrección: DTO estable + mapeo.
-- **`500` al crear por JSON**. Causa probable: Campos/tipos no coinciden. Corrección: Validar request, revisar payload.
+Si el JSON expone `ubicacionInterna`, la causa más probable es que el controller devolvió la entidad JPA o que el DTO incluye el campo por error. La corrección es devolver un DTO de salida con campos explícitos y revisar el mapeo.
 
-#### Verificación rápida
+Si aparece `LazyInitializationException` al serializar una respuesta, suele ocurrir porque Jackson intentó recorrer una relación LAZY después de cerrar la sesión de persistencia. Devolver entidades en la API hace fácil caer en este problema. La corrección es mapear a DTOs o proyecciones que contengan solo los datos necesarios.
 
-1. POST crea tarea y responde 201 con DTO.
-2. GET no expone `ubicacionInterna`.
-3. Busca `BODEGA-7` en respuestas HTTP: no debe aparecer.
+Si un cambio de base de datos rompe a los clientes, el contrato estaba acoplado a la persistencia. El DTO actúa como amortiguador: permite cambiar la entidad o la tabla sin cambiar, necesariamente, la forma del JSON.
 
-</details>
+#### Verificación
+
+La verificación mínima es crear una tarea, listar tareas y confirmar que la respuesta contiene solo `id`, `titulo` y `prioridad`. Puede agregarse una inspección rápida con `curl` y `grep` para asegurar que `BODEGA-7` no aparece en ninguna respuesta HTTP.
+
 
 ### Tema 2: Validación con Bean Validation y ResponseEntity · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Un cliente envía `{"titulo":"   ","prioridad":0}`. Si el controller acepta ese payload, la capa de negocio o la base de datos recibe datos inválidos y el sistema falla tarde, mal o de forma silenciosa. La validación de entrada debe ocurrir en la frontera HTTP: antes de invocar la lógica de negocio, con una respuesta clara y con el código de estado adecuado.
 
-#### Caso guía
+#### Validar en la frontera
 
-Un cliente envía `{"titulo":"   ","prioridad":0}`. Si el controller lo acepta, la capa de negocio/BD recibe datos inválidos y la API responde tarde o mal. La validación debe ocurrir en la frontera HTTP, devolver 400 y explicar qué campo falló.
+Bean Validation, hoy bajo el espacio de nombres Jakarta Validation, permite declarar restricciones sobre los campos de un objeto mediante anotaciones. `@NotBlank` indica que una cadena no puede ser `null`, vacía ni contener solo espacios. `@Min(1)` indica que un valor numérico debe ser al menos 1. Estas anotaciones no reemplazan todas las reglas de negocio, pero sí expresan con claridad las reglas de forma y rango que se pueden evaluar al recibir la petición.
 
-#### Fundamento técnico y modelo mental
+La anotación `@Valid` es la que activa la validación en un parámetro del controller. Sin `@Valid`, las anotaciones de restricción existen, pero no se ejecutan en ese punto. También es necesario tener en el classpath una implementación de Bean Validation; en Spring Boot, la forma habitual es agregar `spring-boot-starter-validation`.
 
-**Bean Validation (Jakarta Validation)**
-- Definición formal: Especificación para declarar restricciones sobre beans mediante anotaciones y validar instancias.
-- Para qué sirve: Validar datos de forma declarativa.
-- Cuándo usarlo: DTOs de entrada, parámetros, configuración.
-- Cuándo NO / riesgo: No sustituye reglas de negocio complejas.
-- Verificación: Request inválido devuelve 400 con detalles.
+Cuando una restricción falla, Spring puede lanzar `MethodArgumentNotValidException`. Si no se maneja, la respuesta puede ser genérica o inconsistente. Por eso conviene capturarla y devolver un cuerpo de error estable. El código de estado correcto para una entrada inválida del cliente es 400 Bad Request. No es un error 500: el servidor no falló inesperadamente; recibió datos que no cumplen el contrato.
 
-**`@Valid` / `@Validated`**
-- Definición formal: Disparan validación en puntos de integración Spring.
-- Para qué sirve: Activar validación en frontera.
-- Cuándo usarlo: `@RequestBody`, parámetros, servicios según caso.
-- Cuándo NO / riesgo: Omitirlos deja pasar input inválido.
-- Verificación: Sin `@Valid`, request inválido puede pasar.
+`ResponseEntity` permite controlar el estado HTTP, las cabeceras y el cuerpo de la respuesta. Es útil cuando el estado importa, como devolver 201 al crear o 400 al validar. No es obligatorio en todos los casos; un método puede devolver directamente un DTO cuando el estado por defecto es suficiente. La regla es usarlo cuando hace explícita la semántica HTTP.
 
-**Restricciones (`@NotBlank`, `@Min`, etc.)**
-- Definición formal: Metadatos de restricción con semántica definida.
-- Para qué sirve: Contrato de entrada explícito.
-- Cuándo usarlo: Campos con reglas conocidas.
-- Cuándo NO / riesgo: Mensajes vagos dificultan corrección.
-- Verificación: Mensaje por campo en error.
+#### Ejemplo desde cero
 
-**`ResponseEntity`**
-- Definición formal: Representa respuesta HTTP completa: status, headers, body.
-- Para qué sirve: Control explícito de semántica HTTP.
-- Cuándo usarlo: Cuando status/headers importan.
-- Cuándo NO / riesgo: No abusar; devolver objeto simple es válido cuando status por defecto es correcto.
-- Verificación: 201 en creación, 400 en validación.
-
-**Contrato / invariantes / reglas.** Validar antes de invocar lógica de negocio. Input inválido del cliente se responde con 400 (Bad Request), no 500. El mensaje de error debe ser útil pero no filtrar detalles internos. `@NotBlank` rechaza null, vacío y solo espacios; `@Min(1)` rechaza 0 si la prioridad mínima es 1.
-
-**Modelo mental.** La validación es el control de acceso de equipaje en aeropuerto: se revisa antes de entrar al avión. Si algo no cumple, se rechaza ahí, con motivo claro.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **Request inválido llega al servicio**. Causa probable: Falta `@Valid` o dependencia validation. Corrección: Agregar `spring-boot-starter-validation` y `@Valid`.
-- **Devuelve 500 en vez de 400**. Causa probable: Excepción no manejada o mapeo incorrecto. Corrección: `@ControllerAdvice` para `MethodArgumentNotValidException`.
-- **Mensaje de error inútil**. Causa probable: Sin `message` o sin estructura. Corrección: Definir mensajes y `ApiError`.
-- **Acepta espacios en título**. Causa probable: Usaste `@NotNull`. Corrección: Usa `@NotBlank`.
-
-#### ► CUÁNDO NO USARLO
-
-No metas toda regla de negocio en anotaciones de bean validation. Validación de formato/rango/presencia va en frontera; reglas como “el usuario tiene saldo suficiente” o “no hay conflicto con otra reserva” suelen ir en dominio/servicio con errores de negocio apropiados.
-
-#### Verificación rápida
-
-- [ ] `@Valid` presente en `@RequestBody`.
-- [ ] Dependencia `spring-boot-starter-validation` incluida.
-- [ ] Input inválido responde 400.
-- [ ] Respuesta indica campo y motivo.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Prerequisitos y bootstrap
-
-Usa el proyecto del Tema 1 o genera uno con:
+Se puede partir del proyecto del Tema 1 o generar uno nuevo con:
 
 ```bash
 curl -s https://start.spring.io/starter.zip \
@@ -338,7 +227,7 @@ curl -s https://start.spring.io/starter.zip \
   -d javaVersion=25 -d type=maven-project -d baseDir=demo -o demo.zip
 ```
 
-Dependencia clave en `pom.xml`:
+En `pom.xml`, la dependencia clave es:
 
 ```xml
 <dependency>
@@ -347,9 +236,7 @@ Dependencia clave en `pom.xml`:
 </dependency>
 ```
 
-#### Implementación desde cero
-
-`src/main/java/com/example/demo/CrearTareaRequest.java`
+El request declara sus reglas:
 
 ```java
 package com.example.demo;
@@ -365,21 +252,58 @@ public record CrearTareaRequest(
 ) { }
 ```
 
-`src/main/java/com/example/demo/TareaController.java`
+El controller activa la validación con `@Valid`:
 
 ```java
 @PostMapping
 public ResponseEntity<TareaDTO> crear(@Valid @RequestBody CrearTareaRequest request) {
-    return ResponseEntity.status(HttpStatus.CREATED).body(servicio.crear(request));
+    Tarea guardada = repo.save(new Tarea(request.titulo(), request.prioridad(), "BODEGA-7"));
+    return ResponseEntity.status(HttpStatus.CREATED).body(TareaDTO.from(guardada));
 }
 ```
 
-#### Desglose del código
+Para devolver un error consistente, conviene definir un DTO de error y un handler:
 
-- **`@NotBlank`**: Rechaza null/vacío/espacios. Por qué importa: Título debe existir. Si lo omites/cambias: Se aceptan títulos vacíos.
-- **`@Min(1)`**: Rechaza prioridad < 1. Por qué importa: Regla de dominio simple. Si lo omites/cambias: Se aceptan 0 o negativos.
-- **`@Valid`**: Activa validación antes del método. Por qué importa: Frontera segura. Si lo omites/cambias: Input inválido entra al servicio.
-- **`ResponseEntity.status(CREATED)`**: Controla status HTTP. Por qué importa: Semántica clara. Si lo omites/cambias: Se pierde precisión de contrato.
+```java
+package com.example.demo;
+
+import java.util.List;
+
+public record ApiError(String codigo, String mensaje, List<String> detalles) { }
+```
+
+```java
+package com.example.demo;
+
+import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+@RestControllerAdvice
+public class ErroresApi {
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> validacion(MethodArgumentNotValidException ex) {
+        var detalles = ex.getBindingResult().getFieldErrors().stream()
+            .map(e -> e.getField() + ": " + e.getDefaultMessage())
+            .toList();
+        return ResponseEntity.badRequest()
+            .body(new ApiError("VALIDACION", "Datos inválidos", detalles));
+    }
+}
+```
+
+#### Recorrido del código
+
+`@NotBlank` es más estricto que `@NotNull`. `@NotNull` solo rechaza la ausencia del valor; un título vacío o compuesto por espacios pasaría. `@NotBlank` cubre esos casos, que en la práctica suelen ser datos inválidos.
+
+`@Min(1)` declara una regla de rango. El valor 0 queda rechazado antes de llegar a la lógica de persistencia. El mensaje asociado a cada anotación se vuelve parte del feedback al cliente. No debe ser críptico ni técnico en exceso: tiene que ayudar a corregir la petición.
+
+En el controller, `@Valid` va antes de `@RequestBody`. Esa posición indica que el cuerpo deserializado debe validarse antes de entrar al método. Si la validación falla, Spring lanza la excepción y el método no se ejecuta.
+
+El `@RestControllerAdvice` centraliza el manejo del error. Recorre los `FieldError` y construye una lista de detalles con el nombre del campo y su mensaje. El resultado es un 400 con un cuerpo estable. El orden de los detalles puede variar, por lo que las pruebas deben verificar presencia de campos, no posición exacta.
 
 #### Ejecución y salida real
 
@@ -393,7 +317,7 @@ curl -i -X POST http://localhost:8080/api/tareas \
   -d '{"titulo":"   ","prioridad":0}'
 ```
 
-Salida real observada (resumen, 2026-05-22):
+Salida real observada (resumen, Spring Boot 4.1.2, 2026-05-22):
 
 ```text
 HTTP/1.1 201
@@ -403,91 +327,36 @@ HTTP/1.1 400
 {"codigo":"VALIDACION","mensaje":"Datos inválidos","detalles":["titulo: Escribe un título.","prioridad: La prioridad mínima es 1."]}
 ```
 
-El orden de `detalles` puede variar; verifica presencia, no posición exacta.
+#### Errores frecuentes
 
-#### Errores comunes y troubleshooting
+Si el request inválido llega al servicio, falta `@Valid` o falta la dependencia de validación. La corrección es agregar `spring-boot-starter-validation` y anotar el parámetro.
 
-- **400 genérico sin detalles**. Causa probable: No hay handler de validación. Corrección: Agrega `@ExceptionHandler(MethodArgumentNotValidException.class)`.
-- **500 por constraint**. Causa probable: Excepción de validación no mapeada. Corrección: Mapear a 400.
-- **Acepta body inválido**. Causa probable: Falta `@Valid`. Corrección: Añadir `@Valid`.
-- **`jakarta.validation` no resuelve**. Causa probable: Falta starter validation. Corrección: Agregar dependencia.
+Si la validación devuelve 500, la excepción no fue mapeada correctamente. `MethodArgumentNotValidException` debe transformarse en 400.
 
-#### Verificación rápida
+Si el mensaje de error es inútil, el cliente no sabe qué corregir. Los detalles deben mencionar el campo y la regla incumplida, sin exponer información interna del servidor.
 
-1. Payload válido => 201.
-2. Título vacío o prioridad 0 => 400.
-3. La respuesta indica campos inválidos.
+#### Verificación
 
-</details>
+Un payload válido debe devolver 201. Un payload con título vacío o prioridad 0 debe devolver 400. El cuerpo del error debe indicar los campos inválidos. Esta verificación puede automatizarse con MockMvc o con llamadas HTTP reales.
+
 
 ### Tema 3: Manejo centralizado de errores con @ControllerAdvice · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+En una API pequeña, es tentador capturar excepciones dentro de cada controller. El resultado, casi siempre, es una colección de respuestas inconsistentes: un endpoint devuelve HTML de error, otro devuelve un mensaje suelto, otro expone un stacktrace. Para el cliente, eso significa que no puede programar contra un contrato predecible. El manejo de errores debe ser tan consistente como el manejo de respuestas exitosas.
 
-#### Caso guía
+#### Una mesa central para los errores
 
-Algunos endpoints devuelven stacktraces, otros HTML de error, otros JSON distinto. El cliente no puede programar contra eso. Un `GET /api/tareas/999` debe responder 404 con el mismo shape que otros errores de la API.
+`@ControllerAdvice` permite definir lógica transversal para controllers. En una API REST, se suele usar su variante `@RestControllerAdvice`, que combina `@ControllerAdvice` con `@ResponseBody`. Dentro de ese componente, los métodos anotados con `@ExceptionHandler` indican cómo transformar una excepción específica en una respuesta HTTP.
 
-#### Fundamento técnico y modelo mental
+La idea central es separar la causa del error de su representación HTTP. El servicio o el repositorio pueden lanzar `TareaNoEncontradaException` cuando no existe un recurso. Esa excepción expresa un hecho del dominio o de la aplicación. El controller advice decide que ese hecho se traduce a 404 Not Found con un cuerpo `ApiError`.
 
-**`@ControllerAdvice`**
-- Definición formal: Componente que aplica advice transversal a controllers (excepciones, binding, model attributes).
-- Para qué sirve: Centralizar manejo de errores.
-- Cuándo usarlo: APIs con múltiples endpoints.
-- Cuándo NO / riesgo: No convertirlo en “catch-all” que oculte bugs.
-- Verificación: Mismo shape de error en varios endpoints.
+Un DTO de error, como `ApiError`, define el contrato de error. Su estructura debe ser estable: por ejemplo, un código, un mensaje y una lista de detalles. Los clientes pueden depender de ese formato para mostrar mensajes, tomar decisiones o registrar fallos. Lo que no debe incluir es información sensible: stacktraces, SQL, nombres internos de clases de infraestructura o rutas del servidor.
 
-**`@ExceptionHandler`**
-- Definición formal: Método que maneja un tipo específico de excepción.
-- Para qué sirve: Mapear excepción a respuesta HTTP.
-- Cuándo usarlo: Validación, no encontrado, conflicto, etc.
-- Cuándo NO / riesgo: No devolver 200 en errores.
-- Verificación: 404/400 según caso.
+También es importante distinguir tipos de error. Una entrada inválida del cliente es 400. Un recurso inexistente es 404. Un conflicto de negocio puede ser 409. Un fallo inesperado es 500, y en ese caso la respuesta al cliente debe ser genérica mientras el detalle real se registra en logs. Un `catch (Exception)` que convierte todo en 400 oculta errores reales y confunde al cliente.
 
-**Error DTO (`ApiError`)**
-- Definición formal: Estructura estable para errores.
-- Para qué sirve: Contrato de error para clientes.
-- Cuándo usarlo: Toda API pública/consumida.
-- Cuándo NO / riesgo: No filtrar stacktrace ni SQL.
-- Verificación: JSON con `codigo`, `mensaje`, `detalles`.
+#### Ejemplo desde cero
 
-**Excepción de dominio**
-- Definición formal: Excepción con significado de negocio/aplicación.
-- Para qué sirve: Separar causa de transporte HTTP.
-- Cuándo usarlo: Reglas de dominio o recurso inexistente.
-- Cuándo NO / riesgo: No usar excepciones genéricas para todo.
-- Verificación: Handler mapea a status correcto.
-
-**Contrato / invariantes / reglas.** El cliente recibe errores consistentes. 400 = input inválido; 404 = recurso no existe; 500 = fallo inesperado interno (sin detalles sensibles). Los detalles internos se registran en logs, no se exponen al cliente.
-
-**Modelo mental.** `@ControllerAdvice` es la mesa de reclamos central: no importa qué ventanilla falló, el formato del reclamo es el mismo.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **Cada endpoint responde error distinto**. Causa probable: Try/catch local inconsistente. Corrección: Centralizar en `@ControllerAdvice`.
-- **Se filtra stacktrace**. Causa probable: Handler genérico devuelve `ex.getMessage()`/stack. Corrección: Log interno; respuesta segura.
-- **500 para recurso inexistente**. Causa probable: Se lanzó excepción no mapeada. Corrección: `TareaNoEncontradaException` -> 404.
-- **Detalles de validación perdidos**. Causa probable: Handler ignora `BindingResult`. Corrección: Extraer `FieldError`s.
-
-#### ► CUÁNDO NO USARLO
-
-No uses un `catch(Exception)` que convierta todo en 400. Distingue errores de cliente, de dominio y fallos inesperados. No uses `@ControllerAdvice` para lógica de negocio.
-
-#### Verificación rápida
-
-- [ ] 400, 404 y 500 (si aplica) tienen shape consistente.
-- [ ] No se exponen stacktraces.
-- [ ] Los logs contienen detalle interno; la respuesta no.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-`src/main/java/com/example/demo/ApiError.java`
+Definimos el contrato de error:
 
 ```java
 package com.example.demo;
@@ -497,7 +366,7 @@ import java.util.List;
 public record ApiError(String codigo, String mensaje, List<String> detalles) { }
 ```
 
-`src/main/java/com/example/demo/TareaNoEncontradaException.java`
+Definimos una excepción de aplicación:
 
 ```java
 package com.example.demo;
@@ -509,7 +378,18 @@ public class TareaNoEncontradaException extends RuntimeException {
 }
 ```
 
-`src/main/java/com/example/demo/ErroresApi.java`
+El controller lanza la excepción cuando corresponde:
+
+```java
+@GetMapping("/{id}")
+public TareaDTO obtener(@PathVariable Long id) {
+    Tarea tarea = repo.findById(id)
+        .orElseThrow(() -> new TareaNoEncontradaException(id));
+    return TareaDTO.from(tarea);
+}
+```
+
+El advice centraliza el mapeo:
 
 ```java
 package com.example.demo;
@@ -529,7 +409,8 @@ public class ErroresApi {
         var detalles = ex.getBindingResult().getFieldErrors().stream()
             .map(e -> e.getField() + ": " + e.getDefaultMessage())
             .toList();
-        return ResponseEntity.badRequest().body(new ApiError("VALIDACION", "Datos inválidos", detalles));
+        return ResponseEntity.badRequest()
+            .body(new ApiError("VALIDACION", "Datos inválidos", detalles));
     }
 
     @ExceptionHandler(TareaNoEncontradaException.class)
@@ -540,12 +421,13 @@ public class ErroresApi {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`@RestControllerAdvice`**: Aplica a controllers REST. Por qué importa: Centraliza formato. Si lo omites/cambias: Errores inconsistentes.
-- **`MethodArgumentNotValidException`**: Captura fallos `@Valid`. Por qué importa: 400 con detalles por campo. Si lo omites/cambias: 400 genérico o 500.
-- **`TareaNoEncontradaException`**: Error semántico. Por qué importa: 404 claro. Si lo omites/cambias: 500 o respuesta ambigua.
-- **`ApiError`**: Contrato de error. Por qué importa: Cliente puede parsear. Si lo omites/cambias: Cada error con shape distinto.
+`TareaNoEncontradaException` contiene el id faltante en su mensaje. Esa información es útil para el cliente y no revela detalles internos peligrosos. El controller no construye la respuesta 404; solo expresa el hecho de que el recurso no existe.
+
+En `ErroresApi`, cada `@ExceptionHandler` se encarga de un tipo de error. El handler de validación transforma errores de campo en 400. El handler de no encontrado transforma la excepción de aplicación en 404. Ambos devuelven el mismo tipo de cuerpo, `ApiError`. Esa consistencia es el objetivo principal.
+
+Si más adelante se agrega un handler genérico para `Exception`, debe responder 500 con un mensaje seguro y registrar el detalle interno en logs. No debe devolver `ex.getMessage()` ciegamente ni el stacktrace al cliente.
 
 #### Ejecución y salida real
 
@@ -553,94 +435,50 @@ public class ErroresApi {
 curl -s http://localhost:8080/api/tareas/999
 ```
 
-Salida real observada (2026-05-22):
+Salida real observada (Spring Boot 4.1.2, 2026-05-22):
 
 ```json
 {"codigo":"TAREA_NO_ENCONTRADA","mensaje":"No existe la tarea 999","detalles":[]}
 ```
 
-#### Errores comunes y troubleshooting
+La petición inválida del tema anterior produce:
 
-- **Stacktrace en respuesta**. Causa probable: No hay handler o handler mal diseñado. Corrección: Loguear stacktrace; devolver `ApiError` seguro.
-- **400 para todo**. Causa probable: Catch-all demasiado amplio. Corrección: Mapear por tipo de excepción.
-- **Cliente no puede distinguir errores**. Causa probable: Sin `codigo` estable. Corrección: Usar códigos de error de API.
+```json
+{"codigo":"VALIDACION","mensaje":"Datos inválidos","detalles":["titulo: Escribe un título.","prioridad: La prioridad mínima es 1."]}
+```
 
-#### Verificación rápida
+Los dos errores tienen estados distintos, pero comparten forma. Eso permite que el cliente implemente un único parser de errores.
 
-1. GET inexistente => 404 con `TAREA_NO_ENCONTRADA`.
-2. POST inválido => 400 con `VALIDACION`.
-3. Ninguna respuesta expone stacktrace.
+#### Errores frecuentes
 
-</details>
+Si cada endpoint responde con un formato diferente, el manejo de errores está disperso. La corrección es mover la traducción de excepciones a `@RestControllerAdvice`.
+
+Si la respuesta incluye un stacktrace, se está exponiendo información interna. El stacktrace pertenece a los logs del servidor; el cliente solo necesita un contrato de error seguro.
+
+Si todo se responde como 400, se está perdiendo la semántica HTTP. Un recurso inexistente no es una petición mal formada; es un 404.
+
+#### Verificación
+
+Hay que verificar al menos tres casos: entrada inválida devuelve 400 con código `VALIDACION`; recurso inexistente devuelve 404 con código `TAREA_NO_ENCONTRADA`; ninguna respuesta expone stacktrace. Estas comprobaciones pueden automatizarse con tests de MockMvc.
+
 
 ### Tema 4: Lombok y MapStruct sin exponer datos internos · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+A medida que crece una API, aparecen tareas repetitivas: constructores, getters, builders, conversiones entre entidades y DTOs. Lombok y MapStruct existen para reducir ese trabajo mecánico. El beneficio es real, pero no es gratuito: ambos funcionan por generación de código en compilación y pueden ocultar decisiones importantes si se usan sin criterio.
 
-#### Caso guía
+#### Generación de código en compilación
 
-El equipo quiere reducir boilerplate: getters, constructores, mapeos. Pero un `@Data` en una entidad JPA puede generar `equals/hashCode/toString` peligrosos, y un mapper mal configurado puede copiar `ubicacionInterna` al DTO. La productividad no puede romper encapsulación ni el contrato.
+Lombok es un procesador de anotaciones que genera código durante la compilación. Anotaciones como `@Getter`, `@Builder` o `@RequiredArgsConstructor` evitan escribir métodos repetitivos. Su ventaja es reducir ruido. Su riesgo es que el código “visible” ya no es todo el código que existe. Por eso conviene usar Lombok con moderación y entender qué genera.
 
-#### Fundamento técnico y modelo mental
+En entidades JPA, el uso de `@Data` suele ser una mala idea. `@Data` combina getters, setters, `toString`, `equals` y `hashCode`. En entidades con relaciones bidireccionales, `toString` o `equals` pueden recorrer la relación y provocar ciclos, `StackOverflowError` o cargas inesperadas. Además, la identidad de una entidad JPA no siempre debe basarse en todos sus campos. En entidades, es preferible ser explícito.
 
-**Lombok**
-- Definición formal: Biblioteca de annotation processing que genera código en compilación.
-- Para qué sirve: Reducir boilerplate.
-- Cuándo usarlo: DTOs, builders, logging, value objects.
-- Cuándo NO / riesgo: `@Data` en entidades JPA; abuso oculta diseño.
-- Verificación: Inspeccionar código generado/bytecode; tests.
+MapStruct es otro procesador de anotaciones, pero con un objetivo distinto: generar mappers tipo-seguro entre objetos. Se define una interfaz con métodos como `toDto` o `toEntity`, y MapStruct genera la implementación en compilación. El resultado se puede inspeccionar en `target/generated-sources/annotations`, lo que hace que el mapeo sea transparente.
 
-**MapStruct**
-- Definición formal: Generador de mappers en compilación, tipo-seguro.
-- Para qué sirve: Mapeo entre DTOs y entidades.
-- Cuándo usarlo: Mapeos repetitivos y claros.
-- Cuándo NO / riesgo: Mapear campos sensibles por defecto sin revisar.
-- Verificación: Revisar implementación generada en `target/generated-sources/annotations`.
+La regla de seguridad es la misma que en el Tema 1: el contrato de salida decide qué campos se exponen. Si el DTO no tiene `ubicacionInterna`, MapStruct no debe copiarlo. Si en algún caso el DTO y la entidad comparten nombres de campos sensibles que no deben viajar, hay que ignorarlos explícitamente con `@Mapping(target = "...", ignore = true)`.
 
-**Annotation Processing**
-- Definición formal: Fase de compilación donde procesadores generan código/metadatos.
-- Para qué sirve: Generación automática.
-- Cuándo usarlo: Lombok, MapStruct, JPAMetamodel.
-- Cuándo NO / riesgo: Configuración de IDE/build incompleta.
-- Verificación: `mvn compile` genera fuentes.
+#### Ejemplo desde cero
 
-**Frontera de datos**
-- Definición formal: Límite donde se decide qué datos salen/entran.
-- Para qué sirve: Seguridad y estabilidad.
-- Cuándo usarlo: Controllers, adapters, integraciones.
-- Cuándo NO / riesgo: Exponer entidad o campo interno.
-- Verificación: DTO no contiene campos internos.
-
-**Contrato / invariantes / reglas.** Lombok no debe usarse para esconder decisiones de modelo. En entidades JPA, evita `@EqualsAndHashCode` sobre todos los campos y `@Data` sin entenderlo. MapStruct debe mapear solo campos del contrato; los internos se ignoran explícitamente. Ambos se resuelven en compilación: si falla annotation processing, falla build o falta implementación.
-
-**Modelo mental.** Lombok y MapStruct son asistentes de taller: aceleran cortes repetitivos, pero tú decides el plano. Un asistente rápido que copia la pieza equivocada también es peligroso.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`No qualifying bean` para mapper**. Causa probable: Falta `componentModel="spring"` o annotation processor. Corrección: Configurar MapStruct y compiler plugin.
-- **DTO expone campo interno**. Causa probable: Mapeo automático incluyó campo por nombre. Corrección: `@Mapping(target="...", ignore=true)` o DTO sin campo.
-- **`StackOverflowError` en `toString/equals`**. Causa probable: `@Data` en entidad con relaciones bidireccionales. Corrección: Evitar `@Data`; usar getters controlados.
-- **IDE muestra error pero Maven compila/no compila**. Causa probable: Annotation processing deshabilitado. Corrección: Habilitar AP en IDE; revisar `annotationProcessorPaths`.
-
-#### ► CUÁNDO NO USARLO
-
-No uses Lombok para ocultar un modelo que no entiendes. No uses MapStruct cuando el mapeo es trivial y una función `from()` basta. Si el mapeo tiene reglas de negocio, ponlas donde correspondan y prueba el mapper.
-
-#### Verificación rápida
-
-- [ ] `mvn -q -DskipTests compile` genera implementaciones MapStruct.
-- [ ] DTO no contiene campos internos.
-- [ ] No hay `@Data` ciego en entidades JPA sensibles.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Prerequisitos y bootstrap
-
-Agrega dependencias y annotation processors al `pom.xml`:
+En `pom.xml` se agregan dependencias y procesadores:
 
 ```xml
 <properties>
@@ -686,28 +524,26 @@ Agrega dependencias y annotation processors al `pom.xml`:
 </build>
 ```
 
-#### Implementación desde cero
-
-`src/main/java/com/example/demo/TareaMapper.java`
+El mapper declara la conversión:
 
 ```java
 package com.example.demo;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface TareaMapper {
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "titulo", source = "titulo")
-    @Mapping(target = "prioridad", source = "prioridad")
     TareaDTO toDto(Tarea tarea);
 }
 ```
 
-Uso en controller/servicio:
+El servicio inyecta el mapper generado por Spring:
 
 ```java
+package com.example.demo;
+
+import org.springframework.stereotype.Service;
+
 @Service
 public class TareaService {
     private final TareaRepository repo;
@@ -725,14 +561,15 @@ public class TareaService {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`@Mapper(componentModel="spring")`**: Genera implementación como bean Spring. Por qué importa: Permite inyectarlo. Si lo omites/cambias: Tendrías `Mappers.getMapper(...)` manual.
-- **`@Mapping` explícito**: Controla campos mapeados. Por qué importa: Documenta contrato. Si lo omites/cambias: Mapeo implícito puede incluir campos indeseados si DTO cambia.
-- **`annotationProcessorPaths`**: Registra procesadores en compilación. Por qué importa: Genera código. Si lo omites/cambias: No se genera mapper/lombok.
-- **DTO sin `ubicacionInterna`**: Frontera de datos. Por qué importa: Seguridad/estabilidad. Si lo omites/cambias: Exposición accidental.
+`componentModel = "spring"` indica a MapStruct que genere una implementación anotada como componente Spring. Esto permite inyectarla en servicios o controllers. Sin esta configuración, habría que obtener el mapper manualmente con `Mappers.getMapper(...)`, lo que no suele ser deseable en una aplicación Spring.
 
-#### Ejecución y salida real
+Los `annotationProcessorPaths` del `maven-compiler-plugin` son esenciales. Lombok y MapStruct no hacen magia en tiempo de ejecución; generan código durante la compilación. Si el procesador no está configurado, el mapper no se genera o el IDE muestra errores engañosos.
+
+El DTO de salida sigue siendo la barrera. Aunque la entidad tenga `ubicacionInterna`, `TareaDTO` no define ese campo. La implementación generada solo puede mapear lo que el contrato permite. Aun así, conviene inspeccionar el código generado cuando el mapeo es sensible.
+
+#### Ejecución y verificación
 
 ```bash
 ./mvnw -q -DskipTests compile
@@ -745,90 +582,38 @@ Salida esperada:
 target/generated-sources/annotations/.../TareaMapperImpl.java
 ```
 
-**Nota de verificación (2026-05-22)**: se verificó el patrón de compilación y generación con proyectos Maven/JDK 27 en esta máquina; la implementación generada debe inspeccionarse en `target/generated-sources/annotations`. MapStruct y Lombok requieren annotation processing habilitado en IDE.
+**Nota de verificación (2026-05-22).** Se verificó el patrón de compilación y generación con proyectos Maven y JDK 27 en esta máquina. La implementación generada debe inspeccionarse en `target/generated-sources/annotations`. Si el IDE marca errores pero Maven compila, el problema suele estar en la configuración de annotation processing del IDE.
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **`Consider defining a bean of type ...TareaMapper`**. Causa probable: Falta `componentModel="spring"` o processor. Corrección: Revisar anotación y `annotationProcessorPaths`.
-- **Implementación no se genera**. Causa probable: AP deshabilitado. Corrección: `mvn compile`; habilitar AP en IDE.
-- **Campo interno aparece en DTO**. Causa probable: DTO/mapper lo incluyó. Corrección: Quitar del DTO e ignorar explícitamente.
-- **Lombok rompe build en JDK nuevo**. Causa probable: Versión Lombok vieja. Corrección: Actualizar Lombok/processor.
+Si Spring no encuentra el bean `TareaMapper`, falta `componentModel = "spring"` o falta el processor en la compilación. Hay que revisar ambas cosas.
 
-#### Verificación rápida
+Si el mapper copia un campo que no debería salir, el problema está en el contrato o en la configuración del mapeo. La corrección es quitar el campo del DTO y, si hace falta, ignorarlo explícitamente.
 
-1. `mvn compile` genera `TareaMapperImpl`.
-2. Revisa implementación generada: no asigna `ubicacionInterna`.
-3. Test/API confirma que respuesta no expone campo interno.
+Si una entidad JPA usa `@Data` y aparecen errores raros en `toString`, `equals` o cargas LAZY, el problema es la generación indiscriminada de métodos. En entidades, es preferible definir solo lo necesario.
 
-</details>
+#### Verificación
+
+La verificación mínima es compilar, confirmar que existe `TareaMapperImpl` y revisar que no asigna `ubicacionInterna`. Después, una prueba de API debe confirmar que la respuesta JSON no expone el campo interno.
+
 
 ### Tema 5: OpenAPI con springdoc: el contrato como prueba · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Una API puede tener código correcto y, aun así, ser difícil de consumir si su contrato no está claro. El problema se agrava cuando la documentación vive en un wiki o en un documento separado: el código cambia, la documentación no, y el cliente integra contra una descripción falsa. OpenAPI permite describir la API en un formato legible por máquinas, y springdoc puede generar esa descripción a partir de una aplicación Spring.
 
-#### Caso guía
+#### La especificación como artefacto verificable
 
-El equipo publica una API y documenta endpoints en un wiki. A la semana, el código cambió y el wiki quedó viejo. El cliente integra contra la doc, recibe 404 o un campo distinto y pierde confianza. La documentación debe salir del código y verificarse como contrato.
+OpenAPI es una especificación para describir APIs HTTP. Define rutas, métodos, parámetros, cuerpos, respuestas, esquemas y códigos de estado. Su valor no es solo documental. Una especificación OpenAPI puede usarse para generar clientes, validar contratos, crear documentación interactiva y detectar cambios incompatibles.
 
-#### Fundamento técnico y modelo mental
+springdoc-openapi integra esta especificación con Spring MVC. Al agregar la dependencia adecuada, la aplicación expone endpoints como `/v3/api-docs` y, si se incluye la UI, Swagger UI. Lo importante es entender que la especificación generada debe reflejar el comportamiento real. Si el endpoint devuelve 400 ante una entrada inválida pero la spec solo documenta 200, el contrato está incompleto.
 
-**OpenAPI**
-- Definición formal: Especificación estándar para describir APIs HTTP de forma machine-readable.
-- Para qué sirve: Documentación, generación de clientes, pruebas de contrato.
-- Cuándo usarlo: APIs HTTP compartidas.
-- Cuándo NO / riesgo: No asumir que doc generada reemplaza diseño.
-- Verificación: `/v3/api-docs` contiene paths/schemas esperados.
+Las anotaciones como `@Operation` y `@ApiResponse` sirven para agregar semántica que no siempre puede inferirse del código. No hace falta anotar cada detalle obvio, pero sí conviene documentar respuestas de error, códigos de estado relevantes y significados de negocio. El objetivo es que el contrato sea útil, no ruidoso.
 
-**springdoc-openapi**
-- Definición formal: Integración que genera OpenAPI desde aplicaciones Spring.
-- Para qué sirve: Publicar spec/UI.
-- Cuándo usarlo: Spring MVC/WebFlux.
-- Cuándo NO / riesgo: Exponer Swagger UI sin control en prod.
-- Verificación: Endpoint OpenAPI responde 200.
+Un contrato también se puede probar. Un test que solo verifica que `/v3/api-docs` devuelve 200 es débil: la spec podría existir y aun así omitir rutas o respuestas importantes. Una prueba de contrato más útil afirma que la especificación contiene las rutas esperadas, los métodos, los códigos de estado y los esquemas clave.
 
-**Contrato como prueba**
-- Definición formal: Test automatizado que falla si el contrato observable cambia.
-- Para qué sirve: Detectar drift.
-- Cuándo usarlo: CI y endpoints críticos.
-- Cuándo NO / riesgo: Test solo “status 200 en /v3/api-docs” es insuficiente.
-- Verificación: Test afirma paths, respuestas, schemas clave.
+#### Ejemplo desde cero
 
-**Anotaciones OpenAPI**
-- Definición formal: Metadatos (`@Operation`, `@ApiResponse`, `@Schema`) para enriquecer contrato.
-- Para qué sirve: Aclarar semántica no inferible.
-- Cuándo usarlo: Errores, ejemplos, restricciones.
-- Cuándo NO / riesgo: Sobredocumentar lo obvio; subdocumentar errores.
-- Verificación: Spec incluye 400/404 y schema de error.
-
-**Contrato / invariantes / reglas.** La spec debe reflejar comportamiento real. Documenta códigos de éxito y error. En producción, controla exposición de Swagger UI; la spec puede ser pública o interna según política. Los tests de contrato deben afirmar piezas críticas: paths, métodos, status, schemas.
-
-**Modelo mental.** OpenAPI es el plano eléctrico de la casa. El wiki es un dibujo a mano que alguien olvidó actualizar. El test de contrato es la inspección que compara plano con instalación real.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`/v3/api-docs` no existe**. Causa probable: Falta dependencia springdoc. Corrección: Agregar starter springdoc compatible.
-- **Spec no muestra 400/404**. Causa probable: Solo se documentó happy path. Corrección: Añadir `@ApiResponse` o handlers visibles.
-- **UI expuesta en prod**. Causa probable: Configuración por defecto sin control. Corrección: `springdoc.swagger-ui.enabled=false` en prod.
-- **Test de contrato pasa pero API cambió**. Causa probable: Test demasiado débil. Corrección: Afirmar paths, status y schemas.
-
-#### ► CUÁNDO NO USARLO
-
-No uses OpenAPI como excusa para no diseñar la API. Tampoco expongas documentación interactiva públicamente sin considerar autenticación, datos sensibles y superficie de ataque.
-
-#### Verificación rápida
-
-- [ ] `/v3/api-docs` responde 200.
-- [ ] Contiene `/api/tareas`.
-- [ ] Documenta 400/404 o los expone por handlers.
-- [ ] Hay un test que falla si falta un path/status clave.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Prerequisitos y bootstrap
+Se crea un proyecto con web y validación:
 
 ```bash
 curl -s https://start.spring.io/starter.zip \
@@ -836,7 +621,7 @@ curl -s https://start.spring.io/starter.zip \
   -d baseDir=demo -o demo.zip
 ```
 
-Agrega springdoc (versión verificada en esta máquina con Boot 4.1.2):
+Se agrega springdoc. En la verificación realizada con Spring Boot 4.1.2, la versión 3.0.2 expuso correctamente `/v3/api-docs`:
 
 ```xml
 <dependency>
@@ -846,50 +631,74 @@ Agrega springdoc (versión verificada en esta máquina con Boot 4.1.2):
 </dependency>
 ```
 
-> Nota de versión: antes de fijar versión, confirma compatibilidad con tu Boot. En esta verificación real, `3.0.2` expuso `/v3/api-docs` con Boot 4.1.2.
+La compatibilidad entre springdoc y Spring Boot cambia con el tiempo. Antes de fijar una versión en un proyecto real, conviene confirmar la matriz de compatibilidad de la versión de Boot que se esté usando.
 
-#### Implementación desde cero
-
-`src/main/java/com/example/demo/TareaController.java` (extracto)
+El controller puede declarar respuestas relevantes:
 
 ```java
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import jakarta.validation.Valid;
 
-@Operation(summary = "Crea una tarea")
-@ApiResponses({
-    @ApiResponse(responseCode = "201", description = "Creada"),
-    @ApiResponse(responseCode = "400", description = "Entrada inválida")
-})
-@PostMapping
-public ResponseEntity<TareaDTO> crear(@Valid @RequestBody CrearTareaRequest request) { ... }
-```
+@RestController
+class TareaController {
 
-Test de contrato:
-
-```java
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ContratoOpenApiTest {
-  @LocalServerPort int port;
-
-  @Test
-  void exponeContrato() throws Exception {
-    var res = java.net.http.HttpClient.newHttpClient().send(
-        java.net.http.HttpRequest.newBuilder(java.net.URI.create("http://localhost:" + port + "/v3/api-docs")).GET().build(),
-        java.net.http.HttpResponse.BodyHandlers.ofString());
-    org.assertj.core.api.Assertions.assertThat(res.statusCode()).isEqualTo(200);
-    org.assertj.core.api.Assertions.assertThat(res.body()).contains("/api/tareas");
-  }
+    @Operation(summary = "Crea una tarea")
+    @ApiResponses({
+        @ApiResponse(responseCode = "201", description = "Creada"),
+        @ApiResponse(responseCode = "400", description = "Entrada inválida")
+    })
+    @PostMapping("/api/tareas")
+    public ResponseEntity<TareaDTO> crear(@Valid @RequestBody CrearTareaRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+            .body(new TareaDTO(1L, request.titulo(), request.prioridad()));
+    }
 }
 ```
 
-#### Desglose del código
+Un test de contrato puede verificar que la spec se expone y contiene la ruta:
 
-- **dependencia springdoc**: Habilita generación OpenAPI/UI. Por qué importa: Contrato machine-readable. Si lo omites/cambias: No hay `/v3/api-docs`.
-- **`@Operation/@ApiResponse`**: Expone semántica HTTP. Por qué importa: Mejora contrato. Si lo omites/cambias: Happy path incompleto.
-- **Test de contrato**: Verifica spec. Por qué importa: Evita drift. Si lo omites/cambias: Doc puede mentir.
-- **`RANDOM_PORT`**: Aísla test. Por qué importa: Evita colisión de puertos. Si lo omites/cambias: Flakiness en CI.
+```java
+import static org.assertj.core.api.Assertions.assertThat;
+
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class ContratoOpenApiTest {
+
+    @LocalServerPort
+    int port;
+
+    @Test
+    void exponeContrato() throws Exception {
+        var response = HttpClient.newHttpClient().send(
+            HttpRequest.newBuilder(URI.create("http://localhost:" + port + "/v3/api-docs"))
+                .GET().build(),
+            HttpResponse.BodyHandlers.ofString());
+
+        assertThat(response.statusCode()).isEqualTo(200);
+        assertThat(response.body()).contains("/api/tareas");
+    }
+}
+```
+
+#### Recorrido del código
+
+La dependencia de springdoc agrega la infraestructura que inspecciona los controllers Spring y construye la especificación OpenAPI. La anotación `@Operation` describe el propósito de la operación. `@ApiResponses` declara códigos de estado que el cliente debe esperar. Esto es especialmente útil para los errores, porque muchos clientes generan código o lógica a partir del contrato.
+
+El test usa `@SpringBootTest` con un puerto aleatorio. Eso evita colisiones en CI o en máquinas donde el puerto 8080 ya está ocupado. La aserción comprueba el estado 200 y la presencia de `/api/tareas`. En un proyecto real conviene reforzarla con más afirmaciones: existencia del método POST, presencia del esquema `CrearTareaRequest`, respuesta 400 documentada.
 
 #### Ejecución y salida real
 
@@ -898,96 +707,45 @@ class ContratoOpenApiTest {
 curl -s http://localhost:8080/v3/api-docs | head
 ```
 
-Salida real observada (2026-05-22, Boot 4.1.2, springdoc 3.0.2):
+Salida real observada (Spring Boot 4.1.2, springdoc 3.0.2, 2026-05-22):
 
 ```text
 Started ... : Init duration for springdoc-openapi is: 57 ms
 HTTP 200 en /v3/api-docs
 ```
 
-#### Errores comunes y troubleshooting
+La respuesta JSON incluye la ruta `/api/tareas`.
 
-- **404 en `/v3/api-docs`**. Causa probable: Dependencia incorrecta/incompatible. Corrección: Verificar versión compatible con Boot.
-- **UI expuesta en prod**. Causa probable: Default sin hardening. Corrección: Deshabilitar UI/spec por perfil o proteger.
-- **Spec incompleta**. Causa probable: Sin anotaciones/handlers claros. Corrección: Documentar errores y revisar handlers.
+#### Errores frecuentes
 
-#### Verificación rápida
+Si `/v3/api-docs` responde 404, la causa habitual es una dependencia faltante o incompatible con la versión de Spring Boot. La corrección es revisar la dependencia y su compatibilidad.
 
-1. `/v3/api-docs` responde 200.
-2. Contiene paths críticos.
-3. El test falla si quitas un path/status esperado.
+Si la especificación existe pero no documenta errores, el contrato está contando solo el camino feliz. Hay que agregar `@ApiResponse` o asegurarse de que los handlers y esquemas de error sean visibles.
 
-</details>
+Si Swagger UI se expone sin control en producción, se abre una superficie de información innecesaria. En entornos sensibles se puede deshabilitar, proteger con autenticación o exponer solo en perfiles internos.
+
+#### Verificación
+
+La verificación mínima es obtener 200 desde `/v3/api-docs` y confirmar que contiene la ruta crítica. La verificación recomendable es un test que falle cuando falta una ruta o un código de estado esperado.
+
 
 ### Tema 6: Paginación HTTP con validación y un límite de recursos explícito · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Un endpoint que devuelve todas las tareas funciona bien cuando hay veinte registros. Cuando hay dos millones, el problema deja de ser funcional y pasa a ser de capacidad: la base de datos hace más trabajo del necesario, la red transporta una respuesta enorme y el cliente intenta procesar demasiados datos. La paginación no es una optimización opcional en listados grandes; es parte del contrato.
 
-#### Caso guía
+#### Paginar, validar y fijar un límite
 
-`GET /api/tareas` devuelve todas las tareas. Funciona con 20; con 2 millones, tumba la BD, la red y el cliente. Además, `size=100000` permite abuso. La API debe paginar, validar límites y devolver un contrato de página estable.
+Paginar significa dividir un conjunto grande de resultados en páginas. En HTTP, una forma común es aceptar parámetros como `page` y `size`. Spring Data expone abstracciones como `Pageable` y `Page` para expresar esa solicitud y su resultado. `Pageable` describe qué página se quiere, con qué tamaño y con qué orden. `Page` contiene los datos y metadatos como el total de elementos o la existencia de una página siguiente.
 
-#### Fundamento técnico y modelo mental
+Pero aceptar paginación no basta. Si el cliente puede pedir `size=100000`, el endpoint sigue siendo vulnerable. Por eso el parámetro `size` debe tener un máximo explícito. También `page` debe ser no negativo. Estas restricciones se pueden declarar con Bean Validation, por ejemplo `@Min(0)` y `@Max(100)`, y se activan en el controller con `@Validated`.
 
-**Paginación**
-- Definición formal: Partición de un resultado grande en páginas (`page`, `size`, `sort`).
-- Para qué sirve: Escalar lecturas y proteger recursos.
-- Cuándo usarlo: Listados potencialmente grandes.
-- Cuándo NO / riesgo: No usar sin orden estable.
-- Verificación: Respuesta trae N items y metadata.
+El orden es otro detalle importante. Una paginación sin orden estable puede devolver resultados duplicados o saltar elementos entre páginas cuando los datos cambian. Usar `Sort.by("id").ascending()` o un criterio estable equivalente evita ese comportamiento.
 
-**`Pageable` / `Page`**
-- Definición formal: Abstracciones Spring Data para solicitud y resultado paginado.
-- Para qué sirve: Integrar paginación con repositorios.
-- Cuándo usarlo: Spring Data JPA/Mongo.
-- Cuándo NO / riesgo: No exponer `Page` interno sin considerar contrato.
-- Verificación: SQL usa limit/offset o equivalente.
+Finalmente, conviene decidir qué contrato devolver. Exponer directamente el `Page` de Spring Data puede acoplar al cliente con detalles internos de la implementación. Un DTO como `PageResponse<T>` permite controlar la forma exacta: items, número de página, tamaño, total y si hay siguiente página.
 
-**Validación de parámetros**
-- Definición formal: Restricciones sobre `page`, `size`, `sort`.
-- Para qué sirve: Evitar abuso y consultas costosas.
-- Cuándo usarlo: Todo endpoint paginado público.
-- Cuándo NO / riesgo: Aceptar `sort` arbitrario puede exponer campos/inyección de orden no deseada.
-- Verificación: `size=101` devuelve 400.
+#### Ejemplo desde cero
 
-**Contrato de página**
-- Definición formal: DTO con items y metadata (page,size,total,hasNext).
-- Para qué sirve: Estabilidad para cliente.
-- Cuándo usarlo: APIs consumidas por front/mobile.
-- Cuándo NO / riesgo: Cambiar shape rompe clientes.
-- Verificación: JSON incluye metadata esperada.
-
-**Contrato / invariantes / reglas.** `page >= 0`, `size` entre 1 y un máximo razonable (ej. 100). Orden determinista (`id` o `createdAt,id`). La validación de parámetros debe rechazarse con 400. Si usas `@Validated` en controller, maneja `ConstraintViolationException`/`HandlerMethodValidationException` según el caso.
-
-**Modelo mental.** Paginación es pedir cajas de un depósito por tandas, no vaciar todo el depósito en la recepción.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`size=10000` aceptado**. Causa probable: Sin `@Max` o sin `@Validated`. Corrección: Limitar y validar.
-- **500 al validar parámetro**. Causa probable: Handler no mapea `ConstraintViolationException`. Corrección: Agregar handler 400.
-- **Resultados duplicados/saltados entre páginas**. Causa probable: Sin orden estable. Corrección: Agregar `Sort.by("id").ascending()`.
-- **Cliente roto al cambiar Spring Data**. Causa probable: Se expuso `Page` crudo. Corrección: Usar `PageResponse` DTO.
-
-#### ► CUÁNDO NO USARLO
-
-No pagines con offset ciego en datasets enormes con escritura intensa sin considerar rendimiento; keyset/cursor puede ser mejor. Pero no saltes paginación en listados grandes.
-
-#### Verificación rápida
-
-- [ ] `size` máximo aplicado.
-- [ ] `size` inválido devuelve 400.
-- [ ] Respuesta incluye metadata.
-- [ ] Orden es determinista.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Implementación desde cero
-
-`src/main/java/com/example/demo/PageResponse.java`
+Se define un DTO de página:
 
 ```java
 package com.example.demo;
@@ -997,7 +755,7 @@ import java.util.List;
 public record PageResponse<T>(List<T> items, int page, int size, long total, boolean hasNext) { }
 ```
 
-`src/main/java/com/example/demo/TareaPageController.java`
+El controller valida parámetros y devuelve el DTO:
 
 ```java
 package com.example.demo;
@@ -1031,21 +789,24 @@ public class TareaPageController {
 }
 ```
 
-Handler de parámetros inválidos (en `ErroresApi`):
+Para que los parámetros inválidos devuelvan 400, el advice debe manejar las excepciones de validación de parámetros. Dependiendo de la configuración y del tipo de validación, pueden aparecer `ConstraintViolationException` o `HandlerMethodValidationException`:
 
 ```java
-@ExceptionHandler({ConstraintViolationException.class, HandlerMethodValidationException.class})
+@ExceptionHandler({jakarta.validation.ConstraintViolationException.class,
+        org.springframework.web.method.annotation.HandlerMethodValidationException.class})
 public ResponseEntity<ApiError> parametros(Exception ex) {
-    return ResponseEntity.badRequest().body(new ApiError("VALIDACION", "Parámetros inválidos", List.of(ex.getMessage())));
+    return ResponseEntity.badRequest()
+        .body(new ApiError("VALIDACION", "Parámetros inválidos", java.util.List.of(ex.getMessage())));
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`@Min/@Max`**: Limita page/size. Por qué importa: Protege recursos. Si lo omites/cambias: Abuso o consultas grandes.
-- **`@Validated`**: Activa validación de parámetros. Por qué importa: Hace cumplir restricciones. Si lo omites/cambias: Se aceptan valores inválidos.
-- **`Sort.by("id")`**: Orden estable. Por qué importa: Paginación consistente. Si lo omites/cambias: Saltos/duplicados.
-- **`PageResponse`**: Contrato propio. Por qué importa: Desacopla de Spring Data. Si lo omites/cambias: Cambios internos rompen cliente.
+La anotación `@Validated` en la clase activa la validación de parámetros del método. Sin ella, `@Min` y `@Max` en los `@RequestParam` no se aplican como se espera. Este detalle es fácil de pasar por alto porque el código compila igual.
+
+`PageRequest.of(page, size, Sort.by("id").ascending())` construye la solicitud de página con un orden determinista. El repositorio devuelve un `Page<Tarea>`. Luego se transforma el contenido a DTOs y se arma un `PageResponse`. El cliente recibe datos y metadatos, pero no depende de la estructura interna de Spring Data.
+
+El límite `@Max(100)` es una decisión de protección. El valor exacto depende del caso, pero debe existir un máximo razonable. Aceptar tamaños arbitrarios equivale a dejar que el cliente decida cuánto trabajo debe hacer el servidor.
 
 #### Ejecución y salida real
 
@@ -1054,99 +815,43 @@ curl -s "http://localhost:8080/api/tareas-page?page=0&size=2"
 curl -i -s "http://localhost:8080/api/tareas-page?page=0&size=101"
 ```
 
-Salida real observada (2026-05-22):
+Salida real observada (Spring Boot 4.1.2, 2026-05-22):
 
 ```text
 items.length == 2, hasNext == true
 HTTP/1.1 400 para size=101
 ```
 
-#### Errores comunes y troubleshooting
+El primer caso confirma que la página respeta el tamaño solicitado. El segundo confirma que el límite protege el endpoint.
 
-- **500 al enviar size=101**. Causa probable: Falta handler de constraint. Corrección: Mapear a 400.
-- **Se aceptan tamaños enormes**. Causa probable: Falta `@Max` o `@Validated`. Corrección: Agregar ambos.
-- **Páginas inconsistentes**. Causa probable: Sin sort. Corrección: Sort determinista.
+#### Errores frecuentes
 
-#### Verificación rápida
+Si `size=10000` es aceptado, falta el límite o falta `@Validated`. La corrección es declarar el máximo y activar la validación.
 
-1. `size=2` retorna 2 items.
-2. `size=101` retorna 400.
-3. Respuesta incluye `total` y `hasNext`.
+Si un parámetro inválido devuelve 500, el manejador de excepciones no está cubriendo el tipo lanzado. Hay que mapear las excepciones de validación de parámetros a 400.
 
-</details>
+Si los resultados se repiten o se saltan entre páginas, falta un orden estable. La paginación por offset necesita un criterio determinista.
+
+#### Verificación
+
+La verificación mínima es pedir `size=2` y comprobar que llegan dos elementos con metadatos. Luego pedir `size=101` y comprobar que responde 400. También conviene revisar que el JSON incluye `page`, `size`, `total` y `hasNext`.
+
 
 ### Tema 7: JSON con Jackson 3: `JsonMapper`, fechas y valores por defecto nuevos · Avanzado · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Una API REST suele hablar JSON. Ese detalle parece obvio, pero es una fuente frecuente de incompatibilidades: fechas en formatos ambiguos, campos nulos interpretados de formas distintas, o cambios de comportamiento al migrar de versión. Con Spring Boot 4, el ecosistema de Jackson 3 introduce cambios importantes, entre ellos el paquete `tools.jackson` para el mapper JSON. El contrato JSON debe ser explícito y probado.
 
-#### Caso guía
+#### El contrato JSON no debe depender de la intuición
 
-Una API devuelve fechas como timestamps, otra como texto local ambiguo. Un cliente móvil parsea `ocurrido` y falla. Con Spring Boot 4 / Jackson 3, el tipo recomendado para JSON es `JsonMapper` (paquete `tools.jackson...`), y el contrato debe ser explícito: ISO-8601 para instantes, manejo claro de nulos y configuración consciente.
+Jackson es la biblioteca que Spring usa habitualmente para serializar objetos Java a JSON y deserializar JSON a objetos Java. En Jackson 3, el tipo recomendado para JSON es `JsonMapper`, ubicado en `tools.jackson.databind.json.JsonMapper`. Este cambio de paquete respecto a Jackson 2 es relevante: si el código o la configuración asumen el paquete antiguo, pueden aparecer errores de compilación o configuraciones que no aplican.
 
-#### Fundamento técnico y modelo mental
+Las fechas son un caso crítico. Un `Instant` representa un punto en el tiempo en UTC. Serializarlo como `2026-11-18T10:15:30Z` en ISO-8601 es claro e interoperable. En cambio, usar timestamps numéricos sin contexto o formatos locales ambiguos obliga al cliente a adivinar zona horaria y semántica. Para APIs, la claridad gana.
 
-**Jackson `JsonMapper`**
-- Definición formal: Mapper JSON de Jackson 3 para serializar/deserializar.
-- Para qué sirve: Controlar contrato JSON.
-- Cuándo usarlo: APIs JSON, tests de serialización.
-- Cuándo NO / riesgo: Asumir API/paquete de Jackson 2.
-- Verificación: Serializa `Instant` a ISO-8601 esperado.
+También hay que definir la política frente a valores nulos y propiedades desconocidas. ¿Un campo ausente significa lo mismo que `null`? ¿El cliente puede enviar campos extra? ¿El servidor debe ignorarlos o rechazarlos? No hay una única respuesta universal, pero sí una regla: la política debe ser consciente y coherente con el contrato. Los tests de serialización y deserialización son la forma práctica de fijar esa política.
 
-**ISO-8601 / `Instant`**
-- Definición formal: Formato textual estándar para fecha-hora; `Instant` representa punto en UTC.
-- Para qué sirve: Interoperabilidad.
-- Cuándo usarlo: Eventos, timestamps API.
-- Cuándo NO / riesgo: Formato local ambiguo.
-- Verificación: JSON contiene `2026-11-18T10:15:30Z`.
+#### Ejemplo desde cero
 
-**Contrato estricto de nulos/desconocidos**
-- Definición formal: Política sobre campos faltantes, nulos o desconocidos.
-- Para qué sirve: Robustez y claridad.
-- Cuándo usarlo: APIs públicas/versionadas.
-- Cuándo NO / riesgo: Aceptar basura silenciosamente o romper clientes sin plan.
-- Verificación: Test define comportamiento esperado.
-
-**Configuración explícita**
-- Definición formal: `JsonMapper.builder()`/propiedades Spring.
-- Para qué sirve: Evitar depender de defaults implícitos.
-- Cuándo usarlo: Producción.
-- Cuándo NO / riesgo: Defaults cambian entre major versions.
-- Verificación: Test de serialización fija contrato.
-
-**Contrato / invariantes / reglas.** En Jackson 3, el paquete base es `tools.jackson` (no `com.fasterxml.jackson` para el mapper core de Jackson 3). Para APIs, prefija fechas ISO-8601; no envíes formatos locales ambiguos. Define política de nulos y propiedades desconocidas según contrato. Prueba serialización/deserialización de ejemplos reales.
-
-**Modelo mental.** JSON es el idioma del contrato; Jackson es el traductor. Si cambias de traductor (Jackson 2 a 3) sin revisar reglas, el significado puede cambiar.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **`package tools.jackson... does not exist`**. Causa probable: Dependencia/versión no alineada. Corrección: Usar Boot 4/Spring Jackson 3 dependencies.
-- **Fecha serializada como número inesperado**. Causa probable: Config/default distinto. Corrección: Configurar explícitamente y testear.
-- **Cliente rompe por campo nulo**. Causa probable: Contrato no definió nulos. Corrección: `@JsonInclude`, DTOs opcionales claros, test.
-- **Acepta propiedades desconocidas**. Causa probable: Config laxa. Corrección: Decidir política y testear.
-
-#### ► CUÁNDO NO USARLO
-
-No uses Jackson para validar reglas de negocio complejas. No dependas de defaults implícitos de major version. No expongas formatos de fecha ambiguos.
-
-#### Verificación rápida
-
-- [ ] Serialización de `Instant` produce ISO-8601.
-- [ ] Test de contrato JSON existe.
-- [ ] Política de nulos/desconocidos está definida.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Prerequisitos
-
-Proyecto Spring Boot 4.1.x con `spring-boot-starter-web` (incluye soporte Jackson 3). Verifica paquete `tools.jackson.databind.json.JsonMapper`.
-
-#### Implementación desde cero
-
-`src/test/java/com/example/demo/JacksonTest.java`
+En un proyecto Spring Boot 4.1.x con `spring-boot-starter-web`, Jackson 3 ya está disponible. La prueba más simple consiste en serializar un record con un `Instant`:
 
 ```java
 package com.example.demo;
@@ -1165,17 +870,19 @@ class JacksonTest {
         JsonMapper mapper = JsonMapper.builder().build();
         String json = mapper.writeValueAsString(
             new Evento(7L, "CREADA", Instant.parse("2026-11-18T10:15:30Z")));
+
         assertThat(json).contains("\"ocurrido\":\"2026-11-18T10:15:30Z\"");
     }
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`tools.jackson...JsonMapper`**: Usa Jackson 3. Por qué importa: Alineado con Boot 4. Si lo omites/cambias: Paquete Jackson 2 puede no existir/confundir.
-- **`Instant.parse(...)`**: Fecha UTC inequívoca. Por qué importa: Contrato interoperable. Si lo omites/cambias: Formatos locales generan ambigüedad.
-- **`writeValueAsString`**: Serializa objeto. Por qué importa: Observa contrato real. Si lo omites/cambias: Asumir forma sin test.
-- **`assertThat(...contains...)`**: Fija expectativa. Por qué importa: Detecta regresión. Si lo omites/cambias: Cambio silencioso de formato.
+El import `tools.jackson.databind.json.JsonMapper` es la señal de que se está usando Jackson 3. En Jackson 2, el mapper estaba en `com.fasterxml.jackson.databind.ObjectMapper`. La diferencia no es cosmética: confundirla causa errores de dependencia o configuraciones que no se aplican al mapper correcto.
+
+El record `Evento` define un contrato simple: un identificador, un tipo y un instante. `Instant.parse("2026-11-18T10:15:30Z")` crea un valor inequívoco en UTC. La aserción verifica que el JSON contiene la representación ISO-8601 esperada.
+
+Este test es pequeño, pero cumple una función importante: fija el contrato. Si una actualización futura cambia la forma de serializar fechas, el test fallará. Ese fallo es útil: obliga a decidir si el cambio de formato es aceptable y si los clientes deben adaptarse.
 
 #### Ejecución y salida real
 
@@ -1183,106 +890,49 @@ class JacksonTest {
 ./mvnw -q -Dtest=JacksonTest test
 ```
 
-Salida real observada (2026-05-22, Boot 4.1.2, JDK 27): test **verde**. El JSON contiene:
+Salida real observada (Spring Boot 4.1.2, JDK 27, 2026-05-22): el test pasó. El JSON serializado contiene:
 
 ```json
 "ocurrido":"2026-11-18T10:15:30Z"
 ```
 
-#### Errores comunes y troubleshooting
+#### Errores frecuentes
 
-- **No compila `JsonMapper`**. Causa probable: Paquete/version incorrecta. Corrección: Usar `tools.jackson.databind.json.JsonMapper` en Jackson 3.
-- **Fecha en formato inesperado**. Causa probable: Default/config no explícita. Corrección: Configurar y agregar test de contrato.
-- **Tests pasan local pero no en CI**. Causa probable: Dependencia/cache distinta. Corrección: Fijar versiones en build reproducible.
+Si el compilador no encuentra `tools.jackson.databind.json.JsonMapper`, la dependencia o la versión no están alineadas con Jackson 3. En Spring Boot 4, la configuración por defecto debería resolverlo; en proyectos personalizados, hay que revisar el árbol de dependencias.
 
-#### Verificación rápida
+Si una fecha aparece como número, arreglo u otro formato inesperado, la configuración de serialización no es la que se cree. La corrección no es “aceptar cualquier cosa”, sino definir el formato y probarlo.
 
-1. Test de serialización pasa.
-2. Fecha es ISO-8601 UTC.
-3. Cambiar formato rompe test (como debe ser).
+Si un cliente rompe por campos nulos o desconocidos, el problema no es solo técnico: falta una política de contrato. Esa política debe documentarse y cubrirse con tests.
 
-</details>
+#### Verificación
+
+La verificación mínima es un test de serialización que afirme la forma ISO-8601. En APIs reales, conviene agregar tests de deserialización, casos con campos nulos y casos con propiedades desconocidas según la política elegida.
+
 
 ### Tema 8: Versionado de API nativo de Spring Framework 7 · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+El endpoint `/api/tareas/{id}/resumen` devuelve `id` y `titulo`. Después de un tiempo, el negocio necesita incluir `prioridad`. Cambiar la respuesta directamente parece simple, pero puede romper clientes que esperan la forma anterior. Cuando una API tiene consumidores externos, móviles, integraciones o frontend desplegado por separado, evolucionar el contrato requiere una estrategia.
 
-#### Caso guía
+#### Versionar es gestionar compatibilidad
 
-El endpoint `/api/tareas/{id}/resumen` devuelve `id` y `titulo`. Una nueva versión debe incluir `prioridad`. Si cambias la respuesta sin versionar, clientes viejos fallan. Necesitas soportar v1 y v2 al mismo tiempo y tener un default claro.
+Versionar una API significa introducir una forma explícita de evolucionar el contrato sin romper a todos los consumidores al mismo tiempo. No todos los cambios necesitan versión nueva. Agregar un campo opcional que los clientes existentes pueden ignorar a veces es compatible. Cambiar el significado de un campo, eliminarlo, renombrarlo o modificar la estructura de forma incompatible sí exige más cuidado.
 
-#### Fundamento técnico y modelo mental
+Spring Framework 7 incorpora soporte nativo de versionado en Spring MVC. Esto permite mapear handlers a versiones específicas usando el atributo `version` en las anotaciones de mapeo, y configurar cómo se resuelve la versión solicitada: por cabecera, por parámetro, por media type u otra estrategia soportada. En Spring Boot 4, esa configuración se expone mediante propiedades.
 
-**Versionado de API**
-- Definición formal: Estrategia para evolucionar contrato sin romper consumidores existentes.
-- Para qué sirve: Compatibilidad y evolución.
-- Cuándo usarlo: APIs con consumidores externos/múltiples.
-- Cuándo NO / riesgo: No versionar cambios incompatibles.
-- Verificación: v1 y v2 responden según versión solicitada.
+En este ejemplo usamos la cabecera `API-Version`. La propiedad `spring.mvc.apiversion.use.header=API-Version` indica qué cabecera leer. La propiedad `spring.mvc.apiversion.default=1.0` define qué versión se usa cuando el cliente no envía la cabecera. Tener un default explícito es importante para la migración: los clientes antiguos pueden seguir funcionando mientras adoptan la nueva versión.
 
-**Versionado nativo Spring Framework 7**
-- Definición formal: Soporte de mapeo por versión en Spring MVC (`version="..."`).
-- Para qué sirve: Implementar versiones sin routing manual duplicado.
-- Cuándo usarlo: Spring Boot 4 / Framework 7.
-- Cuándo NO / riesgo: Mezclar estrategias sin documentación.
-- Verificación: `API-Version: 2.0` selecciona handler v2.
+La versión no soportada debe producir un error claro. No debe caer silenciosamente en una versión cualquiera. También conviene documentar las versiones disponibles y su política de deprecación: cuánto tiempo se mantendrá v1, cómo se avisará y qué métricas indican que ya no se usa.
 
-**Versión por defecto**
-- Definición formal: Versión usada cuando el cliente no envía versión.
-- Para qué sirve: Migración gradual.
-- Cuándo usarlo: Clientes legacy.
-- Cuándo NO / riesgo: Default implícito confuso.
-- Verificación: Request sin header usa default configurado.
+#### Ejemplo desde cero
 
-**Deprecación**
-- Definición formal: Proceso de retirar versión antigua con aviso y plazo.
-- Para qué sirve: Operación sostenible.
-- Cuándo usarlo: Después de migrar clientes.
-- Cuándo NO / riesgo: Mantener versiones eternamente sin métricas.
-- Verificación: Métricas/logs de uso por versión.
-
-**Contrato / invariantes / reglas.** Define estrategia (header, path, media type). Aquí usamos header `API-Version` con default `1.0`, configurado por propiedades Spring MVC. La versión no soportada debe fallar claramente (400/406 según configuración/estrategia). Las versiones son contrato: documentarlas y probarlas.
-
-**Modelo mental.** Versionar es mantener dos planos de la misma casa mientras los inquilinos se mudan gradualmente. No demueles la entrada vieja hasta que todos salieron.
-
-#### ► LO QUE PUEDE SALIR MAL
-
-- **Siempre responde v1**. Causa probable: Falta propiedad `spring.mvc.apiversion.use.header` o header incorrecto. Corrección: Configurar propiedad y enviar header correcto.
-- **400 por versión no soportada**. Causa probable: Cliente pidió versión inexistente. Corrección: Documentar versiones soportadas; default claro.
-- **Rompe clientes viejos**. Causa probable: Cambiaste respuesta v1. Corrección: No modificar contrato existente; crear v2.
-- **Dos estrategias mezcladas**. Causa probable: Header y path sin regla. Corrección: Elegir y documentar una.
-
-#### ► CUÁNDO NO USARLO
-
-No versiones cada cambio cosmético. Versiona cambios incompatibles de contrato. Si el cambio es compatible (agregar campo opcional bien manejado), evalúa si necesitas versión formal.
-
-#### Verificación rápida
-
-- [ ] Request sin versión usa default.
-- [ ] `API-Version: 2.0` usa v2.
-- [ ] Versión no soportada falla con error claro.
-- [ ] Contrato v1 no cambió.
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Prerequisitos
-
-Spring Boot 4.1.x / Spring Framework 7 con `spring-boot-starter-web`.
-
-#### Implementación desde cero
-
-`src/main/resources/application.properties`
+En `src/main/resources/application.properties`:
 
 ```properties
 spring.mvc.apiversion.use.header=API-Version
 spring.mvc.apiversion.default=1.0
 ```
 
-`src/main/java/com/example/demo/VersionController.java`
+El controller define dos versiones del mismo endpoint:
 
 ```java
 package com.example.demo;
@@ -1308,12 +958,13 @@ class VersionController {
 }
 ```
 
-#### Desglose del código
+#### Recorrido del código
 
-- **`spring.mvc.apiversion.use.header`**: Habilita versión por header. Por qué importa: Estrategia explícita. Si lo omites/cambias: No se resuelve versión por header.
-- **`spring.mvc.apiversion.default=1.0`**: Default para clientes sin header. Por qué importa: Compatibilidad. Si lo omites/cambias: Puede fallar o comportarse distinto.
-- **`version="1.0"`**: Mapea handler a versión. Por qué importa: Contrato v1 estable. Si lo omites/cambias: Cambio incompatible rompe clientes.
-- **`version="2.0"`**: Mapea nuevo contrato. Por qué importa: Evolución segura. Si lo omites/cambias: Sin v2 no hay camino de migración.
+Los dos métodos apuntan al mismo path, pero declaran versiones distintas. Spring MVC usa la configuración de versionado para seleccionar el handler adecuado. El cliente que no envía cabecera recibe la versión por defecto, `1.0`. El cliente que envía `API-Version: 2.0` recibe la versión nueva.
+
+En un caso real, `v1` y `v2` devolverían DTOs distintos o la misma ruta con un contrato diferente. Aquí se devuelve un string simple para hacer visible el mecanismo sin mezclarlo con persistencia. Lo importante es observar que la selección ocurre antes de la lógica de negocio y que el contrato viejo no desaparece.
+
+El default `1.0` es una decisión de compatibilidad. Si se cambiara el default a `2.0` sin preparar a los clientes, la migración se volvería una ruptura. Versionar bien no es solo agregar `version="2.0"`; es gestionar el ciclo de vida de ambas versiones.
 
 #### Ejecución y salida real
 
@@ -1322,33 +973,27 @@ curl -s http://localhost:8080/api/tareas/7/resumen
 curl -s -H 'API-Version: 2.0' http://localhost:8080/api/tareas/7/resumen
 ```
 
-Salida real observada (2026-05-22, Boot 4.1.2, JDK 27):
+Salida real observada (Spring Boot 4.1.2, JDK 27, 2026-05-22):
 
 ```text
 v1:7
 v2:7
 ```
 
-#### Errores comunes y troubleshooting
+La primera respuesta confirma el default. La segunda confirma que la cabecera selecciona la versión nueva.
 
-- **No cambia con header**. Causa probable: Propiedad mal configurada. Corrección: Revisar `spring.mvc.apiversion.use.header`.
-- **Cliente viejo recibe v2**. Causa probable: Default incorrecto. Corrección: Fijar `default=1.0`.
-- **Error confuso en versión inválida**. Causa probable: No documentado/manejado. Corrección: Documentar versiones soportadas y manejo de error.
+#### Errores frecuentes
 
-#### Verificación rápida
+Si la cabecera no cambia la respuesta, la propiedad `spring.mvc.apiversion.use.header` no está configurada o la cabecera enviada no coincide. La corrección es revisar la configuración y el nombre exacto de la cabecera.
 
-1. Sin header => `v1:7`.
-2. `API-Version: 2.0` => `v2:7`.
-3. Contrato v1 sigue igual.
+Si un cliente viejo recibe la respuesta nueva, el default cambió o el contrato v1 fue modificado. La versión vieja debe seguir comportándose como antes hasta que termine su periodo de soporte.
 
-</details>
+Si se mezclan estrategias de versionado sin una regla clara, los clientes no sabrán cómo pedir una versión. Es mejor elegir una estrategia, documentarla y probarla.
+
+#### Verificación
+
+La verificación mínima es probar tres casos: sin cabecera devuelve v1, con `API-Version: 2.0` devuelve v2, y una versión no soportada produce un error claro según la política configurada. También conviene documentar qué versiones están activas y cuándo se retirará la anterior.
 
 ## Cierre del módulo
 
-M2 define la frontera HTTP: DTOs para desacoplar, Bean Validation para rechazar input inválido, `@ControllerAdvice` para errores consistentes, mapeo controlado, OpenAPI como contrato verificable, paginación con límites, JSON explícito con Jackson 3 y versionado nativo para evolucionar sin romper clientes.
-
-**Checklist de calidad del módulo (aplicada)**
-- [x] Cada tema tiene Caso guía, Fundamento técnico/modelo mental, Implementación desde cero, Desglose, Ejecución/salida real, Errores comunes, Verificación rápida.
-- [x] Cada concepto del título fue cubierto.
-- [x] Verificaciones ejecutadas en `/tmp` con Boot 4.1.2, JDK 27, Maven 3.10.0: DTO/validación/errores, paginación 400 por límite, Jackson 3 ISO-8601, versionado por header, springdoc `/v3/api-docs`.
-- [ ] Nota: OpenAPI y MapStruct se verificaron por smoke/compilación; integra el test de contrato en tu proyecto real y fija versiones compatibles con tu Boot.
+Este módulo recorrió la frontera HTTP de una aplicación Spring Boot. Primero separó el contrato de la persistencia con DTOs, después protegió la entrada con Bean Validation, centralizó errores con `@RestControllerAdvice`, controló el mapeo con Lombok y MapStruct, documentó el contrato con OpenAPI, limitó listados con paginación validada, fijó el comportamiento JSON con Jackson 3 y mostró cómo evolucionar un endpoint con versionado nativo. La idea transversal es la misma en todos los temas: el contrato externo debe ser explícito, estable y verificable.
