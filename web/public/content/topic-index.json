@@ -4250,26 +4250,6 @@
       {
         "title": "Patrones estructurales para conectar piezas existentes",
         "fragment": "tema-6-patrones-estructurales-para-conectar-piezas-existentes"
-      },
-      {
-        "title": "Objetivo y preparación",
-        "fragment": "objetivo-y-preparacion"
-      },
-      {
-        "title": "Strategy: elegir una política sin cambiar al consumidor",
-        "fragment": "strategy-elegir-una-politica-sin-cambiar-al-consumidor"
-      },
-      {
-        "title": "Singleton: identidad única y dependencia explícita",
-        "fragment": "singleton-identidad-unica-y-dependencia-explicita"
-      },
-      {
-        "title": "Observer: alta, notificación y baja",
-        "fragment": "observer-alta-notificacion-y-baja"
-      },
-      {
-        "title": "Diseño y evidencia",
-        "fragment": "diseno-y-evidencia"
       }
     ],
     "13": [

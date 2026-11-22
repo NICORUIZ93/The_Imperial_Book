@@ -1,957 +1,496 @@
 # Módulo 12: Buenas prácticas y patrones de diseño
 
-## Aprende construyendo
+Los patrones de diseño no son recetas para copiar a ciegas: son soluciones nombradas a problemas recurrentes de diseño. Su valor está en comunicar intención, reducir acoplamiento y hacer explícitos los trade-offs. Este módulo cubre patrones creacionales y estructurales con criterio: cuándo usarlos y cuándo una solución simple es mejor.
 
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Construir objetos complejos con validación usando Builder |
+| 2 | Elegir e intercambiar comportamientos con Factory Method y Strategy |
+| 3 | Crear familias de objetos compatibles con Abstract Factory |
+| 4 | Aplicar SOLID con criterio y detectar sobreingeniería |
+| 5 | Clonar objetos sin compartir estado mutable con Prototype |
+| 6 | Integrar piezas incompatibles con Adapter, Decorator y Facade |
+
+## Aprende construyendo
 
 ### Tema 1: Builder — configuración paso a paso y validación · Básico · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por builder — configuración paso a paso y validación con foco en comprensión antes de implementación.
+Necesitas crear un objeto `Envio` con campos obligatorios (`guia`) y opcionales (`prioritario`, `seguro`). Un constructor con muchos parámetros es difícil de leer y fácil de llamar mal.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender builder — configuración paso a paso y validación te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** *Builder* es un patrón creacional que separa la construcción de un objeto complejo de su representación final, permitiendo crear instancias paso a paso. El builder acumula configuración y valida invariantes en `build()`.
 
-#### ► LA ANALOGÍA
-Piensa en builder — configuración paso a paso y validación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** El objeto construido debe quedar en estado válido al salir de `build()`; las validaciones de invariantes obligatorios se centralizan ahí. El builder puede ser mutable durante la construcción, pero el producto final debe exponer solo el estado coherente. Encadenamiento fluido (`return this`) es una decisión de API, no parte esencial del patrón. No usar Builder cuando un constructor o factory simple es suficiente.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que builder — configuración paso a paso y validación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** Es como un formulario: lo llenas por partes, pero solo se envía cuando pasa validación.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Builder — configuración paso a paso y validación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Builder — configuración paso a paso y validación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses builder — configuración paso a paso y validación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: builder — configuración paso a paso y validación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Builder — configuración paso a paso y validación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve builder — configuración paso a paso y validación en tu contexto?
-2. ¿Cómo sabrías que builder — configuración paso a paso y validación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar builder — configuración paso a paso y validación?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/Envio.java
 public class Envio {
-    static final class Builder {
+    private final String guia;
+    private final boolean prioritario;
+    private final boolean seguro;
+
+    private Envio(Builder b) {
+        this.guia = b.guia;
+        this.prioritario = b.prioritario;
+        this.seguro = b.seguro;
+    }
+
+    public String getGuia() { return guia; }
+    public boolean isPrioritario() { return prioritario; }
+    public boolean isSeguro() { return seguro; }
+
+    public static final class Builder {
         private final String guia;
         private boolean prioritario;
-        Builder(String guia) { this.guia = guia; }
-        Builder prioritario(boolean valor) { this.prioritario = valor; return this; }
-        Envio build() { return new Envio(guia, prioritario); }
+        private boolean seguro;
+
+        public Builder(String guia) {
+            if (guia == null || guia.isBlank()) throw new IllegalArgumentException("guia obligatoria");
+            this.guia = guia;
+        }
+
+        public Builder prioritario(boolean valor) { this.prioritario = valor; return this; }
+        public Builder seguro(boolean valor) { this.seguro = valor; return this; }
+
+        public Envio build() { return new Envio(this); }
     }
 }
 ```
 
-```bash
-javac -d out src/Envio.java
-java -cp out Envio
-```
-
-</details>
-
-### Tema 2: Factory Method y Strategy · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por factory method y strategy con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender factory method y strategy te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en factory method y strategy como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que factory method y strategy resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Factory Method y Strategy se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Factory Method y Strategy | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses factory method y strategy por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: factory method y strategy funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Factory Method y Strategy existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve factory method y strategy en tu contexto?
-2. ¿Cómo sabrías que factory method y strategy no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar factory method y strategy?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/Tarifas.java
-interface Tarifa { int calcular(int gramos); }
-
-static Tarifa crear(String tipo) {
-    return switch (tipo) {
-        case "estandar" -> new Estandar();
-        case "prioritaria" -> new Prioritaria();
-        default -> throw new IllegalArgumentException("tipo desconocido: " + tipo);
-    };
+public class DemoBuilder {
+    public static void main(String[] args) {
+        Envio envio = new Envio.Builder("G-1").prioritario(true).seguro(false).build();
+        System.out.println(envio.getGuia());
+        System.out.println(envio.isPrioritario());
+        System.out.println(envio.isSeguro());
+    }
 }
 ```
 
+**Desglose del código**
+
+- El constructor de `Envio` es privado: la creación pasa por `Builder`.
+- `Builder` valida lo obligatorio temprano (`guia`).
+- `build()` es el punto donde se materializa el objeto con estado final coherente.
+- La API fluida mejora legibilidad cuando hay varios opcionales.
+
+**Ejecución y salida real**
+
 ```bash
-javac -d out src/Tarifas.java src/Cotizador.java
-java -cp out Cotizador
+javac Envio.java DemoBuilder.java
+java DemoBuilder
 ```
 
-</details>
+```text
+G-1
+true
+false
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Objeto inválido creado | Validación tardía o ausente | Valida en constructor/builder/build |
+| Builder enorme y confuso | Demasiados parámetros opcionales | Revisa el diseño del objeto; quizá sea demasiado grande |
+| Usas Builder para 2 campos | Sobreingeniería | Usa constructor o factory simple |
+
+**Verificación rápida**
+
+Intenta `new Envio.Builder("")`: debe lanzar `IllegalArgumentException`.
+
+### Tema 2: Factory Method y Strategy · Intermedio · 40 min
+
+**Caso guía**
+
+Debes calcular tarifas según el tipo de envío. Mañana puede aparecer un nuevo tipo. No quieres llenar el código de `if/switch` repartidos por todo el sistema.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** *Factory Method* delega la creación de objetos a un método/fábrica que encapsula la decisión de instanciación. *Strategy* encapsula una familia de algoritmos intercambiables detrás de una interfaz común, permitiendo variar el comportamiento en runtime o por configuración.
+
+**Contrato / invariantes / reglas.** El cliente depende de la abstracción (`Tarifa`), no de implementaciones concretas. La fábrica centraliza la decisión de creación; Strategy centraliza la variación de comportamiento. Si el conjunto de variantes es cerrado y pequeño, un `switch` puede ser suficiente; la abstracción se justifica cuando reduce duplicación o facilita extensión real. Ambas apuntan a Open/Closed en el punto de variación, no a eliminar toda condición.
+
+**Modelo mental.** Factory es el mostrador que te entrega la herramienta correcta; Strategy es la herramienta intercambiable que cumple el mismo contrato.
+
+**Implementación desde cero**
+
+```java
+interface Tarifa {
+    int calcular(int gramos);
+}
+
+class Estandar implements Tarifa {
+    public int calcular(int gramos) { return 100 + gramos; }
+}
+
+class Prioritaria implements Tarifa {
+    public int calcular(int gramos) { return 200 + gramos * 2; }
+}
+
+class TarifaFactory {
+    static Tarifa crear(String tipo) {
+        return switch (tipo) {
+            case "estandar" -> new Estandar();
+            case "prioritaria" -> new Prioritaria();
+            default -> throw new IllegalArgumentException("tipo desconocido: " + tipo);
+        };
+    }
+}
+
+public class DemoTarifas {
+    static int cotizar(Tarifa tarifa, int gramos) { return tarifa.calcular(gramos); }
+
+    public static void main(String[] args) {
+        System.out.println(cotizar(TarifaFactory.crear("estandar"), 10));
+        System.out.println(cotizar(TarifaFactory.crear("prioritaria"), 10));
+    }
+}
+```
+
+**Desglose del código**
+
+- `Tarifa` define el contrato común.
+- Cada estrategia implementa una regla distinta.
+- `TarifaFactory` encapsula la creación; el cliente recibe la abstracción.
+- `cotizar` no conoce clases concretas: depende de la interfaz.
+
+**Ejecución y salida real**
+
+```bash
+javac Tarifa.java Estandar.java Prioritaria.java TarifaFactory.java DemoTarifas.java
+java DemoTarifas
+```
+
+```text
+110
+220
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `switch` duplicado en varios lugares | Creación no centralizada | Centraliza en factory |
+| Cliente conoce clases concretas | Acoplamiento innecesario | Programa contra la interfaz |
+| Abstracción para un solo caso estable | YAGNI | Usa implementación simple |
+
+**Verificación rápida**
+
+Agrega `Express` implementando `Tarifa` y actualiza solo la factory; `cotizar` no debe cambiar.
 
 ### Tema 3: Abstract Factory y familias de productos compatibles · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por abstract factory y familias de productos compatibles con foco en comprensión antes de implementación.
+Tu sistema debe generar avisos por canal. Cada canal tiene familia de productos compatibles: `Mensaje` y `Plantilla`. No quieres mezclar una plantilla de email con un mensaje SMS por accidente.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender abstract factory y familias de productos compatibles te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** *Abstract Factory* es un patrón creacional que provee una interfaz para crear familias de objetos relacionados o dependientes sin especificar sus clases concretas.
 
-#### ► LA ANALOGÍA
-Piensa en abstract factory y familias de productos compatibles como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** La fábrica abstracta garantiza consistencia de familia: los productos creados por una misma fábrica concreta deben ser compatibles entre sí. Agregar una nueva familia suele ser fácil (otra fábrica concreta); agregar un nuevo tipo de producto a la familia exige cambiar la interfaz abstracta y sus implementaciones. Se usa cuando la compatibilidad entre productos es un invariante de negocio.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que abstract factory y familias de productos compatibles resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** Es un kit: si eliges el kit “local”, todas las piezas del kit son locales y encajan entre sí.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Abstract Factory y familias de productos compatibles se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Abstract Factory y familias de productos compatibles | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses abstract factory y familias de productos compatibles por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: abstract factory y familias de productos compatibles funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Abstract Factory y familias de productos compatibles existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve abstract factory y familias de productos compatibles en tu contexto?
-2. ¿Cómo sabrías que abstract factory y familias de productos compatibles no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar abstract factory y familias de productos compatibles?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/Notificaciones.java
+interface Mensaje { String render(String guia); }
+interface Plantilla { String nombre(); }
+
 interface FabricaAvisos {
     Mensaje crearMensaje();
     Plantilla crearPlantilla();
 }
 
-static final class FabricaLocal implements FabricaAvisos {
+class Sms implements Mensaje { public String render(String guia) { return "SMS guia=" + guia; } }
+class PlantillaLocal implements Plantilla { public String nombre() { return "local"; } }
+
+class FabricaLocal implements FabricaAvisos {
     public Mensaje crearMensaje() { return new Sms(); }
     public Plantilla crearPlantilla() { return new PlantillaLocal(); }
 }
+
+public class DemoAbstractFactory {
+    public static void main(String[] args) {
+        FabricaAvisos fabrica = new FabricaLocal();
+        System.out.println(fabrica.crearMensaje().render("G-1"));
+        System.out.println(fabrica.crearPlantilla().nombre());
+    }
+}
 ```
+
+**Desglose del código**
+
+- `FabricaAvisos` define la familia de productos.
+- `FabricaLocal` crea productos compatibles.
+- El cliente depende de interfaces, no de clases concretas.
+- El invariante es la compatibilidad dentro de la familia.
+
+**Ejecución y salida real**
 
 ```bash
-javac -d out src/Notificaciones.java
-java -cp out Notificaciones
+javac Mensaje.java Plantilla.java FabricaAvisos.java Sms.java PlantillaLocal.java FabricaLocal.java DemoAbstractFactory.java
+java DemoAbstractFactory
 ```
 
-</details>
+```text
+SMS guia=G-1
+local
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Productos incompatibles mezclados | Creación dispersa | Crea por familia mediante factory abstracta |
+| Muchas fábricas para poca variación | Sobreingeniería | Usa factory simple/strategy |
+| Cambiar familia es doloroso | Cliente acoplado a concretos | Inyecta la fábrica abstracta |
+
+**Verificación rápida**
+
+Agrega `FabricaEmail` con `Email` y `PlantillaEmail`; el cliente debe funcionar solo cambiando la fábrica inyectada.
 
 ### Tema 4: SOLID y cuándo NO aplicar un patrón · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por solid y cuándo no aplicar un patrón con foco en comprensión antes de implementación.
+Un servicio de envíos guarda datos, valida y notifica todo en una sola clase. Funciona, pero cada cambio lo rompe. Quieres mejorar el diseño sin convertir el proyecto en un museo de patrones.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender solid y cuándo no aplicar un patrón te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** SOLID es un conjunto de cinco principios de diseño orientado a objetos: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation y Dependency Inversion. Son heurísticas para gestionar acoplamiento, cohesión y extensibilidad.
 
-#### ► LA ANALOGÍA
-Piensa en solid y cuándo no aplicar un patrón como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** SRP: una clase/módulo debe tener una razón clara de cambio. OCP: extender comportamiento sin modificar código estable en el punto de variación. LSP: subtipos deben respetar el contrato del supertipo. ISP: interfaces pequeñas y cohesivas. DIP: módulos de alto nivel dependen de abstracciones, no de detalles concretos. Los principios no son reglas absolutas; aplicarlos sin presión real genera complejidad accidental.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que solid y cuándo no aplicar un patrón resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** SOLID es como ergonomía: te ayuda a trabajar mejor, pero agregar mecanismos innecesarios también causa fatiga.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SOLID y cuándo NO aplicar un patrón se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SOLID y cuándo NO aplicar un patrón | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses solid y cuándo no aplicar un patrón por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: solid y cuándo no aplicar un patrón funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SOLID y cuándo NO aplicar un patrón existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve solid y cuándo no aplicar un patrón en tu contexto?
-2. ¿Cómo sabrías que solid y cuándo no aplicar un patrón no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar solid y cuándo no aplicar un patrón?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/ServicioEnvios.java
-public class ServicioEnvios {
+interface RepositorioEnvios { void guardar(String guia); }
+
+class RepositorioMemoria implements RepositorioEnvios {
+    public void guardar(String guia) { System.out.println("guardado=" + guia); }
+}
+
+class ServicioEnvios {
     private final RepositorioEnvios repositorio;
     ServicioEnvios(RepositorioEnvios repositorio) { this.repositorio = repositorio; }
-    void registrar(String guia) { repositorio.guardar(guia); }
+    void registrar(String guia) {
+        if (guia == null || guia.isBlank()) throw new IllegalArgumentException("guia obligatoria");
+        repositorio.guardar(guia);
+    }
+}
+
+public class DemoSolid {
+    public static void main(String[] args) {
+        ServicioEnvios servicio = new ServicioEnvios(new RepositorioMemoria());
+        servicio.registrar("G-1");
+    }
 }
 ```
 
+**Desglose del código**
+
+- `RepositorioEnvios` es una abstracción (DIP).
+- `ServicioEnvios` orquesta la regla de negocio y delega persistencia (SRP razonable).
+- Puedes cambiar la implementación del repositorio sin modificar el servicio.
+- No se introdujo un patrón extra innecesario: solo una interfaz donde hay variación real.
+
+**Ejecución y salida real**
+
 ```bash
-javac -d out src/Envio.java src/ServicioEnvios.java src/Main.java
-java -cp out Main
+javac RepositorioEnvios.java RepositorioMemoria.java ServicioEnvios.java DemoSolid.java
+java DemoSolid
 ```
 
-</details>
+```text
+guardado=G-1
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Muchas interfaces con una sola implementación sin motivo | DIP aplicado por dogma | Introduce abstracción cuando haya variación o necesidad real |
+| Clase “Dios” | SRP ignorado | Separa responsabilidades por razón de cambio |
+| Herencia que rompe expectativas | LSP violado | Prefiere composición o rediseña contrato |
+
+**Verificación rápida**
+
+Sustituye `RepositorioMemoria` por otra implementación que imprima a otro destino; `ServicioEnvios` no debe cambiar.
 
 ### Tema 5: Prototype: copiar un objeto sin compartir sus datos · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por prototype: copiar un objeto sin compartir sus datos con foco en comprensión antes de implementación.
+Tienes una plantilla de paquete con etiquetas. Quieres crear una copia para modificarla sin alterar la plantilla original. Una copia superficial puede compartir listas internas y causar bugs.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender prototype: copiar un objeto sin compartir sus datos te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** *Prototype* es un patrón creacional que crea nuevos objetos copiando una instancia prototípica. La copia puede ser *superficial* (shallow) o *profunda* (deep), según si copia referencias o también los objetos referenciados.
 
-#### ► LA ANALOGÍA
-Piensa en prototype: copiar un objeto sin compartir sus datos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** El contrato clave es la independencia del estado mutable: modificar la copia no debe afectar al original, ni viceversa, cuando el dominio lo requiere. Para objetos inmutables, la copia profunda es innecesaria. En Java, `clone()` es problemático por su diseño; se prefiere constructor de copia, factory de copia o métodos explícitos. La profundidad de copia debe ser deliberada.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que prototype: copiar un objeto sin compartir sus datos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** Fotocopiar un formulario es copia superficial si ambos apuntan a la misma nota adhesiva pegada; copia profunda es duplicar también la nota.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Prototype: copiar un objeto sin compartir sus datos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Prototype: copiar un objeto sin compartir sus datos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses prototype: copiar un objeto sin compartir sus datos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: prototype: copiar un objeto sin compartir sus datos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Prototype: copiar un objeto sin compartir sus datos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve prototype: copiar un objeto sin compartir sus datos en tu contexto?
-2. ¿Cómo sabrías que prototype: copiar un objeto sin compartir sus datos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar prototype: copiar un objeto sin compartir sus datos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-// src/Paquete.java
-public class Paquete {
-    String guia;
-    List<String> etiquetas;
-
-    Paquete(Paquete original) {
-        this.guia = original.guia;
-        this.etiquetas = new ArrayList<>(original.etiquetas); // copia, no la misma lista
-    }
-}
-```
-
-```bash
-javac -d out src/Paquete.java
-java -cp out Paquete
-```
-
-</details>
-
-### Tema 6: Patrones estructurales para conectar piezas existentes · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por patrones estructurales para conectar piezas existentes con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender patrones estructurales para conectar piezas existentes te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en patrones estructurales para conectar piezas existentes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que patrones estructurales para conectar piezas existentes resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Patrones estructurales para conectar piezas existentes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Patrones estructurales para conectar piezas existentes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses patrones estructurales para conectar piezas existentes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: patrones estructurales para conectar piezas existentes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Patrones estructurales para conectar piezas existentes existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve patrones estructurales para conectar piezas existentes en tu contexto?
-2. ¿Cómo sabrías que patrones estructurales para conectar piezas existentes no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar patrones estructurales para conectar piezas existentes?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-// src/Integracion.java
-class AdaptadorProveedor implements Notificador {
-    private final ProveedorViejo proveedor = new ProveedorViejo();
-    public void enviar(Envio envio) {
-        proveedor.enviarTexto("GUIA:" + envio.guia());
-    }
-}
-```
-
-```bash
-javac -d out src/Integracion.java
-java -cp out Integracion
-```
-
-</details>
-
-### Objetivo y preparación
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por objetivo y preparación con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender objetivo y preparación te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en objetivo y preparación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que objetivo y preparación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Objetivo y preparación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Objetivo y preparación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses objetivo y preparación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: objetivo y preparación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Objetivo y preparación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve objetivo y preparación en tu contexto?
-2. ¿Cómo sabrías que objetivo y preparación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar objetivo y preparación?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-mkdir laboratorio-strategy-singleton-observer
-cd laboratorio-strategy-singleton-observer
-```
-
-</details>
-
-### Strategy: elegir una política sin cambiar al consumidor
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por strategy: elegir una política sin cambiar al consumidor con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender strategy: elegir una política sin cambiar al consumidor te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en strategy: elegir una política sin cambiar al consumidor como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que strategy: elegir una política sin cambiar al consumidor resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Strategy: elegir una política sin cambiar al consumidor se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Strategy: elegir una política sin cambiar al consumidor | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses strategy: elegir una política sin cambiar al consumidor por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: strategy: elegir una política sin cambiar al consumidor funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Strategy: elegir una política sin cambiar al consumidor existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve strategy: elegir una política sin cambiar al consumidor en tu contexto?
-2. ¿Cómo sabrías que strategy: elegir una política sin cambiar al consumidor no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar strategy: elegir una política sin cambiar al consumidor?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-public class StrategyDemo {
-    interface Tarifa {
-        int calcular(int kilometros);
-    }
-
-    static final class Normal implements Tarifa {
-        public int calcular(int kilometros) {
-            return 500 + 100 * kilometros;
-        }
-    }
-
-    static final class Express implements Tarifa {
-        public int calcular(int kilometros) {
-            return 900 + 150 * kilometros;
-        }
-    }
-
-    static final class Recogida implements Tarifa {
-        public int calcular(int kilometros) {
-            return 0;
-        }
-    }
-
-    record Cotizador(Tarifa tarifa) {
-        Cotizador {
-            java.util.Objects.requireNonNull(tarifa, "tarifa");
-        }
-
-        int cotizar(int kilometros) {
-            if (kilometros < 0) {
-                throw new IllegalArgumentException("kilometros negativos");
-            }
-            return tarifa.calcular(kilometros);
-        }
-    }
-
-    public static void main(String[] args) {
-        if (args.length == 1 && args[0].equals("fallo")) {
-            System.out.println("fallo=" + new Cotizador(new Normal()).cotizar(-1));
-            return;
-        }
-        System.out.println("normal=" + new Cotizador(new Normal()).cotizar(10));
-        System.out.println("express=" + new Cotizador(new Express()).cotizar(10));
-        System.out.println("recogida=" + new Cotizador(new Recogida()).cotizar(10));
-    }
-}
-```
-
-```bash
-java StrategyDemo.java
-```
-
-</details>
-
-### Singleton: identidad única y dependencia explícita
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por singleton: identidad única y dependencia explícita con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender singleton: identidad única y dependencia explícita te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en singleton: identidad única y dependencia explícita como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que singleton: identidad única y dependencia explícita resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Singleton: identidad única y dependencia explícita se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Singleton: identidad única y dependencia explícita | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses singleton: identidad única y dependencia explícita por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: singleton: identidad única y dependencia explícita funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Singleton: identidad única y dependencia explícita existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve singleton: identidad única y dependencia explícita en tu contexto?
-2. ¿Cómo sabrías que singleton: identidad única y dependencia explícita no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar singleton: identidad única y dependencia explícita?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-public class SingletonDemo {
-    interface Config {
-        String moneda();
-    }
-
-    enum Configuracion implements Config {
-        INSTANCIA("COP");
-
-        private final String moneda;
-
-        Configuracion(String moneda) {
-            this.moneda = moneda;
-        }
-
-        public String moneda() {
-            return moneda;
-        }
-    }
-
-    public static void main(String[] args) {
-        Config produccion = Configuracion.INSTANCIA;
-        Config prueba = () -> "USD";
-
-        System.out.println("misma instancia=" + (produccion == Configuracion.INSTANCIA));
-        System.out.println("produccion=" + produccion.moneda());
-        System.out.println("prueba=" + prueba.moneda());
-
-        if (args.length == 1 && args[0].equals("fallo")) {
-            String actual = Configuracion.INSTANCIA.moneda();
-            if (!"USD".equals(actual)) {
-                throw new IllegalStateException(
-                        "dependencia global: esperado USD, obtenido " + actual);
-            }
-        }
-    }
-}
-```
-
-```bash
-java SingletonDemo.java
-```
-
-</details>
-
-### Observer: alta, notificación y baja
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por observer: alta, notificación y baja con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender observer: alta, notificación y baja te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en observer: alta, notificación y baja como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que observer: alta, notificación y baja resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Observer: alta, notificación y baja se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Observer: alta, notificación y baja | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses observer: alta, notificación y baja por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: observer: alta, notificación y baja funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Observer: alta, notificación y baja existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve observer: alta, notificación y baja en tu contexto?
-2. ¿Cómo sabrías que observer: alta, notificación y baja no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar observer: alta, notificación y baja?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObserverDemo {
-    interface Observador {
-        void actualizar(String estado);
+public class Paquete {
+    private final String guia;
+    private final List<String> etiquetas;
+
+    public Paquete(String guia, List<String> etiquetas) {
+        this.guia = guia;
+        this.etiquetas = new ArrayList<>(etiquetas);
     }
 
-    static final class Entrega {
-        private final List<Observador> observadores = new ArrayList<>();
-
-        void suscribir(Observador observador) {
-            observadores.add(observador);
-        }
-
-        void cancelar(Observador observador) {
-            observadores.remove(observador);
-        }
-
-        void publicar(String estado) {
-            for (Observador observador : new ArrayList<>(observadores)) {
-                observador.actualizar(estado);
-            }
-        }
+    public Paquete(Paquete original) { // copia profunda de estado mutable necesario
+        this.guia = original.guia;
+        this.etiquetas = new ArrayList<>(original.etiquetas);
     }
 
+    public void agregarEtiqueta(String etiqueta) { etiquetas.add(etiqueta); }
+    public String getGuia() { return guia; }
+    public List<String> getEtiquetas() { return List.copyOf(etiquetas); }
+}
+
+class DemoPrototype {
     public static void main(String[] args) {
-        Observador cliente = estado -> System.out.println("cliente=" + estado);
-        Observador auditoria = estado -> System.out.println("auditoria=" + estado);
+        Paquete original = new Paquete("G-1", new ArrayList<>(List.of("fragil")));
+        Paquete copia = new Paquete(original);
+        copia.agregarEtiqueta("prioritario");
 
-        if (args.length == 1 && args[0].equals("fallo")) {
-            Entrega entregaConFallo = new Entrega();
-            entregaConFallo.suscribir(estado -> {
-                throw new IllegalStateException("observador no disponible");
-            });
-            entregaConFallo.suscribir(cliente);
-            entregaConFallo.suscribir(auditoria);
-            entregaConFallo.publicar("EN_CAMINO");
-            return;
-        }
-
-        Entrega entrega = new Entrega();
-        entrega.suscribir(cliente);
-        entrega.suscribir(auditoria);
-        entrega.publicar("EN_CAMINO");
-        entrega.cancelar(cliente);
-        entrega.publicar("ENTREGADA");
+        System.out.println(original.getEtiquetas());
+        System.out.println(copia.getEtiquetas());
     }
 }
 ```
 
+**Desglose del código**
+
+- El constructor de copia crea una nueva lista para `etiquetas`.
+- `List.copyOf` evita exponer la lista interna mutable.
+- Modificar `copia` no afecta `original`.
+- La copia profunda se aplica donde hay mutabilidad relevante.
+
+**Ejecución y salida real**
+
 ```bash
-java ObserverDemo.java
+javac Paquete.java DemoPrototype.java
+java DemoPrototype
 ```
 
-</details>
+```text
+[fragil]
+[fragil, prioritario]
+```
 
-### Diseño y evidencia
+**Errores comunes y cómo resolverlos**
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por diseño y evidencia con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender diseño y evidencia te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en diseño y evidencia como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que diseño y evidencia resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Diseño y evidencia se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Modificar copia modifica original | Shallow copy de campo mutable | Copia profundamente el estado mutable |
+| Copia profunda innecesaria en todo | Sobre-costo | Copia solo lo mutable/compartible |
+| Usar `clone()` sin entenderlo | Contrato frágil | Prefiere constructor/factory de copia |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
+**Verificación rápida**
+
+Agrega una etiqueta a la copia y confirma que el original mantiene su lista original.
+
+### Tema 6: Patrones estructurales para conectar piezas existentes · Intermedio · 40 min
+
+**Caso guía**
+
+Tienes un proveedor viejo con una API incompatible, quieres agregar logging sin modificar la clase original y necesitas una interfaz simple para un subsistema complejo. Son tres problemas estructurales distintos.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** Los patrones estructurales organizan composición entre objetos/clases. *Adapter* convierte una interfaz en otra esperada por el cliente. *Decorator* agrega responsabilidades dinámicamente envolviendo un objeto con la misma interfaz. *Facade* ofrece una interfaz simplificada sobre un subsistema complejo.
+
+**Contrato / invariantes / reglas.** Adapter preserva la expectativa del cliente traduciendo llamadas. Decorator debe mantener el contrato de la interfaz decorada; el orden de decoradores puede importar. Facade no prohíbe acceso al subsistema, pero ofrece el camino simple. Ninguno debe ocultar errores o cambiar semántica sin documentarlo. Se usan para gestionar compatibilidad, composición y complejidad, no para añadir capas por defecto.
+
+**Modelo mental.** Adapter es un adaptador de enchufe; Decorator es envolver un regalo con otra capa; Facade es la ventanilla única de un trámite complejo.
+
+**Implementación desde cero**
+
+```java
+interface Notificador { void enviar(String guia); }
+
+class ProveedorViejo {
+    void enviarTexto(String texto) { System.out.println("viejo:" + texto); }
+}
+
+class AdaptadorProveedor implements Notificador { // Adapter
+    private final ProveedorViejo proveedor = new ProveedorViejo();
+    public void enviar(String guia) { proveedor.enviarTexto("GUIA:" + guia); }
+}
+
+class NotificadorLogging implements Notificador { // Decorator
+    private final Notificador interno;
+    NotificadorLogging(Notificador interno) { this.interno = interno; }
+    public void enviar(String guia) {
+        System.out.println("log:antes");
+        interno.enviar(guia);
+        System.out.println("log:despues");
+    }
+}
+
+public class DemoEstructural {
+    public static void main(String[] args) {
+        Notificador n = new NotificadorLogging(new AdaptadorProveedor());
+        n.enviar("G-1");
+    }
+}
+```
+
+**Desglose del código**
+
+- `AdaptadorProveedor` traduce la interfaz esperada a la API vieja.
+- `NotificadorLogging` envuelve cualquier `Notificador` y agrega comportamiento.
+- El cliente solo ve `Notificador`.
+- Componer adaptador + decorador evita modificar código existente.
+
+**Ejecución y salida real**
+
+```bash
+javac Notificador.java ProveedorViejo.java AdaptadorProveedor.java NotificadorLogging.java DemoEstructural.java
+java DemoEstructural
+```
+
+```text
+log:antes
+viejo:GUIA:G-1
+log:despues
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Usar Diseño y evidencia | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+| Decorador cambia el contrato | Añadió comportamiento incompatible | Mantén la semántica de la interfaz |
+| Facade se vuelve “Dios” | Metiste demasiada lógica | Mantén la facade delgada |
+| Capas innecesarias | Patrón por moda | Usa la solución más simple que funcione |
 
-#### ► CUÁNDO NO USAR ESTO
-No uses diseño y evidencia por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+**Verificación rápida**
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: diseño y evidencia funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+Quita el decorador y confirma que la funcionalidad base sigue funcionando; agrega otro decorador y verifica el orden.
 
-#### ► LO QUE DEBES RECORDAR
-- Diseño y evidencia existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
+## Cierre del módulo
 
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve diseño y evidencia en tu contexto?
-2. ¿Cómo sabrías que diseño y evidencia no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar diseño y evidencia?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar diseño y evidencia.
-
-</details>
+Los patrones son vocabulario de diseño: Builder, Factory, Strategy, Abstract Factory, Prototype, Adapter, Decorator y Facade resuelven problemas concretos. El criterio profesional es saber cuándo no usarlos. En el siguiente módulo aplicarás este criterio a diseño de sistemas.
