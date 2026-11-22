@@ -1,279 +1,197 @@
-# Módulo 17: JDBC, DAO y transacciones
+# Módulo 17: JDBC
+
+Antes de ORMs, y debajo de ellos, está JDBC: la API estándar de Java para hablar con bases de datos relacionales. Entender JDBC te ayuda a depurar JPA/Hibernate, escribir consultas críticas y razonar sobre transacciones, conexiones y SQL con precisión.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Ejecutar consultas seguras con `PreparedStatement` y el patrón DAO |
+| 2 | Controlar transacciones, commit/rollback y niveles de aislamiento |
 
 ## Aprende construyendo
 
-Este módulo construye una capa JDBC pequeña y verificable. El objetivo es entender lo que un ORM automatiza y qué garantías siguen siendo responsabilidad del programa.
-
-
-### Dos ejemplos: primero visible, luego real
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por dos ejemplos: primero visible, luego real con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender dos ejemplos: primero visible, luego real te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en dos ejemplos: primero visible, luego real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que dos ejemplos: primero visible, luego real resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Dos ejemplos: primero visible, luego real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Dos ejemplos: primero visible, luego real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses dos ejemplos: primero visible, luego real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: dos ejemplos: primero visible, luego real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Dos ejemplos: primero visible, luego real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve dos ejemplos: primero visible, luego real en tu contexto?
-2. ¿Cómo sabrías que dos ejemplos: primero visible, luego real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar dos ejemplos: primero visible, luego real?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar dos ejemplos: primero visible, luego real.
-
-</details>
-
 ### Tema 1: JDBC, PreparedStatement y DAO · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Al finalizar podrás consultar e insertar registros usando DataSource, PreparedStatement y un DAO con responsabilidades acotadas. Requiere JDK 25+. El ejemplo ejecutable usa H2 y está en el código de este tema. Conocimiento previo: SQL básico (CREATE TABLE, INSERT, SELECT) y el en…
+Necesitas guardar y consultar guías en una base SQL. Si concatenas strings para armar SQL, abres la puerta a inyección SQL y errores de escape. Necesitas consultas parametrizadas y una capa de acceso a datos clara.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás consultar e insertar registros usando DataSource, PreparedStatement y un DAO con responsabilidades acotadas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** JDBC (Java Database Connectivity) es la API estándar (`java.sql`) para conectar aplicaciones Java con bases de datos relacionales. `Connection` representa una sesión con la BD; `PreparedStatement` representa una sentencia SQL precompilada/parametrizada; `ResultSet` representa un cursor sobre filas resultado. DAO (Data Access Object) es un patrón que encapsula acceso a persistencia detrás de una interfaz.
 
-#### ► LA ANALOGÍA
-Piensa en jdbc, preparedstatement y dao como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** Las conexiones, statements y result sets son recursos que deben cerrarse (`try-with-resources`). Los parámetros de usuario deben pasarse con `PreparedStatement.setX(...)`, nunca concatenados en el SQL. `ResultSet` se recorre normalmente de forma forward-only por defecto; leer columnas por nombre o índice depende del contrato de la consulta. JDBC lanza `SQLException` (checked) por errores de acceso a datos; el código debe manejar o traducir con contexto. El DAO no debe filtrar detalles de UI; expone operaciones del dominio de persistencia.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que jdbc, preparedstatement y dao resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** `PreparedStatement` es un formulario con casillas: el SQL es la plantilla, los datos son valores que van en casillas, no texto pegado al formulario.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| JDBC, PreparedStatement y DAO se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar JDBC, PreparedStatement y DAO | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses jdbc, preparedstatement y dao por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: jdbc, preparedstatement y dao funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- JDBC, PreparedStatement y DAO existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve jdbc, preparedstatement y dao en tu contexto?
-2. ¿Cómo sabrías que jdbc, preparedstatement y dao no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar jdbc, preparedstatement y dao?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-package academia.pedidos;
-
-import javax.sql.DataSource;
 import java.sql.*;
-import java.util.Optional;
+import java.util.*;
 
-public final class EnvioDao {
-    private final DataSource dataSource;
+public class GuiaDaoJdbc {
+    private final String url;
 
-    public EnvioDao(DataSource dataSource) { this.dataSource = dataSource; }
+    public GuiaDaoJdbc(String url) { this.url = url; }
 
-    public Optional<String> buscarEstado(String referencia) throws SQLException {
-        String sql = "select estado from envio where referencia = ?";
-        try (Connection connection = dataSource.getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setString(1, referencia);
-            try (ResultSet result = statement.executeQuery()) {
-                return result.next()
-                    ? Optional.of(result.getString("estado"))
-                    : Optional.empty();
+    public void crearTabla() throws SQLException {
+        String sql = "CREATE TABLE IF NOT EXISTS guias (id INT PRIMARY KEY, numero VARCHAR(40) NOT NULL)";
+        try (Connection con = DriverManager.getConnection(url);
+             Statement st = con.createStatement()) {
+            st.execute(sql);
+        }
+    }
+
+    public void insertar(int id, String numero) throws SQLException {
+        String sql = "INSERT INTO guias(id, numero) VALUES (?, ?)";
+        try (Connection con = DriverManager.getConnection(url);
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            ps.setString(2, numero);
+            ps.executeUpdate();
+        }
+    }
+
+    public List<String> listarNumeros() throws SQLException {
+        String sql = "SELECT numero FROM guias ORDER BY id";
+        List<String> out = new ArrayList<>();
+        try (Connection con = DriverManager.getConnection(url);
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                out.add(rs.getString("numero"));
+            }
+        }
+        return out;
+    }
+}
+```
+
+**Desglose del código**
+
+- `DriverManager.getConnection` obtiene la conexión (requiere driver JDBC en classpath).
+- `PreparedStatement` usa `?` como placeholders; `setInt/setString` enlaza valores con tipo.
+- `try-with-resources` cierra `Connection`, `PreparedStatement` y `ResultSet` aunque haya excepción.
+- `executeUpdate` para DML; `executeQuery` para SELECT.
+
+**Ejecución y salida real**
+
+> **Nota:** requiere un driver JDBC (p. ej. H2) y URL válida. El código compila con JDK porque `java.sql` está en la plataforma.
+
+Ejemplo con H2 en memoria:
+
+```java
+public class DemoJdbc {
+    public static void main(String[] args) throws Exception {
+        GuiaDaoJdbc dao = new GuiaDaoJdbc("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+        dao.crearTabla();
+        dao.insertar(1, "G-1");
+        dao.insertar(2, "G-2");
+        System.out.println(dao.listarNumeros());
+    }
+}
+```
+
+Salida esperada:
+
+```text
+[G-1, G-2]
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Inyección SQL | Concatenaste input en el SQL | Usa `PreparedStatement` con parámetros |
+| Fuga de conexiones | No cerraste recursos | Usa try-with-resources |
+| `SQLException: No suitable driver` | Driver no está en classpath | Agrega el driver JDBC |
+
+**Verificación rápida**
+
+Compila el DAO: `javac GuiaDaoJdbc.java` debe compilar (JDK incluye `java.sql`). Para ejecutarlo, agrega un driver JDBC.
+
+### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min
+
+**Caso guía**
+
+Debes debitar saldo y registrar un movimiento. Si el segundo paso falla, el primero debe revertirse. Además, dos procesos concurrentes no deben corromper el saldo.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** Una *transacción* es una unidad lógica de trabajo que la base de datos trata como atómica. ACID describe propiedades deseadas: Atomicidad, Consistencia, Aislamiento y Durabilidad. El *nivel de aislamiento* define qué anomalías de concurrencia son posibles (dirty read, non-repeatable read, phantom read).
+
+**Contrato / invariantes / reglas.** En JDBC, `setAutoCommit(false)` inicia control manual; `commit()` confirma; `rollback()` revierte. Si ocurre excepción, se debe hacer rollback en `catch/finally` según el flujo. El nivel de aislamiento se configura con `Connection.setTransactionIsolation(...)`; mayor aislamiento reduce anomalías pero aumenta contención/bloqueos. La atomicidad es del límite transaccional, no de cada sentencia aislada. Los recursos deben cerrarse incluso ante rollback.
+
+**Modelo mental.** Una transacción es un “todo o nada”: o se aplican todos los asientos del libro contable, o no se aplica ninguno.
+
+**Implementación desde cero**
+
+```java
+import java.sql.*;
+
+public class TransferenciaJdbc {
+    private final String url;
+    public TransferenciaJdbc(String url) { this.url = url; }
+
+    public void transferir(int desde, int hacia, int monto) throws SQLException {
+        String debitar = "UPDATE cuentas SET saldo = saldo - ? WHERE id = ?";
+        String acreditar = "UPDATE cuentas SET saldo = saldo + ? WHERE id = ?";
+
+        try (Connection con = DriverManager.getConnection(url)) {
+            con.setAutoCommit(false);
+            con.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            try (PreparedStatement ps1 = con.prepareStatement(debitar);
+                 PreparedStatement ps2 = con.prepareStatement(acreditar)) {
+                ps1.setInt(1, monto); ps1.setInt(2, desde);
+                ps1.executeUpdate();
+
+                ps2.setInt(1, monto); ps2.setInt(2, hacia);
+                ps2.executeUpdate();
+
+                con.commit();
+            } catch (SQLException | RuntimeException e) {
+                con.rollback();
+                throw e;
+            } finally {
+                con.setAutoCommit(true);
             }
         }
     }
 }
 ```
 
-```bash
-./mvnw -q -Dtest=EnvioDaoTest#consultaConParametroYDevuelveAusenteSinError test
-```
+**Desglose del código**
 
-```bash
-./mvnw -Dtest=EnvioDaoTest#consultaConParametroYDevuelveAusenteSinError test
-```
+- `setAutoCommit(false)` desactiva commit automático por sentencia.
+- Ambas actualizaciones se ejecutan en la misma transacción.
+- Cualquier excepción provoca `rollback()`.
+- `commit()` confirma solo si todo salió bien.
+- El nivel de aislamiento se elige según el caso; `READ_COMMITTED` es un default común en muchas BDs.
 
-```java
-import java.util.Map;
+**Ejecución y salida real**
 
-public class OrdenPermitido {
-    private static final Map<String, String> COLUMNAS = Map.of(
-        "fecha", "fecha_creacion",
-        "guia", "referencia"
-    );
-    static String consulta(String opcion) {
-        String columna = COLUMNAS.get(opcion);
-        if (columna == null) throw new IllegalArgumentException("Orden no permitida");
-        return "select referencia, estado from envio order by " + columna;
-    }
-    public static void main(String[] args) {
-        System.out.println(consulta("fecha"));
-        try { consulta("fecha desc; drop table envio"); }
-        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
-    }
-}
-```
+> **Nota:** requiere driver JDBC y tabla `cuentas(id INT, saldo INT)`.
 
-</details>
+Salida esperada: si ambas actualizaciones funcionan, los saldos cambian; si falla la segunda, el saldo del primero vuelve al estado previo.
 
-### Tema 2: Transacciones, ACID y aislamiento · Avanzado · 45 min
+**Errores comunes y cómo resolverlos**
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Al finalizar podrás hacer que dos escrituras relacionadas se confirmen juntas o se reviertan juntas. Necesitas el DAO anterior y una base de datos H2 o PostgreSQL. Conocimiento previo: haber seguido el tema anterior de este módulo y tener instalado el entorno del stack.
-
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás hacer que dos escrituras relacionadas se confirmen juntas o se reviertan juntas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en transacciones, acid y aislamiento como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que transacciones, acid y aislamiento resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Transacciones, ACID y aislamiento se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Datos parcialmente actualizados | Falta transacción/rollback | Usa `setAutoCommit(false)` + commit/rollback |
+| Deadlock | Orden de locks inconsistente | Ordena accesos y acorta transacciones |
+| Anomalías de lectura | Aislamiento demasiado bajo | Sube aislamiento solo si el caso lo requiere |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Transacciones, ACID y aislamiento | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses transacciones, acid y aislamiento por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: transacciones, acid y aislamiento funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Transacciones, ACID y aislamiento existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve transacciones, acid y aislamiento en tu contexto?
-2. ¿Cómo sabrías que transacciones, acid y aislamiento no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar transacciones, acid y aislamiento?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-try (Connection connection = dataSource.getConnection()) {
-    connection.setAutoCommit(false);
-    try {
-        insertarCobro(connection, referencia, importe);
-        actualizarEstado(connection, referencia, "LIQUIDADO");
-        connection.commit();
-    } catch (SQLException error) {
-        connection.rollback();
-        throw error;
-    }
-}
-```
+**Verificación rápida**
 
 ```bash
-./mvnw -q -Dtest=EnvioDaoTest#confirmaLasDosEscriturasJuntas test
+javac GuiaDaoJdbc.java TransferenciaJdbc.java
 ```
 
-```bash
-./mvnw -Dtest=EnvioDaoTest#confirmaLasDosEscriturasJuntas test
-```
+Ambos deben compilar con JDK estándar. Prueba la transferencia contra H2/PostgreSQL para verificar commit y rollback.
 
-```bash
-./mvnw -Dtest=EnvioDaoTest#revierteElCobroSiNoExisteElEnvio test
-```
+## Cierre del módulo
 
-</details>
+JDBC es la base de la persistencia relacional en Java. Saber usar `PreparedStatement`, DAO, transacciones y aislamiento te da control fino y te ayuda a entender lo que ORMs hacen por debajo. El siguiente módulo sube al stack web con Spring Boot.

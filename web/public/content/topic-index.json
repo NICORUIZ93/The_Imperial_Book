@@ -4354,10 +4354,6 @@
     ],
     "17": [
       {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
-      },
-      {
         "title": "JDBC, PreparedStatement y DAO",
         "fragment": "tema-1-jdbc-preparedstatement-y-dao"
       },
