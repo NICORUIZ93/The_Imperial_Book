@@ -19,16 +19,13 @@ Procesar colecciones con bucles `for` funciona, pero cuando la lógica crece apa
 
 Tienes una lista de empleados y necesitas obtener los nombres de los que ganan más de 2000, en mayúsculas, ordenados. Con bucles se puede, pero la intención queda mezclada con la mecánica de iteración.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un stream es una tubería de datos: fuente → operaciones intermedias → operación terminal.
+**Definición formal.** Un `Stream<T>` es una secuencia de elementos que soporta operaciones agregadas secuenciales o paralelas. Las operaciones se clasifican en *intermedias* (devuelven stream, perezosas) y *terminales* (producen resultado o efecto, disparan la evaluación).
 
-| Tipo | Ejemplos | Efecto |
-|---|---|---|
-| Intermedia | `filter`, `map`, `sorted`, `distinct` | Devuelve otro stream; es perezosa |
-| Terminal | `collect`, `reduce`, `forEach`, `count` | Produce resultado; ejecuta la tubería |
+**Contrato / invariantes / reglas.** Un stream no almacena datos; consume una fuente. Es perezoso: las intermedias no ejecutan hasta una terminal. Un stream es de un solo uso: tras una operación terminal, está consumido. Las operaciones deben ser preferentemente no interferentes y, en paralelo, stateless/thread-safe según el caso. `reduce` requiere función asociativa para resultados deterministas en paralelo.
 
-Las operaciones intermedias no se ejecutan hasta que hay una terminal. No reutilices un stream ya consumido.
+**Modelo mental.** Un stream es una cinta transportadora: configuras estaciones (filter/map) y al final colocas una caja de salida (collect/reduce) que pone la cinta en marcha.
 
 **Implementación desde cero**
 
@@ -55,14 +52,10 @@ public class DemoStreams {
             .collect(Collectors.toList());
         System.out.println(nombres);
 
-        int total = empleados.stream()
-            .mapToInt(Empleado::salario)
-            .sum();
+        int total = empleados.stream().mapToInt(Empleado::salario).sum();
         System.out.println(total);
 
-        int max = empleados.stream()
-            .mapToInt(Empleado::salario)
-            .reduce(0, Integer::max);
+        int max = empleados.stream().mapToInt(Empleado::salario).reduce(0, Integer::max);
         System.out.println(max);
     }
 }
@@ -72,9 +65,9 @@ public class DemoStreams {
 
 - `filter` conserva elementos que cumplen el predicado.
 - `map` transforma cada elemento; `Empleado::nombre` es una referencia a método.
-- `collect(Collectors.toList())` materializa el resultado. En Java 16+ también puedes usar `toList()` (lista inmutable).
+- `collect` materializa el resultado; la tubería se ejecuta al llegar a la terminal.
 - `mapToInt` evita boxing/unboxing en operaciones numéricas.
-- `reduce(0, Integer::max)` acumula un resultado; el primer argumento es la identidad.
+- `reduce(0, Integer::max)` acumula un resultado con identidad.
 
 **Ejecución y salida real**
 
@@ -106,20 +99,13 @@ Cambia el filtro a `salario >= 2000` y verifica que la salida incluya los casos 
 
 Buscas un usuario por email. A veces existe, a veces no. Devolver `null` obliga a cada llamador a recordar la comprobación; olvidarla produce `NullPointerException` en otro lugar, lejos del origen.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-`Optional<T>` representa “puede haber un valor o no”. No es un reemplazo para todos los nulls; úsalo principalmente como tipo de retorno cuando la ausencia es un resultado esperado.
+**Definición formal.** `Optional<T>` es un contenedor objeto que puede contener o no un valor no nulo. Es un tipo destinado principalmente a modelar ausencia en retornos.
 
-Métodos clave:
+**Contrato / invariantes / reglas.** `Optional.of(null)` lanza `NullPointerException`; `Optional.ofNullable` acepta null. `get()` lanza `NoSuchElementException` si está vacío. `Optional` no debe usarse como campo serializable por defecto, ni como parámetro generalizado en todos los casos; su valor principal es en el contrato de retorno. `orElse` evalúa su argumento siempre; `orElseGet` lo evalúa perezosamente.
 
-| Método | Uso |
-|---|---|
-| `Optional.of(value)` | Valor no nulo |
-| `Optional.ofNullable(value)` | Valor que puede ser nulo |
-| `Optional.empty()` | Ausencia |
-| `orElse(default)` | Valor por defecto |
-| `orElseThrow()` | Falla si no hay valor |
-| `map/flatMap/filter` | Transformar si hay valor |
+**Modelo mental.** `Optional` es una caja etiquetada: “puede haber algo”. Obliga a abrir la caja conscientemente.
 
 **Implementación desde cero**
 
@@ -141,14 +127,10 @@ public class DemoOptional {
             new Usuario("linus@example.com", "Linus")
         );
 
-        String nombre = buscar("ada@example.com", usuarios)
-            .map(Usuario::nombre)
-            .orElse("DESCONOCIDO");
+        String nombre = buscar("ada@example.com", usuarios).map(Usuario::nombre).orElse("DESCONOCIDO");
         System.out.println(nombre);
 
-        String otro = buscar("nadie@example.com", usuarios)
-            .map(Usuario::nombre)
-            .orElse("DESCONOCIDO");
+        String otro = buscar("nadie@example.com", usuarios).map(Usuario::nombre).orElse("DESCONOCIDO");
         System.out.println(otro);
 
         try {
@@ -162,10 +144,10 @@ public class DemoOptional {
 
 **Desglose del código**
 
-- `findFirst()` ya devuelve `Optional`; encaja natural con búsquedas.
+- `findFirst()` devuelve `Optional`; encaja natural con búsquedas.
 - `map` transforma solo si hay valor; si está vacío, sigue vacío.
 - `orElse` da un valor por defecto. `orElseThrow` hace explícito que la ausencia es excepcional en ese contexto.
-- Evita `Optional.get()` sin comprobar; pierde el beneficio del tipo.
+- Evita `get()` sin comprobar.
 
 **Ejecución y salida real**
 
@@ -180,7 +162,7 @@ No encontrado
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
 | `NoSuchElementException` con `get()` | Llamaste `get()` sin verificar | Usa `orElse`, `orElseThrow`, `ifPresent` o `map` |
-| `Optional` como campo/parametro por todas partes | Sobreuso | Úsalo principalmente en retornos; evalúa el caso |
+| `Optional` como campo/parámetro por todas partes | Sobreuso | Úsalo principalmente en retornos; evalúa el caso |
 | `orElse` ejecuta código costoso siempre | `orElse` evalúa el argumento | Usa `orElseGet` para cálculo perezoso |
 
 **Verificación rápida**
@@ -199,17 +181,13 @@ Necesitas ventanas deslizantes de 3 elementos para detectar picos, o agrupar por
 
 > **Nota de versión:** `Stream.gather()` y `Gatherers` son características de Java 24+. Verifica con `javac -version`.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un gatherer es una operación intermedia personalizada. Java incluye gatherers útiles en `java.util.stream.Gatherers`:
+**Definición formal.** Un *gatherer* es una operación intermedia de stream que transforma elementos mediante un estado y una función de integración/salida. `Gatherers` provee implementaciones estándar (`windowFixed`, `windowSliding`, `fold`, `scan`, `mapConcurrent`).
 
-| Gatherer | Qué hace |
-|---|---|
-| `windowFixed(n)` | Agrupa en ventanas fijas de tamaño `n` |
-| `windowSliding(n)` | Ventanas deslizantes de tamaño `n` |
-| `fold(...)` | Acumulación con estado |
-| `scan(...)` | Acumulación emitiendo estados intermedios |
-| `mapConcurrent(...)` | Mapeo concurrente con límite |
+**Contrato / invariantes / reglas.** `gather()` es intermedia y perezosa, como otras operaciones intermedias. El gatherer puede mantener estado por pipeline; por tanto, su uso en paralelo requiere cuidado con la semántica del gatherer específico. La API requiere Java 24+; en versiones anteriores se debe usar alternativas (`Collector`, bucles, librerías).
+
+**Modelo mental.** Un gatherer es una estación personalizada que puedes insertar en la cinta transportadora cuando las estaciones estándar no alcanzan.
 
 **Implementación desde cero**
 
@@ -221,14 +199,10 @@ public class DemoGatherers {
     public static void main(String[] args) {
         List<Integer> valores = List.of(1, 2, 3, 4, 5);
 
-        var ventanas = valores.stream()
-            .gather(Gatherers.windowSliding(3))
-            .toList();
+        var ventanas = valores.stream().gather(Gatherers.windowSliding(3)).toList();
         System.out.println(ventanas);
 
-        var lotes = valores.stream()
-            .gather(Gatherers.windowFixed(2))
-            .toList();
+        var lotes = valores.stream().gather(Gatherers.windowFixed(2)).toList();
         System.out.println(lotes);
     }
 }
@@ -239,7 +213,7 @@ public class DemoGatherers {
 - `windowSliding(3)` produce `[1,2,3], [2,3,4], [3,4,5]`.
 - `windowFixed(2)` produce `[1,2], [3,4], [5]`.
 - `gather(...)` se integra en el pipeline como cualquier operación intermedia.
-- Si tu JDK es anterior a 24, esta API no existe; la alternativa es implementar la lógica con un colector personalizado o bucle explícito.
+- Si tu JDK es anterior a 24, esta API no existe.
 
 **Ejecución y salida real**
 
@@ -272,16 +246,13 @@ Si no tienes JDK 24+, valida la lógica equivalente con bucles y deja el gathere
 
 `parallelStream()` promete usar varios núcleos, pero no siempre mejora el rendimiento. En colecciones pequeñas, operaciones baratas o fuentes difíciles de dividir, el overhead puede hacerla más lenta. La regla es medir.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un stream paralelo divide el trabajo en subtareas y las ejecuta en el ForkJoinPool común. Funciona mejor cuando:
+**Definición formal.** Un *stream paralelo* particiona el trabajo en subtareas ejecutadas sobre el ForkJoinPool común (por defecto). Una *referencia a método* (`Class::method`, `obj::method`) es una forma compacta de lambda cuando la firma coincide.
 
-- hay muchos datos;
-- cada operación es costosa;
-- la fuente se divide bien (`ArrayList`, arrays);
-- no hay estado mutable compartido.
+**Contrato / invariantes / reglas.** La corrección en paralelo requiere operaciones sin efectos secundarios compartidos no sincronizados y funciones asociativas/idempotentes según la operación. El orden de encuentro puede no preservarse salvo operaciones que lo mantengan. El rendimiento depende de tamaño de datos, costo por elemento, divisibilidad de la fuente, localidad de memoria y contención del pool común.
 
-Evítalo cuando hay I/O bloqueante, orden estricto importante o colecciones pequeñas.
+**Modelo mental.** Paralelizar es dividir una carga entre varios trabajadores: útil si la carga es grande; contraproducente si coordinar a los trabajadores cuesta más que el trabajo.
 
 **Implementación desde cero**
 
@@ -291,8 +262,7 @@ import java.util.stream.*;
 
 public class DemoParallel {
     public static void main(String[] args) {
-        List<Integer> datos = IntStream.rangeClosed(1, 1_000_000)
-            .boxed().toList();
+        List<Integer> datos = IntStream.rangeClosed(1, 1_000_000).boxed().toList();
 
         long t1 = System.nanoTime();
         long sumaSec = datos.stream().mapToLong(Integer::longValue).sum();
@@ -312,9 +282,9 @@ public class DemoParallel {
 **Desglose del código**
 
 - `Integer::longValue` es una referencia a método; equivalente a `x -> x.longValue()`.
-- Comparamos el resultado, no solo el tiempo: la paralelización no debe cambiar la corrección.
-- La medición simple con `nanoTime` es orientativa. Para benchmarks serios usa JMH.
-- `parallelStream()` usa el pool común; tareas bloqueantes pueden afectar otras partes del proceso.
+- Se compara resultado antes que tiempo: paralelizar no debe romper corrección.
+- `nanoTime` es orientativo; benchmarks serios usan JMH.
+- `parallelStream()` usa el pool común; I/O bloqueante puede afectar otras tareas.
 
 **Ejecución y salida real**
 

@@ -9,6 +9,7 @@ Los errores son parte normal de un programa: un archivo no existe, una entrada e
 | 1 | Diferenciar checked y unchecked y elegir cuándo usar cada una |
 | 2 | Liberar recursos correctamente con `try-with-resources` |
 | 3 | Crear excepciones personalizadas sin ocultar la causa real |
+| 4 | Aplicar manejo de errores al importador de guías |
 
 ## Aprende construyendo
 
@@ -18,15 +19,13 @@ Los errores son parte normal de un programa: un archivo no existe, una entrada e
 
 Vas a leer la edad de una persona desde texto. Pueden ocurrir dos problemas distintos: el texto no es un número (error de datos/uso) o un archivo que debías leer no está disponible (error externo recuperable). Tratar ambos igual suele generar mal manejo de errores.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-| Tipo | Hereda de | El compilador exige manejarla | Uso típico |
-|---|---|---|---|
-| Checked | `Exception` (no `RuntimeException`) | Sí: `try/catch` o `throws` | I/O, red, acceso a recursos externos |
-| Unchecked | `RuntimeException` | No | Errores de programación, argumentos inválidos, estado inválido |
-| Error | `Error` | No | Fallos graves de JVM/sistema; normalmente no se manejan |
+**Definición formal.** En Java, una *excepción* es un objeto que representa una condición anómala durante la ejecución. La jerarquía principal es `Throwable` → `Error` y `Exception`; dentro de `Exception`, las subclases de `RuntimeException` son *unchecked* y el resto son *checked*.
 
-No captures excepciones solo para “que no falle”. Captura cuando puedes recuperarte, agregar contexto útil o convertir la falla en una respuesta clara.
+**Contrato / invariantes / reglas.** Las checked exceptions deben ser manejadas (`catch`) o declaradas (`throws`) en tiempo de compilación. Las unchecked no requieren declaración obligatoria. `Error` representa condiciones graves del runtime que normalmente no deben manejarse. Capturar una excepción solo tiene sentido si se puede recuperar, agregar contexto o traducir la falla; silenciarla rompe la trazabilidad. `finally` se ejecuta al salir del bloque try/catch salvo terminación anómala de la JVM.
+
+**Modelo mental.** Checked: el compilador te obliga a reconocer un riesgo externo previsible. Unchecked: suele indicar bug o precondición violada. Error: el piso se está moviendo, no es un flujo normal.
 
 **Implementación desde cero**
 
@@ -60,10 +59,10 @@ public class ParseoEdad {
 
 **Desglose del código**
 
-- `NumberFormatException` es unchecked; ocurre cuando `Integer.parseInt` no puede convertir el texto.
-- `IllegalArgumentException` también es unchecked; la usamos para señalar datos inválidos.
-- El `catch` múltiple evita duplicar manejo cuando la respuesta es la misma.
+- `NumberFormatException` es unchecked y subclase de `IllegalArgumentException` en la jerarquía? No: `NumberFormatException` extiende `IllegalArgumentException`, por eso el catch de `IllegalArgumentException` la cubre.
+- Validar precondiciones temprano evita propagar estado inválido.
 - El mensaje incluye el dato problemático; eso facilita depurar sin ocultar la excepción.
+- No se usa `catch (Exception e) {}` porque silenciaría fallos.
 
 **Ejecución y salida real**
 
@@ -101,24 +100,13 @@ Agrega una entrada `"120"` y otra `"121"` para confirmar los límites.
 
 Tu programa lee un archivo de texto. Si ocurre un error a mitad de lectura, el archivo debe cerrarse igual. Hacerlo manualmente con `finally` es posible, pero verboso y fácil de romper.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-`try-with-resources` cierra automáticamente cualquier recurso que implemente `AutoCloseable` o `Closeable`. Se cierra al salir del bloque `try`, tanto si hubo éxito como si hubo excepción.
+**Definición formal.** `try-with-resources` es una forma de `try` que declara uno o más recursos que implementan `AutoCloseable` (o `Closeable`) y garantiza su cierre al salir del bloque.
 
-```java
-try (BufferedReader br = Files.newBufferedReader(path)) {
-    // usar recurso
-} catch (IOException e) {
-    // manejar error
-}
-// aquí br ya está cerrado
-```
+**Contrato / invariantes / reglas.** El cierre ocurre en orden inverso al de declaración, tanto en finalización normal como por excepción. Si el cuerpo lanza excepción y `close()` también, la excepción de cierre se suprime y se adjunta como *suppressed exception*. El recurso debe ser efectivamente final o final. Esto implementa manejo determinista de liberación de recursos, no recolección por GC.
 
-Ventajas:
-
-- menos código de limpieza;
-- evita fugas por olvidar `close()`;
-- maneja correctamente excepciones suprimidas cuando falla el cierre.
+**Modelo mental.** Es pedir un libro en la biblioteca con devolución automática al salir por la puerta, aunque tropieces en el pasillo.
 
 **Implementación desde cero**
 
@@ -150,8 +138,8 @@ public class LeerArchivo {
 
 - `Files.lines(...)` devuelve un `Stream<String>` que debe cerrarse porque mantiene abierto el archivo.
 - `try (var lineas = Files.lines(ruta))` garantiza el cierre.
-- `var` reduce ruido, pero el tipo real importa: aquí es un stream autocerrable.
-- `IOException` es checked; en este ejemplo simple la propagamos con `throws` para mantener el foco en el recurso.
+- `IOException` es checked; en este ejemplo simple se propaga con `throws`.
+- `Files.deleteIfExists` limpia el archivo de prueba.
 
 **Ejecución y salida real**
 
@@ -187,25 +175,13 @@ Cambia la ruta a un archivo inexistente y observa la excepción. Luego decide si
 
 En un proceso de retiro bancario, “saldo insuficiente” no es lo mismo que un `NullPointerException` o un error de disco. Necesitas un error de dominio claro para que la capa superior pueda reaccionar correctamente.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Crea una excepción personalizada cuando:
+**Definición formal.** Una *excepción personalizada* es un tipo definido por el dominio que extiende `Exception`/`RuntimeException` para representar una condición de error específica. *Envolver* (wrapping) una excepción consiste en lanzar una nueva excepción preservando la causa original (`cause`).
 
-- representa un concepto del dominio;
-- el llamador necesita distinguirla;
-- quieres agregar contexto útil.
+**Contrato / invariantes / reglas.** Una excepción de dominio debe tener nombre significativo, mensaje útil y, cuando corresponda, la causa original (`super(message, cause)`). No se deben capturar excepciones sin acción (`catch` vacío). Si se captura, se debe recuperar, registrar con contexto, traducir o relanzar. Mantener la causa preserva la traza de diagnóstico.
 
-Evita crear excepciones por cada detalle trivial. Y nunca “tragues” excepciones con un `catch` vacío: pierdes la causa real.
-
-```java
-try {
-    ...
-} catch (Exception e) {
-    // MAL: silencio
-}
-```
-
-Si no puedes recuperarte, propaga. Si puedes recuperarte, maneja y deja trazabilidad.
+**Modelo mental.** Una excepción personalizada es una etiqueta precisa en la caja de fallos: no dice solo “algo salió mal”, dice “qué salió mal” y conserva la evidencia.
 
 **Implementación desde cero**
 
@@ -233,9 +209,7 @@ Crea `Cuenta.java`:
 public class Cuenta {
     private double saldo;
 
-    public Cuenta(double saldoInicial) {
-        this.saldo = saldoInicial;
-    }
+    public Cuenta(double saldoInicial) { this.saldo = saldoInicial; }
 
     public void retirar(double monto) {
         if (monto <= 0) throw new IllegalArgumentException("Monto inválido");
@@ -265,7 +239,7 @@ public class DemoExcepcion {
 
 **Desglose del código**
 
-- `SaldoInsuficienteException` extiende `RuntimeException`: es una regla de dominio que la capa llamadora puede decidir manejar.
+- `SaldoInsuficienteException` extiende `RuntimeException`: representa una regla de dominio.
 - La excepción guarda contexto (`saldo`, `monto`) útil para diagnóstico o respuesta.
 - El `catch` no oculta el problema; lo traduce a una reacción clara.
 - `IllegalArgumentException` se usa para entrada inválida; son errores distintos.
@@ -299,21 +273,19 @@ java DemoExcepcion
 
 Agrega un `catch (Exception e) {}` temporalmente y compara: el fallo se vuelve invisible. Esa es la razón de no tragar excepciones.
 
-## Cierre del módulo
-
-Ahora puedes distinguir fallos técnicos de fallos de dominio, cerrar recursos de forma segura y comunicar errores con contexto. En el siguiente módulo usarás estas bases junto con Streams y Optional para escribir código más declarativo sin perder claridad ante datos ausentes o transformaciones complejas.
-
 ### Tema 4: Incremento del proyecto: leer guías y respetar capacidad · Intermedio · 25 min
 
 **Caso guía**
 
 El importador de guías lee un archivo y debe rechazar guías con datos inválidos o cuando la capacidad se excede. Aquí se combinan I/O, validación y excepciones de dominio.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-- Usa `try-with-resources` para leer el archivo.
-- Valida formato y reglas de negocio; lanza excepciones con mensajes claros.
-- Separa error técnico (I/O) de error de dominio (capacidad, datos inválidos).
+**Definición formal.** La validación de entrada es la verificación de precondiciones sobre datos externos antes de incorporarlos al estado del sistema. La separación entre errores técnicos (I/O) y de dominio (reglas de negocio) permite decisiones de manejo distintas.
+
+**Contrato / invariantes / reglas.** `IOException` representa fallos de I/O checked. `IllegalArgumentException`/`IllegalStateException` representan violaciones de precondición/estado en este ejemplo. El recurso de lectura debe cerrarse con try-with-resources. La operación debe fallar de forma explícita ante datos inválidos; no debe devolver resultados parciales silenciosos.
+
+**Modelo mental.** El importador es un control de aduana: verifica formato, capacidad y deja registro claro si algo no entra.
 
 **Implementación desde cero**
 
@@ -377,3 +349,7 @@ javac ImportadorGuias.java && java ImportadorGuias
 ```
 
 Prueba con capacidad `1` y verifica que se lanza `IllegalStateException`.
+
+## Cierre del módulo
+
+Ahora puedes distinguir fallos técnicos de fallos de dominio, cerrar recursos de forma segura y comunicar errores con contexto. En el siguiente módulo usarás estas bases junto con Streams y Optional para escribir código más declarativo sin perder claridad ante datos ausentes o transformaciones complejas.
