@@ -5579,35 +5579,35 @@
     "16": [
       {
         "title": "Dockerfile multi-stage, distroless",
-        "fragment": "dockerfile-multi-stage-distroless"
+        "fragment": "tema-1-dockerfile-multi-stage-distroless"
       },
       {
         "title": "Docker Compose",
-        "fragment": "docker-compose"
+        "fragment": "tema-2-docker-compose"
       },
       {
         "title": "Kubernetes: Deployments, Services, ConfigMaps, Secrets",
-        "fragment": "kubernetes-deployments-services-configmaps-secrets"
+        "fragment": "tema-3-kubernetes-deployments-services-configmaps-secrets"
       },
       {
         "title": "Readiness/Liveness Probes",
-        "fragment": "readiness-liveness-probes"
+        "fragment": "tema-4-readiness-liveness-probes"
       },
       {
         "title": "HPA",
-        "fragment": "hpa"
+        "fragment": "tema-5-hpa"
       },
       {
         "title": "Helm",
-        "fragment": "helm"
+        "fragment": "tema-6-helm"
       },
       {
         "title": "Blue-Green y Canary",
-        "fragment": "blue-green-y-canary"
+        "fragment": "tema-7-blue-green-y-canary"
       },
       {
         "title": "GitOps con ArgoCD",
-        "fragment": "gitops-con-argocd"
+        "fragment": "tema-8-gitops-con-argocd"
       }
     ],
     "17": [
