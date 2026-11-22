@@ -74,910 +74,273 @@ flowchart LR
 
 ### Tema 1: Inversión de control y el contenedor de Spring · Básico · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: `ServicioEnvios` necesita consultar un repositorio. Si lo instancia con `new`, el servicio queda acoplado a una implementación concreta y es difícil probarlo.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por inversión de control y el contenedor de spring con foco en comprensión antes de implementación.
+**Fundamento técnico y modelo mental**
 
-#### ► LA IDEA EN UNA FRASE
-**Entender inversión de control y el contenedor de spring te permite tomar mejores decisiones técnicas.**
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| Inversión de control (IoC) | Principio donde el framework controla creación/composición de objetos, no el código de negocio. | Desacoplar construcción de uso. | Apps con dependencias y configuración. | Confundir IoC con “usar anotaciones”. |
+| Contenedor IoC / `ApplicationContext` | Contenedor Spring que crea, configura, conecta y gestiona beans. | Punto central de composición. | Toda app Spring Boot. | Instanciar beans con `new` fuera del contenedor. |
+| Bean | Objeto administrado por el contenedor Spring. | Ciclo de vida y wiring administrado. | Servicios, repos, controllers, infra. | Registrar todo como bean sin criterio. |
+| Inyección de dependencias (DI) | Patrón para proveer dependencias desde fuera del objeto. | Testabilidad y bajo acoplamiento. | Dependencias entre componentes. | Service Locator oculto. |
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Contrato / invariantes / reglas.** Spring resuelve dependencias entre beans registrados. Si falta un bean requerido, falla en arranque (`NoSuchBeanDefinitionException`). Preferir depender de interfaces/contratos. `@SpringBootApplication` habilita component scan desde su paquete base.
 
-#### ► LA ANALOGÍA
-Piensa en inversión de control y el contenedor de spring como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Modelo mental.** El contenedor es una fábrica + agenda: crea objetos y sabe a quién entregarlos.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que inversión de control y el contenedor de spring resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Implementación desde cero** (proyecto `academia-spring`, paquete `com.example.demo`)
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Inversión de control y el contenedor de Spring se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Inversión de control y el contenedor de Spring | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses inversión de control y el contenedor de spring por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: inversión de control y el contenedor de spring funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Inversión de control y el contenedor de Spring existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve inversión de control y el contenedor de spring en tu contexto?
-2. ¿Cómo sabrías que inversión de control y el contenedor de spring no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar inversión de control y el contenedor de spring?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
+`RepositorioEnvios.java`
 ```java
 package com.example.demo;
-
-public interface RepositorioEnvios {
-    String buscarEstado(String codigo);
-}
+public interface RepositorioEnvios { String buscarEstado(String codigo); }
 ```
-
+`RepositorioMemoriaEnvios.java`
 ```java
 package com.example.demo;
-
 import org.springframework.stereotype.Repository;
-
 @Repository
 public class RepositorioMemoriaEnvios implements RepositorioEnvios {
-    @Override
-    public String buscarEstado(String codigo) {
-        return "En ruta: " + codigo;
-    }
+  public String buscarEstado(String codigo) { return "En ruta: " + codigo; }
 }
 ```
-
-```bash
-./mvnw test
-```
-
+`ServicioEnvios.java`
 ```java
 package com.example.demo;
-
 import org.springframework.stereotype.Service;
-
 @Service
 public class ServicioEnvios {
-    private final RepositorioEnvios repositorio;
-
-    public ServicioEnvios(RepositorioEnvios repositorio) {
-        this.repositorio = repositorio;
-    }
-
-    public String consultar(String codigo) {
-        return repositorio.buscarEstado(codigo);
-    }
+  private final RepositorioEnvios repositorio;
+  public ServicioEnvios(RepositorioEnvios repositorio) { this.repositorio = repositorio; }
+  public String consultar(String codigo) { return repositorio.buscarEstado(codigo); }
 }
 ```
-
-```bash
-./mvnw spring-boot:run
-```
-
+`EnviosController.java`
 ```java
 package com.example.demo;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.bind.annotation.*;
 @RestController
 public class EnviosController {
-    private final ServicioEnvios servicio;
-
-    public EnviosController(ServicioEnvios servicio) {
-        this.servicio = servicio;
-    }
-
-    @GetMapping("/envios/{codigo}")
-    public String consultar(@PathVariable String codigo) {
-        return servicio.consultar(codigo);
-    }
+  private final ServicioEnvios servicio;
+  public EnviosController(ServicioEnvios servicio) { this.servicio = servicio; }
+  @GetMapping("/envios/{codigo}") public String consultar(@PathVariable String codigo) { return servicio.consultar(codigo); }
 }
 ```
 
-</details>
+**Ejecución y salida real**
+```bash
+./mvnw spring-boot:run
+curl http://localhost:8080/envios/RF-42
+```
+Salida esperada:
+```text
+En ruta: RF-42
+```
+
+**Errores comunes**: `new RepositorioMemoriaEnvios()` dentro del servicio; bean fuera del paquete base. **Verificación**: arranque sin errores y endpoint responde.
 
 ### Tema 2: Inyección por constructor vs por campo · Intermedio · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: quieres probar `ServicioEnvios` sin levantar Spring, y también entender el costo de `@Autowired` en campo.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por inyección por constructor vs por campo con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Inyección por constructor | Dependencias pasan por constructor. | Inmutabilidad, dependencias explícitas, test simple. | Preferida por defecto. | Constructores con demasiadas dependencias (señal de diseño). |
+| Inyección por campo (`@Autowired`) | Spring asigna campo por reflexión. | Conveniencia en ejemplos legacy. | Evitar en código nuevo. | No puedes instanciar fácil en unit test. |
+| Dependencia obligatoria | Dependencia sin la cual el objeto no es válido. | Contrato claro. | `final` + constructor. | Campo null en runtime fuera de Spring. |
+| Testabilidad | Facilidad de probar aislado. | Confianza rápida. | Pasar dobles por constructor. | Test que requiere contexto Spring para lógica pura. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender inyección por constructor vs por campo te permite tomar mejores decisiones técnicas.**
+**Implementación desde cero**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en inyección por constructor vs por campo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que inyección por constructor vs por campo resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Inyección por constructor vs por campo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Inyección por constructor vs por campo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses inyección por constructor vs por campo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: inyección por constructor vs por campo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Inyección por constructor vs por campo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve inyección por constructor vs por campo en tu contexto?
-2. ¿Cómo sabrías que inyección por constructor vs por campo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar inyección por constructor vs por campo?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
+`ServicioEnviosTest.java`
 ```java
 package com.example.demo;
-
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
+import static org.junit.jupiter.api.Assertions.*;
 class ServicioEnviosTest {
-    @Test
-    void consultaElEstadoDelRepositorio() {
-        RepositorioEnvios falso = codigo -> "Preparando: " + codigo;
-        ServicioEnvios servicio = new ServicioEnvios(falso);
-
-        assertEquals("Preparando: RF-42", servicio.consultar("RF-42"));
-    }
+  @Test void consulta() {
+    ServicioEnvios servicio = new ServicioEnvios(codigo -> "Preparando: " + codigo);
+    assertEquals("Preparando: RF-42", servicio.consultar("RF-42"));
+  }
 }
 ```
-
-```bash
-./mvnw -Dtest=ServicioEnviosTest test
-```
-
+Alternativa por campo (solo para comparación):
 ```java
-package com.example.demo;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 @Service
 public class ServicioEnviosCampo {
-    @Autowired
-    private RepositorioEnvios repositorio;
-
-    public String consultar(String codigo) {
-        return repositorio.buscarEstado(codigo);
-    }
+  @Autowired private RepositorioEnvios repositorio;
+  public String consultar(String codigo) { return repositorio.buscarEstado(codigo); }
 }
 ```
 
-```java
-package com.example.demo;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-@SpringBootTest
-class ServicioEnviosCampoTest {
-    @Autowired
-    private ServicioEnviosCampo servicio;
-
-    @Test
-    void springConectaElRepositorioAlServicio() {
-        assertEquals("En ruta: RF-42", servicio.consultar("RF-42"));
-    }
-}
-```
-
-```bash
-./mvnw -Dtest=ServicioEnviosCampoTest test
-```
-
+**Ejecución y salida real**
 ```bash
 ./mvnw -Dtest=ServicioEnviosTest test
-./mvnw -Dtest=ServicioEnviosCampoTest test
 ```
+Salida esperada: `BUILD SUCCESS`, test verde.
 
-</details>
+**Verificación**: el test de constructor corre sin `@SpringBootTest`; el de campo requiere contexto o cableado manual.
 
 ### Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 35 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: necesitas distinguir roles (`@Repository`, `@Service`, `@RestController`), entender por qué Spring Boot configura web y observar scope `singleton` vs `prototype`.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por estereotipos, autoconfiguración y scopes con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Estereotipos (`@Component`, `@Service`, `@Repository`, `@Controller/@RestController`) | Especializaciones semánticas de `@Component`. | Escaneo y semántica. | Usar el que expresa rol. | Poner todo como `@Component`. |
+| Autoconfiguración | Configuración condicional basada en classpath, properties y beans existentes. | Convenio sobre configuración. | Inspeccionar con `--debug` o conditions report. | “Magia” sin entender condiciones. |
+| Scope `singleton` | Un bean por contexto (default). | Servicios stateless. | No guardar estado por request en singleton. | Estado mutable compartido. |
+| Scope `prototype` | Nueva instancia cada vez que se solicita. | Objetos stateful de corta vida. | Inyectar con `ObjectProvider` si singleton lo necesita. | Inyectar prototype en singleton y esperar nueva instancia por llamada. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender estereotipos, autoconfiguración y scopes te permite tomar mejores decisiones técnicas.**
+**Implementación desde cero**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en estereotipos, autoconfiguración y scopes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    pom[Dependencias en pom.xml] --> cp[Clases disponibles]
-    cp --> cond[Condiciones de auto-configuración]
-    beans[Beans que ya declaraste] --> cond
-    cond --> app[Infraestructura configurada]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Estereotipos, autoconfiguración y scopes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Estereotipos, autoconfiguración y scopes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses estereotipos, autoconfiguración y scopes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: estereotipos, autoconfiguración y scopes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Estereotipos, autoconfiguración y scopes existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve estereotipos, autoconfiguración y scopes en tu contexto?
-2. ¿Cómo sabrías que estereotipos, autoconfiguración y scopes no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar estereotipos, autoconfiguración y scopes?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-import org.springframework.stereotype.Component;
-
-@Component
-public class ServicioEnvios {
-    // Conserva el constructor y los métodos que ya escribiste.
-}
-```
-
-```bash
-./mvnw dependency:tree
-```
-
-```mermaid
-flowchart LR
-    pom[Dependencias en pom.xml] --> cp[Clases disponibles]
-    cp --> cond[Condiciones de auto-configuración]
-    beans[Beans que ya declaraste] --> cond
-    cond --> app[Infraestructura configurada]
-```
-
+`GeneradorReporte.java`
 ```java
 package com.example.demo;
-
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-@Component
-@Scope("prototype")
-public class GeneradorReporte {
-    private final String id = java.util.UUID.randomUUID().toString();
-
-    public String id() {
-        return id;
-    }
-}
+import org.springframework.context.annotation.Scope; import org.springframework.stereotype.Component;
+@Component @Scope("prototype")
+public class GeneradorReporte { private final String id = java.util.UUID.randomUUID().toString(); public String id(){ return id; } }
 ```
-
+`ServicioReportes.java`
 ```java
 package com.example.demo;
-
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.stereotype.Service;
-
+import org.springframework.beans.factory.ObjectProvider; import org.springframework.stereotype.Service;
 @Service
 public class ServicioReportes {
-    private final GeneradorReporte recibidoAlCrear;
-    private final ObjectProvider<GeneradorReporte> generadores;
-
-    public ServicioReportes(
-            GeneradorReporte recibidoAlCrear,
-            ObjectProvider<GeneradorReporte> generadores) {
-        this.recibidoAlCrear = recibidoAlCrear;
-        this.generadores = generadores;
-    }
-
-    public String comparar() {
-        return "directo=" + recibidoAlCrear.id()
-                + "; nuevos=" + generadores.getObject().id()
-                + "," + generadores.getObject().id();
-    }
+  private final GeneradorReporte recibidoAlCrear; private final ObjectProvider<GeneradorReporte> generadores;
+  public ServicioReportes(GeneradorReporte recibidoAlCrear, ObjectProvider<GeneradorReporte> generadores){ this.recibidoAlCrear=recibidoAlCrear; this.generadores=generadores; }
+  public String comparar(){ return "directo="+recibidoAlCrear.id()+"; nuevos="+generadores.getObject().id()+","+generadores.getObject().id(); }
 }
 ```
 
-```java
-package com.example.demo;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class ReporteController {
-    private final ServicioReportes servicio;
-
-    public ReporteController(ServicioReportes servicio) {
-        this.servicio = servicio;
-    }
-
-    @GetMapping("/reporte/comparar")
-    public String comparar() {
-        return servicio.comparar();
-    }
-}
+**Ejecución y salida real**
+```bash
+./mvnw spring-boot:run
+curl http://localhost:8080/reporte/comparar
 ```
+Salida esperada: `directo=...; nuevos=..., ...` donde los dos `nuevos` son distintos entre sí; `directo` permanece igual por instancia de servicio singleton.
 
-</details>
+**Verificación**: `./mvnw dependency:tree` muestra starters; el endpoint evidencia scopes.
 
 ### Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: en shutdown, quieres dejar de aceptar trabajo, drenar lote pendiente y liberar recursos antes de que el proceso muera.
 
-#### ► DE QUÉ TRATA
-Usa Spring Boot 4.1.2 con JDK 25 y la dependencia Spring Web. Continúa el proyecto academia-spring de los temas anteriores (paquete com.example.demo) o créalo en start.spring.io como indica «Antes de comenzar».
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Ciclo de vida del bean | Creación, inyección, callbacks init, uso, callbacks destroy. | Hooks de inicialización/limpieza. | Trabajo rápido en init. | Trabajo largo en `@PostConstruct`. |
+| `@PostConstruct` / `@PreDestroy` | Callbacks JSR-250 al iniciar/destruir bean. | Validar/preparar/liberar. | Idempotentes y rápidos. | Asumir orden complejo entre beans no relacionados. |
+| `SmartLifecycle` / fase | Contrato para componentes con start/stop y orden por fase. | Arranque/detención ordenada. | Fase menor se detiene antes en shutdown ordenado. | Ignorar fase y cortar trabajo en curso. |
+| Graceful shutdown | `server.shutdown=graceful`: deja de aceptar nuevas y espera activas. | Evitar cortar requests. | Timeout < `terminationGracePeriodSeconds`. | Timeout mayor al del orquestador. |
 
-#### ► LA IDEA EN UNA FRASE
-**Usa Spring Boot 4.1.2 con JDK 25 y la dependencia Spring Web.**
+**Implementación desde cero**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-**Conceptos clave:** ciclo de vida de un bean, `@PostConstruct`, `@PreDestroy`, `SmartLifecycle`, fase, `server.shutdown=graceful`, `spring.lifecycle.timeout-per-shutdown-phase`.
-
-Spring crea cada bean, le inyecta sus dependencias y entonces llama a `@PostConstruct`. Al cerrar el contexto, llama a `@PreDestroy` en orden inverso de creación.
-
-`SmartLifecycle` sirve para componentes que **arrancan y se detienen** (un consumidor, un planificador): Spring llama `start()` cuando el contexto está listo y `stop()` al apagar. El número de **fase** decide el orden: fases más altas arrancan después y se detienen antes. La fase por defecto es `Integer.MAX_VALUE`, la más alta posible, y el apagado ordenado del servidor web corre en `WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE` (`Integer.MAX_VALUE - 1024`). Por eso un `SmartLifecycle` sin `getPhase()` se detendría **antes** de que el servidor termine las peticiones en curso.
-
-Con `server.shutdown=graceful` (activo por defecto desde Spring Boot 3.4), al recibir `SIGTERM` el servidor deja de aceptar peticiones nuevas y espera a las que están en curso, hasta el tiempo de `spring.lifecycle.timeout-per-shutdown-phase` (30 s por defecto).
-
-| Momento | Úsalo para |
-|---|---|
-| `@PostConstruct` | validar configuración, preparar cachés pequeñas |
-| `SmartLifecycle.start()` | arrancar consumidores o tareas de fondo |
-| `SmartLifecycle.stop()` | dejar de tomar trabajo nuevo y vaciar lo pendiente |
-| `@PreDestroy` | liberar recursos propios |
-
-**Analogía:** el apagado ordenado es el cierre de un restaurante: se cierra la puerta a clientes nuevos, se terminan los platos que ya están en la cocina y al final se apagan los fogones. La analogía falla en que, si el cierre tarda más del tiempo permitido, Kubernetes apaga las luces igual (`SIGKILL`).
-
-**Límite de uso:** no hagas trabajo largo en `@PostConstruct`: retrasa el arranque y la readiness. El tiempo de apagado debe ser menor que `terminationGracePeriodSeconds` del pod, o Kubernetes matará el proceso a la mitad.
-
-```mermaid
-sequenceDiagram
-    participant K as Kubernetes
-    participant S as Servidor web
-    participant L as LoteEnvios (SmartLifecycle)
-    K->>S: SIGTERM
-    S->>S: no acepta peticiones nuevas, termina las activas
-    S->>L: stop(): vacía el lote pendiente
-    L-->>S: listo
-    S-->>K: el proceso termina antes del plazo
-```
-
-**Dónde se rompe la analogía:** el modelo simplifica la realidad; en producción influyen escala, fallos, costo y contexto.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-    participant K as Kubernetes
-    participant S as Servidor web
-    participant L as LoteEnvios (SmartLifecycle)
-    K->>S: SIGTERM
-    S->>S: no acepta peticiones nuevas, termina las activas
-    S->>L: stop(): vacía el lote pendiente
-    L-->>S: listo
-    S-->>K: el proceso termina antes del plazo
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Ciclo de vida de los beans y apagado ordenado se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Ciclo de vida de los beans y apagado ordenado | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses ciclo de vida de los beans y apagado ordenado por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ciclo de vida de los beans y apagado ordenado funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Ciclo de vida de los beans y apagado ordenado existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ciclo de vida de los beans y apagado ordenado en tu contexto?
-2. ¿Cómo sabrías que ciclo de vida de los beans y apagado ordenado no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ciclo de vida de los beans y apagado ordenado?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-sequenceDiagram
-    participant K as Kubernetes
-    participant S as Servidor web
-    participant L as LoteEnvios (SmartLifecycle)
-    K->>S: SIGTERM
-    S->>S: no acepta peticiones nuevas, termina las activas
-    S->>L: stop(): vacía el lote pendiente
-    L-->>S: listo
-    S-->>K: el proceso termina antes del plazo
-```
-
-```java
-package com.example.demo.asignacion;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import java.util.ArrayList;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.server.context.WebServerApplicationContext;
-import org.springframework.context.SmartLifecycle;
-import org.springframework.stereotype.Component;
-
-@Component
-public class LoteEnvios implements SmartLifecycle {
-    private static final Logger log = LoggerFactory.getLogger(LoteEnvios.class);
-    private final List<String> pendientes = new ArrayList<>();
-    private volatile boolean corriendo;
-
-    @PostConstruct
-    void validar() { log.info("1. bean creado y dependencias inyectadas"); }
-
-    @Override public void start() { corriendo = true; log.info("2. empieza a aceptar envíos"); }
-
-    public synchronized void agregar(String codigo) {
-        if (!corriendo) throw new IllegalStateException("apagando: no se aceptan envíos");
-        pendientes.add(codigo);
-    }
-
-    @Override public synchronized void stop() {
-        corriendo = false;
-        log.info("3. vacía {} envíos pendientes antes de salir", pendientes.size());
-        pendientes.clear(); // aquí iría el guardado en la base
-    }
-
-    @Override public boolean isRunning() { return corriendo; }
-
-    // Fase menor que la del apagado ordenado: se detiene cuando el servidor ya terminó las peticiones activas.
-    @Override public int getPhase() { return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE - 1; }
-
-    @PreDestroy
-    void liberar() { log.info("4. libera recursos propios"); }
-}
-```
-
+`application.properties`
 ```properties
 server.shutdown=graceful
 spring.lifecycle.timeout-per-shutdown-phase=20s
 ```
+`LoteEnvios.java` (extracto clave)
+```java
+@Component
+public class LoteEnvios implements SmartLifecycle {
+  private static final Logger log = LoggerFactory.getLogger(LoteEnvios.class);
+  private volatile boolean corriendo;
+  @PostConstruct void validar(){ log.info("1. bean creado"); }
+  @Override public void start(){ corriendo=true; log.info("2. start"); }
+  @Override public void stop(){ corriendo=false; log.info("3. drenar pendientes"); }
+  @Override public boolean isRunning(){ return corriendo; }
+  @Override public int getPhase(){ return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE - 1; }
+  @PreDestroy void liberar(){ log.info("4. liberar"); }
+}
+```
 
+**Ejecución y salida real**
 ```bash
-cd academia-spring
 ./mvnw spring-boot:run
-# en otra terminal, cuando arranque:
+# otra terminal
 kill -TERM $(pgrep -f academia-spring)
 ```
+Salida esperada en logs: mensajes `1..4` y `Graceful shutdown complete`.
 
-```text
-... LoteEnvios : 1. bean creado y dependencias inyectadas
-... LoteEnvios : 2. empieza a aceptar envíos
-... Commencing graceful shutdown. Waiting for active requests to complete
-... Graceful shutdown complete
-... LoteEnvios : 3. vacía 0 envíos pendientes antes de salir
-... LoteEnvios : 4. libera recursos propios
-```
-
-</details>
+**Verificación**: observa orden de callbacks; ajusta fase para ver impacto.
 
 ### Tema 5: Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` · Intermedio · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: medir tiempo de ejecución de métodos de servicio sin ensuciar lógica de negocio.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por proxies y aop: `@aspect`, `@around` y `beanpostprocessor` con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| AOP | Programación orientada a aspectos; separa concerns transversales. | Logging, métricas, tx, seguridad. | Aspectos pequeños y claros. | Ocultar lógica de negocio crítica. |
+| Proxy | Objeto que envuelve al target e intercepta llamadas. | Aplicar advice. | Llamadas internas `this.metodo()` no pasan por proxy. | Esperar AOP en self-invocation. |
+| `@Aspect`/`@Around` | Aspecto y advice que rodea join point. | Medición, control, retry. | Llamar `proceed()` y manejar excepciones. | Olvidar `proceed()` o tragar excepción. |
+| `BeanPostProcessor` | Hook para modificar/envolver beans durante inicialización. | Infraestructura/framework. | Usar para infraestructura, no negocio. | Lógica pesada/oscura en BPP. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender proxies y aop: `@aspect`, `@around` y `beanpostprocessor` te permite tomar mejores decisiones técnicas.**
+**Implementación desde cero**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en proxies y aop: `@aspect`, `@around` y `beanpostprocessor` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  C["EnviosController"] -->|"consultar('RF-42')"| P["Proxy de ServicioEnvios<br/>(lo crea un BeanPostProcessor)"]
-  P -->|"antes"| A["@Around MedicionAspect"]
-  A -->|"proceed()"| S["ServicioEnvios real"]
-  S -->|"this.consultar(...)<br/>no vuelve a pasar por el proxy"| S
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses proxies y aop: `@aspect`, `@around` y `beanpostprocessor` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proxies y aop: `@aspect`, `@around` y `beanpostprocessor` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proxies y aop: `@aspect`, `@around` y `beanpostprocessor` en tu contexto?
-2. ¿Cómo sabrías que proxies y aop: `@aspect`, `@around` y `beanpostprocessor` no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proxies y aop: `@aspect`, `@around` y `beanpostprocessor`?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-  C["EnviosController"] -->|"consultar('RF-42')"| P["Proxy de ServicioEnvios<br/>(lo crea un BeanPostProcessor)"]
-  P -->|"antes"| A["@Around MedicionAspect"]
-  A -->|"proceed()"| S["ServicioEnvios real"]
-  S -->|"this.consultar(...)<br/>no vuelve a pasar por el proxy"| S
-```
-
-```java
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Proxy;
-
-interface Envios {
-    String consultar(String codigo);
-    String consultarDos(String a, String b);
-}
-
-final class EnviosReales implements Envios {
-    @Override
-    public String consultar(String codigo) {
-        return "En ruta: " + codigo;
-    }
-
-    @Override
-    public String consultarDos(String a, String b) {
-        return consultar(a) + " | " + consultar(b);
-    }
-}
-
-public class ProxyAMano {
-    public static void main(String[] args) {
-        Envios real = new EnviosReales();
-        InvocationHandler registro = (proxy, metodo, argumentos) -> {
-            System.out.println("[proxy] entra a " + metodo.getName());
-            Object resultado = metodo.invoke(real, argumentos);
-            System.out.println("[proxy] sale de " + metodo.getName());
-            return resultado;
-        };
-        Envios envios = (Envios) Proxy.newProxyInstance(
-                Envios.class.getClassLoader(), new Class<?>[] {Envios.class}, registro);
-
-        System.out.println(envios.consultar("RF-42"));
-        System.out.println(envios.consultarDos("RF-1", "RF-2"));
-        System.out.println("Es un proxy: " + Proxy.isProxyClass(envios.getClass()));
-    }
-}
-```
-
-```bash
-java ProxyAMano.java
-```
-
-```text
-[proxy] entra a consultar
-[proxy] sale de consultar
-En ruta: RF-42
-[proxy] entra a consultarDos
-[proxy] sale de consultarDos
-En ruta: RF-1 | En ruta: RF-2
-Es un proxy: true
-```
-
+Dependencia:
 ```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-aspectj</artifactId>
-</dependency>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-aspectj</artifactId></dependency>
 ```
-
+`MedicionAspect.java`
 ```java
 package com.example.demo;
-
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
-
-@Aspect
-@Component
+import org.aspectj.lang.*; import org.aspectj.lang.annotation.*; import org.slf4j.*; import org.springframework.stereotype.Component;
+@Aspect @Component
 public class MedicionAspect {
-    private static final Logger log = LoggerFactory.getLogger(MedicionAspect.class);
-
-    @Around("execution(* com.example.demo.ServicioEnvios.*(..))")
-    public Object medir(ProceedingJoinPoint punto) throws Throwable {
-        long inicio = System.nanoTime();
-        try {
-            return punto.proceed();
-        } finally {
-            long micros = (System.nanoTime() - inicio) / 1_000;
-            log.info("medido {} en {} us", punto.getSignature().toShortString(), micros);
-        }
-    }
+  private static final Logger log = LoggerFactory.getLogger(MedicionAspect.class);
+  @Around("execution(* com.example.demo.ServicioEnvios.*(..))")
+  public Object medir(ProceedingJoinPoint p) throws Throwable {
+    long t1 = System.nanoTime();
+    try { return p.proceed(); }
+    finally { log.info("medido {} en {} us", p.getSignature().toShortString(), (System.nanoTime()-t1)/1_000); }
+  }
 }
 ```
 
-</details>
+**Ejecución y salida real**
+```bash
+./mvnw spring-boot:run
+curl http://localhost:8080/envios/RF-42
+```
+Salida esperada: respuesta `En ruta: RF-42` y log con `medido ... en ... us`.
+
+**Verificación**: agrega llamada interna `this.otro()` y confirma que no se mide si no pasa por proxy.
 
 ### Tema 6: Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: dos tarifadores implementan la misma interfaz; uno es default y otro se selecciona explícitamente.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por varias implementaciones (`@primary`, `@qualifier`) y expresiones spel con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| `@Primary` | Bean preferido cuando hay múltiples candidatos. | Default claro. | Solo un primary por tipo/contrato. | Múltiples primaries/confusión. |
+| `@Qualifier` | Selección explícita por nombre/calificador. | Desambiguar inyección. | Usar en constructor/parámetro. | Strings mágicos sin convención. |
+| Ambigüedad de beans | Más de un bean cumple el contrato. | Forzar decisión explícita. | Resolver con primary/qualifier/config. | Dejar que falle en arranque. |
+| SpEL (`#{...}`) | Spring Expression Language para evaluar expresiones en configuración/anotaciones. | Valores dinámicos/calculados. | Mantener simple y testeable. | Lógica compleja oculta en SpEL. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender varias implementaciones (`@primary`, `@qualifier`) y expresiones spel te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en varias implementaciones (`@primary`, `@qualifier`) y expresiones spel como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que varias implementaciones (`@primary`, `@qualifier`) y expresiones spel resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses varias implementaciones (`@primary`, `@qualifier`) y expresiones spel por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: varias implementaciones (`@primary`, `@qualifier`) y expresiones spel funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve varias implementaciones (`@primary`, `@qualifier`) y expresiones spel en tu contexto?
-2. ¿Cómo sabrías que varias implementaciones (`@primary`, `@qualifier`) y expresiones spel no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar varias implementaciones (`@primary`, `@qualifier`) y expresiones spel?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-// src/main/java/com/example/demo/Tarifador.java
-package com.example.demo;
-
-public interface Tarifador {
-    long tarifa(int kilometros);
-}
-```
+**Implementación desde cero**
 
 ```java
-// src/main/java/com/example/demo/TarifaUrbana.java
-package com.example.demo;
-
-import org.springframework.stereotype.Component;
-
-@Component("tarifaUrbana")
-public class TarifaUrbana implements Tarifador {
-    @Override
-    public long tarifa(int kilometros) { return 3_500 + 1_000L * kilometros; }
-}
-```
-
-```java
-// src/main/java/com/example/demo/CotizadorService.java
-package com.example.demo;
-
-import org.springframework.stereotype.Service;
-
-@Service
-public class CotizadorService {
-    private final Tarifador tarifador;
-
-    public CotizadorService(Tarifador tarifador) { this.tarifador = tarifador; }
-
-    public long cotizar(int kilometros) { return tarifador.tarifa(kilometros); }
-}
-```
-
-```java
-// src/main/java/com/example/demo/TarifaExpress.java
-package com.example.demo;
-
-import org.springframework.stereotype.Component;
-
+public interface Tarifador { long tarifa(int km); }
+@Component("tarifaUrbana") @Primary
+class TarifaUrbana implements Tarifador { public long tarifa(int km){ return 3500 + 1000L*km; } }
 @Component("tarifaExpress")
-public class TarifaExpress implements Tarifador {
-    @Override
-    public long tarifa(int kilometros) { return 9_000 + 1_500L * kilometros; }
-}
-```
-
-```java
-package com.example.demo;
-
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
-
+class TarifaExpress implements Tarifador { public long tarifa(int km){ return 9000 + 1500L*km; } }
 @Service
-public class CotizadorExpress {
-    private final Tarifador tarifador;
-
-    public CotizadorExpress(@Qualifier("tarifaExpress") Tarifador tarifador) {
-        this.tarifador = tarifador;
-    }
-
-    public long cotizar(int kilometros) { return tarifador.tarifa(kilometros); }
-}
+class CotizadorExpress { private final Tarifador tarifador; CotizadorExpress(@Qualifier("tarifaExpress") Tarifador t){ this.tarifador=t; } long cotizar(int km){ return tarifador.tarifa(km); } }
 ```
-
+Ejemplo SpEL en propiedad:
 ```java
-package com.example.demo;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-class CotizadoresTest {
-    @Autowired CotizadorService normal;
-    @Autowired CotizadorExpress express;
-
-    @Test
-    void cadaCotizadorRecibeSuTarifa() {
-        assertEquals(13_500, normal.cotizar(10));
-        assertEquals(24_000, express.cotizar(10));
-    }
-}
+@Value("#{${app.impuesto:19} / 100.0}")
+private double impuesto;
 ```
 
-</details>
+**Ejecución y salida real**
+```bash
+./mvnw -Dtest=CotizadoresTest test
+```
+Salida esperada: test verde con `13500` y `24000` para 10 km.
+
+**Verificación**: quita `@Primary` y `@Qualifier` para observar `NoUniqueBeanDefinitionException`.
+
