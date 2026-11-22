@@ -235,21 +235,43 @@ Verifica: existe `HolaJVM.class`, el programa imprime propiedades del runtime y 
 
 ### Tema 3: Instalar JDK y verificar entorno · Básico · 30 min
 
-**Contexto y para qué sirve**
+**Caso guía / Contexto**
 
-Un entorno mal configurado hace perder tiempo: el código puede estar bien, pero el sistema no encuentra el compilador o usa una versión distinta a la que esperas. Verificar el entorno antes de programar evita diagnósticos falsos y te da un punto de partida confiable.
+Vas a compilar tu primer programa, pero antes necesitas confirmar dos cosas: que el JDK está instalado y que tu terminal está usando la versión correcta. Muchos fallos de “mi código no funciona” son en realidad fallos de entorno.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** El *entorno de desarrollo Java* es el conjunto de binarios, variables y rutas que determinan qué compilador y runtime usa el sistema. `PATH` es la variable de entorno que lista directorios de búsqueda de ejecutables; `JAVA_HOME` es una convención que apunta al directorio raíz del JDK.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Para compilar y ejecutar desde terminal se requiere que `javac` y `java` estén resolubles en `PATH` o se invoquen por ruta absoluta. La coherencia de versión es importante: compilar con un JDK y ejecutar con una JVM de versión incompatible puede causar errores como `UnsupportedClassFileError`. Abrir una terminal nueva recarga variables de entorno; una terminal ya abierta puede conservar valores viejos.
+| Concepto | Definición formal | Para qué sirve | Cuándo aplica | Error/riesgo común |
+|---|---|---|---|---|
+| **Instalar JDK** | Instalar el Java Development Kit: binarios (`java`, `javac`, etc.), bibliotecas estándar y metadatos en el sistema. | Tener compilador y runtime para desarrollar Java. | Antes de compilar/ejecutar proyectos Java locales. | Instalar solo JRE/runtime o una versión distinta a la requerida. |
+| **JDK/JRE/runtime** | JDK incluye herramientas de desarrollo; JRE/runtime se orienta a ejecutar. En distribuciones modernas suele instalarse JDK. | Elegir el paquete correcto. | Al instalar en máquina nueva o CI. | Creer que “ya tengo Java” implica que tengo `javac`. |
+| **`JAVA_HOME`** | Variable de entorno que apunta al directorio raíz del JDK activo. | Herramientas (Maven, Gradle, IDEs, scripts) localizan el JDK. | Builds, CI, múltiples JDKs. | Apuntar a un JRE viejo o a una ruta inexistente. |
+| **`PATH`** | Variable de entorno con directorios donde el shell busca ejecutables. | Permite invocar `java`/`javac` sin ruta absoluta. | Toda ejecución por terminal. | `PATH` apunta a otro Java; `java -version` y `javac -version` difieren. |
+| **Verificar entorno** | Comprobar versión, ubicación y coherencia de `java`/`javac`/`JAVA_HOME`. | Evitar diagnósticos falsos y errores de versión. | Tras instalar, cambiar JDK, o antes de depurar un build. | Verificar solo `java` y olvidar `javac`. |
 
-**Modelo mental.** Es como un taller: `JAVA_HOME` es la dirección del taller, `PATH` es la lista de herramientas que tienes a mano, y `java -version`/`javac -version` son la etiqueta que confirma qué herramienta estás tomando.
+**Contrato / invariantes / reglas.** Para compilar y ejecutar desde terminal necesitas `javac` y `java` resolubles en `PATH` (o ruta absoluta). Deben ser coherentes en versión mayor para evitar `UnsupportedClassFileError`. `JAVA_HOME` debe apuntar al directorio raíz del JDK, no a `bin`. Los cambios de variables de entorno se ven en terminales nuevas; una terminal abierta puede conservar valores viejos.
+
+**Modelo mental.** El JDK es la caja de herramientas; `JAVA_HOME` es la dirección donde está guardada; `PATH` es el acceso rápido en el escritorio; la verificación es mirar la etiqueta de la herramienta antes de usarla.
 
 **Implementación desde cero**
 
-Desde una carpeta vacía:
+#### 1) Instalar JDK (elige tu sistema)
+
+Usa una versión LTS (por ejemplo 21 o 25). Ejemplos:
+
+| Sistema | Comando/acción | Nota |
+|---|---|---|
+| macOS (Homebrew) | `brew install openjdk@21` | Sigue la salida de brew para enlazar/symlink si hace falta. |
+| Ubuntu/Debian | `sudo apt update && sudo apt install -y openjdk-21-jdk` | Instala JDK, no solo JRE. |
+| Windows (winget) | `winget install EclipseAdoptium.Temurin.21.JDK` | Abre una terminal nueva tras instalar. |
+
+> Si tu organización exige una distribución específica (Temurin, Oracle, Corretto, Zulu), usa esa; lo importante es tener JDK y verificar versión.
+
+#### 2) Verificar entorno
+
+Desde una carpeta vacía de trabajo:
 
 ```bash
 mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
@@ -262,10 +284,18 @@ java -version
 javac -version
 ```
 
-En macOS, también es útil:
+En macOS, para ver el JDK activo:
 
 ```bash
 /usr/libexec/java_home
+```
+
+En Linux/macOS (bash/zsh), verifica `JAVA_HOME` y el ejecutable:
+
+```bash
+echo "$JAVA_HOME"
+which java
+which javac
 ```
 
 En Windows PowerShell:
@@ -276,67 +306,91 @@ where.exe java
 where.exe javac
 ```
 
-Crea `EntornoOk.java` para confirmar el runtime:
+#### 3) Prueba mínima de compilación
+
+Crea `EntornoOk.java`:
 
 ```java
 public class EntornoOk {
     public static void main(String[] args) {
-        System.out.println("Java version: " + System.getProperty("java.version"));
-        System.out.println("Java vendor: " + System.getProperty("java.vendor"));
-        System.out.println("OS: " + System.getProperty("os.name"));
+        System.out.println("JDK OK");
+        System.out.println(System.getProperty("java.version"));
     }
 }
 ```
-
-**Desglose del código**
-
-- `System.getProperty("java.version")` muestra la versión de Java que está usando la JVM actual.
-- `java.vendor` indica la distribución/proveedor del JDK.
-- `os.name` confirma el sistema operativo desde el que se ejecuta.
-- Este programa no prueba toda tu instalación, pero sí prueba el circuito completo: compilación + ejecución + propiedades del runtime.
-
-**Ejecución y salida real**
-
-Ejemplo verificado en esta máquina:
-
-```text
-Java version: 27.0.1.0.2
-Java vendor: Eclipse Adoptium
-OS: Mac OS X
-```
-
-Tu salida puede ser distinta. Lo relevante es que los tres valores aparezcan y tengan sentido para tu equipo.
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| `javac` no se reconoce | Instalaste JRE, o el JDK no está en PATH | Instala JDK y revisa `PATH`/`JAVA_HOME` |
-| `java` y `javac` muestran versiones muy distintas | Hay múltiples instalaciones en PATH | Ajusta PATH para que apunte al JDK correcto |
-| Cambiaste variables y sigue fallando | La terminal no recargó el entorno | Abre una terminal nueva y repite la verificación |
-
-**Verificación rápida**
 
 ```bash
 javac EntornoOk.java
 java EntornoOk
 ```
 
-Si compila y ejecuta, el entorno base está listo para los siguientes temas.
+**Desglose del código/comandos**
+
+- `java -version` confirma el runtime en `PATH`.
+- `javac -version` confirma el compilador; ambos deben ser coherentes.
+- `JAVA_HOME` es consumido por Maven/Gradle/IDEs; no basta con que `java` funcione si `JAVA_HOME` apunta mal.
+- `EntornoOk` prueba el ciclo completo: compilar + ejecutar.
+
+**Ejecución y salida real**
+
+Ejemplo (la versión variará):
+
+```text
+openjdk version "21.0.7" 2025-04-15
+OpenJDK Runtime Environment ...
+OpenJDK 64-Bit Server VM ...
+```
+
+```text
+javac 21.0.7
+```
+
+```text
+JDK OK
+21.0.7
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `javac: command not found` / no reconocido | JDK no instalado o `PATH` incompleto | Instala JDK, revisa `PATH`, abre terminal nueva |
+| `java -version` y `javac -version` muestran versiones distintas | Hay múltiples instalaciones | Ajusta `JAVA_HOME`/`PATH` a la misma instalación |
+| `JAVA_HOME` apunta a carpeta incorrecta | Ruta manual mal definida | Debe apuntar a la raíz del JDK (contiene `bin`, `lib`, etc.) |
+| `UnsupportedClassFileError` al ejecutar | Compilaste con JDK más nuevo que el runtime | Alinea versiones o compila con `javac --release N` |
+
+**Verificación rápida**
+
+```bash
+javac -version
+java -version
+javac EntornoOk.java && java EntornoOk
+```
+
+Si ves `JDK OK` y la versión esperada, el entorno está listo.
+
 
 ### Tema 4: Primer programa desde cero, sin IDE · Básico · 35 min
 
 **Caso guía**
 
-Quieres un programa pequeño que salude por nombre. Si el usuario no pasa un nombre, el programa debe indicar cómo usarlo. Este caso te obliga a cubrir el ciclo completo: archivo, clase, `main`, compilación, ejecución y argumentos.
+Quieres un programa pequeño que salude por nombre. Si el usuario no pasa un nombre, debe indicar cómo usarlo. Este caso cubre el ciclo completo: archivo, clase, `main`, compilación, ejecución y argumentos.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** El método de entrada `main` es el punto definido por el launcher de Java para iniciar una aplicación. Su firma canónica es `public static void main(String[] args)`. Los *argumentos de línea de comandos* son un arreglo de `String` entregado por el runtime en el orden recibido.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** `public` permite acceso desde el launcher; `static` permite invocarlo sin instancia; `void` indica que no retorna valor al launcher por ese canal; `args` nunca es `null` por contrato normal del launcher, pero puede tener longitud 0. Acceder a `args[i]` requiere `0 <= i < args.length`; de lo contrario se lanza `ArrayIndexOutOfBoundsException`.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Primer programa** | Unidad mínima ejecutable: código fuente `.java` compilable a `.class` con punto de entrada. | Validar entorno, sintaxis y ciclo de ejecución. | Al iniciar en Java o al probar un entorno nuevo. | Poner lógica compleja antes de confirmar el ciclo básico. |
+| **Desde cero** | Crear archivo, escribir código, compilar y ejecutar manualmente, sin generación automática del IDE. | Entender qué hace el IDE por debajo. | Aprendizaje, diagnóstico, CI/scripts. | Depender del IDE sin saber compilar por terminal. |
+| **Sin IDE** | Usar editor de texto + `javac` + `java` en terminal. | Controlar y observar cada paso. | Entornos mínimos, servidores, depuración de build. | Confundir “sin IDE” con “sin herramientas”; el JDK sí es necesario. |
+| **`main`** | Método de entrada: `public static void main(String[] args)`. | Punto donde la JVM inicia la aplicación. | Aplicaciones Java standalone. | Firma incorrecta: falta `static`, `String[]`, o nombre distinto. |
+| **Argumentos CLI** | `String[] args` recibe parámetros pasados al iniciar el programa. | Parametrizar ejecución sin recompilar. | Scripts, herramientas, configuración simple. | Acceder `args[0]` sin validar longitud (`ArrayIndexOutOfBoundsException`). |
 
-**Modelo mental.** `main` es la puerta de entrada del edificio. `args` es la bandeja de notas que deja quien entra por la puerta: puede venir vacía, con una nota, o con varias.
+**Contrato / invariantes / reglas.** La clase pública debe llamarse igual que el archivo. `args` no es `null` en la invocación normal, pero puede estar vacío. La validación de entrada es responsabilidad del programa. Compilar genera `.class`; ejecutar usa el nombre de clase.
+
+**Modelo mental.** `main` es la puerta de entrada; `args` es la bandeja de notas que deja quien ejecuta el comando. Si la bandeja viene vacía, el programa debe responder con un mensaje útil, no con una excepción.
 
 **Implementación desde cero**
 
@@ -364,12 +418,41 @@ public class SaludoArgs {
 
 **Desglose del código**
 
-- `args` contiene los argumentos pasados por terminal. Si ejecutas `java SaludoArgs Ada`, `args[0]` es `"Ada"`.
-- `args.length == 0` detecta que no se pasó ningún argumento.
-- `return;` termina la ejecución de `main` en ese punto.
-- La concatenación `"Hola, " + nombre` construye el mensaje final.
+- `public class SaludoArgs` coincide con el nombre del archivo.
+- `args.length` permite verificar si llegaron argumentos.
+- `return;` termina `main` temprano cuando falta el dato requerido.
+- `args[0]` toma el primer argumento. Solo se accede después de validar.
 
 **Ejecución y salida real**
+
+```bash
+javac SaludoArgs.java
+java SaludoArgs Ada
+```
+
+```text
+Hola, Ada
+```
+
+Sin argumentos:
+
+```bash
+java SaludoArgs
+```
+
+```text
+Uso: java SaludoArgs <nombre>
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `ArrayIndexOutOfBoundsException` | Leíste `args[0]` sin validar | Verifica `args.length` antes de acceder |
+| `Could not find or load main class` | Nombre de clase mal escrito o carpeta incorrecta | Ejecuta desde donde está el `.class` y usa el nombre de clase |
+| No aparece salida nueva | No recompilaste | Corre `javac` antes de `java` |
+
+**Verificación rápida**
 
 ```bash
 javac SaludoArgs.java
@@ -377,45 +460,30 @@ java SaludoArgs
 java SaludoArgs Ada
 ```
 
-```text
-Uso: java SaludoArgs <nombre>
-```
+Debes ver primero el uso y luego el saludo. Si cambias el nombre, la salida debe cambiar.
 
-```text
-Hola, Ada
-```
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| `Main method not found in class ...` | La firma de `main` no es correcta | Usa `public static void main(String[] args)` |
-| `ArrayIndexOutOfBoundsException` al leer `args[0]` | Asumiste que siempre hay argumentos | Valida `args.length` antes de acceder |
-| Compila pero no corre desde otra carpeta | El classpath/carpeta actual no contiene la clase | Ejecuta desde la carpeta donde está el `.class`, o usa `-cp` |
-
-**Verificación rápida**
-
-```bash
-javac SaludoArgs.java
-java SaludoArgs
-java SaludoArgs Linus
-```
-
-Debes ver el mensaje de uso en el primer caso y el saludo personalizado en el segundo.
 
 ### Tema 5: Tipos primitivos, variables y conversiones · Básico · 45 min
 
-**Contexto y para qué sirve**
+**Caso guía**
 
-Los tipos definen qué valores puede guardar una variable y qué operaciones tienen sentido. Elegir mal un tipo puede producir pérdida de datos, desbordamientos o errores de compilación. Este tema te da la base para representar números, caracteres y valores booleanos con criterio.
+Necesitas representar edad (`int`), saldo (`double`/`BigDecimal` en sistemas reales; aquí `double` para aprender), inicial (`char`) y si un usuario está activo (`boolean`). También necesitas convertir un `double` a `int` y entender qué se pierde.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** En Java, un *tipo primitivo* es un tipo de valor definido por el lenguaje, no un objeto. Java define ocho primitivos: `byte`, `short`, `int`, `long`, `float`, `double`, `char`, `boolean`. Una *variable* es una ubicación con nombre, tipo estático y alcance que contiene un valor compatible.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** El tipado de Java es estático: la compatibilidad de tipos se verifica en compilación. Una conversión *widening* (p. ej. `int` → `double`) es segura y puede ser implícita. Una conversión *narrowing* (p. ej. `double` → `int`) puede perder información y requiere cast explícito. Los literales enteros son `int` por defecto (`long` requiere sufijo `L/l`); los decimales son `double` por defecto (`float` requiere `f/F`). El desbordamiento de enteros se produce por aritmética modular en complemento a dos, sin excepción.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error/riesgo común |
+|---|---|---|---|---|
+| **Tipos primitivos** | 8 tipos de valor definidos por el lenguaje: `byte, short, int, long, float, double, char, boolean`. | Representar valores simples con tamaño/semántica conocida. | Contadores, flags, caracteres, números; rendimiento/memoria predecible. | Usar `float/double` para dinero; overflow en enteros. |
+| **Variables** | Nombre asociado a un tipo estático, alcance y valor compatible. | Guardar y nombrar estado/datos intermedios. | Siempre que necesites reutilizar un valor con significado. | Nombres ambiguos, tipo demasiado amplio/estrecho, variable sin inicializar. |
+| **Conversión widening** | Conversión implícita a un tipo con mayor capacidad/rango compatible (`int`→`long`→`double`). | Combinar tipos sin perder representación en el rango esperado. | Cálculos mixtos seguros. | Asumir precisión infinita: `int` grande a `float` puede perder precisión. |
+| **Conversión narrowing/cast** | Conversión explícita a tipo más pequeño/menos preciso (`double`→`int`). | Adaptar valores cuando aceptas la regla de pérdida. | Al integrar APIs o formateos controlados. | Pérdida silenciosa de decimales o desbordamiento. |
+| **Literal/overflow** | Literal entero es `int` por defecto; `L` indica `long`. Overflow entero ocurre al exceder el rango. | Escribir valores correctos y detectar límites. | IDs grandes, timestamps, cálculos acumulados. | `2147483648` sin `L`; esperar excepción en overflow de `int`. |
 
-**Modelo mental.** Los tipos son contenedores con forma: puedes vaciar un vaso pequeño en uno grande sin problema (widening), pero vaciar uno grande en uno pequeño puede derramar (narrowing).
+**Contrato / invariantes / reglas.** Java es de tipado estático: compatibilidad verificada en compilación. Widening puede ser implícito; narrowing requiere cast explícito. `int` es 32-bit con signo; `long` 64-bit con signo; `double` IEEE 754 64-bit. El desbordamiento de enteros no lanza excepción por defecto; para detectar usa `Math.addExact`, `Math.multiplyExact`.
+
+**Modelo mental.** Los tipos son moldes: un molde pequeño no acepta cualquier pieza. Convertir de molde grande a chico (narrowing) puede recortar la pieza; convertir a más grande (widening) normalmente cabe.
 
 **Implementación desde cero**
 
@@ -430,59 +498,27 @@ Crea `TiposYConversiones.java`:
 ```java
 public class TiposYConversiones {
     public static void main(String[] args) {
-        int entero = 42;
-        long poblacion = 8_000_000_000L;
+        byte edad = 30;                 // primitivo entero pequeño
+        long poblacion = 8_000_000_000L; // L requerido: literal long
         double precio = 19.99;
         char inicial = 'J';
         boolean activo = true;
 
-        double enteroComoDouble = entero;      // widening
-        int precioTruncado = (int) precio;     // narrowing
+        double desdeInt = edad;         // widening implícito
+        int precioEntero = (int) precio; // narrowing explícito: trunca decimales
 
-        System.out.println(entero);
+        System.out.println(edad);
         System.out.println(poblacion);
         System.out.println(precio);
         System.out.println(inicial);
         System.out.println(activo);
-        System.out.println(enteroComoDouble);
-        System.out.println(precioTruncado);
+        System.out.println(desdeInt);
+        System.out.println(precioEntero);
     }
 }
 ```
 
-**Desglose del código**
-
-- `8_000_000_000L` usa guiones bajos para legibilidad y sufijo `L` porque el valor no cabe en un `int`.
-- `enteroComoDouble` es una conversión amplia: no hay pérdida de rango para ese valor.
-- `(int) precio` trunca la parte decimal. No redondea; corta.
-- `char` usa comillas simples; `String` usa comillas dobles.
-
-**Ejecución y salida real**
-
-```bash
-javac TiposYConversiones.java
-java TiposYConversiones
-```
-
-```text
-42
-8000000000
-19.99
-J
-true
-42.0
-19
-```
-
-**Errores comunes y cómo resolverlos**
-
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| `integer number too large` | Literal entero fuera de rango de `int` sin sufijo `L` | Usa `long` y agrega `L` |
-| `possible lossy conversion from double to int` | Intentaste narrowing sin cast | Haz cast explícito solo si aceptas la pérdida |
-| Overflow silencioso: `Integer.MAX_VALUE + 1` da negativo | El `int` se desborda | Usa `long` o `Math.addExact` para detectar |
-
-Ejemplo de overflow (guarda como `Desbordamiento.java` en la misma carpeta):
+Crea `Desbordamiento.java` en la misma carpeta:
 
 ```java
 public class Desbordamiento {
@@ -490,46 +526,89 @@ public class Desbordamiento {
         int maximo = Integer.MAX_VALUE;
         System.out.println(maximo);
         System.out.println(maximo + 1);
+        try {
+            System.out.println(Math.addExact(maximo, 1));
+        } catch (ArithmeticException e) {
+            System.out.println("overflow detectado");
+        }
     }
 }
 ```
 
-Ejecución:
+**Desglose del código**
+
+- `long poblacion = 8_000_000_000L;` usa `L` porque el literal supera el rango de `int`.
+- `double desdeInt = edad;` es widening: seguro, implícito.
+- `(int) precio` es narrowing: trunca a `19`, no redondea.
+- `Integer.MAX_VALUE + 1` desborda a negativo; `Math.addExact` lanza `ArithmeticException`.
+
+**Ejecución y salida real**
 
 ```bash
-javac Desbordamiento.java
+javac TiposYConversiones.java Desbordamiento.java
+java TiposYConversiones
 java Desbordamiento
 ```
 
-Salida real:
+Salida `TiposYConversiones`:
+
+```text
+30
+8000000000
+19.99
+J
+true
+30.0
+19
+```
+
+Salida `Desbordamiento`:
 
 ```text
 2147483647
 -2147483648
+overflow detectado
 ```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `integer number too large` | Literal entero fuera de rango `int` sin `L` | Usa `long` y sufijo `L` |
+| `possible lossy conversion from double to int` | Narrowing sin cast | Haz cast explícito solo si aceptas la pérdida |
+| Resultado negativo inesperado | Overflow de `int` | Usa `long` o `Math.*Exact` |
+| Precisión rara en decimales | `float/double` son binarios IEEE 754 | Para dinero, usa `BigDecimal` (tema avanzado) |
 
 **Verificación rápida**
 
 ```bash
-javac TiposYConversiones.java && java TiposYConversiones
-javac Desbordamiento.java && java Desbordamiento
+javac TiposYConversiones.java Desbordamiento.java && java TiposYConversiones && java Desbordamiento
 ```
 
-Confirma que `19.99` se trunca a `19` y que el desbordamiento de `int` no lanza excepción, sino que da vuelta al rango.
+Confirma: `19.99` se trunca a `19`; `Math.addExact` detecta overflow.
+
 
 ### Tema 6: String, entrada/salida y formato · Básico · 40 min
 
 **Caso guía**
 
-Necesitas pedir el nombre de una persona, mostrar un saludo y comparar una respuesta textual. Es un caso cotidiano en aplicaciones de consola y te expone a las trampas más comunes de `String`: inmutabilidad, espacios y comparación por contenido.
+Pides el nombre de una persona por consola, normalizas espacios, muestras un saludo con formato y comparas respuestas textuales. Es el caso típico donde aparecen las trampas de `String`, entrada/salida y formato.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** `String` es una clase del paquete `java.lang` que representa una secuencia inmutable de caracteres Unicode (UTF-16 en su representación interna). `System.out` es un `PrintStream` conectado a la salida estándar del proceso; `System.in` es un `InputStream` conectado a la entrada estándar.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** La inmutabilidad de `String` implica que métodos como `toUpperCase()` o `trim()` retornan un nuevo objeto; el original no cambia. El operador `==` compara identidad de referencia; `equals()` compara contenido. `Scanner` tokeniza/lee desde una fuente; mezclar `nextInt()`/`next()` con `nextLine()` puede dejar delimitadores pendientes. Todo recurso que envuelve I/O debe cerrarse cuando corresponda.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error/riesgo común |
+|---|---|---|---|---|
+| **String** | Objeto inmutable de `java.lang` que representa secuencia de caracteres UTF-16. | Manejar texto: nombres, mensajes, IDs textuales. | Casi todo I/O textual. | Usar `==` para contenido; asumir que métodos mutan el original. |
+| **Entrada (I/O)** | Lectura desde `System.in` (InputStream) mediante `Scanner`/`BufferedReader`. | Recibir datos del usuario o de otro proceso. | CLIs, ejercicios, pipes. | Mezclar `nextInt()` y `nextLine()`; no manejar encoding/localidad. |
+| **Salida (I/O)** | Escritura a `System.out`/`System.err` (PrintStream). | Mostrar resultados, prompts, errores. | Feedback al usuario/log simple. | Usar salida para depurar en producción sin logging adecuado. |
+| **Formato** | Representar datos como texto con plantilla: concatenación, `printf`/`format`, text blocks + formatted. | Mensajes legibles, columnas, decimales, reportes. | UI consola, logs legibles, exportes simples. | Concatenar todo sin controlar decimales/localidad. |
+| **Comparación de texto** | `equals`/`equalsIgnoreCase` comparan contenido; `==` compara referencia. | Validar respuestas, comandos, IDs. | Validaciones, parsing, routing simple. | `==` devuelve `false` con mismo contenido. |
 
-**Modelo mental.** Un `String` es como un texto impreso: no lo “editas”, generas otra copia con el cambio. `==` pregunta “¿es el mismo papel?”; `equals()` pregunta “¿dice lo mismo?”.
+**Contrato / invariantes / reglas.** `String` es inmutable: `trim()`, `toUpperCase()`, `replace()` devuelven nuevos objetos. `Scanner` tokeniza por delimitadores; `nextLine()` lee hasta fin de línea. Cierra recursos que envuelven I/O cuando corresponda (`Scanner` sobre `System.in` suele cerrarse al final del programa; en apps grandes evita cerrarlo si lo compartes). `printf` usa formato de `Formatter`; `%n` es separador de línea portable.
+
+**Modelo mental.** `String` es un texto impreso: no lo editas, generas otra copia. `==` pregunta por el mismo papel; `equals` pregunta por el mismo texto. La entrada es un sobre que llega por `System.in`; la salida es lo que imprimes en `System.out`.
 
 **Implementación desde cero**
 
@@ -550,11 +629,16 @@ public class TextoIO {
         System.out.println("Lenguaje: " + lenguaje);
         System.out.println("Longitud: " + lenguaje.length());
         System.out.println("Mayúsculas: " + lenguaje.toUpperCase());
+        System.out.printf("Formato: %-10s | v%d%n", lenguaje, 25);
 
         Scanner scanner = new Scanner(System.in);
         System.out.print("Escribe tu nombre: ");
-        String nombre = scanner.nextLine();
-        System.out.println("Hola, " + nombre.trim());
+        String nombre = scanner.nextLine().trim();
+        if (nombre.isEmpty()) {
+            System.out.println("Nombre vacío");
+        } else {
+            System.out.println("Hola, " + nombre);
+        }
         scanner.close();
     }
 }
@@ -568,24 +652,25 @@ public class CompararStrings {
         String a = "java";
         String b = new String("java");
 
-        System.out.println(a == b);
-        System.out.println(a.equals(b));
+        System.out.println(a == b);                 // referencia
+        System.out.println(a.equals(b));            // contenido
         System.out.println("si".equalsIgnoreCase("SI"));
+
+        String respuesta = null;
+        System.out.println("si".equals(respuesta)); // seguro ante null
     }
 }
 ```
 
 **Desglose del código**
 
-- `lenguaje.length()` devuelve la cantidad de caracteres.
-- `toUpperCase()` devuelve otro `String`; `lenguaje` sigue valiendo `"Java"`.
-- `scanner.nextLine()` lee una línea completa de entrada.
-- `trim()` quita espacios al inicio y final, útil para entrada de usuario.
-- `equalsIgnoreCase` compara contenido ignorando mayúsculas/minúsculas.
+- `toUpperCase()` crea otro `String`; `lenguaje` sigue siendo `"Java"`.
+- `printf` con `%-10s` alinea a la izquierda, `%d` número, `%n` salto de línea portable.
+- `trim()` elimina espacios extremos de la entrada.
+- `new String("java")` fuerza otro objeto: `==` falla, `equals` acierta.
+- `"si".equals(respuesta)` evita `NullPointerException`.
 
 **Ejecución y salida real**
-
-Compila y ejecuta `CompararStrings`:
 
 ```bash
 javac CompararStrings.java
@@ -598,21 +683,23 @@ Salida real:
 false
 true
 true
+false
 ```
 
-Compila y ejecuta `TextoIO` (interactivo):
+`TextoIO` es interactivo:
 
 ```bash
 javac TextoIO.java
 java TextoIO
 ```
 
-Ejemplo de sesión (si escribes ` Ada `):
+Ejemplo de sesión (entrada ` Ada `):
 
 ```text
 Lenguaje: Java
 Longitud: 4
 Mayúsculas: JAVA
+Formato: Java       | v25
 Escribe tu nombre:  Ada 
 Hola, Ada
 ```
@@ -621,31 +708,42 @@ Hola, Ada
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Dos strings iguales dan `false` con `==` | Comparaste referencias, no contenido | Usa `equals()` o `equalsIgnoreCase()` |
-| `NullPointerException` al hacer `respuesta.equals("si")` | `respuesta` es `null` | Usa `"si".equals(respuesta)` |
-| `Scanner` mezcla `nextInt()` y `nextLine()` | Queda un salto de línea pendiente | Consume el salto con `nextLine()` o usa una estrategia consistente |
+| `==` da `false` para textos iguales | Comparaste referencias | Usa `equals`/`equalsIgnoreCase` |
+| `NullPointerException` en `respuesta.equals(...)` | Variable nula | Usa `"literal".equals(variable)` |
+| Salto de línea raro en Windows/Linux | Usaste `\n` hardcodeado | Prefiere `%n` en `printf` o `System.lineSeparator()` |
+| `Scanner` se salta entrada | Mezcla `nextInt()`/`nextLine()` | Consume el fin de línea o usa `nextLine()` + parseo |
 
 **Verificación rápida**
 
 ```bash
-javac CompararStrings.java && java CompararStrings
+javac TextoIO.java CompararStrings.java
+java CompararStrings
 ```
 
-Verifica que `==` devuelva `false` y `equals()` devuelva `true` para el mismo contenido creado con `new String(...)`.
+Confirma los cuatro booleanos y prueba `TextoIO` con nombre vacío y con espacios.
+
 
 ### Tema 7: Operadores, expresiones y precedencia · Básico · 35 min
 
-**Contexto y para qué sirve**
+**Caso guía**
 
-Las expresiones combinan valores y operadores para producir un resultado. Si no entiendes precedencia, tipos numéricos y operadores lógicos, puedes escribir código que compila pero calcula mal. Este tema fija las reglas que después vas a usar en condiciones, bucles y cálculos.
+Calculas un total con descuento, verificas si un usuario puede acceder (edad y permiso) y obtienes un promedio. Un paréntesis mal puesto o una división entera pueden cambiar el resultado sin romper la compilación.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Una *expresión* es una construcción sintáctica que se evalúa para producir un valor. Un *operador* define una operación sobre uno, dos o tres operandos. La *precedencia* y *asociatividad* determinan el orden de evaluación cuando hay varios operadores.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** En Java, la división entera entre `int`/`long` produce resultado entero truncado hacia cero. La división por cero en enteros lanza `ArithmeticException`; en punto flotante produce `Infinity`/`NaN` según el caso. Los operadores `&&` y `||` son de cortocircuito: no evalúan el operando derecho si el izquierdo ya determina el resultado. La comparación `==` en primitivos compara valor; en referencias, identidad.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error/riesgo común |
+|---|---|---|---|---|
+| **Operadores** | Símbolos/keywords que aplican operaciones: aritméticos (`+ - * / %`), relacionales (`< > ==`), lógicos (`&& || !`), asignación (`= +=`), etc. | Transformar y comparar valores. | Cualquier cálculo o condición. | Confundir `=` con `==`; usar `/` entero esperando decimal. |
+| **Expresiones** | Construcción que se evalúa a un valor (`a + b * c`, `edad >= 18`). | Componer lógica y cálculos. | Asignaciones, condiciones, argumentos. | Efectos secundarios ocultos; expresiones difíciles de leer. |
+| **Precedencia** | Reglas que determinan qué operador se evalúa primero. | Interpretar correctamente expresiones compuestas. | Siempre que mezcles operadores. | Asumir orden izquierdo-a-derecho para todo. |
+| **Asociatividad** | Regla de evaluación cuando operadores tienen la misma precedencia (izq-der o der-izq). | Resolver empates de precedencia. | `a = b = 0`, `a - b - c`. | Malinterpretar asignaciones encadenadas. |
+| **Cortocircuito** | `&&` y `||` no evalúan el lado derecho si el izquierdo determina el resultado. | Evitar evaluaciones innecesarias/peligrosas. | `obj != null && obj.valido()`. | Poner efectos secundarios en el lado derecho esperando que siempre ocurra. |
 
-**Modelo mental.** Una expresión es una frase matemática con reglas de puntuación: los paréntesis son la puntuación explícita que evita ambigüedad.
+**Contrato / invariantes / reglas.** División entre enteros trunca hacia cero. División entera por cero lanza `ArithmeticException`; en punto flotante produce `Infinity/NaN`. `==` compara valor en primitivos y referencia en objetos. Precedencia: unaria/aritmética > relacional > igualdad > lógicos > asignación (simplificación práctica; ante duda, usa paréntesis).
+
+**Modelo mental.** Una expresión es una frase matemática con reglas de puntuación: precedencia/asociatividad son la gramática; los paréntesis hacen explícita la intención.
 
 **Implementación desde cero**
 
@@ -662,29 +760,33 @@ public class Operadores {
     public static void main(String[] args) {
         int a = 10;
         int b = 3;
+        System.out.println(a + b); // 13
+        System.out.println(a - b); // 7
+        System.out.println(a * b); // 30
+        System.out.println(a / b); // 3 (división entera)
+        System.out.println(a % b); // 1
 
-        System.out.println(a + b);
-        System.out.println(a - b);
-        System.out.println(a * b);
-        System.out.println(a / b);
-        System.out.println(a % b);
+        double promedio = (5 + 4) / 2.0; // paréntesis + promoción a double
+        System.out.println(promedio); // 4.5
 
-        double promedio = 5 / 2.0;
-        System.out.println(promedio);
-
-        boolean puedeEntrar = (a > 5) && (b < 5);
+        int edad = 20;
+        boolean tienePermiso = true;
+        boolean puedeEntrar = (edad >= 18) && tienePermiso; // relacional + lógico
         System.out.println(puedeEntrar);
+
+        String nombre = null;
+        boolean seguro = nombre != null && nombre.length() > 0; // cortocircuito
+        System.out.println(seguro);
     }
 }
 ```
 
 **Desglose del código**
 
-- `a / b` con dos `int` produce división entera: `3`.
-- `%` devuelve el resto: `10 % 3` es `1`.
-- `5 / 2.0` fuerza una operación con decimal, por eso el resultado es `2.5`.
-- `&&` solo es `true` cuando ambas condiciones son verdaderas.
-- Los paréntesis en `puedeEntrar` no son obligatorios aquí, pero hacen la intención visible.
+- `a / b` con enteros trunca: `3`, no `3.33...`.
+- `(5 + 4) / 2.0` fuerza promedio real: los paréntesis controlan la suma antes de dividir.
+- `&&` evalúa el lado derecho solo si el izquierdo es `true`; evita NPE en `nombre.length()`.
+- Usa paréntesis para dejar clara la intención, incluso cuando la precedencia lo permite.
 
 **Ejecución y salida real**
 
@@ -699,17 +801,19 @@ java Operadores
 30
 3
 1
-2.5
+4.5
 true
+false
 ```
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Esperabas `2.5` y obtuviste `2` | División entera entre `int` | Convierte uno de los operandos a `double` |
-| Condición difícil de leer o con bug | Precedencia poco clara | Agrega paréntesis |
-| `=` en vez de `==` | Confusión entre asignación y comparación | Usa `==` para comparar primitivos; en booleanos Java suele detectar el error de tipo |
+| Esperabas `4.5` y obtuviste `4` | División entera / precedencia mal asumida | Usa `2.0` o cast y paréntesis |
+| `NullPointerException` en condición | Evaluaste lado derecho sin cortocircuito seguro | Usa `obj != null && obj...` |
+| Condición confusa | Precedencia poco clara | Agrega paréntesis y extrae variables booleanas |
+| Bug por `=` | Asignación en vez de comparación | Usa `==` para primitivos; el compilador suele avisar en booleanos |
 
 **Verificación rápida**
 
@@ -717,21 +821,30 @@ true
 javac Operadores.java && java Operadores
 ```
 
-Cambia `5 / 2.0` por `5 / 2` y observa la diferencia. Ese cambio pequeño explica muchos bugs reales.
+Cambia `(5 + 4) / 2.0` por `5 + 4 / 2.0` y observa el cambio: evidencia de precedencia.
+
 
 ### Tema 8: Control de flujo: decisiones y repeticiones · Básico · 45 min
 
 **Caso guía**
 
-Imagina un programa que valida la edad de una persona, traduce un número de día y cuenta hacia atrás. Son tareas distintas, pero todas dependen de la misma capacidad: decidir qué ejecutar y repetir instrucciones con una condición clara.
+Validas la edad de un usuario, traduces un número de día a nombre y cuentas hacia atrás. Necesitas elegir caminos (decisiones) y repetir acciones (repeticiones) con condiciones claras.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** El *control de flujo* es el conjunto de sentencias que determinan el orden de ejecución. Una *condicional* selecciona una rama según una expresión booleana. Un *bucle* repite un bloque mientras se cumple una condición o se itera sobre un rango/estructura. `switch` selecciona entre casos discretos.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** La condición de `if`, `while`, `do/while` y `for` debe ser de tipo `boolean` (Java no admite enteros como condición). `switch` acepta tipos compatibles definidos por el lenguaje (primitivos enteros, `char`, `String`, enums, y formas modernas con patrones según versión). Un bucle debe progresar hacia terminación o tener una condición de salida explícita; de lo contrario produce un bucle infinito. `break` sale del bucle/switch; `continue` salta a la siguiente iteración.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error/riesgo común |
+|---|---|---|---|---|
+| **Control de flujo** | Sentencias que determinan el orden de ejecución: secuencia, selección, iteración, salto controlado. | Implementar lógica real más allá de líneas lineales. | Cualquier programa con reglas. | Flujo enredado, difícil de leer/probar. |
+| **Decisiones (`if/else`, `switch`)** | Seleccionan una rama según condición booleana o caso discreto. | Validar, clasificar, elegir comportamiento. | Reglas de negocio, menús, validaciones. | Condiciones incompletas, `switch` sin `default`. |
+| **Repeticiones (`for`, `while`, `do/while`)** | Ejecutan un bloque repetidamente mientras se cumpla condición/iteración. | Procesar rangos, colecciones, reintentos. | Contadores, búsqueda, acumulación. | Bucle infinito, off-by-one. |
+| **`break`/`continue`** | `break` sale del bucle/switch; `continue` salta a la siguiente iteración. | Control fino de iteración. | Salida temprana, saltar casos inválidos. | Uso excesivo que oculta la lógica. |
+| **Condición booleana** | Expresión que evalúa a `true/false`. | Determinar rama o continuación. | `if`, `while`, `for`. | Usar `=`; asumir enteros como booleanos (no en Java). |
 
-**Modelo mental.** El control de flujo es el semáforo y las señales de una ruta: el `if` es un desvío, el `for` es una rotonda con contador, el `while` es “sigue mientras la luz esté verde”.
+**Contrato / invariantes / reglas.** La condición de `if/while/do/while/for` debe ser `boolean`. `switch` moderno (`->`) evita fall-through accidental; `switch` clásico requiere `break` si no se desea caer al siguiente caso. Todo bucle debe tener progreso hacia terminación o una salida explícita. `do/while` ejecuta el cuerpo al menos una vez.
+
+**Modelo mental.** Las decisiones son bifurcaciones en una ruta; las repeticiones son rotondas: necesitas una señal clara de salida.
 
 **Implementación desde cero**
 
@@ -758,11 +871,12 @@ public class Flujo {
             case 1 -> "Lunes";
             case 2 -> "Martes";
             case 3 -> "Miércoles";
-            default -> "Otro día";
+            default -> "Día no válido";
         };
         System.out.println(nombreDia);
 
         for (int i = 1; i <= 3; i++) {
+            if (i == 2) continue; // salta el 2
             System.out.println("for:" + i);
         }
 
@@ -771,16 +885,23 @@ public class Flujo {
             System.out.println("while:" + n);
             n--;
         }
+
+        int intentos = 0;
+        do {
+            intentos++;
+        } while (intentos < 1);
+        System.out.println("intentos:" + intentos);
     }
 }
 ```
 
 **Desglose del código**
 
-- `if (edad >= 18)` evalúa una condición booleana. Solo una rama se ejecuta.
-- El `switch` moderno con `->` devuelve un valor y evita `break` en cada caso.
-- `for (int i = 1; i <= 3; i++)` concentra inicialización, condición y avance.
-- En el `while`, `n--` es esencial: sin avance hacia la condición de salida, el bucle sería infinito.
+- `if/else` selecciona una sola rama.
+- `switch` con `->` mapea un caso discreto a valor; `default` cubre lo inesperado.
+- `for` concentra inicio/condición/avance; `continue` salta una iteración.
+- `while` repite mientras la condición sea true; `n--` garantiza progreso.
+- `do/while` ejecuta al menos una vez, útil para “intentar y luego validar”.
 
 **Ejecución y salida real**
 
@@ -793,20 +914,21 @@ java Flujo
 Mayor de edad
 Miércoles
 for:1
-for:2
 for:3
 while:3
 while:2
 while:1
+intentos:1
 ```
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| El programa nunca termina | Bucle sin condición de salida o sin avance | Verifica que la condición pueda volverse falsa |
-| `incompatible types: int cannot be converted to boolean` | Usaste `=` en vez de `==` | Corrige la comparación |
-| `switch` no cubre valores esperados | Falta `default` o casos | Agrega `default` y revisa los valores posibles |
+| Bucle infinito | Condición nunca cambia / falta avance | Verifica avance (`n--`, `i++`) y condición de salida |
+| `switch` cae en casos no deseados | `switch` clásico sin `break` | Usa `switch` con `->` o agrega `break` |
+| Off-by-one | Límite `<`/`<=` mal definido | Prueba bordes: 0, 1, N-1, N |
+| Condición inválida | `=` en vez de comparación o tipo no booleano | Usa `==`/comparadores; Java exige boolean |
 
 **Verificación rápida**
 
@@ -814,21 +936,30 @@ while:1
 javac Flujo.java && java Flujo
 ```
 
-Cambia `edad`, `dia` y el límite del `for`. Antes de ejecutar, predice la salida; luego confirma.
+Cambia `dia` a 9 y `edad` a 16. Predice la salida antes de ejecutar.
+
 
 ### Tema 9: Arreglos y métodos básicos · Básico · 50 min
 
 **Caso guía**
 
-Tienes varias notas de un alumno y quieres mostrar cada una y calcular el promedio. Podrías crear `nota1`, `nota2`, `nota3`, pero esa solución no escala. Este caso pide dos herramientas: una estructura para guardar varios valores y métodos para separar responsabilidades.
+Tienes varias notas de un alumno y quieres mostrar cada una y calcular el promedio. También quieres reutilizar la lógica de promedio. Necesitas una estructura para varios valores (arreglo) y una unidad reutilizable (método).
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *arreglo* es un objeto de tamaño fijo que contiene elementos del mismo tipo, accesibles por índice entero basado en cero. Un *método* es una abstracción de procedimiento con nombre, parámetros formales, tipo de retorno y cuerpo; puede ser `static` (asociado a la clase) o de instancia (asociado a un objeto).
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Para un arreglo `a` de longitud `n = a.length`, los índices válidos son `0 <= i < n`. Acceder fuera de ese rango lanza `ArrayIndexOutOfBoundsException`. `length` es una propiedad final del arreglo, no un método. Los parámetros en Java se pasan por valor; cuando el valor es una referencia, se copia la referencia (el objeto referenciado puede ser modificado a través de ella).
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error/riesgo común |
+|---|---|---|---|---|
+| **Arreglos** | Objeto de tamaño fijo, elementos del mismo tipo, índice 0-based; `length` indica cantidad. | Guardar colección fija de valores homogéneos. | Notas, buffers, datos pequeños de tamaño conocido. | `ArrayIndexOutOfBoundsException`; asumir tamaño dinámico. |
+| **Índice y `length`** | Índices válidos: `0 <= i < length`. `length` es campo, no método. | Recorrer/acceder con seguridad. | `for`, validaciones, bordes. | Off-by-one (`i <= length`). |
+| **Métodos básicos** | Bloque nombrado con parámetros, tipo de retorno y cuerpo; `static` o de instancia. | Reutilizar, nombrar intención, probar. | Cálculos, validaciones, utilidades. | Métodos largos o con efectos secundarios ocultos. |
+| **Parámetros y retorno** | Parámetros reciben valores; retorno entrega resultado. Java pasa argumentos por valor; la referencia del arreglo se copia por valor. | Definir contrato entrada/salida. | Diseñar APIs claras. | Mutar arreglo recibido sin documentarlo. |
+| **Recorrido (`for` / `for-each`)** | `for` controla índice; `for-each` itera elementos directamente. | Procesar todos los elementos. | Suma, búsqueda, impresión. | Usar for-each cuando necesitas el índice. |
 
-**Modelo mental.** Un arreglo es una fila de casilleros numerados desde 0; `length` dice cuántos casilleros hay. Un método es una máquina con etiqueta: le das entradas, ejecuta su proceso y devuelve (o no) un resultado.
+**Contrato / invariantes / reglas.** El tamaño del arreglo es fijo después de creado. Acceso fuera de rango lanza `ArrayIndexOutOfBoundsException`. Un método `static` no necesita instancia. Si pasas un arreglo a un método, el contenido puede ser modificado desde el método (se comparte el objeto).
+
+**Modelo mental.** Arreglo = fila de casilleros numerados desde 0. Método = máquina: entrada (parámetros), proceso, salida (return).
 
 **Implementación desde cero**
 
@@ -838,71 +969,76 @@ Desde una carpeta vacía:
 mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
 ```
 
-Crea `ArreglosMetodos.java`:
+Crea `Notas.java`:
 
 ```java
-public class ArreglosMetodos {
+public class Notas {
+    static double promedio(int[] valores) {
+        if (valores.length == 0) {
+            return 0.0;
+        }
+        int suma = 0;
+        for (int i = 0; i < valores.length; i++) {
+            suma += valores[i];
+        }
+        return (double) suma / valores.length; // cast evita división entera
+    }
+
+    static void imprimir(int[] valores) {
+        for (int nota : valores) {
+            System.out.println("Nota: " + nota);
+        }
+    }
+
     public static void main(String[] args) {
         int[] notas = {10, 8, 9, 7};
-
-        imprimirNotas(notas);
+        imprimir(notas);
         System.out.println("Promedio: " + promedio(notas));
-    }
-
-    static void imprimirNotas(int[] valores) {
-        for (int i = 0; i < valores.length; i++) {
-            System.out.println("nota[" + i + "]=" + valores[i]);
-        }
-    }
-
-    static double promedio(int[] valores) {
-        int suma = 0;
-        for (int valor : valores) {
-            suma += valor;
-        }
-        return (double) suma / valores.length;
+        System.out.println("Cantidad: " + notas.length);
     }
 }
 ```
 
 **Desglose del código**
 
-- `int[] notas = {10, 8, 9, 7};` crea el arreglo con cuatro elementos.
-- `valores.length` da el tamaño total; el último índice válido es `length - 1`.
-- `imprimirNotas` no devuelve valor (`void`): su efecto es imprimir.
-- `promedio` devuelve `double`. El cast `(double) suma` evita la división entera.
-- El `for-each` en `promedio` es adecuado porque no necesitamos el índice.
+- `int[] notas = {10, 8, 9, 7}` crea un arreglo de tamaño 4.
+- `promedio` valida vacío y castea a `double` antes de dividir.
+- `imprimir` usa `for-each` porque solo lee valores.
+- `notas.length` permite recorrer sin hardcodear el tamaño.
 
 **Ejecución y salida real**
 
 ```bash
-javac ArreglosMetodos.java
-java ArreglosMetodos
+javac Notas.java
+java Notas
 ```
 
 ```text
-nota[0]=10
-nota[1]=8
-nota[2]=9
-nota[3]=7
+Nota: 10
+Nota: 8
+Nota: 9
+Nota: 7
 Promedio: 8.5
+Cantidad: 4
 ```
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| `ArrayIndexOutOfBoundsException` | Accediste a un índice fuera de `0..length-1` | Revisa el límite del bucle y el índice usado |
-| Promedio `8` en vez de `8.5` | División entera | Convierte `suma` o `valores.length` a `double` |
-| `ArithmeticException: / by zero` o resultado inválido | Arreglo vacío | Valida `valores.length == 0` antes de dividir |
+| `ArrayIndexOutOfBoundsException` | Índice fuera de `0..length-1` | Usa `i < valores.length`; revisa bordes |
+| Promedio `8` en vez de `8.5` | División entera | Convierte a `double` antes de dividir |
+| `NullPointerException` | Arreglo `null` | Valida precondición o retorna error controlado |
+| Método difícil de reutilizar | Hace I/O y cálculo mezclado | Separa cálculo (`promedio`) de presentación (`imprimir`) |
 
 **Verificación rápida**
 
 ```bash
-javac ArreglosMetodos.java && java ArreglosMetodos
+javac Notas.java && java Notas
 ```
 
-Prueba con `int[] notas = {10, 10, 9};`. El promedio debe ser `9.666...`, lo que confirma que la división no es entera.
+Prueba con `{10, 10, 9}`; el promedio debe ser `9.666...`.
+
 
 ## Cierre del módulo
 
