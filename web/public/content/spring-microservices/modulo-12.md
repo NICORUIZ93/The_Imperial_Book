@@ -174,6 +174,26 @@ node check.mjs
 
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `false`.
 
+### Tema 5: GraalVM Native Image, CRaC y JVM tuning para contenedores · Avanzado · 120 min
+
+Caso guía: servicio Spring Boot con cold start alto en autoscaling Kubernetes; necesitas evaluar native image, CRaC o tuning JVM.
+
+#### Definición formal
+
+- **Native Image (GraalVM):** compila AOT a binario nativo; arranque y memoria suelen mejorar, con restricciones de reflexión/dynamic features.
+- **CRaC:** checkpoint/restore del proceso JVM para arranque rápido; requiere compatibilidad de recursos abiertos/sockets/estado.
+- **JVM tuning:** G1GC/ZGC, `MaxRAMPercentage`, heap/Metaspace, thread pools, según carga.
+
+#### Cuándo usarlo / cuándo no
+
+Usa native/CRaC cuando el cold start sea problema medible. Usa JVM tuning siempre en contenedores; no asumas defaults óptimos. No uses native si dependencias críticas no son compatibles.
+
+#### Error común
+
+**Síntoma.** arranca rápido pero falla funcionalidad. **Causa.** reflection/resources no configurados o estado no restaurable. **Corrección.** smoke tests equivalentes, observabilidad, benchmarks. **Señal observable.** errores en runtime ausentes en JVM.
+
+**Nota de verificación (2026-05-22).** No ejecutado build native/CRaC en esta sesión. Verificación propuesta: `./mvnw -Pnative native:compile` o proceso CRaC en Linux compatible; medir arranque RSS/p95.
+
 ## Cierre
 
 Entrega segura es parte del diseño: imagen reproducible, probes, escalado, rollout progresivo y GitOps.

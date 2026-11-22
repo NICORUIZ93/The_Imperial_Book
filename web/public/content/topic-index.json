@@ -6666,6 +6666,10 @@
       {
         "title": "Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL",
         "fragment": "tema-6-varias-implementaciones-primary-qualifier-y-expresiones-spel"
+      },
+      {
+        "title": "Java moderno para Spring Boot: virtual threads, scoped values, pattern matching y AOT/arranque",
+        "fragment": "tema-7-java-moderno-para-spring-boot-virtual-threads-scoped-values-pattern-matching-y-aot-arranque"
       }
     ],
     "1": [
@@ -6972,6 +6976,10 @@
       {
         "title": "Contenedores Testcontainers reutilizados entre clases",
         "fragment": "tema-5-contenedores-testcontainers-reutilizados-entre-clases"
+      },
+      {
+        "title": "Floci y emulación local de servicios cloud para pruebas reproducibles",
+        "fragment": "tema-6-floci-y-emulacion-local-de-servicios-cloud-para-pruebas-reproducibles"
       }
     ],
     "7": [
@@ -7178,6 +7186,10 @@
       {
         "title": "GitOps con ArgoCD",
         "fragment": "tema-4-gitops-con-argocd"
+      },
+      {
+        "title": "GraalVM Native Image, CRaC y JVM tuning para contenedores",
+        "fragment": "tema-5-graalvm-native-image-crac-y-jvm-tuning-para-contenedores"
       }
     ],
     "13": [
@@ -7254,6 +7266,10 @@
       {
         "title": "SonarQube",
         "fragment": "tema-5-sonarqube"
+      },
+      {
+        "title": "Floci para emular dependencias cloud en tests/CI",
+        "fragment": "tema-6-floci-para-emular-dependencias-cloud-en-tests-ci"
       }
     ],
     "3": [
@@ -7312,12 +7328,16 @@
       {
         "title": "Sync vs async, timeouts e idempotencia",
         "fragment": "tema-4-sync-vs-async-timeouts-e-idempotencia"
+      },
+      {
+        "title": "HTTP Service Clients declarativos y RSocket",
+        "fragment": "tema-5-http-service-clients-declarativos-y-rsocket"
       }
     ],
     "6": [
       {
-        "title": "Service discovery con Eureka/Consul",
-        "fragment": "tema-1-service-discovery-con-eureka-consul"
+        "title": "Service discovery con Eureka/Consul/Nacos/Nacos",
+        "fragment": "tema-1-service-discovery-con-eureka-consul-nacos-nacos"
       },
       {
         "title": "Spring Cloud Gateway",
@@ -7360,12 +7380,12 @@
         "fragment": "tema-2-jwt-y-oauth2-oidc"
       },
       {
-        "title": "RBAC, scopes y mTLS",
-        "fragment": "tema-3-rbac-scopes-y-mtls"
+        "title": "RBAC, scopes y mTLS/Zero-Trust",
+        "fragment": "tema-3-rbac-scopes-y-mtls-zero-trust"
       },
       {
-        "title": "Vault, gestión de secretos y CVE scanning",
-        "fragment": "tema-4-vault-gestion-de-secretos-y-cve-scanning"
+        "title": "Vault, gestión de secretos y SBOM y CVE scanning",
+        "fragment": "tema-4-vault-gestion-de-secretos-y-sbom-y-cve-scanning"
       }
     ],
     "9": [
@@ -7374,8 +7394,8 @@
         "fragment": "tema-1-micrometer-y-prometheus"
       },
       {
-        "title": "OpenTelemetry y trazas",
-        "fragment": "tema-2-opentelemetry-y-trazas"
+        "title": "OpenTelemetry por defecto: métricas, trazas y logs correlacionados",
+        "fragment": "tema-2-opentelemetry-por-defecto-metricas-trazas-y-logs-correlacionados"
       },
       {
         "title": "Logs estructurados y correlación",

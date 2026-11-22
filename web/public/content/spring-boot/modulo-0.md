@@ -387,9 +387,75 @@ java DemoQual
 
 **Error común.** Meter lógica de negocio compleja en SpEL. Corrección: SpEL para configuración simple; lógica real en código testeable.
 
+### Tema 7: Java moderno para Spring Boot: virtual threads, scoped values, pattern matching y AOT/arranque · Intermedio · 60 min
+
+Caso guía: un endpoint Spring Boot hace I/O bloqueante a base de datos y a un servicio externo; necesitas decidir qué mejora de Java moderno ayuda sin reescribir todo a reactivo.
+
+#### Virtual threads
+
+**Definición formal.** Un virtual thread (Java 21+, JEP 444) es un hilo ligero gestionado por la JVM que se monta/desmonta de un carrier thread al bloquearse en I/O.
+
+**Contrato.** Útil para alta concurrencia I/O con modelo thread-per-request. No acelera CPU-bound. Limita recursos downstream (DB, pools, APIs) con semáforos/bulkheads/timeouts.
+
+```java
+try (var exec = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
+  exec.submit(() -> System.out.println(Thread.currentThread().isVirtual()));
+}
+```
+
+**Cuándo usarlo / cuándo no.** Úsalo en MVC con I/O bloqueante. No lo uses sin límites de concurrencia sobre DB o servicios externos.
+
+**Error común.** miles de virtual threads golpeando la DB. **Síntoma.** timeouts/saturación. **Causa.** cuello de botella downstream. **Corrección.** `Semaphore`/bulkhead/pool. **Señal observable.** conexiones DB al máximo.
+
+#### Scoped values
+
+**Definición formal.** Scoped values (Java 25, JEP 506, final) comparten datos inmutables en un scope de ejecución y con hilos hijos, con mejor modelo que `ThreadLocal` para muchos casos.
+
+```java
+static final ScopedValue<String> REQUEST_ID = ScopedValue.newInstance();
+// ScopedValue.where(REQUEST_ID, "req-1").run(() -> ...);
+```
+
+**Cuándo usarlo / cuándo no.** Úsalo para contexto inmutable (request/trace/tenant). No lo uses para estado mutable por hilo.
+
+**Nota de verificación.** JEP 506 es final en JDK 25 según OpenJDK. No ejecutado en este entorno con JDK 25 dedicado; el contrato esperado es binding acotado al scope y propagación controlada.
+
+#### Pattern matching y Flexible Constructor Bodies
+
+**Definición formal.** Pattern matching reduce casting/ramificación; Flexible Constructor Bodies (Java 25, JEP 513, final) permite validar/asignar campos antes de `super(...)`/`this(...)` sin tocar la instancia en construcción.
+
+**Caso real.** DTOs/reglas de dominio con switches exhaustivos y constructores que fallan rápido antes de inicializar el padre.
+
+#### AOT, Leyden y CRaC
+
+**Definición formal.** AOT acelera arranque/warmup precalculando trabajo. JDK 25 incluye JEP 514 (AOT command-line ergonomics) y JEP 515 (AOT method profiling). Spring/CRaC y Native Image son opciones con restricciones.
+
+**Cuándo usarlo / cuándo no.** Úsalo cuando cold start importa (autoscaling/K8s/serverless). No lo uses por defecto sin medir build, compatibilidad, observabilidad y memoria.
+
+**Error común.** asumir que native/AOT es gratis. **Síntoma.** fallos por reflexión/configuración, builds lentos. **Corrección.** medir y mantener smoke tests. **Señal observable.** arranque mejora pero throughput o compatibilidad empeora.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).**
+
+```bash
+cat > /tmp/DemoVt.java <<'JAVA'
+public class DemoVt {
+  public static void main(String[] args) throws Exception {
+    try (var exec = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
+      var f = exec.submit(() -> Thread.currentThread().isVirtual());
+      System.out.println(f.get());
+    }
+  }
+}
+JAVA
+javac /tmp/DemoVt.java -d /tmp
+java -cp /tmp DemoVt
+```
+
+Salida esperada: `true`. **Nota de verificación:** JEP 506/513/514/515 no se ejecutaron en JDK 25 en esta sesión; se documentan como features finales/entregadas en JDK 25 según OpenJDK.
+
 ## Cierre
 
-Spring es un contenedor de objetos con ciclo de vida, inyección y proxies. Dominar este modelo evita la mayoría de bugs “mágicos”.
+Spring es un contenedor de objetos con ciclo de vida, inyección y proxies. Dominar este modelo evita la mayoría de bugs “mágicos”. Java moderno agrega herramientas útiles, pero cada una exige medir límites y trade-offs.
 
 ## Checklist
 
@@ -397,3 +463,4 @@ Spring es un contenedor de objetos con ciclo de vida, inyección y proxies. Domi
 - Sé qué es un bean, scope y ciclo de vida.
 - Entiendo que AOP en Spring suele ser proxy y tiene límites (self-invocation).
 - Sé desambiguar beans con `@Primary`/`@Qualifier`.
+- Evalúo virtual threads/AOT/scoped values con evidencia y límites.

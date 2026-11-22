@@ -228,6 +228,28 @@ java Quality
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`. **Nota de verificación:** SonarQube requiere servidor/scanner.
 
+### Tema 6: Floci para emular dependencias cloud en tests/CI · Avanzado · 120 min
+
+Caso guía: un microservicio publica a S3/SQS; necesitas pruebas de integración deterministas en CI sin cuenta cloud real.
+
+#### Definición formal
+
+Floci es un emulador local cloud; en Java se integra con Testcontainers y, en Spring Boot, puede usarse para configurar clientes AWS vía endpoint local. Permite validar integraciones de control/data plane emulado en local.
+
+#### Contrato mínimo
+
+Endpoint local, credenciales de prueba, región, clientes SDK con endpoint override, y suite que diferencie lo que valida el emulador vs lo que requiere cloud real.
+
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** para tests de integración rápidos, CI y reproducibilidad. **No lo uses** como garantía completa de comportamiento cloud real (IAM avanzado, cuotas, latencia, fallas regionales).
+
+#### Error común
+
+**Síntoma.** verde en CI, falla en AWS real. **Causa.** paridad parcial. **Corrección.** pruebas contractuales locales + smoke en entorno cloud controlado. **Señal observable.** errores de permisos/cuotas solo en real.
+
+**Nota de verificación (2026-05-22).** No ejecutado aquí; requiere Docker/imagen Floci y dependencias test. Comando esperado: `./mvnw test` con `FlociContainer` y aserciones sobre recurso creado.
+
 ## Cierre
 
 Testing en microservicios es economía de confianza: rápido en unit/slice, realista en integración, contractual en fronteras y automatizado en arquitectura/calidad.

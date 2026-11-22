@@ -116,9 +116,39 @@ Caso guía: suite de integración con muchos tests; levantar Postgres por clase 
 
 **Nota de verificación.** Docker 29.9.3 disponible; lab reproducible con Testcontainers.
 
+### Tema 6: Floci y emulación local de servicios cloud para pruebas reproducibles · Avanzado · 60 min
+
+Caso guía: tu servicio Spring Boot integra con S3/SQS/DynamoDB y quieres pruebas locales deterministas sin cuenta cloud real.
+
+#### Definición formal
+
+Floci es un emulador local de servicios cloud compatible con workflows AWS. Para Java, se puede usar con Testcontainers (`io.floci:testcontainers-floci`); las versiones varían por línea de Testcontainers/Spring Boot.
+
+#### Contrato mínimo
+
+- Endpoint local (común: `http://localhost:4566`).
+- Credenciales de prueba.
+- Región explícita.
+- SDK configurado con `endpointOverride` y, cuando aplique, path style.
+
+```java
+S3Client s3 = S3Client.builder()
+  .endpointOverride(URI.create(floci.getEndpoint()))
+  .region(Region.US_EAST_1)
+  .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create("test","test")))
+  .forcePathStyle(true)
+  .build();
+```
+
+**Cuándo usarlo / cuándo no.** Úsalo para feedback rápido y CI sin costos cloud. No lo uses como única validación para IAM real, cuotas, latencia o semánticas no emuladas.
+
+**Error común.** asumir paridad total. **Síntoma.** pasa en local, falla en cloud. **Causa.** diferencias de servicio/IAM/cuotas. **Corrección.** pirámide: emulador + smoke real selectivo. **Señal observable.** fallos solo en staging/prod cloud.
+
+**Nota de verificación (2026-05-22).** No ejecutado en esta sesión (requiere contenedor Floci y dependencia de test). Verificación propuesta: levantar `FlociContainer`, ejecutar test JUnit que cree recurso y lo liste; esperado: test verde sin cuenta AWS real.
+
 ## Cierre
 
-Elige el test por costo/fidelidad: unitario para lógica, slice para borde, integración completa para flujos críticos.
+Elige el test por costo/fidelidad: unitario para lógica, slice para borde, integración completa para flujos críticos. Los emuladores locales aceleran, pero no eliminan la necesidad de validar riesgos cloud reales.
 
 ## Checklist
 
@@ -127,3 +157,4 @@ Elige el test por costo/fidelidad: unitario para lógica, slice para borde, inte
 - Limito `@SpringBootTest`.
 - Verifico versión antes de usar `RestTestClient`.
 - Aíslo datos en Testcontainers.
+- Uso Floci/emuladores con límites explícitos.

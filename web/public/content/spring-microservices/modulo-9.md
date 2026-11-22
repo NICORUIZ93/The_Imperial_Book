@@ -45,7 +45,7 @@ java Metrics
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `2`, `1`.
 
-### Tema 2: OpenTelemetry y trazas · Avanzado · 150 min
+### Tema 2: OpenTelemetry por defecto: métricas, trazas y logs correlacionados · Avanzado · 150 min
 
 Caso guía: seguir una request entre orders e inventory.
 

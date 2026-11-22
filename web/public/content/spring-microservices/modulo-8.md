@@ -1,6 +1,6 @@
 # Módulo 8 · Seguridad en microservicios Spring
 
-La seguridad distribuida debe ser por capas: identidad, autorización, transporte, secretos y dependencias. En Spring, Security filter chain, OAuth2/OIDC y gestión de secretos son la base; mTLS y mesh la refuerzan en service-to-service.
+La seguridad distribuida debe ser por capas: identidad, autorización, transporte, secretos y dependencias. En Spring, Security filter chain, OAuth2/OIDC y gestión de secretos son la base; mTLS/Zero-Trust y mesh la refuerzan en service-to-service.
 
 **Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Se ejecutan smokes de JWT claims, RBAC y secretos con Java puro. Spring Security/Keycloak/Vault/mTLS requieren infra; **Nota de verificación**.
 
@@ -81,7 +81,7 @@ java Jwt
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`. **Nota de verificación:** Keycloak/OIDC real requiere IdP.
 
-### Tema 3: RBAC, scopes y mTLS · Avanzado · 150 min
+### Tema 3: RBAC, scopes y mTLS/Zero-Trust · Avanzado · 150 min
 
 Caso guía: solo `admin` puede borrar; servicios internos usan mTLS.
 
@@ -119,7 +119,7 @@ java Rbac
 
 **Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `false`, `true`.
 
-### Tema 4: Vault, gestión de secretos y CVE scanning · Intermedio · 120 min
+### Tema 4: Vault, gestión de secretos y SBOM y CVE scanning · Intermedio · 120 min
 
 Caso guía: rotar DB password sin redeploy.
 
