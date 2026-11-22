@@ -5711,19 +5711,19 @@
     "21": [
       {
         "title": "Estructura de carpetas escalable",
-        "fragment": "estructura-de-carpetas-escalable"
+        "fragment": "tema-1-estructura-de-carpetas-escalable"
       },
       {
         "title": "dotenv",
-        "fragment": "dotenv"
+        "fragment": "tema-2-dotenv"
       },
       {
         "title": "Service Discovery con Consul",
-        "fragment": "service-discovery-con-consul"
+        "fragment": "tema-3-service-discovery-con-consul"
       },
       {
         "title": "Configuración centralizada",
-        "fragment": "configuracion-centralizada"
+        "fragment": "tema-4-configuracion-centralizada"
       }
     ],
     "22": [
