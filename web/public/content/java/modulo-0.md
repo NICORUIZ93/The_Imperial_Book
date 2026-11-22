@@ -1,17 +1,37 @@
-# Módulo 0: Sintaxis, tipos y el modelo de la JVM
+# Módulo 0: Java desde cero — del primer programa al modelo de ejecución
 
+Este módulo es el punto de partida real de la ruta Java. No asume experiencia previa en Java. El objetivo es que puedas instalar el JDK, escribir programas pequeños sin depender de un IDE, entender qué hace la JVM al ejecutarlos y leer errores comunes con criterio.
 
-## Antes de comenzar: instala Java correctamente
+## Antes de comenzar: instalación guiada por sistema operativo
 
-Necesitas un **JDK**, no solo “Java”. El JDK incluye el compilador `javac`, la JVM y herramientas de diagnóstico. Usaremos una versión LTS reciente (Java 25 o superior), Visual Studio Code con **Extension Pack for Java**, y Git.
+Necesitas un **JDK** (Java Development Kit). No alcanza con tener “Java” instalado para ejecutar aplicaciones: para programar necesitas el compilador `javac`, la JVM `java` y las herramientas básicas del kit.
 
-| Sistema | Instalación | Nota importante |
+| Herramienta | Qué hace | Cuándo la usas |
 |---|---|---|
-| Windows | Instala Eclipse Temurin JDK y VS Code; marca la opción de configurar `JAVA_HOME` | Abre una terminal nueva después de instalar |
-| macOS | `brew install --cask temurin` y `brew install git` | En Mac Apple Silicon usa el instalador ARM64 |
-| Ubuntu/Debian | `sudo apt update && sudo apt install -y openjdk-25-jdk git` (Ubuntu 24.04 o posterior) | No instales únicamente `jre` |
+| `javac` | Compila código fuente `.java` a bytecode `.class` | Cada vez que cambias el código fuente |
+| `java` | Inicia la JVM y ejecuta una clase | Para correr el programa compilado |
+| `jar`, `jshell`, `jcmd`, `jfr` | Empaquetado, REPL, diagnóstico, profiling | Más adelante; conviene saber que vienen con el JDK |
 
-Verifica con `java --version` y `javac --version`: ambas versiones deben coincidir. Crea una carpeta `hola-java`, abre allí VS Code y guarda:
+#### Instalación por sistema operativo
+
+| Sistema | Instalación recomendada | Verificación |
+|---|---|---|
+| Windows | Instala un JDK LTS (por ejemplo Temurin). Durante la instalación, habilita la opción que configura `JAVA_HOME` si está disponible. | Abre una terminal nueva y ejecuta `java -version` y `javac -version`. |
+| macOS | `brew install --cask temurin` o instalador oficial. En Apple Silicon usa la variante ARM64. | `java -version`, `javac -version`, `/usr/libexec/java_home`. |
+| Ubuntu/Debian | `sudo apt update && sudo apt install -y openjdk-21-jdk` (o la versión LTS disponible en tu distribución). | `java -version` y `javac -version`. |
+
+#### Verificación mínima
+
+```bash
+java -version
+javac -version
+```
+
+Ambos comandos deben responder. Si `java` funciona pero `javac` no, instalaste un runtime sin compilador.
+
+#### Prueba de humo
+
+Crea un archivo llamado `Hola.java`:
 
 ```java
 public class Hola {
@@ -21,1057 +41,853 @@ public class Hola {
 }
 ```
 
-Ejecuta `javac Hola.java` y luego `java Hola`. El primer comando produce `Hola.class`; el segundo lo ejecuta en la JVM. En Windows, si `javac` no se reconoce, revisa `JAVA_HOME` y que `%JAVA_HOME%\bin` esté en `Path`.
+Compila y ejecuta:
 
-**Maven y Gradle (los necesitas desde el Módulo 8 y para `gradle init` del final de este módulo).** Instala Maven 3.9 o posterior y Gradle 9.1 o posterior, la primera versión de Gradle que funciona con Java 25. En macOS usa `brew install maven gradle`; en Windows y Ubuntu descarga los binarios de [maven.apache.org](https://maven.apache.org/download.cgi) y [gradle.org/install](https://gradle.org/install/), porque `apt` en Ubuntu 24.04 ofrece Maven 3.8.7 y Gradle 4.4.1, demasiado antiguos. Verifica con `mvn --version` y `gradle --version`: ambos deben mostrar Java 25.
-
-## Ruta recomendada: recorrido del desarrollador Java en 16 pasos
-
-Esta ruta ordena lo que un desarrollador Java aprende desde cero hasta llegar a producción. La idea central:
-no hay atajos; cada paso hace más fácil el siguiente, así que no saltes a Kafka sin dominar los
-fundamentos.
-
-```mermaid
-flowchart LR
-    F["Fundamentos<br/>pasos 1–5"] --> B["Base de datos<br/>pasos 6–7"]
-    B --> S["Ecosistema Spring<br/>pasos 8–10"]
-    S --> P["Grado de producción<br/>pasos 11–16"]
+```bash
+javac Hola.java
+java Hola
 ```
 
-| Paso | Tema de la ruta | Etapa | Dónde lo aprendes en la academia |
-|---|---|---|---|
-| 01 | Fundamentos de Java | Fundamentos | [Del código fuente a la JVM](/curso/java/0#tema-1-del-codigo-fuente-a-la-jvm) |
-| 02 | Conceptos de OOP | Fundamentos | [Clases, objetos, constructores y encapsulación](/curso/java/1#tema-1-clases-objetos-constructores-y-encapsulacion) |
-| 03 | Marco de colecciones | Fundamentos | [List, Set, Map y sus implementaciones](/curso/java/2#tema-1-list-set-map-y-sus-implementaciones) |
-| 04 | Manejo de excepciones | Fundamentos | [Excepciones personalizadas y no tragar excepciones](/curso/java/3#tema-3-excepciones-personalizadas-y-no-tragar-excepciones) |
-| 05 | Multihilo | Fundamentos | [ExecutorService y gestión de hilos](/curso/java/5#tema-1-executorservice-y-gestion-de-hilos), [Virtual threads](/curso/java/5#tema-3-virtual-threads) y [Condiciones de carrera y sincronización](/curso/java/5#tema-4-condiciones-de-carrera-y-sincronizacion) |
-| 06 | JDBC | Base de datos | [JDBC, PreparedStatement y DAO](/curso/java/17#tema-1-jdbc-preparedstatement-y-dao) |
-| 07 | SQL | Base de datos | [SQL para definir, escribir, consultar y relacionar](/curso/foundations/4#tema-2-sql-para-definir-escribir-consultar-y-relacionar) |
-| 08 | Spring Core | Ecosistema Spring | [Inversión de control y el contenedor de Spring](/curso/spring-boot/0#tema-1-inversion-de-control-y-el-contenedor-de-spring) |
-| 09 | Spring Boot | Ecosistema Spring | [Estereotipos, autoconfiguración y scopes](/curso/spring-boot/0#tema-3-estereotipos-autoconfiguracion-y-scopes) |
-| 10 | JPA / Hibernate | Ecosistema Spring | [Entidades y relaciones JPA](/curso/java/16#tema-1-entidades-y-relaciones-jpa) y [Persistencia con Spring Data JPA](/curso/spring-boot/4) |
-| 11 | Microservicios | Grado de producción | [Curso Microservicios](/curso/microservices/0) y [Microservicios con Spring Cloud](/curso/spring-boot/16) |
-| 12 | Kafka | Grado de producción | [Producers y consumers con Spring Kafka](/curso/spring-boot/10#tema-1-producers-y-consumers-con-spring-kafka) |
-| 13 | Docker | Grado de producción | [Dockerfile multi-stage](/curso/devops/2#tema-1-dockerfile-multi-stage) |
-| 14 | Kubernetes | Grado de producción | [Pod, ReplicaSet, Deployment](/curso/devops/6#tema-1-pod-replicaset-deployment) |
-| 15 | AWS en la nube | Grado de producción | [Contenedores vs Lambda, y EKS](/curso/cloud/14#tema-3-contenedores-vs-lambda-y-eks) |
-| 16 | Diseño de sistemas | Grado de producción | [Diseño de sistemas: de requisitos a estimación de capacidad y cuello de botella](/curso/foundations/10#tema-7-diseno-de-sistemas-de-requisitos-a-estimacion-de-capacidad-y-cuello-de-botella) |
+Salida esperada:
 
-## Mapa de la ruta
-
-«Java: fundamentos y temas avanzados» tiene 23 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto.
-
-```mermaid
-flowchart LR
-    E0["Fundamentos<br/>módulos 0–3"]
-    E1["Aplicación<br/>módulos 4–6 y 20"]
-    E2["Integración<br/>módulos 7–9, 16–17, 19 y 22"]
-    E3["Experto<br/>módulos 10–15, 18 y 21"]
-    E0 --> E1
-    E1 --> E2
-    E2 --> E3
+```text
+Mi entorno Java funciona
 ```
 
-| Módulo | Etapa | Qué aprendes |
-|---|---|---|
-| 0 | Fundamentos | [Sintaxis, tipos y el modelo de la JVM](/curso/java/0) |
-| 1 | Fundamentos | [Programación orientada a objetos, records y constructores flexibles](/curso/java/1) |
-| 2 | Fundamentos | [Colecciones, igualdad, genéricos y colas](/curso/java/2) |
-| 3 | Fundamentos | [Excepciones y manejo de recursos](/curso/java/3) |
-| 4 | Aplicación | [Streams, programación funcional y Stream Gatherers](/curso/java/4) |
-| 5 | Aplicación | [Concurrencia: hilos, virtual threads y structured concurrency](/curso/java/5) |
-| 6 | Aplicación | [I/O, NIO.2 y serialización](/curso/java/6) |
-| 7 | Integración | [Sealed classes, pattern matching y unnamed patterns](/curso/java/7) |
-| 8 | Integración | [Build tools: Maven y Gradle](/curso/java/8) |
-| 9 | Integración | [Testing con JUnit 6 (Jupiter) y Mockito](/curso/java/9) |
-| 10 | Experto | [Módulos (JPMS) y proyectos grandes](/curso/java/10) |
-| 11 | Experto | [JVM interna: GC, profiling, JIT y Foreign Function & Memory API](/curso/java/11) |
-| 12 | Experto | [Buenas prácticas y patrones de diseño](/curso/java/12) |
-| 13 | Experto | [Proyecto integrador](/curso/java/13) |
-| 14 | Experto | [Java en producción: memoria, benchmarks y runtime seguro](/curso/java/14) |
-| 15 | Experto | [Java Master: builds, testing y logging operacional](/curso/java/15) |
-| 16 | Integración | [JPA, Hibernate, consultas y persistencia en producción](/curso/java/16) |
-| 17 | Integración | [JDBC, DAO y transacciones](/curso/java/17) |
-| 18 | Experto | [HTTP, seguridad y backend con Java](/curso/java/18) |
-| 19 | Integración | [Java del día a día: reflexión, regex, dinero, contratos, plugins e i18n](/curso/java/19) |
-| 20 | Aplicación | [Java funcional: interfaces que componen comportamiento](/curso/java/20) |
-| 21 | Experto | [APIs públicas, compatibilidad y evolución](/curso/java/21) |
-| 22 | Integración | [El objeto por dentro: copia, enums y tipos anidados](/curso/java/22) |
+Si ves `class Hola is public, should be declared in a file named Hola.java`, el nombre del archivo no coincide con el nombre de la clase pública. Si ves `Could not find or load main class Hola`, estás en la carpeta equivocada o escribiste `java Hola.class`.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Explicar qué es programar y qué aporta Java |
+| 2 | Describir el flujo código fuente → bytecode → JVM |
+| 3 | Verificar que el entorno JDK está correctamente instalado |
+| 4 | Crear, compilar y ejecutar un programa sin IDE |
+| 5 | Elegir tipos primitivos y hacer conversiones seguras |
+| 6 | Trabajar con texto, salida, entrada y comparaciones correctas |
+| 7 | Escribir expresiones y entender precedencia/división entera |
+| 8 | Usar condicionales y bucles para controlar el flujo |
+| 9 | Guardar varios valores en arreglos y extraer lógica a métodos |
 
 ## Aprende construyendo
 
+### Tema 1: Qué es programar y qué problema resuelve Java · Básico · 25 min
 
-### Tema 1: Del código fuente a la JVM · Básico · 40 min
+**Caso guía**
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Tienes que calcular el precio final de un producto con IVA. La regla es simple: tomar el precio base, aplicar el impuesto y mostrar el resultado. Es un caso pequeño, pero obliga a lo esencial de programar: datos, proceso, salida y una forma de verificar que el resultado es correcto.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por del código fuente a la jvm con foco en comprensión antes de implementación.
+**Concepto clave / modelo mental**
 
-#### ► LA IDEA EN UNA FRASE
-**Entender del código fuente a la jvm te permite tomar mejores decisiones técnicas.**
+Programar es describir un procedimiento con precisión suficiente para que una máquina lo ejecute. Ese procedimiento suele tener cuatro partes:
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+1. **Entrada**: datos que llegan al programa (argumentos, teclado, archivo, red).
+2. **Proceso**: reglas que transforman esos datos.
+3. **Salida**: resultado observable (pantalla, archivo, respuesta).
+4. **Casos de error**: qué ocurre cuando la entrada o el contexto no son los esperados.
 
-#### ► LA ANALOGÍA
-Piensa en del código fuente a la jvm como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+Java es un lenguaje compilado a bytecode, de tipado estático y orientado a objetos. Eso lo hace útil cuando quieres código verificable antes de ejecutar, una base grande de librerías y una ejecución portable sobre la JVM. No es la herramienta para todo: para scripts muy pequeños o prototipos rápidos puede haber opciones más livianas; para sistemas con restricciones muy específicas puede convenir otro lenguaje.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que del código fuente a la jvm resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Implementación desde cero**
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Del código fuente a la JVM se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+Crea `PrecioFinal.java`:
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Del código fuente a la JVM | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses del código fuente a la jvm por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: del código fuente a la jvm funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Del código fuente a la JVM existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve del código fuente a la jvm en tu contexto?
-2. ¿Cómo sabrías que del código fuente a la jvm no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar del código fuente a la jvm?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-public final class Saludo {
+public class PrecioFinal {
+    public static void main(String[] args) {
+        double precioBase = 100.0;
+        double iva = 0.21;
+        double precioFinal = precioBase + (precioBase * iva);
+
+        System.out.println("Precio base: " + precioBase);
+        System.out.println("IVA: " + iva);
+        System.out.println("Precio final: " + precioFinal);
+    }
+}
+```
+
+**Desglose del código**
+
+- `public class PrecioFinal` define la clase. En Java, el código ejecutable vive dentro de clases.
+- `main` es el punto de entrada que la JVM busca al iniciar el programa.
+- `double` guarda números decimales. Aquí lo usamos para precio e IVA.
+- `precioBase + (precioBase * iva)` expresa la regla de negocio: precio más impuesto.
+- `System.out.println(...)` envía texto a la salida estándar. Es la forma más simple de observar el resultado.
+
+**Ejecución y salida real**
+
+```bash
+javac PrecioFinal.java
+java PrecioFinal
+```
+
+```text
+Precio base: 100.0
+IVA: 0.21
+Precio final: 121.0
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `class PrecioFinal is public, should be declared in a file named PrecioFinal.java` | El archivo se llama distinto a la clase pública | Renombra el archivo o la clase para que coincidan |
+| `Could not find or load main class PrecioFinal` | Ejecutaste desde otra carpeta o usaste `PrecioFinal.class` | Entra a la carpeta del `.class` y ejecuta `java PrecioFinal` |
+| El resultado no cambia tras editar | Ejecutaste el `.class` viejo | Vuelve a compilar con `javac` antes de ejecutar |
+
+**Verificación rápida**
+
+Cambia `precioBase` a `200.0`, recompila y ejecuta. La salida debe mostrar `Precio final: 242.0`. Si cambia, el programa está calculando y no solo imprimiendo un texto fijo.
+
+### Tema 2: JDK, JRE, JVM y bytecode (WORA) · Básico · 30 min
+
+**Contexto y para qué sirve**
+
+Muchos errores de principiantes no son de lógica, sino de entorno: confunden JDK con JRE, o ejecutan el `.class` como si fuera el `.java`. Entender el flujo de compilación y ejecución te permite ubicar dónde está el problema antes de tocar el código a ciegas.
+
+**Concepto clave / modelo mental**
+
+El flujo básico de Java es:
+
+```text
+Código fuente (.java)
+        │
+        │ javac
+        ▼
+Bytecode (.class)
+        │
+        │ java / JVM
+        ▼
+Ejecución en el sistema
+```
+
+- **JDK**: kit para desarrollar. Incluye compilador, JVM y herramientas.
+- **JVM**: máquina virtual que ejecuta bytecode.
+- **Bytecode**: formato intermedio. No es Java fuente ni código máquina nativo de tu CPU.
+- **WORA** (“Write Once, Run Anywhere”): el mismo bytecode puede ejecutarse en distintas plataformas si existe una JVM compatible. La portabilidad es del bytecode/modelo de ejecución; el acceso a archivos, rutas, codificaciones o librerías nativas sigue dependiendo del entorno.
+
+**Implementación desde cero**
+
+Crea `HolaJVM.java`:
+
+```java
+public class HolaJVM {
     public static void main(String[] args) {
         System.out.println("Hola desde la JVM");
+        System.out.println("Versión Java: " + System.getProperty("java.version"));
     }
 }
 ```
 
-```bash
-javac -d out src/Saludo.java
-java -cp out Saludo
-```
+Compila, lista archivos y ejecuta:
 
 ```bash
-javap -c -classpath out Saludo
+javac HolaJVM.java
+ls
+java HolaJVM
 ```
 
+Para inspeccionar el bytecode:
+
 ```bash
-java -cp out Saludo
-java -cp src Saludo
+javap -c HolaJVM
 ```
+
+**Desglose del código**
+
+- `javac HolaJVM.java` genera `HolaJVM.class`. Ese archivo contiene bytecode.
+- `java HolaJVM` recibe el **nombre de la clase**, no el nombre del archivo `.class`.
+- `System.getProperty("java.version")` consulta una propiedad del runtime. Sirve para observar qué JVM está ejecutando.
+- `javap -c` desensambla el bytecode. No hace falta dominarlo ahora; basta con reconocer que existe una representación intermedia.
+
+**Ejecución y salida real**
+
+```text
+Hola desde la JVM
+Versión Java: 27.0.1.0.2
+```
+
+La versión puede variar en tu máquina. El punto importante es que el programa se compila a `.class` y luego lo ejecuta la JVM.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `Error: Could not find or load main class HolaJVM.class` | Pasaste el nombre del archivo en lugar del nombre de la clase | Ejecuta `java HolaJVM` |
+| Cambiaste el código pero la salida es igual | No recompilaste | Ejecuta `javac HolaJVM.java` y luego `java HolaJVM` |
+| `javac: command not found` / no reconocido | JDK no instalado o PATH mal configurado | Revisa la instalación del JDK y la variable PATH |
+
+**Verificación rápida**
+
+```bash
+javac HolaJVM.java
+java HolaJVM
+javap -c HolaJVM | head
+```
+
+Debes ver el archivo `.class`, la salida del programa y un encabezado de bytecode generado por `javap`.
+
+### Tema 3: Instalar JDK y verificar entorno · Básico · 30 min
+
+**Contexto y para qué sirve**
+
+Un entorno mal configurado hace perder tiempo: el código puede estar bien, pero el sistema no encuentra el compilador o usa una versión distinta a la que esperas. Verificar el entorno antes de programar evita diagnósticos falsos y te da un punto de partida confiable.
+
+**Concepto clave / modelo mental**
+
+La verificación de entorno tiene tres capas:
+
+1. **Binarios disponibles**: `java` y `javac` responden en la terminal.
+2. **Coherencia**: ambos pertenecen al JDK que quieres usar.
+3. **Ejecución real**: puedes compilar y ejecutar un programa simple.
+
+`JAVA_HOME` es la variable de entorno que apunta al directorio del JDK. Muchas herramientas la usan (Gradle, Maven, IDEs, servidores CI). `PATH` es la lista de directorios donde el sistema busca ejecutables.
+
+**Implementación desde cero**
+
+Comandos de diagnóstico:
+
+```bash
+java -version
+javac -version
+```
+
+En macOS, también es útil:
+
+```bash
+/usr/libexec/java_home
+```
+
+En Windows PowerShell:
+
+```powershell
+echo $env:JAVA_HOME
+where.exe java
+where.exe javac
+```
+
+Crea `EntornoOk.java` para confirmar el runtime:
 
 ```java
-public final class Ayudante {
-    void saludar() { System.out.println("ayudando"); }
-}
-```
-
-```java
-public final class Principal {
+public class EntornoOk {
     public static void main(String[] args) {
-        new Ayudante().saludar();
+        System.out.println("Java version: " + System.getProperty("java.version"));
+        System.out.println("Java vendor: " + System.getProperty("java.vendor"));
+        System.out.println("OS: " + System.getProperty("os.name"));
     }
 }
 ```
 
-</details>
+**Desglose del código**
 
-### Tema 2: JDK, JRE y JVM · Básico · 30 min
+- `System.getProperty("java.version")` muestra la versión de Java que está usando la JVM actual.
+- `java.vendor` indica la distribución/proveedor del JDK.
+- `os.name` confirma el sistema operativo desde el que se ejecuta.
+- Este programa no prueba toda tu instalación, pero sí prueba el circuito completo: compilación + ejecución + propiedades del runtime.
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Ejecución y salida real**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por jdk, jre y jvm con foco en comprensión antes de implementación.
+Ejemplo verificado en esta máquina:
 
-#### ► LA IDEA EN UNA FRASE
-**Entender jdk, jre y jvm te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en jdk, jre y jvm como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que jdk, jre y jvm resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| JDK, JRE y JVM se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar JDK, JRE y JVM | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses jdk, jre y jvm por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: jdk, jre y jvm funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- JDK, JRE y JVM existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve jdk, jre y jvm en tu contexto?
-2. ¿Cómo sabrías que jdk, jre y jvm no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar jdk, jre y jvm?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-javac -d out src/Entorno.java
-java -cp out Entorno
+```text
+Java version: 27.0.1.0.2
+Java vendor: Eclipse Adoptium
+OS: Mac OS X
 ```
 
+Tu salida puede ser distinta. Lo relevante es que los tres valores aparezcan y tengan sentido para tu equipo.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `javac` no se reconoce | Instalaste JRE, o el JDK no está en PATH | Instala JDK y revisa `PATH`/`JAVA_HOME` |
+| `java` y `javac` muestran versiones muy distintas | Hay múltiples instalaciones en PATH | Ajusta PATH para que apunte al JDK correcto |
+| Cambiaste variables y sigue fallando | La terminal no recargó el entorno | Abre una terminal nueva y repite la verificación |
+
+**Verificación rápida**
+
 ```bash
-java --version
-javac --version
+javac EntornoOk.java
+java EntornoOk
 ```
+
+Si compila y ejecuta, el entorno base está listo para los siguientes temas.
+
+### Tema 4: Primer programa desde cero, sin IDE · Básico · 35 min
+
+**Caso guía**
+
+Quieres un programa pequeño que salude por nombre. Si el usuario no pasa un nombre, el programa debe indicar cómo usarlo. Este caso te obliga a cubrir el ciclo completo: archivo, clase, `main`, compilación, ejecución y argumentos.
+
+**Concepto clave / modelo mental**
+
+Un programa Java mínimo ejecutable necesita:
+
+- un archivo `.java`;
+- una clase;
+- un método `main` con la firma que la JVM espera;
+- una compilación exitosa;
+- una ejecución con `java NombreDeClase`.
+
+La firma estándar es:
 
 ```java
-public class Entorno {
-    public static void main(String[] args) {
-        System.out.println(System.getProperty("java.vm.name"));
-        System.out.println(System.getProperty("java.version"));
-    }
-}
+public static void main(String[] args)
 ```
 
-```bash
-javac -d out src/Entorno.java
-java -cp out Entorno
-```
+| Parte | Significado |
+|---|---|
+| `public` | La JVM puede invocarlo desde fuera de la clase |
+| `static` | No requiere crear un objeto para ejecutarse |
+| `void` | No devuelve un valor |
+| `String[] args` | Recibe argumentos de línea de comandos |
 
-```bash
-javac -d out src/Entorno.java
-java -cp out Entorno
-```
+**Implementación desde cero**
 
-</details>
-
-### Tema 3: public static void main — qué significa cada palabra · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por public static void main — qué significa cada palabra con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender public static void main — qué significa cada palabra te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en public static void main — qué significa cada palabra como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que public static void main — qué significa cada palabra resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| public static void main — qué significa cada palabra se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar public static void main — qué significa cada palabra | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses public static void main — qué significa cada palabra por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: public static void main — qué significa cada palabra funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- public static void main — qué significa cada palabra existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve public static void main — qué significa cada palabra en tu contexto?
-2. ¿Cómo sabrías que public static void main — qué significa cada palabra no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar public static void main — qué significa cada palabra?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-public final class PuntoEntrada {
-    public static void main(String[] args) {
-        System.out.println("Motor de entregas listo");
-        System.out.println("Argumentos recibidos: " + args.length);
-    }
-}
-```
-
-```bash
-javac -d out src/PuntoEntrada.java
-java -cp out PuntoEntrada
-```
+Crea `SaludoArgs.java`:
 
 ```java
-public final class PuntoEntrada {
+public class SaludoArgs {
     public static void main(String[] args) {
-        if (args.length < 2) {
-            System.out.println("Uso: java PuntoEntrada <origen> <destino>");
+        if (args.length == 0) {
+            System.out.println("Uso: java SaludoArgs <nombre>");
             return;
         }
 
-        String origen = args[0];
-        String destino = args[1];
-        System.out.printf("Ruta solicitada: %s -> %s%n", origen, destino);
+        String nombre = args[0];
+        System.out.println("Hola, " + nombre);
     }
 }
 ```
+
+**Desglose del código**
+
+- `args` contiene los argumentos pasados por terminal. Si ejecutas `java SaludoArgs Ada`, `args[0]` es `"Ada"`.
+- `args.length == 0` detecta que no se pasó ningún argumento.
+- `return;` termina la ejecución de `main` en ese punto.
+- La concatenación `"Hola, " + nombre` construye el mensaje final.
+
+**Ejecución y salida real**
 
 ```bash
-javac -d out src/PuntoEntrada.java
-java -cp out PuntoEntrada Medellin Envigado
-java -cp out PuntoEntrada Medellin
+javac SaludoArgs.java
+java SaludoArgs
+java SaludoArgs Ada
 ```
 
-```java
-void main() {
-    System.out.println("Hola, Java 25");
-}
+```text
+Uso: java SaludoArgs <nombre>
 ```
+
+```text
+Hola, Ada
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `Main method not found in class ...` | La firma de `main` no es correcta | Usa `public static void main(String[] args)` |
+| `ArrayIndexOutOfBoundsException` al leer `args[0]` | Asumiste que siempre hay argumentos | Valida `args.length` antes de acceder |
+| Compila pero no corre desde otra carpeta | El classpath/carpeta actual no contiene la clase | Ejecuta desde la carpeta donde está el `.class`, o usa `-cp` |
+
+**Verificación rápida**
 
 ```bash
-java Hola25.java
+javac SaludoArgs.java
+java SaludoArgs
+java SaludoArgs Linus
 ```
 
-</details>
+Debes ver el mensaje de uso en el primer caso y el saludo personalizado en el segundo.
 
-### Tema 4: Tipos primitivos vs referencias · Intermedio · 40 min
+### Tema 5: Tipos primitivos, variables y conversiones · Básico · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Contexto y para qué sirve**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por tipos primitivos vs referencias con foco en comprensión antes de implementación.
+Los tipos definen qué valores puede guardar una variable y qué operaciones tienen sentido. Elegir mal un tipo puede producir pérdida de datos, desbordamientos o errores de compilación. Este tema te da la base para representar números, caracteres y valores booleanos con criterio.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender tipos primitivos vs referencias te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-1. Contexto El Subtema 4.3 mostró que == siempre da false entre dos String creados con new. Pero si alguien prueba == con dos literales de texto en vez de new String(...), puede obtener true por accidente y concluir —equivocadamente— que == sí sirve para comparar texto.
+Java tiene ocho tipos primitivos:
 
-#### ► LA ANALOGÍA
-Piensa en tipos primitivos vs referencias como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+| Tipo | Qué representa | Ejemplo | Observación |
+|---|---|---|---|
+| `byte` | Entero pequeño | `byte b = 10;` | -128 a 127 |
+| `short` | Entero corto | `short s = 300;` | Poco frecuente |
+| `int` | Entero común | `int n = 42;` | Tipo entero por defecto |
+| `long` | Entero grande | `long l = 9_000_000_000L;` | Sufijo `L` |
+| `float` | Decimal simple precisión | `float f = 1.5f;` | Sufijo `f` |
+| `double` | Decimal doble precisión | `double d = 1.5;` | Tipo decimal por defecto |
+| `char` | Unidad UTF-16 | `char c = 'A';` | Comillas simples |
+| `boolean` | Verdadero/falso | `boolean ok = true;` | No es 0/1 |
 
-#### ► CÓMO FUNCIONA
-1. [ ] Distinguí un primitivo de una referencia y su valor por defecto (`null`).
-2. [ ] Reproduje `NullPointerException` al usar una referencia sin objeto.
-3. [ ] Comparé contenido con `equals` e identidad con `==` en objetos `new String(...)`.
-4. [ ] Expliqué por qué dos literales de texto pueden dar `== true` sin que eso valide usar `==` para texto en general.
+Conversión **amplia** (widening) ocurre cuando pasas a un tipo con más capacidad, por ejemplo `int` a `double`. Conversión **estrecha** (narrowing) ocurre al revés y puede perder información; por eso Java exige cast explícito.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tipos primitivos vs referencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tipos primitivos vs referencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+Crea `TiposYConversiones.java`:
 
-#### ► CUÁNDO NO USAR ESTO
-No uses tipos primitivos vs referencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tipos primitivos vs referencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- [ ] Distinguí un primitivo de una referencia y su valor por defecto (`null`).
-- [ ] Reproduje `NullPointerException` al usar una referencia sin objeto.
-- [ ] Comparé contenido con `equals` e identidad con `==` en objetos `new String(...)`.
-- [ ] Expliqué por qué dos literales de texto pueden dar `== true` sin que eso valide usar `==` para texto en general.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tipos primitivos vs referencias en tu contexto?
-2. ¿Cómo sabrías que tipos primitivos vs referencias no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tipos primitivos vs referencias?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-public class Tipos {
+public class TiposYConversiones {
     public static void main(String[] args) {
-        int entregas = 3;
-        double distanciaKm = 12.5;
-        System.out.println(entregas + " entregas, " + distanciaKm + " km");
+        int entero = 42;
+        long poblacion = 8_000_000_000L;
+        double precio = 19.99;
+        char inicial = 'J';
+        boolean activo = true;
+
+        double enteroComoDouble = entero;      // widening
+        int precioTruncado = (int) precio;     // narrowing
+
+        System.out.println(entero);
+        System.out.println(poblacion);
+        System.out.println(precio);
+        System.out.println(inicial);
+        System.out.println(activo);
+        System.out.println(enteroComoDouble);
+        System.out.println(precioTruncado);
     }
 }
 ```
+
+**Desglose del código**
+
+- `8_000_000_000L` usa guiones bajos para legibilidad y sufijo `L` porque el valor no cabe en un `int`.
+- `enteroComoDouble` es una conversión amplia: no hay pérdida de rango para ese valor.
+- `(int) precio` trunca la parte decimal. No redondea; corta.
+- `char` usa comillas simples; `String` usa comillas dobles.
+
+**Ejecución y salida real**
 
 ```bash
-javac -d out src/Tipos.java
-java -cp out Tipos
+javac TiposYConversiones.java
+java TiposYConversiones
 ```
 
-```java
-public class Tipos {
-    static class Envio {
-        String guia;
-        String destino;
-    }
-
-    public static void main(String[] args) {
-        Envio envio = new Envio();
-        envio.guia = "RT-8";
-        envio.destino = "Cali";
-        System.out.println(envio.guia + " -> " + envio.destino);
-    }
-}
+```text
+42
+8000000000
+19.99
+J
+true
+42.0
+19
 ```
 
-```java
-public class Tipos {
-    public static void main(String[] args) {
-        String a = new String("RT-8");
-        String b = new String("RT-8");
-        System.out.println(a.equals(b));
-        System.out.println(a == b);
-    }
-}
-```
+**Errores comunes y cómo resolverlos**
 
-```java
-public class Tipos {
-    public static void main(String[] args) {
-        String literalA = "RT-8";
-        String literalB = "RT-8";
-        String nuevaA = new String("RT-8");
-        System.out.println("literal == literal: " + (literalA == literalB));
-        System.out.println("literal == new String: " + (literalA == nuevaA));
-        System.out.println("new String().intern() == literal: " + (nuevaA.intern() == literalA));
-    }
-}
-```
-
-</details>
-
-### Tema 5: Variables, conversiones y `String` · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por variables, conversiones y `string` con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender variables, conversiones y `string` te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en variables, conversiones y `string` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que variables, conversiones y `string` resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Variables, conversiones y `String` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| `integer number too large` | Literal entero fuera de rango de `int` sin sufijo `L` | Usa `long` y agrega `L` |
+| `possible lossy conversion from double to int` | Intentaste narrowing sin cast | Haz cast explícito solo si aceptas la pérdida |
+| Overflow silencioso: `Integer.MAX_VALUE + 1` da negativo | El `int` se desborda | Usa `long` o `Math.addExact` para detectar |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Variables, conversiones y `String` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+Ejemplo de overflow:
 
-#### ► CUÁNDO NO USAR ESTO
-No uses variables, conversiones y `string` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+```java
+public class Desbordamiento {
+    public static void main(String[] args) {
+        int maximo = Integer.MAX_VALUE;
+        System.out.println(maximo);
+        System.out.println(maximo + 1);
+    }
+}
+```
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: variables, conversiones y `string` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+Salida real:
 
-#### ► LO QUE DEBES RECORDAR
-- Variables, conversiones y `String` existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
+```text
+2147483647
+-2147483648
+```
 
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve variables, conversiones y `string` en tu contexto?
-2. ¿Cómo sabrías que variables, conversiones y `string` no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar variables, conversiones y `string`?
+**Verificación rápida**
 
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```bash
-javac -d out src/LeerPeso.java
-java -cp out LeerPeso 2.75
+javac TiposYConversiones.java && java TiposYConversiones
+javac Desbordamiento.java && java Desbordamiento
 ```
+
+Confirma que `19.99` se trunca a `19` y que el desbordamiento de `int` no lanza excepción, sino que da vuelta al rango.
+
+### Tema 6: String, entrada/salida y formato · Básico · 40 min
+
+**Caso guía**
+
+Necesitas pedir el nombre de una persona, mostrar un saludo y comparar una respuesta textual. Es un caso cotidiano en aplicaciones de consola y te expone a las trampas más comunes de `String`: inmutabilidad, espacios y comparación por contenido.
+
+**Concepto clave / modelo mental**
+
+- `System.out.println` imprime y agrega salto de línea; `System.out.print` imprime sin salto.
+- `String` es una clase inmutable: sus métodos devuelven nuevos strings, no modifican el original.
+- La comparación de contenido entre strings se hace con `.equals()`, no con `==`.
+- `Scanner` lee texto desde una fuente, por ejemplo `System.in`.
 
 ```java
-public class Variables {
-    public static void main(String[] args) {
-        int paquetes = 2;
-        paquetes = paquetes + 1;
-        final String zona = "Norte";
-        System.out.println(zona + ": " + paquetes);
-    }
-}
+String a = "java";
+String b = new String("java");
+a == b      // compara referencias
+a.equals(b) // compara contenido
 ```
 
-```java
-public class Conversion {
-    public static void main(String[] args) {
-        double pesoKg = 2.75;
-        int pesoEntero = (int) pesoKg;
-        System.out.println(pesoKg);
-        System.out.println(pesoEntero);
-    }
-}
-```
+**Implementación desde cero**
 
-```java
-public class LeerPeso {
-    public static void main(String[] args) {
-        try {
-            double peso = Double.parseDouble(args[0]);
-            System.out.println("Peso: " + peso + " kg");
-        } catch (NumberFormatException | ArrayIndexOutOfBoundsException error) {
-            System.out.println("Uso: java LeerPeso <número>");
-        }
-    }
-}
-```
-
-</details>
-
-### Tema 6: Operadores, precedencia y control de flujo · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por operadores, precedencia y control de flujo con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender operadores, precedencia y control de flujo te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en operadores, precedencia y control de flujo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que operadores, precedencia y control de flujo resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Operadores, precedencia y control de flujo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Operadores, precedencia y control de flujo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses operadores, precedencia y control de flujo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: operadores, precedencia y control de flujo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Operadores, precedencia y control de flujo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve operadores, precedencia y control de flujo en tu contexto?
-2. ¿Cómo sabrías que operadores, precedencia y control de flujo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar operadores, precedencia y control de flujo?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-javac -d out src/Condicion.java
-java -cp out Condicion
-```
-
-```java
-public class Condicion {
-    static class Paquete {
-        double pesoKg;
-    }
-
-    static boolean pesoValido(Paquete paquete) {
-        return paquete != null && paquete.pesoKg > 0 && paquete.pesoKg <= 50;
-    }
-
-    public static void main(String[] args) {
-        Paquete paquete = new Paquete();
-        paquete.pesoKg = 12.5;
-        System.out.println(pesoValido(null));
-        System.out.println(pesoValido(paquete));
-    }
-}
-```
-
-```java
-enum Estado { CREADO, EN_RUTA, ENTREGADO }
-
-public class MensajeEstado {
-    static String mensaje(Estado estado) {
-        return switch (estado) {
-            case CREADO -> "Guía registrada";
-            case EN_RUTA -> "Conductor en recorrido";
-            case ENTREGADO -> "Entrega confirmada";
-        };
-    }
-
-    public static void main(String[] args) {
-        System.out.println(mensaje(Estado.EN_RUTA));
-    }
-}
-```
-
-```java
-public class Recorrido {
-    public static void main(String[] args) {
-        String[] guias = {"RT-1", "RT-2", "RT-3"};
-        for (int i = 0; i < guias.length; i++) {
-            System.out.println(i + ": " + guias[i]);
-        }
-    }
-}
-```
-
-```java
-public class Precedencia {
-    static boolean sinParentesis(boolean esUrgente, boolean pesoExcedido, boolean clienteVip) {
-        return esUrgente || pesoExcedido && clienteVip;
-    }
-
-    static boolean conParentesis(boolean esUrgente, boolean pesoExcedido, boolean clienteVip) {
-        return (esUrgente || pesoExcedido) && clienteVip;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(sinParentesis(true, false, false));
-        System.out.println(conParentesis(true, false, false));
-    }
-}
-```
-
-</details>
-
-### Tema 7: Arreglos, wrappers y paso de argumentos · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por arreglos, wrappers y paso de argumentos con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender arreglos, wrappers y paso de argumentos te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en arreglos, wrappers y paso de argumentos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que arreglos, wrappers y paso de argumentos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Arreglos, wrappers y paso de argumentos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Arreglos, wrappers y paso de argumentos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses arreglos, wrappers y paso de argumentos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: arreglos, wrappers y paso de argumentos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Arreglos, wrappers y paso de argumentos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve arreglos, wrappers y paso de argumentos en tu contexto?
-2. ¿Cómo sabrías que arreglos, wrappers y paso de argumentos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar arreglos, wrappers y paso de argumentos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-public class Guias {
-    public static void main(String[] args) {
-        String[] guias = {"RT-1", "RT-2"};
-        for (String guia : guias) System.out.println(guia);
-        System.out.println("Total: " + guias.length);
-    }
-}
-```
-
-```java
-public class Wrapper {
-    public static void main(String[] args) {
-        Integer cajas = Integer.valueOf(args[0]);
-        int total = cajas + 1;
-        System.out.println(total);
-    }
-}
-```
-
-```java
-public class PasoValor {
-    static void cambiar(StringBuilder texto) {
-        texto.append(" listo");
-        texto = new StringBuilder("otro");
-    }
-
-    public static void main(String[] args) {
-        StringBuilder estado = new StringBuilder("pedido");
-        cambiar(estado);
-        System.out.println(estado);
-    }
-}
-```
-
-</details>
-
-### Tema 8: Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Entrada, `java.time` y por qué evitar las APIs obsoletas (`Date`/`Calendar`) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) en tu contexto?
-2. ¿Cómo sabrías que entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar entrada, `java.time` y por qué evitar las apis obsoletas (`date`/`calendar`)?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-javac -d out src/FechaEntrega.java
-java -cp out FechaEntrega 2026-11-03
-```
+Crea `TextoIO.java`:
 
 ```java
 import java.util.Scanner;
 
-public class Entrada {
+public class TextoIO {
     public static void main(String[] args) {
-        try (Scanner entrada = new Scanner(System.in)) {
-            System.out.print("Paquetes: ");
-            if (!entrada.hasNextInt()) {
-                System.out.println("Escribe un número entero");
-                return;
-            }
-            System.out.println("Recibidos: " + entrada.nextInt());
+        String lenguaje = "Java";
+        System.out.println("Lenguaje: " + lenguaje);
+        System.out.println("Longitud: " + lenguaje.length());
+        System.out.println("Mayúsculas: " + lenguaje.toUpperCase());
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Escribe tu nombre: ");
+        String nombre = scanner.nextLine();
+        System.out.println("Hola, " + nombre.trim());
+        scanner.close();
+    }
+}
+```
+
+Crea `CompararStrings.java`:
+
+```java
+public class CompararStrings {
+    public static void main(String[] args) {
+        String a = "java";
+        String b = new String("java");
+
+        System.out.println(a == b);
+        System.out.println(a.equals(b));
+        System.out.println("si".equalsIgnoreCase("SI"));
+    }
+}
+```
+
+**Desglose del código**
+
+- `lenguaje.length()` devuelve la cantidad de caracteres.
+- `toUpperCase()` devuelve otro `String`; `lenguaje` sigue valiendo `"Java"`.
+- `scanner.nextLine()` lee una línea completa de entrada.
+- `trim()` quita espacios al inicio y final, útil para entrada de usuario.
+- `equalsIgnoreCase` compara contenido ignorando mayúsculas/minúsculas.
+
+**Ejecución y salida real**
+
+Para `CompararStrings`:
+
+```bash
+javac CompararStrings.java
+java CompararStrings
+```
+
+```text
+false
+true
+true
+```
+
+Para `TextoIO`, la salida depende de la entrada. Si escribes ` Ada `:
+
+```text
+Lenguaje: Java
+Longitud: 4
+Mayúsculas: JAVA
+Escribe tu nombre:  Ada 
+Hola, Ada
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Dos strings iguales dan `false` con `==` | Comparaste referencias, no contenido | Usa `equals()` o `equalsIgnoreCase()` |
+| `NullPointerException` al hacer `respuesta.equals("si")` | `respuesta` es `null` | Usa `"si".equals(respuesta)` |
+| `Scanner` mezcla `nextInt()` y `nextLine()` | Queda un salto de línea pendiente | Consume el salto con `nextLine()` o usa una estrategia consistente |
+
+**Verificación rápida**
+
+```bash
+javac CompararStrings.java && java CompararStrings
+```
+
+Verifica que `==` devuelva `false` y `equals()` devuelva `true` para el mismo contenido creado con `new String(...)`.
+
+### Tema 7: Operadores, expresiones y precedencia · Básico · 35 min
+
+**Contexto y para qué sirve**
+
+Las expresiones combinan valores y operadores para producir un resultado. Si no entiendes precedencia, tipos numéricos y operadores lógicos, puedes escribir código que compila pero calcula mal. Este tema fija las reglas que después vas a usar en condiciones, bucles y cálculos.
+
+**Concepto clave / modelo mental**
+
+Grupos de operadores que usarás desde el inicio:
+
+| Grupo | Operadores | Ejemplo | Resultado |
+|---|---|---|---|
+| Aritméticos | `+ - * / %` | `10 / 3` | `3` si ambos son `int` |
+| Comparación | `== != < > <= >=` | `a > b` | `boolean` |
+| Lógicos | `&& || !` | `edad >= 18 && activo` | `boolean` |
+| Asignación compuesta | `+= -= *= /=` | `x += 2` | modifica `x` |
+
+Dos reglas prácticas:
+
+- La división entre enteros descarta decimales.
+- Cuando una expresión tenga varias operaciones, usa paréntesis para hacer explícita la intención.
+
+**Implementación desde cero**
+
+Crea `Operadores.java`:
+
+```java
+public class Operadores {
+    public static void main(String[] args) {
+        int a = 10;
+        int b = 3;
+
+        System.out.println(a + b);
+        System.out.println(a - b);
+        System.out.println(a * b);
+        System.out.println(a / b);
+        System.out.println(a % b);
+
+        double promedio = 5 / 2.0;
+        System.out.println(promedio);
+
+        boolean puedeEntrar = (a > 5) && (b < 5);
+        System.out.println(puedeEntrar);
+    }
+}
+```
+
+**Desglose del código**
+
+- `a / b` con dos `int` produce división entera: `3`.
+- `%` devuelve el resto: `10 % 3` es `1`.
+- `5 / 2.0` fuerza una operación con decimal, por eso el resultado es `2.5`.
+- `&&` solo es `true` cuando ambas condiciones son verdaderas.
+- Los paréntesis en `puedeEntrar` no son obligatorios aquí, pero hacen la intención visible.
+
+**Ejecución y salida real**
+
+```bash
+javac Operadores.java
+java Operadores
+```
+
+```text
+13
+7
+30
+3
+1
+2.5
+true
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Esperabas `2.5` y obtuviste `2` | División entera entre `int` | Convierte uno de los operandos a `double` |
+| Condición difícil de leer o con bug | Precedencia poco clara | Agrega paréntesis |
+| `=` en vez de `==` | Confusión entre asignación y comparación | Usa `==` para comparar primitivos; en booleanos Java suele detectar el error de tipo |
+
+**Verificación rápida**
+
+```bash
+javac Operadores.java && java Operadores
+```
+
+Cambia `5 / 2.0` por `5 / 2` y observa la diferencia. Ese cambio pequeño explica muchos bugs reales.
+
+### Tema 8: Control de flujo: decisiones y repeticiones · Básico · 45 min
+
+**Caso guía**
+
+Imagina un programa que valida la edad de una persona, traduce un número de día y cuenta hacia atrás. Son tareas distintas, pero todas dependen de la misma capacidad: decidir qué ejecutar y repetir instrucciones con una condición clara.
+
+**Concepto clave / modelo mental**
+
+Las estructuras básicas son:
+
+- `if / else`: ejecuta una rama según una condición booleana.
+- `switch`: elige entre casos discretos.
+- `for`: repite cuando conoces o controlas el ciclo de iteración.
+- `while`: repite mientras una condición sea verdadera.
+- `do/while`: ejecuta al menos una vez y luego evalúa.
+- `break` y `continue`: alteran el ciclo, pero conviene usarlos con moderación.
+
+**Implementación desde cero**
+
+Crea `Flujo.java`:
+
+```java
+public class Flujo {
+    public static void main(String[] args) {
+        int edad = 20;
+        if (edad >= 18) {
+            System.out.println("Mayor de edad");
+        } else {
+            System.out.println("Menor de edad");
+        }
+
+        int dia = 3;
+        String nombreDia = switch (dia) {
+            case 1 -> "Lunes";
+            case 2 -> "Martes";
+            case 3 -> "Miércoles";
+            default -> "Otro día";
+        };
+        System.out.println(nombreDia);
+
+        for (int i = 1; i <= 3; i++) {
+            System.out.println("for:" + i);
+        }
+
+        int n = 3;
+        while (n > 0) {
+            System.out.println("while:" + n);
+            n--;
         }
     }
 }
 ```
 
-```java
-import java.time.LocalDate;
+**Desglose del código**
 
-public class FechaEntrega {
-    public static void main(String[] args) {
-        LocalDate entrega = LocalDate.parse(args[0]);
-        System.out.println(entrega.plusDays(1));
-    }
-}
-```
+- `if (edad >= 18)` evalúa una condición booleana. Solo una rama se ejecuta.
+- El `switch` moderno con `->` devuelve un valor y evita `break` en cada caso.
+- `for (int i = 1; i <= 3; i++)` concentra inicialización, condición y avance.
+- En el `while`, `n--` es esencial: sin avance hacia la condición de salida, el bucle sería infinito.
 
-```java
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-
-public class Instantes {
-    public static void main(String[] args) {
-        Instant ahora = Instant.now();
-        ZonedDateTime bogota = ahora.atZone(ZoneId.of("America/Bogota"));
-        System.out.println(ahora);
-        System.out.println(bogota);
-    }
-}
-```
-
-</details>
-
-### Tema 9: Java 25 para programas pequeños: `IO`, archivos compactos e `import module` · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por java 25 para programas pequeños: `io`, archivos compactos e `import module` con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender java 25 para programas pequeños: `io`, archivos compactos e `import module` te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en java 25 para programas pequeños: `io`, archivos compactos e `import module` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que java 25 para programas pequeños: `io`, archivos compactos e `import module` resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Java 25 para programas pequeños: `IO`, archivos compactos e `import module` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Java 25 para programas pequeños: `IO`, archivos compactos e `import module` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses java 25 para programas pequeños: `io`, archivos compactos e `import module` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: java 25 para programas pequeños: `io`, archivos compactos e `import module` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Java 25 para programas pequeños: `IO`, archivos compactos e `import module` existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve java 25 para programas pequeños: `io`, archivos compactos e `import module` en tu contexto?
-2. ¿Cómo sabrías que java 25 para programas pequeños: `io`, archivos compactos e `import module` no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar java 25 para programas pequeños: `io`, archivos compactos e `import module`?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-void main() {
-    String nombre = IO.readln("Conductor: ");
-    IO.println("Hola, " + nombre + ". Hoy tienes " + List.of("RF-1", "RF-2").size() + " entregas.");
-}
-```
+**Ejecución y salida real**
 
 ```bash
-java Saludo.java
-```
-
-```java
-import module java.base;
-
-public class Modulos {
-    public static void main(String[] args) {
-        List<String> guias = new ArrayList<>(List.of("RF-2", "RF-1"));
-        Collections.sort(guias);
-        Map<String, LocalDate> entregas = new TreeMap<>();
-        entregas.put(guias.get(0), LocalDate.of(2026, 11, 18));
-        IO.println(guias + " " + entregas);
-    }
-}
-```
-
-```java
-import module java.base;
-import module java.desktop;
-
-public class Ambiguo {
-    public static void main(String[] args) {
-        List<String> guias = List.of("RF-1");
-        IO.println(guias);
-    }
-}
+javac Flujo.java
+java Flujo
 ```
 
 ```text
-error: reference to List is ambiguous
-  both class java.awt.List in java.awt and interface java.util.List in java.util match
+Mayor de edad
+Miércoles
+for:1
+for:2
+for:3
+while:3
+while:2
+while:1
 ```
 
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| El programa nunca termina | Bucle sin condición de salida o sin avance | Verifica que la condición pueda volverse falsa |
+| `incompatible types: int cannot be converted to boolean` | Usaste `=` en vez de `==` | Corrige la comparación |
+| `switch` no cubre valores esperados | Falta `default` o casos | Agrega `default` y revisa los valores posibles |
+
+**Verificación rápida**
+
+```bash
+javac Flujo.java && java Flujo
+```
+
+Cambia `edad`, `dia` y el límite del `for`. Antes de ejecutar, predice la salida; luego confirma.
+
+### Tema 9: Arreglos y métodos básicos · Básico · 50 min
+
+**Caso guía**
+
+Tienes varias notas de un alumno y quieres mostrar cada una y calcular el promedio. Podrías crear `nota1`, `nota2`, `nota3`, pero esa solución no escala. Este caso pide dos herramientas: una estructura para guardar varios valores y métodos para separar responsabilidades.
+
+**Concepto clave / modelo mental**
+
+Un **arreglo** es una estructura de tamaño fijo con elementos del mismo tipo. Se accede por índice, empezando en `0`.
+
+```text
+índices:  0   1   2   3
+valores: [10,  8,  9,  7]
+length = 4
+```
+
+Un **método** es un bloque con nombre que puede recibir parámetros y devolver un resultado. Permite nombrar una intención: `promedio`, `imprimir`, `calcularTotal`.
+
+**Implementación desde cero**
+
+Crea `ArreglosMetodos.java`:
+
 ```java
-void main() {
-    double a = Double.parseDouble(IO.readln("Tramo 1 (km): "));
-    double b = Double.parseDouble(IO.readln("Tramo 2 (km): "));
-    IO.println("Total: %.1f km".formatted(a + b));
+public class ArreglosMetodos {
+    public static void main(String[] args) {
+        int[] notas = {10, 8, 9, 7};
+
+        imprimirNotas(notas);
+        System.out.println("Promedio: " + promedio(notas));
+    }
+
+    static void imprimirNotas(int[] valores) {
+        for (int i = 0; i < valores.length; i++) {
+            System.out.println("nota[" + i + "]=" + valores[i]);
+        }
+    }
+
+    static double promedio(int[] valores) {
+        int suma = 0;
+        for (int valor : valores) {
+            suma += valor;
+        }
+        return (double) suma / valores.length;
+    }
 }
 ```
 
-</details>
+**Desglose del código**
+
+- `int[] notas = {10, 8, 9, 7};` crea el arreglo con cuatro elementos.
+- `valores.length` da el tamaño total; el último índice válido es `length - 1`.
+- `imprimirNotas` no devuelve valor (`void`): su efecto es imprimir.
+- `promedio` devuelve `double`. El cast `(double) suma` evita la división entera.
+- El `for-each` en `promedio` es adecuado porque no necesitamos el índice.
+
+**Ejecución y salida real**
+
+```bash
+javac ArreglosMetodos.java
+java ArreglosMetodos
+```
+
+```text
+nota[0]=10
+nota[1]=8
+nota[2]=9
+nota[3]=7
+Promedio: 8.5
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `ArrayIndexOutOfBoundsException` | Accediste a un índice fuera de `0..length-1` | Revisa el límite del bucle y el índice usado |
+| Promedio `8` en vez de `8.5` | División entera | Convierte `suma` o `valores.length` a `double` |
+| `ArithmeticException: / by zero` o resultado inválido | Arreglo vacío | Valida `valores.length == 0` antes de dividir |
+
+**Verificación rápida**
+
+```bash
+javac ArreglosMetodos.java && java ArreglosMetodos
+```
+
+Prueba con `int[] notas = {10, 10, 9};`. El promedio debe ser `9.666...`, lo que confirma que la división no es entera.
+
+## Cierre del módulo
+
+En este módulo pasaste de “no tengo Java instalado” a entender el ciclo completo de trabajo: entorno, compilación, ejecución, tipos básicos, texto, operadores, flujo, arreglos y métodos. En el siguiente módulo ese código deja de ser una secuencia suelta y empieza a organizarse en clases y objetos.
