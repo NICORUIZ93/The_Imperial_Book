@@ -1,33 +1,41 @@
-# Módulo 0 · Java moderno y Spring Boot
+# Módulo 0 · Java moderno y Spring Boot para microservicios
 
-Este módulo prepara la base Java/Spring para microservicios: características modernas de Java, virtual threads, contenedor Spring, auto-configuración, multi-módulo, configuración externalizada y opciones de runtime como CRaC/GraalVM. El foco es entender qué problema resuelve cada pieza y qué costo introduce.
+Antes de hablar de gateways, sagas o Kubernetes, un microservicio Spring necesita una base sólida: Java moderno, concurrencia, contenedor de dependencias, configuración y opciones de runtime. Este módulo va de cero a experto en esa base, con ejemplos mínimos ejecutables y notas honestas cuando una feature requiere infraestructura específica.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Gradle 9.8.2. Ejemplos Java puros ejecutados localmente. Features Spring Boot se describen con notas de versión cuando aplican.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Gradle 9.8.2. Los ejemplos Java puros se ejecutaron localmente. Las partes específicas de Spring/CRaC/GraalVM incluyen **Nota de verificación** cuando no se ejecutaron en este entorno.
 
 ## Aprende construyendo
 
-### Tema 1: Java 21: Streams, Lambdas, Optional, Records, Pattern Matching · Intermedio · 360 min
+### Tema 1: Java 21: streams, lambdas, Optional, records y pattern matching · Intermedio · 360 min
 
-Caso guía: normalizar pedidos entrantes, filtrar inválidos y modelar respuestas inmutables.
+Caso guía: normalizar pedidos entrantes, filtrar inválidos y producir DTOs inmutables.
 
-#### Lambdas y Streams
+#### Modelo mental
 
-**Definición formal.** Una lambda es una función anónima que implementa una interfaz funcional. Un Stream es un pipeline declarativo de operaciones sobre datos, lazy en intermedias y ejecutado en terminal.
+Java moderno reduce boilerplate y hace más explícito el contrato de datos. Streams/lambdas expresan transformaciones; Optional expresa ausencia; records modelan datos inmutables; pattern matching reduce casting y ramificación frágil.
 
-**Ejemplo mínimo enfocado (ejecutable).**
+#### Ejemplo mínimo enfocado: lambdas y streams
+
+**Definición formal.** Una lambda implementa una interfaz funcional. Un `Stream` es un pipeline lazy: operaciones intermedias no ejecutan hasta una operación terminal.
+
+**Cuándo usarlo / cuándo no.** Úsalo para transformar/filtrar colecciones con claridad. No lo uses cuando un bucle simple sea más legible o cuando la depuración sea crítica.
 
 ```bash
-mkdir -p ms5-stream
-cd ms5-stream
+mkdir -p sm0-stream
+cd sm0-stream
 ```
 
 Crea el archivo `DemoStream.java`:
 
 ```java
-import java.util.*; import java.util.stream.*;
+import java.util.*;
+import java.util.stream.*;
 public class DemoStream {
   public static void main(String[] args) {
-    var r = List.of(1,2,3,4).stream().filter(x -> x % 2 == 0).map(x -> x * 10).toList();
+    var r = List.of(1, 2, 3, 4).stream()
+      .filter(x -> x % 2 == 0)
+      .map(x -> x * 10)
+      .toList();
     System.out.println(r);
   }
 }
@@ -38,19 +46,23 @@ javac DemoStream.java
 java DemoStream
 ```
 
-**Error común.** Usar streams para todo y ocultar lógica simple. Corrección: legibilidad primero.
+**Caso de uso real.** Filtrar pedidos válidos y mapearlos a DTOs antes de responder una API.
 
-**Verificación (JDK 27, 2026-05-22).** `[20, 40]`.
+**Error común.** Usar streams con efectos secundarios ocultos.
 
-#### Optional
+**Síntoma.** resultados difíciles de depurar o dependientes del orden de ejecución. **Causa.** mutar estado externo desde `map/filter`. **Corrección.** mantener funciones puras; usar bucle o collector explícito si hay mutación necesaria. **Señal observable.** tests flaky o distintos resultados al paralelizar.
 
-**Definición formal.** Contenedor que expresa ausencia/presencia sin `null`.
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `[20, 40]`.
 
-**Ejemplo mínimo enfocado (ejecutable).**
+#### Ejemplo mínimo enfocado: Optional
+
+**Definición formal.** `Optional<T>` representa presencia o ausencia de valor, evitando `null` como contrato implícito.
+
+**Cuándo usarlo / cuándo no.** Úsalo en retornos donde la ausencia es normal. No lo uses en campos de entidades JPA ni como parámetro de todos los métodos.
 
 ```bash
-mkdir -p ms5-opt
-cd ms5-opt
+mkdir -p sm0-opt
+cd sm0-opt
 ```
 
 Crea el archivo `DemoOpt.java`:
@@ -58,8 +70,11 @@ Crea el archivo `DemoOpt.java`:
 ```java
 import java.util.*;
 public class DemoOpt {
-  static Optional<String> find(boolean ok){ return ok ? Optional.of("A") : Optional.empty(); }
-  public static void main(String[] args){ System.out.println(find(true).orElse("X")); System.out.println(find(false).orElse("X")); }
+  static Optional<String> find(boolean ok) { return ok ? Optional.of("A") : Optional.empty(); }
+  public static void main(String[] args) {
+    System.out.println(find(true).orElse("X"));
+    System.out.println(find(false).orElse("X"));
+  }
 }
 ```
 
@@ -68,19 +83,23 @@ javac DemoOpt.java
 java DemoOpt
 ```
 
-**Error común.** `Optional.get()` sin verificar. Corrección: `orElse/orElseThrow/map`.
+**Caso de uso real.** Buscar cliente por id y devolver 404 si no existe.
 
-**Verificación (2026-05-22).** `A`, `X`.
+**Error común.** Llamar `Optional.get()` sin comprobar.
 
-#### Records y pattern matching
+**Síntoma.** `NoSuchElementException` en producción. **Causa.** asumir presencia. **Corrección.** `orElseThrow`, `map`, `orElse`. **Señal observable.** stack trace con `Optional.get`.
 
-**Definición formal.** Record: clase inmutable de datos con constructor/accesores/equals/hashCode/toString. Pattern matching permite desestructurar/condicionar por forma.
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `A`, `X`.
 
-**Ejemplo mínimo enfocado (ejecutable).**
+#### Ejemplo mínimo enfocado: records y pattern matching
+
+**Definición formal.** Un record es una clase de datos inmutable con constructor, accesores, `equals`, `hashCode` y `toString`. Pattern matching de `switch` permite desestructurar y aplicar guardas.
+
+**Cuándo usarlo / cuándo no.** Úsalo para DTOs/value objects. No lo uses para entidades JPA mutables o con identidad gestionada por ORM.
 
 ```bash
-mkdir -p ms5-rec
-cd ms5-rec
+mkdir -p sm0-rec
+cd sm0-rec
 ```
 
 Crea el archivo `DemoRec.java`:
@@ -91,11 +110,14 @@ public class DemoRec {
   static String label(Object o) {
     return switch (o) {
       case User(String n, int a) when a >= 18 -> n + ":adult";
-      case User(String n, int _) -> n + ":minor";
+      case User(String n, int a) -> n + ":minor";
       default -> "other";
     };
   }
-  public static void main(String[] args){ System.out.println(label(new User("Ana",20))); }
+  public static void main(String[] args) {
+    System.out.println(label(new User("Ana", 20)));
+    System.out.println(label(new User("Ben", 10)));
+  }
 }
 ```
 
@@ -104,40 +126,47 @@ javac DemoRec.java
 java DemoRec
 ```
 
-**Error común.** Usar record como entidad JPA mutable. Corrección: records para DTOs/value objects inmutables.
+**Caso de uso real.** DTOs de request/response en Spring MVC.
 
-**Verificación (JDK 27, 2026-05-22).** `Ana:adult`.
+**Error común.** Usar records como entidades JPA.
+
+**Síntoma.** problemas con proxies, mutabilidad y setters esperados por JPA. **Causa.** JPA espera entidades mutables/no-final en muchos casos. **Corrección.** records para DTO; clases controladas para entidades. **Señal observable.** errores de Hibernate/proxy o diseño forzado.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `Ana:adult`, `Ben:minor`.
 
 ### Tema 2: Virtual Threads (Project Loom) · Avanzado · 240 min
 
-Caso guía: muchas requests I/O bloqueantes concurrentes.
+Caso guía: endpoint I/O-bound que espera llamadas a DB/HTTP sin bloquear hilos de plataforma caros.
 
 #### Virtual threads
 
-**Definición formal.** Hilos ligeros administrados por la JVM que permiten estilo bloqueante con alta concurrencia en I/O. No hacen magia con CPU-bound.
+**Definición formal.** Los virtual threads son hilos ligeros gestionados por la JVM. Permiten escribir código bloqueante con alta concurrencia en I/O, porque la JVM desmonta el virtual thread del carrier thread cuando bloquea.
+
+**Cuándo usarlo / cuándo no.** Úsalo para mucha concurrencia I/O-bound. No lo uses como acelerador mágico de CPU-bound; evita pinning en secciones críticas largas.
 
 ```mermaid
 flowchart LR
   VT1[Virtual Thread] --> C[Carrier Thread]
   VT2[Virtual Thread] --> C
   C --> CPU[CPU]
-  VT1 -.bloquea I/O, se desmonta.-> C
+  VT1 -.I/O bloqueante: se desmonta.-> C
 ```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p ms5-vt
-cd ms5-vt
+mkdir -p sm0-vt
+cd sm0-vt
 ```
 
 Crea el archivo `DemoVT.java`:
 
 ```java
+import java.util.concurrent.*;
 public class DemoVT {
   public static void main(String[] args) throws Exception {
-    try (var ex = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
-      var f = ex.submit(() -> "ok-vt");
+    try (var ex = Executors.newVirtualThreadPerTaskExecutor()) {
+      Future<String> f = ex.submit(() -> "ok-vt");
       System.out.println(f.get());
     }
   }
@@ -149,38 +178,103 @@ javac DemoVT.java
 java DemoVT
 ```
 
-**Error común.** Usar virtual threads con `synchronized` contencioso y bloqueo largo (pinning en escenarios específicos) o para CPU-bound. Corrección: medir; usar pools adecuados para CPU-bound.
+**Caso de uso real.** Servicio que hace muchas llamadas HTTP/DB bloqueantes.
 
-**Verificación (JDK 27, 2026-05-22).** `ok-vt`.
+**Error común.** Usar virtual threads para CPU-bound o con secciones `synchronized` largas.
 
-### Tema 3: Spring IoC, DI, Bean Lifecycle, ApplicationContext · Intermedio · 360 min
+**Síntoma.** no mejora throughput o hay pinning/degradación. **Causa.** CPU-bound no se beneficia; locking contencioso puede fijar carrier thread. **Corrección.** medir, usar pools CPU para cálculo, revisar locks. **Señal observable.** CPU alta sin mejora de latencia, profiling muestra contención.
 
-Caso guía: servicio depende de repositorio; Spring crea y conecta.
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `ok-vt`.
 
-#### IoC/DI
+### Tema 3: Spring IoC, DI, bean lifecycle y ApplicationContext · Intermedio · 360 min
 
-**Definición formal.** El contenedor crea beans y los inyecta. DI por constructor es la forma preferida.
+Caso guía: `OrderService` depende de `OrderRepository`; el contenedor arma el grafo.
 
-**Ejemplo mínimo.** Ver track Spring Boot M0; aquí el contrato: depende de interfaz, inyecta por constructor.
+#### IoC y DI
 
-**Error común.** Field injection. Corrección: constructor.
+**Definición formal.** Inversión de Control delega al contenedor la creación/cableado de objetos. Dependency Injection provee dependencias a través de constructor, setter o campo (constructor preferido).
 
-### Tema 4: Auto-configuración condicional, @Conditional, starters · Intermedio · 240 min
+**Cuándo usarlo / cuándo no.** Usa DI por constructor para dependencias obligatorias. No uses field injection en código de producción testeable.
 
-Caso guía: habilitar bean solo si existe propiedad/clase.
+**Ejemplo mínimo enfocado (ejecutable con Java puro, contrato equivalente).**
 
-#### `@Conditional` y autoconfig
-
-**Definición formal.** Boot configura beans según condiciones de classpath, propiedades, beans existentes, entorno.
-
-**Ejemplo mínimo (concepto).**
-
-```java
-@ConditionalOnProperty(name="feature.x.enabled", havingValue="true")
-@Bean FeatureX featureX(){ return new FeatureX(); }
+```bash
+mkdir -p sm0-di
+cd sm0-di
 ```
 
-**Error común.** “Magia” no entendida. Corrección: `--debug`/actuator conditions para ver qué se activó.
+Crea el archivo `DemoDI.java`:
+
+```java
+interface Repo { String get(); }
+class RepoImpl implements Repo { public String get() { return "order-1"; } }
+class Service {
+  private final Repo repo;
+  Service(Repo repo) { this.repo = repo; }
+  String run() { return repo.get(); }
+}
+public class DemoDI {
+  public static void main(String[] args) {
+    Service s = new Service(new RepoImpl());
+    System.out.println(s.run());
+  }
+}
+```
+
+```bash
+javac DemoDI.java
+java DemoDI
+```
+
+**Caso de uso real.** `@Service` con dependencia `@Repository` inyectada por constructor.
+
+**Error común.** Field injection.
+
+**Síntoma.** tests difíciles, dependencias ocultas, NPE en uso manual. **Causa.** dependencia no visible en constructor. **Corrección.** constructor injection, final fields. **Señal observable.** `@Autowired` en campos y tests con reflection.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `order-1`. **Nota de verificación:** `ApplicationContext`/bean lifecycle reales requieren app Spring Boot; el contrato de DI por constructor es equivalente y ejecutado aquí.
+
+### Tema 4: Auto-configuración condicional, @Conditional y starters · Intermedio · 240 min
+
+Caso guía: habilitar una feature solo si existe propiedad o clase.
+
+#### Auto-configuración
+
+**Definición formal.** Spring Boot autoconfigura beans según classpath, propiedades, entorno y beans existentes. `@Conditional*` controla activación. Starters agregan dependencias coherentes.
+
+**Cuándo usarlo / cuándo no.** Úsalo para defaults productivos. No asumas magia: inspecciona conditions.
+
+**Ejemplo mínimo enfocado (ejecutable: evaluación de condición).**
+
+```bash
+mkdir -p sm0-cond
+cd sm0-cond
+```
+
+Crea el archivo `Cond.java`:
+
+```java
+public class Cond {
+  static boolean enabled(String value) { return "true".equalsIgnoreCase(value); }
+  public static void main(String[] args) {
+    System.out.println(enabled("true"));
+    System.out.println(enabled("false"));
+  }
+}
+```
+
+```bash
+javac Cond.java
+java Cond
+```
+
+**Caso de uso real.** `@ConditionalOnProperty(name="feature.x.enabled", havingValue="true")`.
+
+**Error común.** No entender por qué un bean existe/no existe.
+
+**Síntoma.** comportamiento inesperado al arrancar. **Causa.** autoconfig condición no inspeccionada. **Corrección.** usar `--debug`, Actuator conditions, leer auto-config. **Señal observable.** bean ausente o bean duplicado.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`. **Nota de verificación:** auto-config Spring real no ejecutada en este smoke Java.
 
 ### Tema 5: Multi-module Spring Boot projects · Intermedio · 180 min
 
@@ -188,29 +282,129 @@ Caso guía: separar `api`, `application`, `domain`, `infra`.
 
 #### Multi-módulo
 
-**Definición formal.** Proyecto con varios módulos Maven/Gradle con dependencias explícitas y build coordinado.
+**Definición formal.** Un proyecto multi-módulo divide código en módulos con dependencias explícitas y build coordinado. En microservicios también ayuda como paso intermedio antes de extraer servicios.
 
-**Error común.** Ciclos entre módulos. Corrección: grafo acíclico, dependencias hacia dominio.
+**Cuándo usarlo / cuándo no.** Úsalo cuando hay límites claros. No lo uses para crear capas artificiales con ciclos.
+
+**Ejemplo mínimo enfocado (ejecutable: grafo de dependencias).**
+
+```bash
+mkdir -p sm0-mod
+cd sm0-mod
+```
+
+Crea el archivo `Modules.java`:
+
+```java
+import java.util.*;
+public class Modules {
+  static boolean hasCycle(Map<String,List<String>> g) {
+    return g.getOrDefault("domain", List.of()).contains("api");
+  }
+  public static void main(String[] args) {
+    var g = Map.of("api", List.of("application"), "application", List.of("domain"), "domain", List.<String>of());
+    System.out.println(g.get("api"));
+    System.out.println(hasCycle(g));
+  }
+}
+```
+
+```bash
+javac Modules.java
+java Modules
+```
+
+**Caso de uso real.** Maven multi-module con `domain` sin dependencia de Spring.
+
+**Error común.** Ciclos entre módulos.
+
+**Síntoma.** builds frágiles, cambios en cascada. **Causa.** dependencia bidireccional. **Corrección.** grafo acíclico, dependencias hacia dentro. **Señal observable.** fallo de compilación por ciclo o cambios cruzados.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `[application]`, `false`.
 
 ### Tema 6: Perfiles y configuración externalizada · Intermedio · 180 min
 
-Caso guía: `dev` usa H2, `prod` Postgres.
+Caso guía: `dev` usa H2, `prod` usa Postgres; secretos fuera del repo.
 
-#### Profiles y config externa
+#### Profiles y configuración
 
-**Definición formal.** Profiles activan configuración por entorno; config externalizada sale de env vars/archivos/sistema de config.
+**Definición formal.** Profiles activan configuración por entorno. Configuración externalizada mueve valores a env vars, archivos externos o config server.
 
-**Error común.** Secretos en `application-prod.yml` commiteado. Corrección: secret manager/env.
+**Cuándo usarlo / cuándo no.** Úsalo para diferencias de entorno. No uses perfiles para esconder comportamiento de negocio incompatible.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p sm0-prof
+cd sm0-prof
+```
+
+Crea el archivo `Profile.java`:
+
+```java
+public class Profile {
+  static String db(String profile) { return "prod".equals(profile) ? "postgres" : "h2"; }
+  public static void main(String[] args) {
+    System.out.println(db("dev"));
+    System.out.println(db("prod"));
+  }
+}
+```
+
+```bash
+javac Profile.java
+java Profile
+```
+
+**Caso de uso real.** `SPRING_PROFILES_ACTIVE=prod`, secretos en Vault/AWS Secrets Manager.
+
+**Error común.** Secretos en `application-prod.yml`.
+
+**Síntoma.** credenciales filtradas en git. **Causa.** configuración sensible versionada. **Corrección.** env vars/secret manager, `.env.example`. **Señal observable.** secret scanners o incidentes.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `h2`, `postgres`.
 
 ### Tema 7: CRaC (Coordinated Restore at Checkpoint) · Avanzado · 180 min
 
-Caso guía: reducir arranque restaurando snapshot.
+Caso guía: reducir tiempo de arranque restaurando snapshot JVM.
 
 #### CRaC
 
-**Definición formal.** API para coordinar checkpoint/restore de la JVM, permitiendo arranques rápidos al restaurar estado.
+**Definición formal.** Coordinated Restore at Checkpoint es una API/flujo donde la JVM hace checkpoint de un proceso en ejecución y lo restaura después, coordinando recursos para evitar estado inválido.
 
-**Nota de verificación.** Requiere JDK/runtime con soporte CRaC y configuración cuidadosa de recursos. No ejecutable de forma genérica en este entorno sin setup específico; documentar concepto y riesgos (archivos abiertos, sockets, estado stale).
+**Cuándo usarlo / cuándo no.** Úsalo cuando el tiempo de arranque es crítico y puedes controlar el entorno. No lo uses sin validar sockets, archivos, secretos, tiempo y conexiones.
+
+**Ejemplo mínimo enfocado (ejecutable: modelo de lifecycle).**
+
+```bash
+mkdir -p sm0-crac
+cd sm0-crac
+```
+
+Crea el archivo `Crac.java`:
+
+```java
+public class Crac {
+  static String lifecycle(boolean checkpointed) { return checkpointed ? "restore" : "cold-start"; }
+  public static void main(String[] args) {
+    System.out.println(lifecycle(false));
+    System.out.println(lifecycle(true));
+  }
+}
+```
+
+```bash
+javac Crac.java
+java Crac
+```
+
+**Caso de uso real.** Servicios serverless/scale-to-zero donde cold start importa.
+
+**Error común.** Restaurar con recursos stale.
+
+**Síntoma.** conexiones rotas, secretos viejos, tiempo incorrecto. **Causa.** no coordinar recursos en checkpoint/restore. **Corrección.** implementar hooks de recurso, validar entorno. **Señal observable.** errores tras restore que no ocurren en cold start.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `cold-start`, `restore`. **Nota de verificación:** CRaC real requiere JDK/runtime con soporte CRaC y configuración de sistema; no se ejecutó checkpoint/restore real en este entorno.
 
 ### Tema 8: GraalVM Native Image · Avanzado · 240 min
 
@@ -218,20 +412,55 @@ Caso guía: binario nativo con arranque rápido y menor memoria.
 
 #### Native Image
 
-**Definición formal.** Compilación AOT que produce ejecutable nativo a partir de app Java, con restricciones sobre reflexión dinámica y recursos.
+**Definición formal.** GraalVM Native Image compila AOT una app Java a ejecutable nativo, incluyendo solo lo necesario según análisis de alcanzabilidad.
 
-**Trade-off.** Arranque/memoria mejores; build más lento; necesita reachability metadata para reflexión.
+**Cuándo usarlo / cuándo no.** Úsalo para arranque/memoria críticos. No lo uses si dependes fuertemente de reflexión dinámica no declarada o si el costo de build/compatibilidad es mayor.
 
-**Nota de verificación.** Requiere GraalVM/toolchain nativa. No se ejecuta aquí; indicar comando típico `./mvnw -Pnative native:compile`.
+**Trade-offs.** Mejor arranque/memoria; builds más lentos; requiere metadata para reflexión/recursos/proxies.
+
+**Ejemplo mínimo enfocado (ejecutable: decisión por trade-off).**
+
+```bash
+mkdir -p sm0-native
+cd sm0-native
+```
+
+Crea el archivo `NativeDecision.java`:
+
+```java
+public class NativeDecision {
+  static String choose(boolean fastStartupCritical, boolean heavyReflection) {
+    if (fastStartupCritical && !heavyReflection) return "consider-native";
+    return "stay-jvm";
+  }
+  public static void main(String[] args) {
+    System.out.println(choose(true, false));
+    System.out.println(choose(true, true));
+  }
+}
+```
+
+```bash
+javac NativeDecision.java
+java NativeDecision
+```
+
+**Caso de uso real.** CLI o función serverless con arranque crítico.
+
+**Error común.** Asumir que toda app Spring funciona igual en native.
+
+**Síntoma.** fallos en runtime por reflexión/recursos faltantes. **Causa.** metadata de reachability incompleta. **Corrección.** pruebas nativas, tracing agent, configuración de hints. **Señal observable.** `ClassNotFoundException`/recursos faltantes solo en native.
+
+**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `consider-native`, `stay-jvm`. **Nota de verificación:** build native real requiere GraalVM/toolchain nativa; comando típico `./mvnw -Pnative native:compile`, no ejecutado aquí.
 
 ## Cierre
 
-Java moderno y Spring Boot dan productividad; virtual threads, CRaC y Native Image dan opciones de runtime. Elige por perfil de carga y complejidad operativa.
+La base Java/Spring no es “tema preliminar”: define cómo el microservicio modela datos, maneja concurrencia, se configura y arranca. Virtual threads, CRaC y Native Image son opciones con trade-offs, no upgrades automáticos.
 
 ## Checklist
 
-- Uso records/Optional/streams con criterio.
-- Entiendo virtual threads para I/O, no CPU-bound.
-- Entiendo IoC/DI/autoconfig.
-- Separo módulos y config por entorno.
-- Evalúo CRaC/Native con pruebas reales.
+- Uso streams/Optional/records con criterio.
+- Sé cuándo virtual threads ayudan y cuándo no.
+- Aplico DI por constructor y entiendo autoconfig.
+- Mantengo config/secretos fuera del código.
+- Evalúo CRaC/Native con evidencia, no por moda.

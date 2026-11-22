@@ -7064,20 +7064,20 @@
   "spring-microservices": {
     "0": [
       {
-        "title": "Java 21: Streams, Lambdas, Optional, Records, Pattern Matching",
-        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
+        "title": "Java 21: streams, lambdas, Optional, records y pattern matching",
+        "fragment": "tema-1-java-21-streams-lambdas-optional-records-y-pattern-matching"
       },
       {
         "title": "Virtual Threads (Project Loom)",
         "fragment": "tema-2-virtual-threads-project-loom"
       },
       {
-        "title": "Spring IoC, DI, Bean Lifecycle, ApplicationContext",
-        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-applicationcontext"
+        "title": "Spring IoC, DI, bean lifecycle y ApplicationContext",
+        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-y-applicationcontext"
       },
       {
-        "title": "Auto-configuración condicional, @Conditional, starters",
-        "fragment": "tema-4-auto-configuracion-condicional-conditional-starters"
+        "title": "Auto-configuración condicional, @Conditional y starters",
+        "fragment": "tema-4-auto-configuracion-condicional-conditional-y-starters"
       },
       {
         "title": "Multi-module Spring Boot projects",
