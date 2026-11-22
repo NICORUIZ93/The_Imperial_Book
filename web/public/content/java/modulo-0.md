@@ -78,16 +78,13 @@ Si ves `class Hola is public, should be declared in a file named Hola.java`, el 
 
 Tienes que calcular el precio final de un producto con IVA. La regla es simple: tomar el precio base, aplicar el impuesto y mostrar el resultado. Es un caso pequeño, pero obliga a lo esencial de programar: datos, proceso, salida y una forma de verificar que el resultado es correcto.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Programar es describir un procedimiento con precisión suficiente para que una máquina lo ejecute. Ese procedimiento suele tener cuatro partes:
+**Definición formal.** Un *programa* es una especificación finita y ejecutable de un cómputo: dado un estado de entrada `E`, produce una transformación determinista o controlada hacia un estado/salida `S`, sujeto a reglas del lenguaje y del entorno de ejecución. *Programar* es construir esa especificación en un lenguaje con sintaxis y semántica definidas.
 
-1. **Entrada**: datos que llegan al programa (argumentos, teclado, archivo, red).
-2. **Proceso**: reglas que transforman esos datos.
-3. **Salida**: resultado observable (pantalla, archivo, respuesta).
-4. **Casos de error**: qué ocurre cuando la entrada o el contexto no son los esperados.
+**Contrato / invariantes / reglas.** En Java, el código fuente se escribe en unidades de compilación `.java`. Una clase pública `C` debe declararse en un archivo llamado `C.java`. El punto de entrada estándar de una aplicación es un método con firma exacta `public static void main(String[] args)`. El compilador (`javac`) valida sintaxis y tipos antes de generar bytecode; la JVM ejecuta ese bytecode bajo su modelo de ejecución y verificación.
 
-Java es un lenguaje compilado a bytecode, de tipado estático y orientado a objetos. Eso lo hace útil cuando quieres código verificable antes de ejecutar, una base grande de librerías y una ejecución portable sobre la JVM. No es la herramienta para todo: para scripts muy pequeños o prototipos rápidos puede haber opciones más livianas; para sistemas con restricciones muy específicas puede convenir otro lenguaje.
+**Modelo mental.** Piensa en un programa como una receta verificable: entrada (ingredientes), proceso (pasos), salida (plato) y manejo de errores (qué pasa si falta un ingrediente). Java agrega un “control de calidad” antes de cocinar: el compilador revisa la receta.
 
 **Implementación desde cero**
 
@@ -111,7 +108,7 @@ public class PrecioFinal {
 
 - `public class PrecioFinal` define la clase. En Java, el código ejecutable vive dentro de clases.
 - `main` es el punto de entrada que la JVM busca al iniciar el programa.
-- `double` guarda números decimales. Aquí lo usamos para precio e IVA.
+- `double` guarda números decimales en formato IEEE 754 de doble precisión.
 - `precioBase + (precioBase * iva)` expresa la regla de negocio: precio más impuesto.
 - `System.out.println(...)` envía texto a la salida estándar. Es la forma más simple de observar el resultado.
 
@@ -146,26 +143,13 @@ Cambia `precioBase` a `200.0`, recompila y ejecuta. La salida debe mostrar `Prec
 
 Muchos errores de principiantes no son de lógica, sino de entorno: confunden JDK con JRE, o ejecutan el `.class` como si fuera el `.java`. Entender el flujo de compilación y ejecución te permite ubicar dónde está el problema antes de tocar el código a ciegas.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-El flujo básico de Java es:
+**Definición formal.** *Bytecode Java* es el conjunto de instrucciones de la máquina virtual Java, almacenado en archivos `.class`, definido por la Java Virtual Machine Specification. La *JVM* es la implementación que carga, verifica y ejecuta bytecode. El *JDK* es el kit de desarrollo que incluye compilador, herramientas y un runtime; el término *JRE* se usaba históricamente para el runtime orientado a ejecución.
 
-```text
-Código fuente (.java)
-        │
-        │ javac
-        ▼
-Bytecode (.class)
-        │
-        │ java / JVM
-        ▼
-Ejecución en el sistema
-```
+**Contrato / invariantes / reglas.** `javac` traduce fuente `.java` a bytecode `.class`. `java` recibe el nombre de clase (no la ruta del archivo `.class`) y busca `main(String[])`. El bytecode es independiente de CPU/SO, pero la ejecución depende de una JVM compatible y del entorno (sistema de archivos, red, encoding, librerías nativas). “WORA” se cumple en la medida en que el programa se mantenga dentro de APIs portables y supuestos compatibles.
 
-- **JDK**: kit para desarrollar. Incluye compilador, JVM y herramientas.
-- **JVM**: máquina virtual que ejecuta bytecode.
-- **Bytecode**: formato intermedio. No es Java fuente ni código máquina nativo de tu CPU.
-- **WORA** (“Write Once, Run Anywhere”): el mismo bytecode puede ejecutarse en distintas plataformas si existe una JVM compatible. La portabilidad es del bytecode/modelo de ejecución; el acceso a archivos, rutas, codificaciones o librerías nativas sigue dependiendo del entorno.
+**Modelo mental.** El `.java` es el guion, el `.class` es el guion traducido a un idioma intermedio, y la JVM es el actor/intérprete que lo representa en cada escenario (Windows, Linux, macOS).
 
 **Implementación desde cero**
 
@@ -234,15 +218,13 @@ Debes ver el archivo `.class`, la salida del programa y un encabezado de bytecod
 
 Un entorno mal configurado hace perder tiempo: el código puede estar bien, pero el sistema no encuentra el compilador o usa una versión distinta a la que esperas. Verificar el entorno antes de programar evita diagnósticos falsos y te da un punto de partida confiable.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-La verificación de entorno tiene tres capas:
+**Definición formal.** El *entorno de desarrollo Java* es el conjunto de binarios, variables y rutas que determinan qué compilador y runtime usa el sistema. `PATH` es la variable de entorno que lista directorios de búsqueda de ejecutables; `JAVA_HOME` es una convención que apunta al directorio raíz del JDK.
 
-1. **Binarios disponibles**: `java` y `javac` responden en la terminal.
-2. **Coherencia**: ambos pertenecen al JDK que quieres usar.
-3. **Ejecución real**: puedes compilar y ejecutar un programa simple.
+**Contrato / invariantes / reglas.** Para compilar y ejecutar desde terminal se requiere que `javac` y `java` estén resolubles en `PATH` o se invoquen por ruta absoluta. La coherencia de versión es importante: compilar con un JDK y ejecutar con una JVM de versión incompatible puede causar errores como `UnsupportedClassFileError`. Abrir una terminal nueva recarga variables de entorno; una terminal ya abierta puede conservar valores viejos.
 
-`JAVA_HOME` es la variable de entorno que apunta al directorio del JDK. Muchas herramientas la usan (Gradle, Maven, IDEs, servidores CI). `PATH` es la lista de directorios donde el sistema busca ejecutables.
+**Modelo mental.** Es como un taller: `JAVA_HOME` es la dirección del taller, `PATH` es la lista de herramientas que tienes a mano, y `java -version`/`javac -version` son la etiqueta que confirma qué herramienta estás tomando.
 
 **Implementación desde cero**
 
@@ -321,28 +303,13 @@ Si compila y ejecuta, el entorno base está listo para los siguientes temas.
 
 Quieres un programa pequeño que salude por nombre. Si el usuario no pasa un nombre, el programa debe indicar cómo usarlo. Este caso te obliga a cubrir el ciclo completo: archivo, clase, `main`, compilación, ejecución y argumentos.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un programa Java mínimo ejecutable necesita:
+**Definición formal.** El método de entrada `main` es el punto definido por el launcher de Java para iniciar una aplicación. Su firma canónica es `public static void main(String[] args)`. Los *argumentos de línea de comandos* son un arreglo de `String` entregado por el runtime en el orden recibido.
 
-- un archivo `.java`;
-- una clase;
-- un método `main` con la firma que la JVM espera;
-- una compilación exitosa;
-- una ejecución con `java NombreDeClase`.
+**Contrato / invariantes / reglas.** `public` permite acceso desde el launcher; `static` permite invocarlo sin instancia; `void` indica que no retorna valor al launcher por ese canal; `args` nunca es `null` por contrato normal del launcher, pero puede tener longitud 0. Acceder a `args[i]` requiere `0 <= i < args.length`; de lo contrario se lanza `ArrayIndexOutOfBoundsException`.
 
-La firma estándar es:
-
-```java
-public static void main(String[] args)
-```
-
-| Parte | Significado |
-|---|---|
-| `public` | La JVM puede invocarlo desde fuera de la clase |
-| `static` | No requiere crear un objeto para ejecutarse |
-| `void` | No devuelve un valor |
-| `String[] args` | Recibe argumentos de línea de comandos |
+**Modelo mental.** `main` es la puerta de entrada del edificio. `args` es la bandeja de notas que deja quien entra por la puerta: puede venir vacía, con una nota, o con varias.
 
 **Implementación desde cero**
 
@@ -409,22 +376,13 @@ Debes ver el mensaje de uso en el primer caso y el saludo personalizado en el se
 
 Los tipos definen qué valores puede guardar una variable y qué operaciones tienen sentido. Elegir mal un tipo puede producir pérdida de datos, desbordamientos o errores de compilación. Este tema te da la base para representar números, caracteres y valores booleanos con criterio.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Java tiene ocho tipos primitivos:
+**Definición formal.** En Java, un *tipo primitivo* es un tipo de valor definido por el lenguaje, no un objeto. Java define ocho primitivos: `byte`, `short`, `int`, `long`, `float`, `double`, `char`, `boolean`. Una *variable* es una ubicación con nombre, tipo estático y alcance que contiene un valor compatible.
 
-| Tipo | Qué representa | Ejemplo | Observación |
-|---|---|---|---|
-| `byte` | Entero pequeño | `byte b = 10;` | -128 a 127 |
-| `short` | Entero corto | `short s = 300;` | Poco frecuente |
-| `int` | Entero común | `int n = 42;` | Tipo entero por defecto |
-| `long` | Entero grande | `long l = 9_000_000_000L;` | Sufijo `L` |
-| `float` | Decimal simple precisión | `float f = 1.5f;` | Sufijo `f` |
-| `double` | Decimal doble precisión | `double d = 1.5;` | Tipo decimal por defecto |
-| `char` | Unidad UTF-16 | `char c = 'A';` | Comillas simples |
-| `boolean` | Verdadero/falso | `boolean ok = true;` | No es 0/1 |
+**Contrato / invariantes / reglas.** El tipado de Java es estático: la compatibilidad de tipos se verifica en compilación. Una conversión *widening* (p. ej. `int` → `double`) es segura y puede ser implícita. Una conversión *narrowing* (p. ej. `double` → `int`) puede perder información y requiere cast explícito. Los literales enteros son `int` por defecto (`long` requiere sufijo `L/l`); los decimales son `double` por defecto (`float` requiere `f/F`). El desbordamiento de enteros se produce por aritmética modular en complemento a dos, sin excepción.
 
-Conversión **amplia** (widening) ocurre cuando pasas a un tipo con más capacidad, por ejemplo `int` a `double`. Conversión **estrecha** (narrowing) ocurre al revés y puede perder información; por eso Java exige cast explícito.
+**Modelo mental.** Los tipos son contenedores con forma: puedes vaciar un vaso pequeño en uno grande sin problema (widening), pero vaciar uno grande en uno pequeño puede derramar (narrowing).
 
 **Implementación desde cero**
 
@@ -519,19 +477,13 @@ Confirma que `19.99` se trunca a `19` y que el desbordamiento de `int` no lanza 
 
 Necesitas pedir el nombre de una persona, mostrar un saludo y comparar una respuesta textual. Es un caso cotidiano en aplicaciones de consola y te expone a las trampas más comunes de `String`: inmutabilidad, espacios y comparación por contenido.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-- `System.out.println` imprime y agrega salto de línea; `System.out.print` imprime sin salto.
-- `String` es una clase inmutable: sus métodos devuelven nuevos strings, no modifican el original.
-- La comparación de contenido entre strings se hace con `.equals()`, no con `==`.
-- `Scanner` lee texto desde una fuente, por ejemplo `System.in`.
+**Definición formal.** `String` es una clase del paquete `java.lang` que representa una secuencia inmutable de caracteres Unicode (UTF-16 en su representación interna). `System.out` es un `PrintStream` conectado a la salida estándar del proceso; `System.in` es un `InputStream` conectado a la entrada estándar.
 
-```java
-String a = "java";
-String b = new String("java");
-a == b      // compara referencias
-a.equals(b) // compara contenido
-```
+**Contrato / invariantes / reglas.** La inmutabilidad de `String` implica que métodos como `toUpperCase()` o `trim()` retornan un nuevo objeto; el original no cambia. El operador `==` compara identidad de referencia; `equals()` compara contenido. `Scanner` tokeniza/lee desde una fuente; mezclar `nextInt()`/`next()` con `nextLine()` puede dejar delimitadores pendientes. Todo recurso que envuelve I/O debe cerrarse cuando corresponda.
+
+**Modelo mental.** Un `String` es como un texto impreso: no lo “editas”, generas otra copia con el cambio. `==` pregunta “¿es el mismo papel?”; `equals()` pregunta “¿dice lo mismo?”.
 
 **Implementación desde cero**
 
@@ -626,21 +578,13 @@ Verifica que `==` devuelva `false` y `equals()` devuelva `true` para el mismo co
 
 Las expresiones combinan valores y operadores para producir un resultado. Si no entiendes precedencia, tipos numéricos y operadores lógicos, puedes escribir código que compila pero calcula mal. Este tema fija las reglas que después vas a usar en condiciones, bucles y cálculos.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Grupos de operadores que usarás desde el inicio:
+**Definición formal.** Una *expresión* es una construcción sintáctica que se evalúa para producir un valor. Un *operador* define una operación sobre uno, dos o tres operandos. La *precedencia* y *asociatividad* determinan el orden de evaluación cuando hay varios operadores.
 
-| Grupo | Operadores | Ejemplo | Resultado |
-|---|---|---|---|
-| Aritméticos | `+ - * / %` | `10 / 3` | `3` si ambos son `int` |
-| Comparación | `== != < > <= >=` | `a > b` | `boolean` |
-| Lógicos | `&& || !` | `edad >= 18 && activo` | `boolean` |
-| Asignación compuesta | `+= -= *= /=` | `x += 2` | modifica `x` |
+**Contrato / invariantes / reglas.** En Java, la división entera entre `int`/`long` produce resultado entero truncado hacia cero. La división por cero en enteros lanza `ArithmeticException`; en punto flotante produce `Infinity`/`NaN` según el caso. Los operadores `&&` y `||` son de cortocircuito: no evalúan el operando derecho si el izquierdo ya determina el resultado. La comparación `==` en primitivos compara valor; en referencias, identidad.
 
-Dos reglas prácticas:
-
-- La división entre enteros descarta decimales.
-- Cuando una expresión tenga varias operaciones, usa paréntesis para hacer explícita la intención.
+**Modelo mental.** Una expresión es una frase matemática con reglas de puntuación: los paréntesis son la puntuación explícita que evita ambigüedad.
 
 **Implementación desde cero**
 
@@ -714,16 +658,13 @@ Cambia `5 / 2.0` por `5 / 2` y observa la diferencia. Ese cambio pequeño explic
 
 Imagina un programa que valida la edad de una persona, traduce un número de día y cuenta hacia atrás. Son tareas distintas, pero todas dependen de la misma capacidad: decidir qué ejecutar y repetir instrucciones con una condición clara.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Las estructuras básicas son:
+**Definición formal.** El *control de flujo* es el conjunto de sentencias que determinan el orden de ejecución. Una *condicional* selecciona una rama según una expresión booleana. Un *bucle* repite un bloque mientras se cumple una condición o se itera sobre un rango/estructura. `switch` selecciona entre casos discretos.
 
-- `if / else`: ejecuta una rama según una condición booleana.
-- `switch`: elige entre casos discretos.
-- `for`: repite cuando conoces o controlas el ciclo de iteración.
-- `while`: repite mientras una condición sea verdadera.
-- `do/while`: ejecuta al menos una vez y luego evalúa.
-- `break` y `continue`: alteran el ciclo, pero conviene usarlos con moderación.
+**Contrato / invariantes / reglas.** La condición de `if`, `while`, `do/while` y `for` debe ser de tipo `boolean` (Java no admite enteros como condición). `switch` acepta tipos compatibles definidos por el lenguaje (primitivos enteros, `char`, `String`, enums, y formas modernas con patrones según versión). Un bucle debe progresar hacia terminación o tener una condición de salida explícita; de lo contrario produce un bucle infinito. `break` sale del bucle/switch; `continue` salta a la siguiente iteración.
+
+**Modelo mental.** El control de flujo es el semáforo y las señales de una ruta: el `if` es un desvío, el `for` es una rotonda con contador, el `while` es “sigue mientras la luz esté verde”.
 
 **Implementación desde cero**
 
@@ -808,17 +749,13 @@ Cambia `edad`, `dia` y el límite del `for`. Antes de ejecutar, predice la salid
 
 Tienes varias notas de un alumno y quieres mostrar cada una y calcular el promedio. Podrías crear `nota1`, `nota2`, `nota3`, pero esa solución no escala. Este caso pide dos herramientas: una estructura para guardar varios valores y métodos para separar responsabilidades.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un **arreglo** es una estructura de tamaño fijo con elementos del mismo tipo. Se accede por índice, empezando en `0`.
+**Definición formal.** Un *arreglo* es un objeto de tamaño fijo que contiene elementos del mismo tipo, accesibles por índice entero basado en cero. Un *método* es una abstracción de procedimiento con nombre, parámetros formales, tipo de retorno y cuerpo; puede ser `static` (asociado a la clase) o de instancia (asociado a un objeto).
 
-```text
-índices:  0   1   2   3
-valores: [10,  8,  9,  7]
-length = 4
-```
+**Contrato / invariantes / reglas.** Para un arreglo `a` de longitud `n = a.length`, los índices válidos son `0 <= i < n`. Acceder fuera de ese rango lanza `ArrayIndexOutOfBoundsException`. `length` es una propiedad final del arreglo, no un método. Los parámetros en Java se pasan por valor; cuando el valor es una referencia, se copia la referencia (el objeto referenciado puede ser modificado a través de ella).
 
-Un **método** es un bloque con nombre que puede recibir parámetros y devolver un resultado. Permite nombrar una intención: `promedio`, `imprimir`, `calcularTotal`.
+**Modelo mental.** Un arreglo es una fila de casilleros numerados desde 0; `length` dice cuántos casilleros hay. Un método es una máquina con etiqueta: le das entradas, ejecuta su proceso y devuelve (o no) un resultado.
 
 **Implementación desde cero**
 
