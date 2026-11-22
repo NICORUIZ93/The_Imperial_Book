@@ -7178,302 +7178,162 @@
     ],
     "10": [
       {
-        "title": "Producers y consumers con Spring Kafka",
-        "fragment": "tema-1-producers-y-consumers-con-spring-kafka"
+        "title": "Productor, consumidor y claves de partición",
+        "fragment": "tema-1-productor-consumidor-y-claves-de-particion"
       },
       {
-        "title": "Dead-letter queue",
-        "fragment": "tema-2-dead-letter-queue"
+        "title": "Idempotencia, retries y DLT",
+        "fragment": "tema-2-idempotencia-retries-y-dlt"
       },
       {
-        "title": "Transacciones Kafka y SQL: idempotencia y límites de exactly-once",
-        "fragment": "tema-3-transacciones-kafka-y-sql-idempotencia-y-limites-de-exactly-once"
+        "title": "Outbox, inbox y duplicados reales",
+        "fragment": "tema-3-outbox-inbox-y-duplicados-reales"
       },
       {
-        "title": "Outbox transaccional y flujo de negocio",
-        "fragment": "tema-4-outbox-transaccional-y-flujo-de-negocio"
-      },
-      {
-        "title": "Rebalanceo de consumer groups y asignación de particiones",
-        "fragment": "tema-5-rebalanceo-de-consumer-groups-y-asignacion-de-particiones"
-      },
-      {
-        "title": "Kafka Streams con Spring para transformar eventos",
-        "fragment": "tema-6-kafka-streams-con-spring-para-transformar-eventos"
-      },
-      {
-        "title": "Avro y Schema Registry para contratos de eventos",
-        "fragment": "tema-7-avro-y-schema-registry-para-contratos-de-eventos"
+        "title": "Evolución de esquemas y Schema Registry",
+        "fragment": "tema-4-evolucion-de-esquemas-y-schema-registry"
       }
     ],
     "11": [
       {
-        "title": "Kafka frente a RabbitMQ",
-        "fragment": "tema-1-kafka-frente-a-rabbitmq"
+        "title": "Colas, trabajo asíncrono y consumidores",
+        "fragment": "tema-1-colas-trabajo-asincrono-y-consumidores"
       },
       {
-        "title": "RabbitMQ con Spring AMQP: routing, ack y prefetch",
-        "fragment": "tema-2-rabbitmq-con-spring-amqp-routing-ack-y-prefetch"
+        "title": "RabbitMQ: exchanges, routing, ACK y DLQ",
+        "fragment": "tema-2-rabbitmq-exchanges-routing-ack-y-dlq"
       },
       {
-        "title": "JMS con Spring y ActiveMQ Artemis: colas punto a punto y transacciones",
-        "fragment": "tema-3-jms-con-spring-y-activemq-artemis-colas-punto-a-punto-y-transacciones"
+        "title": "JMS y mensajería empresarial",
+        "fragment": "tema-3-jms-y-mensajeria-empresarial"
       },
       {
-        "title": "bindings y destinations",
-        "fragment": "tema-4-bindings-y-destinations"
-      },
-      {
-        "title": "binder Kafka y binder RabbitMQ",
-        "fragment": "tema-5-binder-kafka-y-binder-rabbitmq"
-      },
-      {
-        "title": "reintentos, error handler y dead-letter",
-        "fragment": "tema-6-reintentos-error-handler-y-dead-letter"
-      },
-      {
-        "title": "test binder y límites de la prueba",
-        "fragment": "tema-7-test-binder-y-limites-de-la-prueba"
+        "title": "Spring Cloud Stream: binding de mensajería sin acoplarse al broker",
+        "fragment": "tema-4-spring-cloud-stream-binding-de-mensajeria-sin-acoplarse-al-broker"
       }
     ],
     "12": [
       {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
+        "title": "Jobs, steps y chunk processing",
+        "fragment": "tema-1-jobs-steps-y-chunk-processing"
       },
       {
-        "title": "Job, Step, Tasklet y chunk processing",
-        "fragment": "tema-1-job-step-tasklet-y-chunk-processing"
+        "title": "Reintentos, skip y idempotencia en batch",
+        "fragment": "tema-2-reintentos-skip-y-idempotencia-en-batch"
       },
       {
-        "title": "Reinicio, JobParameters, retry, skip y listeners",
-        "fragment": "tema-2-reinicio-jobparameters-retry-skip-y-listeners"
+        "title": "Scheduling, parámetros y operación",
+        "fragment": "tema-3-scheduling-parametros-y-operacion"
       }
     ],
     "13": [
       {
-        "title": "1. Comprueba el entorno antes de generar archivos",
-        "fragment": "1-comprueba-el-entorno-antes-de-generar-archivos"
+        "title": "Mono, Flux y backpressure",
+        "fragment": "tema-1-mono-flux-y-backpressure"
       },
       {
-        "title": "2. Genera el proyecto con Spring Initializr",
-        "fragment": "2-genera-el-proyecto-con-spring-initializr"
+        "title": "WebFlux, controladores y endpoints funcionales",
+        "fragment": "tema-2-webflux-controladores-y-endpoints-funcionales"
       },
       {
-        "title": "3. Crea una estructura pequeña y explícita",
-        "fragment": "3-crea-una-estructura-pequena-y-explicita"
+        "title": "R2DBC y persistencia reactiva",
+        "fragment": "tema-3-r2dbc-y-persistencia-reactiva"
       },
       {
-        "title": "4. Configura una base reactiva local",
-        "fragment": "4-configura-una-base-reactiva-local"
-      },
-      {
-        "title": "5. Implementa el modelo y el repositorio",
-        "fragment": "5-implementa-el-modelo-y-el-repositorio"
-      },
-      {
-        "title": "6. Expón endpoints sin llamar subscribe()",
-        "fragment": "6-expon-endpoints-sin-llamar-subscribe"
-      },
-      {
-        "title": "7. Ejecuta y observa un resultado concreto",
-        "fragment": "7-ejecuta-y-observa-un-resultado-concreto"
-      },
-      {
-        "title": "8. Provoca tres fallos antes de continuar",
-        "fragment": "8-provoca-tres-fallos-antes-de-continuar"
-      },
-      {
-        "title": "Mono y Flux",
-        "fragment": "tema-1-mono-y-flux"
-      },
-      {
-        "title": "WebClient y composición no bloqueante",
-        "fragment": "tema-2-webclient-y-composicion-no-bloqueante"
-      },
-      {
-        "title": "Cuándo WebFlux vale la complejidad, y R2DBC",
-        "fragment": "tema-3-cuando-webflux-vale-la-complejidad-y-r2dbc"
-      },
-      {
-        "title": "Backpressure real en WebFlux con reactor-test",
-        "fragment": "tema-4-backpressure-real-en-webflux-con-reactor-test"
+        "title": "Cuándo NO usar reactive",
+        "fragment": "tema-4-cuando-no-usar-reactive"
       }
     ],
     "14": [
       {
-        "title": "schema-first con tipos y consultas",
-        "fragment": "tema-1-schema-first-con-tipos-y-consultas"
+        "title": "Esquema, queries y mutations",
+        "fragment": "tema-1-esquema-queries-y-mutations"
       },
       {
-        "title": "data fetchers, relaciones y problema N+1",
-        "fragment": "tema-2-data-fetchers-relaciones-y-problema-n-1"
+        "title": "DataLoader, N+1 y paginación",
+        "fragment": "tema-2-dataloader-n-1-y-paginacion"
       },
       {
-        "title": "mutations y subscriptions",
-        "fragment": "tema-3-mutations-y-subscriptions"
-      },
-      {
-        "title": "pruebas GraphQL con GraphQlTester",
-        "fragment": "tema-4-pruebas-graphql-con-graphqltester"
+        "title": "Seguridad, errores y testing",
+        "fragment": "tema-3-seguridad-errores-y-testing"
       }
     ],
     "15": [
       {
-        "title": "Hexagonal: puertos que hablan el idioma del dominio",
-        "fragment": "tema-1-hexagonal-puertos-que-hablan-el-idioma-del-dominio"
+        "title": "Hexagonal y puertos/adaptadores",
+        "fragment": "tema-1-hexagonal-y-puertos-adaptadores"
       },
       {
-        "title": "Arquitectura hexagonal verificada con ArchUnit",
-        "fragment": "tema-2-arquitectura-hexagonal-verificada-con-archunit"
+        "title": "Clean Architecture, C4 y ADR",
+        "fragment": "tema-2-clean-architecture-c4-y-adr"
       },
       {
-        "title": "Clean Architecture y DDD táctico: caso de uso antes que framework",
-        "fragment": "tema-3-clean-architecture-y-ddd-tactico-caso-de-uso-antes-que-framework"
-      },
-      {
-        "title": "C4: contexto, contenedores, componentes y código",
-        "fragment": "tema-4-c4-contexto-contenedores-componentes-y-codigo"
-      },
-      {
-        "title": "ADR: decisiones con contexto, alternativas y consecuencias",
-        "fragment": "tema-5-adr-decisiones-con-contexto-alternativas-y-consecuencias"
-      },
-      {
-        "title": "módulos y límites entre paquetes",
-        "fragment": "tema-6-modulos-y-limites-entre-paquetes"
-      },
-      {
-        "title": "eventos entre módulos sin importar implementación",
-        "fragment": "tema-7-eventos-entre-modulos-sin-importar-implementacion"
-      },
-      {
-        "title": "documentación generada y mapa de dependencias",
-        "fragment": "tema-8-documentacion-generada-y-mapa-de-dependencias"
-      },
-      {
-        "title": "pruebas de integración por módulo",
-        "fragment": "tema-9-pruebas-de-integracion-por-modulo"
+        "title": "Spring Modulith y fronteras de módulos",
+        "fragment": "tema-3-spring-modulith-y-fronteras-de-modulos"
       }
     ],
     "16": [
       {
-        "title": "Config Server y service discovery",
-        "fragment": "tema-1-config-server-y-service-discovery"
+        "title": "Service discovery y configuración centralizada",
+        "fragment": "tema-1-service-discovery-y-configuracion-centralizada"
       },
       {
-        "title": "Spring Cloud Gateway",
-        "fragment": "tema-2-spring-cloud-gateway"
+        "title": "API Gateway y composición",
+        "fragment": "tema-2-api-gateway-y-composicion"
       },
       {
-        "title": "Circuit breaker con Resilience4j",
-        "fragment": "tema-3-circuit-breaker-con-resilience4j"
+        "title": "Resiliencia distribuida",
+        "fragment": "tema-3-resiliencia-distribuida"
       },
       {
-        "title": "Bulkhead y RateLimiter de Resilience4j",
-        "fragment": "tema-4-bulkhead-y-ratelimiter-de-resilience4j"
-      },
-      {
-        "title": "OAuth2/OIDC, Keycloak y Token Relay sin perder la frontera de autorización",
-        "fragment": "tema-5-oauth2-oidc-keycloak-y-token-relay-sin-perder-la-frontera-de-autorizacion"
-      },
-      {
-        "title": "HTTP Interfaces, deadlines y descubrimiento según el entorno",
-        "fragment": "tema-6-http-interfaces-deadlines-y-descubrimiento-segun-el-entorno"
-      },
-      {
-        "title": "Spring gRPC, contrato HTTP/2 y evolución segura",
-        "fragment": "tema-7-spring-grpc-contrato-http-2-y-evolucion-segura"
-      },
-      {
-        "title": "DDD para decidir límites y propiedad de datos",
-        "fragment": "tema-8-ddd-para-decidir-limites-y-propiedad-de-datos"
-      },
-      {
-        "title": "Orquestar pedidos con Temporal y Spring Boot",
-        "fragment": "tema-9-orquestar-pedidos-con-temporal-y-spring-boot"
-      },
-      {
-        "title": "Spring Cloud Bus para propagar cambios de configuración",
-        "fragment": "tema-10-spring-cloud-bus-para-propagar-cambios-de-configuracion"
-      },
-      {
-        "title": "Micrometer Tracing entre servicios",
-        "fragment": "tema-11-micrometer-tracing-entre-servicios"
-      },
-      {
-        "title": "Contract testing entre productor y consumidor",
-        "fragment": "tema-12-contract-testing-entre-productor-y-consumidor"
+        "title": "Observabilidad distribuida",
+        "fragment": "tema-4-observabilidad-distribuida"
       }
     ],
     "17": [
       {
-        "title": "`@Transactional` funciona en una frontera, no como encantamiento",
-        "fragment": "tema-1-transactional-funciona-en-una-frontera-no-como-encantamiento"
+        "title": "Consistencia eventual y sagas",
+        "fragment": "tema-1-consistencia-eventual-y-sagas"
       },
       {
-        "title": "Recuperación implica duplicación segura",
-        "fragment": "tema-2-recuperacion-implica-duplicacion-segura"
+        "title": "Contratos de API y compatibilidad",
+        "fragment": "tema-2-contratos-de-api-y-compatibilidad"
       },
       {
-        "title": "Contratos ejecutables protegen despliegues independientes",
-        "fragment": "tema-3-contratos-ejecutables-protegen-despliegues-independientes"
-      },
-      {
-        "title": "Observabilidad sirve a un objetivo y a una decisión",
-        "fragment": "tema-4-observabilidad-sirve-a-un-objetivo-y-a-una-decision"
-      },
-      {
-        "title": "Saga con compensación real",
-        "fragment": "tema-5-saga-con-compensacion-real"
-      },
-      {
-        "title": "Event Sourcing con replay real",
-        "fragment": "tema-6-event-sourcing-con-replay-real"
-      },
-      {
-        "title": "Compensación que falla: conservar trabajo pendiente y reintentar sin duplicar",
-        "fragment": "tema-7-compensacion-que-falla-conservar-trabajo-pendiente-y-reintentar-sin-duplicar"
-      },
-      {
-        "title": "Proyecto: microservicio comprobado bajo fallos",
-        "fragment": "proyecto-microservicio-comprobado-bajo-fallos"
+        "title": "Operación distribuida: idempotencia, retries, DLQ",
+        "fragment": "tema-3-operacion-distribuida-idempotencia-retries-dlq"
       }
     ],
     "18": [
       {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
+        "title": "OIDC/OAuth2 con Spring Security",
+        "fragment": "tema-1-oidc-oauth2-con-spring-security"
       },
       {
-        "title": "SecurityFilterChain y autorización",
-        "fragment": "tema-1-securityfilterchain-y-autorizacion"
+        "title": "Autorización por recurso/método",
+        "fragment": "tema-2-autorizacion-por-recurso-metodo"
       },
       {
-        "title": "DTO validation, CORS, JWT/OIDC y clientes HTTP",
-        "fragment": "tema-2-dto-validation-cors-jwt-oidc-y-clientes-http"
+        "title": "SAML y escenarios enterprise",
+        "fragment": "tema-3-saml-y-escenarios-enterprise"
       },
       {
-        "title": "SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa",
-        "fragment": "tema-3-saml-2-0-con-spring-security-iniciar-sesion-con-el-proveedor-de-identidad-de-una-empresa"
+        "title": "Hardening y secretos",
+        "fragment": "tema-4-hardening-y-secretos"
       }
     ],
     "19": [
       {
-        "title": "Fat JAR vs capas de Docker",
-        "fragment": "tema-1-fat-jar-vs-capas-de-docker"
+        "title": "Jar ejecutable y capas",
+        "fragment": "tema-1-jar-ejecutable-y-capas"
       },
       {
-        "title": "GraalVM native image",
-        "fragment": "tema-2-graalvm-native-image"
+        "title": "Imagen OCI con Buildpacks/Jib",
+        "fragment": "tema-2-imagen-oci-con-buildpacks-jib"
       },
       {
-        "title": "Health checks para Kubernetes",
-        "fragment": "tema-3-health-checks-para-kubernetes"
-      },
-      {
-        "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile",
-        "fragment": "tema-4-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
+        "title": "Config, secretos y migraciones en despliegue",
+        "fragment": "tema-3-config-secretos-y-migraciones-en-despliegue"
       }
     ],
     "2": [
@@ -7512,40 +7372,20 @@
     ],
     "20": [
       {
-        "title": "Arquitectura del microservicio integrador",
-        "fragment": "tema-1-arquitectura-del-microservicio-integrador"
+        "title": "Diseño del dominio y contratos",
+        "fragment": "tema-1-diseno-del-dominio-y-contratos"
       },
       {
-        "title": "Integra seguridad JWT y observabilidad",
-        "fragment": "tema-2-integra-seguridad-jwt-y-observabilidad"
+        "title": "Persistencia, transacciones y migraciones",
+        "fragment": "tema-2-persistencia-transacciones-y-migraciones"
       },
       {
-        "title": "Cierra el servicio con evidencia y próximos pasos",
-        "fragment": "tema-3-cierra-el-servicio-con-evidencia-y-proximos-pasos"
+        "title": "Seguridad, observabilidad y resiliencia",
+        "fragment": "tema-3-seguridad-observabilidad-y-resiliencia"
       },
       {
-        "title": "CRUD API y contratos",
-        "fragment": "tema-4-crud-api-y-contratos"
-      },
-      {
-        "title": "MySQL y datos espaciales",
-        "fragment": "tema-5-mysql-y-datos-espaciales"
-      },
-      {
-        "title": "JPA e Hibernate Spatial",
-        "fragment": "tema-6-jpa-e-hibernate-spatial"
-      },
-      {
-        "title": "JWT Bearer y autorización por roles",
-        "fragment": "tema-7-jwt-bearer-y-autorizacion-por-roles"
-      },
-      {
-        "title": "Tiempo real con STOMP",
-        "fragment": "tema-8-tiempo-real-con-stomp"
-      },
-      {
-        "title": "Archivos y notificaciones push",
-        "fragment": "tema-9-archivos-y-notificaciones-push"
+        "title": "Smoke end-to-end y entrega",
+        "fragment": "tema-4-smoke-end-to-end-y-entrega"
       }
     ],
     "3": [
@@ -7664,10 +7504,6 @@
     ],
     "8": [
       {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
-      },
-      {
         "title": "Scheduling y tareas periódicas",
         "fragment": "tema-1-scheduling-y-tareas-periodicas"
       },
@@ -7701,10 +7537,6 @@
       }
     ],
     "9": [
-      {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
-      },
       {
         "title": "@Async y ejecutores: trabajo en segundo plano con límites",
         "fragment": "tema-1-async-y-ejecutores-trabajo-en-segundo-plano-con-limites"

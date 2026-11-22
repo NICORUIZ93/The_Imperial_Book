@@ -1,182 +1,127 @@
 # Módulo 9: Concurrencia, @Async y resiliencia en el núcleo de Spring
 
+Cubre ejecución asíncrona, executors, `CompletableFuture`, locks, deadlocks, semáforos, MDC y resiliencia declarativa. La concurrencia sin límites degrada el sistema.
+
+**Entorno de referencia (2026-05-22):** JDK 27. APIs Spring `@Async`, `@Retryable`, `@ConcurrencyLimit` requieren Spring Framework 6/7+ según caso.
+
 ## Aprende construyendo
-
-Construirás cotizaciones que combinan llamadas asíncronas con `CompletableFuture`, descubrirás por qué `@Async` deja de funcionar cuando una clase se llama a sí misma, provocarás un deadlock real con dos locks tomados en orden inverso y lo corregirás con un orden consistente, y acotarás concurrencia con un `Semaphore`. El hilo conductor es RutaFlow cotizando tarifas de varios proveedores a la vez. El último tema usa lo que Spring Framework 7 trae en el núcleo para reintentar (`@Retryable`) y limitar concurrencia (`@ConcurrencyLimit`) sin dependencias extra.
-
-
-### Dos ejemplos: primero visible, luego real
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por dos ejemplos: primero visible, luego real con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender dos ejemplos: primero visible, luego real te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en dos ejemplos: primero visible, luego real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que dos ejemplos: primero visible, luego real resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Dos ejemplos: primero visible, luego real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Dos ejemplos: primero visible, luego real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses dos ejemplos: primero visible, luego real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: dos ejemplos: primero visible, luego real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Dos ejemplos: primero visible, luego real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve dos ejemplos: primero visible, luego real en tu contexto?
-2. ¿Cómo sabrías que dos ejemplos: primero visible, luego real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar dos ejemplos: primero visible, luego real?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar dos ejemplos: primero visible, luego real.
-
-</details>
 
 ### Tema 1: @Async y ejecutores: trabajo en segundo plano con límites · Avanzado · 35 min
 
-**Caso guía**: enviar notificaciones sin bloquear el request HTTP, pero sin crear hilos infinitos.
-
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `@Async` | Ejecuta método en otro hilo via proxy Spring. | Trabajo background no bloqueante. | Habilitar `@EnableAsync` y executor nombrado. | Llamada interna no pasa por proxy. |
-| `Executor`/`TaskExecutor` | Pool/estrategia de ejecución. | Limitar concurrencia y colas. | Definir tamaños, cola, rechazo. | Usar executor default sin límites. |
-| Backpressure/rechazo | Qué pasa cuando la cola se llena. | Proteger sistema. | Política explícita (`CallerRuns`, rechazo). | Cola ilimitada => OOM. |
-| Límites | Max hilos, cola, timeout. | Estabilidad. | Medir y acotar. | “Async” como cura mágica. |
-
-**Implementación desde cero** (`spring-boot-starter-web`)
-```java
-@Configuration @EnableAsync
-class AsyncConfig {
-  @Bean(name="notificaciones")
-  Executor notificaciones() {
-    ThreadPoolTaskExecutor ex = new ThreadPoolTaskExecutor();
-    ex.setCorePoolSize(2); ex.setMaxPoolSize(4); ex.setQueueCapacity(50); ex.setThreadNamePrefix("notif-");
-    ex.initialize(); return ex;
-  }
-}
-@Service
-class NotificacionService {
-  @Async("notificaciones")
-  public CompletableFuture<String> enviar(String guia) {
-    return CompletableFuture.completedFuture(Thread.currentThread().getName());
-  }
-}
+#### `@Async`
+**Definición formal.** Anotación Spring que ejecuta un método en otro hilo usando un `TaskExecutor`.
+**Para qué sirve.** Descargar trabajo no bloqueante de la request.
+**Cuándo usarlo.** Tareas cortas/background con límites. No para operaciones críticas sin persistencia/confirmación.
+**Ejemplo mínimo enfocado (ejecutable, Java puro executor).**
+```bash
+mkdir -p /tmp/sb9-async && cd /tmp/sb9-async
+cat > DemoAsync.java << 'JAVA'
+import java.util.concurrent.*;
+public class DemoAsync { public static void main(String[] args) throws Exception { ExecutorService ex=Executors.newSingleThreadExecutor(); Future<String> f=ex.submit(() -> "ok"); System.out.println(f.get()); ex.shutdown(); } }
+JAVA
+javac DemoAsync.java && java DemoAsync
 ```
-**Ejecución real**: `./mvnw -Dtest=AsyncBehaviorTest test` o endpoint que invoque y loggee hilo. **Verificación**: llamada externa corre en hilo `notif-*`; auto-invocación corre en hilo llamador.
+**Caso de uso real.** Enviar notificación después de responder HTTP.
+**Error común.** Usar executor ilimitado. Corrección: pool acotado y cola con política.
+**Verificación (JDK 27, 2026-05-22).** Salida: `ok`.
+
+#### `TaskExecutor`
+**Definición formal.** Abstracción Spring para ejecutar tareas asincrónicas.
+**Para qué sirve.** Configurar pools por tipo de carga.
+**Cuándo usarlo.** Siempre que uses `@Async` en producción.
+**Ejemplo mínimo enfocado (Spring).** `ThreadPoolTaskExecutor` con `core/max/queue`.
+**Caso de uso real.** Pool separado para emails.
+**Error común.** `SimpleAsyncTaskExecutor` sin límites. Corrección: pool acotado.
+**Verificación.** **Nota:** requiere contexto Spring.
 
 ### Tema 2: CompletableFuture, @Async y el bug de la autoinvocación · Avanzado · 45 min
 
-**Caso guía**: cotizar en paralelo dos proveedores y combinar resultado; manejar fallo con fallback.
-
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `CompletableFuture` | Futuro componible para async. | Combinar, transformar, manejar errores. | `thenCombine`, `exceptionally`, `orTimeout`. | Bloquear con `get()` en request thread sin timeout. |
-| Composición | Combinar tareas independientes. | Latencia total menor. | Iniciar antes de combinar. | Ejecutar secuencial por accidente. |
-| Bug de autoinvocación | Llamar método `@Async` desde la misma clase con `this`. | Explica por qué no hay async. | Llamar vía bean/proxy o separar clase. | Asumir que anotación basta. |
-| Fallback/timeout | Valor alternativo o límite de tiempo. | Resiliencia. | Timeout + manejo explícito. | Espera infinita. |
-
-**Implementación desde cero**
-```java
-@Service
-class TarifaAsyncService {
-  @Async("tareaAsincrona") public CompletableFuture<BigDecimal> base(String ruta){ dormir(100); return completedFuture(new BigDecimal("120.00")); }
-  @Async("tareaAsincrona") public CompletableFuture<BigDecimal> recargo(String ruta){ dormir(80); return completedFuture(new BigDecimal("15.50")); }
-  public CompletableFuture<BigDecimal> bugAutoinvocacion(String ruta){ return this.base(ruta); } // no async
-}
-@Service
-class Cotizador {
-  private final TarifaAsyncService s; Cotizador(TarifaAsyncService s){this.s=s;}
-  public CompletableFuture<BigDecimal> total(String ruta){ return s.base(ruta).thenCombine(s.recargo(ruta), BigDecimal::add); }
-}
+#### `CompletableFuture`
+**Definición formal.** API Java para composición asincrónica de etapas con callbacks, combinación y manejo de errores.
+**Para qué sirve.** Orquestar tareas async sin bloquear.
+**Cuándo usarlo.** Composición de I/O concurrente. Evita cadenas incomprensibles.
+**Ejemplo mínimo enfocado (ejecutable).**
+```bash
+mkdir -p /tmp/sb9-cf && cd /tmp/sb9-cf
+cat > DemoCf.java << 'JAVA'
+import java.util.concurrent.*;
+public class DemoCf { public static void main(String[] args){ System.out.println(CompletableFuture.supplyAsync(() -> 2).thenApply(x->x*3).join()); } }
+JAVA
+javac DemoCf.java && java DemoCf
 ```
-**Ejecución real**: `./mvnw -Dtest=CotizadorAsyncTest test`. **Verificación**: `thenCombine` retorna `135.50`; autoinvocación se ejecuta en mismo hilo (assert por nombre de hilo).
+**Caso de uso real.** Combinar llamadas remotas.
+**Error común.** Bloquear con `get()` en request thread sin necesidad. Corrección: componer o usar timeout.
+**Verificación (JDK 27, 2026-05-22).** Salida: `6`.
+
+#### Self-invocation en `@Async`
+**Definición formal.** Llamada interna a método del mismo objeto (`this.metodoAsync()`), que evita el proxy Spring.
+**Para qué sirve.** Identificar por qué no hay asincronía/proxy.
+**Cuándo evitarla.** Al usar anotaciones basadas en proxy.
+**Ejemplo mínimo enfocado (conceptual).** Mover método a otro bean o auto-inyectar con cuidado.
+**Caso de uso real.** `@Async`, `@Transactional`, `@Cacheable`.
+**Error común.** Esperar que self-call sea async. Corrección: invocar a través del proxy.
+**Verificación.** **Nota:** observable comparando thread name/logs.
 
 ### Tema 3: Locks, deadlocks, semáforos y MDC en concurrencia · Avanzado · 45 min
 
-**Caso guía**: transferencias concurrentes entre cuentas provocan deadlock; logs pierden requestId en hilos async.
-
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Lock (`ReentrantLock`) | Exclusión mutua explícita. | Proteger sección crítica. | Lock/unlock en `try/finally`. | Olvidar unlock. |
-| Deadlock | Dos hilos esperan locks en orden opuesto. | Fallo catastrófico. | Orden global de locks o `tryLock` con timeout. | Tomar locks en orden inconsistente. |
-| Semáforo | Limita número de permisos concurrentes. | Controlar acceso a recurso limitado. | `acquire/release` en finally. | Fuga de permiso. |
-| MDC en concurrencia | Contexto de logging por hilo. | Trazabilidad. | Propagar MDC con `TaskDecorator`. | Perder correlation id en async. |
-
-**Implementación desde cero**
-```java
-public void transferir(Cuenta a, Cuenta b, BigDecimal monto){
-  Cuenta primera = a.getId().compareTo(b.getId()) <= 0 ? a : b;
-  Cuenta segunda = primera == a ? b : a;
-  primera.lock.lock(); try { segunda.lock.lock(); try { a.restar(monto); b.sumar(monto); } finally { segunda.lock.unlock(); } } finally { primera.lock.unlock(); }
-}
+#### Lock y deadlock
+**Definición formal.** Lock excluye acceso concurrente; deadlock es espera circular donde dos+ hilos no avanzan.
+**Para qué sirve.** Proteger estado compartido y reconocer bloqueos.
+**Cuándo usarlo.** Estado mutable compartido. Prefiere inmutabilidad o estructuras concurrentes.
+**Ejemplo mínimo enfocado (ejecutable).**
+```bash
+mkdir -p /tmp/sb9-lock && cd /tmp/sb9-lock
+cat > DemoLock.java << 'JAVA'
+import java.util.concurrent.locks.*;
+public class DemoLock { public static void main(String[] args){ Lock l=new ReentrantLock(); l.lock(); try{ System.out.println("ok"); } finally { l.unlock(); } } }
+JAVA
+javac DemoLock.java && java DemoLock
 ```
-```java
-class MdcTaskDecorator implements TaskDecorator {
-  public Runnable decorate(Runnable r){ var ctx=MDC.getCopyOfContextMap(); return () -> { var prev=MDC.getCopyOfContextMap(); try { if(ctx!=null) MDC.setContextMap(ctx); r.run(); } finally { if(prev!=null) MDC.setContextMap(prev); else MDC.clear(); } }; }
-}
+**Caso de uso real.** Proteger contador compartido.
+**Error común.** Tomar locks en orden distinto. Corrección: orden global de adquisición.
+**Verificación (JDK 27, 2026-05-22).** Salida: `ok`.
+
+#### Semáforo y MDC
+**Definición formal.** Semáforo limita número de permisos concurrentes; MDC guarda contexto diagnóstico por hilo.
+**Para qué sirve.** Limitar concurrencia y mantener trazabilidad en logs.
+**Cuándo usarlo.** Semáforo para limitar recursos; MDC en requests, propagándolo a hilos async.
+**Ejemplo mínimo enfocado (ejecutable semáforo).**
+```bash
+mkdir -p /tmp/sb9-sem && cd /tmp/sb9-sem
+cat > DemoSem.java << 'JAVA'
+import java.util.concurrent.*;
+public class DemoSem { public static void main(String[] args) throws Exception { Semaphore s=new Semaphore(1); s.acquire(); System.out.println("in"); s.release(); } }
+JAVA
+javac DemoSem.java && java DemoSem
 ```
-**Ejecución real**: `./mvnw -Dtest=TransferenciaDeadlockTest test`. **Verificación**: versión insegura timeouts/deadlock bajo prueba de estrés; versión con orden pasa; MDC visible en hilo async.
+**Caso de uso real.** Limitar llamadas a API externa.
+**Error común.** Perder MDC al pasar a otro hilo. Corrección: TaskDecorator/propagación.
+**Verificación (JDK 27, 2026-05-22).** Salida: `in`.
 
 ### Tema 4: Resiliencia en el núcleo: `@Retryable` y `@ConcurrencyLimit` (Spring Framework 7) · Avanzado · 40 min
 
-**Caso guía**: proveedor externo falla intermitente; otro endpoint debe limitar concurrencia.
-
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `@Retryable` (Spring Framework 7 core) | Reintenta método ante excepciones configuradas. | Transitorios. | Solo idempotentes; max retries y delay. | Reintentar operación no idempotente. |
-| Backoff/jitter | Espera entre reintentos, con variación. | Evitar thundering herd. | Configurar delay/multiplier/jitter. | Reintento inmediato agresivo. |
-| `@ConcurrencyLimit` | Limita ejecuciones concurrentes de un método. | Proteger recurso. | Límite acorde a capacidad. | Límite demasiado alto/bajo sin medir. |
-| `@EnableResilientMethods` | Habilita procesamiento de anotaciones resilientes. | Activar feature. | Agregar config. | Anotación sin habilitar. |
-
-**Implementación desde cero**
-```java
-@Configuration @EnableResilientMethods
-class ResilienciaConfig {}
-@Service
-class CotizadorConReintento {
-  private final ProveedorTarifas proveedor;
-  CotizadorConReintento(ProveedorTarifas p){this.proveedor=p;}
-  @Retryable(includes = ProveedorNoDisponible.class, maxRetries = 2, delay = 50)
-  public long cotizar(String ruta){ return proveedor.tarifa(ruta); }
-}
+#### `@Retryable`
+**Definición formal.** Anotación/mecanismo declarativo para reintentar una operación ante fallos configurados.
+**Para qué sirve.** Tolerar fallos transitorios.
+**Cuándo usarlo.** Idempotente, transitorio, con backoff. No en operaciones no idempotentes sin salvaguarda.
+**Ejemplo mínimo enfocado (ejecutable simulación).**
+```bash
+mkdir -p /tmp/sb9-ret && cd /tmp/sb9-ret
+cat > DemoRet.java << 'JAVA'
+public class DemoRet { static int n; static String call(){ if(++n<3) throw new RuntimeException(); return "ok"; }
+  public static void main(String[] args){ for(int i=0;i<5;i++){ try{ System.out.println(call()); break; } catch(Exception e){} } } }
+JAVA
+javac DemoRet.java && java DemoRet
 ```
-**Ejecución real**: `./mvnw -Dtest=CotizadorConReintentoTest test` con Mockito lanza 2 fallos luego éxito. **Verificación**: 3 invocaciones totales; si agota, propaga excepción.
+**Caso de uso real.** Timeout transitorio HTTP.
+**Error común.** Reintentar sin backoff ni límite. Corrección: max attempts + backoff + jitter.
+**Verificación (JDK 27, 2026-05-22).** Salida: `ok`.
 
+#### `@ConcurrencyLimit`
+**Definición formal.** Límite declarativo de concurrencia para proteger un recurso/método.
+**Para qué sirve.** Evitar saturación.
+**Cuándo usarlo.** Recursos escasos. Disponibilidad depende de versión Spring Framework; validar docs.
+**Ejemplo mínimo enfocado (conceptual).** `@ConcurrencyLimit(10)` en método.
+**Caso de uso real.** Limitar acceso concurrente a servicio externo.
+**Error común.** Límites infinitos por defecto. Corrección: backpressure/límites explícitos.
+**Verificación.** **Nota:** requiere Spring Framework 7+.
