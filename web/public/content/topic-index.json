@@ -6834,16 +6834,24 @@
     ],
     "19": [
       {
-        "title": "Jar ejecutable y capas",
-        "fragment": "tema-1-jar-ejecutable-y-capas"
+        "title": "Fat JAR vs capas de Docker",
+        "fragment": "tema-1-fat-jar-vs-capas-de-docker"
       },
       {
-        "title": "Imagen OCI con Buildpacks/Jib",
-        "fragment": "tema-2-imagen-oci-con-buildpacks-jib"
+        "title": "GraalVM native image",
+        "fragment": "tema-2-graalvm-native-image"
       },
       {
-        "title": "Config, secretos y migraciones en despliegue",
-        "fragment": "tema-3-config-secretos-y-migraciones-en-despliegue"
+        "title": "AOT, Leyden y CRaC: arranque rápido con trade-offs",
+        "fragment": "tema-3-aot-leyden-y-crac-arranque-rapido-con-trade-offs"
+      },
+      {
+        "title": "Health checks para Kubernetes",
+        "fragment": "tema-4-health-checks-para-kubernetes"
+      },
+      {
+        "title": "Imágenes OCI con Buildpacks: spring-boot:build-image sin Dockerfile",
+        "fragment": "tema-5-imagenes-oci-con-buildpacks-spring-boot-build-image-sin-dockerfile"
       }
     ],
     "2": [
@@ -7038,16 +7046,20 @@
         "fragment": "tema-5-integraciones-empresariales-soap-y-fronteras-de-protocolo"
       },
       {
+        "title": "HTTP Service Clients declarativos con @HttpExchange/@ImportHttpServices",
+        "fragment": "tema-6-http-service-clients-declarativos-con-httpexchange-importhttpservices"
+      },
+      {
         "title": "Spring AI: ChatClient y herramientas con autorización fuera del modelo",
-        "fragment": "tema-6-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
+        "fragment": "tema-7-spring-ai-chatclient-y-herramientas-con-autorizacion-fuera-del-modelo"
       },
       {
         "title": "RAG desde la frontera de datos: recuperar evidencia autorizada antes de generar",
-        "fragment": "tema-7-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
+        "fragment": "tema-8-rag-desde-la-frontera-de-datos-recuperar-evidencia-autorizada-antes-de-generar"
       },
       {
         "title": "Model Context Protocol (MCP) con Spring AI: exponer y consumir herramientas",
-        "fragment": "tema-8-model-context-protocol-mcp-con-spring-ai-exponer-y-consumir-herramientas"
+        "fragment": "tema-9-model-context-protocol-mcp-con-spring-ai-exponer-y-consumir-herramientas"
       }
     ],
     "9": [
