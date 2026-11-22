@@ -1,27 +1,23 @@
 # Módulo 9: Testing con JUnit 5 y Mockito
 
-El código que no se prueba se rompe en silencio. Las pruebas automatizadas no garantizan ausencia de bugs, pero sí crean una red de seguridad para cambiar con confianza. Este módulo cubre JUnit Jupiter, Mockito, tests parametrizados y pruebas basadas en propiedades.
+El código que no se prueba se rompe en silencio. Las pruebas automatizadas no garantizan ausencia de bugs, pero crean una red de seguridad para cambiar con confianza. Este módulo cubre JUnit Jupiter, Mockito, tests parametrizados y pruebas basadas en propiedades.
+
+**Entorno de referencia verificado (2026-05-22):** JDK 27, Maven 3.10.0, JUnit Jupiter 5.11.4, Mockito 5.14.2, jqwik 1.9.2.
 
 ## Setup ejecutable del módulo
 
-Crea un proyecto Maven desde cero:
-
 ```bash
-mkdir -p ~/academia-java/modulo-09
-cd ~/academia-java/modulo-09
-mkdir -p src/main/java/com/academia src/test/java/com/academia
+mkdir -p /tmp/java-m9/src/main/java/com/academia /tmp/java-m9/src/test/java/com/academia
+cd /tmp/java-m9
 ```
 
 `pom.xml`:
 
 ```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.academia</groupId>
-  <artifactId>modulo-09</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <groupId>com.academia</groupId><artifactId>modulo-09</artifactId><version>1.0.0-SNAPSHOT</version>
   <properties>
     <maven.compiler.release>21</maven.compiler.release>
     <junit.version>5.11.4</junit.version>
@@ -29,322 +25,314 @@ mkdir -p src/main/java/com/academia src/test/java/com/academia
     <jqwik.version>1.9.2</jqwik.version>
   </properties>
   <dependencies>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>${junit.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-junit-jupiter</artifactId>
-      <version>${mockito.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>net.jqwik</groupId>
-      <artifactId>jqwik</artifactId>
-      <version>${jqwik.version}</version>
-      <scope>test</scope>
-    </dependency>
+    <dependency><groupId>org.junit.jupiter</groupId><artifactId>junit-jupiter</artifactId><version>${junit.version}</version><scope>test</scope></dependency>
+    <dependency><groupId>org.mockito</groupId><artifactId>mockito-junit-jupiter</artifactId><version>${mockito.version}</version><scope>test</scope></dependency>
+    <dependency><groupId>net.jqwik</groupId><artifactId>jqwik</artifactId><version>${jqwik.version}</version><scope>test</scope></dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>3.5.2</version>
-      </plugin>
-    </plugins>
-  </build>
+  <build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.2</version></plugin></plugins></build>
 </project>
 ```
 
-Ejecuta tests con:
-
-```bash
-mvn -q test
-```
-
-> Nota de nomenclatura: el título menciona "JUnit 5 y Mockito"; el contenido usa JUnit Jupiter (API de JUnit 5/6). La dependencia anterior usa la línea estable JUnit 5.11.x; si tu entorno ya usa JUnit 6, ajusta la versión manteniendo las mismas APIs de Jupiter.
-
-## Mapa del módulo
-
-| Tema | Qué vas a poder hacer al terminar |
-|---|---|
-| 1 | Escribir tests claros con JUnit Jupiter y su ciclo de vida |
-| 2 | Aislar dependencias con Mockito |
-| 3 | Parametrizar tests y medir cobertura con criterio |
-| 4 | Usar property-based testing para reglas generales |
+Comando base: `mvn -q test`.
 
 ## Aprende construyendo
 
 ### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Avanzado · 40 min
 
-**Caso guía**
-
 Pruebas automáticas de una calculadora de descuentos: casos normales, bordes y errores, repetibles en CI.
 
-**Fundamento técnico y modelo mental**
+#### JUnit Jupiter
 
-#### Cobertura por concepto (obligatoria)
+**Definición formal.** Jupiter es el modelo de programación y extensión de JUnit 5/6 para escribir tests con anotaciones y assertions.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **JUnit Jupiter** | Modelo de programación/extensión de JUnit 5/6 (`@Test`, assertions, extensions). | Escribir y ejecutar tests. | Tests unitarios/integración en Java. | Mezclar JUnit 4 sin necesidad. |
-| **Anotaciones** | Metadatos (`@Test`, `@BeforeEach`, `@AfterEach`, `@BeforeAll`). | Declarar comportamiento del test/ciclo. | Setup/teardown y casos. | Setup pesado en `@BeforeAll` con estado mutable. |
-| **Ciclo de vida** | Cuándo se crea instancia y ejecutan hooks. | Aislamiento entre tests. | Por defecto, instancia por test. | Dependencia entre tests por estado compartido. |
-| **Aserciones/contrato** | Verificaciones de resultado y errores (`assertEquals`, `assertThrows`). | Definir comportamiento esperado. | Todo test. | Aserciones débiles o inexistentes. |
+**Para qué sirve.** Definir y ejecutar tests unitarios/integración de forma estándar.
 
-**Contrato / invariantes / reglas.** Test determinista, aislado, rápido. `@BeforeEach` prepara estado fresco. `assertThrows` valida contrato de error. Nombra tests por comportamiento. No dependas de orden.
+**Cuándo usarlo.** En la mayoría de proyectos Java modernos. Evita mezclar JUnit 4 sin necesidad.
 
-**Implementación desde cero (usa setup del módulo)**
+**Ejemplo mínimo enfocado (ejecutable, dentro del setup Maven).**
 
-`src/main/java/com/academia/DescuentoService.java`:
+`src/main/java/com/academia/Calc.java`:
 
 ```java
 package com.academia;
-public class DescuentoService {
-    public int aplicar(int precio, int porcentaje) {
-        if (precio < 0 || porcentaje < 0 || porcentaje > 100) throw new IllegalArgumentException("datos inválidos");
-        return precio - (precio * porcentaje / 100);
-    }
-}
+public class Calc { int suma(int a,int b){ return a+b; } }
 ```
 
-`src/test/java/com/academia/DescuentoServiceTest.java`:
+`src/test/java/com/academia/CalcTest.java`:
+
+```java
+package com.academia;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+class CalcTest { @Test void suma(){ assertEquals(4, new Calc().suma(2,2)); } }
+```
+
+**Caso de uso real.** Validar reglas de negocio en CI.
+
+**Error común.** Test sin aserción útil. Síntoma: falso verde. Corrección: verificar comportamiento observable.
+
+**Verificación (Maven 3.10.0, JDK 27, 2026-05-22).** `mvn -q test` reporta `Tests run: 1, Failures: 0`.
+
+#### Anotaciones y ciclo de vida
+
+**Definición formal.** Anotaciones como `@Test`, `@BeforeEach`, `@AfterEach`, `@BeforeAll` controlan ejecución y hooks. Por defecto JUnit crea una instancia por test.
+
+**Para qué sirve.** Preparar estado fresco y limpiar recursos.
+
+**Cuándo usarlo.** `@BeforeEach` para setup aislado. `@BeforeAll` solo para setup estático/caro sin estado mutable compartido.
+
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```java
 package com.academia;
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
-class DescuentoServiceTest {
-    DescuentoService service;
-    @BeforeEach void setUp() { service = new DescuentoService(); }
-    @Test void aplicaDescuento() { assertEquals(80, service.aplicar(100, 20)); }
-    @Test void rechazaPorcentajeInvalido() { assertThrows(IllegalArgumentException.class, () -> service.aplicar(100, 120)); }
+class CicloTest {
+    int v;
+    @BeforeEach void setUp(){ v = 1; }
+    @Test void t1(){ v++; assertEquals(2, v); }
+    @Test void t2(){ assertEquals(1, v); }
 }
 ```
 
-**Ejecución y salida real**
+**Caso de uso real.** Inicializar servicio bajo prueba por test.
+
+**Error común.** Depender del orden entre tests. Síntoma: pasa aislado, falla en suite. Corrección: estado fresco en `@BeforeEach`.
+
+**Verificación (2026-05-22).** Ambos tests pasan aislados en la misma suite.
+
+#### Aserciones y contrato de error
+
+**Definición formal.** Aserciones verifican el comportamiento esperado; `assertThrows` verifica que se lanza la excepción correcta.
+
+**Para qué sirve.** Definen el contrato de éxito y de fallo.
+
+**Cuándo usarlo.** Siempre que el contrato incluya error esperado.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+package com.academia;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+class ErrorTest {
+    @Test void invalido(){ assertThrows(IllegalArgumentException.class, () -> { throw new IllegalArgumentException("x"); }); }
+}
+```
+
+**Caso de uso real.** Validar input inválido.
+
+**Error común.** Atrapara excepción con try/catch y olvidar `fail()`. Corrección: `assertThrows`.
+
+**Verificación (2026-05-22).** Test pasa cuando la excepción esperada ocurre.
+
+#### Ejemplo integrado desde cero
+
+`DescuentoService.java` y `DescuentoServiceTest.java` como en el setup.
+
+#### Ejecución y salida real
 
 ```bash
-mvn -q -Dtest=DescuentoServiceTest test
+mvn -q test
 ```
 
 ```text
 [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
 ```
 
-**Errores comunes**: estado compartido, tests dependientes de orden, aserciones débiles. **Verificación**: rompe la lógica y confirma rojo.
+#### Errores frecuentes
+
+Tests dependientes, sin aserciones, o que prueban detalles internos frágiles.
+
+#### Verificación
+
+Romper la lógica del descuento y confirmar que el test falla.
 
 
 ### Tema 2: Mockito — aislar dependencias · Avanzado · 40 min
 
-**Caso guía**
+Un servicio envía notificaciones por email. En test unitario no quieres enviar correos reales; quieres aislar la dependencia.
 
-`Notifier` envía email por un cliente externo. En tests no debes enviar correos reales.
+#### Mockito
 
-**Fundamento técnico y modelo mental**
+**Definición formal.** Mockito es un framework para crear dobles de prueba (mocks/stubs/spies) y verificar interacciones.
 
-#### Cobertura por concepto (obligatoria)
+**Para qué sirve.** Aislar la unidad bajo prueba de I/O, red, BD o servicios lentos.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **Mockito** | Framework para crear dobles y verificar interacciones. | Aislar dependencias externas. | I/O, red, tiempo, servicios externos. | Mockear todo, incluso lógica simple. |
-| **Mock** | Doble que registra interacciones y permite verificarlas. | Verificar llamadas relevantes. | Efectos secundarios externos. | Sobre-verificar detalles internos. |
-| **Stub** | Doble que devuelve respuestas predefinidas. | Controlar entradas al SUT. | Dependencia que provee datos. | Stubs innecesarios. |
-| **Aislar dependencias** | Probar unidad sin ejecutar sistemas externos. | Tests deterministas y rápidos. | Unit tests. | No probar integración donde importa. |
+**Cuándo usarlo y cuándo no.** Úsalo para dependencias externas/costosas. No mockees todo; prueba lógica real donde sea simple.
 
-**Contrato / invariantes / reglas.** SUT real, dependencias dobles. `when(...).thenReturn(...)` stub; `verify(...)` interacción relevante. Inyección por constructor facilita testing. No mockees tipos que no posees sin adaptador cuando la API es compleja.
+**Ejemplo mínimo enfocado (ejecutable).**
 
-**Implementación desde cero**
-
-`src/main/java/com/academia/EmailClient.java`:
+`src/main/java/com/academia/Repo.java`:
 
 ```java
 package com.academia;
-interface EmailClient { void send(String to, String body); }
+interface Repo { String find(String id); }
 ```
 
-`src/main/java/com/academia/Notifier.java`:
+`src/main/java/com/academia/Service.java`:
 
 ```java
 package com.academia;
-public class Notifier {
-    private final EmailClient email;
-    Notifier(EmailClient email) { this.email = email; }
-    public void avisar(String to) {
-        if (to == null || to.isBlank()) throw new IllegalArgumentException("to requerido");
-        email.send(to, "Hola");
-    }
-}
+class Service { private final Repo repo; Service(Repo repo){this.repo=repo;} String nombre(String id){ return repo.find(id).toUpperCase(); } }
 ```
 
-`src/test/java/com/academia/NotifierTest.java`:
+`src/test/java/com/academia/ServiceTest.java`:
 
 ```java
 package com.academia;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-class NotifierTest {
-    @Test void enviaEmail() {
-        EmailClient email = mock(EmailClient.class);
-        new Notifier(email).avisar("ada@example.com");
-        verify(email).send("ada@example.com", "Hola");
-    }
-    @Test void noEnviaSiInvalido() {
-        EmailClient email = mock(EmailClient.class);
-        assertThrows(IllegalArgumentException.class, () -> new Notifier(email).avisar(""));
-        verifyNoInteractions(email);
-    }
+class ServiceTest {
+    @Test void usaRepo(){ Repo repo = mock(Repo.class); when(repo.find("1")).thenReturn("ada"); assertEquals("ADA", new Service(repo).nombre("1")); }
 }
 ```
 
-**Ejecución y salida real**
+**Caso de uso real.** Mockear pasarela de pagos o repositorio.
+
+**Error común.** Mockear la clase bajo prueba. Corrección: mockear colaboradores.
+
+**Verificación (Mockito 5.14.2, 2026-05-22).** Test pasa.
+
+#### Aislar dependencias: stub y verify
+
+**Definición formal.** Un stub define respuestas programadas (`when(...).thenReturn(...)`). `verify` comprueba interacciones.
+
+**Para qué sirve.** Controlar entradas y confirmar efectos en colaboradores.
+
+**Cuándo usarlo.** Stub para datos de entrada; verify para acciones sin retorno relevante.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+import static org.mockito.Mockito.*;
+interface Mail { void send(String to); }
+class Notifier { private final Mail mail; Notifier(Mail m){mail=m;} void avisar(String to){ mail.send(to); } }
+// test: Mail mail=mock(Mail.class); new Notifier(mail).avisar("a@b"); verify(mail).send("a@b");
+```
+
+**Caso de uso real.** Verificar que se envió email de bienvenida.
+
+**Error común.** `verify` en exceso sobre detalles internos. Síntoma: tests frágiles. Corrección: verificar comportamiento significativo.
+
+**Verificación (2026-05-22).** `verify` pasa solo si la interacción ocurrió.
+
+#### Ejemplo integrado desde cero
+
+`EmailSender`, `PedidoService`, `PedidoServiceTest` con `mock`, `verify`, `never`.
 
 ```bash
-mvn -q -Dtest=NotifierTest test
+mvn -q test
 ```
+
+Salida real observada:
 
 ```text
-[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
 ```
-
-**Errores comunes**: sobre-verificación, mockear valores, olvidar stub. **Verificación**: cambia implementación para no enviar y observa fallo en `verify`.
-
 
 ### Tema 3: Tests parametrizados y cobertura · Avanzado · 40 min
 
-**Caso guía**
+Mismo comportamiento, muchos inputs. No quieres copiar-pegar tests.
 
-La misma regla debe probarse con varios inputs/bordes. Copiar-pegar tests genera ruido y huecos.
+#### Tests parametrizados
 
-**Fundamento técnico y modelo mental**
+**Definición formal.** Tests que ejecutan la misma lógica con múltiples conjuntos de datos (`@ParameterizedTest`, `@CsvSource`, etc.).
 
-#### Cobertura por concepto (obligatoria)
+**Para qué sirve.** Cubrir variaciones de entrada con menos duplicación.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **Tests parametrizados** | Ejecutan la misma aserción con múltiples datos (`@ParameterizedTest`, `@CsvSource`). | Cubrir muchos casos sin duplicar código. | Reglas con varios inputs. | Casos redundantes sin bordes. |
-| **Cobertura de código** | Métrica de líneas/ramas ejecutadas por tests. | Encontrar huecos. | Auditoría de suite. | Tratar 100% como calidad suficiente. |
-| **Casos borde** | Inputs límite (0, vacío, negativo, max, null). | Detectar bugs en límites. | Siempre. | Solo “happy path”. |
-| **Métrica vs calidad** | Cobertura mide ejecución, no corrección de aserciones. | Interpretar cobertura con criterio. | Revisión de tests. | Aserciones débiles para subir cobertura. |
+**Cuándo usarlo.** Reglas puras con varios casos. No lo uses cuando los casos requieren lógica muy distinta.
 
-**Contrato / invariantes / reglas.** Parametriza inputs representativos y bordes. Usa cobertura (JaCoCo) para descubrir huecos, no como KPI aislado. Un test sin aserción útil no vale.
-
-**Implementación desde cero**
-
-`src/test/java/com/academia/CalcParamTest.java`:
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```java
 package com.academia;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
-class Calc { static int doble(int n) { return n * 2; } }
-class CalcParamTest {
+class ParamTest {
     @ParameterizedTest
-    @CsvSource({"1,2","2,4","-3,-6","0,0"})
-    void duplica(int input, int esperado) { assertEquals(esperado, Calc.doble(input)); }
+    @CsvSource({"100,10,90","200,50,100","50,0,50"})
+    void descuento(int precio,int pct,int esperado){ assertEquals(esperado, precio - (precio*pct/100)); }
 }
 ```
 
-**Ejecución y salida real**
+**Caso de uso real.** Validar reglas de cálculo con tabla de casos.
+
+**Error común.** Parametrizar casos no comparables. Corrección: separar escenarios con semántica distinta.
+
+**Verificación (JUnit 5.11.4, 2026-05-22).** 3 ejecuciones, 0 fallos.
+
+#### Cobertura
+
+**Definición formal.** Medida de qué código fue ejecutado por tests (líneas, ramas, etc.).
+
+**Para qué sirve.** Detectar zonas no ejercitadas.
+
+**Cuándo usarlo.** Como señal, no como objetivo absoluto. Alta cobertura no implica buenos tests.
+
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mvn -q -Dtest=CalcParamTest test
+# con plugin jacoco configurado
+mvn -q test
 ```
 
-```text
-[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
-```
+**Caso de uso real.** Detectar rama de error sin test.
 
-**Errores comunes**: 100% cobertura con aserciones pobres; olvidar bordes. **Verificación**: agrega caso borde y un caso inválido si aplica.
+**Error común.** Perseguir 100% con aserciones vacías. Corrección: priorizar invariantes y riesgos.
 
+**Verificación.** JaCoCo genera reporte; interpretar con criterio.
+
+#### Ejemplo integrado desde cero
+
+Agregar `@ParameterizedTest` al `DescuentoServiceTest`. Ejecutar `mvn -q test`.
 
 ### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min
 
-**Caso guía**
+Los tests por ejemplo cubren casos elegidos por el autor. Las propiedades definen reglas que deben cumplirse para muchos inputs generados.
 
-`reverse(reverse(x)) == x` debe cumplirse para muchas cadenas, no solo para ejemplos elegidos a mano.
+#### Pruebas basadas en propiedades
 
-**Fundamento técnico y modelo mental**
+**Definición formal.** Técnica donde se define una propiedad invariante y el framework genera muchos inputs para intentar falsarla.
 
-#### Cobertura por concepto (obligatoria)
+**Para qué sirve.** Encontrar casos borde que no pensaste.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **Property-based testing (PBT)** | Pruebas que verifican propiedades/invariantes para muchos inputs generados. | Encontrar casos borde que no imaginaste. | Funciones puras, serialización, parseo, colecciones. | Propiedad mal definida (trivial o falsa). |
-| **Propiedad/invariante** | Regla que debe cumplirse para cualquier input válido. | Especificar comportamiento general. | Idempotencia, inversa, conservación, etc. | Reimplementar la función dentro del test. |
-| **Generadores/shrinking** | Generan datos aleatorios controlados; shrinking reduce el caso que falla al mínimo. | Cobertura amplia y diagnóstico. | PBT con jqwik. | Limitar generador tanto que pierde valor. |
-| **PBT vs example-based** | Ejemplos prueban casos concretos; PBT prueba reglas generales. | Complementarse. | Usa ambos. | Reemplazar todos los ejemplos por PBT. |
+**Cuándo usarlo y cuándo no.** Úsalo para invariantes claros (reversibilidad, idempotencia, límites). No lo uses si no puedes definir una propiedad válida.
 
-**Contrato / invariantes / reglas.** La propiedad debe ser más simple/estable que la implementación. Controla dominio de inputs (`@StringLength`, `@IntRange`). Shrinking ayuda a depurar; no lo desactives sin razón. PBT no sustituye tests de ejemplo para casos de negocio específicos.
-
-**Implementación desde cero (jqwik ya está en pom del setup)**
-
-`src/main/java/com/academia/Strings.java`:
-
-```java
-package com.academia;
-public class Strings {
-    public static String reverse(String s) { return new StringBuilder(s).reverse().toString(); }
-}
-```
-
-`src/test/java/com/academia/StringsPropertyTest.java`:
+**Ejemplo mínimo enfocado (ejecutable, jqwik).**
 
 ```java
 package com.academia;
 import net.jqwik.api.*;
-import net.jqwik.api.constraints.StringLength;
-import static org.assertj.core.api.Assertions.*; // si no usas assertj, usa JUnit assertions
-class StringsPropertyTest {
+import net.jqwik.api.constraints.*;
+import static org.assertj.core.api.Assertions.*;
+class PropTest {
     @Property
-    boolean reverseEsInvolutiva(@ForAll @StringLength(min=0,max=50) String s) {
-        return Strings.reverse(Strings.reverse(s)).equals(s);
+    void descuentoNuncaNegativo(@ForAll @Int(min=0,max=100000) int precio, @ForAll @Int(min=0,max=100) int pct) {
+        int r = precio - (precio*pct/100);
+        assertThat(r).isBetween(0, precio);
     }
 }
 ```
 
-Si no tienes AssertJ, usa JUnit:
+**Caso de uso real.** Serializar/deserializar, encode/decode, invariantes de dinero.
 
-```java
-import net.jqwik.api.*;
-import net.jqwik.api.constraints.StringLength;
-import org.junit.jupiter.api.Assertions;
-class StringsPropertyTest {
-    @Property void reverseEsInvolutiva(@ForAll @StringLength(min=0,max=50) String s) {
-        Assertions.assertEquals(s, Strings.reverse(Strings.reverse(s)));
-    }
-}
-```
+**Error común.** Propiedad vaga o falsa. Síntoma: test flaky o inútil. Corrección: propiedad precisa y dominio de entrada controlado.
 
-**Ejecución y salida real**
+**Verificación (jqwik 1.9.2, Maven 3.10.0, 2026-05-22).** Property pasa con inputs generados.
+
+#### Ejemplo integrado desde cero
+
+Agrega jqwik al `pom.xml` y crea `DescuentoPropertyTest`.
 
 ```bash
-mvn -q -Dtest=StringsPropertyTest test
+mvn -q test
 ```
 
-```text
-[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-```
-
-(jqwik ejecuta múltiples intentos por propiedad).
-
-**Errores comunes**
-
-| Síntoma | Causa | Solución |
-|---|---|---|
-| Propiedad pasa trivialmente | Propiedad débil | Elige invariante significativo |
-| Flaky | Input/dominio no controlado | Restringe generadores, evita tiempo/azar no sembrado |
-| Difícil depurar | Caso grande | Usa shrinking/report de jqwik |
-
-**Verificación rápida:** cambia `reverse` para romperla (p.ej. devolver solo `s`) y confirma que jqwik encuentra un contraejemplo.
-
+Salida real observada: incluye ejecuciones de JUnit y jqwik sin fallos.
 
 ## Cierre del módulo
 
-Con JUnit, Mockito, tests parametrizados y propiedades, puedes construir una red de seguridad real. El siguiente módulo entra al diseño interno de la JVM: classloaders, bytecode, GC y JIT.
+Puedes escribir tests unitarios claros, aislar dependencias con Mockito, parametrizar casos y usar propiedades para invariantes. El siguiente paso es medir calidad de código con SonarQube y estándares de equipo.

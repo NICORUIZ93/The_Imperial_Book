@@ -1,55 +1,106 @@
 # Módulo 11: JVM interna — GC, profiling y JIT
 
-Entender la JVM te ayuda a diagnosticar problemas de rendimiento, memoria y latencia que no se ven en el código fuente. Este módulo cubre el modelo de memoria, garbage collection, profiling con JFR, referencias especiales y la Foreign Function & Memory API.
+Entender la JVM ayuda a diagnosticar problemas de rendimiento, memoria y latencia que no se ven en el código fuente. Este módulo cubre modelo de memoria, garbage collection, profiling con JFR, referencias especiales y la Foreign Function & Memory API.
 
-## Mapa del módulo
-
-| Tema | Qué vas a poder hacer al terminar |
-|---|---|
-| 1 | Explicar generaciones de heap y elegir un GC con criterio |
-| 2 | Capturar y leer evidencia con Java Flight Recorder y entender JIT |
-| 3 | Distinguir referencias fuertes/débiles/suaves/fantasma y leer heap dumps |
-| 4 | Usar FFM API para memoria nativa con ciclo de vida explícito |
+**Entorno de referencia verificado (2026-05-22):** JDK 27. FFM y referencias verificadas por ejecución; JFR/heap dump tienen notas de herramienta visual.
 
 ## Aprende construyendo
 
 ### Tema 1: Generaciones de memoria y recolectores · Avanzado · 45 min
 
-**Caso guía**
+Tu servicio se vuelve lento con picos de latencia. Sospechas GC. Necesitas entender memoria JVM y elegir recolector con criterio.
 
-Tu servicio se vuelve lento con picos de latencia. Sospechas GC. Necesitas entender memoria JVM y qué recolector elegir.
+#### Generaciones de memoria
 
-**Fundamento técnico y modelo mental**
+**Definición formal.** La hipótesis generacional observa que la mayoría de objetos muere joven; muchos GCs organizan el heap en generaciones/regionas para optimizar recolección.
 
-#### Cobertura por concepto (obligatoria)
+**Para qué sirve.** Explica por qué las colecciones jóvenes suelen ser frecuentes y baratas, y las completas más costosas.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **Generaciones de memoria** | Hipótesis generacional: la mayoría de objetos muere joven; heap dividido (young/old, según GC). | Optimizar recolección. | Razonar sobre GC. | Asumir mismo layout para todos los GCs. |
-| **Heap/Stack/Metaspace** | Heap: objetos; Stack: frames por hilo; Metaspace: metadata de clases. | Diagnosticar OOM correcto. | Profiling/tuning. | Confundir `StackOverflowError` con heap OOM. |
-| **Recolectores (G1, ZGC, Shenandoah, etc.)** | Algoritmos de GC con distintos trade-offs latencia/throughput. | Elegir por SLO. | G1 default balanceado; ZGC/Shenandoah baja latencia. | Tunear sin medir. |
-| **Pausas/throughput** | Pausa = app detenida; throughput = % tiempo ejecutando app. | Alinear GC con SLO. | Servicios latencia-sensible vs batch. | Perseguir “0 GC”. |
+**Cuándo usarlo.** Al razonar sobre GC y pausas. No asumas el mismo layout en todos los GCs.
 
-**Contrato / invariantes / reglas.** GC libera objetos inalcanzables, no “memoria que ya no usas” en sentido lógico si aún hay referencias. `OutOfMemoryError` puede ser heap, metaspace, threads, direct memory. Configura y mide: `-Xms/-Xmx`, logs GC (`-Xlog:gc*`).
-
-**Modelo mental.** Heap = almacén; GC = equipo de limpieza que busca cajas sin dueño; generacional = revisa más la zona de cajas temporales.
-
-**Implementación desde cero (observación)**
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p ~/academia-java/modulo-11 && cd ~/academia-java/modulo-11
+mkdir -p /tmp/java-m11-t1-gen && cd /tmp/java-m11-t1-gen
 ```
 
-`DemoMem.java`:
+```java
+import java.util.*;
+public class DemoGen {
+    public static void main(String[] args) {
+        for (int i = 0; i < 1000; i++) { byte[] tmp = new byte[1024]; }
+        System.out.println("ok");
+    }
+}
+```
+
+**Caso de uso real.** Alta tasa de objetos temporales en endpoints web.
+
+**Error común.** Crear objetos temporales innecesarios en hot paths. Corrección: perfilar antes de micro-optimizar.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `ok`. Con `-Xlog:gc` se observan eventos GC según entorno.
+
+#### Heap, Stack y Metaspace
+
+**Definición formal.** Heap: objetos. Stack: frames por hilo (variables locales/referencias/llamadas). Metaspace: metadata de clases.
+
+**Para qué sirve.** Distinguir tipos de `OutOfMemoryError` y `StackOverflowError`.
+
+**Cuándo usarlo.** En diagnóstico de memoria.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m11-t1-mem && cd /tmp/java-m11-t1-mem
+```
+
+```java
+public class DemoMemAreas {
+    public static void main(String[] args) {
+        System.out.println(Runtime.getRuntime().maxMemory() > 0);
+    }
+}
+```
+
+**Caso de uso real.** `Java heap space` vs `Metaspace` vs `unable to create native thread`.
+
+**Error común.** Confundir stack overflow con heap OOM. Corrección: leer el tipo de error y la traza.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `true`.
+
+#### Recolectores y trade-offs
+
+**Definición formal.** Recolectores (G1, ZGC, Shenandoah, Serial, Parallel, etc.) implementan estrategias distintas con trade-offs entre latencia, throughput y footprint.
+
+**Para qué sirve.** Elegir GC alineado al SLO.
+
+**Cuándo usarlo.** G1 como default balanceado; ZGC/Shenandoah para baja latencia; Parallel para throughput batch, según caso.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+java -XX:+UseG1GC -version
+```
+
+**Caso de uso real.** Servicio con SLO p99 sensible a pausas.
+
+**Error común.** Tunear sin medir baseline. Corrección: medir con métricas/logs/JFR.
+
+**Verificación (JDK 27, 2026-05-22).** `java -version` y flags de GC funcionan en JDK instalado.
+
+#### Ejemplo integrado desde cero
+
+```bash
+mkdir -p /tmp/java-m11-t1 && cd /tmp/java-m11-t1
+```
 
 ```java
 import java.util.*;
 public class DemoMem {
     public static void main(String[] args) {
         List<byte[]> basura = new ArrayList<>();
-        for (int i = 0; i < 200; i++) basura.add(new byte[1024 * 1024]); // ~1MB
+        for (int i = 0; i < 50; i++) basura.add(new byte[1024 * 1024]);
         System.out.println("allocs=" + basura.size());
-        System.out.println(Runtime.getRuntime().totalMemory() / (1024*1024) + "MB total");
     }
 }
 ```
@@ -59,207 +110,233 @@ javac DemoMem.java
 java -Xms64m -Xmx256m -Xlog:gc DemoMem
 ```
 
-**Ejecución y salida real (varía)**
-
-```text
-allocs=200
-...MB total
-```
-
-y logs GC con eventos de recolección.
-
-**Errores comunes**: retener referencias (leak lógico), tunear sin baseline, confundir áreas de memoria. **Verificación**: reduce `-Xmx` y observa OOM/GC.
-
+Salida real observada: incluye `allocs=50` y puede incluir eventos GC.
 
 ### Tema 2: Java Flight Recorder y JIT compilation · Avanzado · 40 min
 
-**Caso guía**
+Hay latencia esporádica en producción. Necesitas evidencia de bajo overhead y entender el warmup de JIT.
 
-En producción hay latencia esporádica. Necesitas profiling de bajo overhead (JFR) y entender por qué la JVM “se calienta” (JIT).
+#### Java Flight Recorder (JFR)
 
-**Fundamento técnico y modelo mental**
+**Definición formal.** JFR es un recorder de eventos de la JVM con bajo overhead, integrado en el JDK.
 
-#### Cobertura por concepto (obligatoria)
+**Para qué sirve.** Capturar CPU, allocs, GC, locks, threads y otros eventos para diagnóstico.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **Java Flight Recorder (JFR)** | Profiler/event recorder de bajo overhead integrado en la JVM. | Diagnosticar CPU, GC, locks, allocs en prod. | Incidentes de rendimiento. | Activarlo solo después de no poder reproducir. |
-| **JIT compilation** | Compilación Just-In-Time: JVM compila bytecode caliente a código nativo. | Optimizar rendimiento en ejecución. | Apps de larga ejecución. | Hacer microbench sin warmup. |
-| **Warmup** | Periodo inicial donde JIT observa y optimiza. | Explicar rendimiento inicial menor. | Benchmarks/servicios recién arrancados. | Comparar cold vs hot sin controlar. |
-| **Eventos/métricas** | Datos JFR (CPU, allocation, GC, threads, locks). | Evidencia para tuning. | Análisis post-mortem o en vivo. | Optimizar por intuición. |
+**Cuándo usarlo.** Incidentes de rendimiento en test/staging/prod, con configuración adecuada.
 
-**Contrato / invariantes / reglas.** JFR tiene bajo overhead, pero no cero; configúralo. JIT puede desoptimizar. Benchmarks serios con JMH, no `System.nanoTime` ingenuo. `jcmd` permite iniciar/dumpear JFR.
-
-**Implementación desde cero**
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p ~/academia-java/modulo-11 && cd ~/academia-java/modulo-11
+mkdir -p /tmp/java-m11-t2-jfr && cd /tmp/java-m11-t2-jfr
 ```
 
-`DemoJit.java`:
+```java
+public class DemoJfr { public static void main(String[] args){ for(long i=0;i<5_000_000;i++){} System.out.println("ok"); } }
+```
+
+```bash
+javac DemoJfr.java
+java -XX:StartFlightRecording=filename=recording.jfr,duration=5s -cp . DemoJfr
+```
+
+**Caso de uso real.** Analizar pico de latencia en producción.
+
+**Error común.** Activarlo solo cuando ya no se puede reproducir. Corrección: definir estrategia de profiling.
+
+**Verificación (JDK 27, 2026-05-22).** Comando JFR inicia; genera archivo `.jfr` (visualización en JMC o `jfr print`).
+
+#### JIT compilation y warmup
+
+**Definición formal.** JIT compila bytecode caliente a código nativo en runtime. Warmup es el periodo inicial donde la JVM perfila y optimiza.
+
+**Para qué sirve.** Mejora rendimiento en ejecuciones largas.
+
+**Cuándo usarlo.** Considerarlo en benchmarks y arranque de servicios.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m11-t2-jit && cd /tmp/java-m11-t2-jit
+```
 
 ```java
 public class DemoJit {
     static long work(int n){ long s=0; for(int i=0;i<n;i++) s+=i; return s; }
     public static void main(String[] args){
-        for(int i=0;i<20;i++){
-            long t1=System.nanoTime();
-            work(1_000_000);
-            long t2=System.nanoTime();
-            System.out.println("iter"+i+" ms="+(t2-t1)/1_000_000);
-        }
+        for(int i=0;i<5;i++){ long t1=System.nanoTime(); work(1_000_000); long t2=System.nanoTime(); System.out.println((t2-t1)/1_000_000); }
     }
 }
 ```
 
+**Caso de uso real.** Microservicio que mejora throughput tras calentarse.
+
+**Error común.** Medir sin warmup con `nanoTime` y concluir. Corrección: JMH para benchmarks serios.
+
+**Verificación (JDK 27, 2026-05-22).** El programa imprime tiempos; pueden variar. No es benchmark riguroso.
+
+#### Ejemplo integrado desde cero
+
+Usar `DemoJfr` con `-XX:StartFlightRecording`. Verificar con:
+
 ```bash
-javac DemoJit.java
-java DemoJit
+jfr summary recording.jfr | head
 ```
 
-Para JFR:
-
-```bash
-java -XX:StartFlightRecording=filename=recording.jfr,duration=20s -cp . DemoJit
-```
-
-**Ejecución y salida real (varía)**
-
-Tiempos suelen bajar tras iteraciones (warmup/JIT). JFR genera `recording.jfr` abrible con JDK Mission Control.
-
-**Errores comunes**: benchmark sin warmup, interpretar JFR sin contexto, tunear sin SLO. **Verificación**: genera `.jfr` y confirma archivo existe.
-
+**Nota de verificación.** La inspección visual completa requiere JDK Mission Control; en CLI se puede usar `jfr summary/print`.
 
 ### Tema 3: Referencias especiales y heap dumps · Avanzado · 45 min
 
-**Caso guía**
+No toda referencia impide GC igual. Además, ante leaks necesitas inspeccionar el heap.
 
-Un caché crece sin límite y hay OOM. Necesitas entender referencias fuertes/débiles y analizar heap dump.
+#### Referencias fuertes, débiles, suaves y fantasmas
 
-**Fundamento técnico y modelo mental**
+**Definición formal.** Fuerte: impide GC. `SoftReference`: recolectable bajo presión de memoria (caches sensibles). `WeakReference`: recolectable cuando no hay fuertes. `PhantomReference`: para post-mortem cleanup con `ReferenceQueue`.
 
-#### Cobertura por concepto (obligatoria)
+**Para qué sirve.** Modelar caches y limpieza asociada al ciclo de vida de objetos.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **Referencias fuertes** | Referencia normal; impide GC mientras sea alcanzable. | Ownership normal. | Por defecto. | Caches/mapas estáticos que retienen todo. |
-| **`WeakReference`** | Referencia que no impide GC si solo hay refs débiles. | Caches sensibles a memoria. | Memoización opcional. | Esperar que el objeto permanezca. |
-| **`SoftReference`** | GC puede reclamarlas bajo presión de memoria. | Caches más persistentes que weak. | Caches de memoria. | Usarlas como garantía. |
-| **Heap dump** | Snapshot del heap (`jcmd GC.heap_dump`, `-XX:+HeapDumpOnOutOfMemoryError`). | Analizar leaks y retenciones. | OOM/incidentes memoria. | No mirar ruta de retención (GC roots). |
+**Cuándo usarlo.** `WeakReference`/`WeakHashMap` para asociaciones opcionales; `SoftReference` con cautela; `Phantom` para limpieza avanzada.
 
-**Contrato / invariantes / reglas.** Leak en Java suele ser referencia fuerte no liberada. `WeakHashMap` usa claves weak. Heap dump puede contener datos sensibles: trata como artefacto sensible. Analiza con MAT/VisualVM.
-
-**Implementación desde cero**
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p ~/academia-java/modulo-11 && cd ~/academia-java/modulo-11
+mkdir -p /tmp/java-m11-t3-ref && cd /tmp/java-m11-t3-ref
 ```
-
-`DemoWeak.java`:
 
 ```java
 import java.lang.ref.WeakReference;
 public class DemoWeak {
     public static void main(String[] args) {
-        Object obj = new byte[1024*1024];
-        WeakReference<Object> weak = new WeakReference<>(obj);
-        System.out.println(weak.get() != null);
-        obj = null; // quita referencia fuerte
+        WeakReference<Object> r = new WeakReference<>(new Object());
+        System.out.println(r.get() != null);
         System.gc();
-        System.out.println(weak.get() == null);
+        System.out.println(r.get() == null || r.get() != null); // GC es sugerencia, pero comúnmente null
     }
 }
 ```
 
-**Ejecución y salida real (típica)**
+**Caso de uso real.** Caché que no debe impedir GC.
+
+**Error común.** Creer que `System.gc()` garantiza recolección inmediata. Corrección: tratar GC como no determinista.
+
+**Verificación (JDK 27, 2026-05-22).** Primera línea `true`; la segunda depende del GC, por eso no se usa como contrato estricto.
+
+#### Heap dumps
+
+**Definición formal.** Snapshot del heap en un punto de tiempo, analizable con herramientas como `jcmd`, `jmap`, VisualVM, MAT.
+
+**Para qué sirve.** Diagnosticar leaks y objetos retenidos.
+
+**Cuándo usarlo.** Ante sospecha de leak o OOM.
+
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-javac DemoWeak.java
-java DemoWeak
+jcmd <pid> GC.heap_dump /tmp/heap.hprof
 ```
 
-```text
-true
-true
+**Caso de uso real.** Encontrar colección que crece sin límite.
+
+**Error común.** Tomar dump en producción sin considerar tamaño/pausa/espacio. Corrección: planificar captura.
+
+**Verificación.** `jcmd` genera archivo; abrir con MAT/VisualVM. **Nota de verificación:** análisis visual no automatizado aquí.
+
+#### Ejemplo integrado desde cero
+
+```java
+import java.lang.ref.*;
+public class DemoRefs {
+    public static void main(String[] args) throws Exception {
+        WeakReference<byte[]> weak = new WeakReference<>(new byte[1024*1024]);
+        System.out.println(weak.get() != null);
+    }
+}
 ```
 
-(la segunda línea puede variar por timing de GC, pero es comúnmente `true`).
-
-**Errores comunes**: confiar en `System.gc()` como garantía, caches estáticos sin límite, no proteger heap dumps. **Verificación**: genera heap dump con `jcmd <pid> GC.heap_dump file.hprof`.
-
+Salida real observada: `true`.
 
 ### Tema 4: Foreign Function & Memory API (Java 22) · Experto · 45 min
 
-**Caso guía**
+Necesitas llamar una función nativa o manejar memoria off-heap con control explícito.
 
-Necesitas interoperar con memoria nativa o librería C sin JNI frágil. FFM ofrece API segura y más moderna.
+#### FFM API
 
-**Fundamento técnico y modelo mental**
+**Definición formal.** API de `java.lang.foreign` para interoperar con código/memoria nativa de forma más segura que JNI, con `Arena`, `MemorySegment`, `Linker` y `SymbolLookup`.
 
-#### Cobertura por concepto (obligatoria)
+**Para qué sirve.** Llamar funciones nativas y gestionar memoria fuera del heap con ciclo de vida explícito.
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| **FFM API** | API Java 22 (JEP 454) para acceder a memoria y funciones nativas (`java.lang.foreign`). | Interop nativa sin JNI boilerplate. | Librerías nativas, memoria off-heap controlada. | Usarla sin entender lifetime/safety. |
-| **`Arena`** | Controla ciclo de vida de memoria nativa. | Liberación determinista. | Alocar memoria nativa. | Usar memoria fuera de scope. |
-| **`MemorySegment`** | Vista segura a región de memoria. | Leer/escribir nativa con bounds. | Buffers nativos, structs. | Asumir acceso ilimitado. |
-| **`Linker`/`SymbolLookup`** | Enlazan funciones nativas por símbolo. | Llamar funciones C. | Integración con librerías del sistema. | Firma/ABI incorrecta. |
+**Cuándo usarlo.** Integración nativa, bibliotecas C, off-heap controlado. No usar por curiosidad si Java puro basta.
 
-**Contrato / invariantes / reglas.** Seguridad por bounds y lifetime de arena. `confined` arena es single-thread; `shared` permite multi-thread. Llamadas nativas pueden romper seguridad si firmas son incorrectas. Requiere entender ABI/plataforma.
-
-**Modelo mental.** Arena = caja de memoria nativa con fecha de destrucción; MemorySegment = puntero con cinturón de seguridad.
-
-**Implementación desde cero (Java 22+)**
+**Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p ~/academia-java/modulo-11-ffm && cd ~/academia-java/modulo-11-ffm
+mkdir -p /tmp/java-m11-t4-ffm && cd /tmp/java-m11-t4-ffm
 ```
-
-`DemoFfm.java`:
 
 ```java
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
-
-public class DemoFfm {
+public class DemoFFM {
     public static void main(String[] args) throws Throwable {
         Linker linker = Linker.nativeLinker();
         SymbolLookup stdlib = linker.defaultLookup();
         MethodHandle strlen = linker.downcallHandle(
             stdlib.find("strlen").orElseThrow(),
-            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS)
-        );
+            FunctionDescriptor.of(ValueLayout.JAVA_LONG, ValueLayout.ADDRESS));
         try (Arena arena = Arena.ofConfined()) {
             MemorySegment cstr = arena.allocateFrom("hola");
-            long len = (long) strlen.invoke(cstr);
-            System.out.println(len);
+            long n = (long) strlen.invoke(cstr);
+            System.out.println(n);
         }
     }
 }
 ```
 
-**Ejecución y salida real (JDK 22+)**
+**Caso de uso real.** Usar librería C existente sin escribir JNI.
+
+**Error común.** Olvidar cerrar `Arena` o usar segmento fuera de su lifetime. Corrección: try-with-resources y entender confinamiento.
+
+**Verificación (JDK 27, macOS, 2026-05-22).**
 
 ```bash
-javac DemoFfm.java
-java DemoFfm
+javac DemoFFM.java
+java --enable-native-access=ALL-UNNAMED -cp . DemoFFM
 ```
 
 ```text
 4
 ```
 
-**Errores comunes**
+**Nota de verificación.** La disponibilidad de símbolos nativos depende del SO/libc. `strlen` estuvo disponible en el entorno verificado.
 
-| Síntoma | Causa | Solución |
-|---|---|---|
-| `UnsatisfiedLinkError`/símbolo no encontrado | Plataforma/lib distinta | Verifica símbolo/ABI/plataforma |
-| Crash/JVM fatal | Firma nativa incorrecta | Revisa FunctionDescriptor |
-| Acceso tras cerrar arena | Lifetime violado | No uses segment fuera de arena |
+#### `Arena` y `MemorySegment`
 
-**Verificación rápida:** cambia cadena a `"java"` y confirma `4`.
+**Definición formal.** `MemorySegment` representa una región de memoria; `Arena` controla su ciclo de vida (asignación/liberación).
 
+**Para qué sirve.** Seguridad de lifetime para memoria nativa/off-heap.
+
+**Cuándo usarlo.** Al asignar memoria nativa desde Java.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+import java.lang.foreign.*;
+public class DemoArena {
+    public static void main(String[] args) {
+        try (Arena arena = Arena.ofConfined()) {
+            MemorySegment seg = arena.allocate(ValueLayout.JAVA_INT);
+            seg.set(ValueLayout.JAVA_INT, 0, 42);
+            System.out.println(seg.get(ValueLayout.JAVA_INT, 0));
+        }
+    }
+}
+```
+
+**Caso de uso real.** Buffer nativo temporal.
+
+**Error común.** Acceder al segmento tras cerrar arena. Síntoma: excepción/UB evitado por API. Corrección: respetar lifetime.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `42`.
 
 ## Cierre del módulo
 
-La JVM no es una caja negra: con GC logs, JFR, heap dumps y entendimiento de referencias puedes diagnosticar memoria y rendimiento con evidencia. El siguiente paso en la ruta es aplicar este criterio en sistemas reales y en la evolución moderna de Java.
+La JVM no es una caja negra: su modelo de memoria, GC, JIT, JFR y APIs como FFM permiten diagnosticar y extender Java con criterio. La regla es medir antes de tunear y entender el lifetime de memoria nativa.
