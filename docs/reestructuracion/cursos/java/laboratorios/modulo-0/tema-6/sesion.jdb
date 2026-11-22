@@ -1,9 +1,0 @@
-stop at PesoVolumetrico:8
-run
-locals
-next
-locals
-print volumenCm3 / 5000
-print volumenCm3 * 1000 / 5000
-where
-cont

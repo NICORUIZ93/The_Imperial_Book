@@ -1,6 +1,0 @@
-catalogo/default -> {catalogo.pagina=20, tienda.moneda=COP}
-catalogo/prod    -> {catalogo.banner=Black Friday, catalogo.pagina=50, tienda.moneda=COP}
-tras el push, sin refrescar: catalogo.pagina=50
-tras refrescar:              catalogo.pagina=80
-arranque sin servidor (fail-fast): no pude leer catalogo/prod del Config Server: ConnectException
-OK: precedencia, refresco y fail-fast comprobados

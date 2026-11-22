@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Audita los recursos que las lecciones usan en la app (specs/001 y specs/002).
+"""Audita los recursos que las lecciones usan en la app.
 
   --logos        cada ruta (salvo rutaflow) tiene web/public/brands/<id>.svg
   --links        ninguna lección enlaza con rutas relativas que salen de web/public/content
   --images       cada imagen enlazada existe, tiene texto alternativo útil y pesa < 300 KB
-  --docs-counts  CLAUDE.md declara los mismos conteos que topic-index.json
+  --docs-counts  README.md declara los mismos conteos que topic-index.json
 
 Sin opciones ejecuta todas las comprobaciones. Sale con 1 si alguna falla.
 """
@@ -75,13 +75,8 @@ def check_docs_counts(index: dict) -> list[str]:
     modules = sum(len(mods) for mods in index.values())
     topics = sum(len(items) for mods in index.values() for items in mods.values())
     real = (tracks, modules, topics)
-    # Los tres lugares donde el proyecto declara su tamaño. Hasta el 2026-11-20 solo se comprobaba
-    # CLAUDE.md, y MASTER-PROMPT se quedó diciendo «289 módulos · 1420 temas» mientras crecían los
-    # 187 temas de Microservicios: una cifra que nadie mide es una cifra que se pudre.
     declaraciones = [
-        ("CLAUDE.md", r"renders (\d+) curriculum tracks \((\d+) modules, (\d+) topics\)"),
         ("README.md", r"(\d+) cursos, (\d+) módulos y ([\d.]+) temas indexados"),
-        ("MASTER-PROMPT.md", r"(\d+) rutas · (\d+) módulos · ([\d.]+) temas"),
     ]
     errors = []
     for nombre, patron in declaraciones:

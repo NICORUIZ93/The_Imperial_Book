@@ -1,5 +1,0 @@
-stop at PesoVolumetrico:10
-cont
-locals
-set gramos = 1800
-cont

@@ -1,6 +1,0 @@
-ANTES · cobro inmediato, 3 intentos con backoff de 100 ms:
-  reservas recibidas (HTTP 202):   300 de 300
-  CONFIRMADAS / CANCELADAS:        118 / 182 (60.7 % de ventas perdidas)
-  peticiones al proveedor:         766 · respondidas con 429: 648
-  máximo de cobros en un segundo:  20
-  p99 desde la reserva al cobro:   0.3 s

@@ -1,4 +1,0 @@
-1) Las 3 vivas, round-robin:          {catalogo-1=2, catalogo-2=2, catalogo-3=2}
-2) catalogo-2 caída, sin health check: {ERROR=2, catalogo-1=2, catalogo-3=2}
-3) catalogo-2 caída, con health check: {catalogo-1=3, catalogo-3=3}
-OK: round-robin reparte y el health check evita la instancia caída

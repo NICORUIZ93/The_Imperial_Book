@@ -1,4 +1,0 @@
-t=0s   instancias de catalogo: {catalogo-1=http://10.0.0.11:8081, catalogo-2=http://10.0.0.12:8081}
-[registro] expulsada catalogo-2 (sin latido > 3000 ms)
-t=4,5s instancias de catalogo: {catalogo-1=http://10.0.0.11:8081}
-OK: el cliente solo ve instancias que laten

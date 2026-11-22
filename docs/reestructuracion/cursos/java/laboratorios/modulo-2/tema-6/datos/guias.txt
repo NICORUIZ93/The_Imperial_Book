@@ -1,7 +1,0 @@
-RF-000123;Bogotá;2500
-  RF-000456;Medellín;1800
-RF-000789;Cali;1001
-
-📦 RF-000999;Pasto;5000
-RF-000;Barranquilla;900
-RF-000555;Cartagena;dos mil

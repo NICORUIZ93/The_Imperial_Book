@@ -1,1 +1,0 @@
-{"inventario":{"name":"inventario","listen":"[::]:21212","upstream":"inventario:9000","enabled":true,"Logger":{},"toxics":[]}}

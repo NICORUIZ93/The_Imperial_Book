@@ -1,2 +1,0 @@
-3 réplicas con LimitadorMemoria: 30 de 100 aceptadas (contrato: 10)
-(sin REDIS_URL: se omite la comparación con LimitadorRedis)

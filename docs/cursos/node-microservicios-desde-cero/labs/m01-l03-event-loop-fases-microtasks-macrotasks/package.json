@@ -1,5 +1,0 @@
-{
-  "name":"m01-l03-event-loop","version":"1.0.0","private":true,"type":"commonjs",
-  "scripts":{"test":"node --test --import tsx test/*.test.ts"},
-  "devDependencies":{"@types/node":"^20.17.57","tsx":"^4.21.0","typescript":"^5.9.3"}
-}

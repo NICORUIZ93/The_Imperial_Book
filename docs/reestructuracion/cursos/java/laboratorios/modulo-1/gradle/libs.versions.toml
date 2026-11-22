@@ -1,9 +1,0 @@
-# Catálogo de versiones: el único lugar donde se escribe un número de versión.
-[versions]
-java = "25"
-junit = "6.0.3"
-
-[libraries]
-junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
-junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }

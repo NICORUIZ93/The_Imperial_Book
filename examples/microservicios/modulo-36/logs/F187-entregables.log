@@ -1,9 +1,0 @@
-✔ Diagrama C4 (contexto y contenedores) en el README
-✔ Saga con compensaciones y sus tests
-✔ Gateway con rate limiting y su test
-✔ Simulación de Gatling con aserciones (SLO)
-✔ Medición antes/después de la restricción
-✔ 2 ADR o más, con fitness function ejecutable
-✔ Estimación de costo con precios reales
-✔ Versión Spring Boot (Fase 1) del sistema
-listo para la defensa
