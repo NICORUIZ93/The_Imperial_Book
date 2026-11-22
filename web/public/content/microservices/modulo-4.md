@@ -1,4 +1,4 @@
-# Módulo 0.5 · Primer Hola Mundo en Java y Node.js + Docker básico
+# Módulo 4 · Primer Hola Mundo en Java y Node.js + Docker básico
 
 Este módulo cierra los fundamentos: compilar/ejecutar Java, ejecutar Node.js, y empaquetar procesos con Docker. El objetivo es dominar el ciclo “código → proceso → contenedor”, porque todo microservicio se despliega como proceso.
 

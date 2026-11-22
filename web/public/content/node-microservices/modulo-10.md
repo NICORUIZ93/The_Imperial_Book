@@ -1,4 +1,4 @@
-# Módulo 23 · Docker, Kubernetes y CI/CD
+# Módulo 10 · Docker, Kubernetes y CI/CD
 
 **Fase 2 · Node.js de cero a experto** (una semana de 12). **Duración:** 12 h (6 temas de unos 100 min y 2 h de
 laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 0.5 (primer Dockerfile y Docker Compose) y

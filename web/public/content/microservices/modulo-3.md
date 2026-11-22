@@ -1,4 +1,4 @@
-# Módulo 0.4 · Git, terminal, HTTP, JSON, YAML, variables de entorno
+# Módulo 3 · Git, terminal, HTTP, JSON, YAML, variables de entorno
 
 Antes de escribir microservicios, necesitas las herramientas transversales: versionar cambios, operar por terminal, entender HTTP, leer/escribir JSON/YAML y configurar por variables de entorno. Son herramientas de piso: si fallan, todo lo de arriba falla.
 

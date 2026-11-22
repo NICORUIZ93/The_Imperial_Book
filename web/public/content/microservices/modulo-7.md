@@ -1,104 +1,78 @@
-# Módulo 1.3 · Testing de microservicios Java
+# Módulo 7 · Patrones de infraestructura
 
-Testing en microservicios no es solo JUnit: incluye slices, bases reales con Testcontainers, contratos entre servicios, reglas de arquitectura y calidad estática. El objetivo es confianza con feedback rápido.
+A medida que hay más servicios, aparecen problemas de localización, entrada, configuración y balanceo. Este módulo cubre service discovery, gateway, config server, load balancing y BFF.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Spring Boot 3.5.0, Docker 29.9.3.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Spring Boot 3.5.0, Docker 29.9.3.
 
 ## Aprende construyendo
 
-### Tema 1: JUnit 5, Mockito, MockMvc · Intermedio · 180 min
+### Tema 1: Service Discovery: Eureka, Consul · Intermedio · 150 min
 
-Caso guía: probar regla de negocio, mockear dependencia y verificar endpoint.
+Caso guía: instancias suben/bajan y sus IPs cambian.
 
-#### JUnit 5 + Mockito
+#### Service discovery
 
-**Definición formal.** JUnit 5 ejecuta tests; Mockito crea dobles para aislar dependencias.
+**Definición formal.** Mecanismo donde servicios se registran y otros los descubren dinámicamente.
 
-**Ejemplo mínimo (ejecutable con Maven/JUnit).**
+**Eureka/Consul.** Eureka es discovery (ecosistema Spring Cloud); Consul ofrece discovery, health checks y KV.
 
-```java
-@ExtendWith(MockitoExtension.class)
-class ServiceTest {
-  @Mock Repo repo;
-  @InjectMocks Service svc;
-  @Test void ok(){ when(repo.get()).thenReturn("A"); assertEquals("A", svc.run()); }
-}
-```
+**Error común.** Hardcodear IPs. Corrección: discovery o DNS de plataforma (Kubernetes).
 
-**Error común.** Mockear todo, incluso el valor que se quiere probar. Corrección: mockear solo fronteras.
+### Tema 2: API Gateway: Spring Cloud Gateway · Intermedio · 150 min
 
-#### MockMvc
+Caso guía: un único punto de entrada con auth, rate limit y routing.
 
-**Definición formal.** Simula requests HTTP contra la capa MVC sin servidor real completo.
+#### Gateway
 
-**Error común.** Testear solo happy path 200. Corrección: cubrir 400/404/409/500 según contrato.
-
-### Tema 2: Testcontainers · Intermedio · 180 min
-
-Caso guía: validar repositorio contra PostgreSQL real.
-
-#### Testcontainers
-
-**Definición formal.** Librería que levanta contenedores Docker efímeros para tests de integración.
+**Definición formal.** Borde que enruta requests a servicios internos y aplica políticas transversales.
 
 ```mermaid
 flowchart LR
-  T[Test JUnit] --> TC[Testcontainers]
-  TC --> D[Docker container DB]
-  T --> D
+  C[Cliente] --> G[API Gateway]
+  G --> A[Servicio A]
+  G --> B[Servicio B]
 ```
 
-**Error común.** Compartir estado entre tests. Corrección: rollback/truncate/fixtures aisladas.
+**Error común.** Gateway con lógica de negocio. Corrección: mantenerlo fino.
 
-**Nota de verificación.** Docker disponible; ejecución pesada, lab reproducible.
+### Tema 3: Config Server: configuración centralizada · Intermedio · 120 min
 
-### Tema 3: Contract Testing con Pact y Pact Broker · Avanzado · 180 min
+Caso guía: cambiar config sin reconstruir cada servicio.
 
-Caso guía: frontend/consumer espera campos que provider quiere cambiar.
+#### Config Server
 
-#### Pact
+**Definición formal.** Servicio que entrega configuración centralizada a clientes.
 
-**Definición formal.** Contract testing verifica que provider y consumer cumplen un pacto. Pact Broker publica y versiona pactos.
+**Error común.** Centralizar secretos inseguros. Corrección: secret manager y cifrado.
 
-**Error común.** Solo E2E. Corrección: contratos para compatibilidad entre servicios, E2E para pocos flujos críticos.
+### Tema 4: Load Balancing: Spring Cloud LoadBalancer · Intermedio · 120 min
 
-**Nota de verificación.** Requiere setup Pact/Broker; no se finge salida.
+Caso guía: 3 instancias del mismo servicio.
 
-### Tema 4: ArchUnit · Intermedio · 120 min
+#### Load balancing
 
-Caso guía: impedir que `domain` dependa de `controller`.
+**Definición formal.** Distribuir tráfico entre instancias para disponibilidad y escala.
 
-#### ArchUnit
+**Error común.** Asumir que LB arregla un servicio lento/roto. Corrección: health checks, timeouts, autoscaling.
 
-**Definición formal.** Framework para escribir tests sobre reglas de arquitectura del código Java.
+### Tema 5: BFF pattern · Intermedio · 90 min
 
-**Ejemplo mínimo.**
+Caso guía: mobile necesita payload distinto a web.
 
-```java
-noClasses().that().resideInPackage("..domain..")
-  .should().dependOnClassesThat().resideInPackage("..web..");
-```
+#### BFF (Backend for Frontend)
 
-**Error común.** Arquitectura solo en diagrama. Corrección: regla ejecutable.
+**Definición formal.** Backend específico por tipo de cliente/UI que orquesta APIs internas para ese frontend.
 
-### Tema 5: SonarQube · Intermedio · 120 min
-
-Caso guía: detectar code smells, bugs y cobertura en CI.
-
-#### SonarQube
-
-**Definición formal.** Plataforma de análisis estático/calidad que reporta issues, hotspots de seguridad, duplicación y cobertura.
-
-**Error común.** Tratar Sonar como burocracia y silenciar todo. Corrección: quality gate razonable, corregir issues reales.
+**Error común.** BFF duplicando lógica de dominio. Corrección: BFF orquesta, dominio vive en servicios core.
 
 ## Cierre
 
-Testing de microservicios es una pirámide pragmática: unit rápido, slices, integración real, contratos y reglas de arquitectura.
+La infraestructura distribuida reduce fricción operativa, pero cada pieza es otro componente a observar y asegurar.
 
 ## Checklist
 
-- Aíslo con Mockito solo fronteras.
-- Uso Testcontainers para DB real.
-- Verifico contratos entre servicios.
-- Enforce arquitectura con ArchUnit.
-- Miro calidad en CI.
+- Discovery o DNS, no IPs hardcodeadas.
+- Gateway fino.
+- Config/secretos centralizados con seguridad.
+- LB con health checks.
+- BFF por necesidad de cliente.

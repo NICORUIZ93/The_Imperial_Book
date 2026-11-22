@@ -1,4 +1,4 @@
-# Módulo 19 · Resiliencia
+# Módulo 6 · Resiliencia
 
 **Fase 2 · Node.js de cero a experto** (media semana de 12). **Duración:** 8 h (5 temas de unos 80 min y 1 h 20 min de
 laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 18 (REST con Axios/Fetch, sync vs async) y

@@ -5,6 +5,13 @@ import type { TrackProgress } from './progress.service';
  * con la traducción `id antiguo → id nuevo` de cada curso afectado. El progreso guardado del estudiante se
  * traduce una sola vez por paso, en orden, para que no pierda lo que ya completó.
  */
+export interface RenumberingMove {
+  fromTrack: string;
+  fromModule: number;
+  toTrack: string;
+  toModule: number;
+}
+
 export interface RenumberingStep {
   /** Número creciente; el progreso guarda el último paso aplicado. */
   version: number;
@@ -15,6 +22,8 @@ export interface RenumberingStep {
    * `tracks`). Sirve cuando un tema se renumera o se fusiona en otro módulo sin cambiar de módulo el resto.
    */
   topics?: Record<string, Record<string, string>>;
+  /** Mueve módulos (y sus claves `módulo:tema`) entre tracks. Se aplica tras `tracks`. */
+  moves?: RenumberingMove[];
 }
 
 export const RENUMBERING_STEPS: RenumberingStep[] = [
@@ -226,6 +235,32 @@ export const RENUMBERING_STEPS: RenumberingStep[] = [
   // specs/018: el curso de Microservicios se rehízo con otro temario; el progreso de los módulos
   // anteriores (M0 falacias, M1 monolito modular) no corresponde a los módulos nuevos 0.1 y 0.2.
   { version: 2, tracks: { microservices: { 0: 900, 1: 901 } } },
+  // Separación de microservicios: contenido agnóstico queda en microservices; Spring y Node se
+  // extraen a tracks dedicados. Los módulos 0-4,9-16,28-36 se conservan en microservices con
+  // renumeración; 5-8 van a spring-microservices; 17-27 van a node-microservices.
+  {
+    version: 3,
+    tracks: {
+      microservices: { 0: 0, 1: 1, 2: 2, 3: 3, 4: 4, 9: 5, 10: 6, 11: 7, 12: 8, 13: 9, 14: 10, 15: 11, 16: 12, 28: 13, 29: 14, 30: 15, 31: 16, 32: 17, 33: 18, 34: 19, 35: 20, 36: 21 },
+    },
+    moves: [
+      { fromTrack: 'microservices', fromModule: 5, toTrack: 'spring-microservices', toModule: 0 },
+      { fromTrack: 'microservices', fromModule: 6, toTrack: 'spring-microservices', toModule: 1 },
+      { fromTrack: 'microservices', fromModule: 7, toTrack: 'spring-microservices', toModule: 2 },
+      { fromTrack: 'microservices', fromModule: 8, toTrack: 'spring-microservices', toModule: 3 },
+      { fromTrack: 'microservices', fromModule: 17, toTrack: 'node-microservices', toModule: 0 },
+      { fromTrack: 'microservices', fromModule: 18, toTrack: 'node-microservices', toModule: 1 },
+      { fromTrack: 'microservices', fromModule: 19, toTrack: 'node-microservices', toModule: 2 },
+      { fromTrack: 'microservices', fromModule: 20, toTrack: 'node-microservices', toModule: 3 },
+      { fromTrack: 'microservices', fromModule: 21, toTrack: 'node-microservices', toModule: 4 },
+      { fromTrack: 'microservices', fromModule: 22, toTrack: 'node-microservices', toModule: 5 },
+      { fromTrack: 'microservices', fromModule: 23, toTrack: 'node-microservices', toModule: 6 },
+      { fromTrack: 'microservices', fromModule: 24, toTrack: 'node-microservices', toModule: 7 },
+      { fromTrack: 'microservices', fromModule: 25, toTrack: 'node-microservices', toModule: 8 },
+      { fromTrack: 'microservices', fromModule: 26, toTrack: 'node-microservices', toModule: 9 },
+      { fromTrack: 'microservices', fromModule: 27, toTrack: 'node-microservices', toModule: 10 },
+    ],
+  },
 ];
 
 export const RENUMBERING_VERSION_KEY = 'imperial-book-renumbering-version';
@@ -235,6 +270,16 @@ function translateKey(key: string, map: Record<number, number>): string {
   if (!match) return key;
   const moved = map[Number(match[1])];
   return moved === undefined ? key : `${moved}:${match[2]}`;
+}
+
+function moveModuleKey(key: string, fromModule: number, toModule: number): string | null {
+  const match = /^(\d+):(.*)$/s.exec(key);
+  if (!match || Number(match[1]) !== fromModule) return null;
+  return `${toModule}:${match[2]}`;
+}
+
+function emptyProgress(): TrackProgress {
+  return { completedModules: [], completedExercises: [], completedTopics: [] };
 }
 
 /** Aplica, en orden, los pasos posteriores a `fromVersion`. Devuelve el progreso traducido. */
@@ -254,6 +299,29 @@ export function applyRenumberings(
         completedExercises: [...new Set(current.completedExercises.map(k => translateKey(k, map)))],
         completedTopics: [...new Set(current.completedTopics.map(k => translateKey(k, map)))],
       };
+    }
+    for (const move of step.moves ?? []) {
+      const source = next[move.fromTrack] ?? emptyProgress();
+      const target = next[move.toTrack] ?? emptyProgress();
+      const movedModule = source.completedModules.includes(move.fromModule);
+      const movedExercises = source.completedExercises
+        .map(k => moveModuleKey(k, move.fromModule, move.toModule))
+        .filter((k): k is string => k !== null);
+      const movedTopics = source.completedTopics
+        .map(k => moveModuleKey(k, move.fromModule, move.toModule))
+        .filter((k): k is string => k !== null);
+      if (movedModule || movedExercises.length || movedTopics.length) {
+        next[move.fromTrack] = {
+          completedModules: source.completedModules.filter(id => id !== move.fromModule),
+          completedExercises: source.completedExercises.filter(k => !/^(\d+):/.exec(k) || Number(/^(\d+):/.exec(k)?.[1]) !== move.fromModule),
+          completedTopics: source.completedTopics.filter(k => !/^(\d+):/.exec(k) || Number(/^(\d+):/.exec(k)?.[1]) !== move.fromModule),
+        };
+        next[move.toTrack] = {
+          completedModules: [...new Set([...target.completedModules, ...(movedModule ? [move.toModule] : [])])],
+          completedExercises: [...new Set([...target.completedExercises, ...movedExercises])],
+          completedTopics: [...new Set([...target.completedTopics, ...movedTopics])],
+        };
+      }
     }
     for (const [trackId, renames] of Object.entries(step.topics ?? {})) {
       const current = next[trackId];

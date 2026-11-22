@@ -1,78 +1,78 @@
-# Módulo 2.3 · Patrones de infraestructura
+# Módulo 11 · Event-Driven Architecture
 
-A medida que hay más servicios, aparecen problemas de localización, entrada, configuración y balanceo. Este módulo cubre service discovery, gateway, config server, load balancing y BFF.
+EDA desacopla productores y consumidores mediante eventos. El beneficio es escalabilidad y extensibilidad; el costo es depurar flujos asíncronos, manejar duplicados y evolucionar esquemas.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Spring Boot 3.5.0, Docker 29.9.3.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Docker 29.9.3 para labs de Kafka/RabbitMQ/NATS.
 
 ## Aprende construyendo
 
-### Tema 1: Service Discovery: Eureka, Consul · Intermedio · 150 min
+### Tema 1: Kafka profundo: particionamiento, consumer groups · Avanzado · 180 min
 
-Caso guía: instancias suben/bajan y sus IPs cambian.
+Caso guía: escalar consumidores manteniendo orden por pedido.
 
-#### Service discovery
+#### Partición y consumer group
 
-**Definición formal.** Mecanismo donde servicios se registran y otros los descubren dinámicamente.
+**Definición formal.** Una partición es un log ordenado; un consumer group reparte particiones entre consumidores para paralelismo.
 
-**Eureka/Consul.** Eureka es discovery (ecosistema Spring Cloud); Consul ofrece discovery, health checks y KV.
+**Regla.** Orden garantizado por partición, no global.
 
-**Error común.** Hardcodear IPs. Corrección: discovery o DNS de plataforma (Kubernetes).
+### Tema 2: Exactly-Once Semantics (EOS) · Avanzado · 150 min
 
-### Tema 2: API Gateway: Spring Cloud Gateway · Intermedio · 150 min
+Caso guía: evitar doble cobro por retry.
 
-Caso guía: un único punto de entrada con auth, rate limit y routing.
+#### EOS
 
-#### Gateway
+**Definición formal.** Propiedad donde el efecto observable equivale a procesar una vez, aunque haya retries. En Kafka depende de idempotent producer/transacciones y diseño end-to-end.
 
-**Definición formal.** Borde que enruta requests a servicios internos y aplica políticas transversales.
+**Error común.** Creer que EOS del broker resuelve duplicados en DB externa. Corrección: idempotencia end-to-end.
 
-```mermaid
-flowchart LR
-  C[Cliente] --> G[API Gateway]
-  G --> A[Servicio A]
-  G --> B[Servicio B]
-```
+### Tema 3: Schema Registry y Avro · Intermedio · 150 min
 
-**Error común.** Gateway con lógica de negocio. Corrección: mantenerlo fino.
+Caso guía: evolucionar evento sin romper consumidores viejos.
 
-### Tema 3: Config Server: configuración centralizada · Intermedio · 120 min
+#### Schema Registry
 
-Caso guía: cambiar config sin reconstruir cada servicio.
+**Definición formal.** Servicio que almacena versiones de esquemas y valida compatibilidad.
 
-#### Config Server
+**Error común.** Cambios incompatibles sin versión. Corrección: reglas de compatibilidad y defaults.
 
-**Definición formal.** Servicio que entrega configuración centralizada a clientes.
+### Tema 4: Dead Letter Topics · Intermedio · 120 min
 
-**Error común.** Centralizar secretos inseguros. Corrección: secret manager y cifrado.
+Caso guía: mensaje inválido bloquea consumer.
 
-### Tema 4: Load Balancing: Spring Cloud LoadBalancer · Intermedio · 120 min
+#### DLT
 
-Caso guía: 3 instancias del mismo servicio.
+**Definición formal.** Destino para mensajes que fallan tras política de retry. Permite aislar veneno y seguir procesando.
 
-#### Load balancing
+**Error común.** DLT sin monitoreo. Corrección: alertas y proceso de reprocesamiento.
 
-**Definición formal.** Distribuir tráfico entre instancias para disponibilidad y escala.
+### Tema 5: RabbitMQ: publisher confirms, DLQ · Intermedio · 120 min
 
-**Error común.** Asumir que LB arregla un servicio lento/roto. Corrección: health checks, timeouts, autoscaling.
+Caso guía: garantizar que el broker recibió el mensaje.
 
-### Tema 5: BFF pattern · Intermedio · 90 min
+#### Publisher confirms y DLQ
 
-Caso guía: mobile necesita payload distinto a web.
+**Definición formal.** Publisher confirms: broker confirma recepción. DLQ: cola para mensajes rechazados/expirados/fallidos.
 
-#### BFF (Backend for Frontend)
+**Error común.** Publicar sin confirm. Corrección: confirms y manejo de nacks.
 
-**Definición formal.** Backend específico por tipo de cliente/UI que orquesta APIs internas para ese frontend.
+### Tema 6: NATS · Intermedio · 90 min
 
-**Error común.** BFF duplicando lógica de dominio. Corrección: BFF orquesta, dominio vive en servicios core.
+Caso guía: mensajería liviana de baja latencia.
+
+#### NATS
+
+**Definición formal.** Sistema de mensajería ligero; JetStream agrega persistencia/streaming. Útil para casos de baja latencia y simplicidad operativa.
+
+**Error común.** Elegir NATS/Kafka por moda. Corrección: comparar garantías, operación y modelo de consumo.
 
 ## Cierre
 
-La infraestructura distribuida reduce fricción operativa, pero cada pieza es otro componente a observar y asegurar.
+EDA requiere pensar en entrega, duplicados, orden, esquema y observabilidad. El evento es un contrato público.
 
 ## Checklist
 
-- Discovery o DNS, no IPs hardcodeadas.
-- Gateway fino.
-- Config/secretos centralizados con seguridad.
-- LB con health checks.
-- BFF por necesidad de cliente.
+- Idempotencia end-to-end.
+- Clave de partición consciente.
+- DLT monitoreado.
+- Esquemas con compatibilidad.

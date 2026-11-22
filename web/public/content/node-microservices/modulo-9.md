@@ -1,4 +1,4 @@
-# Módulo 22 · Mensajería y patrones de datos
+# Módulo 9 · Mensajería y patrones de datos
 
 **Fase 2 · Node.js de cero a experto** (una semana y media de 12). **Duración:** 14 h (7 temas de unos 100 min y 2 h
 20 min de laboratorio integrador). **Dificultad:** 5 de 5. **Dependencias:** Módulo 18 (Kafka y RabbitMQ, sync vs

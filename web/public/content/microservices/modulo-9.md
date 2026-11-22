@@ -1,169 +1,127 @@
-# Módulo 2.1 · Fundamentos de arquitectura de microservicios
+# Módulo 9 · Seguridad en microservicios
 
-Microservicios no son “muchos repos”. Son una forma de dividir un sistema por capacidades de negocio, con límites, datos y operación independientes. Este módulo da criterios para decidir cuándo usarlos y cómo evitar distribuir un monolito mal diseñado.
+La seguridad distribuida combina identidad, transporte, secretos y cadena de suministro. Cada servicio es una superficie de ataque; por eso la defensa debe ser por capas: autenticación, autorización, cifrado, gestión de secretos y escaneo.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0. Conceptos de arquitectura se validan con ejemplos de modelado/contratos ejecutables pequeños y notas operativas.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Spring Boot 3.5.0, Docker 29.9.3.
 
 ## Aprende construyendo
 
-### Tema 1: Monolito vs Microservicios vs SOA · Intermedio · 120 min
+### Tema 1: Spring Security: filter chain · Intermedio · 150 min
 
-Caso guía: e-commerce crece de 2 a 20 desarrolladores y los deploys se vuelven riesgosos.
+Caso guía: proteger endpoints con reglas explícitas.
 
-#### Monolito
+#### Security Filter Chain
 
-**Definición formal.** Aplicación desplegada como una unidad con componentes internos acoplados por el mismo proceso/runtime.
-
-**Cuándo usar.** Equipos pequeños, dominio aún incierto, necesidad de simplicidad operativa. No es “malo”; es la base razonable por defecto.
-
-#### Microservicios
-
-**Definición formal.** Conjunto de servicios desplegables independientemente, organizados alrededor de capacidades de negocio, con contratos explícitos y autonomía operativa.
-
-**Costo.** Latencia de red, consistencia eventual, observabilidad, despliegue, versionado, testing distribuido.
+**Definición formal.** Cadena de filtros que intercepta requests HTTP para autenticación, autorización, CSRF, sesiones y otras políticas.
 
 ```mermaid
 flowchart LR
-  M[Monolito] --> D1[Deploy único]
-  MS[Microservicios] --> S1[Servicio A]
-  MS --> S2[Servicio B]
-  MS --> S3[Servicio C]
-  S1 <-->|contrato red| S2
+  R[Request] --> F[Security Filters]
+  F --> A[AuthN/AuthZ]
+  A -->|ok| C[Controller]
+  A -->|no| E[401/403]
 ```
 
-**Ejemplo mínimo (modelo de decisión, ejecutable).**
+**Error común.** Reglas en orden incorrecto (`anyRequest` primero). Corrección: reglas específicas antes de generales.
+
+### Tema 2: JWT: firmas simétricas vs asimétricas · Intermedio · 150 min
+
+Caso guía: servicios internos deben validar tokens sin compartir secreto simétrico.
+
+#### JWT
+
+**Definición formal.** Token con header.payload.signature. Simétrico (HMAC, mismo secreto) vs asimétrico (RSA/EC, clave privada firma, pública verifica).
+
+**Regla.** Validar `iss`, `aud`, `exp`, `nbf` y firma.
+
+**Error común.** Confiar en payload sin verificar firma. Corrección: siempre validar firma y claims.
+
+### Tema 3: OAuth2 y OIDC · Avanzado · 180 min
+
+Caso guía: delegar login en IdP.
+
+#### OAuth2/OIDC
+
+**Definición formal.** OAuth2 autoriza acceso a recursos; OIDC agrega identidad autenticada sobre OAuth2.
+
+**Error común.** Usar access token como prueba de identidad sin contexto OIDC. Corrección: ID token para identidad, access token para autorización.
+
+### Tema 4: Keycloak · Intermedio · 120 min
+
+Caso guía: centralizar usuarios, roles y clientes.
+
+#### Keycloak
+
+**Definición formal.** Identity Provider open source para OAuth2/OIDC/SAML, gestión de realms, clientes y roles.
+
+**Nota de verificación.** Lab con Docker/Keycloak; no fingir salida.
+
+### Tema 5: RBAC y Scopes · Intermedio · 120 min
+
+Caso guía: `admin` puede borrar, `reader` solo leer.
+
+#### RBAC/Scopes
+
+**Definición formal.** RBAC autoriza por rol; scopes autorizan por permisos concedidos al token/cliente.
+
+**Error común.** Solo checks en frontend. Corrección: enforcement en backend.
+
+### Tema 6: Token Exchange (RFC 8693) · Avanzado · 90 min
+
+Caso guía: servicio A llama a B en nombre del usuario con token de menor alcance.
+
+#### Token Exchange
+
+**Definición formal.** Protocolo para intercambiar un token por otro con claims/audiencia/scope adecuados.
+
+**Error común.** Reenviar token original a todos los servicios. Corrección: token acotado por audiencia y least privilege.
+
+### Tema 7: mTLS con Service Mesh · Avanzado · 120 min
+
+Caso guía: cifrar y autenticar tráfico service-to-service.
+
+#### mTLS
+
+**Definición formal.** TLS mutuo: cliente y servidor presentan certificados. En mesh (Istio/Linkerd), suele automatizarse.
+
+**Error común.** Asumir red interna confiable. Corrección: zero trust, mTLS donde aplica.
+
+### Tema 8: HashiCorp Vault · Intermedio · 120 min
+
+Caso guía: rotar credenciales DB sin redeploy manual.
+
+#### Vault
+
+**Definición formal.** Sistema de gestión de secretos, cifrado y credenciales dinámicas.
+
+**Error común.** Secretos en variables de entorno sin rotación/control. Corrección: vault/secret manager y auditoría.
+
+### Tema 9: Escaneo de vulnerabilidades: Trivy, Snyk · Intermedio · 90 min
+
+Caso guía: detectar CVEs en imagen base.
+
+#### Escaneo de supply chain
+
+**Definición formal.** Análisis de dependencias/imágenes/IaC en busca de vulnerabilidades conocidas y malas configuraciones.
+
+**Ejemplo mínimo.**
 
 ```bash
-mkdir -p ms9-decision
-cd ms9-decision
+trivy image --severity HIGH,CRITICAL myapp:latest
 ```
 
-Crea el archivo `decision.mjs`:
+**Error común.** Ignorar findings por volumen. Corrección: priorizar por explotabilidad, severidad y exposición.
 
-```js
-function elegir({ equipo, dominiosClaros, cargaOperativa }) {
-  if (equipo < 8 || !dominiosClaros) return 'monolito-modular';
-  if (cargaOperativa) return 'microservicios-selectivos';
-  return 'monolito-modular';
-}
-console.log(elegir({ equipo: 3, dominiosClaros: false, cargaOperativa: false }));
-console.log(elegir({ equipo: 20, dominiosClaros: true, cargaOperativa: true }));
-```
-
-```bash
-node decision.mjs
-```
-
-**Error común.** Empezar con microservicios sin límites claros. Corrección: monolito modular primero, extraer cuando duela de verdad.
-
-**Verificación (Node 24.18.0, 2026-05-22).** `monolito-modular`, `microservicios-selectivos`.
-
-### Tema 2: DDD: Bounded Contexts, Agregados, Eventos de Dominio · Avanzado · 180 min
-
-Caso guía: “Cliente” significa cosas distintas en Ventas y Soporte.
-
-#### Bounded Context
-
-**Definición formal.** Límite donde un modelo de dominio y su lenguaje ubicuo son consistentes.
-
-#### Agregado
-
-**Definición formal.** Clúster de objetos de dominio tratado como unidad de consistencia, con una raíz aggregate.
-
-#### Evento de dominio
-
-**Definición formal.** Hecho significativo ocurrido en el dominio (`OrderPaid`, `GuideCreated`).
-
-```mermaid
-flowchart LR
-  V[Ventas: Customer=Comprador] -->|evento| E[OrderPaid]
-  S[Soporte: Customer=Contacto] -->|consume| E
-```
-
-**Error común.** Un solo modelo “Customer” para toda la empresa. Corrección: bounded contexts.
-
-### Tema 3: Spring Modulith · Intermedio · 120 min
-
-Caso guía: quieres modularidad fuerte sin saltar aún a red.
-
-#### Spring Modulith
-
-**Definición formal.** Enfoque/herramientas para estructurar y verificar módulos en una app Spring Boot, con eventos internos y límites verificables.
-
-**Cuándo usar.** Monolito modular con intención de evolución.
-
-**Nota de verificación.** Requiere dependencia Spring Modulith y tests; lab en proyecto Boot.
-
-### Tema 4: 12-Factor App · Intermedio · 120 min
-
-Caso guía: app que funciona en laptop pero falla en prod por config hardcodeada.
-
-#### 12-Factor
-
-**Definición formal.** Conjunto de prácticas para apps cloud-native: config en env, procesos stateless, logs como streams, build/release/run separados, etc.
-
-**Ejemplo mínimo (ejecutable).**
-
-```bash
-mkdir -p ms9-12f
-cd ms9-12f
-```
-
-Crea el archivo `app.mjs`:
-
-```js
-const port = process.env.PORT;
-if (!port) { console.error('missing PORT'); process.exit(1); }
-console.log('port=' + port);
-```
-
-```bash
-PORT=8080 node app.mjs; echo $?
-node app.mjs; echo $?
-```
-
-**Error común.** Configurar por archivos locales no versionados o secretos en código. Corrección: env vars/secret manager.
-
-**Verificación (Node 24.18.0, 2026-05-22).** `port=8080,0`, `missing PORT,1`.
-
-### Tema 5: Strangler Fig Pattern · Avanzado · 120 min
-
-Caso guía: migrar monolito legacy a servicios sin big bang.
-
-#### Strangler Fig
-
-**Definición formal.** Patrón de migración incremental: se enrutan capacidades nuevas o extraídas al nuevo sistema, reduciendo gradualmente el legacy.
-
-```mermaid
-flowchart LR
-  U[Usuario] --> GW[Gateway/Router]
-  GW --> L[Legacy]
-  GW --> N[Nuevo servicio]
-  N -.crece.-> L
-```
-
-**Error común.** Reescritura big bang. Corrección: extraer por capacidad, con routing y rollback.
-
-### Tema 6: Database-per-service · Avanzado · 120 min
-
-Caso guía: dos servicios escriben la misma tabla; acoplamiento oculto.
-
-#### Database-per-service
-
-**Definición formal.** Cada servicio posee su base de datos/esquema y expone datos por API/eventos, no por acceso directo a tablas ajenas.
-
-**Trade-off.** Autonomía y escalado independiente; mayor complejidad en consultas cross-service y consistencia.
-
-**Error común.** Microservicios con DB compartida. Corrección: ownership de datos, API/eventos, sagas.
+**Nota de verificación.** Requiere Trivy/Snyk instalados.
 
 ## Cierre
 
-La arquitectura de microservicios es sobre límites y propiedad. Empieza modular, distribuye solo cuando el costo se justifique.
+Seguridad en microservicios es identidad + autorización + cifrado + secretos + supply chain. No hay un único control suficiente.
 
 ## Checklist
 
-- Sé cuándo no usar microservicios.
-- Identifico bounded contexts y aggregates.
-- Aplico 12-factor y config externa.
-- Prefiero strangler fig sobre big bang.
-- Respeto database-per-service.
+- Valido JWT/claims.
+- Aplico RBAC/scopes en backend.
+- Uso mTLS/zero trust cuando corresponde.
+- Gestiono secretos con rotación.
+- Escaneo CVEs en CI.

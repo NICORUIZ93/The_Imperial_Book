@@ -32,6 +32,6 @@ export const SHARED_ICONS = {
  * identidad reconocible sin depender de fuentes de iconos o CDN externos. */
 export const TRACK_MARKS: Record<string, string> = {
   rutaflow: 'RF', foundations: '</>', cloud: '☁', devops: '∞', javascript: 'JS',
-  node: '⬢', angular: 'A', react: '⚛', java: 'J', 'spring-boot': 'S', microservices: 'µS',
+  node: '⬢', angular: 'A', react: '⚛', java: 'J', 'spring-boot': 'S', microservices: 'µS', 'spring-microservices': 'Sµ', 'node-microservices': 'Nµ',
   'kotlin-multiplatform': 'K', android: 'A', ios: '', flutter: 'F', 'control-1': 'Σ',
 };

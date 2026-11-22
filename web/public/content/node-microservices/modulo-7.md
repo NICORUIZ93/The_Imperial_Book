@@ -1,4 +1,4 @@
-# Módulo 20 · Seguridad
+# Módulo 7 · Seguridad
 
 **Fase 2 · Node.js de cero a experto** (una semana de 12). **Duración:** 12 h (6 temas de unos 100 min y 2 h de
 laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 14 (Express, middleware, validación con

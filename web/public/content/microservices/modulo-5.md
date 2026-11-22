@@ -1,237 +1,169 @@
-# Módulo 1.1 · Java moderno y Spring Boot
+# Módulo 5 · Fundamentos de arquitectura de microservicios
 
-Este módulo prepara la base Java/Spring para microservicios: características modernas de Java, virtual threads, contenedor Spring, auto-configuración, multi-módulo, configuración externalizada y opciones de runtime como CRaC/GraalVM. El foco es entender qué problema resuelve cada pieza y qué costo introduce.
+Microservicios no son “muchos repos”. Son una forma de dividir un sistema por capacidades de negocio, con límites, datos y operación independientes. Este módulo da criterios para decidir cuándo usarlos y cómo evitar distribuir un monolito mal diseñado.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Gradle 9.8.2. Ejemplos Java puros ejecutados localmente. Features Spring Boot se describen con notas de versión cuando aplican.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0. Conceptos de arquitectura se validan con ejemplos de modelado/contratos ejecutables pequeños y notas operativas.
 
 ## Aprende construyendo
 
-### Tema 1: Java 21: Streams, Lambdas, Optional, Records, Pattern Matching · Intermedio · 360 min
+### Tema 1: Monolito vs Microservicios vs SOA · Intermedio · 120 min
 
-Caso guía: normalizar pedidos entrantes, filtrar inválidos y modelar respuestas inmutables.
+Caso guía: e-commerce crece de 2 a 20 desarrolladores y los deploys se vuelven riesgosos.
 
-#### Lambdas y Streams
+#### Monolito
 
-**Definición formal.** Una lambda es una función anónima que implementa una interfaz funcional. Un Stream es un pipeline declarativo de operaciones sobre datos, lazy en intermedias y ejecutado en terminal.
+**Definición formal.** Aplicación desplegada como una unidad con componentes internos acoplados por el mismo proceso/runtime.
 
-**Ejemplo mínimo enfocado (ejecutable).**
+**Cuándo usar.** Equipos pequeños, dominio aún incierto, necesidad de simplicidad operativa. No es “malo”; es la base razonable por defecto.
 
-```bash
-mkdir -p ms5-stream
-cd ms5-stream
-```
+#### Microservicios
 
-Crea el archivo `DemoStream.java`:
+**Definición formal.** Conjunto de servicios desplegables independientemente, organizados alrededor de capacidades de negocio, con contratos explícitos y autonomía operativa.
 
-```java
-import java.util.*; import java.util.stream.*;
-public class DemoStream {
-  public static void main(String[] args) {
-    var r = List.of(1,2,3,4).stream().filter(x -> x % 2 == 0).map(x -> x * 10).toList();
-    System.out.println(r);
-  }
-}
-```
-
-```bash
-javac DemoStream.java
-java DemoStream
-```
-
-**Error común.** Usar streams para todo y ocultar lógica simple. Corrección: legibilidad primero.
-
-**Verificación (JDK 27, 2026-05-22).** `[20, 40]`.
-
-#### Optional
-
-**Definición formal.** Contenedor que expresa ausencia/presencia sin `null`.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p ms5-opt
-cd ms5-opt
-```
-
-Crea el archivo `DemoOpt.java`:
-
-```java
-import java.util.*;
-public class DemoOpt {
-  static Optional<String> find(boolean ok){ return ok ? Optional.of("A") : Optional.empty(); }
-  public static void main(String[] args){ System.out.println(find(true).orElse("X")); System.out.println(find(false).orElse("X")); }
-}
-```
-
-```bash
-javac DemoOpt.java
-java DemoOpt
-```
-
-**Error común.** `Optional.get()` sin verificar. Corrección: `orElse/orElseThrow/map`.
-
-**Verificación (2026-05-22).** `A`, `X`.
-
-#### Records y pattern matching
-
-**Definición formal.** Record: clase inmutable de datos con constructor/accesores/equals/hashCode/toString. Pattern matching permite desestructurar/condicionar por forma.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p ms5-rec
-cd ms5-rec
-```
-
-Crea el archivo `DemoRec.java`:
-
-```java
-record User(String name, int age) {}
-public class DemoRec {
-  static String label(Object o) {
-    return switch (o) {
-      case User(String n, int a) when a >= 18 -> n + ":adult";
-      case User(String n, int _) -> n + ":minor";
-      default -> "other";
-    };
-  }
-  public static void main(String[] args){ System.out.println(label(new User("Ana",20))); }
-}
-```
-
-```bash
-javac DemoRec.java
-java DemoRec
-```
-
-**Error común.** Usar record como entidad JPA mutable. Corrección: records para DTOs/value objects inmutables.
-
-**Verificación (JDK 27, 2026-05-22).** `Ana:adult`.
-
-### Tema 2: Virtual Threads (Project Loom) · Avanzado · 240 min
-
-Caso guía: muchas requests I/O bloqueantes concurrentes.
-
-#### Virtual threads
-
-**Definición formal.** Hilos ligeros administrados por la JVM que permiten estilo bloqueante con alta concurrencia en I/O. No hacen magia con CPU-bound.
+**Costo.** Latencia de red, consistencia eventual, observabilidad, despliegue, versionado, testing distribuido.
 
 ```mermaid
 flowchart LR
-  VT1[Virtual Thread] --> C[Carrier Thread]
-  VT2[Virtual Thread] --> C
-  C --> CPU[CPU]
-  VT1 -.bloquea I/O, se desmonta.-> C
+  M[Monolito] --> D1[Deploy único]
+  MS[Microservicios] --> S1[Servicio A]
+  MS --> S2[Servicio B]
+  MS --> S3[Servicio C]
+  S1 <-->|contrato red| S2
 ```
 
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo (modelo de decisión, ejecutable).**
 
 ```bash
-mkdir -p ms5-vt
-cd ms5-vt
+mkdir -p ms9-decision
+cd ms9-decision
 ```
 
-Crea el archivo `DemoVT.java`:
+Crea el archivo `decision.mjs`:
 
-```java
-public class DemoVT {
-  public static void main(String[] args) throws Exception {
-    try (var ex = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
-      var f = ex.submit(() -> "ok-vt");
-      System.out.println(f.get());
-    }
-  }
+```js
+function elegir({ equipo, dominiosClaros, cargaOperativa }) {
+  if (equipo < 8 || !dominiosClaros) return 'monolito-modular';
+  if (cargaOperativa) return 'microservicios-selectivos';
+  return 'monolito-modular';
 }
+console.log(elegir({ equipo: 3, dominiosClaros: false, cargaOperativa: false }));
+console.log(elegir({ equipo: 20, dominiosClaros: true, cargaOperativa: true }));
 ```
 
 ```bash
-javac DemoVT.java
-java DemoVT
+node decision.mjs
 ```
 
-**Error común.** Usar virtual threads con `synchronized` contencioso y bloqueo largo (pinning en escenarios específicos) o para CPU-bound. Corrección: medir; usar pools adecuados para CPU-bound.
+**Error común.** Empezar con microservicios sin límites claros. Corrección: monolito modular primero, extraer cuando duela de verdad.
 
-**Verificación (JDK 27, 2026-05-22).** `ok-vt`.
+**Verificación (Node 24.18.0, 2026-05-22).** `monolito-modular`, `microservicios-selectivos`.
 
-### Tema 3: Spring IoC, DI, Bean Lifecycle, ApplicationContext · Intermedio · 360 min
+### Tema 2: DDD: Bounded Contexts, Agregados, Eventos de Dominio · Avanzado · 180 min
 
-Caso guía: servicio depende de repositorio; Spring crea y conecta.
+Caso guía: “Cliente” significa cosas distintas en Ventas y Soporte.
 
-#### IoC/DI
+#### Bounded Context
 
-**Definición formal.** El contenedor crea beans y los inyecta. DI por constructor es la forma preferida.
+**Definición formal.** Límite donde un modelo de dominio y su lenguaje ubicuo son consistentes.
 
-**Ejemplo mínimo.** Ver track Spring Boot M0; aquí el contrato: depende de interfaz, inyecta por constructor.
+#### Agregado
 
-**Error común.** Field injection. Corrección: constructor.
+**Definición formal.** Clúster de objetos de dominio tratado como unidad de consistencia, con una raíz aggregate.
 
-### Tema 4: Auto-configuración condicional, @Conditional, starters · Intermedio · 240 min
+#### Evento de dominio
 
-Caso guía: habilitar bean solo si existe propiedad/clase.
+**Definición formal.** Hecho significativo ocurrido en el dominio (`OrderPaid`, `GuideCreated`).
 
-#### `@Conditional` y autoconfig
-
-**Definición formal.** Boot configura beans según condiciones de classpath, propiedades, beans existentes, entorno.
-
-**Ejemplo mínimo (concepto).**
-
-```java
-@ConditionalOnProperty(name="feature.x.enabled", havingValue="true")
-@Bean FeatureX featureX(){ return new FeatureX(); }
+```mermaid
+flowchart LR
+  V[Ventas: Customer=Comprador] -->|evento| E[OrderPaid]
+  S[Soporte: Customer=Contacto] -->|consume| E
 ```
 
-**Error común.** “Magia” no entendida. Corrección: `--debug`/actuator conditions para ver qué se activó.
+**Error común.** Un solo modelo “Customer” para toda la empresa. Corrección: bounded contexts.
 
-### Tema 5: Multi-module Spring Boot projects · Intermedio · 180 min
+### Tema 3: Spring Modulith · Intermedio · 120 min
 
-Caso guía: separar `api`, `application`, `domain`, `infra`.
+Caso guía: quieres modularidad fuerte sin saltar aún a red.
 
-#### Multi-módulo
+#### Spring Modulith
 
-**Definición formal.** Proyecto con varios módulos Maven/Gradle con dependencias explícitas y build coordinado.
+**Definición formal.** Enfoque/herramientas para estructurar y verificar módulos en una app Spring Boot, con eventos internos y límites verificables.
 
-**Error común.** Ciclos entre módulos. Corrección: grafo acíclico, dependencias hacia dominio.
+**Cuándo usar.** Monolito modular con intención de evolución.
 
-### Tema 6: Perfiles y configuración externalizada · Intermedio · 180 min
+**Nota de verificación.** Requiere dependencia Spring Modulith y tests; lab en proyecto Boot.
 
-Caso guía: `dev` usa H2, `prod` Postgres.
+### Tema 4: 12-Factor App · Intermedio · 120 min
 
-#### Profiles y config externa
+Caso guía: app que funciona en laptop pero falla en prod por config hardcodeada.
 
-**Definición formal.** Profiles activan configuración por entorno; config externalizada sale de env vars/archivos/sistema de config.
+#### 12-Factor
 
-**Error común.** Secretos en `application-prod.yml` commiteado. Corrección: secret manager/env.
+**Definición formal.** Conjunto de prácticas para apps cloud-native: config en env, procesos stateless, logs como streams, build/release/run separados, etc.
 
-### Tema 7: CRaC (Coordinated Restore at Checkpoint) · Avanzado · 180 min
+**Ejemplo mínimo (ejecutable).**
 
-Caso guía: reducir arranque restaurando snapshot.
+```bash
+mkdir -p ms9-12f
+cd ms9-12f
+```
 
-#### CRaC
+Crea el archivo `app.mjs`:
 
-**Definición formal.** API para coordinar checkpoint/restore de la JVM, permitiendo arranques rápidos al restaurar estado.
+```js
+const port = process.env.PORT;
+if (!port) { console.error('missing PORT'); process.exit(1); }
+console.log('port=' + port);
+```
 
-**Nota de verificación.** Requiere JDK/runtime con soporte CRaC y configuración cuidadosa de recursos. No ejecutable de forma genérica en este entorno sin setup específico; documentar concepto y riesgos (archivos abiertos, sockets, estado stale).
+```bash
+PORT=8080 node app.mjs; echo $?
+node app.mjs; echo $?
+```
 
-### Tema 8: GraalVM Native Image · Avanzado · 240 min
+**Error común.** Configurar por archivos locales no versionados o secretos en código. Corrección: env vars/secret manager.
 
-Caso guía: binario nativo con arranque rápido y menor memoria.
+**Verificación (Node 24.18.0, 2026-05-22).** `port=8080,0`, `missing PORT,1`.
 
-#### Native Image
+### Tema 5: Strangler Fig Pattern · Avanzado · 120 min
 
-**Definición formal.** Compilación AOT que produce ejecutable nativo a partir de app Java, con restricciones sobre reflexión dinámica y recursos.
+Caso guía: migrar monolito legacy a servicios sin big bang.
 
-**Trade-off.** Arranque/memoria mejores; build más lento; necesita reachability metadata para reflexión.
+#### Strangler Fig
 
-**Nota de verificación.** Requiere GraalVM/toolchain nativa. No se ejecuta aquí; indicar comando típico `./mvnw -Pnative native:compile`.
+**Definición formal.** Patrón de migración incremental: se enrutan capacidades nuevas o extraídas al nuevo sistema, reduciendo gradualmente el legacy.
+
+```mermaid
+flowchart LR
+  U[Usuario] --> GW[Gateway/Router]
+  GW --> L[Legacy]
+  GW --> N[Nuevo servicio]
+  N -.crece.-> L
+```
+
+**Error común.** Reescritura big bang. Corrección: extraer por capacidad, con routing y rollback.
+
+### Tema 6: Database-per-service · Avanzado · 120 min
+
+Caso guía: dos servicios escriben la misma tabla; acoplamiento oculto.
+
+#### Database-per-service
+
+**Definición formal.** Cada servicio posee su base de datos/esquema y expone datos por API/eventos, no por acceso directo a tablas ajenas.
+
+**Trade-off.** Autonomía y escalado independiente; mayor complejidad en consultas cross-service y consistencia.
+
+**Error común.** Microservicios con DB compartida. Corrección: ownership de datos, API/eventos, sagas.
 
 ## Cierre
 
-Java moderno y Spring Boot dan productividad; virtual threads, CRaC y Native Image dan opciones de runtime. Elige por perfil de carga y complejidad operativa.
+La arquitectura de microservicios es sobre límites y propiedad. Empieza modular, distribuye solo cuando el costo se justifique.
 
 ## Checklist
 
-- Uso records/Optional/streams con criterio.
-- Entiendo virtual threads para I/O, no CPU-bound.
-- Entiendo IoC/DI/autoconfig.
-- Separo módulos y config por entorno.
-- Evalúo CRaC/Native con pruebas reales.
+- Sé cuándo no usar microservicios.
+- Identifico bounded contexts y aggregates.
+- Aplico 12-factor y config externa.
+- Prefiero strangler fig sobre big bang.
+- Respeto database-per-service.

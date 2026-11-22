@@ -41,6 +41,8 @@ const TRACK_OFFICIAL_SOURCES: Record<string, { label: string; url: string }> = {
   java: { label: 'Aprende Java', url: 'https://dev.java/learn/' },
   'spring-boot': { label: 'Guías de Spring', url: 'https://spring.io/guides' },
   microservices: { label: 'Patrones de sistemas distribuidos', url: 'https://learn.microsoft.com/en-us/azure/architecture/patterns/' },
+  'spring-microservices': { label: 'Spring Boot y Spring Cloud', url: 'https://spring.io/projects/spring-cloud' },
+  'node-microservices': { label: 'Node.js y OpenTelemetry', url: 'https://nodejs.org/en/learn' },
   'kotlin-multiplatform': { label: 'Kotlin Multiplatform', url: 'https://kotlinlang.org/docs/multiplatform/get-started.html' },
   android: { label: 'Android con Compose', url: 'https://developer.android.com/courses/android-basics-compose/course' },
   ios: { label: 'Tutoriales de Apple', url: 'https://developer.apple.com/tutorials/app-dev-training' },

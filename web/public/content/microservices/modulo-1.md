@@ -1,4 +1,4 @@
-# Módulo 0.2 · Lógica de programación y pensamiento computacional
+# Módulo 1 · Lógica de programación y pensamiento computacional
 
 La lógica de programación no es un lenguaje específico: es la capacidad de describir reglas precisas que una máquina pueda ejecutar. El pensamiento computacional es la disciplina para llegar a esas reglas: descomponer, reconocer patrones, abstraer y definir algoritmos verificables.
 

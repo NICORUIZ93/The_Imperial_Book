@@ -5418,6 +5418,342 @@
     ],
     "10": [
       {
+        "title": "Micrometer + Prometheus",
+        "fragment": "tema-1-micrometer-prometheus"
+      },
+      {
+        "title": "OpenTelemetry + Zipkin/Jaeger",
+        "fragment": "tema-2-opentelemetry-zipkin-jaeger"
+      },
+      {
+        "title": "Logging estructurado",
+        "fragment": "tema-3-logging-estructurado"
+      },
+      {
+        "title": "Grafana: dashboards",
+        "fragment": "tema-4-grafana-dashboards"
+      },
+      {
+        "title": "Alerting basado en p99",
+        "fragment": "tema-5-alerting-basado-en-p99"
+      }
+    ],
+    "11": [
+      {
+        "title": "Kafka profundo: particionamiento, consumer groups",
+        "fragment": "tema-1-kafka-profundo-particionamiento-consumer-groups"
+      },
+      {
+        "title": "Exactly-Once Semantics (EOS)",
+        "fragment": "tema-2-exactly-once-semantics-eos"
+      },
+      {
+        "title": "Schema Registry y Avro",
+        "fragment": "tema-3-schema-registry-y-avro"
+      },
+      {
+        "title": "Dead Letter Topics",
+        "fragment": "tema-4-dead-letter-topics"
+      },
+      {
+        "title": "RabbitMQ: publisher confirms, DLQ",
+        "fragment": "tema-5-rabbitmq-publisher-confirms-dlq"
+      },
+      {
+        "title": "NATS",
+        "fragment": "tema-6-nats"
+      }
+    ],
+    "12": [
+      {
+        "title": "Dockerfile multi-stage, distroless",
+        "fragment": "tema-1-dockerfile-multi-stage-distroless"
+      },
+      {
+        "title": "Docker Compose",
+        "fragment": "tema-2-docker-compose"
+      },
+      {
+        "title": "Kubernetes: Deployments, Services, ConfigMaps, Secrets",
+        "fragment": "tema-3-kubernetes-deployments-services-configmaps-secrets"
+      },
+      {
+        "title": "Readiness/Liveness Probes",
+        "fragment": "tema-4-readiness-liveness-probes"
+      },
+      {
+        "title": "HPA",
+        "fragment": "tema-5-hpa"
+      },
+      {
+        "title": "Helm",
+        "fragment": "tema-6-helm"
+      },
+      {
+        "title": "Blue-Green y Canary",
+        "fragment": "tema-7-blue-green-y-canary"
+      },
+      {
+        "title": "GitOps con ArgoCD",
+        "fragment": "tema-8-gitops-con-argocd"
+      }
+    ],
+    "13": [
+      {
+        "title": "ADRs",
+        "fragment": "adrs"
+      },
+      {
+        "title": "Modelo C4",
+        "fragment": "modelo-c4"
+      },
+      {
+        "title": "ATAM ligero",
+        "fragment": "atam-ligero"
+      },
+      {
+        "title": "Fitness functions en producción",
+        "fragment": "fitness-functions-en-produccion"
+      }
+    ],
+    "14": [
+      {
+        "title": "Outbox Pattern + CDC con Debezium",
+        "fragment": "outbox-pattern-cdc-con-debezium"
+      },
+      {
+        "title": "Sagas orquestadas con Temporal.io",
+        "fragment": "sagas-orquestadas-con-temporal-io"
+      },
+      {
+        "title": "Idempotencia real en consumidores Kafka",
+        "fragment": "idempotencia-real-en-consumidores-kafka"
+      },
+      {
+        "title": "Exactly-once semantics en la práctica",
+        "fragment": "exactly-once-semantics-en-la-practica"
+      },
+      {
+        "title": "Two-Phase Commit: por qué no usar",
+        "fragment": "two-phase-commit-por-que-no-usar"
+      }
+    ],
+    "15": [
+      {
+        "title": "Kafka profundo: transacciones, EOS, Schema Registry",
+        "fragment": "kafka-profundo-transacciones-eos-schema-registry"
+      },
+      {
+        "title": "RabbitMQ avanzado",
+        "fragment": "rabbitmq-avanzado"
+      },
+      {
+        "title": "NATS",
+        "fragment": "nats"
+      },
+      {
+        "title": "Event Notification vs Event-Carried State Transfer",
+        "fragment": "event-notification-vs-event-carried-state-transfer"
+      }
+    ],
+    "16": [
+      {
+        "title": "mTLS con Istio/Linkerd",
+        "fragment": "mtls-con-istio-linkerd"
+      },
+      {
+        "title": "Token Exchange (RFC 8693)",
+        "fragment": "token-exchange-rfc-8693"
+      },
+      {
+        "title": "Vault",
+        "fragment": "vault"
+      },
+      {
+        "title": "Service Mesh",
+        "fragment": "service-mesh"
+      }
+    ],
+    "17": [
+      {
+        "title": "Modelo de costo cloud",
+        "fragment": "modelo-de-costo-cloud"
+      },
+      {
+        "title": "Right-sizing",
+        "fragment": "right-sizing"
+      },
+      {
+        "title": "Break-even Serverless vs Contenedores",
+        "fragment": "break-even-serverless-vs-contenedores"
+      },
+      {
+        "title": "Observability tax",
+        "fragment": "observability-tax"
+      }
+    ],
+    "18": [
+      {
+        "title": "Ley de Conway",
+        "fragment": "ley-de-conway"
+      },
+      {
+        "title": "Stream-aligned, Platform, Enabling teams",
+        "fragment": "stream-aligned-platform-enabling-teams"
+      },
+      {
+        "title": "Carga cognitiva",
+        "fragment": "carga-cognitiva"
+      },
+      {
+        "title": "Dimensionamiento de equipos",
+        "fragment": "dimensionamiento-de-equipos"
+      }
+    ],
+    "19": [
+      {
+        "title": "Monolito distribuido",
+        "fragment": "monolito-distribuido"
+      },
+      {
+        "title": "Sobre-descomposición",
+        "fragment": "sobre-descomposicion"
+      },
+      {
+        "title": "Sagas innecesarias",
+        "fragment": "sagas-innecesarias"
+      },
+      {
+        "title": "Fitness functions",
+        "fragment": "fitness-functions"
+      }
+    ],
+    "2": [
+      {
+        "title": "Sintaxis y ejecución",
+        "fragment": "tema-1-sintaxis-y-ejecucion"
+      },
+      {
+        "title": "Tipos, errores y concurrencia",
+        "fragment": "tema-2-tipos-errores-y-concurrencia"
+      }
+    ],
+    "20": [
+      {
+        "title": "Strangler Fig",
+        "fragment": "strangler-fig"
+      },
+      {
+        "title": "Coexistencia monolito + servicios",
+        "fragment": "coexistencia-monolito-servicios"
+      },
+      {
+        "title": "Métricas de éxito",
+        "fragment": "metricas-de-exito"
+      },
+      {
+        "title": "Deuda técnica",
+        "fragment": "deuda-tecnica"
+      }
+    ],
+    "21": [
+      {
+        "title": "Sistema de reservas con pago externo",
+        "fragment": "sistema-de-reservas-con-pago-externo"
+      },
+      {
+        "title": "Saga orquestada con Temporal.io",
+        "fragment": "saga-orquestada-con-temporal-io"
+      },
+      {
+        "title": "API Gateway con rate limiting",
+        "fragment": "api-gateway-con-rate-limiting"
+      },
+      {
+        "title": "Test de carga con Gatling",
+        "fragment": "test-de-carga-con-gatling"
+      },
+      {
+        "title": "Restricción sobrevenida",
+        "fragment": "restriccion-sobrevenida"
+      },
+      {
+        "title": "Rediseño documentado en ADR",
+        "fragment": "rediseno-documentado-en-adr"
+      },
+      {
+        "title": "Defensa ante Architecture Review Board",
+        "fragment": "defensa-ante-architecture-review-board"
+      }
+    ],
+    "3": [
+      {
+        "title": "Git",
+        "fragment": "tema-1-git"
+      },
+      {
+        "title": "Terminal",
+        "fragment": "tema-2-terminal"
+      },
+      {
+        "title": "HTTP",
+        "fragment": "tema-3-http"
+      },
+      {
+        "title": "JSON",
+        "fragment": "tema-4-json"
+      },
+      {
+        "title": "YAML",
+        "fragment": "tema-5-yaml"
+      },
+      {
+        "title": "Variables de entorno",
+        "fragment": "tema-6-variables-de-entorno"
+      }
+    ],
+    "4": [
+      {
+        "title": "Primer Hola Mundo en Java",
+        "fragment": "tema-1-primer-hola-mundo-en-java"
+      },
+      {
+        "title": "Primer Hola Mundo en Node.js",
+        "fragment": "tema-2-primer-hola-mundo-en-node-js"
+      },
+      {
+        "title": "Docker básico",
+        "fragment": "tema-3-docker-basico"
+      }
+    ],
+    "5": [
+      {
+        "title": "Monolito vs Microservicios vs SOA",
+        "fragment": "tema-1-monolito-vs-microservicios-vs-soa"
+      },
+      {
+        "title": "DDD: Bounded Contexts, Agregados, Eventos de Dominio",
+        "fragment": "tema-2-ddd-bounded-contexts-agregados-eventos-de-dominio"
+      },
+      {
+        "title": "Spring Modulith",
+        "fragment": "tema-3-spring-modulith"
+      },
+      {
+        "title": "12-Factor App",
+        "fragment": "tema-4-12-factor-app"
+      },
+      {
+        "title": "Strangler Fig Pattern",
+        "fragment": "tema-5-strangler-fig-pattern"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "tema-6-database-per-service"
+      }
+    ],
+    "6": [
+      {
         "title": "REST síncrono: RestTemplate, WebClient, OpenFeign",
         "fragment": "tema-1-rest-sincrono-resttemplate-webclient-openfeign"
       },
@@ -5438,7 +5774,7 @@
         "fragment": "tema-5-sync-vs-async-criterios-de-decision"
       }
     ],
-    "11": [
+    "7": [
       {
         "title": "Service Discovery: Eureka, Consul",
         "fragment": "tema-1-service-discovery-eureka-consul"
@@ -5460,7 +5796,7 @@
         "fragment": "tema-5-bff-pattern"
       }
     ],
-    "12": [
+    "8": [
       {
         "title": "Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter",
         "fragment": "tema-1-resilience4j-circuit-breaker-retry-ratelimiter-bulkhead-timelimiter"
@@ -5478,7 +5814,7 @@
         "fragment": "tema-4-chaos-engineering-con-toxiproxy"
       }
     ],
-    "13": [
+    "9": [
       {
         "title": "Spring Security: filter chain",
         "fragment": "tema-1-spring-security-filter-chain"
@@ -5514,704 +5850,6 @@
       {
         "title": "Escaneo de vulnerabilidades: Trivy, Snyk",
         "fragment": "tema-9-escaneo-de-vulnerabilidades-trivy-snyk"
-      }
-    ],
-    "14": [
-      {
-        "title": "Micrometer + Prometheus",
-        "fragment": "tema-1-micrometer-prometheus"
-      },
-      {
-        "title": "OpenTelemetry + Zipkin/Jaeger",
-        "fragment": "tema-2-opentelemetry-zipkin-jaeger"
-      },
-      {
-        "title": "Logging estructurado",
-        "fragment": "tema-3-logging-estructurado"
-      },
-      {
-        "title": "Grafana: dashboards",
-        "fragment": "tema-4-grafana-dashboards"
-      },
-      {
-        "title": "Alerting basado en p99",
-        "fragment": "tema-5-alerting-basado-en-p99"
-      }
-    ],
-    "15": [
-      {
-        "title": "Kafka profundo: particionamiento, consumer groups",
-        "fragment": "tema-1-kafka-profundo-particionamiento-consumer-groups"
-      },
-      {
-        "title": "Exactly-Once Semantics (EOS)",
-        "fragment": "tema-2-exactly-once-semantics-eos"
-      },
-      {
-        "title": "Schema Registry y Avro",
-        "fragment": "tema-3-schema-registry-y-avro"
-      },
-      {
-        "title": "Dead Letter Topics",
-        "fragment": "tema-4-dead-letter-topics"
-      },
-      {
-        "title": "RabbitMQ: publisher confirms, DLQ",
-        "fragment": "tema-5-rabbitmq-publisher-confirms-dlq"
-      },
-      {
-        "title": "NATS",
-        "fragment": "tema-6-nats"
-      }
-    ],
-    "16": [
-      {
-        "title": "Dockerfile multi-stage, distroless",
-        "fragment": "tema-1-dockerfile-multi-stage-distroless"
-      },
-      {
-        "title": "Docker Compose",
-        "fragment": "tema-2-docker-compose"
-      },
-      {
-        "title": "Kubernetes: Deployments, Services, ConfigMaps, Secrets",
-        "fragment": "tema-3-kubernetes-deployments-services-configmaps-secrets"
-      },
-      {
-        "title": "Readiness/Liveness Probes",
-        "fragment": "tema-4-readiness-liveness-probes"
-      },
-      {
-        "title": "HPA",
-        "fragment": "tema-5-hpa"
-      },
-      {
-        "title": "Helm",
-        "fragment": "tema-6-helm"
-      },
-      {
-        "title": "Blue-Green y Canary",
-        "fragment": "tema-7-blue-green-y-canary"
-      },
-      {
-        "title": "GitOps con ArgoCD",
-        "fragment": "tema-8-gitops-con-argocd"
-      }
-    ],
-    "17": [
-      {
-        "title": "ES6+: async/await, Promises, destructuring, modules",
-        "fragment": "tema-1-es6-async-await-promises-destructuring-modules"
-      },
-      {
-        "title": "TypeScript: tipos, interfaces, generics, strict mode",
-        "fragment": "tema-2-typescript-tipos-interfaces-generics-strict-mode"
-      },
-      {
-        "title": "Event Loop: fases, microtasks, macrotasks",
-        "fragment": "tema-3-event-loop-fases-microtasks-macrotasks"
-      },
-      {
-        "title": "perf_hooks y clinic.js",
-        "fragment": "tema-4-perf-hooks-y-clinic-js"
-      },
-      {
-        "title": "Worker Threads vs Child Processes",
-        "fragment": "tema-5-worker-threads-vs-child-processes"
-      },
-      {
-        "title": "Backpressure en Streams",
-        "fragment": "tema-6-backpressure-en-streams"
-      },
-      {
-        "title": "Graceful shutdown",
-        "fragment": "tema-7-graceful-shutdown"
-      }
-    ],
-    "18": [
-      {
-        "title": "Express: routing, middleware, error handling",
-        "fragment": "tema-1-express-routing-middleware-error-handling"
-      },
-      {
-        "title": "NestJS: módulos, controllers, providers, interceptors, guards",
-        "fragment": "tema-2-nestjs-modulos-controllers-providers-interceptors-guards"
-      },
-      {
-        "title": "Validación con Zod o class-validator",
-        "fragment": "tema-3-validacion-con-zod-o-class-validator"
-      },
-      {
-        "title": "DTOs",
-        "fragment": "tema-4-dtos"
-      },
-      {
-        "title": "OpenAPI/Swagger",
-        "fragment": "tema-5-openapi-swagger"
-      }
-    ],
-    "19": [
-      {
-        "title": "MongoDB + Mongoose",
-        "fragment": "tema-1-mongodb-mongoose"
-      },
-      {
-        "title": "PostgreSQL + Prisma/Sequelize",
-        "fragment": "tema-2-postgresql-prisma-sequelize"
-      },
-      {
-        "title": "Database-per-service",
-        "fragment": "tema-3-database-per-service"
-      },
-      {
-        "title": "Connection pooling y transacciones",
-        "fragment": "tema-4-connection-pooling-y-transacciones"
-      }
-    ],
-    "2": [
-      {
-        "title": "Sintaxis y ejecución",
-        "fragment": "tema-1-sintaxis-y-ejecucion"
-      },
-      {
-        "title": "Tipos, errores y concurrencia",
-        "fragment": "tema-2-tipos-errores-y-concurrencia"
-      }
-    ],
-    "20": [
-      {
-        "title": "Jest",
-        "fragment": "tema-1-jest"
-      },
-      {
-        "title": "Supertest",
-        "fragment": "tema-2-supertest"
-      },
-      {
-        "title": "Contract Testing con Pact",
-        "fragment": "tema-3-contract-testing-con-pact"
-      },
-      {
-        "title": "Testcontainers para Node",
-        "fragment": "tema-4-testcontainers-para-node"
-      }
-    ],
-    "21": [
-      {
-        "title": "Estructura de carpetas escalable",
-        "fragment": "tema-1-estructura-de-carpetas-escalable"
-      },
-      {
-        "title": "dotenv",
-        "fragment": "tema-2-dotenv"
-      },
-      {
-        "title": "Service Discovery con Consul",
-        "fragment": "tema-3-service-discovery-con-consul"
-      },
-      {
-        "title": "Configuración centralizada",
-        "fragment": "tema-4-configuracion-centralizada"
-      }
-    ],
-    "22": [
-      {
-        "title": "REST con Axios/Fetch",
-        "fragment": "rest-con-axios-fetch"
-      },
-      {
-        "title": "gRPC con @grpc/grpc-js",
-        "fragment": "grpc-con-grpc-grpc-js"
-      },
-      {
-        "title": "GraphQL con Apollo Server",
-        "fragment": "graphql-con-apollo-server"
-      },
-      {
-        "title": "KafkaJS, amqplib",
-        "fragment": "kafkajs-amqplib"
-      },
-      {
-        "title": "NATS",
-        "fragment": "nats"
-      },
-      {
-        "title": "Sync vs async",
-        "fragment": "sync-vs-async"
-      }
-    ],
-    "23": [
-      {
-        "title": "Circuit Breaker con opossum o cockatiel",
-        "fragment": "circuit-breaker-con-opossum-o-cockatiel"
-      },
-      {
-        "title": "Retry con jitter",
-        "fragment": "retry-con-jitter"
-      },
-      {
-        "title": "Rate Limiting con Redis",
-        "fragment": "rate-limiting-con-redis"
-      },
-      {
-        "title": "Timeouts",
-        "fragment": "timeouts"
-      },
-      {
-        "title": "Fallback strategies",
-        "fragment": "fallback-strategies"
-      }
-    ],
-    "24": [
-      {
-        "title": "JWT con jsonwebtoken",
-        "fragment": "jwt-con-jsonwebtoken"
-      },
-      {
-        "title": "Passport.js",
-        "fragment": "passport-js"
-      },
-      {
-        "title": "Helmet, CORS",
-        "fragment": "helmet-cors"
-      },
-      {
-        "title": "Prevención de inyecciones NoSQL",
-        "fragment": "prevencion-de-inyecciones-nosql"
-      },
-      {
-        "title": "OWASP Top 10",
-        "fragment": "owasp-top-10"
-      },
-      {
-        "title": "Secretos: AWS Secrets Manager, Vault, Azure Key Vault",
-        "fragment": "secretos-aws-secrets-manager-vault-azure-key-vault"
-      }
-    ],
-    "25": [
-      {
-        "title": "OpenTelemetry para Node",
-        "fragment": "opentelemetry-para-node"
-      },
-      {
-        "title": "Propagación de traceparent en AMQP/Kafka",
-        "fragment": "propagacion-de-traceparent-en-amqp-kafka"
-      },
-      {
-        "title": "Pino/Winston",
-        "fragment": "pino-winston"
-      },
-      {
-        "title": "ELK o Grafana Loki",
-        "fragment": "elk-o-grafana-loki"
-      },
-      {
-        "title": "Prometheus client",
-        "fragment": "prometheus-client"
-      }
-    ],
-    "26": [
-      {
-        "title": "RabbitMQ: publisher confirms, consumer acknowledgments",
-        "fragment": "rabbitmq-publisher-confirms-consumer-acknowledgments"
-      },
-      {
-        "title": "Deduplicación con Redis",
-        "fragment": "deduplicacion-con-redis"
-      },
-      {
-        "title": "Sagas con NestJS CQRS",
-        "fragment": "sagas-con-nestjs-cqrs"
-      },
-      {
-        "title": "Compensaciones idempotentes",
-        "fragment": "compensaciones-idempotentes"
-      },
-      {
-        "title": "Event Sourcing con EventStoreDB o MongoDB",
-        "fragment": "event-sourcing-con-eventstoredb-o-mongodb"
-      },
-      {
-        "title": "Proyecciones materializadas",
-        "fragment": "proyecciones-materializadas"
-      },
-      {
-        "title": "CQRS",
-        "fragment": "cqrs"
-      }
-    ],
-    "27": [
-      {
-        "title": "Dockerfile multi-stage",
-        "fragment": "dockerfile-multi-stage"
-      },
-      {
-        "title": "Kubernetes",
-        "fragment": "kubernetes"
-      },
-      {
-        "title": "HPA",
-        "fragment": "hpa"
-      },
-      {
-        "title": "GitHub Actions",
-        "fragment": "github-actions"
-      },
-      {
-        "title": "Blue-Green y Canary",
-        "fragment": "blue-green-y-canary"
-      },
-      {
-        "title": "GitOps con ArgoCD",
-        "fragment": "gitops-con-argocd"
-      }
-    ],
-    "28": [
-      {
-        "title": "ADRs",
-        "fragment": "adrs"
-      },
-      {
-        "title": "Modelo C4",
-        "fragment": "modelo-c4"
-      },
-      {
-        "title": "ATAM ligero",
-        "fragment": "atam-ligero"
-      },
-      {
-        "title": "Fitness functions en producción",
-        "fragment": "fitness-functions-en-produccion"
-      }
-    ],
-    "29": [
-      {
-        "title": "Outbox Pattern + CDC con Debezium",
-        "fragment": "outbox-pattern-cdc-con-debezium"
-      },
-      {
-        "title": "Sagas orquestadas con Temporal.io",
-        "fragment": "sagas-orquestadas-con-temporal-io"
-      },
-      {
-        "title": "Idempotencia real en consumidores Kafka",
-        "fragment": "idempotencia-real-en-consumidores-kafka"
-      },
-      {
-        "title": "Exactly-once semantics en la práctica",
-        "fragment": "exactly-once-semantics-en-la-practica"
-      },
-      {
-        "title": "Two-Phase Commit: por qué no usar",
-        "fragment": "two-phase-commit-por-que-no-usar"
-      }
-    ],
-    "3": [
-      {
-        "title": "Git",
-        "fragment": "tema-1-git"
-      },
-      {
-        "title": "Terminal",
-        "fragment": "tema-2-terminal"
-      },
-      {
-        "title": "HTTP",
-        "fragment": "tema-3-http"
-      },
-      {
-        "title": "JSON",
-        "fragment": "tema-4-json"
-      },
-      {
-        "title": "YAML",
-        "fragment": "tema-5-yaml"
-      },
-      {
-        "title": "Variables de entorno",
-        "fragment": "tema-6-variables-de-entorno"
-      }
-    ],
-    "30": [
-      {
-        "title": "Kafka profundo: transacciones, EOS, Schema Registry",
-        "fragment": "kafka-profundo-transacciones-eos-schema-registry"
-      },
-      {
-        "title": "RabbitMQ avanzado",
-        "fragment": "rabbitmq-avanzado"
-      },
-      {
-        "title": "NATS",
-        "fragment": "nats"
-      },
-      {
-        "title": "Event Notification vs Event-Carried State Transfer",
-        "fragment": "event-notification-vs-event-carried-state-transfer"
-      }
-    ],
-    "31": [
-      {
-        "title": "mTLS con Istio/Linkerd",
-        "fragment": "mtls-con-istio-linkerd"
-      },
-      {
-        "title": "Token Exchange (RFC 8693)",
-        "fragment": "token-exchange-rfc-8693"
-      },
-      {
-        "title": "Vault",
-        "fragment": "vault"
-      },
-      {
-        "title": "Service Mesh",
-        "fragment": "service-mesh"
-      }
-    ],
-    "32": [
-      {
-        "title": "Modelo de costo cloud",
-        "fragment": "modelo-de-costo-cloud"
-      },
-      {
-        "title": "Right-sizing",
-        "fragment": "right-sizing"
-      },
-      {
-        "title": "Break-even Serverless vs Contenedores",
-        "fragment": "break-even-serverless-vs-contenedores"
-      },
-      {
-        "title": "Observability tax",
-        "fragment": "observability-tax"
-      }
-    ],
-    "33": [
-      {
-        "title": "Ley de Conway",
-        "fragment": "ley-de-conway"
-      },
-      {
-        "title": "Stream-aligned, Platform, Enabling teams",
-        "fragment": "stream-aligned-platform-enabling-teams"
-      },
-      {
-        "title": "Carga cognitiva",
-        "fragment": "carga-cognitiva"
-      },
-      {
-        "title": "Dimensionamiento de equipos",
-        "fragment": "dimensionamiento-de-equipos"
-      }
-    ],
-    "34": [
-      {
-        "title": "Monolito distribuido",
-        "fragment": "monolito-distribuido"
-      },
-      {
-        "title": "Sobre-descomposición",
-        "fragment": "sobre-descomposicion"
-      },
-      {
-        "title": "Sagas innecesarias",
-        "fragment": "sagas-innecesarias"
-      },
-      {
-        "title": "Fitness functions",
-        "fragment": "fitness-functions"
-      }
-    ],
-    "35": [
-      {
-        "title": "Strangler Fig",
-        "fragment": "strangler-fig"
-      },
-      {
-        "title": "Coexistencia monolito + servicios",
-        "fragment": "coexistencia-monolito-servicios"
-      },
-      {
-        "title": "Métricas de éxito",
-        "fragment": "metricas-de-exito"
-      },
-      {
-        "title": "Deuda técnica",
-        "fragment": "deuda-tecnica"
-      }
-    ],
-    "36": [
-      {
-        "title": "Sistema de reservas con pago externo",
-        "fragment": "sistema-de-reservas-con-pago-externo"
-      },
-      {
-        "title": "Saga orquestada con Temporal.io",
-        "fragment": "saga-orquestada-con-temporal-io"
-      },
-      {
-        "title": "API Gateway con rate limiting",
-        "fragment": "api-gateway-con-rate-limiting"
-      },
-      {
-        "title": "Test de carga con Gatling",
-        "fragment": "test-de-carga-con-gatling"
-      },
-      {
-        "title": "Restricción sobrevenida",
-        "fragment": "restriccion-sobrevenida"
-      },
-      {
-        "title": "Rediseño documentado en ADR",
-        "fragment": "rediseno-documentado-en-adr"
-      },
-      {
-        "title": "Defensa ante Architecture Review Board",
-        "fragment": "defensa-ante-architecture-review-board"
-      }
-    ],
-    "4": [
-      {
-        "title": "Primer Hola Mundo en Java",
-        "fragment": "tema-1-primer-hola-mundo-en-java"
-      },
-      {
-        "title": "Primer Hola Mundo en Node.js",
-        "fragment": "tema-2-primer-hola-mundo-en-node-js"
-      },
-      {
-        "title": "Docker básico",
-        "fragment": "tema-3-docker-basico"
-      }
-    ],
-    "5": [
-      {
-        "title": "Java 21: Streams, Lambdas, Optional, Records, Pattern Matching",
-        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
-      },
-      {
-        "title": "Virtual Threads (Project Loom)",
-        "fragment": "tema-2-virtual-threads-project-loom"
-      },
-      {
-        "title": "Spring IoC, DI, Bean Lifecycle, ApplicationContext",
-        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-applicationcontext"
-      },
-      {
-        "title": "Auto-configuración condicional, @Conditional, starters",
-        "fragment": "tema-4-auto-configuracion-condicional-conditional-starters"
-      },
-      {
-        "title": "Multi-module Spring Boot projects",
-        "fragment": "tema-5-multi-module-spring-boot-projects"
-      },
-      {
-        "title": "Perfiles y configuración externalizada",
-        "fragment": "tema-6-perfiles-y-configuracion-externalizada"
-      },
-      {
-        "title": "CRaC (Coordinated Restore at Checkpoint)",
-        "fragment": "tema-7-crac-coordinated-restore-at-checkpoint"
-      },
-      {
-        "title": "GraalVM Native Image",
-        "fragment": "tema-8-graalvm-native-image"
-      }
-    ],
-    "6": [
-      {
-        "title": "Spring MVC: DispatcherServlet, Controllers, Validación",
-        "fragment": "tema-1-spring-mvc-dispatcherservlet-controllers-validacion"
-      },
-      {
-        "title": "DTOs, @JsonProperty, Jackson",
-        "fragment": "tema-2-dtos-jsonproperty-jackson"
-      },
-      {
-        "title": "Manejo global de excepciones (@ControllerAdvice)",
-        "fragment": "tema-3-manejo-global-de-excepciones-controlleradvice"
-      },
-      {
-        "title": "Spring Data JPA, Hibernate, entidades, relaciones, transacciones",
-        "fragment": "tema-4-spring-data-jpa-hibernate-entidades-relaciones-transacciones"
-      },
-      {
-        "title": "Criteria API y Specifications",
-        "fragment": "tema-5-criteria-api-y-specifications"
-      },
-      {
-        "title": "Flyway/Liquibase",
-        "fragment": "tema-6-flyway-liquibase"
-      },
-      {
-        "title": "PostgreSQL y MySQL",
-        "fragment": "tema-7-postgresql-y-mysql"
-      }
-    ],
-    "7": [
-      {
-        "title": "JUnit 5, Mockito, MockMvc",
-        "fragment": "tema-1-junit-5-mockito-mockmvc"
-      },
-      {
-        "title": "Testcontainers",
-        "fragment": "tema-2-testcontainers"
-      },
-      {
-        "title": "Contract Testing con Pact y Pact Broker",
-        "fragment": "tema-3-contract-testing-con-pact-y-pact-broker"
-      },
-      {
-        "title": "ArchUnit",
-        "fragment": "tema-4-archunit"
-      },
-      {
-        "title": "SonarQube",
-        "fragment": "tema-5-sonarqube"
-      }
-    ],
-    "8": [
-      {
-        "title": "Caching con Redis: @Cacheable, @CacheEvict, TTL",
-        "fragment": "tema-1-caching-con-redis-cacheable-cacheevict-ttl"
-      },
-      {
-        "title": "Patrones: Read-Through, Write-Behind, Write-Through",
-        "fragment": "tema-2-patrones-read-through-write-behind-write-through"
-      },
-      {
-        "title": "Distributed Locking con Redlock y Fencing Tokens",
-        "fragment": "tema-3-distributed-locking-con-redlock-y-fencing-tokens"
-      },
-      {
-        "title": "Cache stampede y solución con locks",
-        "fragment": "tema-4-cache-stampede-y-solucion-con-locks"
-      }
-    ],
-    "9": [
-      {
-        "title": "Monolito vs Microservicios vs SOA",
-        "fragment": "tema-1-monolito-vs-microservicios-vs-soa"
-      },
-      {
-        "title": "DDD: Bounded Contexts, Agregados, Eventos de Dominio",
-        "fragment": "tema-2-ddd-bounded-contexts-agregados-eventos-de-dominio"
-      },
-      {
-        "title": "Spring Modulith",
-        "fragment": "tema-3-spring-modulith"
-      },
-      {
-        "title": "12-Factor App",
-        "fragment": "tema-4-12-factor-app"
-      },
-      {
-        "title": "Strangler Fig Pattern",
-        "fragment": "tema-5-strangler-fig-pattern"
-      },
-      {
-        "title": "Database-per-service",
-        "fragment": "tema-6-database-per-service"
       }
     ]
   },
@@ -6658,6 +6296,266 @@
       {
         "title": "Métricas Prometheus y trazas distribuidas con OpenTelemetry",
         "fragment": "tema-6-metricas-prometheus-y-trazas-distribuidas-con-opentelemetry"
+      }
+    ]
+  },
+  "node-microservices": {
+    "0": [
+      {
+        "title": "ES6+: async/await, Promises, destructuring, modules",
+        "fragment": "tema-1-es6-async-await-promises-destructuring-modules"
+      },
+      {
+        "title": "TypeScript: tipos, interfaces, generics, strict mode",
+        "fragment": "tema-2-typescript-tipos-interfaces-generics-strict-mode"
+      },
+      {
+        "title": "Event Loop: fases, microtasks, macrotasks",
+        "fragment": "tema-3-event-loop-fases-microtasks-macrotasks"
+      },
+      {
+        "title": "perf_hooks y clinic.js",
+        "fragment": "tema-4-perf-hooks-y-clinic-js"
+      },
+      {
+        "title": "Worker Threads vs Child Processes",
+        "fragment": "tema-5-worker-threads-vs-child-processes"
+      },
+      {
+        "title": "Backpressure en Streams",
+        "fragment": "tema-6-backpressure-en-streams"
+      },
+      {
+        "title": "Graceful shutdown",
+        "fragment": "tema-7-graceful-shutdown"
+      }
+    ],
+    "1": [
+      {
+        "title": "Express: routing, middleware, error handling",
+        "fragment": "tema-1-express-routing-middleware-error-handling"
+      },
+      {
+        "title": "NestJS: módulos, controllers, providers, interceptors, guards",
+        "fragment": "tema-2-nestjs-modulos-controllers-providers-interceptors-guards"
+      },
+      {
+        "title": "Validación con Zod o class-validator",
+        "fragment": "tema-3-validacion-con-zod-o-class-validator"
+      },
+      {
+        "title": "DTOs",
+        "fragment": "tema-4-dtos"
+      },
+      {
+        "title": "OpenAPI/Swagger",
+        "fragment": "tema-5-openapi-swagger"
+      }
+    ],
+    "10": [
+      {
+        "title": "Dockerfile multi-stage",
+        "fragment": "dockerfile-multi-stage"
+      },
+      {
+        "title": "Kubernetes",
+        "fragment": "kubernetes"
+      },
+      {
+        "title": "HPA",
+        "fragment": "hpa"
+      },
+      {
+        "title": "GitHub Actions",
+        "fragment": "github-actions"
+      },
+      {
+        "title": "Blue-Green y Canary",
+        "fragment": "blue-green-y-canary"
+      },
+      {
+        "title": "GitOps con ArgoCD",
+        "fragment": "gitops-con-argocd"
+      }
+    ],
+    "2": [
+      {
+        "title": "MongoDB + Mongoose",
+        "fragment": "tema-1-mongodb-mongoose"
+      },
+      {
+        "title": "PostgreSQL + Prisma/Sequelize",
+        "fragment": "tema-2-postgresql-prisma-sequelize"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "tema-3-database-per-service"
+      },
+      {
+        "title": "Connection pooling y transacciones",
+        "fragment": "tema-4-connection-pooling-y-transacciones"
+      }
+    ],
+    "3": [
+      {
+        "title": "Jest",
+        "fragment": "tema-1-jest"
+      },
+      {
+        "title": "Supertest",
+        "fragment": "tema-2-supertest"
+      },
+      {
+        "title": "Contract Testing con Pact",
+        "fragment": "tema-3-contract-testing-con-pact"
+      },
+      {
+        "title": "Testcontainers para Node",
+        "fragment": "tema-4-testcontainers-para-node"
+      }
+    ],
+    "4": [
+      {
+        "title": "Estructura de carpetas escalable",
+        "fragment": "tema-1-estructura-de-carpetas-escalable"
+      },
+      {
+        "title": "dotenv",
+        "fragment": "tema-2-dotenv"
+      },
+      {
+        "title": "Service Discovery con Consul",
+        "fragment": "tema-3-service-discovery-con-consul"
+      },
+      {
+        "title": "Configuración centralizada",
+        "fragment": "tema-4-configuracion-centralizada"
+      }
+    ],
+    "5": [
+      {
+        "title": "REST con Axios/Fetch",
+        "fragment": "rest-con-axios-fetch"
+      },
+      {
+        "title": "gRPC con @grpc/grpc-js",
+        "fragment": "grpc-con-grpc-grpc-js"
+      },
+      {
+        "title": "GraphQL con Apollo Server",
+        "fragment": "graphql-con-apollo-server"
+      },
+      {
+        "title": "KafkaJS, amqplib",
+        "fragment": "kafkajs-amqplib"
+      },
+      {
+        "title": "NATS",
+        "fragment": "nats"
+      },
+      {
+        "title": "Sync vs async",
+        "fragment": "sync-vs-async"
+      }
+    ],
+    "6": [
+      {
+        "title": "Circuit Breaker con opossum o cockatiel",
+        "fragment": "circuit-breaker-con-opossum-o-cockatiel"
+      },
+      {
+        "title": "Retry con jitter",
+        "fragment": "retry-con-jitter"
+      },
+      {
+        "title": "Rate Limiting con Redis",
+        "fragment": "rate-limiting-con-redis"
+      },
+      {
+        "title": "Timeouts",
+        "fragment": "timeouts"
+      },
+      {
+        "title": "Fallback strategies",
+        "fragment": "fallback-strategies"
+      }
+    ],
+    "7": [
+      {
+        "title": "JWT con jsonwebtoken",
+        "fragment": "jwt-con-jsonwebtoken"
+      },
+      {
+        "title": "Passport.js",
+        "fragment": "passport-js"
+      },
+      {
+        "title": "Helmet, CORS",
+        "fragment": "helmet-cors"
+      },
+      {
+        "title": "Prevención de inyecciones NoSQL",
+        "fragment": "prevencion-de-inyecciones-nosql"
+      },
+      {
+        "title": "OWASP Top 10",
+        "fragment": "owasp-top-10"
+      },
+      {
+        "title": "Secretos: AWS Secrets Manager, Vault, Azure Key Vault",
+        "fragment": "secretos-aws-secrets-manager-vault-azure-key-vault"
+      }
+    ],
+    "8": [
+      {
+        "title": "OpenTelemetry para Node",
+        "fragment": "opentelemetry-para-node"
+      },
+      {
+        "title": "Propagación de traceparent en AMQP/Kafka",
+        "fragment": "propagacion-de-traceparent-en-amqp-kafka"
+      },
+      {
+        "title": "Pino/Winston",
+        "fragment": "pino-winston"
+      },
+      {
+        "title": "ELK o Grafana Loki",
+        "fragment": "elk-o-grafana-loki"
+      },
+      {
+        "title": "Prometheus client",
+        "fragment": "prometheus-client"
+      }
+    ],
+    "9": [
+      {
+        "title": "RabbitMQ: publisher confirms, consumer acknowledgments",
+        "fragment": "rabbitmq-publisher-confirms-consumer-acknowledgments"
+      },
+      {
+        "title": "Deduplicación con Redis",
+        "fragment": "deduplicacion-con-redis"
+      },
+      {
+        "title": "Sagas con NestJS CQRS",
+        "fragment": "sagas-con-nestjs-cqrs"
+      },
+      {
+        "title": "Compensaciones idempotentes",
+        "fragment": "compensaciones-idempotentes"
+      },
+      {
+        "title": "Event Sourcing con EventStoreDB o MongoDB",
+        "fragment": "event-sourcing-con-eventstoredb-o-mongodb"
+      },
+      {
+        "title": "Proyecciones materializadas",
+        "fragment": "proyecciones-materializadas"
+      },
+      {
+        "title": "CQRS",
+        "fragment": "cqrs"
       }
     ]
   },
@@ -7524,6 +7422,112 @@
       {
         "title": "Resiliencia en el núcleo: `@Retryable` y `@ConcurrencyLimit` (Spring Framework 7)",
         "fragment": "tema-4-resiliencia-en-el-nucleo-retryable-y-concurrencylimit-spring-framework-7"
+      }
+    ]
+  },
+  "spring-microservices": {
+    "0": [
+      {
+        "title": "Java 21: Streams, Lambdas, Optional, Records, Pattern Matching",
+        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
+      },
+      {
+        "title": "Virtual Threads (Project Loom)",
+        "fragment": "tema-2-virtual-threads-project-loom"
+      },
+      {
+        "title": "Spring IoC, DI, Bean Lifecycle, ApplicationContext",
+        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-applicationcontext"
+      },
+      {
+        "title": "Auto-configuración condicional, @Conditional, starters",
+        "fragment": "tema-4-auto-configuracion-condicional-conditional-starters"
+      },
+      {
+        "title": "Multi-module Spring Boot projects",
+        "fragment": "tema-5-multi-module-spring-boot-projects"
+      },
+      {
+        "title": "Perfiles y configuración externalizada",
+        "fragment": "tema-6-perfiles-y-configuracion-externalizada"
+      },
+      {
+        "title": "CRaC (Coordinated Restore at Checkpoint)",
+        "fragment": "tema-7-crac-coordinated-restore-at-checkpoint"
+      },
+      {
+        "title": "GraalVM Native Image",
+        "fragment": "tema-8-graalvm-native-image"
+      }
+    ],
+    "1": [
+      {
+        "title": "Spring MVC: DispatcherServlet, Controllers, Validación",
+        "fragment": "tema-1-spring-mvc-dispatcherservlet-controllers-validacion"
+      },
+      {
+        "title": "DTOs, @JsonProperty, Jackson",
+        "fragment": "tema-2-dtos-jsonproperty-jackson"
+      },
+      {
+        "title": "Manejo global de excepciones (@ControllerAdvice)",
+        "fragment": "tema-3-manejo-global-de-excepciones-controlleradvice"
+      },
+      {
+        "title": "Spring Data JPA, Hibernate, entidades, relaciones, transacciones",
+        "fragment": "tema-4-spring-data-jpa-hibernate-entidades-relaciones-transacciones"
+      },
+      {
+        "title": "Criteria API y Specifications",
+        "fragment": "tema-5-criteria-api-y-specifications"
+      },
+      {
+        "title": "Flyway/Liquibase",
+        "fragment": "tema-6-flyway-liquibase"
+      },
+      {
+        "title": "PostgreSQL y MySQL",
+        "fragment": "tema-7-postgresql-y-mysql"
+      }
+    ],
+    "2": [
+      {
+        "title": "JUnit 5, Mockito, MockMvc",
+        "fragment": "tema-1-junit-5-mockito-mockmvc"
+      },
+      {
+        "title": "Testcontainers",
+        "fragment": "tema-2-testcontainers"
+      },
+      {
+        "title": "Contract Testing con Pact y Pact Broker",
+        "fragment": "tema-3-contract-testing-con-pact-y-pact-broker"
+      },
+      {
+        "title": "ArchUnit",
+        "fragment": "tema-4-archunit"
+      },
+      {
+        "title": "SonarQube",
+        "fragment": "tema-5-sonarqube"
+      }
+    ],
+    "3": [
+      {
+        "title": "Caching con Redis: @Cacheable, @CacheEvict, TTL",
+        "fragment": "tema-1-caching-con-redis-cacheable-cacheevict-ttl"
+      },
+      {
+        "title": "Patrones: Read-Through, Write-Behind, Write-Through",
+        "fragment": "tema-2-patrones-read-through-write-behind-write-through"
+      },
+      {
+        "title": "Distributed Locking con Redlock y Fencing Tokens",
+        "fragment": "tema-3-distributed-locking-con-redlock-y-fencing-tokens"
+      },
+      {
+        "title": "Cache stampede y solución con locks",
+        "fragment": "tema-4-cache-stampede-y-solucion-con-locks"
       }
     ]
   }

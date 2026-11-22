@@ -1,4 +1,4 @@
-# Módulo 0.1 · Qué es un programa, un servidor y una API
+# Módulo 0 · Qué es un programa, un servidor y una API
 
 Antes de hablar de microservicios, hay que tener el modelo mental correcto: un programa ejecuta instrucciones y termina; un servidor es un programa que permanece escuchando; una API es el contrato que define qué pedidos acepta y cómo responde. Si este modelo está borroso, el resto del track se vuelve memorización.
 

@@ -29,7 +29,7 @@ export const ACADEMY_STAGES: AcademyStage[] = [
   {
     id: 'systems', number: '04', title: 'Sistemas, entrega y operación',
     description: 'Distribución, contenedores, nube, confiabilidad y operación después de construir una aplicación completa.',
-    trackIds: ['microservices', 'devops', 'cloud'],
+    trackIds: ['microservices', 'spring-microservices', 'node-microservices', 'devops', 'cloud'],
   },
   {
     id: 'capstone', number: '05', title: 'Integración profesional',
@@ -56,6 +56,8 @@ export const TRACK_PREREQUISITES: Record<string, string[]> = {
   ios: ['foundations'],
   'kotlin-multiplatform': ['android'],
   microservices: ['spring-boot'],
+  'spring-microservices': ['spring-boot', 'microservices'],
+  'node-microservices': ['node', 'microservices'],
   devops: ['foundations'],
   cloud: ['devops'],
   rutaflow: ['node', 'spring-boot', 'flutter', 'devops'],

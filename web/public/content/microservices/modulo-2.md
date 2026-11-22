@@ -1,4 +1,4 @@
-# Módulo 0.3 · Introducción a Java y Node.js lado a lado
+# Módulo 2 · Introducción a Java y Node.js lado a lado
 
 Java y Node.js pueden resolver el mismo problema con modelos de ejecución distintos. Compararlos lado a lado evita la falsa idea de que “sintaxis parecida” significa “runtime igual”. Este módulo construye el mapa mental: JVM vs V8/Node, tipado, estructura, errores y concurrencia.
 

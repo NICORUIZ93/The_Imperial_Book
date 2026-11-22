@@ -1,97 +1,120 @@
-# Módulo 2.4 · Resiliencia y tolerancia a fallos
+# Módulo 12 · Contenedores y Kubernetes
 
-En sistemas distribuidos, las fallas son normales: latencia, timeouts, caídas parciales, dependencias lentas. La resiliencia no evita fallos; limita su impacto.
+Los microservicios se empaquetan como contenedores y suelen orquestarse con Kubernetes. Este módulo cubre imágenes, Compose, objetos K8s básicos, probes, HPA, Helm, despliegues progresivos y GitOps.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0.
+**Entorno de referencia verificado (2026-05-22):** Docker 29.9.3. Kubernetes/Helm/ArgoCD se describen con labs reproducibles; no se finge cluster en ejecución.
 
 ## Aprende construyendo
 
-### Tema 1: Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter · Avanzado · 240 min
+### Tema 1: Dockerfile multi-stage, distroless · Intermedio · 120 min
 
-Caso guía: dependencia externa intermitente.
+Caso guía: imagen pequeña y con menos superficie de ataque.
 
-#### Patrones de resiliencia
+#### Multi-stage
 
-**Definición formal.** Circuit breaker corta llamadas ante fallos; retry reintenta transitorios; rate limiter limita tasa; bulkhead aísla recursos; time limiter acota espera.
+**Definición formal.** Dockerfile con varias etapas: build en una, runtime mínimo en otra.
+
+**Ejemplo mínimo.**
+
+```dockerfile
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY . .
+RUN npm ci --omit=dev
+FROM gcr.io/distroless/nodejs24-debian12
+WORKDIR /app
+COPY --from=build /app /app
+CMD ["server.js"]
+```
+
+**Error común.** Imagen de build en producción. Corrección: multi-stage.
+
+### Tema 2: Docker Compose · Básico · 90 min
+
+Caso guía: app + db local.
+
+#### Compose
+
+**Definición formal.** Declaración YAML de servicios locales interconectados.
+
+**Error común.** Usar Compose para prod sin entender límites. Corrección: dev/integration.
+
+### Tema 3: Kubernetes: Deployments, Services, ConfigMaps, Secrets · Avanzado · 180 min
+
+Caso guía: desplegar servicio con config y secreto.
+
+#### Objetos básicos
+
+**Definición formal.** Deployment gestiona replicas; Service expone; ConfigMap configura; Secret guarda material sensible (codificado, no cifrado por defecto).
 
 ```mermaid
-stateDiagram-v2
-  [*] --> Closed
-  Closed --> Open: error threshold
-  Open --> HalfOpen: wait duration
-  HalfOpen --> Closed: success
-  HalfOpen --> Open: failure
+flowchart LR
+  D[Deployment] --> P1[Pod]
+  D --> P2[Pod]
+  S[Service] --> P1
+  S --> P2
 ```
 
-**Ejemplo mínimo (ejecutable, circuit breaker simple).**
+**Error común.** Meter secretos en ConfigMap. Corrección: Secret + cifrado/gestión externa.
 
-```bash
-mkdir -p ms12-cb
-cd ms12-cb
-```
+### Tema 4: Readiness/Liveness Probes · Intermedio · 90 min
 
-Crea el archivo `cb.mjs`:
+Caso guía: no enviar tráfico antes de estar listo.
 
-```js
-let failures = 0; let open = false;
-function call(ok) {
-  if (open) return 'OPEN';
-  if (!ok) { failures++; if (failures >= 2) open = true; return 'ERR'; }
-  failures = 0; return 'OK';
-}
-console.log(call(false));
-console.log(call(false));
-console.log(call(true));
-```
+#### Probes
 
-```bash
-node cb.mjs
-```
+**Definición formal.** Liveness detecta proceso irrecuperable; readiness detecta si puede recibir tráfico.
 
-**Error común.** Retry sin límite ni backoff. Corrección: max attempts, backoff, jitter, idempotencia.
+**Error común.** Liveness consultando DB. Corrección: readiness para dependencias.
 
-**Verificación (Node 24.18.0, 2026-05-22).** `ERR`, `ERR`, `OPEN`.
+### Tema 5: HPA · Intermedio · 90 min
 
-### Tema 2: Timeouts en cascada y presupuesto de latencia · Avanzado · 120 min
+Caso guía: escalar por CPU/latencia.
 
-Caso guía: A llama B llama C; cada uno espera 10s.
+#### HPA
 
-#### Presupuesto de latencia
+**Definición formal.** Horizontal Pod Autoscaler ajusta réplicas según métricas.
 
-**Definición formal.** Límite total de tiempo para una request, repartido entre saltos. Los timeouts deben decrecer aguas abajo.
+**Error común.** Autoscalar sin límites/recursos definidos. Corrección: requests/limits y métricas adecuadas.
 
-**Error común.** Timeout por defecto o infinito. Corrección: timeout explícito por hop y total.
+### Tema 6: Helm · Intermedio · 90 min
 
-### Tema 3: Fallback strategies · Intermedio · 120 min
+Caso guía: empaquetar manifests reutilizables.
 
-Caso guía: recomendador caído; mostrar catálogo base.
+#### Helm
 
-#### Fallback
+**Definición formal.** Gestor de paquetes para Kubernetes; charts parametrizan manifests.
 
-**Definición formal.** Respuesta alternativa ante falla: caché, valor por defecto, degradación funcional.
+**Error común.** Templates Helm demasiado complejos. Corrección: valores claros, charts simples.
 
-**Error común.** Fallback que oculta fallo crítico. Corrección: degradar solo lo tolerable y emitir métrica/log.
+### Tema 7: Blue-Green y Canary · Avanzado · 120 min
 
-### Tema 4: Chaos Engineering con Toxiproxy · Avanzado · 120 min
+Caso guía: liberar sin tumbar a todos.
 
-Caso guía: simular latencia y cortes de red.
+#### Estrategias de despliegue
 
-#### Chaos/Toxiproxy
+**Definición formal.** Blue-green mantiene dos entornos y cambia tráfico; canary libera a un subconjunto gradual.
 
-**Definición formal.** Toxiproxy es un proxy para simular condiciones de red adversas; chaos engineering valida hipótesis de resiliencia ante fallos controlados.
+**Error común.** Canary sin métricas de rollback. Corrección: SLOs y rollback automático/manual definido.
 
-**Error común.** Probar resiliencia solo en happy path. Corrección: inyectar fallos en staging/controlado.
+### Tema 8: GitOps con ArgoCD · Avanzado · 90 min
 
-**Nota de verificación.** Requiere Toxiproxy/Docker; lab reproducible.
+Caso guía: estado del cluster desde Git.
+
+#### GitOps
+
+**Definición formal.** Git como fuente de verdad declarativa; un controlador reconcilia el cluster al estado deseado.
+
+**Error común.** Cambios manuales en cluster fuera de Git. Corrección: reconciliación y disciplina de PRs.
 
 ## Cierre
 
-Resiliencia es diseño de fallos esperados. Timeouts, límites y degradación evitan que un fallo pequeño tumbe el sistema.
+Kubernetes no es requisito inicial, pero es el lenguaje común de operación para microservicios a escala. Aprende los objetos básicos antes de la magia.
 
 ## Checklist
 
-- Timeouts explícitos.
-- Retries solo transitorios e idempotentes.
-- Circuit breaker/bulkhead donde aplique.
-- Fallbacks medidos.
-- Pruebas de fallo con chaos controlado.
+- Imágenes pequeñas y reproducibles.
+- Probes correctas.
+- Config/Secret separados.
+- Despliegue progresivo con métricas.
+- GitOps para estado declarativo.

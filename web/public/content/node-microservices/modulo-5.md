@@ -1,4 +1,4 @@
-# Módulo 18 · Comunicación
+# Módulo 5 · Comunicación
 
 **Fase 2 · Node.js de cero a experto** (semana 7 de 12). **Duración:** 14 h (6 temas de 2 h y 2 h de laboratorio
 integrador). **Dificultad:** 2 de 5 en REST, 3 de 5 en gRPC, GraphQL y mensajería, 4 de 5 en decidir entre síncrono y

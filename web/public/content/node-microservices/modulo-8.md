@@ -1,4 +1,4 @@
-# Módulo 21 · Observabilidad
+# Módulo 8 · Observabilidad
 
 **Fase 2 · Node.js de cero a experto** (una semana de 12). **Duración:** 10 h (5 temas de unos 100 min y 1 h 40 min
 de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 13 (Event Loop, `async/await`, graceful
