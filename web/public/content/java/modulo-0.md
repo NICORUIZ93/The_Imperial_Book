@@ -45,7 +45,8 @@ flowchart LR
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-prog && cd /tmp/java-m0-prog
+mkdir -p java-m0-prog
+cd java-m0-prog
 ```
 
 Crea el archivo `Regla.java`:
@@ -58,6 +59,11 @@ public class Regla {
     System.out.println(salida);
   }
 }
+```
+
+```bash
+javac Regla.java
+java Regla
 ```
 
 **Caso de uso real.** Calcular IVA, comisiones, descuentos o impuestos sobre miles de transacciones con la misma regla.
@@ -77,7 +83,8 @@ public class Regla {
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-porque && cd /tmp/java-m0-porque
+mkdir -p java-m0-porque
+cd java-m0-porque
 ```
 
 Crea el archivo `Hola.java`:
@@ -88,6 +95,11 @@ public class Hola {
     System.out.println("Java OK");
   }
 }
+```
+
+```bash
+javac Hola.java
+java Hola
 ```
 
 **Caso de uso real.** Servicio backend que procesa pedidos con reglas de negocio, pruebas automatizadas y despliegue en servidores Linux.
@@ -116,7 +128,8 @@ flowchart TB
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-t1 && cd /tmp/java-m0-t1
+mkdir -p java-m0-t1
+cd java-m0-t1
 ```
 
 Crea el archivo `PrecioFinal.java`:
@@ -134,7 +147,10 @@ public class PrecioFinal {
 }
 ```
 
+
+
 ```bash
+javac PrecioFinal.java
 java PrecioFinal
 ```
 
@@ -174,7 +190,8 @@ flowchart LR
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-jvm && cd /tmp/java-m0-jvm
+mkdir -p java-m0-jvm
+cd java-m0-jvm
 ```
 
 Crea el archivo `HolaJVM.java`:
@@ -189,7 +206,10 @@ public class HolaJVM {
 }
 ```
 
+
+
 ```bash
+javac HolaJVM.java
 java HolaJVM
 javap -c HolaJVM | head -4
 ```
@@ -214,7 +234,8 @@ Compiled from "HolaJVM.java"
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-comp && cd /tmp/java-m0-comp
+mkdir -p java-m0-comp
+cd java-m0-comp
 ```
 
 Crea el archivo `Compila.java`:
@@ -223,7 +244,10 @@ Crea el archivo `Compila.java`:
 public class Compila { public static void main(String[] args){ System.out.println("ok"); } }
 ```
 
+
+
 ```bash
+javac Compila.java
 ls Compila.class
 java Compila
 ```
@@ -287,7 +311,8 @@ echo "${JAVA_HOME:-JAVA_HOME_NO_DEFINIDA}"
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-env && cd /tmp/java-m0-env
+mkdir -p java-m0-env
+cd java-m0-env
 ```
 
 Crea el archivo `EntornoOk.java`:
@@ -299,6 +324,11 @@ public class EntornoOk {
     System.out.println(System.getProperty("java.version"));
   }
 }
+```
+
+```bash
+javac EntornoOk.java
+java EntornoOk
 ```
 
 **Verificación (JDK 27, 2026-05-22).** Salida real:
@@ -335,13 +365,19 @@ sequenceDiagram
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-ciclo && cd /tmp/java-m0-ciclo
+mkdir -p java-m0-ciclo
+cd java-m0-ciclo
 ```
 
 Crea el archivo `Ciclo.java`:
 
 ```java
 public class Ciclo { public static void main(String[] args){ System.out.println("ciclo"); } }
+```
+
+```bash
+javac Ciclo.java
+java Ciclo
 ```
 
 **Error común.** Olvidar recompilar. Síntoma: ves salida vieja. Causa: ejecutas un `.class` anterior. Corrección: `javac` tras cada cambio.
@@ -357,7 +393,8 @@ public class Ciclo { public static void main(String[] args){ System.out.println(
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-args && cd /tmp/java-m0-args
+mkdir -p java-m0-args
+cd java-m0-args
 ```
 
 Crea el archivo `Args.java`:
@@ -371,7 +408,10 @@ public class Args {
 }
 ```
 
+
+
 ```bash
+javac Args.java
 java Args
 java Args Ada
 ```
@@ -392,7 +432,8 @@ Ada
 #### Ejemplo integrado: saludo con argumentos
 
 ```bash
-mkdir -p /tmp/java-m0-t4 && cd /tmp/java-m0-t4
+mkdir -p java-m0-t4
+cd java-m0-t4
 ```
 
 Crea el archivo `SaludoArgs.java`:
@@ -410,7 +451,10 @@ public class SaludoArgs {
 }
 ```
 
+
+
 ```bash
+javac SaludoArgs.java
 java SaludoArgs
 java SaludoArgs Ada
 ```
@@ -445,7 +489,8 @@ flowchart TB
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-prims && cd /tmp/java-m0-prims
+mkdir -p java-m0-prims
+cd java-m0-prims
 ```
 
 Crea el archivo `Prims.java`:
@@ -463,6 +508,11 @@ public class Prims {
     System.out.println(letra);
   }
 }
+```
+
+```bash
+javac Prims.java
+java Prims
 ```
 
 **Error común.** Usar `float`/`double` para dinero con expectativas de exactitud decimal. Síntoma: redondeos inesperados. Corrección: para dinero, usar `BigDecimal` o enteros en centavos; en este nivel, entender la limitación.
@@ -485,7 +535,8 @@ A
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-cast && cd /tmp/java-m0-cast
+mkdir -p java-m0-cast
+cd java-m0-cast
 ```
 
 Crea el archivo `Cast.java`:
@@ -503,6 +554,11 @@ public class Cast {
     System.out.println(max + 1);
   }
 }
+```
+
+```bash
+javac Cast.java
+java Cast
 ```
 
 **Caso de uso real.** Convertir milisegundos `long` a `int` sin validar rango puede corromper timeouts.
@@ -537,7 +593,8 @@ flowchart LR
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-str && cd /tmp/java-m0-str
+mkdir -p java-m0-str
+cd java-m0-str
 ```
 
 Crea el archivo `Str.java`:
@@ -552,6 +609,11 @@ public class Str {
     System.out.println(a.equals("hola"));
   }
 }
+```
+
+```bash
+javac Str.java
+java Str
 ```
 
 **Error común.** Comparar strings con `==`. Síntoma: comparación falla aunque el texto sea igual. Corrección: `equals` o `Objects.equals`.
@@ -571,7 +633,8 @@ true
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-fmt && cd /tmp/java-m0-fmt
+mkdir -p java-m0-fmt
+cd java-m0-fmt
 ```
 
 Crea el archivo `Fmt.java`:
@@ -585,6 +648,11 @@ public class Fmt {
     System.out.printf("Total: %.2f%n", total);
   }
 }
+```
+
+```bash
+javac Fmt.java
+java Fmt
 ```
 
 **Error común.** Concatenar todo y perder legibilidad/formato numérico. Corrección: `printf`/`String.format` o formatted strings según caso.
@@ -611,7 +679,8 @@ Caso guía: una regla de descuento aplica si el cliente es VIP y el total supera
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-arit && cd /tmp/java-m0-arit
+mkdir -p java-m0-arit
+cd java-m0-arit
 ```
 
 Crea el archivo `Arit.java`:
@@ -626,6 +695,11 @@ public class Arit {
     System.out.println(a);
   }
 }
+```
+
+```bash
+javac Arit.java
+java Arit
 ```
 
 **Error común.** Esperar `3.5` de `7/2` con enteros. Corrección: usar `double` o castear.
@@ -649,7 +723,8 @@ flowchart LR
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-log && cd /tmp/java-m0-log
+mkdir -p java-m0-log
+cd java-m0-log
 ```
 
 Crea el archivo `Logica.java`:
@@ -665,6 +740,11 @@ public class Logica {
     System.out.println(true || (10 / 0 > 0));
   }
 }
+```
+
+```bash
+javac Logica.java
+java Logica
 ```
 
 **Error común.** Confiar en precedencia sin paréntesis en reglas de negocio. Corrección: usar paréntesis para intención explícita.
@@ -684,7 +764,8 @@ Caso guía: un sistema clasifica pedidos y procesa lotes. Sin control de flujo, 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-if && cd /tmp/java-m0-if
+mkdir -p java-m0-if
+cd java-m0-if
 ```
 
 Crea el archivo `Decision.java`:
@@ -703,6 +784,11 @@ public class Decision {
     }
   }
 }
+```
+
+```bash
+javac Decision.java
+java Decision
 ```
 
 **Error común.** Olvidar el caso `default`/rama else en reglas de negocio. Corrección: definir comportamiento explícito para casos inesperados.
@@ -727,7 +813,8 @@ flowchart TD
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-loop && cd /tmp/java-m0-loop
+mkdir -p java-m0-loop
+cd java-m0-loop
 ```
 
 Crea el archivo `Loop.java`:
@@ -743,6 +830,11 @@ public class Loop {
     System.out.println();
   }
 }
+```
+
+```bash
+javac Loop.java
+java Loop
 ```
 
 **Error común.** Bucle infinito por no actualizar condición. Síntoma: programa no termina/CPU alta. Corrección: asegurar progreso y condición de salida.
@@ -762,7 +854,8 @@ Caso guía: procesar una lista de precios. Necesitas agrupar datos y reutilizar 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-arr && cd /tmp/java-m0-arr
+mkdir -p java-m0-arr
+cd java-m0-arr
 ```
 
 Crea el archivo `Arr.java`:
@@ -779,6 +872,11 @@ public class Arr {
 }
 ```
 
+```bash
+javac Arr.java
+java Arr
+```
+
 **Error común.** Usar índice `length`. Síntoma: `ArrayIndexOutOfBoundsException`. Corrección: último índice válido es `length - 1`.
 
 **Verificación (JDK 27, 2026-05-22).** `3`, `60`.
@@ -792,7 +890,8 @@ public class Arr {
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/java-m0-met && cd /tmp/java-m0-met
+mkdir -p java-m0-met
+cd java-m0-met
 ```
 
 Crea el archivo `Met.java`:
@@ -806,6 +905,11 @@ public class Met {
     System.out.println(aplicarIva(100, 0.21));
   }
 }
+```
+
+```bash
+javac Met.java
+java Met
 ```
 
 **Caso de uso real.** Extraer cálculo de impuesto para reutilizarlo en checkout, factura y reporte.

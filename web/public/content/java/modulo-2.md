@@ -52,6 +52,11 @@ public class DemoList {
 }
 ```
 
+```bash
+javac DemoList.java
+java DemoList
+```
+
 **Caso real.** Historial de eventos de pedido.
 
 **Error común.** Usar `list.contains` para deduplicar en hot path. Síntoma: lentitud. Corrección: `Set`/`Map`.
@@ -81,6 +86,11 @@ public class DemoSet {
     System.out.println(ids.contains("A"));
   }
 }
+```
+
+```bash
+javac DemoSet.java
+java DemoSet
 ```
 
 **Error común.** Asumir orden en `HashSet`. Corrección: `LinkedHashSet` o `TreeSet`.
@@ -114,6 +124,11 @@ public class DemoMap {
 }
 ```
 
+```bash
+javac DemoMap.java
+java DemoMap
+```
+
 **Error común.** Usar clave mutable o asumir orden en `HashMap`. Corrección: claves inmutables; `LinkedHashMap`/`TreeMap` si el orden importa.
 
 **Verificación (JDK 27, 2026-05-22).** `ENTREGADO`, `a`.
@@ -141,6 +156,11 @@ public class ColeccionesBasicas {
     System.out.println(estado.get("ENV-001"));
   }
 }
+```
+
+```bash
+javac ColeccionesBasicas.java
+java ColeccionesBasicas
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `[ENV-003, ENV-001, ENV-003]`, `2`, `ENTREGADO`.
@@ -177,6 +197,11 @@ class Guia { final String codigo; Guia(String c){codigo=c;} @Override public boo
 public class DemoEq { public static void main(String[] args){ System.out.println(new Guia("A").equals(new Guia("A"))); } }
 ```
 
+```bash
+javac DemoEq.java
+java DemoEq
+```
+
 **Error común.** Usar `==` para igualdad lógica. Corrección: `equals` con contrato correcto.
 
 **Verificación (JDK 27, 2026-05-22).** `true`.
@@ -199,6 +224,11 @@ Crea el archivo `DemoHash.java`:
 import java.util.*; import java.util.Objects;
 class Guia { final String codigo; Guia(String c){codigo=c;} @Override public boolean equals(Object o){ return o instanceof Guia g && Objects.equals(codigo,g.codigo);} @Override public int hashCode(){ return Objects.hash(codigo);} }
 public class DemoHash { public static void main(String[] args){ Set<Guia> s=new HashSet<>(); s.add(new Guia("A")); s.add(new Guia("A")); System.out.println(s.size()); } }
+```
+
+```bash
+javac DemoHash.java
+java DemoHash
 ```
 
 **Error común.** Sobrescribir `equals` sin `hashCode`. Síntoma: `HashSet/HashMap` comportamientos inconsistentes. Corrección: implementar ambos con los mismos campos.
@@ -244,6 +274,11 @@ public class DemoMut {
 }
 ```
 
+```bash
+javac DemoMut.java
+java DemoMut
+```
+
 **Error común.** Usar entidad mutable como clave. Corrección: claves inmutables (String, record, id inmutable).
 
 **Verificación (JDK 27, 2026-05-22).** `null`, `1` (entrada "perdida" lógicamente).
@@ -267,6 +302,11 @@ Crea el archivo `DemoGen.java`:
 ```java
 class Box<T> { private final T v; Box(T v){this.v=v;} T get(){return v;} }
 public class DemoGen { public static void main(String[] args){ Box<String> b=new Box<>("hola"); System.out.println(b.get().toUpperCase()); } }
+```
+
+```bash
+javac DemoGen.java
+java DemoGen
 ```
 
 **Error común.** Usar raw types. Síntoma: warnings y `ClassCastException` runtime. Corrección: parametrizar siempre.
@@ -293,6 +333,11 @@ public class DemoWc {
 }
 ```
 
+```bash
+javac DemoWc.java
+java DemoWc
+```
+
 **Error común.** Intentar agregar a `List<? extends Number>`. Corrección: usar `extends` para leer, `super` para escribir.
 
 **Verificación (JDK 27, 2026-05-22).** `6.0`.
@@ -314,6 +359,11 @@ Crea el archivo `DemoEr.java`:
 ```java
 import java.util.*;
 public class DemoEr { public static void main(String[] args){ System.out.println(new ArrayList<String>().getClass()==new ArrayList<Integer>().getClass()); } }
+```
+
+```bash
+javac DemoEr.java
+java DemoEr
 ```
 
 **Error común.** Esperar info de tipo genérico en runtime. Corrección: pasar `Class<T>` o usar diseño que no dependa de reified generics.
@@ -342,6 +392,11 @@ record Guia(String codigo) implements Comparable<Guia> { public int compareTo(Gu
 public class DemoCmp { public static void main(String[] args){ var l=new ArrayList<>(List.of(new Guia("B"),new Guia("A"))); Collections.sort(l); System.out.println(l); } }
 ```
 
+```bash
+javac DemoCmp.java
+java DemoCmp
+```
+
 **Verificación (JDK 27, 2026-05-22).** `[Guia[codigo=A], Guia[codigo=B]]`.
 
 #### Comparator
@@ -360,6 +415,11 @@ Crea el archivo `DemoCmpr.java`:
 import java.util.*;
 record Guia(String codigo, int prioridad) {}
 public class DemoCmpr { public static void main(String[] args){ var l=new ArrayList<>(List.of(new Guia("B",2),new Guia("A",1))); l.sort(Comparator.comparingInt(Guia::prioridad).reversed()); System.out.println(l.get(0).codigo()); } }
+```
+
+```bash
+javac DemoCmpr.java
+java DemoCmpr
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `B`.
@@ -386,6 +446,11 @@ public class DemoIt {
     System.out.println(l);
   }
 }
+```
+
+```bash
+javac DemoIt.java
+java DemoIt
 ```
 
 **Error común.** `ConcurrentModificationException` al modificar lista dentro de for-each. Corrección: usar `Iterator.remove()` o `removeIf`.

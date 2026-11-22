@@ -51,6 +51,11 @@ public class DemoClase {
 }
 ```
 
+```bash
+javac DemoClase.java
+java DemoClase
+```
+
 **Caso de uso real.** `Cuenta`, `Pedido`, `Reserva`, `Factura`.
 
 **Error común.** Clase con demasiadas responsabilidades. Síntoma: cambiar un requisito rompe otro. Causa: baja cohesión. Corrección: separar responsabilidades por tipo.
@@ -89,6 +94,11 @@ public class DemoObj {
 }
 ```
 
+```bash
+javac DemoObj.java
+java DemoObj
+```
+
 **Error común.** Confundir clase con objeto. Síntoma: esperar estado compartido o usar campos de instancia como si fueran globales. Corrección: instanciar con `new`; usar `static` solo para estado/comportamiento verdaderamente de clase.
 
 **Verificación (JDK 27, 2026-05-22).** Salida: `false`, `1 2`.
@@ -121,6 +131,11 @@ public class DemoCtor {
     try { new CuentaC(""); } catch (IllegalArgumentException e) { System.out.println("error"); }
   }
 }
+```
+
+```bash
+javac DemoCtor.java
+java DemoCtor
 ```
 
 **Error común.** Permitir objetos inválidos al nacer. Síntoma: fallos tardíos alejados de la causa. Corrección: validar invariantes en el constructor.
@@ -157,6 +172,11 @@ public class DemoEnc {
 }
 ```
 
+```bash
+javac DemoEnc.java
+java DemoEnc
+```
+
 **Error común.** Getters/setters ciegos para todo. Síntoma: encapsulación nominal, estado inválido posible. Corrección: exponer operaciones de dominio (`depositar`, `retirar`) y validar invariantes.
 
 **Verificación (JDK 27, 2026-05-22).** Salida: `5`, `bloqueado`.
@@ -164,7 +184,8 @@ public class DemoEnc {
 #### Ejemplo integrado: Cuenta
 
 ```bash
-mkdir -p /tmp/java-m1-t1 && cd /tmp/java-m1-t1
+mkdir -p java-m1-t1
+cd java-m1-t1
 ```
 
 Crea el archivo `Cuenta.java`:
@@ -204,6 +225,11 @@ public class Cuenta {
     try { c.retirar(500); } catch (IllegalStateException e) { System.out.println(e.getMessage()); }
   }
 }
+```
+
+```bash
+javac Cuenta.java
+java Cuenta
 ```
 
 **Recorrido.** `titular` y `saldo` son privados; no hay escritura directa. El constructor establece invariantes iniciales. `depositar` y `retirar` validan entrada y estado. `IllegalArgumentException` señala dato inválido; `IllegalStateException` señala operación inválida para el estado actual.
@@ -255,6 +281,11 @@ public class DemoHer {
 }
 ```
 
+```bash
+javac DemoHer.java
+java DemoHer
+```
+
 **Error común.** Heredar por conveniencia. Síntoma: subclase recibe comportamiento que no tiene sentido. Corrección: composición/delegación.
 
 **Verificación (JDK 27, 2026-05-22).** `animal`.
@@ -279,6 +310,11 @@ class B extends A { @Override String f(){ return "B"; } }
 public class DemoOv {
   public static void main(String[] args){ A x = new B(); System.out.println(x.f()); }
 }
+```
+
+```bash
+javac DemoOv.java
+java DemoOv
 ```
 
 **Error común.** Cambiar firma y creer que sobrescribiste. Síntoma: se ejecuta el método base. Corrección: `@Override` hace fallar compilación si no hay override real.
@@ -319,6 +355,11 @@ public class Herencia {
     System.out.println(e2.descripcion());
   }
 }
+```
+
+```bash
+javac Herencia.java
+java Herencia
 ```
 
 **Verificación (JDK 27, 2026-05-22).**
@@ -364,6 +405,11 @@ public class DemoInt {
 }
 ```
 
+```bash
+javac DemoInt.java
+java DemoInt
+```
+
 **Error común.** Programar contra la clase concreta. Síntoma: cada nuevo tipo obliga a modificar el cliente. Corrección: depender de la interfaz.
 
 **Verificación (JDK 27, 2026-05-22).** `121.0`.
@@ -397,6 +443,11 @@ class Recibo extends Documento {
 public class DemoAbs {
   public static void main(String[] args){ System.out.println(new Recibo("R1",100).etiqueta()); }
 }
+```
+
+```bash
+javac DemoAbs.java
+java DemoAbs
 ```
 
 **Error común.** Base abstracta gigante. Síntoma: subclases heredan basura. Corrección: mantener solo lo común estable.
@@ -435,6 +486,11 @@ public class DemoPoly {
   static void imprimir(PagableP p){ System.out.println(p.total()); }
   public static void main(String[] args){ imprimir(new FacturaP()); imprimir(new ReciboP()); }
 }
+```
+
+```bash
+javac DemoPoly.java
+java DemoPoly
 ```
 
 **Error común.** Cadena de `instanceof` en el cliente. Síntoma: cada nuevo tipo rompe el cliente. Corrección: mover comportamiento al contrato polimórfico.
@@ -478,6 +534,11 @@ public class Polimorfismo {
 }
 ```
 
+```bash
+javac Polimorfismo.java
+java Polimorfismo
+```
+
 **Verificación (JDK 27, 2026-05-22).** `121.0`, `100.0`, `F1:121.0`.
 
 ### Tema 4: Sobrecarga, sobreescritura y modificadores de acceso · Intermedio · 35 min
@@ -508,6 +569,11 @@ public class DemoOver {
 }
 ```
 
+```bash
+javac DemoOver.java
+java DemoOver
+```
+
 **Error común.** Sobrecargas ambiguas/confusas. Corrección: nombres o parámetros claros.
 
 **Verificación (JDK 27, 2026-05-22).** `3`, `4.0`.
@@ -528,6 +594,11 @@ Crea el archivo `DemoOverr.java`:
 class Base { String who(){ return "base"; } }
 class Sub extends Base { @Override String who(){ return "sub"; } }
 public class DemoOverr { public static void main(String[] args){ Base b=new Sub(); System.out.println(b.who()); } }
+```
+
+```bash
+javac DemoOverr.java
+java DemoOverr
 ```
 
 **Error común.** Olvidar `@Override`. Corrección: anotarlo siempre.
@@ -560,6 +631,11 @@ class BaseM { private int x=1; protected int y=2; public int z=3; int p=4; int s
 public class DemoMod { public static void main(String[] args){ System.out.println(new BaseM().sum()); } }
 ```
 
+```bash
+javac DemoMod.java
+java DemoMod
+```
+
 **Error común.** Hacer todo `public`. Síntoma: acoplamiento y ruptura de invariantes. Corrección: mínima visibilidad necesaria.
 
 **Verificación (JDK 27, 2026-05-22).** `10`.
@@ -585,6 +661,11 @@ Crea el archivo `DemoRec.java`:
 ```java
 record Punto(int x, int y) {}
 public class DemoRec { public static void main(String[] args){ System.out.println(new Punto(1,2)); } }
+```
+
+```bash
+javac DemoRec.java
+java DemoRec
 ```
 
 **Cuándo usarlo / cuándo no.** Úsalo para DTOs/value objects inmutables. No para entidades JPA mutables o con identidad compleja.
@@ -615,6 +696,11 @@ public class DemoRecV {
     try { new Email("bad"); } catch (IllegalArgumentException e) { System.out.println("error"); }
   }
 }
+```
+
+```bash
+javac DemoRecV.java
+java DemoRecV
 ```
 
 **Verificación (JDK 27, 2026-05-22).** `a@b.com`, `error`.
@@ -658,6 +744,11 @@ class User extends Base {
 public class DemoFlex {
   public static void main(String[] args) { System.out.println(new User(" ab ").id); }
 }
+```
+
+```bash
+javac DemoFlex.java
+java DemoFlex
 ```
 
 **Error común.** Usar `this` antes de inicializar la superclase. Corrección: respetar reglas de inicialización segura; hacer solo validación/normalización local.

@@ -7,8 +7,9 @@ Una aplicación puede validar reglas en memoria, pero si no persiste datos con g
 ## Setup ejecutable del módulo
 
 ```bash
-mkdir -p /tmp/jdbc-m17
-cd /tmp/jdbc-m17
+```bash
+mkdir -p jdbc-m17
+cd jdbc-m17
 curl -L -o h2.jar https://repo1.maven.org/maven2/com/h2database/h2/2.3.232/h2-2.3.232.jar
 ```
 
@@ -48,7 +49,8 @@ flowchart LR
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/jdbc-m17
+mkdir -p jdbc-m17
+cd jdbc-m17
 ```
 
 Crea el archivo `DemoJdbcApi.java`:
@@ -67,7 +69,10 @@ public class DemoJdbcApi {
 }
 ```
 
+
+
 ```bash
+javac -cp ".:h2.jar" DemoJdbcApi.java
 java -cp ".:h2.jar" DemoJdbcApi
 ```
 
@@ -108,7 +113,8 @@ sequenceDiagram
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/jdbc-m17
+mkdir -p jdbc-m17
+cd jdbc-m17
 ```
 
 Crea el archivo `DemoPs.java`:
@@ -140,7 +146,10 @@ public class DemoPs {
 }
 ```
 
+
+
 ```bash
+javac -cp ".:h2.jar" DemoPs.java
 java -cp ".:h2.jar" DemoPs
 ```
 
@@ -176,7 +185,8 @@ flowchart LR
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/jdbc-m17
+mkdir -p jdbc-m17
+cd jdbc-m17
 ```
 
 Crea el archivo `DemoDao.java`:
@@ -230,7 +240,10 @@ public class DemoDao {
 }
 ```
 
+
+
 ```bash
+javac -cp ".:h2.jar" DemoDao.java
 java -cp ".:h2.jar" DemoDao
 ```
 
@@ -269,7 +282,8 @@ flowchart TD
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/jdbc-m17
+mkdir -p jdbc-m17
+cd jdbc-m17
 ```
 
 Crea el archivo `DemoClose.java`:
@@ -293,7 +307,10 @@ public class DemoClose {
 }
 ```
 
+
+
 ```bash
+javac -cp ".:h2.jar" DemoClose.java
 java -cp ".:h2.jar" DemoClose
 ```
 
@@ -342,7 +359,8 @@ sequenceDiagram
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/jdbc-m17
+mkdir -p jdbc-m17
+cd jdbc-m17
 ```
 
 Crea el archivo `DemoTx.java`:
@@ -391,7 +409,10 @@ public class DemoTx {
 }
 ```
 
+
+
 ```bash
+javac -cp ".:h2.jar" DemoTx.java
 java -cp ".:h2.jar" DemoTx
 ```
 
@@ -452,7 +473,8 @@ flowchart LR
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/jdbc-m17
+mkdir -p jdbc-m17
+cd jdbc-m17
 ```
 
 Crea el archivo `DemoIsolation.java`:
@@ -470,7 +492,10 @@ public class DemoIsolation {
 }
 ```
 
+
+
 ```bash
+javac -cp ".:h2.jar" DemoIsolation.java
 java -cp ".:h2.jar" DemoIsolation
 ```
 
