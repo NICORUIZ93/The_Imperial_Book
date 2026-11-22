@@ -5643,23 +5643,23 @@
     "18": [
       {
         "title": "Express: routing, middleware, error handling",
-        "fragment": "express-routing-middleware-error-handling"
+        "fragment": "tema-1-express-routing-middleware-error-handling"
       },
       {
         "title": "NestJS: módulos, controllers, providers, interceptors, guards",
-        "fragment": "nestjs-modulos-controllers-providers-interceptors-guards"
+        "fragment": "tema-2-nestjs-modulos-controllers-providers-interceptors-guards"
       },
       {
         "title": "Validación con Zod o class-validator",
-        "fragment": "validacion-con-zod-o-class-validator"
+        "fragment": "tema-3-validacion-con-zod-o-class-validator"
       },
       {
         "title": "DTOs",
-        "fragment": "dtos"
+        "fragment": "tema-4-dtos"
       },
       {
         "title": "OpenAPI/Swagger",
-        "fragment": "openapi-swagger"
+        "fragment": "tema-5-openapi-swagger"
       }
     ],
     "19": [
