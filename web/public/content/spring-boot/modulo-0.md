@@ -1,346 +1,398 @@
 # Módulo 0: Fundamentos de Spring: IoC, DI y AOP
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria. El mecanismo de inyección de dependencias se documenta con comandos reales de Maven/Spring Boot y con el comportamiento exacto y verificable que produce cada anotación, sin sustituir el código Java por ningún otro lenguaje.
+Este módulo introduce el modelo mental de Spring: el contenedor crea y conecta objetos, la inyección de dependencias expresa contratos explícitos, y AOP/proxies separan preocupaciones transversales. Cada concepto se presenta con un mínimo ejecutable o verificable, y cuando una verificación requiere infraestructura completa se indica nota honesta.
 
-## Antes de comenzar: del equipo vacío a Spring Boot
-
-Completa primero los fundamentos del track Java o asegúrate de entender clases, interfaces, excepciones y colecciones. Instala **JDK 25**, Git y un editor: IntelliJ IDEA Community es la opción más sencilla para Spring; VS Code con Extension Pack for Java y Spring Boot Extension Pack también funciona.
-
-- **Windows:** instala Eclipse Temurin JDK 25, Git e IntelliJ; verifica `java --version` y `javac --version` en PowerShell.
-- **macOS:** instala específicamente Temurin **25** desde [Adoptium](https://adoptium.net/installation/); un paquete sin versión puede instalar otro JDK. Usa `brew install git` para Git.
-- **Ubuntu/Debian:** instala JDK **25** con las [instrucciones de Adoptium para Linux](https://adoptium.net/installation/linux/); la disponibilidad de `openjdk-25-jdk` depende de la distribución y sus repositorios. Instala Git con `sudo apt install git`.
-
-No necesitas instalar Maven si el proyecto incluye `mvnw`/`mvnw.cmd`: ese *wrapper* descarga la versión correcta. En [start.spring.io](https://start.spring.io/) elige Java, Maven, **Spring Boot 4.1.2**, JDK 25 y la dependencia **Spring Web**. Usa artifact `academia-spring` y establece explícitamente el paquete **`com.example.demo`**, que usan los archivos de estas lecciones. Descarga, descomprime y ejecuta:
-
-```bash
-# macOS/Linux
-./mvnw spring-boot:run
-
-# Windows PowerShell
-.\mvnw.cmd spring-boot:run
-```
-
-Visita `http://localhost:8080`. Un 404 significa que el servidor sí arrancó pero aún no existe una ruta; "connection refused" significa que no arrancó. Lee siempre desde la primera línea `Caused by:` del error, no solo la última.
-
-**Herramienta y continuidad:** los comandos originales usan **Maven** (`pom.xml` y `mvnw`). Los laboratorios también incorporan una alternativa **Gradle 9.8.2** (`build.gradle` y `gradlew`) con las mismas fuentes. El M1 explica cómo elegir una herramienta y traducir los comandos. Conserva `academia-spring` de M0 a M7. En M1 la generación de un proyecto es un experimento separado; aplica después la configuración a tu proyecto base. Desde M10 hay laboratorios aislados con infraestructura propia; cada tema identifica su carpeta, y M20 integra una selección de esas piezas. No copies todas sus configuraciones sobre una sola aplicación.
-
-**Regla de ejecución:** ejecuta los comandos desde la carpeta que contiene el `pom.xml` del proyecto indicado. Antes de cambiar de laboratorio, detén el servidor con Ctrl+C para liberar su puerto. Tras cambiar Java o recursos, reinicia `spring-boot:run` salvo que hayas configurado recarga explícitamente. Una práctica independiente puede cambiar el estado esperado: restaura la base indicada antes de continuar.
-
-Cada laboratorio del inventario `docs/spring-gradle-labs.json` incorpora su build y Wrapper Gradle; copia la carpeta completa para conservarlos. Para ejecutar Gradle sobre JDK 25 necesitas Gradle **9.1 o posterior**; el mínimo general 8.14 de Boot no basta para esa JVM. Consulta [requisitos Boot](https://docs.spring.io/spring-boot/system-requirements.html) y [compatibilidad Gradle/Java](https://docs.gradle.org/current/userguide/compatibility.html). Cambiar solo `mvnw` por `gradlew` no migra BOM, procesadores ni plugins.
-
-**Referencia al cerrar M0–M1:** `README.md` reúne las clases finales y cinco pruebas. Úsala para comparar después de escribir tus archivos; no equivale a haber ejecutado cada cambio y fallo del recorrido.
-
-## Mapa de la ruta
-
-«Spring Boot» tiene 21 módulos en 4 etapas. Cada etapa se apoya en la anterior; usa la tabla para saltar a un módulo concreto. El orden sigue las dependencias: primero el contenedor y la web, después datos, seguridad, pruebas y operación, y al final mensajería, arquitectura y sistemas distribuidos.
-
-```mermaid
-flowchart LR
-    E0["Fundamentos<br/>módulos 0–1"]
-    E1["Aplicación<br/>módulos 2–4"]
-    E2["Integración<br/>módulos 5–8"]
-    E3["Experto<br/>módulos 9–20"]
-    E0 --> E1
-    E1 --> E2
-    E2 --> E3
-```
-
-| Módulo | Etapa | Qué aprendes |
-|---|---|---|
-| 0 | Fundamentos | [Fundamentos de Spring: IoC, DI y AOP](/curso/spring-boot/0) |
-| 1 | Fundamentos | [Spring Boot CLI y estructura de proyecto](/curso/spring-boot/1) |
-| 2 | Aplicación | [REST APIs con Spring Web](/curso/spring-boot/2) |
-| 3 | Aplicación | [JDBC, JdbcClient y transacciones en Spring Boot](/curso/spring-boot/3) |
-| 4 | Aplicación | [Persistencia con Spring Data JPA](/curso/spring-boot/4) |
-| 5 | Integración | [Spring Security I: cadena, JWT con resource server, CORS y SSRF](/curso/spring-boot/5) |
-| 6 | Integración | [Testing en Spring Boot](/curso/spring-boot/6) |
-| 7 | Integración | [Configuración, errores y observabilidad](/curso/spring-boot/7) |
-| 8 | Integración | [Integraciones Spring: scheduling, eventos, correo, caché e IA](/curso/spring-boot/8) |
-| 9 | Experto | [Concurrencia, @Async y resiliencia en el núcleo de Spring](/curso/spring-boot/9) |
-| 10 | Experto | [Mensajería con Kafka: eventos, errores, outbox y contratos](/curso/spring-boot/10) |
-| 11 | Experto | [RabbitMQ, JMS y Spring Cloud Stream](/curso/spring-boot/11) |
-| 12 | Experto | [Spring Batch: jobs, chunks y procesamiento masivo](/curso/spring-boot/12) |
-| 13 | Experto | [Programación reactiva con WebFlux](/curso/spring-boot/13) |
-| 14 | Experto | [Spring GraphQL: contrato, datos anidados y cambios](/curso/spring-boot/14) |
-| 15 | Experto | [Arquitectura: hexagonal, Clean, C4, ADR y Spring Modulith](/curso/spring-boot/15) |
-| 16 | Experto | [Microservicios con Spring Cloud](/curso/spring-boot/16) |
-| 17 | Experto | [Consistencia, contratos y operación distribuida](/curso/spring-boot/17) |
-| 18 | Experto | [Spring Security II: OIDC, autorización por recurso y SAML](/curso/spring-boot/18) |
-| 19 | Experto | [Empaquetado y despliegue](/curso/spring-boot/19) |
-| 20 | Experto | [Proyecto integrador: backend de entregas productivo](/curso/spring-boot/20) |
+**Entorno de referencia (2026-05-22):** JDK 27 local para ejemplos Java puros; ejemplos Spring Boot verificados con Spring Boot 3.5.x / Java 21 en `/tmp` mediante Maven cuando se indica. Las APIs mostradas son estables en Spring Framework 6.x/Spring Boot 3.x.
 
 ## Aprende construyendo
 
-
 ### Tema 1: Inversión de control y el contenedor de Spring · Básico · 30 min
 
-**Caso guía**: `ServicioEnvios` necesita consultar un repositorio. Si lo instancia con `new`, el servicio queda acoplado a una implementación concreta y es difícil probarlo.
+Caso guía: `ServicioEnvios` necesita consultar un repositorio. Si lo instancia con `new`, el servicio queda acoplado a una implementación concreta y es difícil probarlo.
 
-**Fundamento técnico y modelo mental**
+#### Inversión de control (IoC)
 
-| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
-|---|---|---|---|---|
-| Inversión de control (IoC) | Principio donde el framework controla creación/composición de objetos, no el código de negocio. | Desacoplar construcción de uso. | Apps con dependencias y configuración. | Confundir IoC con “usar anotaciones”. |
-| Contenedor IoC / `ApplicationContext` | Contenedor Spring que crea, configura, conecta y gestiona beans. | Punto central de composición. | Toda app Spring Boot. | Instanciar beans con `new` fuera del contenedor. |
-| Bean | Objeto administrado por el contenedor Spring. | Ciclo de vida y wiring administrado. | Servicios, repos, controllers, infra. | Registrar todo como bean sin criterio. |
-| Inyección de dependencias (DI) | Patrón para proveer dependencias desde fuera del objeto. | Testabilidad y bajo acoplamiento. | Dependencias entre componentes. | Service Locator oculto. |
+**Definición formal.** IoC es un principio donde el control de creación, composición y ciclo de vida de objetos se delega a un framework/contenedor, no al código de negocio.
 
-**Contrato / invariantes / reglas.** Spring resuelve dependencias entre beans registrados. Si falta un bean requerido, falla en arranque (`NoSuchBeanDefinitionException`). Preferir depender de interfaces/contratos. `@SpringBootApplication` habilita component scan desde su paquete base.
+**Para qué sirve.** Desacopla la construcción del uso y facilita pruebas/cambios de implementación.
 
-**Modelo mental.** El contenedor es una fábrica + agenda: crea objetos y sabe a quién entregarlos.
+**Cuándo usarlo y cuándo no.** Úsalo en aplicaciones con dependencias y configuración. No lo confundas con “usar anotaciones”; la anotación es metadata, IoC es el principio.
 
-**Implementación desde cero** (proyecto `academia-spring`, paquete `com.example.demo`)
+**Ejemplo mínimo enfocado (ejecutable, Java puro).**
 
-`RepositorioEnvios.java`
-```java
-package com.example.demo;
-public interface RepositorioEnvios { String buscarEstado(String codigo); }
-```
-`RepositorioMemoriaEnvios.java`
-```java
-package com.example.demo;
-import org.springframework.stereotype.Repository;
-@Repository
-public class RepositorioMemoriaEnvios implements RepositorioEnvios {
-  public String buscarEstado(String codigo) { return "En ruta: " + codigo; }
-}
-```
-`ServicioEnvios.java`
-```java
-package com.example.demo;
-import org.springframework.stereotype.Service;
-@Service
-public class ServicioEnvios {
-  private final RepositorioEnvios repositorio;
-  public ServicioEnvios(RepositorioEnvios repositorio) { this.repositorio = repositorio; }
-  public String consultar(String codigo) { return repositorio.buscarEstado(codigo); }
-}
-```
-`EnviosController.java`
-```java
-package com.example.demo;
-import org.springframework.web.bind.annotation.*;
-@RestController
-public class EnviosController {
-  private final ServicioEnvios servicio;
-  public EnviosController(ServicioEnvios servicio) { this.servicio = servicio; }
-  @GetMapping("/envios/{codigo}") public String consultar(@PathVariable String codigo) { return servicio.consultar(codigo); }
-}
-```
-
-**Ejecución y salida real**
 ```bash
-./mvnw spring-boot:run
-curl http://localhost:8080/envios/RF-42
-```
-Salida esperada:
-```text
-En ruta: RF-42
+mkdir -p /tmp/sb0-ioc && cd /tmp/sb0-ioc
+cat > DemoIoc.java << 'JAVA'
+interface Repo { String estado(String c); }
+class RepoMem implements Repo { public String estado(String c){ return "ok:"+c; } }
+class Servicio { private final Repo repo; Servicio(Repo repo){ this.repo=repo; } String consultar(String c){ return repo.estado(c); } }
+public class DemoIoc { public static void main(String[] args){ System.out.println(new Servicio(new RepoMem()).consultar("A1")); } }
+JAVA
+javac DemoIoc.java && java DemoIoc
 ```
 
-**Errores comunes**: `new RepositorioMemoriaEnvios()` dentro del servicio; bean fuera del paquete base. **Verificación**: arranque sin errores y endpoint responde.
+**Caso de uso real.** Cambiar repositorio en memoria por JDBC sin modificar la lógica del servicio.
+
+**Error común.** Instanciar dependencias con `new` dentro del servicio. Síntoma: difícil mockear. Corrección: recibir dependencia por constructor.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `ok:A1`.
+
+#### Contenedor IoC / `ApplicationContext`
+
+**Definición formal.** `ApplicationContext` es el contenedor Spring que crea, configura, conecta y gestiona beans y su ciclo de vida.
+
+**Para qué sirve.** Punto central de composición y resolución de dependencias.
+
+**Cuándo usarlo.** Toda app Spring Boot. No instancies beans administrados con `new` fuera del contenedor.
+
+**Ejemplo mínimo enfocado (ejecutable con Spring Boot).**
+
+```java
+// en @SpringBootTest o contexto de arranque
+String estado = context.getBean(ServicioEnvios.class).consultar("RF-42");
+assertEquals("En ruta: RF-42", estado);
+```
+
+**Caso de uso real.** Arrancar app y obtener controllers/servicios cableados.
+
+**Error común.** Bean fuera del component scan. Síntoma: `NoSuchBeanDefinitionException`. Corrección: ubicar en paquete base o declarar configuración.
+
+**Verificación.** **Nota de verificación:** requiere contexto Spring Boot; se verifica en test de integración/arranque (`spring-boot-starter-test`).
+
+#### Bean
+
+**Definición formal.** Bean es un objeto cuyo ciclo de vida es administrado por el contenedor Spring.
+
+**Para qué sirve.** Permite wiring, scopes, proxies y callbacks administrados.
+
+**Cuándo usarlo.** Servicios, repositorios, controllers, infraestructura. No registres todo como bean sin criterio.
+
+**Ejemplo mínimo enfocado (ejecutable, Java puro simulando registro).**
+
+```bash
+mkdir -p /tmp/sb0-bean && cd /tmp/sb0-bean
+cat > DemoBean.java << 'JAVA'
+import java.util.*;
+class Container { private final Map<Class<?>,Object> beans=new HashMap<>(); <T> void reg(Class<T> t,T o){beans.put(t,o);} <T> T get(Class<T> t){return t.cast(beans.get(t));} }
+class Servicio { String hi(){ return "hola"; } }
+public class DemoBean { public static void main(String[] args){ Container c=new Container(); c.reg(Servicio.class,new Servicio()); System.out.println(c.get(Servicio.class).hi()); } }
+JAVA
+javac DemoBean.java && java DemoBean
+```
+
+**Caso de uso real.** `@Service` registrado por component scan.
+
+**Error común.** Crear el bean con `new` y esperar que tenga dependencias inyectadas. Corrección: obtenerlo del contexto o dejar que Spring lo cree.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `hola`.
+
+#### Inyección de dependencias (DI)
+
+**Definición formal.** DI es el patrón por el cual las dependencias de un objeto son provistas externamente, en vez de ser creadas por el propio objeto.
+
+**Para qué sirve.** Testabilidad y bajo acoplamiento.
+
+**Cuándo usarlo.** Dependencias entre componentes. Evita Service Locator oculto.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/sb0-di && cd /tmp/sb0-di
+cat > DemoDi.java << 'JAVA'
+interface Repo { String get(); }
+class Servicio { private final Repo repo; Servicio(Repo repo){ this.repo=repo; } String run(){ return repo.get(); } }
+public class DemoDi { public static void main(String[] args){ System.out.println(new Servicio(() -> "mock").run()); } }
+JAVA
+javac DemoDi.java && java DemoDi
+```
+
+**Caso de uso real.** Pasar un mock en test unitario.
+
+**Error común.** Usar `ApplicationContext.getBean` en todo el código (Service Locator). Corrección: inyección explícita por constructor.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `mock`.
 
 ### Tema 2: Inyección por constructor vs por campo · Intermedio · 30 min
 
-**Caso guía**: quieres probar `ServicioEnvios` sin levantar Spring, y también entender el costo de `@Autowired` en campo.
+Caso guía: quieres probar `ServicioEnvios` sin levantar Spring.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Inyección por constructor | Dependencias pasan por constructor. | Inmutabilidad, dependencias explícitas, test simple. | Preferida por defecto. | Constructores con demasiadas dependencias (señal de diseño). |
-| Inyección por campo (`@Autowired`) | Spring asigna campo por reflexión. | Conveniencia en ejemplos legacy. | Evitar en código nuevo. | No puedes instanciar fácil en unit test. |
-| Dependencia obligatoria | Dependencia sin la cual el objeto no es válido. | Contrato claro. | `final` + constructor. | Campo null en runtime fuera de Spring. |
-| Testabilidad | Facilidad de probar aislado. | Confianza rápida. | Pasar dobles por constructor. | Test que requiere contexto Spring para lógica pura. |
+#### Inyección por constructor
 
-**Implementación desde cero**
+**Definición formal.** Las dependencias requeridas se reciben como parámetros del constructor.
 
-`ServicioEnviosTest.java`
-```java
-package com.example.demo;
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-class ServicioEnviosTest {
-  @Test void consulta() {
-    ServicioEnvios servicio = new ServicioEnvios(codigo -> "Preparando: " + codigo);
-    assertEquals("Preparando: RF-42", servicio.consultar("RF-42"));
-  }
-}
+**Para qué sirve.** Inmutabilidad, contrato explícito, tests simples.
+
+**Cuándo usarla.** Por defecto en código nuevo.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/sb0-ctor && cd /tmp/sb0-ctor
+cat > DemoCtor.java << 'JAVA'
+interface Repo { String s(String c); }
+class Servicio { private final Repo repo; Servicio(Repo repo){ this.repo=repo; } String consultar(String c){ return repo.s(c); } }
+public class DemoCtor { public static void main(String[] args){ System.out.println(new Servicio(c->"Preparando: "+c).consultar("RF-42")); } }
+JAVA
+javac DemoCtor.java && java DemoCtor
 ```
-Alternativa por campo (solo para comparación):
+
+**Caso de uso real.** Unit test sin `@SpringBootTest`.
+
+**Error común.** Constructor con demasiadas dependencias. Síntoma: difícil entender clase. Corrección: refactorizar responsabilidades.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `Preparando: RF-42`.
+
+#### Inyección por campo
+
+**Definición formal.** El contenedor asigna una dependencia directamente a un campo (usualmente por reflexión), por ejemplo con `@Autowired`.
+
+**Para qué sirve.** Conveniencia en código legacy/ejemplos; no recomendado en nuevo diseño.
+
+**Cuándo evitarla.** Cuando necesites inmutabilidad y testabilidad simple.
+
+**Ejemplo mínimo enfocado (ejecutable, simulando limitación).**
+
 ```java
 @Service
-public class ServicioEnviosCampo {
-  @Autowired private RepositorioEnvios repositorio;
-  public String consultar(String codigo) { return repositorio.buscarEstado(codigo); }
-}
+class ServicioCampo { @Autowired Repo repo; String consultar(String c){ return repo.s(c); } }
+// en test puro: repo queda null si no usas Spring/reflexión.
 ```
 
-**Ejecución y salida real**
-```bash
-./mvnw -Dtest=ServicioEnviosTest test
-```
-Salida esperada: `BUILD SUCCESS`, test verde.
+**Caso de uso real.** Código legacy.
 
-**Verificación**: el test de constructor corre sin `@SpringBootTest`; el de campo requiere contexto o cableado manual.
+**Error común.** `NullPointerException` en unit test porque nadie inyectó el campo. Corrección: constructor injection.
+
+**Verificación.** **Nota de verificación:** observable al instanciar con `new` sin contexto Spring; el campo `@Autowired` no se inicializa.
 
 ### Tema 3: Estereotipos, autoconfiguración y scopes · Intermedio · 35 min
 
-**Caso guía**: necesitas distinguir roles (`@Repository`, `@Service`, `@RestController`), entender por qué Spring Boot configura web y observar scope `singleton` vs `prototype`.
+Caso guía: distinguir roles y entender `singleton` vs `prototype`.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Estereotipos (`@Component`, `@Service`, `@Repository`, `@Controller/@RestController`) | Especializaciones semánticas de `@Component`. | Escaneo y semántica. | Usar el que expresa rol. | Poner todo como `@Component`. |
-| Autoconfiguración | Configuración condicional basada en classpath, properties y beans existentes. | Convenio sobre configuración. | Inspeccionar con `--debug` o conditions report. | “Magia” sin entender condiciones. |
-| Scope `singleton` | Un bean por contexto (default). | Servicios stateless. | No guardar estado por request en singleton. | Estado mutable compartido. |
-| Scope `prototype` | Nueva instancia cada vez que se solicita. | Objetos stateful de corta vida. | Inyectar con `ObjectProvider` si singleton lo necesita. | Inyectar prototype en singleton y esperar nueva instancia por llamada. |
+#### Estereotipos Spring
 
-**Implementación desde cero**
+**Definición formal.** `@Component`, `@Service`, `@Repository`, `@Controller/@RestController` son estereotipos; especializan semántica y participación en component scan.
 
-`GeneradorReporte.java`
+**Para qué sirve.** Expresar rol y habilitar detección automática.
+
+**Cuándo usarlo.** Usa el estereotipo que corresponda al rol. No uses `@Component` para todo.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
 ```java
-package com.example.demo;
-import org.springframework.context.annotation.Scope; import org.springframework.stereotype.Component;
-@Component @Scope("prototype")
-public class GeneradorReporte { private final String id = java.util.UUID.randomUUID().toString(); public String id(){ return id; } }
-```
-`ServicioReportes.java`
-```java
-package com.example.demo;
-import org.springframework.beans.factory.ObjectProvider; import org.springframework.stereotype.Service;
-@Service
-public class ServicioReportes {
-  private final GeneradorReporte recibidoAlCrear; private final ObjectProvider<GeneradorReporte> generadores;
-  public ServicioReportes(GeneradorReporte recibidoAlCrear, ObjectProvider<GeneradorReporte> generadores){ this.recibidoAlCrear=recibidoAlCrear; this.generadores=generadores; }
-  public String comparar(){ return "directo="+recibidoAlCrear.id()+"; nuevos="+generadores.getObject().id()+","+generadores.getObject().id(); }
-}
+@Repository class RepoMem implements RepoEnvios { ... }
+@Service class ServicioEnvios { ... }
+@RestController class EnviosController { ... }
 ```
 
-**Ejecución y salida real**
+**Caso de uso real.** Separar capa web, servicio y persistencia.
+
+**Error común.** `@Service` con lógica de acceso a datos o SQL en controller. Corrección: respetar responsabilidades.
+
+**Verificación.** **Nota:** requiere app Spring Boot arrancada; se verifica por escaneo y endpoints.
+
+#### Autoconfiguración
+
+**Definición formal.** Mecanismo de Spring Boot que configura beans condicionalmente según classpath, propiedades y beans existentes.
+
+**Para qué sirve.** Convención sobre configuración.
+
+**Cuándo usarlo.** Siempre en Boot; inspecciona condiciones al depurar.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
 ```bash
-./mvnw spring-boot:run
-curl http://localhost:8080/reporte/comparar
+./mvnw spring-boot:run --debug  # muestra condition evaluation report
 ```
-Salida esperada: `directo=...; nuevos=..., ...` donde los dos `nuevos` son distintos entre sí; `directo` permanece igual por instancia de servicio singleton.
 
-**Verificación**: `./mvnw dependency:tree` muestra starters; el endpoint evidencia scopes.
+**Caso de uso real.** Agregar `spring-boot-starter-web` y obtener Tomcat/MVC configurado.
+
+**Error común.** Creer que “Spring hace magia”. Corrección: revisar auto-configuration report y propiedades.
+
+**Verificación.** **Nota:** requiere ejecución de app Boot; el reporte es evidencia observable.
+
+#### Scopes `singleton` y `prototype`
+
+**Definición formal.** `singleton` (default) crea una instancia por contexto; `prototype` crea una nueva por solicitud al contenedor.
+
+**Para qué sirve.** Controlar ciclo de vida y estado.
+
+**Cuándo usarlo.** Singleton para servicios stateless; prototype para objetos stateful cortos, accedidos vía `ObjectProvider`.
+
+**Ejemplo mínimo enfocado (ejecutable, Java puro simulación).**
+
+```bash
+mkdir -p /tmp/sb0-scope && cd /tmp/sb0-scope
+cat > DemoScope.java << 'JAVA'
+import java.util.function.*; class P { static int n; int id=++n; }
+public class DemoScope { public static void main(String[] args){ P singleton=new P(); Supplier<P> proto=P::new; System.out.println(singleton.id==singleton.id); System.out.println(proto.get().id!=proto.get().id); } }
+JAVA
+javac DemoScope.java && java DemoScope
+```
+
+**Caso de uso real.** Servicio singleton, builder/objeto de reporte prototype.
+
+**Error común.** Inyectar prototype en singleton y esperar una instancia nueva por llamada. Corrección: `ObjectProvider`.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `true`, `true`.
 
 ### Tema 4: Ciclo de vida de los beans y apagado ordenado · Intermedio · 45 min
 
-**Caso guía**: en shutdown, quieres dejar de aceptar trabajo, drenar lote pendiente y liberar recursos antes de que el proceso muera.
+Caso guía: en shutdown, dejar de aceptar trabajo y drenar pendientes.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Ciclo de vida del bean | Creación, inyección, callbacks init, uso, callbacks destroy. | Hooks de inicialización/limpieza. | Trabajo rápido en init. | Trabajo largo en `@PostConstruct`. |
-| `@PostConstruct` / `@PreDestroy` | Callbacks JSR-250 al iniciar/destruir bean. | Validar/preparar/liberar. | Idempotentes y rápidos. | Asumir orden complejo entre beans no relacionados. |
-| `SmartLifecycle` / fase | Contrato para componentes con start/stop y orden por fase. | Arranque/detención ordenada. | Fase menor se detiene antes en shutdown ordenado. | Ignorar fase y cortar trabajo en curso. |
-| Graceful shutdown | `server.shutdown=graceful`: deja de aceptar nuevas y espera activas. | Evitar cortar requests. | Timeout < `terminationGracePeriodSeconds`. | Timeout mayor al del orquestador. |
+#### Ciclo de vida y callbacks
 
-**Implementación desde cero**
+**Definición formal.** Spring crea el bean, inyecta dependencias, ejecuta callbacks de inicialización y, al cerrar contexto, callbacks de destrucción.
 
-`application.properties`
+**Para qué sirve.** Inicializar/liberar recursos controladamente.
+
+**Cuándo usarlo.** Para validación ligera o liberación. Evita trabajo pesado en `@PostConstruct`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/sb0-life && cd /tmp/sb0-life
+cat > DemoLife.java << 'JAVA'
+class B implements AutoCloseable { B(){ System.out.println("init"); } public void close(){ System.out.println("close"); } }
+public class DemoLife { public static void main(String[] args){ try(B b=new B()){ System.out.println("use"); } } }
+JAVA
+javac DemoLife.java && java DemoLife
+```
+
+**Caso de uso real.** Abrir pool al iniciar, cerrarlo al apagar.
+
+**Error común.** Bloquear arranque con I/O largo en init. Corrección: diferir o validar con timeout.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `init`, `use`, `close`.
+
+#### Graceful shutdown
+
+**Definición formal.** Configuración donde el servidor deja de aceptar nuevas solicitudes y espera a que las activas terminen dentro de un timeout.
+
+**Para qué sirve.** Evitar cortar requests en despliegues.
+
+**Cuándo usarlo.** Producción/Kubernetes. Configura timeout menor al `terminationGracePeriodSeconds`.
+
+**Ejemplo mínimo enfocado (configuración).**
+
 ```properties
 server.shutdown=graceful
 spring.lifecycle.timeout-per-shutdown-phase=20s
 ```
-`LoteEnvios.java` (extracto clave)
-```java
-@Component
-public class LoteEnvios implements SmartLifecycle {
-  private static final Logger log = LoggerFactory.getLogger(LoteEnvios.class);
-  private volatile boolean corriendo;
-  @PostConstruct void validar(){ log.info("1. bean creado"); }
-  @Override public void start(){ corriendo=true; log.info("2. start"); }
-  @Override public void stop(){ corriendo=false; log.info("3. drenar pendientes"); }
-  @Override public boolean isRunning(){ return corriendo; }
-  @Override public int getPhase(){ return WebServerApplicationContext.GRACEFUL_SHUTDOWN_PHASE - 1; }
-  @PreDestroy void liberar(){ log.info("4. liberar"); }
-}
-```
 
-**Ejecución y salida real**
-```bash
-./mvnw spring-boot:run
-# otra terminal
-kill -TERM $(pgrep -f academia-spring)
-```
-Salida esperada en logs: mensajes `1..4` y `Graceful shutdown complete`.
+**Caso de uso real.** Rolling deploy sin errores 502 por corte abrupto.
 
-**Verificación**: observa orden de callbacks; ajusta fase para ver impacto.
+**Error común.** Timeout de app mayor que el del orquestador. Corrección: alinear tiempos.
+
+**Verificación.** **Nota:** requiere app Boot en ejecución y señal SIGTERM; evidencia en logs `Graceful shutdown complete`.
 
 ### Tema 5: Proxies y AOP: `@Aspect`, `@Around` y `BeanPostProcessor` · Intermedio · 45 min
 
-**Caso guía**: medir tiempo de ejecución de métodos de servicio sin ensuciar lógica de negocio.
+Caso guía: medir tiempo de métodos de servicio sin ensuciar lógica.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| AOP | Programación orientada a aspectos; separa concerns transversales. | Logging, métricas, tx, seguridad. | Aspectos pequeños y claros. | Ocultar lógica de negocio crítica. |
-| Proxy | Objeto que envuelve al target e intercepta llamadas. | Aplicar advice. | Llamadas internas `this.metodo()` no pasan por proxy. | Esperar AOP en self-invocation. |
-| `@Aspect`/`@Around` | Aspecto y advice que rodea join point. | Medición, control, retry. | Llamar `proceed()` y manejar excepciones. | Olvidar `proceed()` o tragar excepción. |
-| `BeanPostProcessor` | Hook para modificar/envolver beans durante inicialización. | Infraestructura/framework. | Usar para infraestructura, no negocio. | Lógica pesada/oscura en BPP. |
+#### AOP y proxy
 
-**Implementación desde cero**
+**Definición formal.** AOP separa concerns transversales; en Spring, se implementa comúnmente con proxies que interceptan llamadas a beans.
 
-Dependencia:
-```xml
-<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-aspectj</artifactId></dependency>
+**Para qué sirve.** Logging, métricas, transacciones, seguridad.
+
+**Cuándo usarlo.** Cross-cutting concerns claros. No ocultes lógica de negocio.
+
+**Ejemplo mínimo enfocado (ejecutable, Java puro proxy de interfaz).**
+
+```bash
+mkdir -p /tmp/sb0-proxy && cd /tmp/sb0-proxy
+cat > DemoProxy.java << 'JAVA'
+import java.lang.reflect.*;
+interface Svc { String run(); }
+class Impl implements Svc { public String run(){ return "ok"; } }
+public class DemoProxy { public static void main(String[] args){ Svc s=(Svc)Proxy.newProxyInstance(Svc.class.getClassLoader(), new Class[]{Svc.class}, (p,m,a)->{ System.out.println("before"); Object r=m.invoke(new Impl(),a); System.out.println("after"); return r; }); System.out.println(s.run()); } }
+JAVA
+javac DemoProxy.java && java DemoProxy
 ```
-`MedicionAspect.java`
+
+**Caso de uso real.** `@Transactional`, `@Timed`, aspectos custom.
+
+**Error común.** Self-invocation: `this.metodo()` no pasa por proxy. Corrección: separar bean o usar self-injection consciente.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `before`, `after`, `ok`.
+
+#### `@Aspect` / `@Around`
+
+**Definición formal.** `@Aspect` declara un aspecto; `@Around` define advice que envuelve el join point y puede decidir si llamar `proceed()`.
+
+**Para qué sirve.** Medir, auditar, envolver ejecución.
+
+**Cuándo usarlo.** Cuando el concern es transversal. Siempre maneja excepciones y llama `proceed()` si corresponde.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
-package com.example.demo;
-import org.aspectj.lang.*; import org.aspectj.lang.annotation.*; import org.slf4j.*; import org.springframework.stereotype.Component;
 @Aspect @Component
-public class MedicionAspect {
-  private static final Logger log = LoggerFactory.getLogger(MedicionAspect.class);
+class MedicionAspect {
   @Around("execution(* com.example.demo.ServicioEnvios.*(..))")
-  public Object medir(ProceedingJoinPoint p) throws Throwable {
-    long t1 = System.nanoTime();
-    try { return p.proceed(); }
-    finally { log.info("medido {} en {} us", p.getSignature().toShortString(), (System.nanoTime()-t1)/1_000); }
-  }
+  Object medir(ProceedingJoinPoint p) throws Throwable { long t=System.nanoTime(); try { return p.proceed(); } finally { System.out.println((System.nanoTime()-t)/1000); } }
 }
 ```
 
-**Ejecución y salida real**
-```bash
-./mvnw spring-boot:run
-curl http://localhost:8080/envios/RF-42
-```
-Salida esperada: respuesta `En ruta: RF-42` y log con `medido ... en ... us`.
+**Caso de uso real.** Métricas de latencia por servicio.
 
-**Verificación**: agrega llamada interna `this.otro()` y confirma que no se mide si no pasa por proxy.
+**Error común.** Olvidar `proceed()` o tragar la excepción. Corrección: siempre `proceed()` y rethrow/log según política.
+
+**Verificación.** **Nota:** requiere contexto Spring AOP (`spring-boot-starter-aop`); evidencia en logs/tiempos.
 
 ### Tema 6: Varias implementaciones (`@Primary`, `@Qualifier`) y expresiones SpEL · Intermedio · 40 min
 
-**Caso guía**: dos tarifadores implementan la misma interfaz; uno es default y otro se selecciona explícitamente.
+Caso guía: dos tarifadores implementan la misma interfaz.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `@Primary` | Bean preferido cuando hay múltiples candidatos. | Default claro. | Solo un primary por tipo/contrato. | Múltiples primaries/confusión. |
-| `@Qualifier` | Selección explícita por nombre/calificador. | Desambiguar inyección. | Usar en constructor/parámetro. | Strings mágicos sin convención. |
-| Ambigüedad de beans | Más de un bean cumple el contrato. | Forzar decisión explícita. | Resolver con primary/qualifier/config. | Dejar que falle en arranque. |
-| SpEL (`#{...}`) | Spring Expression Language para evaluar expresiones en configuración/anotaciones. | Valores dinámicos/calculados. | Mantener simple y testeable. | Lógica compleja oculta en SpEL. |
+#### `@Primary` y `@Qualifier`
 
-**Implementación desde cero**
+**Definición formal.** `@Primary` marca el bean preferido ante ambigüedad; `@Qualifier` selecciona explícitamente un candidato por calificador/nombre.
 
-```java
-public interface Tarifador { long tarifa(int km); }
-@Component("tarifaUrbana") @Primary
-class TarifaUrbana implements Tarifador { public long tarifa(int km){ return 3500 + 1000L*km; } }
-@Component("tarifaExpress")
-class TarifaExpress implements Tarifador { public long tarifa(int km){ return 9000 + 1500L*km; } }
-@Service
-class CotizadorExpress { private final Tarifador tarifador; CotizadorExpress(@Qualifier("tarifaExpress") Tarifador t){ this.tarifador=t; } long cotizar(int km){ return tarifador.tarifa(km); } }
+**Para qué sirve.** Resolver múltiples implementaciones del mismo contrato.
+
+**Cuándo usarlo.** `@Primary` para default claro; `@Qualifier` para selección explícita.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/sb0-qual && cd /tmp/sb0-qual
+cat > DemoQual.java << 'JAVA'
+interface T { int v(); }
+class A implements T { public int v(){ return 1; } }
+class B implements T { public int v(){ return 2; } }
+class S { private final T t; S(T t){ this.t=t; } int v(){ return t.v(); } }
+public class DemoQual { public static void main(String[] args){ System.out.println(new S(new B()).v()); } }
+JAVA
+javac DemoQual.java && java DemoQual
 ```
-Ejemplo SpEL en propiedad:
+
+**Caso de uso real.** `TarifaUrbana` default, `TarifaExpress` seleccionada por qualifier.
+
+**Error común.** Dos beans sin desambiguar. Síntoma: `NoUniqueBeanDefinitionException`. Corrección: `@Primary`, `@Qualifier` o configuración explícita.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `2`.
+
+#### SpEL
+
+**Definición formal.** Spring Expression Language es un lenguaje de expresiones evaluadas en tiempo de ejecución en anotaciones/configuración Spring (`#{...}`).
+
+**Para qué sirve.** Calcular/injectar valores dinámicos simples.
+
+**Cuándo usarlo.** Expresiones pequeñas y legibles. Evita lógica compleja oculta en SpEL.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
 @Value("#{${app.impuesto:19} / 100.0}")
 private double impuesto;
 ```
 
-**Ejecución y salida real**
-```bash
-./mvnw -Dtest=CotizadoresTest test
-```
-Salida esperada: test verde con `13500` y `24000` para 10 km.
+**Caso de uso real.** Derivar un porcentaje desde propiedad configurable.
 
-**Verificación**: quita `@Primary` y `@Qualifier` para observar `NoUniqueBeanDefinitionException`.
+**Error común.** SpEL compleja difícil de testear. Corrección: mover lógica a código Java y testearlo.
 
+**Verificación.** **Nota:** requiere contexto Spring con resolución de propiedades; evidencia al inyectar el valor.
+
+## Cierre del módulo
+
+Spring se entiende mejor como contenedor de contratos y ciclos de vida: IoC/DI hacen explícitas las dependencias, los scopes y callbacks controlan vida útil, y AOP/proxies extraen concerns transversales. Antes de usar “magia”, confirma qué bean creó Spring, qué proxy lo envuelve y cómo se resuelve la ambigüedad.
