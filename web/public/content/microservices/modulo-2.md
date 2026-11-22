@@ -1,192 +1,291 @@
 # Módulo 0.3 · Introducción a Java y Node.js lado a lado
 
-**Entorno de referencia (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0. Se ejecutan ejemplos mínimos en ambos runtimes.
+Java y Node.js pueden resolver el mismo problema con modelos de ejecución distintos. Compararlos lado a lado evita la falsa idea de que “sintaxis parecida” significa “runtime igual”. Este módulo construye el mapa mental: JVM vs V8/Node, tipado, estructura, errores y concurrencia.
 
-Este módulo compara Java y Node.js con el mismo problema implementado dos veces. El objetivo no es elegir un ganador, sino entender el modelo de ejecución, tipado, errores y concurrencia de cada plataforma.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0.
 
 ## Aprende construyendo
 
 ### Tema 1: Sintaxis y ejecución · Básico · 240 min
 
-Caso guía: calcular el total de una tienda en Java y en Node.js.
+Caso guía: calcular el total de una tienda en Java y Node.js.
 
 #### Modelo de ejecución (JVM vs V8/Node)
 
-**Definición formal.** Java compila código fuente a bytecode `.class` y la JVM lo ejecuta; Node.js ejecuta JavaScript sobre V8 con APIs del runtime Node.
+**Definición formal.** Java compila fuente a bytecode `.class` ejecutado por la JVM. Node.js ejecuta JavaScript sobre V8 con APIs del runtime Node.
 
-**Para qué sirve.** Explica el flujo de trabajo, errores y empaquetado.
+**Para qué sirve.** Explica arranque, empaquetado, debugging y comportamiento en producción.
 
-**Cuándo usarlo.** Elige según ecosistema, equipo y requisitos. Java destaca en tipado fuerte y tooling JVM; Node en I/O y ecosistema JS.
+**Cuándo usarlo / cuándo no.** Java cuando el ecosistema JVM, tipado estático y tooling enterprise pesan; Node cuando el equipo JS y la I/O async son el centro. No elijas por moda.
+
+```mermaid
+flowchart LR
+  J[.java] --> JC[javac]
+  JC --> B[bytecode .class]
+  B --> JVM[JVM]
+  N[.mjs/.js] --> V8[V8 + Node APIs]
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms2-exec && cd /tmp/ms2-exec
-cat > Hola.java << 'JAVA'
-public class Hola { public static void main(String[] args){ System.out.println("java"); } }
-JAVA
-cat > hola.mjs << 'JS'
+mkdir -p ms2-exec
+cd ms2-exec
+```
+
+Crea el archivo `Hola.java`:
+
+```java
+public class Hola {
+  public static void main(String[] args) {
+    System.out.println("java");
+  }
+}
+```
+
+Crea el archivo `hola.mjs`:
+
+```js
 console.log('node');
-JS
-javac Hola.java && java Hola
+```
+
+```bash
+javac Hola.java
+java Hola
 node hola.mjs
 ```
 
-**Caso de uso real.** El mismo endpoint implementado en Spring Boot o Node.
+**Error común.** Confundir Java con JavaScript. Corrección: son lenguajes/runtimes distintos.
 
-**Error común.** Asumir que Java y JavaScript son el mismo lenguaje. Corrección: son runtimes y ecosistemas distintos.
-
-**Verificación (JDK 27, Node 24.18.0, 2026-05-22).** Salida: `java` y `node`.
+**Verificación (JDK 27, Node 24.18.0, 2026-05-22).** `java`, `node`.
 
 #### Tipado declarado vs dinámico
 
-**Definición formal.** Java usa tipado estático declarado en compilación; JavaScript es dinámicamente tipado (los valores tienen tipo en runtime).
+**Definición formal.** Java tiene tipado estático declarado; JavaScript es dinámicamente tipado (los valores llevan tipo en runtime).
 
-**Para qué sirve.** El tipado estático detecta clases de errores antes; el dinámico da rapidez, pero requiere más pruebas/contratos.
-
-**Cuándo usarlo.** Java para contratos explícitos; en Node, usar TypeScript o validación runtime para compensar.
+**Para qué sirve.** El tipado estático detecta incompatibilidades antes; el dinámico exige validación y tests.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms2-types && cd /tmp/ms2-types
-cat > Tipos.java << 'JAVA'
-public class Tipos { public static void main(String[] args){ int x = 2; System.out.println(x+1); } }
-JAVA
-cat > tipos.mjs << 'JS'
-let x = 2; x = '2'; console.log(x + 1);
-JS
-javac Tipos.java && java Tipos
+mkdir -p ms2-types
+cd ms2-types
+```
+
+Crea el archivo `Tipos.java`:
+
+```java
+public class Tipos {
+  public static void main(String[] args) {
+    int x = 2;
+    System.out.println(x + 1);
+  }
+}
+```
+
+Crea el archivo `tipos.mjs`:
+
+```js
+let x = 2;
+x = '2';
+console.log(x + 1);
+```
+
+```bash
+javac Tipos.java
+java Tipos
 node tipos.mjs
 ```
 
-**Caso de uso real.** Validar payloads en API Node; Java los captura por tipo/modelo.
+**Error común.** Confiar en coerción JS en reglas de negocio. Corrección: validación explícita y/o TypeScript.
 
-**Error común.** Confiar en coerción implícita JS. Corrección: validación explícita (`zod`, checks) o TypeScript.
-
-**Verificación (2026-05-22).** Salida: `3` (Java) y `21` (JS concatenación).
+**Verificación (2026-05-22).** `3`, `21`.
 
 #### Estructura mínima de programa
 
-**Definición formal.** Java requiere clase y método `main` para entrada; Node ejecuta el script de arriba a abajo.
-
-**Para qué sirve.** Saber dónde arranca la ejecución.
-
-**Cuándo usarlo.** En Java, respetar firma `main`; en Node, usar `import.meta.main` para código ejecutable directo.
+**Definición formal.** Java inicia en `public static void main(String[] args)`. Node ejecuta el módulo; `import.meta.main` indica si es el entrypoint.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms2-main && cd /tmp/ms2-main
-cat > Main.java << 'JAVA'
-public class Main { public static void main(String[] args){ System.out.println(args.length); } }
-JAVA
-cat > main.mjs << 'JS'
+mkdir -p ms2-main
+cd ms2-main
+```
+
+Crea el archivo `Main.java`:
+
+```java
+public class Main {
+  public static void main(String[] args) {
+    System.out.println(args.length);
+  }
+}
+```
+
+Crea el archivo `main.mjs`:
+
+```js
 console.log(process.argv.slice(2).length);
-JS
-javac Main.java && java Main a b
+```
+
+```bash
+javac Main.java
+java Main a b
 node main.mjs a b
 ```
 
-**Caso de uso real.** CLI con argumentos.
+**Error común.** Cambiar la firma de `main` en Java. Corrección: mantener la firma exacta.
 
-**Error común.** Cambiar firma de `main` en Java. Corrección: `public static void main(String[] args)`.
-
-**Verificación (2026-05-22).** Salida: `2` y `2`.
+**Verificación (2026-05-22).** `2`, `2`.
 
 ### Tema 2: Tipos, errores y concurrencia · Intermedio · 240 min
 
-Caso guía: manejar un error de input y una operación concurrente.
+Caso guía: manejar un error de input y ejecutar trabajo concurrente.
 
 #### Manejo de errores
 
-**Definición formal.** Java usa excepciones checked/unchecked con `try/catch/finally`; JS usa `try/catch` y rechazos de Promises.
-
-**Para qué sirve.** Controlar fallos esperables y proteger invariantes.
-
-**Cuándo usarlo.** Valida input y propaga errores con contexto. No tragues excepciones.
+**Definición formal.** Java modela fallos con excepciones; JS con excepciones y rechazos de Promise. Ambos usan `try/catch/finally`.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms2-err && cd /tmp/ms2-err
-cat > Err.java << 'JAVA'
-public class Err { static int div(int a,int b){ if(b==0) throw new IllegalArgumentException("b=0"); return a/b; }
-  public static void main(String[] args){ try{ div(1,0); } catch(Exception e){ System.out.println("error"); } } }
-JAVA
-cat > err.mjs << 'JS'
-function div(a,b){ if(b===0) throw new Error('b=0'); return a/b; }
-try { div(1,0); } catch { console.log('error'); }
-JS
-javac Err.java && java Err
+mkdir -p ms2-err
+cd ms2-err
+```
+
+Crea el archivo `Err.java`:
+
+```java
+public class Err {
+  static int div(int a, int b) {
+    if (b == 0) throw new IllegalArgumentException("b=0");
+    return a / b;
+  }
+  public static void main(String[] args) {
+    try { div(1, 0); }
+    catch (Exception e) { System.out.println("error"); }
+  }
+}
+```
+
+Crea el archivo `err.mjs`:
+
+```js
+function div(a, b) {
+  if (b === 0) throw new Error('b=0');
+  return a / b;
+}
+try { div(1, 0); } catch { console.log('error'); }
+```
+
+```bash
+javac Err.java
+java Err
 node err.mjs
 ```
 
-**Caso de uso real.** Validación de request 400.
+**Error común.** Tragar excepción y seguir como si nada. Corrección: manejar, traducir o relanzar.
 
-**Error común.** Devolver `null` o seguir ejecutando tras input inválido. Corrección: fallo explícito.
-
-**Verificación (2026-05-22).** Salida: `error` y `error`.
+**Verificación (2026-05-22).** `error`, `error`.
 
 #### Concurrencia: hilos vs event loop
 
-**Definición formal.** Java usa hilos y el scheduler de la JVM; Node usa un event loop con I/O no bloqueante y callbacks/promesas (y worker threads cuando aplica).
+**Definición formal.** Java usa hilos y scheduler; Node usa event loop con I/O no bloqueante y Promises, más Worker Threads para CPU-bound.
 
-**Para qué sirve.** Atender múltiples tareas eficientemente según el modelo.
-
-**Cuándo usarlo.** Node destaca en I/O concurrente; Java en CPU-bound paralelo y ecosistema multihilo maduro. No bloquees el event loop.
+```mermaid
+flowchart TD
+  subgraph Java
+    T1[Hilo 1]
+    T2[Hilo 2]
+  end
+  subgraph Node
+    EL[Event loop]
+    IO[I/O async]
+    W[Worker thread opcional]
+  end
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms2-conc && cd /tmp/ms2-conc
-cat > Conc.java << 'JAVA'
+mkdir -p ms2-conc
+cd ms2-conc
+```
+
+Crea el archivo `Conc.java`:
+
+```java
 import java.util.concurrent.*;
-public class Conc { public static void main(String[] args) throws Exception { ExecutorService ex=Executors.newSingleThreadExecutor(); System.out.println(ex.submit(() -> "ok").get()); ex.shutdown(); } }
-JAVA
-cat > conc.mjs << 'JS'
+public class Conc {
+  public static void main(String[] args) throws Exception {
+    ExecutorService ex = Executors.newSingleThreadExecutor();
+    System.out.println(ex.submit(() -> "ok").get());
+    ex.shutdown();
+  }
+}
+```
+
+Crea el archivo `conc.mjs`:
+
+```js
 const r = await Promise.resolve('ok');
 console.log(r);
-JS
-javac Conc.java && java Conc
+```
+
+```bash
+javac Conc.java
+java Conc
 node conc.mjs
 ```
 
-**Caso de uso real.** Node: muchas requests I/O; Java: procesamiento paralelo CPU.
+**Error común.** CPU pesada en el event loop de Node. Corrección: worker/cola/servicio dedicado.
 
-**Error común.** Hacer CPU pesada en event loop de Node. Corrección: worker thread, cola o servicio separado.
-
-**Verificación (2026-05-22).** Salida: `ok` y `ok`.
+**Verificación (2026-05-22).** `ok`, `ok`.
 
 #### Mismo contrato, distinta implementación
 
-**Definición formal.** Un contrato funcional puede implementarse en distintos runtimes siempre que preserve entradas, salidas y errores observables.
-
-**Para qué sirve.** Permite comparar plataformas y migrar con tests.
-
-**Cuándo usarlo.** Al evaluar Java vs Node o al mantener dos implementaciones.
+**Definición formal.** Un contrato funcional puede implementarse en distintos runtimes si preserva entradas, salidas y errores observables.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms2-contract && cd /tmp/ms2-contract
-cat > Total.java << 'JAVA'
-public class Total { static int total(int[] xs){ int s=0; for(int x:xs) s+=x; return s; } public static void main(String[] args){ System.out.println(total(new int[]{4500,12000,3500})); } }
-JAVA
-cat > total.mjs << 'JS'
-const total = xs => xs.reduce((a,b)=>a+b,0);
-console.log(total([4500,12000,3500]));
-JS
-javac Total.java && java Total
+mkdir -p ms2-contract
+cd ms2-contract
+```
+
+Crea el archivo `Total.java`:
+
+```java
+public class Total {
+  static int total(int[] xs) { int s = 0; for (int x : xs) s += x; return s; }
+  public static void main(String[] args) { System.out.println(total(new int[]{4500,12000,3500})); }
+}
+```
+
+Crea el archivo `total.mjs`:
+
+```js
+const total = (xs) => xs.reduce((a, b) => a + b, 0);
+console.log(total([4500, 12000, 3500]));
+```
+
+```bash
+javac Total.java
+java Total
 node total.mjs
 ```
 
-**Caso de uso real.** Misma regla de negocio en dos servicios.
+**Error común.** Comparar por gusto sintáctico. Corrección: comparar por contrato, pruebas, operación y requisitos.
 
-**Error común.** Comparar sintaxis e ignorar semántica. Corrección: usar tests de contrato.
+**Verificación (2026-05-22).** `20000`, `20000`.
 
-**Verificación (2026-05-22).** Salida: `56000` y `56000`.
+## Cierre
 
-## Cierre del módulo
+Java y Node comparten conceptos pero no modelo de ejecución. Elige por contrato, carga, equipo y operación; conserva pruebas que validen comportamiento observable.
 
-Java y Node.js resuelven los mismos problemas con modelos distintos: compilación/JVM/tipos estáticos vs V8/event loop/tipado dinámico. La elección se justifica por requisitos, equipo y operación, no por preferencia superficial.
+## Checklist
+
+- Distingo JVM/bytecode de V8/Node.
+- Entiendo tipado estático vs dinámico.
+- Manejo errores sin tragarlos.
+- No bloqueo el event loop; entiendo hilos.
