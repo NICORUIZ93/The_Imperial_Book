@@ -4178,20 +4178,20 @@
         "fragment": "tema-2-herencia-y-sobreescritura"
       },
       {
-        "title": "Interfaces, clases abstractas y cuándo usar cada una",
-        "fragment": "tema-3-interfaces-clases-abstractas-y-cuando-usar-cada-una"
+        "title": "Interfaces, clases abstractas y polimorfismo",
+        "fragment": "tema-3-interfaces-clases-abstractas-y-polimorfismo"
       },
       {
-        "title": "Sobrecarga vs sobreescritura, y modificadores de acceso",
-        "fragment": "tema-4-sobrecarga-vs-sobreescritura-y-modificadores-de-acceso"
+        "title": "Sobrecarga, sobreescritura y modificadores de acceso",
+        "fragment": "tema-4-sobrecarga-sobreescritura-y-modificadores-de-acceso"
       },
       {
-        "title": "record — modelos inmutables sin boilerplate",
+        "title": "`record` — modelos inmutables sin boilerplate",
         "fragment": "tema-5-record-modelos-inmutables-sin-boilerplate"
       },
       {
-        "title": "Constructores flexibles (Java 25): validar y preparar antes de `super(...)`",
-        "fragment": "tema-6-constructores-flexibles-java-25-validar-y-preparar-antes-de-super"
+        "title": "Constructores flexibles (Java 25)",
+        "fragment": "tema-6-constructores-flexibles-java-25"
       }
     ],
     "10": [

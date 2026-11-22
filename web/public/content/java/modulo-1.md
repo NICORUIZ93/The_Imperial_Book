@@ -1,868 +1,739 @@
 # Módulo 1: Programación orientada a objetos
 
+En el Módulo 0 escribiste programas pequeños con variables, condiciones, bucles, arreglos y métodos. Eso alcanza para empezar, pero cuando el problema crece aparecen preguntas nuevas: ¿dónde vive cada dato?, ¿qué operaciones son válidas sobre él?, ¿cómo evitas que cualquier parte del programa lo modifique sin control? La programación orientada a objetos (POO) responde organizando el código alrededor de objetos con estado y comportamiento.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Modelar una entidad con clase, campos, métodos y objetos |
+| 2 | Usar constructores y encapsulación para proteger el estado |
+| 3 | Reutilizar comportamiento con herencia y sobreescritura |
+| 4 | Definir contratos con interfaces y clases abstractas |
+| 5 | Usar records para modelos de datos inmutables |
+| 6 | Aplicar constructores flexibles de Java moderno con validación temprana |
 
 ## Aprende construyendo
 
+### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 40 min
 
-### Tema 1: Clases, objetos, constructores y encapsulación · Básico · 35 min
+**Caso guía**
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Necesitas representar una cuenta bancaria. No basta con una variable `double saldo`: también debes saber de quién es la cuenta, permitir depósitos y retiros, y evitar que el saldo quede en un estado inválido. Este caso obliga a agrupar datos y comportamiento en una misma unidad.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por clases, objetos, constructores y encapsulación con foco en comprensión antes de implementación.
+**Concepto clave / modelo mental**
 
-#### ► LA IDEA EN UNA FRASE
-**Entender clases, objetos, constructores y encapsulación te permite tomar mejores decisiones técnicas.**
+- **Clase**: el plano. Define qué datos tiene un objeto y qué operaciones puede hacer.
+- **Objeto**: una instancia concreta de la clase. Cada objeto tiene su propio estado.
+- **Campo**: variable dentro del objeto (`numero`, `titular`, `saldo`).
+- **Método**: comportamiento asociado al objeto (`depositar`, `retirar`).
+- **Constructor**: método especial que se ejecuta al crear el objeto con `new`.
+- **Encapsulación**: ocultar el estado interno y exponer operaciones controladas.
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+La regla práctica: si un dato puede quedar inválido, no lo expongas directamente; protégelo con `private` y valida en métodos o constructores.
 
-#### ► LA ANALOGÍA
-Piensa en clases, objetos, constructores y encapsulación como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Implementación desde cero**
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que clases, objetos, constructores y encapsulación resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Clases, objetos, constructores y encapsulación se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Clases, objetos, constructores y encapsulación | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses clases, objetos, constructores y encapsulación por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: clases, objetos, constructores y encapsulación funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Clases, objetos, constructores y encapsulación existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve clases, objetos, constructores y encapsulación en tu contexto?
-2. ¿Cómo sabrías que clases, objetos, constructores y encapsulación no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar clases, objetos, constructores y encapsulación?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-public final class Guia {
-    String numero;
-    String destino;
-
-    Guia(String numero, String destino) {
-        this.numero = numero;
-        this.destino = destino;
-    }
-
-    public static void main(String[] args) {
-        Guia primera = new Guia("RF-101", "Medellin");
-        Guia segunda = new Guia("RF-102", "Envigado");
-        System.out.println(primera.numero + " -> " + primera.destino);
-        System.out.println(segunda.numero + " -> " + segunda.destino);
-    }
-}
-```
-
-```bash
-mkdir -p out
-javac -d out src/Guia.java
-java -cp out Guia
-```
+Crea `CuentaBancaria.java`:
 
 ```java
-public final class Guia {
+public class CuentaBancaria {
     private final String numero;
-    private String destino;
+    private String titular;
+    private double saldo;
 
-    public Guia(String numero, String destino) {
+    public CuentaBancaria(String numero, String titular, double saldoInicial) {
+        if (numero == null || numero.isBlank()) {
+            throw new IllegalArgumentException("El número de cuenta es obligatorio");
+        }
+        if (titular == null || titular.isBlank()) {
+            throw new IllegalArgumentException("El titular es obligatorio");
+        }
+        if (saldoInicial < 0) {
+            throw new IllegalArgumentException("El saldo inicial no puede ser negativo");
+        }
         this.numero = numero;
-        this.destino = destino;
+        this.titular = titular;
+        this.saldo = saldoInicial;
     }
 
     public String getNumero() {
         return numero;
     }
 
-    public String getDestino() {
-        return destino;
+    public String getTitular() {
+        return titular;
     }
 
-    public void cambiarDestino(String nuevoDestino) {
-        destino = nuevoDestino;
+    public double getSaldo() {
+        return saldo;
+    }
+
+    public void depositar(double monto) {
+        if (monto <= 0) {
+            throw new IllegalArgumentException("El monto a depositar debe ser mayor a cero");
+        }
+        saldo += monto;
+    }
+
+    public void retirar(double monto) {
+        if (monto <= 0) {
+            throw new IllegalArgumentException("El monto a retirar debe ser mayor a cero");
+        }
+        if (monto > saldo) {
+            throw new IllegalStateException("Saldo insuficiente");
+        }
+        saldo -= monto;
     }
 }
 ```
+
+Crea `DemoCuenta.java`:
 
 ```java
-public final class Principal {
+public class DemoCuenta {
     public static void main(String[] args) {
-        Guia guia = new Guia("RF-101", "Medellin");
-        guia.cambiarDestino("Envigado");
-        System.out.println(guia.getNumero() + " -> " + guia.getDestino());
+        CuentaBancaria cuenta = new CuentaBancaria("001-123", "Ada", 1000.0);
+        cuenta.depositar(250.0);
+        cuenta.retirar(100.0);
+
+        System.out.println(cuenta.getNumero());
+        System.out.println(cuenta.getTitular());
+        System.out.println(cuenta.getSaldo());
     }
 }
 ```
+
+**Desglose del código**
+
+- `private` impide modificar `saldo` directamente desde fuera. Solo los métodos de la clase lo cambian.
+- `final` en `numero` indica que, una vez asignado en el constructor, no cambia.
+- `this.numero = numero` distingue el campo del parámetro con el mismo nombre.
+- El constructor valida el estado inicial. Es mejor rechazar un objeto inválido al crearlo que permitirlo y depurar después.
+- `depositar` y `retirar` son guardas de comportamiento: aplican reglas antes de modificar el estado.
+- `IllegalArgumentException` indica un argumento inválido; `IllegalStateException` indica que la operación no es válida en el estado actual.
+
+**Ejecución y salida real**
 
 ```bash
-javac -d out src/Guia.java src/Principal.java
-java -cp out Principal
-```
-
-```java
-public final class Guia {
-    private final String numero;
-    private String destino;
-
-    public Guia(String numero, String destino) {
-        if (numero == null || numero.isBlank()) {
-            throw new IllegalArgumentException("El numero es obligatorio");
-        }
-        if (destino == null || destino.isBlank()) {
-            throw new IllegalArgumentException("El destino es obligatorio");
-        }
-        this.numero = numero;
-        this.destino = destino;
-    }
-
-    public String getNumero() { return numero; }
-    public String getDestino() { return destino; }
-
-    public void cambiarDestino(String nuevoDestino) {
-        if (nuevoDestino == null || nuevoDestino.isBlank()) {
-            throw new IllegalArgumentException("El destino es obligatorio");
-        }
-        destino = nuevoDestino;
-    }
-
-    public static void main(String[] args) {
-        Guia guia = new Guia("RF-101", "Medellin");
-        System.out.println(guia.getNumero() + " -> " + guia.getDestino());
-        try {
-            new Guia("", "Envigado");
-        } catch (IllegalArgumentException error) {
-            System.out.println("Rechazada: " + error.getMessage());
-        }
-    }
-}
-```
-
-</details>
-
-### Tema 2: Herencia y sobreescritura · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por herencia y sobreescritura con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender herencia y sobreescritura te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en herencia y sobreescritura como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que herencia y sobreescritura resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Herencia y sobreescritura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Herencia y sobreescritura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses herencia y sobreescritura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: herencia y sobreescritura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Herencia y sobreescritura existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve herencia y sobreescritura en tu contexto?
-2. ¿Cómo sabrías que herencia y sobreescritura no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar herencia y sobreescritura?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-class Vehiculo {
-    String codigo;
-    Vehiculo(String codigo) { this.codigo = codigo; }
-    String entregar() { return codigo + " entrega paquete"; }
-}
-
-class Bicicleta extends Vehiculo {
-    Bicicleta(String codigo) { super(codigo); }
-}
-
-public class EntregaDemo {
-    public static void main(String[] args) {
-        Bicicleta bici = new Bicicleta("BI-7");
-        System.out.println(bici.entregar());
-    }
-}
-```
-
-```bash
-mkdir -p out
-javac -d out src/EntregaDemo.java
-java -cp out EntregaDemo
-```
-
-```java
-class Vehiculo {
-    String codigo;
-    Vehiculo(String codigo) { this.codigo = codigo; }
-    String entregar() { return codigo + " entrega paquete"; }
-}
-
-class Bicicleta extends Vehiculo {
-    Bicicleta(String codigo) { super(codigo); }
-    @Override
-    String entregar() { return codigo + " entrega en bicicleta"; }
-}
-
-public class EntregaDemo {
-    public static void main(String[] args) {
-        Bicicleta bici = new Bicicleta("BI-7");
-        System.out.println(bici.entregar());
-    }
-}
-```
-
-```java
-import java.util.List;
-
-class Vehiculo {
-    String codigo;
-    Vehiculo(String codigo) { this.codigo = codigo; }
-    String entregar() { return codigo + " entrega paquete"; }
-}
-
-class Bicicleta extends Vehiculo {
-    Bicicleta(String codigo) { super(codigo); }
-    @Override String entregar() { return codigo + " entrega en bicicleta"; }
-}
-
-class Furgoneta extends Vehiculo {
-    Furgoneta(String codigo) { super(codigo); }
-    @Override String entregar() { return codigo + " entrega en furgoneta"; }
-}
-
-public class EntregaDemo {
-    public static void main(String[] args) {
-        List<Vehiculo> flota = List.of(
-            new Bicicleta("BI-7"), new Furgoneta("FU-2"));
-        for (Vehiculo vehiculo : flota) {
-            System.out.println(vehiculo.entregar());
-        }
-    }
-}
-```
-
-```bash
-javac -d out src/EntregaDemo.java
-java -cp out EntregaDemo
-```
-
-```java
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import java.lang.annotation.ElementType;
-import java.lang.reflect.Method;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-@interface Auditable {
-    String accion();
-}
-
-class ServicioEntrega {
-    @Auditable(accion = "confirmar-entrega")
-    public void confirmar() { }
-}
-
-public class EntregaDemo {
-    public static void main(String[] args) throws Exception {
-        Method metodo = ServicioEntrega.class.getMethod("confirmar");
-        Auditable marca = metodo.getAnnotation(Auditable.class);
-        System.out.println(marca.accion());
-    }
-}
-```
-
-</details>
-
-### Tema 3: Interfaces, clases abstractas y cuándo usar cada una · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por interfaces, clases abstractas y cuándo usar cada una con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender interfaces, clases abstractas y cuándo usar cada una te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en interfaces, clases abstractas y cuándo usar cada una como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que interfaces, clases abstractas y cuándo usar cada una resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Interfaces, clases abstractas y cuándo usar cada una se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Interfaces, clases abstractas y cuándo usar cada una | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses interfaces, clases abstractas y cuándo usar cada una por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: interfaces, clases abstractas y cuándo usar cada una funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Interfaces, clases abstractas y cuándo usar cada una existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve interfaces, clases abstractas y cuándo usar cada una en tu contexto?
-2. ¿Cómo sabrías que interfaces, clases abstractas y cuándo usar cada una no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar interfaces, clases abstractas y cuándo usar cada una?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-interface Confirmable {
-    String confirmar();
-}
-
-class EntregaLocal implements Confirmable {
-    public String confirmar() { return "Entrega local confirmada"; }
-}
-
-class AdaptadorMovil implements Confirmable {
-    public String confirmar() { return "Confirmación recibida del móvil"; }
-}
-
-public class ContratoDemo {
-    static void procesar(Confirmable entrega) {
-        System.out.println(entrega.confirmar());
-    }
-
-    public static void main(String[] args) {
-        procesar(new EntregaLocal());
-        procesar(new AdaptadorMovil());
-    }
-}
-```
-
-```bash
-mkdir -p out
-javac -d out src/ContratoDemo.java
-java -cp out ContratoDemo
-```
-
-```java
-abstract class ServicioEntrega {
-    private final String guia;
-
-    ServicioEntrega(String guia) {
-        if (guia == null || guia.isBlank()) {
-            throw new IllegalArgumentException("La guia es obligatoria");
-        }
-        this.guia = guia;
-    }
-
-    String guia() { return guia; }
-    abstract int minutosEstimados();
-    String resumen() { return guia + ": " + minutosEstimados() + " min"; }
-}
-
-class EntregaLocal extends ServicioEntrega {
-    EntregaLocal(String guia) { super(guia); }
-    int minutosEstimados() { return 45; }
-}
-
-public class ContratoDemo {
-    public static void main(String[] args) {
-        System.out.println(new EntregaLocal("RF-201").resumen());
-    }
-}
-```
-
-```java
-import java.util.List;
-
-interface Confirmable {
-    String confirmar();
-}
-
-abstract class ServicioEntrega implements Confirmable {
-    private final String guia;
-    ServicioEntrega(String guia) { this.guia = guia; }
-    abstract int minutosEstimados();
-    public String confirmar() { return guia + " confirmada en " + minutosEstimados() + " min"; }
-}
-
-class EntregaLocal extends ServicioEntrega {
-    EntregaLocal(String guia) { super(guia); }
-    int minutosEstimados() { return 45; }
-}
-
-class EntregaExpress extends ServicioEntrega {
-    EntregaExpress(String guia) { super(guia); }
-    int minutosEstimados() { return 20; }
-}
-
-public class ContratoDemo {
-    static void procesar(List<Confirmable> entregas) {
-        for (Confirmable entrega : entregas) {
-            System.out.println(entrega.confirmar());
-        }
-    }
-
-    public static void main(String[] args) {
-        procesar(List.of(new EntregaLocal("RF-201"), new EntregaExpress("RF-202")));
-    }
-}
-```
-
-```bash
-javac -d out src/ContratoDemo.java
-java -cp out ContratoDemo
-```
-
-</details>
-
-### Tema 4: Sobrecarga vs sobreescritura, y modificadores de acceso · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por sobrecarga vs sobreescritura, y modificadores de acceso con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender sobrecarga vs sobreescritura, y modificadores de acceso te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en sobrecarga vs sobreescritura, y modificadores de acceso como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que sobrecarga vs sobreescritura, y modificadores de acceso resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Sobrecarga vs sobreescritura, y modificadores de acceso se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Sobrecarga vs sobreescritura, y modificadores de acceso | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sobrecarga vs sobreescritura, y modificadores de acceso por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sobrecarga vs sobreescritura, y modificadores de acceso funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Sobrecarga vs sobreescritura, y modificadores de acceso existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sobrecarga vs sobreescritura, y modificadores de acceso en tu contexto?
-2. ¿Cómo sabrías que sobrecarga vs sobreescritura, y modificadores de acceso no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sobrecarga vs sobreescritura, y modificadores de acceso?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-class Tarifa {
-    static int calcular(int kilometros) { return kilometros * 1200; }
-    static double calcular(double kilometros) { return kilometros * 1200.0; }
-}
-
-public class TarifaDemo {
-    public static void main(String[] args) {
-        System.out.println(Tarifa.calcular(3));
-        System.out.println(Tarifa.calcular(2.5));
-    }
-}
-```
-
-```bash
-mkdir -p out
-javac -d out src/TarifaDemo.java
-java -cp out TarifaDemo
-```
-
-```java
-class Calculador {
-    String calcular(int kilometros) { return "base=" + kilometros; }
-}
-
-class CalculadorExpress extends Calculador {
-    @Override
-    String calcular(int kilometros) { return "express=" + kilometros; }
-
-    String calcular(double kilometros) { return "decimal=" + kilometros; }
-}
-
-public class TarifaDemo {
-    public static void main(String[] args) {
-        Calculador calculador = new CalculadorExpress();
-        System.out.println(calculador.calcular(3));
-        System.out.println(((CalculadorExpress) calculador).calcular(2.5));
-    }
-}
-```
-
-```java
-package modelo;
-
-public class Guia {
-    private final String numero;
-    int intentos;
-    protected String estado = "lista";
-
-    public Guia(String numero) { this.numero = numero; }
-    public String numero() { return numero; }
-}
-```
-
-```java
-package modelo;
-
-public class Control {
-    public static void main(String[] args) {
-        Guia guia = new Guia("RF-301");
-        guia.intentos++;
-        System.out.println(guia.numero() + " intentos=" + guia.intentos);
-    }
-}
-```
-
-```java
-package app;
-
-import modelo.Guia;
-
-public class Bicicleta extends Guia {
-    public Bicicleta() { super("RF-302"); }
-
-    public String resumen() {
-        return numero() + " estado=" + estado;
-    }
-
-    public static void main(String[] args) {
-        System.out.println(new Bicicleta().resumen());
-    }
-}
-```
-
-</details>
-
-### Tema 5: record — modelos inmutables sin boilerplate · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por record — modelos inmutables sin boilerplate con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender record — modelos inmutables sin boilerplate te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en record — modelos inmutables sin boilerplate como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que record — modelos inmutables sin boilerplate resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| record — modelos inmutables sin boilerplate se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar record — modelos inmutables sin boilerplate | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses record — modelos inmutables sin boilerplate por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: record — modelos inmutables sin boilerplate funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- record — modelos inmutables sin boilerplate existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve record — modelos inmutables sin boilerplate en tu contexto?
-2. ¿Cómo sabrías que record — modelos inmutables sin boilerplate no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar record — modelos inmutables sin boilerplate?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-public record Guia(String numero, double pesoKg) {
-    public Guia {
-        if (numero == null || numero.isBlank()) throw new IllegalArgumentException("Falta número");
-        if (pesoKg <= 0) throw new IllegalArgumentException("Peso debe ser positivo");
-    }
-    public static void main(String[] args) {
-        System.out.println(new Guia("RT-1", 2.5));
-    }
-}
-```
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-```bash
-javac -d out src/Guia.java
-java -cp out Guia
-```
-
-</details>
-
-### Tema 6: Constructores flexibles (Java 25): validar y preparar antes de `super(...)` · Intermedio · 30 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por constructores flexibles (java 25): validar y preparar antes de `super(...)` con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender constructores flexibles (java 25): validar y preparar antes de `super(...)` te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en constructores flexibles (java 25): validar y preparar antes de `super(...)` como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que constructores flexibles (java 25): validar y preparar antes de `super(...)` resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Constructores flexibles (Java 25): validar y preparar antes de `super(...)` se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Constructores flexibles (Java 25): validar y preparar antes de `super(...)` | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses constructores flexibles (java 25): validar y preparar antes de `super(...)` por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: constructores flexibles (java 25): validar y preparar antes de `super(...)` funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Constructores flexibles (Java 25): validar y preparar antes de `super(...)` existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve constructores flexibles (java 25): validar y preparar antes de `super(...)` en tu contexto?
-2. ¿Cómo sabrías que constructores flexibles (java 25): validar y preparar antes de `super(...)` no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar constructores flexibles (java 25): validar y preparar antes de `super(...)`?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-class Vehiculo {
-    private final String placa;
-    private final int capacidadKg;
-
-    Vehiculo(String placa, int capacidadKg) {
-        this.placa = placa;
-        this.capacidadKg = capacidadKg;
-        System.out.println("Vehiculo creado: " + descripcion());
-    }
-
-    String descripcion() {
-        return placa + " (" + capacidadKg + " kg)";
-    }
-}
-
-class Moto extends Vehiculo {
-    private final boolean conCaja;
-
-    Moto(String placa, int capacidadKg, boolean conCaja) {
-        if (capacidadKg > 30) {
-            throw new IllegalArgumentException("Una moto lleva hasta 30 kg: " + capacidadKg);
-        }
-        String normalizada = placa.strip().toUpperCase();
-        this.conCaja = conCaja;
-        super(normalizada, capacidadKg);
-    }
-
-    @Override
-    String descripcion() {
-        return super.descripcion() + (conCaja ? " con caja" : " sin caja");
-    }
-}
-
-public class ConstructorFlexible {
-    public static void main(String[] args) {
-        new Moto(" abc12d ", 25, true);
-        try {
-            new Moto("XYZ98E", 80, false);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Rechazada: " + e.getMessage());
-        }
-    }
-}
+javac CuentaBancaria.java DemoCuenta.java
+java DemoCuenta
 ```
 
 ```text
-Vehiculo creado: ABC12D (25 kg) con caja
-Rechazada: Una moto lleva hasta 30 kg: 80
+001-123
+Ada
+1150.0
 ```
 
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Cualquier clase pone `cuenta.saldo = -999` | El campo es público | Hazlo `private` y expón operaciones con reglas |
+| Objeto creado con datos inválidos | Constructor sin validación | Valida en el constructor y lanza excepción clara |
+| `NullPointerException` al llamar `isBlank()` | Parámetro `null` | Comprueba `null` antes de usar el valor |
+
+**Verificación rápida**
+
+```bash
+javac CuentaBancaria.java DemoCuenta.java
+java DemoCuenta
+```
+
+Prueba también un retiro mayor al saldo: debe lanzar `IllegalStateException: Saldo insuficiente`.
+
+### Tema 2: Herencia y sobreescritura · Básico · 40 min
+
+**Caso guía**
+
+Un sistema de notificaciones envía mensajes por distintos canales: email, SMS, push. Todos son notificaciones, pero cada una se envía de forma diferente. Quieres reutilizar lo común y especializar lo que cambia.
+
+**Concepto clave / modelo mental**
+
+- **Herencia (`extends`)**: una subclase hereda campos y métodos de una superclase.
+- **Sobrescritura (`@Override`)**: la subclase reemplaza el comportamiento de un método heredado.
+- **Polimorfismo**: una referencia del tipo base puede apuntar a objetos de subclases; el método ejecutado se decide en tiempo de ejecución.
+
+Usa herencia cuando haya una relación real “es un”. `EmailNotification` es una `Notification`. No uses herencia solo para reutilizar código si la relación no es natural.
+
+**Implementación desde cero**
+
+Crea `Notification.java`:
+
 ```java
-class Camion extends Vehiculo {
-    Camion(String placa, double toneladas) {
-        if (toneladas <= 0) {
-            throw new IllegalArgumentException("Capacidad inválida: " + toneladas);
-        }
-        int kilos = (int) Math.round(toneladas * 1000);
-        super(placa, kilos);
+public class Notification {
+    private final String destinatario;
+    private final String mensaje;
+
+    public Notification(String destinatario, String mensaje) {
+        this.destinatario = destinatario;
+        this.mensaje = mensaje;
+    }
+
+    public String getDestinatario() {
+        return destinatario;
+    }
+
+    public String getMensaje() {
+        return mensaje;
+    }
+
+    public void enviar() {
+        System.out.println("Enviando notificación genérica a " + destinatario);
     }
 }
 ```
 
-</details>
+Crea `EmailNotification.java`:
+
+```java
+public class EmailNotification extends Notification {
+    private final String asunto;
+
+    public EmailNotification(String destinatario, String mensaje, String asunto) {
+        super(destinatario, mensaje);
+        this.asunto = asunto;
+    }
+
+    @Override
+    public void enviar() {
+        System.out.println("EMAIL a " + getDestinatario()
+                + " | asunto=" + asunto
+                + " | mensaje=" + getMensaje());
+    }
+}
+```
+
+Crea `SmsNotification.java`:
+
+```java
+public class SmsNotification extends Notification {
+    public SmsNotification(String destinatario, String mensaje) {
+        super(destinatario, mensaje);
+    }
+
+    @Override
+    public void enviar() {
+        System.out.println("SMS a " + getDestinatario()
+                + " | mensaje=" + getMensaje());
+    }
+}
+```
+
+Crea `DemoNotificaciones.java`:
+
+```java
+public class DemoNotificaciones {
+    public static void main(String[] args) {
+        Notification email = new EmailNotification("ada@example.com", "Tu pedido salió", "Estado");
+        Notification sms = new SmsNotification("+34123456789", "Tu pedido salió");
+
+        email.enviar();
+        sms.enviar();
+    }
+}
+```
+
+**Desglose del código**
+
+- `extends Notification` indica que `EmailNotification` hereda de `Notification`.
+- `super(destinatario, mensaje)` llama al constructor de la superclase. Debe ser la primera instrucción del constructor.
+- `@Override` le pide al compilador verificar que realmente estás sobrescribiendo un método existente. Si te equivocas en el nombre, falla la compilación.
+- En `DemoNotificaciones`, ambas variables son de tipo `Notification`, pero cada objeto ejecuta su propia versión de `enviar()`. Eso es polimorfismo.
+
+**Ejecución y salida real**
+
+```bash
+javac Notification.java EmailNotification.java SmsNotification.java DemoNotificaciones.java
+java DemoNotificaciones
+```
+
+```text
+EMAIL a ada@example.com | asunto=Estado | mensaje=Tu pedido salió
+SMS a +34123456789 | mensaje=Tu pedido salió
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `There is no default constructor available in 'Notification'` | La superclase no tiene constructor vacío y no llamaste `super(...)` | Llama al constructor adecuado con `super(...)` |
+| Creíste sobrescribir pero se ejecuta el método base | Error de firma o no usaste `@Override` | Agrega `@Override` y verifica nombre/parámetros |
+| Jerarquía confusa | Usaste herencia solo para reutilizar código | Prefiere composición si no hay relación “es un” |
+
+**Verificación rápida**
+
+Agrega una clase `PushNotification` con su propio `@Override enviar()`. No debes modificar `DemoNotificaciones` más que para instanciarla: el tipo base `Notification` debe seguir funcionando.
+
+### Tema 3: Interfaces, clases abstractas y polimorfismo · Intermedio · 45 min
+
+**Caso guía**
+
+Un proceso de cobro puede usar tarjeta, transferencia o billetera. Quieres que el sistema dependa de “algo que puede cobrar”, no de cada implementación concreta. Además, hay comportamientos comunes que no quieres repetir.
+
+**Concepto clave / modelo mental**
+
+| Herramienta | Úsala cuando | No la uses cuando |
+|---|---|---|
+| Interfaz | Quieres definir un contrato/capacidad | Necesitas mucho estado compartido |
+| Clase abstracta | Quieres compartir base común y forzar implementación parcial | Solo necesitas un contrato simple |
+| Clase concreta | El comportamiento ya está completo | Quieres impedir instanciación directa |
+
+- **Interfaz**: define qué se puede hacer. Una clase puede implementar varias interfaces.
+- **Clase abstracta**: puede tener estado, métodos concretos y métodos abstractos. No se instancia directamente.
+- **Polimorfismo**: el código cliente trabaja con el contrato, no con la implementación concreta.
+
+**Implementación desde cero**
+
+Crea `PaymentMethod.java`:
+
+```java
+public interface PaymentMethod {
+    void pay(double amount);
+}
+```
+
+Crea `BasePayment.java`:
+
+```java
+public abstract class BasePayment implements PaymentMethod {
+    private final String owner;
+
+    protected BasePayment(String owner) {
+        this.owner = owner;
+    }
+
+    protected String getOwner() {
+        return owner;
+    }
+
+    protected void validateAmount(double amount) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("El monto debe ser mayor a cero");
+        }
+    }
+}
+```
+
+Crea `CardPayment.java`:
+
+```java
+public class CardPayment extends BasePayment {
+    public CardPayment(String owner) {
+        super(owner);
+    }
+
+    @Override
+    public void pay(double amount) {
+        validateAmount(amount);
+        System.out.println("Cobro con tarjeta de " + getOwner() + " por " + amount);
+    }
+}
+```
+
+Crea `WalletPayment.java`:
+
+```java
+public class WalletPayment extends BasePayment {
+    public WalletPayment(String owner) {
+        super(owner);
+    }
+
+    @Override
+    public void pay(double amount) {
+        validateAmount(amount);
+        System.out.println("Cobro con billetera de " + getOwner() + " por " + amount);
+    }
+}
+```
+
+Crea `Checkout.java`:
+
+```java
+public class Checkout {
+    public static void main(String[] args) {
+        PaymentMethod method = new CardPayment("Ada");
+        method.pay(49.99);
+
+        method = new WalletPayment("Linus");
+        method.pay(15.00);
+    }
+}
+```
+
+**Desglose del código**
+
+- `PaymentMethod` define el contrato `pay(double amount)`. El cliente solo necesita saber que puede pagar.
+- `BasePayment` es abstracta: comparte validación y el dueño, pero no decide cómo se cobra.
+- `CardPayment` y `WalletPayment` implementan el detalle concreto.
+- `Checkout` depende de `PaymentMethod`, no de una clase concreta. Puedes añadir `BankTransferPayment` sin cambiar la idea del cliente.
+
+**Ejecución y salida real**
+
+```bash
+javac PaymentMethod.java BasePayment.java CardPayment.java WalletPayment.java Checkout.java
+java Checkout
+```
+
+```text
+Cobro con tarjeta de Ada por 49.99
+Cobro con billetera de Linus por 15.0
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Intentas instanciar la clase abstracta | Las abstractas no se instancian | Crea una subclase concreta |
+| La interfaz crece con métodos no relacionados | El contrato perdió cohesión | Divide en interfaces más pequeñas |
+| Usaste clase abstracta donde solo necesitabas contrato | Sobre-diseño | Prefiere interfaz si no hay estado/base común real |
+
+**Verificación rápida**
+
+Crea `BankTransferPayment extends BasePayment` y úsala desde `Checkout`. Si no necesitas modificar la interfaz ni la clase abstracta, el diseño va bien.
+
+### Tema 4: Sobrecarga, sobreescritura y modificadores de acceso · Intermedio · 35 min
+
+**Contexto y para qué sirve**
+
+Java usa varias palabras para controlar visibilidad y varias formas de definir métodos con el mismo nombre. Confundir sobrecarga con sobreescritura, o hacer todo `public`, genera APIs difíciles de usar y errores de diseño.
+
+**Concepto clave / modelo mental**
+
+**Modificadores de acceso**
+
+| Modificador | Visible en | Uso típico |
+|---|---|---|
+| `private` | Misma clase | Estado interno y helpers |
+| (sin modificador) | Mismo paquete | Colaboración interna de paquete |
+| `protected` | Mismo paquete y subclases | Extensión controlada |
+| `public` | Todas partes | API pública estable |
+
+**Sobrecarga vs sobreescritura**
+
+| Concepto | Ocurre cuando | Se resuelve en | Firma |
+|---|---|---|---|
+| Sobrecarga (overload) | Mismo nombre, distintos parámetros | Compilación | Distinta |
+| Sobrescritura (override) | Subclase redefine método heredado | Ejecución | Igual |
+
+**Implementación desde cero**
+
+Crea `Calculator.java`:
+
+```java
+public class Calculator {
+    public int sum(int a, int b) {
+        return a + b;
+    }
+
+    public double sum(double a, double b) {
+        return a + b;
+    }
+
+    public int sum(int a, int b, int c) {
+        return a + b + c;
+    }
+}
+```
+
+Crea `Animal.java`:
+
+```java
+public class Animal {
+    protected String name;
+
+    public Animal(String name) {
+        this.name = name;
+    }
+
+    public String speak() {
+        return "...";
+    }
+}
+```
+
+Crea `Dog.java`:
+
+```java
+public class Dog extends Animal {
+    public Dog(String name) {
+        super(name);
+    }
+
+    @Override
+    public String speak() {
+        return name + " dice: guau";
+    }
+}
+```
+
+Crea `DemoOver.java`:
+
+```java
+public class DemoOver {
+    public static void main(String[] args) {
+        Calculator calc = new Calculator();
+        System.out.println(calc.sum(2, 3));
+        System.out.println(calc.sum(2.5, 3.5));
+        System.out.println(calc.sum(1, 2, 3));
+
+        Animal animal = new Dog("Toby");
+        System.out.println(animal.speak());
+    }
+}
+```
+
+**Desglose del código**
+
+- `sum` está sobrecargado tres veces: mismo nombre, distinta lista de parámetros.
+- `speak()` en `Dog` sobrescribe el método de `Animal`. La firma es la misma.
+- `protected String name` permite que la subclase lo use, pero no lo expone como API pública global.
+- `Animal animal = new Dog(...)` muestra despacho dinámico: se ejecuta `Dog.speak()`.
+
+**Ejecución y salida real**
+
+```bash
+javac Calculator.java Animal.java Dog.java DemoOver.java
+java DemoOver
+```
+
+```text
+5
+6.0
+6
+Toby dice: guau
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Cambiaste el tipo de retorno y creíste sobrecargar | El tipo de retorno no define sobrecarga por sí solo | Cambia la lista de parámetros |
+| `@Override` falla | Firma distinta o método no heredado | Revisa nombre, parámetros y visibilidad |
+| Todo es `public` | No pensaste el contrato | Empieza por `private` y abre solo lo necesario |
+
+**Verificación rápida**
+
+```bash
+javac Calculator.java Animal.java Dog.java DemoOver.java && java DemoOver
+```
+
+Quita `@Override` en `Dog.speak()` y cámbialo por `speak(String extra)`: observarás que ya no sobrescribe, ahora sobrecarga.
+
+### Tema 5: `record` — modelos inmutables sin boilerplate · Intermedio · 35 min
+
+**Caso guía**
+
+Necesitas representar un punto de coordenadas o un DTO simple: dos o tres campos, igualdad por valor, sin comportamiento complejo. Escribir constructor, getters, `equals`, `hashCode` y `toString` a mano es repetitivo y propenso a errores.
+
+**Concepto clave / modelo mental**
+
+Un `record` (Java 16+) es una clase especial para datos inmutables. El compilador genera:
+
+- campos privados finales;
+- constructor canónico;
+- accesores (`x()`, no `getX()`);
+- `equals()` y `hashCode()` basados en componentes;
+- `toString()` legible.
+
+Usa `record` cuando el objeto representa un valor. No lo uses cuando necesitas mutabilidad, herencia de clase o identidad compleja.
+
+**Implementación desde cero**
+
+Crea `Point.java`:
+
+```java
+public record Point(int x, int y) {
+    public Point {
+        if (x < 0 || y < 0) {
+            throw new IllegalArgumentException("Las coordenadas no pueden ser negativas");
+        }
+    }
+
+    public int distanceSquaredFromOrigin() {
+        return x * x + y * y;
+    }
+}
+```
+
+Crea `DemoRecord.java`:
+
+```java
+public class DemoRecord {
+    public static void main(String[] args) {
+        Point a = new Point(3, 4);
+        Point b = new Point(3, 4);
+        Point c = new Point(1, 2);
+
+        System.out.println(a);
+        System.out.println(a.x());
+        System.out.println(a.y());
+        System.out.println(a.equals(b));
+        System.out.println(a.equals(c));
+        System.out.println(a.distanceSquaredFromOrigin());
+    }
+}
+```
+
+**Desglose del código**
+
+- `record Point(int x, int y)` declara los componentes. Son finales e inmutables.
+- El bloque `public Point { ... }` es el constructor compacto: permite validar antes de asignar los componentes.
+- `distanceSquaredFromOrigin()` es un método adicional; los records pueden tener comportamiento, pero deben seguir siendo principalmente datos.
+- `equals` compara por valor. Por eso `a.equals(b)` es `true` aunque sean objetos distintos.
+
+**Ejecución y salida real**
+
+```bash
+javac Point.java DemoRecord.java
+java DemoRecord
+```
+
+```text
+Point[x=3, y=4]
+3
+4
+true
+false
+25
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Quieres cambiar `x` después de crear el record | Los records son inmutables | Crea una nueva instancia con el valor nuevo |
+| Intentas extender un record con una clase | Los records no extienden clases | Usa composición o una clase normal |
+| Pones demasiada lógica | El record dejó de ser modelo de valor simple | Mueve comportamiento complejo a un servicio/clase |
+
+**Verificación rápida**
+
+```bash
+javac Point.java DemoRecord.java && java DemoRecord
+```
+
+Crea `Point(-1, 0)` y confirma que la validación del constructor compacto rechaza el valor.
+
+### Tema 6: Constructores flexibles (Java 25) · Avanzado · 30 min
+
+**Contexto y para qué sirve**
+
+En Java clásico, un constructor de subclase debía llamar `super(...)` o `this(...)` como primera instrucción. Eso complicaba validar o normalizar argumentos antes de delegar. Java 25 permite lógica antes de invocar `super(...)`, dentro de reglas claras, para que el estado que pasas al constructor padre ya llegue validado.
+
+> **Nota de versión:** esta característica corresponde a Java 25. Si compilas con un JDK anterior, el ejemplo puede no compilar. Verifica tu versión con `javac -version`.
+
+**Concepto clave / modelo mental**
+
+Un constructor flexible permite ejecutar código antes de `super(...)`, pero con restricciones:
+
+- puedes validar/normalizar parámetros;
+- no puedes usar el objeto en construcción como si ya estuviera inicializado (`this` no está listo para uso general);
+- debes llegar a `super(...)` o `this(...)` por un camino válido.
+
+La idea es simple: preparar datos primero, delegar después.
+
+**Implementación desde cero**
+
+Crea `UserBase.java`:
+
+```java
+public class UserBase {
+    private final String email;
+
+    public UserBase(String email) {
+        this.email = email;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+}
+```
+
+Crea `AdminUser.java`:
+
+```java
+public class AdminUser extends UserBase {
+    private final String role;
+
+    public AdminUser(String rawEmail) {
+        if (rawEmail == null || rawEmail.isBlank()) {
+            throw new IllegalArgumentException("Email obligatorio");
+        }
+        String normalized = rawEmail.trim().toLowerCase();
+        super(normalized);
+        this.role = "ADMIN";
+    }
+
+    public String getRole() {
+        return role;
+    }
+}
+```
+
+Crea `DemoAdmin.java`:
+
+```java
+public class DemoAdmin {
+    public static void main(String[] args) {
+        AdminUser admin = new AdminUser("  ADA@EXAMPLE.COM ");
+        System.out.println(admin.getEmail());
+        System.out.println(admin.getRole());
+    }
+}
+```
+
+**Desglose del código**
+
+- `rawEmail` llega sin normalizar.
+- La validación y `trim().toLowerCase()` ocurren antes de `super(normalized)`.
+- `super(normalized)` inicializa la parte heredada con un valor ya limpio.
+- `this.role = "ADMIN"` se asigna después de delegar al constructor padre.
+
+**Ejecución y salida real**
+
+En JDK 25+:
+
+```bash
+javac UserBase.java AdminUser.java DemoAdmin.java
+java DemoAdmin
+```
+
+```text
+ada@example.com
+ADMIN
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `call to super must be first statement in constructor` | Estás compilando con un JDK que no soporta esta regla flexible | Usa JDK 25+ o mueve la lógica a un factory method estático |
+| Usaste `this` antes de `super(...)` de forma inválida | El objeto aún no está inicializado | Limita el código previo a preparar parámetros |
+| Validación duplicada | Validaste en subclase y superclase sin criterio | Define dónde vive cada invariante |
+
+Alternativa compatible con JDK antiguos:
+
+```java
+public static AdminUser from(String rawEmail) {
+    if (rawEmail == null || rawEmail.isBlank()) {
+        throw new IllegalArgumentException("Email obligatorio");
+    }
+    return new AdminUser(rawEmail.trim().toLowerCase());
+}
+```
+
+**Verificación rápida**
+
+```bash
+javac -version
+javac UserBase.java AdminUser.java DemoAdmin.java
+java DemoAdmin
+```
+
+Si tu JDK no es 25+, usa la alternativa con factory method y confirma que la salida normalizada sea la misma.
+
+## Cierre del módulo
+
+Ya puedes modelar objetos, proteger su estado, reutilizar comportamiento con herencia, definir contratos con interfaces y usar records para datos. En el siguiente módulo el foco se mueve a colecciones y genéricos: cómo organizar muchos objetos sin perder tipo ni claridad.
