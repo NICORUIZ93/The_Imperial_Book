@@ -1,385 +1,291 @@
-# Módulo 9: Testing con JUnit 6 (Jupiter) y Mockito
+# Módulo 9: Testing con JUnit 5 y Mockito
 
+El código que no se prueba se rompe en silencio. Las pruebas automatizadas no garantizan ausencia de bugs, pero sí crean una red de seguridad para cambiar con confianza. Este módulo cubre JUnit Jupiter, Mockito, tests parametrizados y pruebas basadas en propiedades.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Escribir tests claros con JUnit Jupiter y su ciclo de vida |
+| 2 | Aislar dependencias con Mockito |
+| 3 | Parametrizar tests y medir cobertura con criterio |
+| 4 | Usar property-based testing para reglas generales |
 
 ## Aprende construyendo
 
-
 ### Tema 1: JUnit 6 (Jupiter) — anotaciones y ciclo de vida · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por junit 6 (jupiter) — anotaciones y ciclo de vida con foco en comprensión antes de implementación.
+Tienes una calculadora de descuentos. Quieres probar casos normales, bordes y errores sin ejecutar todo manualmente.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender junit 6 (jupiter) — anotaciones y ciclo de vida te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+JUnit Jupiter proporciona el modelo de pruebas moderno de JUnit. Conceptos clave:
 
-#### ► LA ANALOGÍA
-Piensa en junit 6 (jupiter) — anotaciones y ciclo de vida como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+| Anotación | Uso |
+|---|---|
+| `@Test` | Método de prueba |
+| `@BeforeEach` | Se ejecuta antes de cada test |
+| `@AfterEach` | Se ejecuta después de cada test |
+| `@BeforeAll/@AfterAll` | Una vez por clase (método estático) |
+| `@DisplayName` | Nombre legible |
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que junit 6 (jupiter) — anotaciones y ciclo de vida resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+Un buen test es: rápido, aislado, determinista y claro.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| JUnit 6 (Jupiter) — anotaciones y ciclo de vida se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar JUnit 6 (Jupiter) — anotaciones y ciclo de vida | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses junit 6 (jupiter) — anotaciones y ciclo de vida por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: junit 6 (jupiter) — anotaciones y ciclo de vida funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- JUnit 6 (Jupiter) — anotaciones y ciclo de vida existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve junit 6 (jupiter) — anotaciones y ciclo de vida en tu contexto?
-2. ¿Cómo sabrías que junit 6 (jupiter) — anotaciones y ciclo de vida no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar junit 6 (jupiter) — anotaciones y ciclo de vida?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/test/java/TarifaTest.java
-@Test
-void paquetePequenoCuestaCuatroMil() {
-    assertEquals(4000, Tarifa.calcular(300));
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
+
+class DescuentoService {
+    int aplicar(int precio, int porcentaje) {
+        if (precio < 0 || porcentaje < 0 || porcentaje > 100) {
+            throw new IllegalArgumentException("datos inválidos");
+        }
+        return precio - (precio * porcentaje / 100);
+    }
+}
+
+class DescuentoServiceTest {
+    DescuentoService service;
+
+    @BeforeEach
+    void setUp() { service = new DescuentoService(); }
+
+    @Test
+    void aplicaDescuento() {
+        assertEquals(80, service.aplicar(100, 20));
+    }
+
+    @Test
+    void rechazaPorcentajeInvalido() {
+        assertThrows(IllegalArgumentException.class, () -> service.aplicar(100, 120));
+    }
 }
 ```
 
+**Desglose del código**
+
+- `@BeforeEach` crea un estado limpio para cada test.
+- `assertEquals` verifica el resultado esperado.
+- `assertThrows` verifica que el contrato de error se cumple.
+- Nombra tests por comportamiento esperado, no por detalles de implementación.
+
+**Ejecución y salida real**
+
 ```bash
+./gradlew test
+# o
 mvn test
 ```
 
-</details>
+Salida típica: tests ejecutados, fallos 0, errores 0.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Tests dependientes entre sí | Estado compartido mutable | Inicializa en `@BeforeEach` |
+| Test verde pero frágil | Aserciones débiles | Aserta comportamiento observable relevante |
+| Test lento | Dependencias externas | Aísla con dobles/mocks |
+
+**Verificación rápida**
+
+Rompe deliberadamente la lógica de `aplicar` y confirma que el test falla; luego corrígela.
 
 ### Tema 2: Mockito — aislar dependencias · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por mockito — aislar dependencias con foco en comprensión antes de implementación.
+Tu servicio envía notificaciones usando un cliente externo. En tests no quieres enviar correos reales. Necesitas un doble de prueba que simule la dependencia.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender mockito — aislar dependencias te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Mockito crea mocks/stubs para dependencias. Un mock permite:
 
-#### ► LA ANALOGÍA
-Piensa en mockito — aislar dependencias como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+- definir comportamiento (`when(...).thenReturn(...)`);
+- verificar interacciones (`verify(...)`).
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que mockito — aislar dependencias resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+Usa mocks en límites externos o dependencias costosas. No mockees todo: si mockeas el objeto bajo prueba, el test no sirve.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Mockito — aislar dependencias se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Mockito — aislar dependencias | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses mockito — aislar dependencias por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: mockito — aislar dependencias funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Mockito — aislar dependencias existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve mockito — aislar dependencias en tu contexto?
-2. ¿Cómo sabrías que mockito — aislar dependencias no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar mockito — aislar dependencias?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/test/java/ServicioRutasTest.java
-@ExtendWith(MockitoExtension.class)
-class ServicioRutasTest {
-    @Mock RutaRepository repo;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
+
+interface EmailClient { void send(String to, String body); }
+
+class Notifier {
+    private final EmailClient email;
+    Notifier(EmailClient email) { this.email = email; }
+    void avisar(String to) {
+        if (to == null || to.isBlank()) throw new IllegalArgumentException("to requerido");
+        email.send(to, "Hola");
+    }
+}
+
+class NotifierTest {
+    @Test
+    void enviaEmail() {
+        EmailClient email = mock(EmailClient.class);
+        Notifier notifier = new Notifier(email);
+
+        notifier.avisar("ada@example.com");
+
+        verify(email).send("ada@example.com", "Hola");
+    }
 
     @Test
-    void devuelveElEstadoDeLaRuta() {
-        when(repo.buscar("RT-1")).thenReturn(Optional.of(new Ruta("RT-1", "EN_RUTA")));
-        // ... servicio.buscar("RT-1") y la aserción sobre el estado
-        verify(repo).buscar("RT-1");
+    void noEnviaSiInvalido() {
+        EmailClient email = mock(EmailClient.class);
+        Notifier notifier = new Notifier(email);
+        assertThrows(IllegalArgumentException.class, () -> notifier.avisar(""));
+        verifyNoInteractions(email);
     }
 }
 ```
 
-```bash
-mvn test
-```
+**Desglose del código**
 
-</details>
+- `mock(EmailClient.class)` crea un doble.
+- Inyectas la dependencia por constructor: diseño fácil de probar.
+- `verify` comprueba que se llamó con los argumentos esperados.
+- `verifyNoInteractions` asegura que no hubo efectos laterales indebidos.
+
+**Ejecución y salida real**
+
+El test pasa si la interacción ocurre como se espera.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Test acoplado a implementación interna | Demasiados `verify` innecesarios | Verifica comportamiento relevante |
+| Mock de clases de valor simples | Sobreuso | Usa objetos reales cuando son baratos |
+| `NullPointerException` en mock | No stubbeaste método usado | Define `when(...).thenReturn(...)` |
+
+**Verificación rápida**
+
+Cambia `notifier.avisar` para no enviar email y observa que `verify` falla.
 
 ### Tema 3: Tests parametrizados y cobertura · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por tests parametrizados y cobertura con foco en comprensión antes de implementación.
+Quieres probar la misma regla con muchos valores. Copiar/pegar tests genera ruido y omite casos.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender tests parametrizados y cobertura te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Los tests parametrizados ejecutan la misma aserción con distintos inputs. Cobertura mide qué líneas/ramas ejecutaron los tests, pero cobertura alta no equivale a buena calidad.
 
-#### ► LA ANALOGÍA
-Piensa en tests parametrizados y cobertura como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Implementación desde cero**
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que tests parametrizados y cobertura resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tests parametrizados y cobertura se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tests parametrizados y cobertura | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses tests parametrizados y cobertura por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tests parametrizados y cobertura funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Tests parametrizados y cobertura existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tests parametrizados y cobertura en tu contexto?
-2. ¿Cómo sabrías que tests parametrizados y cobertura no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tests parametrizados y cobertura?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-// src/test/java/TarifaTest.java
-@ParameterizedTest
-@CsvSource({"100, 4000", "500, 4000", "501, 7000"})
-void calculaTarifa(int gramos, int esperado) {
-    assertEquals(esperado, Tarifa.calcular(gramos));
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import static org.junit.jupiter.api.Assertions.*;
+
+class Calc {
+    static int doble(int n) { return n * 2; }
+}
+
+class CalcTest {
+    @ParameterizedTest
+    @CsvSource({"1,2","2,4","-3,-6","0,0"})
+    void duplica(int input, int esperado) {
+        assertEquals(esperado, Calc.doble(input));
+    }
 }
 ```
 
-```bash
-mvn verify
-```
+**Desglose del código**
 
-</details>
+- `@ParameterizedTest` marca el test como parametrizado.
+- `@CsvSource` provee casos de entrada/salida.
+- Agrega casos borde: cero, negativos, máximos, valores inválidos.
+- Usa cobertura (JaCoCo) para detectar huecos, no como objetivo ciego.
+
+**Ejecución y salida real**
+
+Se ejecuta un caso por fila del `CsvSource`; todos deben pasar.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Muchos tests repetidos | No usaste parametrización | Usa `@ParameterizedTest` |
+| 100% cobertura, bugs igual | Aserciones pobres | Prueba comportamientos y bordes |
+| Caso falla por parsing | Tipos de `CsvSource` incompatibles | Ajusta tipos/parámetros |
+
+**Verificación rápida**
+
+Agrega un caso borde más en `CsvSource`. Si el comportamiento cambia, el test debe detectarlo.
 
 ### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Usa JDK 21. La demostración no necesita librerías: implementa la idea en un solo archivo. La versión con jqwik necesita un proyecto Maven o Gradle con la dependencia net.jqwik:jqwik. Crea la carpeta academia-labs/java/propiedades.
+En vez de probar solo ejemplos, quieres verificar una regla: “revertir una lista dos veces devuelve la lista original” para muchas entradas generadas.
 
-#### ► LA IDEA EN UNA FRASE
-**La demostración no necesita librerías: implementa la idea en un solo archivo.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Property-based testing genera muchos inputs y verifica propiedades/invariantes. No reemplaza tests de ejemplo: los complementa.
 
-#### ► LA ANALOGÍA
-Piensa en pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+Herramientas comunes en Java: jqwik, QuickTheories.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    G["Generador<br/>bordes + 1000 al azar<br/>semilla 42"] --> P{"¿propiedad se cumple?"}
-    P -->|sí| N["siguiente caso"]
-    P -->|no| S["encoger hasta el<br/>caso mínimo"]
-    S --> R["reporte: kilos=901"]
-```
+Propiedad típica:
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+- idempotencia;
+- inversa (`reverse(reverse(x)) == x`);
+- invariantes (`size` no cambia);
+- equivalencia con implementación de referencia.
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Implementación desde cero**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada en tu contexto?
-2. ¿Cómo sabrías que pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    G["Generador<br/>bordes + 1000 al azar<br/>semilla 42"] --> P{"¿propiedad se cumple?"}
-    P -->|sí| N["siguiente caso"]
-    P -->|no| S["encoger hasta el<br/>caso mínimo"]
-    S --> R["reporte: kilos=901"]
-```
+Ejemplo conceptual con jqwik:
 
 ```java
-import java.util.Random;
-import java.util.function.IntPredicate;
+import net.jqwik.api.*;
+import java.util.*;
 
-public class PropiedadesTarifa {
-    // Código bajo prueba: tiene un error a propósito para pesos grandes.
-    static long tarifa(int kilos) {
-        if (kilos <= 0) throw new IllegalArgumentException("peso inválido");
-        long base = 1_000 + kilos * 120L;
-        return kilos > 900 ? base - 200_000 : base; // error: descuento mal escrito
-    }
-
-    // Una propiedad es una regla que debe cumplirse para TODA entrada válida.
-    static void comprobar(String nombre, IntPredicate propiedad, Random azar) {
-        int[] bordes = {1, 2, 999, 1_000}; // los generadores serios prueban primero los bordes
-        for (int i = 0; i < 1_000; i++) {
-            int kilos = i < bordes.length ? bordes[i] : 1 + azar.nextInt(1_000);
-            if (!propiedad.test(kilos)) {
-                int minimo = encoger(kilos, propiedad);
-                System.out.println("FALLA " + nombre + " con kilos=" + kilos + ", caso mínimo kilos=" + minimo);
-                return;
-            }
-        }
-        System.out.println("OK " + nombre + " en 1000 casos");
-    }
-
-    // Encoger: busca el valor más pequeño que sigue fallando, para depurar fácil.
-    static int encoger(int falla, IntPredicate propiedad) {
-        int minimo = falla;
-        for (int k = falla - 1; k >= 1; k--) if (!propiedad.test(k)) minimo = k;
-        return minimo;
-    }
-
-    public static void main(String[] args) {
-        Random azar = new Random(42); // semilla fija: el fallo se puede repetir
-        comprobar("tarifa positiva", k -> tarifa(k) > 0, azar);
-        comprobar("tarifa crece con el peso", k -> tarifa(k + 1) >= tarifa(k), azar);
-        comprobar("tarifa mínima de 1120", k -> tarifa(k) >= 1_120, azar);
-    }
-}
-```
-
-```java
-import net.jqwik.api.ForAll;
-import net.jqwik.api.Property;
-import net.jqwik.api.constraints.IntRange;
-
-class TarifaPropiedadesTest {
-    @Property // jqwik genera 1000 casos, prueba bordes y encoge los fallos
-    boolean tarifaPositiva(@ForAll @IntRange(min = 1, max = 1_000) int kilos) {
-        return PropiedadesTarifa.tarifa(kilos) > 0;
-    }
-
+class ReversePropertyTest {
     @Property
-    boolean tarifaCreceConElPeso(@ForAll @IntRange(min = 1, max = 999) int kilos) {
-        return PropiedadesTarifa.tarifa(kilos + 1) >= PropiedadesTarifa.tarifa(kilos);
+    boolean reverseTwiceIsOriginal(@ForAll List<Integer> list) {
+        List<Integer> copy = new ArrayList<>(list);
+        Collections.reverse(copy);
+        Collections.reverse(copy);
+        return copy.equals(list);
     }
 }
 ```
 
-```bash
-cd academia-labs/java/propiedades
-java PropiedadesTarifa.java
-# versión con jqwik, dentro de un proyecto Maven con net.jqwik:jqwik en test:
-# mvn test
-```
+**Desglose del código**
 
-```text
-FALLA tarifa positiva con kilos=999, caso mínimo kilos=901
-OK tarifa crece con el peso en 1000 casos
-FALLA tarifa mínima de 1120 con kilos=999, caso mínimo kilos=901
-```
+- `@Property` indica una propiedad a verificar con muchos datos.
+- `@ForAll` genera entradas variadas.
+- La propiedad debe ser verdadera para cualquier entrada válida del dominio.
+- Cuando falla, el framework intenta reducir el caso a un contraejemplo mínimo.
 
-</details>
+**Ejecución y salida real**
+
+El runner de jqwik reporta cantidad de intentos y, si falla, el contraejemplo reducido.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Propiedad falsa por dominio mal definido | Generaste inputs inválidos | Restringe generadores |
+| Test lento o flaky | Propiedad costosa/no determinista | Limita tamaño, evita tiempo/aleatoriedad no controlada |
+| Confías solo en properties | Faltan casos de ejemplo legibles | Combina ejemplos + propiedades |
+
+**Verificación rápida**
+
+Agrega una propiedad simple sobre una función pura y verifica que el runner ejecuta múltiples casos.
+
+## Cierre del módulo
+
+Con JUnit, Mockito, tests parametrizados y propiedades, puedes construir una red de seguridad real. El siguiente módulo entra al diseño interno de la JVM: classloaders, bytecode, GC y JIT.

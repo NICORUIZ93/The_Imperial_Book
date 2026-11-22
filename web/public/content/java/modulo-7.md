@@ -1,283 +1,237 @@
-# Módulo 7: Sealed classes y pattern matching
+# Módulo 7: Logging y depuración
 
-**Prerrequisito:** `record` se enseña en [M1 T5](/curso/java/1); este módulo lo combina con jerarquías `sealed` y patrones.
+Cuando un programa falla en producción, `System.out.println` no alcanza: no tiene niveles, no tiene contexto, no se puede filtrar ni enrutar. El logging estructurado y una depuración metódica permiten entender qué pasó, cuándo y por qué. Este módulo cubre SLF4J/Logback, MDC y técnicas prácticas de depuración.
 
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Usar SLF4J con niveles y placeholders correctamente |
+| 2 | Agregar contexto con MDC para rastrear solicitudes |
+| 3 | Depurar fallos con stack traces, breakpoints y reproducibilidad |
 
 ## Aprende construyendo
 
+### Tema 1: SLF4J y Logback — logging estructurado · Intermedio · 40 min
 
-### Tema 1: sealed — jerarquías cerradas y exhaustividad · Intermedio · 40 min
+**Caso guía**
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+Tu aplicación procesa guías. En desarrollo usabas `println`, pero en producción necesitas saber si un mensaje es información, advertencia o error, y poder activarlo por nivel sin recompilar.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por sealed — jerarquías cerradas y exhaustividad con foco en comprensión antes de implementación.
+**Concepto clave / modelo mental**
 
-#### ► LA IDEA EN UNA FRASE
-**Entender sealed — jerarquías cerradas y exhaustividad te permite tomar mejores decisiones técnicas.**
+SLF4J es una fachada de logging: tu código depende de la API SLF4J. Logback (u otro backend) implementa el comportamiento real.
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Niveles comunes:
 
-#### ► LA ANALOGÍA
-Piensa en sealed — jerarquías cerradas y exhaustividad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+| Nivel | Uso |
+|---|---|
+| `ERROR` | Fallo que requiere atención |
+| `WARN` | Situación anómala pero recuperable |
+| `INFO` | Eventos normales relevantes |
+| `DEBUG` | Detalle para diagnóstico |
+| `TRACE` | Detalle muy fino |
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que sealed — jerarquías cerradas y exhaustividad resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+Usa placeholders `{}` en vez de concatenar strings: evita construir mensajes innecesarios cuando el nivel está desactivado.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| sealed — jerarquías cerradas y exhaustividad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar sealed — jerarquías cerradas y exhaustividad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses sealed — jerarquías cerradas y exhaustividad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: sealed — jerarquías cerradas y exhaustividad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- sealed — jerarquías cerradas y exhaustividad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve sealed — jerarquías cerradas y exhaustividad en tu contexto?
-2. ¿Cómo sabrías que sealed — jerarquías cerradas y exhaustividad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar sealed — jerarquías cerradas y exhaustividad?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-sealed interface EstadoEntrega permits Creada, EnRuta, Entregada {}
-record Creada() implements EstadoEntrega {}
-record EnRuta(String zona) implements EstadoEntrega {}
-record Entregada(String receptor) implements EstadoEntrega {}
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class EstadoEntregaDemo {
+public class DemoLogging {
+    private static final Logger log = LoggerFactory.getLogger(DemoLogging.class);
+
     public static void main(String[] args) {
-        EstadoEntrega estado = new EnRuta("Norte");
-        System.out.println(estado);
+        String guia = "G-1";
+        log.info("Procesando guia {}", guia);
+        log.debug("Detalle interno guia={}", guia);
+        try {
+            int x = Integer.parseInt("NO");
+        } catch (NumberFormatException e) {
+            log.error("Error procesando guia {}", guia, e);
+        }
     }
 }
 ```
 
-```bash
-javac -d out src/EstadoEntrega.java
-java -cp out EstadoEntregaDemo
+**Desglose del código**
+
+- `LoggerFactory.getLogger(...)` crea un logger por clase.
+- `log.info("... {}", guia)` pasa el valor como argumento; SLF4J lo interpola si el nivel aplica.
+- `log.error(..., e)` incluye la excepción y su stack trace en el log.
+- No loguees secretos, tokens o datos sensibles.
+
+**Ejecución y salida real**
+
+Con SLF4J + backend simple configurado:
+
+```text
+INFO  DemoLogging - Procesando guia G-1
+ERROR DemoLogging - Error procesando guia G-1
+java.lang.NumberFormatException: For input string: "NO"
+...
 ```
 
-```bash
-javac -d out src/EstadoEntrega.java
-java -cp out EstadoEntregaDemo
-```
+El formato exacto depende de la configuración de Logback/simple logger.
 
-```bash
-javac -d out src/EstadoEntrega.java
-```
+**Errores comunes y cómo resolverlos**
 
-</details>
-
-### Tema 2: Pattern matching exhaustivo y para instanceof · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por pattern matching exhaustivo y para instanceof con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender pattern matching exhaustivo y para instanceof te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pattern matching exhaustivo y para instanceof como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que pattern matching exhaustivo y para instanceof resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Pattern matching exhaustivo y para instanceof se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| `No SLF4J providers were found` | Falta backend en classpath | Agrega `logback-classic` o `slf4j-simple` |
+| Logs duplicados | Configuración de appenders/loggers mal armada | Revisa additivity y appenders |
+| Concatenas strings costosas | `"a"+obj` en debug | Usa placeholders `{}` |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Pattern matching exhaustivo y para instanceof | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Verificación rápida**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses pattern matching exhaustivo y para instanceof por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+Ejecuta con un backend SLF4J en classpath y verifica que el nivel INFO aparece y DEBUG puede activarse por configuración.
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pattern matching exhaustivo y para instanceof funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+### Tema 2: MDC — contexto por request/hilo · Intermedio · 35 min
 
-#### ► LO QUE DEBES RECORDAR
-- Pattern matching exhaustivo y para instanceof existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
+**Caso guía**
 
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pattern matching exhaustivo y para instanceof en tu contexto?
-2. ¿Cómo sabrías que pattern matching exhaustivo y para instanceof no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pattern matching exhaustivo y para instanceof?
+Dos solicitudes se procesan al mismo tiempo. En los logs ves “procesando guía”, pero no sabes a qué request pertenece cada línea. Necesitas un identificador de correlación.
 
-</details>
+**Concepto clave / modelo mental**
 
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
+MDC (Mapped Diagnostic Context) es un mapa de contexto asociado al hilo actual. Puedes poner valores como `requestId` y hacer que el patrón de logging los imprima en cada línea.
 
-#### Código y verificación
+Reglas:
+
+- pon el valor al inicio del procesamiento;
+- límpialo en `finally`;
+- en virtual threads/tareas async, propaga el contexto explícitamente si cruza límites.
+
+**Implementación desde cero**
+
 ```java
-static boolean sePuedeReprogramar(EstadoEntrega e) {
-    return switch (e) {
-        case Creada c -> true;
-        case EnRuta r -> true;
-        case Entregada x -> false;
-    };
-}
-public static void main(String[] args) {
-    System.out.println(sePuedeReprogramar(new EnRuta("Norte")));
-}
-```
+import org.slf4j.*;
 
-```bash
-javac -d out src/EstadoEntrega.java src/Reprogramar.java
-java -cp out Reprogramar
-```
+public class DemoMDC {
+    private static final Logger log = LoggerFactory.getLogger(DemoMDC.class);
 
-```bash
-javac -d out src/EstadoEntrega.java src/Reprogramar.java
-java -cp out Reprogramar
-```
-
-```bash
-javac -d out src/EstadoEntrega.java src/Reprogramar.java
-java -cp out Reprogramar
-```
-
-</details>
-
-### Tema 3: Unnamed variables y patterns (_, Java 22) · Intermedio · 35 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por unnamed variables y patterns (_, java 22) con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender unnamed variables y patterns (_, java 22) te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en unnamed variables y patterns (_, java 22) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que unnamed variables y patterns (_, java 22) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Unnamed variables y patterns (_, Java 22) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Unnamed variables y patterns (_, Java 22) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses unnamed variables y patterns (_, java 22) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: unnamed variables y patterns (_, java 22) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Unnamed variables y patterns (_, Java 22) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve unnamed variables y patterns (_, java 22) en tu contexto?
-2. ¿Cómo sabrías que unnamed variables y patterns (_, java 22) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar unnamed variables y patterns (_, java 22)?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-record Dimensiones(int x, int y, int z) {}
-record Paquete(Dimensiones dimensiones, String destino) {}
-public class ResumenPaquete {
-    static String resumen(Object valor) {
-        return switch (valor) {
-            case Paquete(Dimensiones _, String destino) -> "Destino: " + destino;
-            default -> "No es un paquete";
-        };
+    static void procesar(String requestId) {
+        MDC.put("requestId", requestId);
+        try {
+            log.info("inicio");
+            log.info("fin");
+        } finally {
+            MDC.remove("requestId");
+        }
     }
+
     public static void main(String[] args) {
-        System.out.println(resumen(new Paquete(new Dimensiones(1, 2, 3), "Norte")));
+        procesar("req-1");
+        procesar("req-2");
     }
 }
 ```
 
-```bash
-javac -d out src/ResumenPaquete.java
-java -cp out ResumenPaquete
+**Desglose del código**
+
+- `MDC.put("requestId", requestId)` agrega contexto al hilo actual.
+- El layout de logging debe incluir `%X{requestId}` o equivalente.
+- `MDC.remove`/`clear` en `finally` evita fugas de contexto en pools de hilos.
+- El contexto facilita correlacionar logs en sistemas concurrentes.
+
+**Ejecución y salida real**
+
+Con patrón que incluya MDC:
+
+```text
+INFO DemoMDC [req-1] - inicio
+INFO DemoMDC [req-1] - fin
+INFO DemoMDC [req-2] - inicio
+INFO DemoMDC [req-2] - fin
 ```
 
-```bash
-javac -d out src/Convertir.java
-java -cp out Convertir abc
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| requestId aparece en logs de otra request | No limpiaste MDC en pool | Usa `finally { MDC.remove(...) }` |
+| MDC vacío | Patrón de log no lo imprime | Configura `%X{requestId}` |
+| Contexto perdido en async | El hilo cambió | Propaga MDC al ejecutar tareas |
+
+**Verificación rápida**
+
+Configura el patrón de logging para mostrar `requestId` y verifica que cada bloque de logs queda asociado al ID correcto.
+
+### Tema 3: Depuración y stack traces · Básico · 30 min
+
+**Caso guía**
+
+Un programa lanza `NullPointerException` solo con ciertos datos. Necesitas encontrar la causa raíz, no solo el síntoma.
+
+**Concepto clave / modelo mental**
+
+Depurar es reducir incertidumbre: reproducir, observar, aislar, corregir, verificar.
+
+Stack trace: léelo de arriba hacia abajo para el tipo de error, y busca la primera línea de **tu** código: suele ser el punto más cercano a la causa.
+
+Herramientas:
+
+- mensajes de excepción y causa (`getCause`);
+- breakpoints y step over/into;
+- logs con contexto;
+- pruebas pequeñas que reproduzcan el fallo.
+
+**Implementación desde cero**
+
+```java
+public class DemoDebug {
+    static String normalizar(String texto) {
+        return texto.trim().toLowerCase();
+    }
+
+    public static void main(String[] args) {
+        String[] valores = {" Ada ", null};
+        for (String v : valores) {
+            try {
+                System.out.println(normalizar(v));
+            } catch (Exception e) {
+                System.out.println("Fallo con valor=" + v);
+                e.printStackTrace(System.out);
+            }
+        }
+    }
+}
 ```
 
-```bash
-javac -d out src/Consulta.java
-java -cp out Consulta
+**Desglose del código**
+
+- `null.trim()` produce `NullPointerException`.
+- El `catch` imprime el valor que causó el fallo; eso hace reproducible el problema.
+- `printStackTrace` es útil en ejercicios; en aplicaciones reales usa logger con excepción.
+- La corrección puede ser validar `null`, rechazarlo o usar `Optional`, según el contrato.
+
+**Ejecución y salida real**
+
+```text
+ada
+Fallo con valor=null
+java.lang.NullPointerException: Cannot invoke "String.trim()" because "texto" is null
+    at DemoDebug.normalizar(...)
 ```
 
-</details>
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Lees solo el final del stack trace | Te perdiste la causa | Ubica la primera línea de tu código |
+| Corriges el síntoma, no la causa | Parche local | Reproduce, identifica contrato y corrige en origen |
+| No puedes reproducir | Falta contexto | Registra inputs, estado y entorno |
+
+**Verificación rápida**
+
+```bash
+javac DemoDebug.java && java DemoDebug
+```
+
+Corrige `normalizar` para manejar `null` explícitamente y define el comportamiento esperado.
+
+## Cierre del módulo
+
+El logging te da visibilidad; la depuración te da método. Con SLF4J, MDC y lectura de stack traces puedes diagnosticar fallos sin adivinar. En el siguiente módulo verás cómo construir y empaquetar proyectos con Maven y Gradle.

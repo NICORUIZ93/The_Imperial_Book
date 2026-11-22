@@ -1,328 +1,294 @@
 # Módulo 8: Build tools — Maven y Gradle
 
+Compilar a mano con `javac` sirve para aprender, pero un proyecto real necesita dependencias, tests, empaquetado, versiones y tareas repetibles. Maven y Gradle automatizan ese ciclo. Este módulo enseña a leer ambos, entender su ciclo de vida y elegir con criterio.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Entender la estructura de `pom.xml` y `build.gradle.kts` |
+| 2 | Ejecutar el ciclo de build y configurar scopes/configurations |
+| 3 | Reconocer cuándo un proyecto multi-módulo tiene sentido |
+| 4 | Comparar el mismo proyecto en Maven y Gradle |
 
 ## Aprende construyendo
 
-
 ### Tema 1: pom.xml vs build.gradle.kts · Básico · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por pom.xml vs build.gradle.kts con foco en comprensión antes de implementación.
+Recibes dos proyectos Java: uno usa Maven, otro Gradle. Necesitas saber dónde están las dependencias, la versión de Java, el nombre del artefacto y cómo ejecutar tests.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender pom.xml vs build.gradle.kts te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en pom.xml vs build.gradle.kts como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que pom.xml vs build.gradle.kts resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Aspecto | Maven | Gradle |
 |---|---|---|
-| pom.xml vs build.gradle.kts se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Archivo principal | `pom.xml` | `build.gradle.kts` |
+| Modelo | Declarativo, convención fuerte | DSL programable sobre tareas |
+| Dependencias | `<dependencies>` | `dependencies { ... }` |
+| Salida típica | `target/` | `build/` |
+| Wrapper | `mvnw` | `gradlew` |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar pom.xml vs build.gradle.kts | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+Maven favorece convención y uniformidad; Gradle favorece flexibilidad y rendimiento. Ambos son herramientas maduras.
 
-#### ► CUÁNDO NO USAR ESTO
-No uses pom.xml vs build.gradle.kts por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+**Implementación desde cero**
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: pom.xml vs build.gradle.kts funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+Maven mínimo (`pom.xml`):
 
-#### ► LO QUE DEBES RECORDAR
-- pom.xml vs build.gradle.kts existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve pom.xml vs build.gradle.kts en tu contexto?
-2. ¿Cómo sabrías que pom.xml vs build.gradle.kts no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar pom.xml vs build.gradle.kts?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>academia</groupId>
-    <artifactId>rutas</artifactId>
-    <version>1.0</version>
-    <properties>
-        <maven.compiler.release>25</maven.compiler.release>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.academia</groupId>
+  <artifactId>demo</artifactId>
+  <version>1.0.0</version>
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>5.11.0</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 </project>
 ```
 
-```java
-public class Saludo {
-    public static void main(String[] args) {
-        System.out.println("Ruta lista");
-    }
-}
+Gradle mínimo (`build.gradle.kts`):
+
+```kotlin
+plugins { java }
+group = "com.academia"
+version = "1.0.0"
+repositories { mavenCentral() }
+dependencies { testImplementation("org.junit.jupiter:junit-jupiter:5.11.0") }
+tasks.test { useJUnitPlatform() }
 ```
 
-```java
-// src/main/java/Saludo.java
-public class Saludo {
-    public static void main(String[] args) {
-        System.out.println("Ruta lista");
-    }
-}
-```
+**Desglose del código**
+
+- `groupId/artifactId/version` identifican el artefacto en Maven; en Gradle, `group` y `version`.
+- `maven.compiler.release` fija la versión de Java objetivo.
+- `scope test` en Maven equivale conceptualmente a `testImplementation` en Gradle.
+- El wrapper (`mvnw`/`gradlew`) permite construir sin instalar la herramienta globalmente.
+
+**Ejecución y salida real**
 
 ```bash
-mvn package
-java -cp target/classes Saludo
+mvn -q test
+./gradlew test
 ```
 
-</details>
+La salida depende del proyecto, pero ambos ejecutan compilación y pruebas según su configuración.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Dependencia no encontrada | Repositorio o coordenada mal escrita | Verifica group/artifact/version |
+| Compila con Java incorrecto | Release/source no configurado | Fija `maven.compiler.release` o toolchain Gradle |
+| “Works on my machine” | No usan wrapper | Versiona y usa `mvnw`/`gradlew` |
+
+**Verificación rápida**
+
+Crea un proyecto mínimo, agrega JUnit y ejecuta `test` con wrapper. El build debe pasar en una máquina limpia con JDK instalado.
 
 ### Tema 2: Ciclo de vida de build y scopes · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por ciclo de vida de build y scopes con foco en comprensión antes de implementación.
+Un colega dice “corre `mvn package`” y otro “corre `./gradlew build`”. Quieres saber qué etapas se ejecutan y por qué una dependencia está en `test` y no en producción.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender ciclo de vida de build y scopes te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Maven tiene ciclos de vida por fases: `validate`, `compile`, `test`, `package`, `verify`, `install`, `deploy`. Ejecutar una fase ejecuta las anteriores.
 
-#### ► LA ANALOGÍA
-Piensa en ciclo de vida de build y scopes como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+Gradle tiene tareas y grafo de dependencias entre tareas: `build` depende de `check`, `check` depende de `test`, etc.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que ciclo de vida de build y scopes resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+Scopes/configurations:
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Maven | Gradle | Uso |
 |---|---|---|
-| Ciclo de vida de build y scopes se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| `compile` | `implementation` | Código de producción |
+| `test` | `testImplementation` | Solo tests |
+| `runtime` | `runtimeOnly` | Necesario al ejecutar, no al compilar |
+| `provided` | `compileOnly` | Lo provee el entorno |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Ciclo de vida de build y scopes | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Implementación desde cero**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses ciclo de vida de build y scopes por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+```bash
+# Maven
+mvn clean test
+mvn package
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: ciclo de vida de build y scopes funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
+# Gradle
+./gradlew clean test
+./gradlew build
+```
 
-#### ► LO QUE DEBES RECORDAR
-- Ciclo de vida de build y scopes existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
+Ejemplo de dependencia por scope/configuration:
 
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve ciclo de vida de build y scopes en tu contexto?
-2. ¿Cómo sabrías que ciclo de vida de build y scopes no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar ciclo de vida de build y scopes?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```xml
-<!-- pom.xml: JUnit solo disponible para pruebas -->
 <dependency>
-    <groupId>org.junit.jupiter</groupId>
-    <artifactId>junit-jupiter</artifactId>
-    <version>5.11.0</version>
-    <scope>test</scope>
+  <groupId>org.projectlombok</groupId>
+  <artifactId>lombok</artifactId>
+  <version>1.18.34</version>
+  <scope>provided</scope>
 </dependency>
 ```
 
-```bash
-mvn clean compile test package
-jar tf target/rutas-1.0.jar
+```kotlin
+dependencies {
+    compileOnly("org.projectlombok:lombok:1.18.34")
+    annotationProcessor("org.projectlombok:lombok:1.18.34")
+}
 ```
 
-</details>
+**Desglose del código**
+
+- `clean` elimina artefactos previos (`target/` o `build/`).
+- `test` compila y ejecuta pruebas.
+- `package/build` produce el artefacto entregable.
+- Usar `test` scope evita llevar JUnit al JAR de producción.
+
+**Ejecución y salida real**
+
+Deberías ver fases/tareas ejecutadas en orden y un resultado `BUILD SUCCESS` o `BUILD SUCCESSFUL`.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Dependencia de test llega a runtime | Scope/configuración mal puesta | Revisa `test`/`testImplementation` |
+| Build lento por no entender tareas | Ejecutas más de lo necesario | Usa la tarea/fase mínima para tu objetivo |
+| Tests no corren en JUnit 5 | Falta plataforma/configuración | En Gradle agrega `useJUnitPlatform()` |
+
+**Verificación rápida**
+
+Ejecuta `mvn test` o `./gradlew test` y confirma que solo se ejecutan pruebas, no empaquetado innecesario.
 
 ### Tema 3: Proyectos multi-módulo · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por proyectos multi-módulo con foco en comprensión antes de implementación.
+Tu aplicación crece: dominio, API y persistencia empiezan a mezclarse. Quieres separar módulos con límites claros y builds reutilizables.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender proyectos multi-módulo te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Un multi-módulo divide un proyecto en artefactos/módulos con dependencias explícitas.
 
-#### ► LA ANALOGÍA
-Piensa en proyectos multi-módulo como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+Usa multi-módulo cuando:
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que proyectos multi-módulo resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+- hay límites claros entre componentes;
+- equipos trabajan en partes distintas;
+- quieres reutilizar módulos;
+- el build/ownership se beneficia.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Proyectos multi-módulo se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+Evítalo al inicio si solo agrega complejidad.
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Proyectos multi-módulo | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Implementación desde cero**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses proyectos multi-módulo por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
+Maven (`pom.xml` padre):
 
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: proyectos multi-módulo funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Proyectos multi-módulo existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve proyectos multi-módulo en tu contexto?
-2. ¿Cómo sabrías que proyectos multi-módulo no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar proyectos multi-módulo?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```xml
-<!-- app/pom.xml: app depende del módulo compartido modelo -->
-<dependency>
-    <groupId>academia</groupId>
-    <artifactId>modelo</artifactId>
-    <version>1.0</version>
-</dependency>
+<modules>
+  <module>domain</module>
+  <module>api</module>
+</modules>
 ```
+
+Gradle (`settings.gradle.kts`):
+
+```kotlin
+rootProject.name = "demo"
+include("domain", "api")
+```
+
+Dependencia entre módulos (Gradle):
+
+```kotlin
+dependencies {
+    implementation(project(":domain"))
+}
+```
+
+**Desglose del código**
+
+- El padre/agregador coordina módulos.
+- Cada módulo tiene su propio build y dependencias.
+- Las dependencias entre módulos hacen visible la arquitectura.
+- Evita dependencias cíclicas: son señal de mal límite.
+
+**Ejecución y salida real**
 
 ```bash
-mvn -q -pl app -am package
+mvn -q -DskipTests package
+./gradlew build
 ```
 
-</details>
+El build compila módulos en orden según dependencias.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Ciclo entre módulos | Límites mal definidos | Extrae contrato común o invierte dependencia |
+| Build complejo demasiado pronto | Sobreingeniería | Empieza simple; modulariza cuando duela |
+| Versionado inconsistente | Cada módulo con versiones sueltas | Centraliza versiones/BOM/propiedades |
+
+**Verificación rápida**
+
+Crea dos módulos (`domain`, `api`) donde `api` depende de `domain` y verifica que el build falla si inviertes la dependencia sin declararla.
 
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Contexto y para qué sirve**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por maven y gradle lado a lado — el mismo proyecto en dos herramientas con foco en comprensión antes de implementación.
+En equipos reales te encontrarás ambos. Saber traducir mentalmente de uno a otro te evita quedarte bloqueado por la herramienta.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender maven y gradle lado a lado — el mismo proyecto en dos herramientas te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+No memorices comandos aislados; mapea intenciones:
 
-#### ► LA ANALOGÍA
-Piensa en maven y gradle lado a lado — el mismo proyecto en dos herramientas como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que maven y gradle lado a lado — el mismo proyecto en dos herramientas resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
+| Intención | Maven | Gradle |
 |---|---|---|
-| Maven y Gradle lado a lado — el mismo proyecto en dos herramientas se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+| Compilar | `mvn compile` | `./gradlew classes` |
+| Tests | `mvn test` | `./gradlew test` |
+| Empaquetar | `mvn package` | `./gradlew build` |
+| Limpiar | `mvn clean` | `./gradlew clean` |
+| Dependencias | `mvn dependency:tree` | `./gradlew dependencies` |
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Maven y Gradle lado a lado — el mismo proyecto en dos herramientas | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
+**Implementación desde cero**
 
-#### ► CUÁNDO NO USAR ESTO
-No uses maven y gradle lado a lado — el mismo proyecto en dos herramientas por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: maven y gradle lado a lado — el mismo proyecto en dos herramientas funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Maven y Gradle lado a lado — el mismo proyecto en dos herramientas existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve maven y gradle lado a lado — el mismo proyecto en dos herramientas en tu contexto?
-2. ¿Cómo sabrías que maven y gradle lado a lado — el mismo proyecto en dos herramientas no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar maven y gradle lado a lado — el mismo proyecto en dos herramientas?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```bash
-mvn clean test
-./gradlew clean test
+# Ver árbol de dependencias
+mvn dependency:tree
+./gradlew dependencies --configuration runtimeClasspath
 ```
 
-</details>
+**Desglose del código**
+
+- `dependency:tree`/`dependencies` ayudan a detectar conflictos y versiones transitivas.
+- La configuración de Gradle (`runtimeClasspath`, `testRuntimeClasspath`) es más granular.
+- Maven es más rígido; eso reduce sorpresas. Gradle es más flexible; eso exige disciplina.
+
+**Ejecución y salida real**
+
+Ambos comandos muestran dependencias directas y transitivas, con formatos distintos.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Conflicto de versiones transitivas | Dos libs traen versiones distintas | Inspecciona árbol y fuerza/alinea versión |
+| Plugin/tarea hace “magia” | No entiendes el build script | Ejecuta con `-X`/`--info` o revisa tareas |
+| Copias scripts sin entender | Deuda en el build | Documenta el propósito de cada tarea/fase |
+
+**Verificación rápida**
+
+En un proyecto con dependencias, ejecuta el árbol de dependencias en Maven o Gradle y ubica una dependencia transitiva.
+
+## Cierre del módulo
+
+Puedes leer y operar builds en Maven y Gradle, entender scopes, fases/tareas y estructura multi-módulo. El siguiente paso es asegurar calidad: pruebas automatizadas con JUnit y Mockito.
