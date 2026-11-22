@@ -41,9 +41,10 @@ repetirlo todo en cada tema, porque eso haría el libro ilegible.
 
 ### Fase B — explicación desde cero (por lotes)
 
-- **C6** `pendiente` — Auditor de prerrequisitos: detecta términos técnicos usados antes de
-  definirse en el mismo tema o en temas anteriores publicados. Sirve para medir, no para
-  legalizar deuda.
+- **C6** `hecho` — Auditor de prerrequisitos: detecta ausencia de declaración de prerrequisitos y
+  términos técnicos de alta señal usados antes de definirse/verlos en el curso. Genera informes en
+  `docs/auditoria/prerrequisitos.{md,csv,json}`; `--check` solo falla en cursos declarados en
+  `docs/reestructuracion/cursos-desde-cero.json` para migrar por lotes sin legalizar deuda.
   Verificación: `python3 scripts/audit_prerrequisitos.py --resumen`
 
 - **C7** `pendiente` — **Piloto, una línea por lote**: Fundamentos, Microservicios y Angular.

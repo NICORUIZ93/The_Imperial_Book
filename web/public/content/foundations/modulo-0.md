@@ -132,7 +132,7 @@ Al finalizar podrás distinguir CPU, memoria, almacenamiento, periféricos, sist
 | Recursos, concurrencia y planificación | Profundización | tener varias CPU lógicas no vuelve paralelo cualquier programa |
 | Código de salida | Diagnóstico | `0` indica terminación normal; otro valor comunica un fallo |
 
-La **CPU** ejecuta instrucciones; sus núcleos y procesadores lógicos permiten trabajo concurrente, pero el sistema operativo decide cuándo se ejecuta cada hilo. La **RAM** mantiene instrucciones y datos del trabajo activo y es volátil. El **almacenamiento** conserva archivos sin energía. SSD y RAM no son intercambiables: difieren en persistencia, latencia, capacidad y función.
+La **CPU** (unidad central de procesamiento) ejecuta instrucciones; sus núcleos y procesadores lógicos permiten trabajo concurrente, pero el sistema operativo decide cuándo se ejecuta cada hilo. La **RAM** (memoria de acceso aleatorio) mantiene instrucciones y datos del trabajo activo y es volátil: se borra al apagarse. El **almacenamiento** conserva archivos sin energía. SSD y RAM no son intercambiables: difieren en persistencia, tiempo de acceso (**latencia**: cuánto tarda en responder), capacidad y función.
 
 El **sistema operativo** administra procesos, memoria, dispositivos, archivos, permisos y red, y ofrece interfaces que los programas utilizan. Un **programa** es el conjunto persistente de instrucciones y recursos; un **proceso** es una instancia activa con PID, memoria y recursos propios. Ejecutar dos veces el mismo archivo crea ejecuciones distintas aunque el programa guardado sea uno.
 
