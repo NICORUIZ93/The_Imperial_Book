@@ -1,59 +1,71 @@
-# Módulo 19: Empaquetado y despliegue
+# Módulo 19: Despliegue y runtime moderno
 
-Cubre JARs, imágenes OCI, configuración por entorno, secretos y despliegue seguro.
+Desplegar Spring Boot requiere empaquetar, configurar, observar y migrar de forma segura. Este módulo cubre jars, imágenes OCI, config/secretos y migraciones en despliegue.
 
-**Entorno (2026-05-22):** JDK 27, Maven 3.10.0, Docker 29.9.3.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Docker 29.9.3, Spring Boot 3.5.0.
 
 ## Aprende construyendo
 
 ### Tema 1: Jar ejecutable y capas · Intermedio · 35 min
-#### Fat/boot jar y capas
-**Definición formal.** Boot jar empaqueta app y dependencias; layering separa dependencias/código para optimizar imagen Docker.
-**Para qué sirve.** Despliegue reproducible.
-**Cuándo usarlo.** Deploy estándar de Spring Boot.
-**Ejemplo mínimo enfocado (comando).**
+
+Caso guía: generar artefacto ejecutable para servidor.
+
+#### Boot jar
+
+**Definición formal.** Jar ejecutable con dependencias y launcher de Spring Boot. Las capas permiten optimizar imágenes Docker.
+
+**Ejemplo mínimo.**
+
 ```bash
-./mvnw -DskipTests package
-java -jar target/*.jar
+mvn -q -DskipTests package
+java -jar target/app.jar
 ```
-**Caso de uso real.** Deploy en VM/contenedor.
-**Error común.** Empaquetar secretos en jar. Corrección: externalizar config.
-**Verificación.** **Nota:** requiere proyecto Maven.
+
+**Error común.** Empaquetar con config local hardcodeada. Corrección: externalizar config.
 
 ### Tema 2: Imagen OCI con Buildpacks/Jib · Avanzado · 40 min
-#### Imagen OCI
-**Definición formal.** Imagen de contenedor estándar OCI construida desde la app.
-**Para qué sirve.** Runtime consistente.
-**Cuándo usarlo.** Kubernetes/containers.
-**Ejemplo mínimo enfocado (comando).**
+
+Caso guía: crear imagen reproducible.
+
+#### Buildpacks/Jib
+
+**Definición formal.** Buildpacks generan imagen OCI sin Dockerfile manual; Jib construye imagen Java optimizada desde Maven/Gradle.
+
+**Ejemplo mínimo.**
+
 ```bash
-./mvnw spring-boot:build-image
+mvn -q spring-boot:build-image
 ```
-**Caso de uso real.** Imagen para k8s.
-**Error común.** Usar tag `latest` en prod. Corrección: tags inmutables/digest.
-**Verificación.** **Nota:** requiere Docker.
+
+**Error común.** Imagen gigante y no reproducible. Corrección: capas, base image confiable, versiones fijadas.
+
+**Nota de verificación.** Docker disponible; build puede ser pesado.
 
 ### Tema 3: Config, secretos y migraciones en despliegue · Avanzado · 40 min
-#### Config externa
-**Definición formal.** Configuración suministrada por entorno (env vars, config maps, secret stores), no hardcodeada.
-**Para qué sirve.** Mismo artefacto en todos los entornos.
-**Cuándo usarlo.** Siempre.
-**Ejemplo mínimo enfocado (ejecutable).**
-```bash
-DB_URL=jdbc:postgres://db/app java -jar app.jar
-```
-**Caso de uso real.** Credenciales desde secret manager.
-**Error común.** Secretos en repo. Corrección: secret manager.
-**Verificación.** **Nota:** depende de entorno.
 
-#### Migraciones en deploy
-**Definición formal.** Aplicar cambios de esquema de forma controlada durante despliegue.
-**Para qué sirve.** Compatibilidad de código+BD.
-**Cuándo usarlo.** Cambios de esquema.
-**Ejemplo mínimo enfocado.** Flyway al arranque o job previo.
-**Caso de uso real.** Expand/contract migration.
-**Error común.** Cambio destructivo incompatible con versión vieja. Corrección: migración backward-compatible.
-**Verificación.** **Nota:** requiere BD.
+Caso guía: desplegar v2 con nueva columna.
+
+#### Despliegue seguro
+
+**Definición formal.** Separar config por entorno, inyectar secretos en runtime, aplicar migraciones compatibles hacia adelante (expand/contract).
+
+```mermaid
+flowchart LR
+  V1[App v1] --> DB[(DB)]
+  M[Migración expand] --> DB
+  V2[App v2] --> DB
+  C[Contract cleanup posterior] --> DB
+```
+
+**Error común.** Migración destructiva al mismo tiempo que deploy. Corrección: expand/contract, backward compatibility.
 
 ## Cierre
-Empaqueta una vez, configura por entorno, protege secretos y despliega con migraciones seguras.
+
+El runtime moderno es empaquetado reproducible + config externa + migraciones seguras + observabilidad.
+
+## Checklist
+
+- Empaqueto jar/imagen reproducible.
+- Externalizo config y secretos.
+- Uso migraciones expand/contract.
+- Observo health/metrics/logs en deploy.
