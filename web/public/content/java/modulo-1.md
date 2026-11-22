@@ -261,27 +261,132 @@ La verificación consiste en ejecutar el ejemplo y confirmar que cada empleado c
 
 ### Tema 3: Interfaces, clases abstractas y polimorfismo · Intermedio · 45 min
 
-En el tema anterior, todas las subclases heredaban de una clase concreta `Empleado`. Eso funciona cuando hay comportamiento común para compartir. Pero a veces lo que queremos compartir no es una implementación, sino un contrato: la promesa de que ciertos objetos pueden responder a una operación. Además, puede haber clases que no deberían instanciarse directamente porque están incompletas. Ahí entran las interfaces, las clases abstractas y el polimorfismo.
+Un sistema de cobros puede recibir facturas, recibos y más adelante notas de crédito. Si el código que cobra conoce cada clase concreta, cada nuevo documento obliga a modificar el cobrador. Además, algunas clases comparten datos y comportamiento, pero no tiene sentido instanciarlas por sí mismas: “documento genérico” no es un objeto de negocio válido. Este tema separa tres conceptos que se apoyan entre sí: interfaz como contrato, clase abstracta como base incompleta y polimorfismo como uso uniforme de implementaciones distintas.
 
-#### Interfaces
+#### Interfaz
 
-Una **interfaz** define un contrato de comportamiento. Indica qué métodos debe ofrecer un tipo, sin imponer necesariamente su implementación. En Java se declara con `interface` y se implementa con `implements`. Sirve para desacoplar: el código cliente depende de la capacidad declarada, no de una clase concreta.
+**Definición formal.** Una interfaz es un tipo de referencia que declara un contrato de comportamiento. En Java se define con `interface` y una clase la implementa con `implements`. La interfaz indica qué métodos debe ofrecer un tipo; las clases implementadoras proveen el comportamiento concreto, o quedan abstractas si no lo hacen.
 
-Se usa cuando varios tipos, incluso sin relación de herencia, deben poder tratarse de forma uniforme. Por ejemplo, una factura y un recibo pueden ser “pagables”. No conviene usar una interfaz cuando lo que se necesita es compartir estado y lógica común de una jerarquía; en ese caso una clase abstracta puede encajar mejor. El error común es programar contra implementaciones concretas y perder la extensibilidad. La verificación es que una nueva implementación de la interfaz pueda usarse en el mismo método cliente sin modificarlo.
+**Para qué sirve.** Sirve para desacoplar al código cliente de las implementaciones concretas. El cliente depende de la capacidad declarada —por ejemplo, “puede calcular su total”— y no de la clase específica. Esto permite agregar nuevas implementaciones sin cambiar el código que usa el contrato.
 
-#### Clases abstractas
+**Cuándo usarla y cuándo no.** Se usa cuando varios tipos, incluso sin relación de herencia, deben poder tratarse de forma uniforme. No es la mejor opción cuando lo que se necesita es compartir estado o implementación común en una jerarquía “es un”; en ese caso puede convenir una clase abstracta, o una combinación de interfaz y clase abstracta.
 
-Una **clase abstracta** es una clase que no puede instanciarse directamente y puede contener tanto métodos concretos como métodos abstractos. Se declara con `abstract`. Sirve para compartir implementación y estado común en una jerarquía “es un”, dejando incompletos los puntos que cada subclase debe definir.
+**Ejemplo mínimo enfocado.**
 
-Se usa cuando hay una base común real: campos, constructor, lógica compartida y, a la vez, comportamiento variable. No se usa cuando solo se quiere un contrato sin estado común; para eso la interfaz suele ser mejor. A diferencia de una interfaz, una clase abstracta puede tener campos de instancia, constructores y métodos concretos. Puede además implementar interfaces. El error común es crear una clase abstracta enorme que obliga a heredar demasiadas cosas. La verificación es que `new ClaseAbstracta()` no compile y que las subclases concretas implementen los métodos abstractos requeridos.
+```java
+interface Pagable {
+    double total();
+}
+
+class FacturaSimple implements Pagable {
+    private final double monto;
+    FacturaSimple(double monto) { this.monto = monto; }
+    @Override public double total() { return monto * 1.21; }
+}
+```
+
+El contrato `Pagable` declara `total()`. `FacturaSimple` se compromete a implementarlo. Quien recibe un `Pagable` no necesita saber que es una factura.
+
+**Caso de uso real.** Un servicio de cobranza recibe `Pagable` y registra el total, sin depender de si el origen es factura, recibo o nota de crédito. Un nuevo tipo pagable se integra implementando la interfaz.
+
+**Error común.** Programar contra la clase concreta: `void cobrar(FacturaSimple f)`. El síntoma es que agregar `Recibo` obliga a duplicar o modificar métodos. La corrección es recibir el contrato: `void cobrar(Pagable p)`.
+
+**Verificación.** El ejemplo mínimo se compiló y ejecutó en `/tmp/java-m1-t3-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoInterfaz.java
+java DemoInterfaz
+```
+
+```text
+121.0
+```
+
+#### Clase abstracta
+
+**Definición formal.** Una clase abstracta es una clase declarada con `abstract` que no puede instanciarse directamente. Puede contener métodos abstractos, sin implementación, y métodos concretos, con implementación. También puede tener campos, constructores y estado.
+
+**Para qué sirve.** Sirve para compartir una base común en una jerarquía “es un” cuando parte del comportamiento es común y parte debe ser definido por las subclases. Evita duplicar estado y lógica común, pero obliga a las subclases concretas a completar los métodos abstractos.
+
+**Cuándo usarla y cuándo no.** Se usa cuando hay relación “es un” y existe estado o implementación común real. No se usa cuando solo se necesita un contrato sin estado común; para eso la interfaz es más flexible. Tampoco conviene si la base crece hasta obligar a las subclases a heredar comportamiento que no necesitan.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+abstract class Documento {
+    protected final String id;
+    Documento(String id) { this.id = id; }
+    abstract double total();
+    String etiqueta() { return id + ":" + total(); }
+}
+
+class Recibo extends Documento {
+    private final double monto;
+    Recibo(String id, double monto) { super(id); this.monto = monto; }
+    @Override double total() { return monto; }
+}
+```
+
+`Documento` comparte `id` y `etiqueta()`, pero deja `total()` como responsabilidad de la subclase. `new Documento(...)` no compila porque la clase es abstracta.
+
+**Caso de uso real.** En facturación, `Documento` puede contener id, fecha y validaciones comunes, mientras `Factura` y `Recibo` definen el cálculo de total. La base evita duplicación sin permitir instanciar un documento incompleto.
+
+**Error común.** Convertir la clase abstracta en un contenedor gigante. El síntoma es que subclases heredan campos o métodos irrelevantes. La corrección es mantener en la base solo lo común y estable; si solo se necesita capacidad, preferir interfaz.
+
+**Verificación.** El ejemplo mínimo se compiló y ejecutó en `/tmp/java-m1-t3-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoAbstracta.java
+java DemoAbstracta
+```
+
+```text
+R1:100.0
+```
+
+La línea `new Documento("X")` genera error de compilación si se descomenta, lo que confirma que la clase abstracta no es instanciable.
 
 #### Polimorfismo
 
-El **polimorfismo** permite tratar objetos de distintos tipos concretos a través de un tipo común y ejecutar en tiempo de ejecución la implementación correspondiente al objeto real. Su propósito es reducir acoplamiento y permitir extensión: el código cliente trabaja con el contrato y no con cada variante concreta.
+**Definición formal.** El polimorfismo es la capacidad de tratar objetos de distintos tipos concretos a través de un tipo común y ejecutar, en tiempo de ejecución, la implementación correspondiente al objeto real. En Java, esto ocurre cuando se invoca un método sobreescrito a través de una referencia de superclase o interfaz.
 
-Se usa en parámetros, colecciones y servicios que operan sobre abstracciones. No aporta valor si el código termina haciendo `instanceof` por cada tipo; en ese caso la lógica quedó fuera del objeto. El error común es confundir polimorfismo con herencia: la herencia es un mecanismo; el polimorfismo es el comportamiento resultante de invocar un método sobre un tipo común. La verificación es llamar al mismo método sobre distintas implementaciones y observar resultados distintos sin cambiar el código cliente.
+**Para qué sirve.** Reduce el acoplamiento y permite extender el sistema. El código cliente opera sobre el contrato común y no necesita una rama por cada tipo concreto. Agregar una nueva implementación no requiere modificar el cliente, siempre que se respete el contrato.
 
-#### Ejemplo desde cero
+**Cuándo usarlo y cuándo no.** Se usa en parámetros, colecciones, servicios y pipelines que operan sobre abstracciones. No aporta valor cuando el código termina preguntando por el tipo concreto con `instanceof` en cada paso; eso indica que el comportamiento no quedó en el lugar correcto. Tampoco debe confundirse con herencia: la herencia es un mecanismo; el polimorfismo es el efecto observable.
+
+**Ejemplo mínimo enfocado.**
+
+```java
+interface PagableP { double total(); }
+class FacturaP implements PagableP { public double total() { return 121.0; } }
+class ReciboP implements PagableP { public double total() { return 100.0; } }
+
+static void imprimir(PagableP p) { System.out.println(p.total()); }
+```
+
+El método `imprimir` no conoce `FacturaP` ni `ReciboP`. Ejecuta `total()` del objeto real recibido.
+
+**Caso de uso real.** Un proceso de cierre diario itera `List<Pagable>` y suma totales. Puede mezclar facturas, recibos y nuevos tipos sin cambiar el algoritmo de cierre.
+
+**Error común.** Usar `instanceof` para decidir la lógica en el cliente. El síntoma es un bloque creciente de condiciones por tipo. La corrección es mover el comportamiento al método polimórfico del contrato.
+
+**Verificación.** El ejemplo mínimo se compiló y ejecutó en `/tmp/java-m1-t3-pilot` (JDK 27, 2026-05-22):
+
+```bash
+javac DemoPolimorfismo.java
+java DemoPolimorfismo
+```
+
+```text
+121.0
+100.0
+```
+
+La misma llamada `imprimir(p)` produce resultados distintos según el objeto real.
+
+#### Ejemplo integrado desde cero
+
+Los tres conceptos se combinan en un caso pequeño: `Pagable` es el contrato, `Documento` es la base abstracta con estado común, y `imprimir` usa polimorfismo sobre el tipo común.
 
 ```bash
 mkdir -p /tmp/java-m1-t3 && cd /tmp/java-m1-t3
@@ -348,9 +453,7 @@ public class Polimorfismo {
 
 #### Recorrido del código
 
-`Pagable` declara el contrato `total()`. No dice cómo se calcula; solo dice que todo pagable debe poder devolver un total. `Documento` es abstracta porque representa una base común: tiene un `id` y un constructor, pero no tiene sentido instanciar “un documento genérico” sin saber qué tipo es. Además, implementa `Pagable`, lo que obliga a sus subclases concretas a definir `total()`.
-
-`Factura` y `Recibo` heredan de `Documento`. Ambas comparten el `id`, pero calculan el total de forma distinta. La factura aplica un impuesto; el recibo devuelve el monto tal cual. El método `imprimir` recibe `Pagable`, no `Factura` ni `Recibo`. Por eso puede trabajar con ambos sin conocer sus diferencias internas.
+`Pagable` define el contrato `total()`. `Documento` es abstracta porque aporta `id` y constructor, pero no define el cálculo completo para todo documento; además implementa `Pagable`, obligando a las subclases concretas a implementar `total()`. `Factura` y `Recibo` heredan el estado común y especializan el cálculo. El método `imprimir` recibe `Pagable`, por lo que funciona con cualquier implementación actual o futura.
 
 #### Ejecución y salida real
 
@@ -366,20 +469,17 @@ Salida real observada (JDK 27, 2026-05-22):
 100.0
 ```
 
-La misma llamada `imprimir(p)` produce resultados distintos porque el objeto real es distinto. El código cliente no cambió.
-
 #### Errores frecuentes
 
-Usar una clase abstracta cuando solo se necesita un contrato puede forzar una jerarquía innecesaria. Si no hay estado o implementación común real, una interfaz suele ser más flexible.
+Usar una clase abstracta cuando no hay estado ni comportamiento común fuerza herencia innecesaria. Si solo se necesita capacidad, una interfaz es más simple.
 
-Hacer que el código dependa de clases concretas por todas partes elimina el beneficio del polimorfismo. Si un método solo necesita `total()`, su parámetro debería ser `Pagable`, no `Factura`.
+Depender de clases concretas en el cliente elimina la extensibilidad del polimorfismo. Si el cliente solo necesita `total()`, el parámetro debe ser `Pagable`.
 
-Implementar una interfaz pero no respetar su contrato semántico también es un error. El compilador verifica la firma, pero no puede garantizar que el significado sea correcto.
+Respetar la firma pero no el contrato semántico crea bugs silenciosos. El compilador garantiza la forma del método, no el significado.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo y comprobar que la factura devuelve 121.0 y el recibo 100.0. Una prueba adicional es agregar una nueva clase que implemente `Pagable` y confirmar que `imprimir` funciona sin modificarse.
-
+La verificación mínima es ejecutar el integrado y confirmar `121.0` y `100.0`. Una prueba adicional es crear `class NotaCredito implements Pagable { public double total() { return 50; } }` y pasarla a `imprimir` sin modificar el método.
 
 ### Tema 4: Sobrecarga, sobreescritura y modificadores de acceso · Intermedio · 35 min
 

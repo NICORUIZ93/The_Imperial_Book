@@ -24,17 +24,19 @@ Estilo:
 
 ## 2) Cobertura total de conceptos (crítico)
 
-Si el título menciona varios conceptos (ej. `LAZY, EAGER y N+1`, `L1/L2/EntityGraph`, `pom.xml vs build.gradle.kts`), **cada concepto** debe incluir, en prosa o de forma explícita:
+Si el título menciona varios conceptos (ej. `LAZY, EAGER y N+1`, `L1/L2/EntityGraph`, `pom.xml vs build.gradle.kts`), **cada concepto** debe tener su propio bloque explícito y debe incluir:
 - Definición formal.
 - Qué problema resuelve / para qué sirve.
 - Contrato, reglas, defaults, trade-offs.
 - Cuándo usarlo y cuándo no.
-- Ejemplo mínimo o demo.
+- **Ejemplo mínimo enfocado**: snippet o ejemplo corto que demuestre ese concepto (no vale un único ejemplo integrado donde el concepto solo aparece mencionado).
 - Caso de uso real.
-- Error común asociado.
-- Verificación/evidencia.
+- Error común asociado (síntoma, causa, corrección).
+- Verificación/evidencia (comando/salida real cuando sea ejecutable).
 
-No se permite explicar solo un concepto y mencionar los demás superficialmente.
+Además del tratamiento por concepto, el tema puede incluir un **ejemplo integrado desde cero** que combine los conceptos, con recorrido, ejecución real y verificación final.
+
+No se permite explicar solo un concepto y mencionar los demás superficialmente. No se permite poner un solo bloque de código al final y asumir que cubre todos los conceptos del título.
 
 ## 3) Ejecutabilidad y contexto completo (crítico)
 
