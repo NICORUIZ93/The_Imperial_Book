@@ -271,7 +271,11 @@ Un sistema de cobros puede recibir facturas, recibos y más adelante notas de cr
 
 **Cuándo usarla y cuándo no.** Se usa cuando varios tipos, incluso sin relación de herencia, deben poder tratarse de forma uniforme. No es la mejor opción cuando lo que se necesita es compartir estado o implementación común en una jerarquía “es un”; en ese caso puede convenir una clase abstracta, o una combinación de interfaz y clase abstracta.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t3-interfaz && cd /tmp/java-m1-t3-interfaz
+```
 
 ```java
 interface Pagable {
@@ -283,15 +287,22 @@ class FacturaSimple implements Pagable {
     FacturaSimple(double monto) { this.monto = monto; }
     @Override public double total() { return monto * 1.21; }
 }
+
+public class DemoInterfaz {
+    static void cobrar(Pagable p) { System.out.println(p.total()); }
+    public static void main(String[] args) {
+        cobrar(new FacturaSimple(100));
+    }
+}
 ```
 
-El contrato `Pagable` declara `total()`. `FacturaSimple` se compromete a implementarlo. Quien recibe un `Pagable` no necesita saber que es una factura.
+El contrato `Pagable` declara `total()`. `FacturaSimple` lo implementa. El método `cobrar` depende del contrato, no de la clase concreta.
 
-**Caso de uso real.** Un servicio de cobranza recibe `Pagable` y registra el total, sin depender de si el origen es factura, recibo o nota de crédito. Un nuevo tipo pagable se integra implementando la interfaz.
+**Caso de uso real.** Un servicio de cobranza recibe `Pagable` y registra el total, sin depender de si el origen es factura, recibo o nota de crédito.
 
 **Error común.** Programar contra la clase concreta: `void cobrar(FacturaSimple f)`. El síntoma es que agregar `Recibo` obliga a duplicar o modificar métodos. La corrección es recibir el contrato: `void cobrar(Pagable p)`.
 
-**Verificación.** El ejemplo mínimo se compiló y ejecutó en `/tmp/java-m1-t3-pilot` (JDK 27, 2026-05-22):
+**Verificación (JDK 27, 2026-05-22).**
 
 ```bash
 javac DemoInterfaz.java
@@ -310,7 +321,11 @@ java DemoInterfaz
 
 **Cuándo usarla y cuándo no.** Se usa cuando hay relación “es un” y existe estado o implementación común real. No se usa cuando solo se necesita un contrato sin estado común; para eso la interfaz es más flexible. Tampoco conviene si la base crece hasta obligar a las subclases a heredar comportamiento que no necesitan.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t3-abstracta && cd /tmp/java-m1-t3-abstracta
+```
 
 ```java
 abstract class Documento {
@@ -325,15 +340,23 @@ class Recibo extends Documento {
     Recibo(String id, double monto) { super(id); this.monto = monto; }
     @Override double total() { return monto; }
 }
+
+public class DemoAbstracta {
+    public static void main(String[] args) {
+        Documento d = new Recibo("R1", 100);
+        System.out.println(d.etiqueta());
+        // new Documento("X"); // error de compilación: clase abstracta
+    }
+}
 ```
 
-`Documento` comparte `id` y `etiqueta()`, pero deja `total()` como responsabilidad de la subclase. `new Documento(...)` no compila porque la clase es abstracta.
+`Documento` comparte `id` y `etiqueta()`, pero deja `total()` a las subclases. No se puede instanciar directamente.
 
-**Caso de uso real.** En facturación, `Documento` puede contener id, fecha y validaciones comunes, mientras `Factura` y `Recibo` definen el cálculo de total. La base evita duplicación sin permitir instanciar un documento incompleto.
+**Caso de uso real.** En facturación, `Documento` puede contener id, fecha y validaciones comunes, mientras `Factura` y `Recibo` definen el cálculo de total.
 
-**Error común.** Convertir la clase abstracta en un contenedor gigante. El síntoma es que subclases heredan campos o métodos irrelevantes. La corrección es mantener en la base solo lo común y estable; si solo se necesita capacidad, preferir interfaz.
+**Error común.** Convertir la clase abstracta en un contenedor gigante. El síntoma es que subclases heredan campos o métodos irrelevantes. La corrección es mantener en la base solo lo común y estable.
 
-**Verificación.** El ejemplo mínimo se compiló y ejecutó en `/tmp/java-m1-t3-pilot` (JDK 27, 2026-05-22):
+**Verificación (JDK 27, 2026-05-22).**
 
 ```bash
 javac DemoAbstracta.java
@@ -344,7 +367,7 @@ java DemoAbstracta
 R1:100.0
 ```
 
-La línea `new Documento("X")` genera error de compilación si se descomenta, lo que confirma que la clase abstracta no es instanciable.
+Si se descomenta `new Documento("X")`, `javac` falla: una clase abstracta no es instanciable.
 
 #### Polimorfismo
 
@@ -354,23 +377,34 @@ La línea `new Documento("X")` genera error de compilación si se descomenta, lo
 
 **Cuándo usarlo y cuándo no.** Se usa en parámetros, colecciones, servicios y pipelines que operan sobre abstracciones. No aporta valor cuando el código termina preguntando por el tipo concreto con `instanceof` en cada paso; eso indica que el comportamiento no quedó en el lugar correcto. Tampoco debe confundirse con herencia: la herencia es un mecanismo; el polimorfismo es el efecto observable.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t3-polimorfismo && cd /tmp/java-m1-t3-polimorfismo
+```
 
 ```java
 interface PagableP { double total(); }
 class FacturaP implements PagableP { public double total() { return 121.0; } }
 class ReciboP implements PagableP { public double total() { return 100.0; } }
 
-static void imprimir(PagableP p) { System.out.println(p.total()); }
+public class DemoPolimorfismo {
+    static void imprimir(PagableP p) { System.out.println(p.total()); }
+    public static void main(String[] args) {
+        PagableP p = new FacturaP();
+        imprimir(p);
+        imprimir(new ReciboP());
+    }
+}
 ```
 
-El método `imprimir` no conoce `FacturaP` ni `ReciboP`. Ejecuta `total()` del objeto real recibido.
+El método `imprimir` depende de `PagableP`. La implementación ejecutada depende del objeto real.
 
-**Caso de uso real.** Un proceso de cierre diario itera `List<Pagable>` y suma totales. Puede mezclar facturas, recibos y nuevos tipos sin cambiar el algoritmo de cierre.
+**Caso de uso real.** Un proceso de cierre diario itera `List<Pagable>` y suma totales sin conocer cada tipo concreto.
 
 **Error común.** Usar `instanceof` para decidir la lógica en el cliente. El síntoma es un bloque creciente de condiciones por tipo. La corrección es mover el comportamiento al método polimórfico del contrato.
 
-**Verificación.** El ejemplo mínimo se compiló y ejecutó en `/tmp/java-m1-t3-pilot` (JDK 27, 2026-05-22):
+**Verificación (JDK 27, 2026-05-22).**
 
 ```bash
 javac DemoPolimorfismo.java
@@ -381,8 +415,6 @@ java DemoPolimorfismo
 121.0
 100.0
 ```
-
-La misma llamada `imprimir(p)` produce resultados distintos según el objeto real.
 
 #### Ejemplo integrado desde cero
 
@@ -493,12 +525,24 @@ Los términos sobrecarga y sobreescritura se parecen, pero describen mecanismos 
 
 **Cuándo usarla y cuándo no.** Se usa cuando el significado conceptual es el mismo, como `sumar(int,int)` y `sumar(double,double)`. No se usa cuando las variantes hacen cosas conceptualmente distintas; en ese caso, nombres distintos evitan ambigüedad. La resolución se hace en compilación, según tipos y cantidad de argumentos.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t4-sobrecarga && cd /tmp/java-m1-t4-sobrecarga
+```
 
 ```java
 class Calculadora {
     int sumar(int a, int b) { return a + b; }
     double sumar(double a, double b) { return a + b; }
+}
+
+public class DemoSobrecarga {
+    public static void main(String[] args) {
+        Calculadora c = new Calculadora();
+        System.out.println(c.sumar(1, 2));
+        System.out.println(c.sumar(1.5, 2.5));
+    }
 }
 ```
 
@@ -526,14 +570,22 @@ java DemoSobrecarga
 
 **Cuándo usarla y cuándo no.** Se usa cuando una subclase debe cambiar la implementación de una operación manteniendo su significado. No se usa si se quiere solo agregar una variante por parámetros; eso es sobrecarga. No se puede reducir la visibilidad al sobreescribir, y `@Override` debe usarse para que el compilador verifique la firma.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t4-override && cd /tmp/java-m1-t4-override
+```
 
 ```java
 class Base { String tipo() { return "base"; } }
 class Derivada extends Base { @Override String tipo() { return "derivada"; } }
 
-Base b = new Derivada();
-System.out.println(b.tipo()); // derivada
+public class DemoSobreescritura {
+    public static void main(String[] args) {
+        Base b = new Derivada();
+        System.out.println(b.tipo());
+    }
+}
 ```
 
 **Caso de uso real.** `Documento.total()` puede tener implementaciones distintas en `Factura` y `Recibo`, mientras el servicio de cobro invoca el mismo método sobre el tipo base.
@@ -559,7 +611,13 @@ derivada
 
 **Cuándo usarlo y cuándo no.** Se usa como parte del diseño de encapsulación: empezar con la visibilidad más restrictiva y ampliar solo con justificación. No conviene hacer todo `public` por comodidad, ni exponer campos mutables. `protected` debe usarse con cuidado porque amplía la superficie visible a subclases y al paquete.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t4-acceso/acceso && cd /tmp/java-m1-t4-acceso
+```
+
+`acceso/Caja.java`:
 
 ```java
 package acceso;
@@ -568,10 +626,27 @@ public class Caja {
     int interno = 2;        // package-private
     protected int protegido = 3;
     public int abierto = 4;
+    public int verSecreto() { return secreto; }
 }
 ```
 
-Desde otra clase del mismo paquete se puede acceder a `interno`, `protegido` y `abierto`, pero no a `secreto`.
+`acceso/DemoAcceso.java`:
+
+```java
+package acceso;
+public class DemoAcceso {
+    public static void main(String[] args) {
+        Caja c = new Caja();
+        // c.secreto; // no compila: private
+        System.out.println(c.interno);
+        System.out.println(c.protegido);
+        System.out.println(c.abierto);
+        System.out.println(c.verSecreto());
+    }
+}
+```
+
+Desde el mismo paquete se accede a `interno`, `protegido` y `abierto`; `secreto` solo desde dentro de `Caja`.
 
 **Caso de uso real.** Un dominio mantiene `saldo` como `private` y expone `depositar/retirar`, evitando que cualquier código externo deje el objeto inválido.
 
@@ -674,14 +749,22 @@ En muchos programas aparecen clases cuyo propósito principal es transportar dat
 
 **Cuándo usarlo y cuándo no.** Se usa para DTOs, valores, respuestas y claves compuestas. No se usa cuando el objeto tiene identidad mutable, ciclo de vida complejo o necesita heredar de otra clase, porque todo record extiende implícitamente `java.lang.Record`. Puede implementar interfaces.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t5-record && cd /tmp/java-m1-t5-record
+```
 
 ```java
 record Punto(int x, int y) {}
 
-Punto p = new Punto(2, 3);
-System.out.println(p.x());
-System.out.println(p);
+public class DemoRecord {
+    public static void main(String[] args) {
+        Punto p = new Punto(2, 3);
+        System.out.println(p.x());
+        System.out.println(p);
+    }
+}
 ```
 
 **Caso de uso real.** Un endpoint devuelve `record UsuarioDto(String id, String email)`; el contrato de datos es claro y la igualdad por componentes es útil en tests.
@@ -708,12 +791,25 @@ Punto[x=2, y=3]
 
 **Cuándo usarlo y cuándo no.** Se usa cuando los componentes son inmutables o se protegen con copia defensiva. No se debe asumir inmutabilidad profunda si hay `List`, `Date` u otros objetos mutables dentro.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t5-inmutable && cd /tmp/java-m1-t5-inmutable
+```
 
 ```java
 import java.util.*;
 record Caja(List<String> items) {
     Caja { items = List.copyOf(items); }
+}
+
+public class DemoInmutable {
+    public static void main(String[] args) {
+        List<String> base = new ArrayList<>(List.of("a"));
+        Caja c = new Caja(base);
+        base.add("b");
+        System.out.println(c.items());
+    }
 }
 ```
 
@@ -744,12 +840,23 @@ La lista original se modificó, pero el record conservó `[a]`.
 
 **Cuándo usarlo y cuándo no.** Se usa para validaciones y normalizaciones simples. No conviene colocar lógica pesada, I/O o efectos secundarios en constructores.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t5-compacto && cd /tmp/java-m1-t5-compacto
+```
 
 ```java
 record PuntoC(int x, int y) {
     public PuntoC {
         if (x < 0 || y < 0) throw new IllegalArgumentException("Coordenada inválida");
+    }
+}
+
+public class DemoCompacto {
+    public static void main(String[] args) {
+        try { new PuntoC(-1, 0); }
+        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
     }
 }
 ```
@@ -777,11 +884,21 @@ Coordenada inválida
 
 **Cuándo usarlo y cuándo no.** Se usa para lógica simple relacionada con el valor. No se usa para convertir el record en una entidad con mutación, identidad compleja o dependencias.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t5-comportamiento && cd /tmp/java-m1-t5-comportamiento
+```
 
 ```java
 record PuntoM(int x, int y) {
     public int suma() { return x + y; }
+}
+
+public class DemoComportamiento {
+    public static void main(String[] args) {
+        System.out.println(new PuntoM(2, 3).suma());
+    }
 }
 ```
 
@@ -880,14 +997,32 @@ Los constructores deben dejar el objeto en un estado válido. En versiones clás
 
 **Cuándo usarla y cuándo no.** Es el modelo mental base que sigue vigente. No es conveniente cuando necesitas validar/normalizar parámetros antes de pasarlos a `super(...)`; en Java clásico requería métodos estáticos auxiliares o duplicación.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t6-clasica && cd /tmp/java-m1-t6-clasica
+```
 
 ```java
-Sub(String nombre, int puntos) {
-    super(validar(nombre)); // auxiliar estático por la regla clásica
-    this.puntos = puntos;
+class Base {
+    final String nombre;
+    Base(String nombre) { this.nombre = nombre; }
 }
-static String validar(String n) { return n.trim(); }
+
+class Sub extends Base {
+    final int puntos;
+    Sub(String nombre, int puntos) {
+        super(validar(nombre)); // en Java clásico se usa auxiliar estático
+        this.puntos = puntos;
+    }
+    static String validar(String n) { return n.trim(); }
+}
+
+public class DemoClasica {
+    public static void main(String[] args) {
+        System.out.println(new Sub(" Ada ", 10).nombre);
+    }
+}
 ```
 
 **Caso de uso real.** Jerarquías donde la superclase exige parámetros ya normalizados; antes de Java 25 la normalización se movía a métodos estáticos.
@@ -913,13 +1048,33 @@ Ada
 
 **Cuándo usarlo y cuándo no.** Se usa cuando la validación afecta directamente los argumentos de `super(...)`. No se usa para lógica pesada, I/O, acceso a red o efectos secundarios. El constructor sigue siendo inicialización.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t6-flexible && cd /tmp/java-m1-t6-flexible
+```
 
 ```java
-SubF(String nombre, int puntos) {
-    if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
-    super(nombre.trim());
-    this.puntos = puntos;
+class BaseF {
+    final String nombre;
+    BaseF(String nombre) { this.nombre = nombre; }
+}
+
+class SubF extends BaseF {
+    final int puntos;
+    SubF(String nombre, int puntos) {
+        if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
+        super(nombre.trim());
+        this.puntos = puntos;
+    }
+}
+
+public class DemoFlexible {
+    public static void main(String[] args) {
+        System.out.println(new SubF(" Ada ", 10).nombre);
+        try { new SubF("Ada", -1); }
+        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
+    }
 }
 ```
 
@@ -947,11 +1102,26 @@ Puntos inválidos
 
 **Cuándo usarla y cuándo no.** Se usa para rangos, nulls, formatos y precondiciones locales del objeto. No reemplaza validaciones de negocio de capa de servicio o de persistencia; el constructor debe proteger invariantes del objeto.
 
-**Ejemplo mínimo enfocado.**
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m1-t6-validacion && cd /tmp/java-m1-t6-validacion
+```
 
 ```java
-if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
-super(nombre.trim());
+class BaseV { final String nombre; BaseV(String nombre) { this.nombre = nombre; } }
+class SubV extends BaseV {
+    SubV(String nombre, int puntos) {
+        if (puntos < 0) throw new IllegalArgumentException("Puntos inválidos");
+        super(nombre.trim());
+    }
+}
+public class DemoValidacion {
+    public static void main(String[] args) {
+        try { new SubV("Ada", -1); }
+        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
+    }
+}
 ```
 
 **Caso de uso real.** Antes de crear una entidad de dominio, se rechaza un valor fuera de rango, evitando propagar datos inválidos a capas superiores.

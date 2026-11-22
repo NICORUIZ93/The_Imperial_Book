@@ -22,23 +22,101 @@ Imaginemos un registro de envíos. Necesitamos mantener el orden en que llegaron
 
 #### List
 
-Una **List** es una colección ordenada que permite elementos duplicados y acceso posicional. “Ordenada” significa que conserva un orden definido, normalmente el orden de inserción, y que cada elemento puede identificarse por un índice. Sirve cuando importa la secuencia o cuando se necesita acceder por posición, como en un historial, una lista de pasos o un registro de llegada. No es la mejor opción cuando la operación principal es buscar por una clave única en un volumen grande, porque una búsqueda lineal recorre la lista hasta encontrar el elemento.
+**Definición formal.** `List` es una colección ordenada que permite elementos duplicados y acceso posicional por índice. El orden es el definido por la lista, normalmente el de inserción.
 
-**ArrayList** es la implementación más común de `List`. Está respaldada por un arreglo que se redimensiona cuando hace falta. Ofrece acceso por índice rápido y agrega elementos al final con costo amortizado bajo. Su debilidad aparece al insertar o eliminar en medio, porque debe desplazar elementos. En la práctica, `ArrayList` es la opción por defecto cuando se necesita una lista general.
+**Para qué sirve.** Sirve cuando importa la secuencia, la posición o la presencia de duplicados, como historial, pasos o filas en orden.
+
+**Cuándo usarla y cuándo no.** Úsala cuando necesites orden/acceso por índice. Evítala como mecanismo principal de búsqueda por clave única en grandes volúmenes; para eso conviene `Set` o `Map`. `ArrayList` es la implementación general por defecto: acceso por índice rápido y agregado al final amortizado; insertar/eliminar en medio cuesta por desplazamiento.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t1-list && cd /tmp/java-m2-t1-list
+```
+
+```java
+import java.util.*;
+public class DemoList {
+    public static void main(String[] args) {
+        List<String> llegada = new ArrayList<>();
+        llegada.add("A"); llegada.add("B"); llegada.add("A");
+        System.out.println(llegada);
+        System.out.println(llegada.get(0));
+    }
+}
+```
+
+**Caso de uso real.** Historial de eventos de un pedido donde el orden de llegada importa y puede haber eventos repetidos.
+
+**Error común.** Usar `List.contains` para validar unicidad en un flujo grande. Síntoma: lentitud por búsqueda lineal. Corrección: usar `Set` para membresía o `Map` para búsqueda por clave.
+
+**Verificación.** Ejecutado en `/tmp/java-m2-pilot` (JDK 27, 2026-05-22): salida `[A, B, A]` y `A`.
 
 #### Set
 
-Un **Set** representa una colección que no permite duplicados. La unicidad se determina por el criterio de igualdad de la implementación: en `HashSet`, por `equals` y `hashCode`; en `TreeSet`, por el comparador u orden natural. Sirve para IDs, etiquetas, membresías o cualquier caso donde “ya existe” sea una pregunta importante.
+**Definición formal.** `Set` es una colección que no permite duplicados. La unicidad se determina por `equals/hashCode` en `HashSet` o por comparación/orden en `TreeSet`.
 
-**HashSet** es la implementación hash más común. Ofrece operaciones promedio cercanas a O(1) para agregar, consultar y eliminar, pero no garantiza orden de iteración. Usarlo es correcto cuando importa la unicidad y la velocidad, no cuando se necesita conservar el orden de inserción o un orden ordenado.
+**Para qué sirve.** Sirve para representar membresía: ¿este ID ya existe?, ¿este permiso está presente?
+
+**Cuándo usarla y cuándo no.** Úsala cuando la unicidad es central. No la uses si necesitas duplicados o acceso posicional. `HashSet` da operaciones promedio cercanas a O(1) pero no garantiza orden; si necesitas orden de inserción, `LinkedHashSet`; si necesitas orden ordenado, `TreeSet`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t1-set && cd /tmp/java-m2-t1-set
+```
+
+```java
+import java.util.*;
+public class DemoSet {
+    public static void main(String[] args) {
+        Set<String> s = new HashSet<>(List.of("A", "A", "B"));
+        System.out.println(s.contains("A"));
+        System.out.println(s.size());
+    }
+}
+```
+
+**Caso de uso real.** Conjunto de IDs de envíos ya procesados para evitar reprocesamiento.
+
+**Error común.** Asumir que `HashSet` conserva orden. Síntoma: tests frágiles o salida cambiante. Corrección: usar `LinkedHashSet` o `TreeSet` si el orden es parte del contrato.
+
+**Verificación.** Ejecutado en `/tmp/java-m2-pilot` (JDK 27, 2026-05-22): `true`, `2`.
 
 #### Map
 
-Un **Map** asocia claves únicas con valores. No es una subinterfaz de `Collection`, porque su modelo es clave-valor, no una secuencia simple de elementos. Sirve para buscar por clave: estado por ID, configuración por nombre, índice por código. Si la misma clave se inserta de nuevo, el valor anterior se reemplaza.
+**Definición formal.** `Map` asocia claves únicas a valores. No es subinterfaz de `Collection`; modela pares clave-valor. Insertar una clave existente reemplaza el valor.
 
-**HashMap** es la implementación hash general de `Map`. Da acceso promedio cercano a O(1), pero no garantiza orden. Su correcto funcionamiento depende del contrato de `equals` y `hashCode` de las claves. **LinkedHashMap** conserva el orden de inserción, lo que resulta útil cuando se quiere predictibilidad o estructuras como un caché LRU simple. **TreeMap** mantiene las claves ordenadas, normalmente por orden natural o por un `Comparator`; sus operaciones son O(log n), así que se usa cuando el orden ordenado importa, no por defecto.
+**Para qué sirve.** Sirve para búsqueda por clave: estado por ID, configuración por nombre, índice por código.
 
-#### Ejemplo desde cero
+**Cuándo usarla y cuándo no.** Úsala cuando la pregunta natural es “dado esta clave, ¿qué valor tiene?”. `HashMap` es la opción general (O(1) promedio, sin orden). `LinkedHashMap` conserva orden de inserción. `TreeMap` mantiene claves ordenadas (O(log n)).
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t1-map && cd /tmp/java-m2-t1-map
+```
+
+```java
+import java.util.*;
+public class DemoMap {
+    public static void main(String[] args) {
+        Map<String, String> m = new HashMap<>();
+        m.put("ENV-1", "PENDIENTE");
+        m.put("ENV-1", "ENTREGADO");
+        System.out.println(m.get("ENV-1"));
+        System.out.println(new TreeMap<>(Map.of("b", 2, "a", 1)));
+    }
+}
+```
+
+**Caso de uso real.** Índice en memoria de sesiones por token o de productos por SKU.
+
+**Error común.** Elegir `HashMap` y asumir orden. Síntoma: salida no determinista. Corrección: `LinkedHashMap` para inserción, `TreeMap` para orden por clave.
+
+**Verificación.** Ejecutado en `/tmp/java-m2-pilot` (JDK 27, 2026-05-22): `ENTREGADO` y `{a=1, b=2}`.
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m2-t1 && cd /tmp/java-m2-t1
@@ -81,11 +159,7 @@ public class ColeccionesBasicas {
 
 #### Recorrido del código
 
-La `ArrayList` conserva el orden de inserción y permite el duplicado `ENV-003`. El acceso por índice `llegada.get(0)` devuelve el primer elemento, algo natural en una lista. Al construir el `HashSet` a partir de la lista, los duplicados se eliminan según el criterio de igualdad de `String`. Por eso el tamaño pasa a 2.
-
-El `HashMap` asocia el código del envío con su estado. La segunda inserción con la clave `ENV-001` reemplaza el valor anterior, dejando `ENTREGADO`. Esto muestra la regla de claves únicas.
-
-`LinkedHashMap` conserva el orden en que se insertaron las claves `b` y `a`. `TreeMap`, en cambio, las ordena por clave, produciendo `a=1, b=2`. La diferencia no es cosmética: define el contrato que el resto del programa puede asumir.
+`ArrayList` conserva orden y duplicados. `HashSet` elimina duplicados por igualdad. `HashMap` reemplaza valor para la misma clave. `LinkedHashMap` conserva inserción; `TreeMap` ordena por clave. Cada estructura expresa una intención distinta.
 
 #### Ejecución y salida real
 
@@ -106,44 +180,130 @@ LinkedHashMap: {b=2, a=1}
 TreeMap: {a=1, b=2}
 ```
 
-El orden de `HashSet` o `HashMap` puede variar entre ejecuciones o versiones; el de `LinkedHashMap` y `TreeMap` es determinista en este ejemplo.
-
 #### Errores frecuentes
 
-Usar una `List` para comprobar existencia por ID en grandes volúmenes suele terminar en búsquedas lineales innecesarias. Si la pregunta principal es “¿existe este ID?” o “¿cuál es el valor para esta clave?”, `Set` o `Map` expresan mejor la intención.
-
-Asumir que `HashSet` o `HashMap` conservan orden es otro error común. Si el orden importa, hay que elegir una implementación que lo garantice.
-
-Usar `TreeMap` solo por costumbre también tiene costo: mantiene orden y sus operaciones son O(log n). Conviene usarlo cuando el orden ordenado sea parte del problema.
+Usar la estructura equivocada encarece o confunde el código: `List` para membresía, `HashMap` cuando el orden importa, `TreeMap` sin necesidad de orden. Elegir por contrato primero, por implementación después.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo y confirmar que la lista conserva duplicados, el set los elimina, el mapa reemplaza el valor de la misma clave y `TreeMap` ordena por clave.
-
+La verificación mínima es ejecutar el integrado y confirmar duplicados en `List`, unicidad en `Set`, reemplazo en `Map` y orden en `LinkedHashMap/TreeMap`.
 
 ### Tema 2: El contrato de equals y hashCode · Intermedio · 45 min
 
-Dos objetos `Cliente` con el mismo DNI representan, para el negocio, al mismo cliente. Sin embargo, si Java no conoce esa regla, dos instancias distintas serán distintas aunque tengan el mismo DNI. Esto se vuelve visible en estructuras hash como `HashSet` o `HashMap`: un `contains` puede devolver `false` o aparecer duplicados lógicos.
+Dos objetos `Cliente` con el mismo DNI representan, para el negocio, al mismo cliente. Si Java no conoce esa regla, dos instancias distintas serán distintas aunque tengan el mismo DNI. Esto se vuelve visible en estructuras hash como `HashSet` o `HashMap`: un `contains` puede devolver `false` o aparecer duplicados lógicos.
 
 #### `equals`
 
-El método **`equals`** define la igualdad lógica entre objetos. Su contrato exige que sea reflexivo, simétrico, transitivo y consistente, y que `x.equals(null)` devuelva `false` cuando `x` no es nulo. Sirve para expresar qué significa que dos objetos “representen lo mismo” en el dominio. Se implementa cuando la identidad por referencia (`==`) no es suficiente.
+**Definición formal.** `equals` define la igualdad lógica entre objetos. Su contrato exige que sea reflexivo, simétrico, transitivo y consistente, y que `x.equals(null)` devuelva `false` cuando `x` no es nulo.
 
-No conviene incluir en `equals` campos irrelevantes o mutables que no forman parte de la identidad. Si el DNI identifica al cliente, comparar también el nombre puede impedir reconocer al mismo cliente después de una corrección de nombre. El error común es comparar campos de referencia con `==` en vez de `Objects.equals`. La verificación es crear dos instancias con el mismo DNI y comprobar que `equals` devuelve `true`.
+**Para qué sirve.** Expresa qué significa que dos objetos representen lo mismo en el dominio. Se implementa cuando la identidad por referencia (`==`) no es suficiente.
+
+**Cuándo usarlo y cuándo no.** Úsalo cuando el dominio tenga identidad lógica (DNI, email, código). No incluyas campos irrelevantes o mutables que no formen parte de la identidad. Compara campos de referencia con `Objects.equals`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t2-equals && cd /tmp/java-m2-t2-equals
+```
+
+```java
+import java.util.Objects;
+class ClienteE {
+    final String dni; final String nombre;
+    ClienteE(String dni, String nombre) { this.dni = dni; this.nombre = nombre; }
+    @Override public boolean equals(Object o) {
+        return o instanceof ClienteE c && Objects.equals(dni, c.dni);
+    }
+    @Override public int hashCode() { return Objects.hash(dni); }
+}
+public class DemoEquals {
+    public static void main(String[] args) {
+        System.out.println(new ClienteE("A1", "Ada").equals(new ClienteE("A1", "Otra")));
+    }
+}
+```
+
+**Caso de uso real.** Dos registros de cliente cargados desde fuentes distintas se consideran el mismo cliente si comparten DNI.
+
+**Error común.** Usar `==` para comparar `String` o incluir campos no identitarios. Síntoma: duplicados lógicos o igualdad inesperada. Corrección: comparar solo campos de identidad con `Objects.equals`.
+
+**Verificación.** Ejecutado en `/tmp/java-m2-t2p` (JDK 27, 2026-05-22): `new ClienteE("A1","Ada").equals(new ClienteE("A1","Otra"))` devuelve `true`.
 
 #### `hashCode`
 
-El método **`hashCode`** devuelve un entero usado por estructuras hash para ubicar objetos en buckets. Su contrato dice que si dos objetos son iguales según `equals`, deben devolver el mismo `hashCode`. Si `hashCode` es distinto, `HashSet` y `HashMap` pueden colocar objetos “iguales” en buckets distintos y fallar al buscarlos.
+**Definición formal.** `hashCode` devuelve un entero usado por estructuras hash para ubicar objetos en buckets. Si dos objetos son iguales según `equals`, deben devolver el mismo `hashCode`.
 
-`hashCode` puede devolver el mismo valor para objetos no iguales; eso se llama colisión y solo afecta rendimiento, no correctitud. Lo que no puede ocurrir es que objetos iguales tengan hashes distintos. El error común es sobreescribir `equals` sin sobreescribir `hashCode`. La verificación es usar el objeto en un `HashSet` y comprobar `contains` con una instancia distinta pero igual.
+**Para qué sirve.** Permite a `HashMap`/`HashSet` localizar candidatos rápido antes de confirmar con `equals`.
+
+**Cuándo usarlo y cuándo no.** Siempre que sobreescribas `equals`, sobreescribe `hashCode` con los mismos campos de identidad. No uses campos distintos a los de `equals`. Colisiones (mismo hash, objetos no iguales) son aceptables; hashes distintos para objetos iguales no.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t2-hash && cd /tmp/java-m2-t2-hash
+```
+
+```java
+import java.util.*; import java.util.Objects;
+class ClienteH {
+    final String dni;
+    ClienteH(String dni) { this.dni = dni; }
+    @Override public boolean equals(Object o) { return o instanceof ClienteH c && Objects.equals(dni, c.dni); }
+    @Override public int hashCode() { return Objects.hash(dni); }
+}
+public class DemoHash {
+    public static void main(String[] args) {
+        Set<ClienteH> s = new HashSet<>();
+        s.add(new ClienteH("A1"));
+        System.out.println(s.contains(new ClienteH("A1")));
+    }
+}
+```
+
+**Caso de uso real.** Un `HashSet<Cliente>` evita duplicados por DNI y responde `contains` en tiempo promedio cercano a O(1).
+
+**Error común.** Sobreescribir `equals` sin `hashCode`. Síntoma: `contains` devuelve `false` o hay duplicados en `HashSet`. Corrección: implementar ambos con los mismos campos.
+
+**Verificación.** Ejecutado en `/tmp/java-m2-t2p` (JDK 27, 2026-05-22): `HashSet` con `ClienteH("A1")` responde `contains(new ClienteH("A1")) == true`.
 
 #### Relación entre `equals` y `hashCode`
 
-El **contrato combinado** es simple: `equals` define igualdad lógica; `hashCode` permite localizar rápidamente en estructuras hash; ambos deben basarse en los mismos campos de identidad. `HashMap` y `HashSet` primero usan `hashCode` para elegir el bucket y después usan `equals` para confirmar la igualdad dentro del bucket.
+**Definición formal.** Contrato combinado: `equals` true implica mismo `hashCode`; mismo `hashCode` no implica `equals`. Las estructuras hash usan `hashCode` para elegir bucket y `equals` para confirmar dentro del bucket.
 
-Este modelo explica por qué `contains` puede fallar aunque `equals` esté bien: si el hash lleva a otro bucket, nunca se llega a comparar con `equals`. También explica por qué un hash igual no basta: dentro del bucket todavía hay que confirmar con `equals`. El error común es implementar cada método con campos distintos. La verificación es revisar que los campos usados en `equals` y en `hashCode` sean los mismos.
+**Para qué sirve.** Garantiza correctitud en `HashMap`, `HashSet` y cualquier estructura basada en hash.
 
-#### Ejemplo desde cero
+**Cuándo usarlo y cuándo no.** Aplica siempre que un objeto se use como clave de `HashMap` o elemento de `HashSet`. No bases `equals` y `hashCode` en campos distintos. No uses campos mutables en la identidad mientras el objeto esté en una estructura hash.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t2-contrato && cd /tmp/java-m2-t2-contrato
+```
+
+```java
+import java.util.Objects;
+class ClienteC {
+    final String dni;
+    ClienteC(String dni) { this.dni = dni; }
+    @Override public boolean equals(Object o) { return o instanceof ClienteC c && Objects.equals(dni, c.dni); }
+    @Override public int hashCode() { return Objects.hash(dni); }
+}
+public class DemoContrato {
+    public static void main(String[] args) {
+        ClienteC a = new ClienteC("A1"), b = new ClienteC("A1");
+        System.out.println(a.equals(b));
+        System.out.println(a.hashCode() == b.hashCode());
+    }
+}
+```
+
+**Caso de uso real.** Caché en memoria por ID de entidad: la clave debe ser igual y tener mismo hash para recuperar el valor.
+
+**Error común.** Campos mutables en identidad hash. Síntoma: el mapa “pierde” entradas después de mutar la clave. Corrección: usar campos inmutables o no mutarlos mientras estén en la estructura.
+
+**Verificación.** Ejecutado en `/tmp/java-m2-t2p` (JDK 27, 2026-05-22): `true`, `true`.
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m2-t2 && cd /tmp/java-m2-t2
@@ -201,9 +361,7 @@ public class DemoEqualsHash {
 
 #### Recorrido del código
 
-`equals` primero comprueba si es la misma referencia (`this == o`), luego verifica el tipo con `instanceof` y finalmente compara el DNI. El DNI es el campo de identidad de negocio. El nombre no participa porque dos registros con el mismo DNI representan al mismo cliente, aunque el nombre se haya escrito distinto.
-
-`hashCode` usa `Objects.hash(dni)`, exactamente el mismo campo de identidad. Esto cumple el contrato: si dos clientes son iguales por DNI, su hash será igual. En `DemoEqualsHash`, el segundo `add` no incrementa el tamaño del conjunto porque el cliente se considera duplicado lógico. La consulta `contains` devuelve `true` aunque la instancia buscada tenga otro nombre, porque la igualdad se define por DNI.
+`equals` compara solo `dni`, la identidad de negocio. `hashCode` usa el mismo campo. El segundo `add` no aumenta el tamaño porque el `HashSet` detecta el duplicado lógico: mismo hash, luego `equals` true. `contains` con una instancia distinta pero mismo DNI devuelve `true`.
 
 #### Ejecución y salida real
 
@@ -221,16 +379,11 @@ true
 
 #### Errores frecuentes
 
-Implementar `equals` pero no `hashCode` rompe `HashSet` y `HashMap`. El conjunto puede contener duplicados lógicos o `contains` puede devolver `false`.
-
-Usar campos distintos en `equals` y `hashCode` crea un contrato inconsistente. Ambos deben basarse en la misma identidad.
-
-Usar campos mutables como identidad en objetos que se guardan en estructuras hash es peligroso. Si el campo cambia después de insertar el objeto, la estructura puede perderlo. Este caso se desarrolla en el siguiente tema.
+Omitir `hashCode` rompe estructuras hash. Usar campos distintos en ambos métodos rompe el contrato. Usar campos mutables como identidad puede “perder” entradas en `HashMap`/`HashSet`.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo y confirmar que el tamaño es 2 y que `contains` devuelve `true`. Una prueba útil es comentar `hashCode()`, recompilar y observar el comportamiento incorrecto en la estructura hash.
-
+Ejecutar el integrado y confirmar `2` y `true`. Prueba adicional: comentar `hashCode()`, recompilar y observar comportamiento incorrecto.
 
 ### Tema 3: Claves mutables y el mapa que pierde entradas · Intermedio · 35 min
 
