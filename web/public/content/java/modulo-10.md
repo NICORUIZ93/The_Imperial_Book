@@ -60,8 +60,8 @@ public class Main { public static void main(String[] args){ System.out.println(A
 
 ```bash
 javac -d out/core src/com.academia.core/module-info.java src/com.academia.core/com/academia/core/api/Api.java
-javac --module-path out -d out/app src/com.academia.app/module-info.java src/com.academia.app/com/academia/app/Main.java
-java --module-path out -m com.academia.app/com.academia.app.Main
+javac --module-path out/core -d out/app src/com.academia.app/module-info.java src/com.academia.app/com/academia/app/Main.java
+java --module-path out/core:out/app -m com.academia.app/com.academia.app.Main
 ```
 
 ```text

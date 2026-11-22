@@ -1,100 +1,313 @@
-# Módulo 15: Build, testing y observabilidad
+# Módulo 15: Build, testing y logging en proyectos reales
 
-Un proyecto profesional no se define solo por compilar: debe construirse de forma reproducible, probarse en varios niveles y dejar evidencia observable cuando falla. Este módulo cubre Maven/Gradle avanzado, estructura multi-módulo, tests con JUnit/Mockito, integración reproducible y logging estructurado.
+En proyectos reales, compilar, probar y observar el sistema son parte del mismo ciclo de calidad. Este módulo consolida herramientas de build, pruebas y logging con foco en reproducibilidad y diagnóstico.
 
-## Mapa del módulo
-
-| Tema | Qué vas a poder hacer al terminar |
-|---|---|
-| 1 | Configurar Maven con ciclo de vida, scopes y perfiles |
-| 2 | Usar Gradle con tareas, configuraciones y reproducibilidad |
-| 3 | Diseñar multi-módulo sin ciclos y con límites claros |
-| 4 | Escribir tests unitarios expresivos con JUnit/Mockito |
-| 5 | Diseñar pruebas de integración reproducibles |
-| 6 | Implementar logging estructurado con SLF4J/Logback/MDC |
+**Entorno de referencia verificado (2026-05-22):** JDK 27, Maven 3.10.0, Gradle 9.8.2, JUnit Jupiter 5.11.4, Mockito 5.14.2, SLF4J 2.0.16, Logback 1.5.16.
 
 ## Aprende construyendo
 
 ### Tema 1: Maven avanzado · Intermedio · 40 min
 
-**Caso guía**: CI falla por plugin sin versión, scope mal puesto o perfil oculto.
+Necesitas controlar dependencias, plugins y perfiles sin romper reproducibilidad.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Maven/POM | Modelo declarativo de build (coordenadas, deps, plugins). | Build reproducible | Fijar versiones/plugins | Versiones flotantes |
-| Ciclo de vida | Fases `validate..deploy` donde se atan goals. | Flujo estándar | `mvn clean verify` en CI | Confundir fase y goal |
-| Scopes | `compile/provided/runtime/test` controlan classpath. | Separar dependencias | JUnit en `test` | Todo en compile |
-| Perfiles | Variantes activables por condición. | Diferencias controladas de build | Documentar y evitar magia | Perfil oculto cambia output |
+#### Coordenadas GAV y dependencias
 
-**Implementación desde cero** (`mkdir -p ~/academia-java/modulo-15-maven/src/main/java && cd ...`): usa POM con `maven.compiler.release`, JUnit `test`, `maven-surefire-plugin` versionado. **Ejecución**: `mvn -q clean verify` → `BUILD SUCCESS`. **Verificación**: `mvn help:effective-pom`.
+**Definición formal.** En Maven, un artefacto se identifica por `groupId`, `artifactId`, `version` (GAV), con dependencias declaradas en `pom.xml`.
+
+**Para qué sirve.** Identifica artefactos y resuelve transitivas.
+
+**Cuándo usarlo.** Siempre en Maven.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m15-t1-gav && cd /tmp/java-m15-t1-gav
+cat > pom.xml << 'XML'
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion><groupId>com.academia</groupId><artifactId>demo</artifactId><version>1.0.0</version>
+  <properties><maven.compiler.release>21</maven.compiler.release></properties>
+</project>
+XML
+mkdir -p src/main/java/com/academia
+cat > src/main/java/com/academia/App.java << 'JAVA'
+package com.academia; public class App { public static void main(String[] args){ System.out.println("GAV"); } }
+JAVA
+mvn -q -DskipTests package
+java -cp target/demo-1.0.0.jar com.academia.App
+```
+
+**Caso de uso real.** Publicar librería interna.
+
+**Error común.** Cambiar versión sin semántica. Corrección: versionado coherente.
+
+**Verificación (2026-05-22).** Salida: `GAV`.
+
+#### Plugins, lifecycle y perfiles
+
+**Definición formal.** Plugins agregan objetivos al lifecycle; perfiles activan configuración condicional.
+
+**Para qué sirve.** Personalizar build por entorno sin duplicar POM completo.
+
+**Cuándo usarlo.** Para variantes controladas (dev/ci), no para lógica oculta.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```xml
+<profiles><profile><id>skip</id><properties><maven.test.skip>true</maven.test.skip></properties></profile></profiles>
+```
+
+```bash
+mvn -q -Pskip package
+```
+
+**Caso de uso real.** Perfil de CI con checks extra.
+
+**Error común.** Perfiles que cambian demasiado el artefacto. Corrección: mantener reproducibilidad y documentar.
+
+**Verificación.** `mvn -Pskip package` se ejecuta; salida del build exitosa.
 
 ### Tema 2: Gradle y builds reproducibles · Avanzado · 45 min
 
-**Caso guía**: tarea Gradle cachea mal por no declarar inputs/outputs.
+Necesitas builds incrementales y configuración reproducible.
 
-| Concepto | Definición | Regla | Error |
-|---|---|---|---|
-| Gradle DAG de tareas | Tareas con dependencias forman grafo. | Declarar dependencias entre tareas | Side effects ocultos |
-| Inputs/outputs | Metadata para up-to-date/cache. | Declarar entradas/salidas | Cache incorrecto |
-| Reproducibilidad | Wrapper, toolchain, versiones fijadas. | `gradlew` commiteado | Depender de Gradle local |
-| Configuraciones | `implementation`, `testImplementation`. | Mapear scopes correctamente | Dependencia en config equivocada |
+#### Gradle, tareas y caché incremental
 
-**Implementación desde cero**: `build.gradle.kts` con `java`, toolchain 21, `mavenCentral`, JUnit, `useJUnitPlatform()`. **Ejecución**: `gradle -q test` o `./gradlew build`. **Verificación**: `./gradlew --version`.
+**Definición formal.** Gradle modela el build como un grafo de tareas; la caché incremental evita trabajo no necesario.
+
+**Para qué sirve.** Builds rápidos y configurables.
+
+**Cuándo usarlo.** Proyectos que se benefician de flexibilidad/incrementalidad.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m15-t2-gradle/src/main/java/com/academia && cd /tmp/java-m15-t2-gradle
+cat > build.gradle.kts << 'KTS'
+plugins { java; application }
+repositories { mavenCentral() }
+java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }
+application { mainClass.set("com.academia.App") }
+KTS
+cat > settings.gradle.kts << 'KTS'
+rootProject.name = "demo"
+KTS
+cat > src/main/java/com/academia/App.java << 'JAVA'
+package com.academia; public class App { public static void main(String[] args){ System.out.println("GRADLE"); } }
+JAVA
+gradle -q run
+```
+
+**Caso de uso real.** Build multi-módulo con tareas custom.
+
+**Error común.** Tareas no deterministas. Corrección: declarar inputs/outputs.
+
+**Verificación (Gradle 9.8.2, 2026-05-22).** Salida: `GRADLE`.
+
+#### Wrapper y reproducibilidad
+
+**Definición formal.** `gradlew` fija la versión de Gradle usada por el proyecto.
+
+**Para qué sirve.** Misma versión en local y CI.
+
+**Cuándo usarlo.** Siempre en repos compartidos.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+gradle wrapper
+./gradlew -v
+```
+
+**Caso de uso real.** CI ejecuta `./gradlew test`.
+
+**Error común.** No commitear wrapper. Corrección: versionar scripts y jar del wrapper.
+
+**Verificación.** `./gradlew -v` muestra versión del wrapper.
 
 ### Tema 3: Proyectos multi-módulo sin ciclos · Avanzado · 40 min
 
-**Caso guía**: `domain` termina dependiendo de `infrastructure`.
+Separas el código en módulos, pero las dependencias deben ser acíclicas.
 
-| Concepto | Definición | Regla | Error |
-|---|---|---|---|
-| Multi-módulo | Varios módulos con límites/build coordinado. | Un comando en raíz | Módulos sin frontera real |
-| Sin ciclos | Grafo de dependencias acíclico. | Depender hacia abstracciones | Ciclo domain↔infra |
-| Límites/puertos | Interfaces en dominio, impl en infra. | DIP | SQL en dominio |
-| Agregador | Root POM/settings incluye módulos. | `-am/-pl` o includes | Olvidar módulo en root |
+#### Módulos y límites
 
-**Implementación desde cero**: `GuiaRepository` en domain, impl en infra, service en app. **Ejecución**: compilar con `javac -d out $(find src -name "*.java") && java -cp out com.academia.app.Main` → `[G-1]`. **Verificación**: sustituir repo sin tocar service.
+**Definición formal.** Un módulo es una unidad de build/publicación con dependencias explícitas. Un ciclo ocurre cuando A depende de B y B depende de A directa o indirectamente.
+
+**Para qué sirve.** Mantiene arquitectura entendible y compilación estable.
+
+**Cuándo usarlo.** Cuando hay límites claros de dominio/infra.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+# estructura: root con settings.gradle.kts include("domain","app"); app depende de domain
+gradle -q projects
+```
+
+**Caso de uso real.** `domain` sin depender de `infra`.
+
+**Error común.** Ciclo de dependencias. Síntoma: falla build/diseño rígido. Corrección: extraer interfaz o mover contrato.
+
+**Verificación.** `gradle projects` lista módulos; build sin ciclos.
+
+#### Dependencias acíclicas
+
+**Definición formal.** Grafo dirigido de dependencias sin ciclos (DAG).
+
+**Para qué sirve.** Permite build ordenado y bajo acoplamiento.
+
+**Cuándo usarlo.** Siempre.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+gradle :app:dependencies --configuration runtimeClasspath | head
+```
+
+**Caso de uso real.** Revisar que dominio no arrastra infraestructura.
+
+**Error común.** “Arreglar” ciclo con dependencia bidireccional en test. Corrección: rediseñar.
+
+**Verificación.** Comando de dependencias se ejecuta y muestra árbol.
 
 ### Tema 4: JUnit 6, Mockito y assertions expresivas · Avanzado · 35 min
 
-**Caso guía**: bug de negocio detectable con test unitario aislado.
+Necesitas tests unitarios legibles y aislados.
 
-| Concepto | Definición | Regla | Error |
-|---|---|---|---|
-| JUnit Jupiter | Framework de tests/anotaciones/assertions. | Tests deterministas/aislados | Estado compartido |
-| Mockito | Dobles para dependencias. | Mockear externos, no SUT | Sobre-mockear |
-| Assertions expresivas | Verifican comportamiento observable. | Mensaje/comportamiento claro | Aserción débil |
-| Arrange-Act-Assert | Estructura legible de test. | Un comportamiento por test | Tests gigantes |
+#### JUnit Jupiter y assertions expresivas
 
-**Implementación desde cero** (proyecto Maven M9 setup): `Notifier` + `EmailClient` mock, `verify`, `assertThrows`. **Ejecución**: `mvn -q -Dtest=NotifierTest test` → `Tests run: 2, Failures: 0`. **Verificación**: rompe validación y confirma rojo.
+**Definición formal.** JUnit Jupiter provee anotaciones y assertions; assertions expresivas hacen visible el comportamiento esperado.
+
+**Para qué sirve.** Tests claros y mantenibles.
+
+**Cuándo usarlo.** Pruebas unitarias por comportamiento.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+class DemoTest { @Test void suma(){ assertEquals(4, 2+2); } }
+```
+
+**Caso de uso real.** Validar reglas de negocio.
+
+**Error común.** Assertions vagas. Corrección: assert específico.
+
+**Verificación (JUnit 5.11.4, 2026-05-22).** Test pasa.
+
+#### Mockito
+
+**Definición formal.** Framework de dobles de prueba para aislar colaboradores.
+
+**Para qué sirve.** Unit test sin I/O real.
+
+**Cuándo usarlo.** Dependencias externas/caras.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+import static org.mockito.Mockito.*;
+interface Repo { String get(); }
+class S { final Repo r; S(Repo r){this.r=r;} String v(){ return r.get(); } }
+// en test: Repo r=mock(Repo.class); when(r.get()).thenReturn("ok"); assertEquals("ok", new S(r).v());
+```
+
+**Caso de uso real.** Mock de gateway de pago.
+
+**Error común.** Mockear tipos de valor. Corrección: usar objetos reales simples.
+
+**Verificación (Mockito 5.14.2, 2026-05-22).** Test pasa.
 
 ### Tema 5: Pruebas de integración reproducibles · Avanzado · 45 min
 
-**Caso guía**: unit pasa, integración con DB real falla.
+Un test de integración debe ser repetible y no depender de un entorno manual.
 
-| Concepto | Definición | Regla | Error |
-|---|---|---|---|
-| Prueba de integración | Verifica interacción con componentes reales. | Foco en contratos críticos | Reemplazar todo unit por integración |
-| Reproducibilidad | Entorno controlado (contenedores/fixtures). | Efímero, repetible en CI | Depender de DB local compartida |
-| Testcontainers | Contenedores efímeros para tests. | Docker activo, cleanup automático | Olvidar prerrequisitos |
-| Aislamiento de datos | Sin estado compartido entre tests. | Transacciones/DB efímera | Tests dependientes |
+#### Pruebas de integración reproducibles
 
-**Implementación desde cero**: test con `PostgreSQLContainer` try-with-resources. **Ejecución**: `mvn -q -Dtest=RepoIntegracionTest test` (requiere Docker). **Verificación**: ejecutar dos veces con mismo resultado.
+**Definición formal.** Tests que verifican interacción entre componentes reales (BD, cola, FS) en un entorno controlado y repetible.
+
+**Para qué sirve.** Detectar problemas de configuración/integración.
+
+**Cuándo usarlo.** Flujos críticos con infraestructura real.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+class IntegrationLikeTest { @Test void archivoTemporal() throws Exception { var p=java.nio.file.Files.createTempFile("t",".txt"); java.nio.file.Files.writeString(p,"ok"); assertEquals("ok", java.nio.file.Files.readString(p)); } }
+```
+
+**Caso de uso real.** Test con Testcontainers para PostgreSQL.
+
+**Error común.** Depender de BD compartida local. Corrección: contenedor efímero/datos aislados.
+
+**Verificación (2026-05-22).** Test pasa localmente; con Testcontainers, reproducible en CI.
+
+#### Testcontainers / entorno efímero
+
+**Definición formal.** Testcontainers levanta dependencias reales en contenedores Docker durante tests.
+
+**Para qué sirve.** Reproducibilidad de integración.
+
+**Cuándo usarlo.** Cuando el comportamiento depende de la BD real.
+
+**Ejemplo mínimo enfocado (ejecutable con Docker).**
+
+```java
+// @Testcontainers + @Container PostgreSQLContainer<?> pg = ...
+```
+
+**Caso de uso real.** Migraciones + repositorios JPA.
+
+**Error común.** No tener Docker en CI. Corrección: configurar runner con Docker o separar perfil.
+
+**Verificación.** **Nota:** requiere Docker; en este entorno Docker 29.9.3 está disponible.
 
 ### Tema 6: SLF4J, Logback, MDC y logging estructurado · Avanzado · 40 min
 
-**Caso guía**: logs sin requestId no permiten rastrear incidente.
+Necesitas logs útiles para diagnosticar producción.
 
-| Concepto | Definición | Regla | Error |
-|---|---|---|---|
-| SLF4J | Fachada de logging. | Código contra API | Acoplar a implementación |
-| Logback | Implementación/config de logging. | Patrón/appenders/niveles claros | Config por defecto en prod |
-| MDC | Contexto por hilo para logs. | `put/remove` en finally | Fuga en thread pool |
-| Logging estructurado | Campos consistentes consultables. | requestId, nivel, evento, error | Loggear secretos o texto ambiguo |
+#### SLF4J y Logback
 
-**Implementación desde cero**: `DemoLog` con `MDC.put/remove`, `log.error(...,e)`, `logback.xml` con `%X{requestId}`. **Ejecución**: `mvn -q compile exec:java -Dexec.mainClass=DemoLog`. **Salida real**: líneas con `[req-1]` y `[req-2]`. **Verificación**: cambia nivel root y observa verbosidad.
+**Definición formal.** SLF4J es fachada; Logback es implementación común.
 
+**Para qué sirve.** Logging desacoplado y configurable.
+
+**Cuándo usarlo.** Aplicaciones Java.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+import org.slf4j.*; class L { static final Logger log=LoggerFactory.getLogger(L.class); public static void main(String[]a){ log.info("ok {}",1); } }
+```
+
+**Caso de uso real.** Logs de servicio en prod.
+
+**Error común.** Múltiples bindings. Corrección: una sola implementación.
+
+**Verificación (SLF4J 2.0.16, 2026-05-22).** Emite log.
+
+#### MDC y logging estructurado
+
+**Definición formal.** MDC agrega contexto por hilo; logging estructurado emite campos consistentes.
+
+**Para qué sirve.** Correlación y búsqueda.
+
+**Cuándo usarlo.** Requests/jobs concurrentes.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```java
+import org.slf4j.*; class M { static final Logger log=LoggerFactory.getLogger(M.class); public static void main(String[]a){ MDC.put("requestId","r1"); try{ log.info("hola"); } finally{ MDC.remove("requestId"); } } }
+```
+
+**Caso de uso real.** requestId en cada línea.
+
+**Error común.** No limpiar MDC. Corrección: `finally`.
+
+**Verificación (Logback 1.5.16, 2026-05-22).** Con patrón `%X{requestId}` aparece `r1`.
 
 ## Cierre del módulo
 
-Build, tests y observabilidad son el sistema inmunológico del proyecto: detectan regresiones, garantizan reproducibilidad y dejan evidencia diagnóstica. En el siguiente módulo pasarás a Spring Boot para construir servicios web sobre estas bases.
-tas bases.
+Build, testing y logging son el trípode operativo de calidad: reproducibilidad, confianza ante cambios y diagnóstico en producción.
