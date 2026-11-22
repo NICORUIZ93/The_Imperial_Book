@@ -1,698 +1,372 @@
 # Módulo 21: APIs públicas, compatibilidad y evolución
 
-Una librería no se rompe cuando deja de compilar: se rompe cuando un cliente que ya estaba compilado deja de ejecutarse en producción. Este módulo construye `envios-core`, una librería con contrato público explícito, y provoca con la JVM real cada tipo de ruptura: `NoSuchMethodError`, `AbstractMethodError`, choques de borrado y constantes que se copian dentro del cliente. Todo se ejecuta con `javac`, `jar`, `javap` y `java` del JDK; no hace falta Maven, Gradle ni conexión a red.
+Una librería no solo debe compilar hoy: debe no romper a los clientes ya compilados mañana. Este módulo trata la superficie pública de una API Java como un contrato: qué se expone, qué compatibilidad se promete, cómo evolucionar sin romper y cómo verificarlo.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Identificar la superficie pública real de una API |
+| 2 | Distinguir compatibilidad de fuente y binaria |
+| 3 | Evolucionar APIs con `default`, deprecación y retiro planificado |
+| 4 | Entender borrado de genéricos y métodos puente en APIs públicas |
+| 5 | Verificar compatibilidad en build/CI |
 
 ## Aprende construyendo
 
-El proyecto del módulo es una librería de dominio para RutaFlow: guías, cotización y notificaciones, con una regla de oro —lo que se publica se puede prometer y lo que se promete se puede retirar sin sorpresas—. Cada tema añade una capa de esa promesa y termina verificándola con un cliente congelado: un código que se compila una vez contra la versión 1 y se vuelve a ejecutar contra cada versión posterior.
-
-
 ### Tema 1: Qué es la superficie pública de una API · Básico · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por qué es la superficie pública de una api con foco en comprensión antes de implementación.
+Publicas una librería `envios-core`. Otro equipo la usa desde su propio paquete. Un método “parece” usable, pero devuelve un tipo package-private: compila mal para el cliente. Necesitas distinguir superficie pública de implementación interna.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender qué es la superficie pública de una api te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** La *superficie pública* (API pública) de un módulo/librería es el conjunto de tipos y miembros accesibles a clientes externos bajo las reglas de acceso de Java (`public`, `protected` según herencia, y reglas de módulos). Todo lo no expuesto es detalle de implementación, aunque exista en el JAR.
 
-#### ► LA ANALOGÍA
-Piensa en qué es la superficie pública de una api como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** `public` no significa “diseñado para ser estable”; pero todo `public` accesible puede ser usado por clientes y, por tanto, genera expectativa de compatibilidad. Los tipos package-private o `private` reducen la superficie comprometida. La firma pública incluye nombre, parámetros, tipo de retorno, excepciones checked declaradas, tipos genéricos expuestos y comportamiento observable. Exponer tipos internos en firmas públicas contamina la API.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    C["cliente.Cliente<br/>otro paquete"] -->|"solo puede llamar"| P["Guia (public)"]
-    P -->|"codigo(), pesoKg()<br/>firma pública válida"| C
-    P -->|"detalle(): tipo no público"| D["DetalleInterno<br/>(package-private)"]
-    D -.->|"inaccesible: error de compilación"| C
-    P --> I["Cotizador (public)<br/>implementación oculta"]
-```
+**Modelo mental.** La API pública es la fachada del edificio: los clientes pueden usar las puertas marcadas; los pasillos internos pueden cambiar si la fachada se mantiene.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Qué es la superficie pública de una API se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Qué es la superficie pública de una API | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses qué es la superficie pública de una api por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: qué es la superficie pública de una api funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Qué es la superficie pública de una API existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve qué es la superficie pública de una api en tu contexto?
-2. ¿Cómo sabrías que qué es la superficie pública de una api no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar qué es la superficie pública de una api?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    C["cliente.Cliente<br/>otro paquete"] -->|"solo puede llamar"| P["Guia (public)"]
-    P -->|"codigo(), pesoKg()<br/>firma pública válida"| C
-    P -->|"detalle(): tipo no público"| D["DetalleInterno<br/>(package-private)"]
-    D -.->|"inaccesible: error de compilación"| C
-    P --> I["Cotizador (public)<br/>implementación oculta"]
-```
-
-```bash
-mkdir envios-core && cd envios-core
-mkdir -p src/io/academia/envios cliente
-```
+**Implementación desde cero**
 
 ```java
-// src/io/academia/envios/Guia.java
-package io.academia.envios;
-
-public final class Guia {
-    public static final int MAX_BULTO = 30;
-
+final class Guia {
     private final String codigo;
     private final double pesoKg;
 
-    public Guia(String codigo, double pesoKg) {
-        if (codigo == null || codigo.isBlank()) {
-            throw new IllegalArgumentException("El código de guía es obligatorio");
-        }
-        if (pesoKg <= 0) {
-            throw new IllegalArgumentException("El peso debe ser positivo");
-        }
+    Guia(String codigo, double pesoKg) {
+        if (codigo == null || codigo.isBlank()) throw new IllegalArgumentException("codigo");
+        if (pesoKg <= 0) throw new IllegalArgumentException("peso");
         this.codigo = codigo;
         this.pesoKg = pesoKg;
     }
 
-    public String codigo() {
-        return codigo;
-    }
+    String codigo() { return codigo; }
+    double pesoKg() { return pesoKg; }
+}
 
-    public double pesoKg() {
-        return pesoKg;
-    }
+interface Cotizador {
+    int cotizar(Guia guia);
+}
 
-    public DetalleInterno detalle() {
-        return new DetalleInterno(codigo);
+class CotizadorSimple implements Cotizador {
+    public int cotizar(Guia guia) { return (int) Math.ceil(guia.pesoKg() * 1000); }
+}
+
+public class DemoApi {
+    public static void main(String[] args) {
+        Cotizador c = new CotizadorSimple();
+        System.out.println(c.cotizar(new Guia("G-1", 2.5)));
     }
 }
 ```
 
-```java
-// src/io/academia/envios/DetalleInterno.java
-package io.academia.envios;
+**Desglose del código**
 
-final class DetalleInterno {
-    private final String codigo;
+- `Guia` expone constructores y métodos accesibles: son contrato.
+- `Cotizador` es contrato público; `CotizadorSimple` puede ser implementación interna.
+- No exponer tipos internos en firmas reduce acoplamiento.
+- La estabilidad se promete sobre la superficie pública, no sobre clases internas.
 
-    DetalleInterno(String codigo) {
-        this.codigo = codigo;
-    }
+**Ejecución y salida real**
 
-    String codigo() {
-        return codigo;
-    }
-}
+```bash
+javac DemoApi.java
+java DemoApi
 ```
 
-```java
-// src/io/academia/envios/Cotizador.java
-package io.academia.envios;
-
-public interface Cotizador {
-    double cotizar(Guia guia);
-}
+```text
+2500
 ```
 
-```java
-// src/io/academia/envios/CotizadorBase.java
-package io.academia.envios;
+**Errores comunes y cómo resolverlos**
 
-public final class CotizadorBase implements Cotizador {
-    @Override
-    public double cotizar(Guia guia) {
-        return guia.pesoKg() * 1.2;
-    }
-}
-```
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Cliente no puede compilar contra tipo devuelto | Tipo no público en firma | Expón un tipo público o cambia firma |
+| Cambias clase interna y rompes clientes | Era usada por reflexión/acceso indebido | Documenta y reduce superficie pública |
+| API demasiado grande | Todo `public` por defecto | Minimiza visibilidad; “publicar es prometer” |
 
-</details>
+**Verificación rápida**
+
+Revisa qué tipos/métodos usaría un cliente fuera del paquete: esa es tu superficie comprometida.
 
 ### Tema 2: Compatibilidad binaria frente a compatibilidad de fuente · Intermedio · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por compatibilidad binaria frente a compatibilidad de fuente con foco en comprensión antes de implementación.
+Actualizas una librería. El cliente recompila bien, pero un JAR antiguo desplegado falla con `NoSuchMethodError`. O al revés: recompilar falla, pero binarios viejos siguen funcionando. Son tipos de compatibilidad distintos.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender compatibilidad binaria frente a compatibilidad de fuente te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** *Compatibilidad de fuente* (source compatibility) significa que el código cliente compila contra la nueva versión. *Compatibilidad binaria* (binary compatibility) significa que código cliente ya compilado contra una versión anterior enlaza y ejecuta correctamente con la nueva versión, según reglas de la JVM/Java Language Specification.
 
-#### ► LA ANALOGÍA
-Piensa en compatibilidad binaria frente a compatibilidad de fuente como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** Agregar un método sobrecargado puede ser source-compatible pero afectar resolución. Eliminar o cambiar firma de un método usado puede romper binario (`NoSuchMethodError`). Agregar método abstracto a interfaz rompe implementadores existentes (`AbstractMethodError`/error de compilación al recompilar). Cambiar tipo de retorno de forma incompatible rompe binario/fuente según caso. Las constantes `static final` primitivas/String pueden ser inlined en compilación cliente.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-    participant A as "autor de la API"
-    participant C as "cliente .class"
-    participant J as "JVM"
-    A->>C: "compila contra v1 (codigo())"
-    A->>A: "publica v2 (referencia())"
-    J->>C: "carga el cliente (sin verificar enlaces)"
-    C->>J: "invoca codigo() en la primera llamada"
-    J-->>C: "NoSuchMethodError"
-```
+**Modelo mental.** Compatibilidad de fuente es que el plano nuevo sirva para redibujar; compatibilidad binaria es que el edificio ya construido siga encajando con la pieza nueva.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Compatibilidad binaria frente a compatibilidad de fuente se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Compatibilidad binaria frente a compatibilidad de fuente | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses compatibilidad binaria frente a compatibilidad de fuente por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: compatibilidad binaria frente a compatibilidad de fuente funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Compatibilidad binaria frente a compatibilidad de fuente existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve compatibilidad binaria frente a compatibilidad de fuente en tu contexto?
-2. ¿Cómo sabrías que compatibilidad binaria frente a compatibilidad de fuente no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar compatibilidad binaria frente a compatibilidad de fuente?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-sequenceDiagram
-    participant A as "autor de la API"
-    participant C as "cliente .class"
-    participant J as "JVM"
-    A->>C: "compila contra v1 (codigo())"
-    A->>A: "publica v2 (referencia())"
-    J->>C: "carga el cliente (sin verificar enlaces)"
-    C->>J: "invoca codigo() en la primera llamada"
-    J-->>C: "NoSuchMethodError"
-```
-
-```bash
-mkdir -p v2-src/io/academia/envios
-cp src/io/academia/envios/*.java v2-src/io/academia/envios/
-```
+**Implementación desde cero**
 
 ```java
-// v2-src/io/academia/envios/Guia.java (solo cambian la constante y el nombre del método)
-package io.academia.envios;
+// v1
+class CalculadoraV1 {
+    public int sumar(int a, int b) { return a + b; }
+}
 
-public final class Guia {
-    public static final int MAX_BULTO = 50;
+// v2 compatible en fuente/binario para este caso: agrega sobrecarga
+class CalculadoraV2 {
+    public int sumar(int a, int b) { return a + b; }
+    public int sumar(int a, int b, int c) { return a + b + c; }
+}
 
-    private final String codigo;
-    private final double pesoKg;
-
-    public Guia(String codigo, double pesoKg) {
-        if (codigo == null || codigo.isBlank()) {
-            throw new IllegalArgumentException("El código de guía es obligatorio");
-        }
-        if (pesoKg <= 0) {
-            throw new IllegalArgumentException("El peso debe ser positivo");
-        }
-        this.codigo = codigo;
-        this.pesoKg = pesoKg;
-    }
-
-    public String referencia() {   // antes: codigo()
-        return codigo;
-    }
-
-    public double pesoKg() {
-        return pesoKg;
-    }
-
-    public DetalleInterno detalle() {
-        return new DetalleInterno(codigo);
+public class DemoCompat {
+    public static void main(String[] args) {
+        CalculadoraV2 c = new CalculadoraV2();
+        System.out.println(c.sumar(1, 2));
+        System.out.println(c.sumar(1, 2, 3));
     }
 }
 ```
 
+Ejemplo de ruptura binaria conceptual: si un cliente compilado llama `sumar(int,int)` y en la nueva versión lo renombras a `sumarDos(int,int)`, el cliente viejo falla con `NoSuchMethodError`.
+
+**Desglose del código**
+
+- Agregar sobrecarga suele ser compatible.
+- Eliminar/renombrar método usado rompe binario.
+- Verifica con cliente compilado contra versión vieja ejecutado sobre versión nueva.
+- `javap -v` ayuda a inspeccionar firmas/constantes.
+
+**Ejecución y salida real**
+
 ```bash
-javac -d v2-out $(find v2-src -name '*.java')
-jar --create --file envios-core-2.0.0.jar -C v2-out .
-java -cp "envios-core-2.0.0.jar:cliente-out" cliente.Cliente
+javac DemoCompat.java
+java DemoCompat
 ```
 
 ```text
-Exception in thread "main" java.lang.NoSuchMethodError: 'java.lang.String io.academia.envios.Guia.codigo()'
+3
+6
 ```
 
-```bash
-javac -cp envios-core-2.0.0.jar -d cliente-out cliente/Cliente.java
-```
+**Errores comunes y cómo resolverlos**
 
-</details>
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `NoSuchMethodError` en prod | Cambiaste firma/eliminaste método | Mantén firma vieja; agrega nueva y depreca |
+| `AbstractMethodError` | Agregaste método abstracto a interfaz publicada | Usa `default` o nueva interfaz |
+| Compila pero falla en runtime | Probaste solo recompilando | Prueba binarios viejos contra JAR nuevo |
+
+**Verificación rápida**
+
+Compila un cliente contra una versión, modifica la librería de forma incompatible, reemplaza el JAR y ejecuta el cliente sin recompilar.
 
 ### Tema 3: Evolucionar sin romper: default methods, deprecación y retirada · Intermedio · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por evolucionar sin romper: default methods, deprecación y retirada con foco en comprensión antes de implementación.
+Tu interfaz `Notificador` ya fue implementada por clientes. Necesitas agregar `enviarUrgente`. Si agregas un método abstracto, rompes implementadores. Necesitas una evolución compatible.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender evolucionar sin romper: default methods, deprecación y retirada te permite tomar mejores decisiones técnicas.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** Un *default method* es un método de interfaz con implementación por defecto, introducido para evolución compatible de interfaces. La *deprecación* (`@Deprecated`) marca un elemento como no recomendado, usualmente indicando alternativa y plan de retiro. El *retiro* es la eliminación real en una versión mayor/planificada.
 
-#### ► LA ANALOGÍA
-Piensa en evolucionar sin romper: default methods, deprecación y retirada como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** `default` permite agregar comportamiento sin romper implementadores existentes, pero la implementación por defecto debe ser semánticamente razonable. Deprecar no elimina: comunica. `forRemoval=true` y `since` documentan intención. Retirar requiere ciclo de migración, notas de versión y, idealmente, herramientas de detección. No deprecies sin alternativa.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart TB
-    V1["Notificador v1<br/>enviar(destino, mensaje)"] --> IMP["NotificadorConsola.class<br/>compilado contra v1"]
-    V2["Notificador v2<br/>+ default enviarLote()"] -->|"hereda sin recompilar"| IMP
-    V3["Notificador v3<br/>+ abstract soporta(canal)"] -->|"AbstractMethodError"| IMP
-    DEP["@Deprecated(forRemoval = true)"] -->|"aviso con -Xlint:deprecation"| V4["Notificador v4"]
-```
+**Modelo mental.** Evolucionar una API es cambiar una carretera en uso: primero pones señalización (deprecación), luego abres desvío (default/nueva API), y solo al final cierras el tramo viejo (retiro).
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Evolucionar sin romper: default methods, deprecación y retirada se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Evolucionar sin romper: default methods, deprecación y retirada | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses evolucionar sin romper: default methods, deprecación y retirada por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: evolucionar sin romper: default methods, deprecación y retirada funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Evolucionar sin romper: default methods, deprecación y retirada existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve evolucionar sin romper: default methods, deprecación y retirada en tu contexto?
-2. ¿Cómo sabrías que evolucionar sin romper: default methods, deprecación y retirada no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar evolucionar sin romper: default methods, deprecación y retirada?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart TB
-    V1["Notificador v1<br/>enviar(destino, mensaje)"] --> IMP["NotificadorConsola.class<br/>compilado contra v1"]
-    V2["Notificador v2<br/>+ default enviarLote()"] -->|"hereda sin recompilar"| IMP
-    V3["Notificador v3<br/>+ abstract soporta(canal)"] -->|"AbstractMethodError"| IMP
-    DEP["@Deprecated(forRemoval = true)"] -->|"aviso con -Xlint:deprecation"| V4["Notificador v4"]
-```
-
-```bash
-mkdir notificaciones && cd notificaciones
-mkdir -p lib-src/io/academia/notificaciones app-src/app
-```
+**Implementación desde cero**
 
 ```java
-// lib-src/io/academia/notificaciones/Notificador.java
-package io.academia.notificaciones;
+interface Notificador {
+    void enviar(String mensaje);
 
-public interface Notificador {
-    void enviar(String destino, String mensaje);
-}
-```
+    @Deprecated(since = "2.0", forRemoval = true)
+    default void enviarUrgente(String mensaje) {
+        enviar("[URGENTE] " + mensaje);
+    }
 
-```bash
-javac -d lib-out $(find lib-src -name '*.java')
-jar --create --file notificaciones-core-1.0.0.jar -C lib-out .
-```
-
-```java
-// app-src/app/NotificadorConsola.java
-package app;
-
-import io.academia.notificaciones.Notificador;
-
-public final class NotificadorConsola implements Notificador {
-    @Override
-    public void enviar(String destino, String mensaje) {
-        System.out.println("Para " + destino + ": " + mensaje);
+    default void enviarPrioridad(String mensaje, int prioridad) {
+        String prefijo = prioridad >= 5 ? "[URGENTE] " : "";
+        enviar(prefijo + mensaje);
     }
 }
-```
 
-```java
-// app-src/app/Enviador.java
-package app;
+class EmailNotificador implements Notificador {
+    public void enviar(String mensaje) { System.out.println("email:" + mensaje); }
+}
 
-import io.academia.notificaciones.Notificador;
-import java.util.List;
-
-public final class Enviador {
-    private final Notificador notificador;
-
-    public Enviador(Notificador notificador) {
-        this.notificador = notificador;
-    }
-
-    public void avisar(String destino, String mensaje) {
-        notificador.enviarLote(List.of(destino), mensaje);
-    }
-
+public class DemoEvolucion {
     public static void main(String[] args) {
-        new Enviador(new NotificadorConsola()).avisar("RF-001", "En reparto");
+        Notificador n = new EmailNotificador();
+        n.enviarPrioridad("Falla", 5);
     }
 }
 ```
 
-</details>
+**Desglose del código**
 
-### Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 45 min
+- `enviarPrioridad` es la nueva API.
+- `enviarUrgente` queda deprecada con alternativa.
+- Implementadores antiguos siguen compilando porque la interfaz mantiene compatibilidad.
+- El retiro real se hace en versión mayor, tras periodo de migración.
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por genéricos, borrado y métodos puente en la superficie pública con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender genéricos, borrado y métodos puente en la superficie pública te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en genéricos, borrado y métodos puente en la superficie pública como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    S["interface Cotizador<br/>Number cotizar(Guia)"] --> I["CotizadorBase<br/>Double cotizar(Guia)"]
-    I --> B["puente sintético<br/>Number cotizar(Guia)"]
-    B -->|"delega"| I
-    E["List&lt;Guia&gt; y List&lt;Factura&gt;"] --> X["mismo borrado: List"]
-    X -->|"sobrecargas imposibles"| R["error: same erasure"]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Genéricos, borrado y métodos puente en la superficie pública se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Genéricos, borrado y métodos puente en la superficie pública | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses genéricos, borrado y métodos puente en la superficie pública por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: genéricos, borrado y métodos puente en la superficie pública funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Genéricos, borrado y métodos puente en la superficie pública existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve genéricos, borrado y métodos puente en la superficie pública en tu contexto?
-2. ¿Cómo sabrías que genéricos, borrado y métodos puente en la superficie pública no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar genéricos, borrado y métodos puente en la superficie pública?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    S["interface Cotizador<br/>Number cotizar(Guia)"] --> I["CotizadorBase<br/>Double cotizar(Guia)"]
-    I --> B["puente sintético<br/>Number cotizar(Guia)"]
-    B -->|"delega"| I
-    E["List&lt;Guia&gt; y List&lt;Factura&gt;"] --> X["mismo borrado: List"]
-    X -->|"sobrecargas imposibles"| R["error: same erasure"]
-```
+**Ejecución y salida real**
 
 ```bash
-mkdir genericos && cd genericos
-mkdir -p src/io/academia/envios
-```
-
-```java
-// src/io/academia/envios/Guia.java
-package io.academia.envios;
-
-public record Guia(String codigo, double pesoKg) {}
-```
-
-```java
-// src/io/academia/envios/Cotizador.java
-package io.academia.envios;
-
-public interface Cotizador {
-    Number cotizar(Guia guia);
-}
-```
-
-```java
-// src/io/academia/envios/CotizadorBase.java
-package io.academia.envios;
-
-public final class CotizadorBase implements Cotizador {
-    @Override
-    public Double cotizar(Guia guia) {
-        return guia.pesoKg() * 1.2;
-    }
-}
-```
-
-```bash
-javac -d out $(find src -name '*.java')
-javap -p -cp out io.academia.envios.CotizadorBase
-```
-
-</details>
-
-### Tema 5: Verificar la compatibilidad en el build · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por verificar la compatibilidad en el build con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender verificar la compatibilidad en el build te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en verificar la compatibilidad en el build como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    A["envios-core-2.0.0.jar"] --> V["VerificadorCompatibilidad"]
-    C["ClienteCongelado.java<br/>compilado contra 1.0.0"] --> V
-    V -->|"compila"| OK["COMPATIBLE · exit 0"]
-    V -->|"no compila"| KO["INCOMPATIBLE · exit 1"]
-    KO --> B["el build se detiene"]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Verificar la compatibilidad en el build se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Verificar la compatibilidad en el build | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses verificar la compatibilidad en el build por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: verificar la compatibilidad en el build funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Verificar la compatibilidad en el build existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve verificar la compatibilidad en el build en tu contexto?
-2. ¿Cómo sabrías que verificar la compatibilidad en el build no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar verificar la compatibilidad en el build?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    A["envios-core-2.0.0.jar"] --> V["VerificadorCompatibilidad"]
-    C["ClienteCongelado.java<br/>compilado contra 1.0.0"] --> V
-    V -->|"compila"| OK["COMPATIBLE · exit 0"]
-    V -->|"no compila"| KO["INCOMPATIBLE · exit 1"]
-    KO --> B["el build se detiene"]
-```
-
-```bash
-mkdir verificador && cd verificador
-```
-
-```java
-// VerificadorCompatibilidad.java
-import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
-import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.List;
-
-public final class VerificadorCompatibilidad {
-
-    public static void main(String[] args) throws Exception {
-        if (args.length != 2) {
-            System.err.println("Uso: java VerificadorCompatibilidad <api.jar> <ClienteCongelado.java>");
-            System.exit(2);
-        }
-
-        Path api = Path.of(args[0]).toAbsolutePath();
-        Path cliente = Path.of(args[1]).toAbsolutePath();
-        Path salida = Files.createTempDirectory("compatibilidad");
-
-        JavaCompiler compilador = ToolProvider.getSystemJavaCompiler();
-        if (compilador == null) {
-            System.err.println("Sin compilador: ejecuta esto con un JDK, no con un JRE.");
-            System.exit(2);
-        }
-
-        DiagnosticCollector<JavaFileObject> diagnosticos = new DiagnosticCollector<>();
-        try (StandardJavaFileManager archivos =
-                     compilador.getStandardFileManager(diagnosticos, null, null)) {
-            Iterable<? extends JavaFileObject> unidades =
-                    archivos.getJavaFileObjects(cliente.toFile());
-            List<String> opciones = List.of(
-                    "-classpath", api.toString(),
-                    "-d", salida.toString());
-            boolean compilo = Boolean.TRUE.equals(
-                    compilador.getTask(null, archivos, diagnosticos, opciones, null, unidades).call());
-
-            if (compilo) {
-                System.out.println("COMPATIBLE: el cliente congelado compila contra " + api.getFileName());
-                return;
-            }
-
-            System.out.println("INCOMPATIBLE: el cliente congelado ya no compila contra " + api.getFileName());
-            for (Diagnostic<? extends JavaFileObject> d : diagnosticos.getDiagnostics()) {
-                if (d.getKind() == Diagnostic.Kind.ERROR) {
-                    System.out.println("  linea " + d.getLineNumber() + ": " + d.getMessage(null));
-                }
-            }
-            System.exit(1);
-        }
-    }
-}
-```
-
-```bash
-javac -d verificador-out VerificadorCompatibilidad.java
-java -cp verificador-out VerificadorCompatibilidad ../envios-core-1.0.0.jar ../cliente/Cliente.java
-```
-
-```bash
-java -cp verificador-out VerificadorCompatibilidad ../envios-core-2.0.0.jar ../cliente/Cliente.java; echo "salida=$?"
+javac DemoEvolucion.java
+java DemoEvolucion
 ```
 
 ```text
-INCOMPATIBLE: el cliente congelado ya no compila contra envios-core-2.0.0.jar
-  linea 8: cannot find symbol
-  symbol:   method codigo()
-  location: variable guia of type io.academia.envios.Guia
-salida=1
+email:[URGENTE] Falla
 ```
 
-</details>
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Rompes implementadores | Agregaste método abstracto | Usa `default` o versión mayor planificada |
+| Deprecación inútil | No indicas alternativa | Documenta reemplazo y `since/forRemoval` |
+| Retiro prematuro | Sin ventana de migración | Mantén ciclo de deprecación y comunicación |
+
+**Verificación rápida**
+
+Compila un implementador viejo contra la interfaz con `default` agregado: debe seguir compilando.
+
+### Tema 4: Genéricos, borrado y métodos puente en la superficie pública · Avanzado · 45 min
+
+**Caso guía**
+
+Publicas una interfaz genérica `Repositorio<T>`. Un cliente implementa `Repositorio<Guia>` y el compilador genera métodos puente. Cambias la firma genérica de forma incompatible y aparecen errores sutiles en runtime.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** El *borrado de tipos* (type erasure) es la implementación de genéricos en Java donde la información de tipo genérico se elimina en bytecode (en su forma parametrizada) y se insertan casts/métodos puente según sea necesario. Un *método puente* (bridge method) es un método sintético generado por el compilador para preservar polimorfismo y compatibilidad de firmas tras el borrado.
+
+**Contrato / invariantes / reglas.** Dos métodos no pueden diferir solo por parámetros genéricos si borran a la misma firma. Cambiar genéricos en API pública puede romper source o binary compatibility. `javap -c -private` permite ver bridge methods. Las APIs públicas deben ser cuidadosas con tipos raw, wildcards y retornos genéricos porque el borrado afecta el contrato en bytecode.
+
+**Modelo mental.** Los genéricos son etiquetas de seguridad en compilación; en runtime, muchas etiquetas se borran y el compilador deja puentes invisibles para que el tráfico siga pasando.
+
+**Implementación desde cero**
+
+```java
+interface Repositorio<T> {
+    void guardar(T valor);
+}
+
+class RepoGuia implements Repositorio<String> {
+    public void guardar(String valor) {
+        System.out.println("guardar:" + valor);
+    }
+}
+
+public class DemoBridge {
+    public static void main(String[] args) {
+        Repositorio<String> repo = new RepoGuia();
+        repo.guardar("G-1");
+    }
+}
+```
+
+Inspección:
+
+```bash
+javac DemoBridge.java
+javap -private RepoGuia
+```
+
+**Desglose del código**
+
+- `Repositorio<String>` da tipo seguro en compilación.
+- En bytecode, el método puente permite que la implementación cumpla la firma borrada.
+- `javap` muestra métodos sintéticos/bridge cuando aplica.
+- Cambios de genéricos en APIs públicas deben evaluarse como cambios de contrato.
+
+**Ejecución y salida real**
+
+```bash
+javac DemoBridge.java
+java DemoBridge
+```
+
+```text
+guardar:G-1
+```
+
+`javap -private RepoGuia` puede mostrar un método bridge sintético dependiendo del caso exacto.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Error “same erasure” | Dos métodos colisionan tras borrado | Cambia nombres o diseño de API |
+| `ClassCastException` en runtime | Uso de raw types o API inconsistente | Evita raw types en API pública |
+| Ruptura sutil al cambiar genéricos | Cambio de firma borrada | Verifica binario y usa herramientas de compatibilidad |
+
+**Verificación rápida**
+
+Ejecuta `javap -private -v RepoGuia` y busca métodos `bridge`/`synthetic`.
+
+### Tema 5: Verificar la compatibilidad en el build · Avanzado · 45 min
+
+**Caso guía**
+
+El equipo cambia la librería y todo compila en el repo. Pero un cliente externo compilado contra v1 falla en producción. Necesitas una verificación de compatibilidad en CI.
+
+**Fundamento técnico y modelo mental**
+
+**Definición formal.** La *verificación de compatibilidad API/binaria* es el proceso automatizado de comparar una versión base y una nueva para detectar cambios incompatibles. Herramientas como japicmp, Revapi o checks de Maven/Gradle pueden integrarse en el build.
+
+**Contrato / invariantes / reglas.** El baseline debe ser una versión publicada real. La verificación debe distinguir cambios binarios y de fuente cuando la herramienta lo soporte. No toda ruptura detectada es un error si la versión mayor lo permite; la política semántica de versiones define la respuesta. La verificación automatizada no reemplaza pruebas de integración de clientes reales.
+
+**Modelo mental.** Es un control de calidad de piezas: antes de enviar la nueva pieza, la comparas con el molde anterior.
+
+**Implementación desde cero**
+
+Flujo conceptual con `japicmp` (herramienta externa):
+
+```bash
+# comparar v1.jar (baseline) contra v2.jar (nuevo)
+java -jar japicmp.jar --old v1.jar --new v2.jar --only-modified --markdown report.md
+```
+
+Política mínima de CI:
+
+```text
+[ ] compilar librería nueva
+[ ] ejecutar tests
+[ ] comparar contra baseline publicado
+[ ] fallar CI si hay ruptura incompatible sin bump mayor
+[ ] publicar notas de migración si hay deprecaciones/retiros
+```
+
+**Desglose del código**
+
+- El baseline es la versión anterior publicada.
+- La comparación detecta métodos/clases eliminadas o firmas incompatibles.
+- El resultado debe conectarse a la política de versionado.
+- La prueba con cliente real sigue siendo valiosa.
+
+**Ejecución y salida real**
+
+> **Nota:** `japicmp`/Revapi son herramientas externas. El flujo se verifica en CI o local con el JAR de la herramienta.
+
+Salida esperada: reporte sin cambios incompatibles, o fallo de build si los hay.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| CI verde pero cliente rompe | No comparaste binarios | Agrega japicmp/Revapi y prueba cliente congelado |
+| Ruptura aceptada sin bump | Política de versión ausente | Define SemVer/política de compatibilidad |
+| Baseline incorrecto | Comparaste contra build local | Usa artefacto publicado |
+
+**Verificación rápida**
+
+Guarda un cliente compilado contra v1, cambia v2 de forma incompatible y verifica que la herramienta lo reporta.
+
+## Cierre del módulo
+
+Diseñar APIs públicas es diseñar promesas. Distinguir fuente/binario, evolucionar con `default` y deprecación, entender borrado y automatizar verificación convierte la compatibilidad en una práctica de ingeniería, no en suerte.
