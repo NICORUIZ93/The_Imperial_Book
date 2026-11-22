@@ -6115,35 +6115,35 @@
     "5": [
       {
         "title": "Java 21: Streams, Lambdas, Optional, Records, Pattern Matching",
-        "fragment": "java-21-streams-lambdas-optional-records-pattern-matching"
+        "fragment": "tema-1-java-21-streams-lambdas-optional-records-pattern-matching"
       },
       {
         "title": "Virtual Threads (Project Loom)",
-        "fragment": "virtual-threads-project-loom"
+        "fragment": "tema-2-virtual-threads-project-loom"
       },
       {
         "title": "Spring IoC, DI, Bean Lifecycle, ApplicationContext",
-        "fragment": "spring-ioc-di-bean-lifecycle-applicationcontext"
+        "fragment": "tema-3-spring-ioc-di-bean-lifecycle-applicationcontext"
       },
       {
         "title": "Auto-configuración condicional, @Conditional, starters",
-        "fragment": "auto-configuracion-condicional-conditional-starters"
+        "fragment": "tema-4-auto-configuracion-condicional-conditional-starters"
       },
       {
         "title": "Multi-module Spring Boot projects",
-        "fragment": "multi-module-spring-boot-projects"
+        "fragment": "tema-5-multi-module-spring-boot-projects"
       },
       {
         "title": "Perfiles y configuración externalizada",
-        "fragment": "perfiles-y-configuracion-externalizada"
+        "fragment": "tema-6-perfiles-y-configuracion-externalizada"
       },
       {
         "title": "CRaC (Coordinated Restore at Checkpoint)",
-        "fragment": "crac-coordinated-restore-at-checkpoint"
+        "fragment": "tema-7-crac-coordinated-restore-at-checkpoint"
       },
       {
         "title": "GraalVM Native Image",
-        "fragment": "graalvm-native-image"
+        "fragment": "tema-8-graalvm-native-image"
       }
     ],
     "6": [
