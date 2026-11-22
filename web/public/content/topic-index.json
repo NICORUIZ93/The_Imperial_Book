@@ -6185,19 +6185,19 @@
     "8": [
       {
         "title": "Caching con Redis: @Cacheable, @CacheEvict, TTL",
-        "fragment": "caching-con-redis-cacheable-cacheevict-ttl"
+        "fragment": "tema-1-caching-con-redis-cacheable-cacheevict-ttl"
       },
       {
         "title": "Patrones: Read-Through, Write-Behind, Write-Through",
-        "fragment": "patrones-read-through-write-behind-write-through"
+        "fragment": "tema-2-patrones-read-through-write-behind-write-through"
       },
       {
         "title": "Distributed Locking con Redlock y Fencing Tokens",
-        "fragment": "distributed-locking-con-redlock-y-fencing-tokens"
+        "fragment": "tema-3-distributed-locking-con-redlock-y-fencing-tokens"
       },
       {
         "title": "Cache stampede y solución con locks",
-        "fragment": "cache-stampede-y-solucion-con-locks"
+        "fragment": "tema-4-cache-stampede-y-solucion-con-locks"
       }
     ],
     "9": [
