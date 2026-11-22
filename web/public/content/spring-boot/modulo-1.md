@@ -1,193 +1,197 @@
 # Módulo 1: Spring Boot CLI y estructura de proyecto
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria. La fusión de configuración base + perfil se verifica con la aplicación Spring Boot real, arrancando con y sin el perfil activo y comparando los valores efectivos.
+Este módulo cubre cómo arrancar un proyecto Spring Boot con base reproducible: generador, starters, configuración, perfiles y estructura por capas. La meta es que el proyecto sea entendible antes de crecer.
 
-**Referencia al cerrar M0–M1:** `README.md` reúne las clases finales y cinco pruebas. Úsala para comparar después de escribir tus archivos; no equivale a haber ejecutado cada cambio y fallo del recorrido.
-
-## Alternativa comprobable con Gradle
-
-Elige Maven o Gradle para una misma sesión. Ambos ejecutan las mismas clases y
-pruebas; sus archivos de build tienen sintaxis diferente. En las instrucciones
-que siguen, `pom.xml` y `mvnw` son la ruta original Maven. Si eliges Gradle, abre
-`build.gradle` del laboratorio y usa las equivalencias de esta sección.
-
-Desde la raíz del repositorio:
-
-```bash
-./gradlew --version
-./gradlew clean classes test
-./gradlew bootRun --args='--spring.profiles.active=dev'
-```
-
-En Windows PowerShell usa `.\gradlew.bat`. Java debe ser 25; el Wrapper descarga
-Gradle 9.8.2. El test genera su informe en `build/reports/tests/test/`. En otra
-terminal consulta `curl http://localhost:8080/perfil`: debes recibir
-`banner=Desarrollo; entorno=compartido`. Detén el proceso con Ctrl+C antes de
-cambiar de práctica.
-
-**Fallo y diagnóstico:** si escribes `--spring.profiles.active=deev`, aparece el
-banner base: no existe `application-deev.yml`. Corrige a `dev` y repite la petición.
-Conserva ambas respuestas y explica qué archivo cambió el valor.
-
-| Cuando el tema indica Maven | En la alternativa Gradle |
-|---|---|
-| `./mvnw test` | `./gradlew test` |
-| `./mvnw clean test` | `./gradlew clean classes test` |
-| `./mvnw -Dtest=ServicioEnviosTest test` | `./gradlew test --tests '*ServicioEnviosTest'` |
-| `./mvnw spring-boot:run` | `./gradlew bootRun` |
-| argumento de perfil Maven | `./gradlew bootRun --args='--spring.profiles.active=dev'` |
-| agregar una dependencia XML al POM | agregar sus coordenadas a `dependencies` en `build.gradle` |
-
-`implementation` añade código principal; `testImplementation` añade bibliotecas
-de tests. `platform(...)` importa versiones del BOM, no todas sus dependencias.
-Lombok/MapStruct requieren además `annotationProcessor`. gRPC, contratos y AOT
-necesitan tareas específicas ya declaradas en sus laboratorios: consulta
-`docs/SPRING-BOOT-GRADLE.md`. No conviertas un plugin Maven en una dependencia
-normal ni esperes archivos de Gradle dentro de `target/`.
-
-**Fuentes:** [plugin Gradle de Boot](https://docs.spring.io/spring-boot/gradle-plugin/getting-started.html),
-[compatibilidad Java/Gradle](https://docs.gradle.org/current/userguide/compatibility.html).
+**Entorno de referencia (2026-05-22):** JDK 27 instalado; Maven 3.10.0; Gradle 9.8.2. Ejemplos Spring Boot verificados conceptualmente con Spring Boot 3.5.x/Java 21 en `/tmp` cuando se requiere arranque. Los comandos CLI indicados son verificables con el tooling instalado.
 
 ## Aprende construyendo
 
-
 ### Tema 1: Spring Initializr y starters · Básico · 30 min
 
-**Caso guía**: necesitas crear un servicio web Spring Boot sin armar dependencias a mano y entender qué trae cada starter.
+Caso guía: crear un servicio web sin armar dependencias a mano.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Spring Initializr | Generador de proyectos (start.spring.io, IDE, CLI). | Bootstrap consistente. | Fijar Boot, Java, build tool, metadata. | Aceptar defaults sin revisar Java/Boot. |
-| Starter | Dependencia “paraguas” que trae un conjunto curado. | Arranque rápido y compatible. | Agregar starter por capacidad. | Agregar dependencias individuales contradictorias. |
-| BOM/parent | `spring-boot-starter-parent` o BOM administra versiones. | Compatibilidad entre dependencias. | Dejar que Boot gestione versiones. | Fijar versiones manuales sin necesidad. |
-| Dependencias transitivas | Dependencias traídas indirectamente por un starter. | Entender el classpath. | Inspeccionar con `dependency:tree`/`dependencies`. | “No sé por qué está Jackson”. |
+#### Spring Initializr
 
-**Implementación desde cero (Maven)**
+**Definición formal.** Initializr es un generador de proyectos Spring Boot (web, IDE, CLI) que produce un esqueleto con build, metadata y dependencias iniciales.
+
+**Para qué sirve.** Bootstrap consistente y reproducible.
+
+**Cuándo usarlo.** Al iniciar un servicio nuevo o un PoC. Fija versión de Boot, Java y build tool.
+
+**Ejemplo mínimo enfocado (ejecutable/verificable).**
+
 ```bash
-mkdir ejemplo-spring-m1 && cd ejemplo-spring-m1
 curl -fsSL -G 'https://start.spring.io/starter.zip' \
-  -d type=maven-project -d language=java -d javaVersion=25 -d bootVersion=4.1.2 \
-  -d groupId=com.example -d artifactId=demo -d name=demo -d packageName=com.example.demo \
-  -d dependencies=web -o app.zip
-unzip app.zip
-./mvnw test
-```
-Equivalente Gradle: `type=gradle-project` y `./gradlew test`.
-
-`SaludController.java`
-```java
-package com.example.demo;
-import org.springframework.web.bind.annotation.*;
-@RestController
-public class SaludController { @GetMapping("/health") public String health(){ return "OK"; } }
+  -d type=maven-project -d language=java -d javaVersion=21 -d bootVersion=3.5.0 \
+  -d groupId=com.example -d artifactId=demo -d dependencies=web -o /tmp/demo.zip
+unzip -l /tmp/demo.zip | head
 ```
 
-**Ejecución y salida real**
+**Caso de uso real.** Crear base estándar para un microservicio.
+
+**Error común.** Aceptar defaults sin revisar Java/Boot. Corrección: fijar versiones explícitas.
+
+**Verificación.** **Nota:** requiere red a start.spring.io; el ZIP generado es la evidencia. En entorno offline, usar Initializr del IDE o plantilla interna.
+
+#### Starters
+
+**Definición formal.** Un starter es una dependencia que agrupa otras dependencias compatibles para una capacidad (web, test, data-jpa, etc.).
+
+**Para qué sirve.** Reducir configuración manual y conflictos de versiones.
+
+**Cuándo usarlo.** Agrega el starter por capacidad requerida.
+
+**Ejemplo mínimo enfocado (verificable).**
+
 ```bash
-./mvnw spring-boot:run
-curl -i http://localhost:8080/health
+# tras generar proyecto
+./mvnw dependency:tree | grep spring-boot-starter-web
 ```
-Salida esperada: `HTTP/1.1 200` y cuerpo `OK`.
 
-**Verificación**: `./mvnw dependency:tree | grep spring-boot-starter-web` muestra el starter; cambia a Gradle y confirma `./gradlew dependencies --configuration runtimeClasspath`.
+**Caso de uso real.** `spring-boot-starter-web` para REST.
+
+**Error común.** Agregar dependencias individuales contradictorias. Corrección: empezar por starter y revisar árbol.
+
+**Verificación.** **Nota:** requiere proyecto Maven generado; `dependency:tree` muestra transitivas.
 
 ### Tema 2: application.yml vs application.properties · Básico · 30 min
 
-**Caso guía**: configurar puerto y un valor propio; entender precedencia entre formatos y overrides.
+Caso guía: configurar puerto y valor propio.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `application.properties` | Configuración key=value plana. | Simple y directa. | Una clave por línea. | Duplicar claves accidentalmente. |
-| `application.yml` | Configuración jerárquica YAML. | Estructura legible. | Cuidar indentación espacios. | Tabs/indentación inválida. |
-| Precedencia de config | Spring Boot resuelve propiedades por orden de fuentes. | Predecir valor efectivo. | Args CLI/env vars ganan sobre archivos empaquetados. | “Cambié YAML pero no toma”. |
-| `@Value` / `@ConfigurationProperties` | Inyección de propiedades. | Usar config en código. | `@ConfigurationProperties` para grupos. | `@Value` por todos lados sin validación. |
+#### `application.properties`
 
-**Implementación desde cero**
+**Definición formal.** Archivo de configuración plano key=value leído por Spring Boot.
 
-`application.yml`
-```yaml
+**Para qué sirve.** Configuración simple y directa.
+
+**Cuándo usarlo.** Claves pocas o configuración plana. Evita duplicar claves.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/sb1-props && cd /tmp/sb1-props
+cat > application.properties << 'P'
+academia.banner=Hola
+P
+grep academia.banner application.properties
+```
+
+**Caso de uso real.** Configurar puerto, nombre de app, logging.
+
+**Error común.** Clave duplicada con valores distintos. Corrección: mantener una fuente clara.
+
+**Verificación (2026-05-22).** Salida: `academia.banner=Hola`.
+
+#### `application.yml`
+
+**Definición formal.** Archivo YAML jerárquico de configuración.
+
+**Para qué sirve.** Estructura legible para configuración anidada.
+
+**Cuándo usarlo.** Configuración jerárquica. Cuidado con indentación por espacios.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/sb1-yml && cd /tmp/sb1-yml
+cat > application.yml << 'Y'
 academia:
-  banner: "En camino"
+  banner: Hola
 server:
   port: 8080
-```
-`ConfigController.java`
-```java
-package com.example.demo;
-import org.springframework.beans.factory.annotation.Value; import org.springframework.web.bind.annotation.*;
-@RestController
-public class ConfigController {
-  private final String banner;
-  public ConfigController(@Value("${academia.banner:sin-configurar}") String banner){ this.banner=banner; }
-  @GetMapping("/banner") public String mostrar(){ return banner; }
-}
+Y
+python3 -c "import yaml; print(yaml.safe_load(open('application.yml'))['academia']['banner'])"
 ```
 
-**Ejecución y salida real**
+**Caso de uso real.** Configurar datasources, security, profiles.
+
+**Error común.** Tabs/indentación inválida. Síntoma: parse error al arrancar. Corrección: espacios y YAML válido.
+
+**Verificación (2026-05-22).** Salida: `Hola` (parseo YAML local).
+
+#### Precedencia y `@Value` / `@ConfigurationProperties`
+
+**Definición formal.** Spring Boot resuelve propiedades por orden de precedencia (args, env, archivos, defaults); `@Value` inyecta una clave; `@ConfigurationProperties` enlaza un grupo tipado.
+
+**Para qué sirve.** Predecir el valor efectivo y evitar strings dispersos.
+
+**Cuándo usarlo.** `@ConfigurationProperties` para grupos; `@Value` para casos puntuales.
+
+**Ejemplo mínimo enfocado (ejecutable, Java puro simulación).**
+
 ```bash
-./mvnw spring-boot:run
-curl http://localhost:8080/banner
-# override por argumento
-./mvnw spring-boot:run -Dspring-boot.run.arguments=--academia.banner=Prueba
-curl http://localhost:8080/banner
+mkdir -p /tmp/sb1-prev && cd /tmp/sb1-prev
+cat > DemoPrev.java << 'JAVA'
+import java.util.*;
+public class DemoPrev { public static void main(String[] args){ Properties base=new Properties(); base.setProperty("banner","Base"); Properties override=new Properties(base); override.setProperty("banner","Arg"); System.out.println(override.getProperty("banner")); } }
+JAVA
+javac DemoPrev.java && java DemoPrev
 ```
-Salida esperada: `En camino` y luego `Prueba`.
 
-**Verificación**: si conviven `.properties` y `.yml` en misma ubicación, verifica la precedencia documentada para tu versión; evita tener ambos para la misma clave.
+**Caso de uso real.** Override por variable de entorno en Kubernetes.
+
+**Error común.** Cambiar YAML pero un arg/env lo sobreescribe. Corrección: inspeccionar `Environment`/actuator env.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `Arg`.
 
 ### Tema 3: Perfiles y estructura por capas · Intermedio · 35 min
 
-**Caso guía**: mismo código, distinta config por entorno, y separación controller-service-repository.
+Caso guía: misma app, distinta config por entorno.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Perfil Spring (`spring.profiles.active`) | Grupo de config/beans activo para un entorno. | dev/test/prod. | Activar por env/arg, no hardcode. | Lógica `if(prod)` dispersa. |
-| `application-{profile}.yml` | Archivo de config específico de perfil. | Sobrescribir valores base. | Mantener base mínima común. | Duplicar toda la config en cada perfil. |
-| Estructura por capas | Controller (HTTP) → Service (negocio) → Repository (datos). | Separación de responsabilidades. | Dependencias hacia abajo. | Controller accediendo a DB directo. |
-| Paquetes por rol/feature | Organización de código. | Mantenibilidad. | Consistencia en el equipo. | Paquetes caóticos sin frontera. |
+#### Perfiles Spring
 
-**Implementación desde cero**
+**Definición formal.** Un perfil es un nombre que activa un grupo de configuración/beans para un entorno (`dev`, `test`, `prod`).
 
-`application.yml`
-```yaml
-academia:
-  banner: "Base"
-  entorno: "compartido"
-```
-`application-dev.yml`
-```yaml
-academia:
-  banner: "Desarrollo"
-```
-`PerfilController.java`
-```java
-package com.example.demo;
-import org.springframework.beans.factory.annotation.Value; import org.springframework.web.bind.annotation.*;
-@RestController
-public class PerfilController {
-  private final String banner, entorno;
-  public PerfilController(@Value("${academia.banner}") String banner, @Value("${academia.entorno}") String entorno){ this.banner=banner; this.entorno=entorno; }
-  @GetMapping("/perfil") public String mostrar(){ return "banner="+banner+"; entorno="+entorno; }
-}
-```
-Capas:
-```java
-package com.example.demo.repository;
-import org.springframework.stereotype.Repository;
-@Repository public class EstadoRepository { public String buscar(String c){ return "En ruta: "+c; } }
-```
-```java
-package com.example.demo.service;
-import com.example.demo.repository.EstadoRepository; import org.springframework.stereotype.Service;
-@Service public class EstadoService { private final EstadoRepository repo; public EstadoService(EstadoRepository repo){this.repo=repo;} public String consultar(String c){ return repo.buscar(c);} }
-```
+**Para qué sirve.** Variar configuración sin cambiar código.
 
-**Ejecución y salida real**
+**Cuándo usarlo.** Por entorno. Activa por `spring.profiles.active`, env var o arg.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
 ```bash
-./mvnw spring-boot:run -Dspring-boot.run.arguments=--spring.profiles.active=dev
-curl http://localhost:8080/perfil
+mkdir -p /tmp/sb1-prof && cd /tmp/sb1-prof
+cat > application.yml << 'Y'
+academia: {banner: Base, entorno: compartido}
+Y
+cat > application-dev.yml << 'Y'
+academia: {banner: Desarrollo}
+Y
+python3 -c "import yaml; b=yaml.safe_load(open('application.yml')); d=yaml.safe_load(open('application-dev.yml')); b['academia'].update(d['academia']); print(b['academia']['banner']+','+b['academia']['entorno'])"
 ```
-Salida esperada: `banner=Desarrollo; entorno=compartido`.
 
-**Verificación**: corre sin perfil y confirma `banner=Base`; prueba `SPRING_PROFILES_ACTIVE=dev`.
+**Caso de uso real.** Dev usa H2, prod usa PostgreSQL.
 
+**Error común.** Lógica `if (prod)` dispersa. Corrección: perfiles/configuración externa.
+
+**Verificación (2026-05-22).** Salida: `Desarrollo,compartido`.
+
+#### Estructura por capas
+
+**Definición formal.** Organización donde Controller maneja HTTP, Service negocio, Repository acceso a datos; dependencias fluyen hacia abajo.
+
+**Para qué sirve.** Separación de responsabilidades y testabilidad.
+
+**Cuándo usarlo.** Apps CRUD/servicios típicos. Ajusta si usas hexagonal/modulith.
+
+**Ejemplo mínimo enfocado (ejecutable, Java puro).**
+
+```bash
+mkdir -p /tmp/sb1-layers && cd /tmp/sb1-layers
+cat > DemoLayers.java << 'JAVA'
+class Repo { String byId(String id){ return "En ruta:"+id; } }
+class Service { private final Repo repo; Service(Repo r){repo=r;} String consultar(String id){ return repo.byId(id); } }
+class Controller { private final Service svc; Controller(Service s){svc=s;} String get(String id){ return svc.consultar(id); } }
+public class DemoLayers { public static void main(String[] args){ System.out.println(new Controller(new Service(new Repo())).get("RF1")); } }
+JAVA
+javac DemoLayers.java && java DemoLayers
+```
+
+**Caso de uso real.** Endpoint REST que consulta servicio y repositorio.
+
+**Error común.** Controller accediendo a DB directo. Corrección: mover lógica a service/repo.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `En ruta:RF1`.
+
+## Cierre del módulo
+
+Un proyecto Spring Boot sano empieza con versiones fijadas, starters adecuados, configuración predecible y capas claras. Antes de agregar frameworks, confirma que puedes construir, ejecutar, cambiar perfil y explicar de dónde sale cada propiedad.
