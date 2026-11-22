@@ -1,830 +1,551 @@
 # Módulo 5: Concurrencia — hilos y virtual threads
 
+La concurrencia permite que un programa avance en varias tareas. Bien usada, mejora capacidad de respuesta y aprovechamiento de recursos; mal usada, produce condiciones de carrera, bloqueos y bugs difíciles de reproducir. Este módulo parte del modelo clásico de hilos y avanza a virtual threads, structured concurrency y scoped values de Java moderno.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Ejecutar tareas con `ExecutorService` y controlar su ciclo de vida |
+| 2 | Componer tareas asíncronas con `CompletableFuture` |
+| 3 | Usar virtual threads para I/O concurrente de alto volumen |
+| 4 | Identificar y corregir condiciones de carrera |
+| 5 | Usar structured concurrency para tareas relacionadas |
+| 6 | Propagar contexto con scoped values en lugar de `ThreadLocal` |
+| 7 | Manejar timeouts y cancelación cooperativa sin fugas |
 
 ## Aprende construyendo
 
-
 ### Tema 1: ExecutorService y gestión de hilos · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por executorservice y gestión de hilos con foco en comprensión antes de implementación.
+Necesitas procesar varias guías en paralelo sin crear un hilo nuevo por tarea manualmente. Quieres limitar el número de hilos, esperar resultados y cerrar el pool correctamente.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender executorservice y gestión de hilos te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+Crear `new Thread(...).start()` por tarea es simple pero no escala bien. `ExecutorService` separa la tarea del hilo que la ejecuta.
 
-#### ► LA ANALOGÍA
-Piensa en executorservice y gestión de hilos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+| API | Uso |
+|---|---|
+| `Executors.newFixedThreadPool(n)` | Pool con límite fijo |
+| `submit(Callable)` | Envía tarea que devuelve resultado (`Future`) |
+| `shutdown()` | No acepta nuevas tareas |
+| `awaitTermination(...)` | Espera cierre |
+| `close()` (Java 19+) | `ExecutorService` es `AutoCloseable` |
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que executorservice y gestión de hilos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+`Future.get()` bloquea hasta que hay resultado o error.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| ExecutorService y gestión de hilos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar ExecutorService y gestión de hilos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses executorservice y gestión de hilos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: executorservice y gestión de hilos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- ExecutorService y gestión de hilos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve executorservice y gestión de hilos en tu contexto?
-2. ¿Cómo sabrías que executorservice y gestión de hilos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar executorservice y gestión de hilos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
+import java.util.*;
 
-public class ExecutorDemo {
+public class DemoExecutor {
     public static void main(String[] args) throws Exception {
-        var executor = Executors.newFixedThreadPool(2);
-        try {
-            var primero = executor.submit(() -> "RT-1 validada");
-            var segundo = executor.submit(() -> "RT-2 validada");
-            System.out.println(primero.get());
-            System.out.println(segundo.get());
-        } finally {
-            executor.shutdown();
+        try (ExecutorService executor = Executors.newFixedThreadPool(2)) {
+            List<Callable<String>> tareas = List.of(
+                () -> "procesada G-1 en " + Thread.currentThread().getName(),
+                () -> "procesada G-2 en " + Thread.currentThread().getName(),
+                () -> "procesada G-3 en " + Thread.currentThread().getName()
+            );
+
+            List<Future<String>> futuros = executor.invokeAll(tareas);
+            for (Future<String> futuro : futuros) {
+                System.out.println(futuro.get());
+            }
         }
+        System.out.println("pool cerrado");
     }
 }
 ```
+
+**Desglose del código**
+
+- `newFixedThreadPool(2)` limita concurrencia a dos hilos.
+- `Callable<String>` permite devolver valor y lanzar excepciones comprobadas.
+- `invokeAll` envía todas las tareas y devuelve futuros en el mismo orden.
+- `try-with-resources` llama `close()`, que cierra el executor de forma ordenada.
+- `future.get()` propaga errores de la tarea envueltos en `ExecutionException`.
+
+**Ejecución y salida real**
+
+```text
+procesada G-1 en pool-1-thread-1
+procesada G-2 en pool-1-thread-2
+procesada G-3 en pool-1-thread-1
+pool cerrado
+```
+
+Los nombres de hilos pueden variar.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| La JVM no termina | Pool sin cerrar | Usa try-with-resources o `shutdown()` |
+| `ExecutionException` | La tarea lanzó excepción | Inspecciona `getCause()` |
+| Bloqueo indefinido en `get()` | Tarea colgada | Usa `get(timeout, unit)` |
+
+**Verificación rápida**
 
 ```bash
-javac -d out src/ExecutorDemo.java
-java -cp out ExecutorDemo
+javac DemoExecutor.java && java DemoExecutor
 ```
 
-```java
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
-public class Futuro {
-    public static void main(String[] args) throws Exception {
-        var executor = Executors.newSingleThreadExecutor();
-        try {
-            Future<String> guia = executor.submit(() -> "RT-3");
-            System.out.println(guia.get());
-        } finally {
-            executor.shutdown();
-        }
-    }
-}
-```
-
-```java
-var a = executor.submit(() -> "RT-1");
-var b = executor.submit(() -> "RT-2");
-executor.shutdown();
-System.out.println(a.get());
-System.out.println(b.get());
-executor.awaitTermination(1, java.util.concurrent.TimeUnit.SECONDS);
-System.out.println(executor.isTerminated());
-```
-
-</details>
+Cambia el pool a 1 y observa que las tareas se ejecutan secuencialmente en un solo hilo.
 
 ### Tema 2: CompletableFuture · Intermedio · 40 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Este tema te guía por completablefuture con foco en comprensión antes de implementación.
+Necesitas consultar el precio de un producto y el tipo de cambio, combinar ambos resultados y manejar fallos sin bloquear manualmente cada paso con `Future.get()`.
 
-#### ► LA IDEA EN UNA FRASE
-**Entender completablefuture te permite tomar mejores decisiones técnicas.**
+**Concepto clave / modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+`CompletableFuture` representa un resultado asíncrono que puede componerse. Permite encadenar pasos, combinar futuros y definir recuperación ante errores.
 
-#### ► LA ANALOGÍA
-Piensa en completablefuture como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+| Método | Propósito |
+|---|---|
+| `supplyAsync` | Ejecuta tarea que devuelve valor |
+| `thenApply` | Transforma resultado |
+| `thenCompose` | Encadena otro futuro dependiente |
+| `thenCombine` | Combina dos futuros independientes |
+| `exceptionally` | Recupera ante error |
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que completablefuture resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Implementación desde cero**
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CompletableFuture se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CompletableFuture | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses completablefuture por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: completablefuture funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CompletableFuture existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve completablefuture en tu contexto?
-2. ¿Cómo sabrías que completablefuture no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar completablefuture?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-javac -d out src/FuturoCompletable.java
-java -cp out FuturoCompletable
-```
-
-```java
-import java.util.concurrent.CompletableFuture;
-
-public class FuturoCompletable {
-    public static void main(String[] args) {
-        var confirmacion = CompletableFuture
-            .supplyAsync(() -> "RT-8")
-            .thenApply(guia -> "Guía " + guia + " lista");
-        System.out.println(confirmacion.join());
-    }
-}
-```
-
-```java
-import java.util.concurrent.CompletableFuture;
-
-public class Combinar {
-    public static void main(String[] args) {
-        var ciudad = CompletableFuture.supplyAsync(() -> "Cali");
-        var tarifa = CompletableFuture.supplyAsync(() -> 4500);
-        var resumen = ciudad.thenCombine(tarifa,
-            (destino, valor) -> destino + ": " + valor);
-        System.out.println(resumen.join());
-    }
-}
-```
-
-```java
-var respuesta = CompletableFuture.<String>supplyAsync(() -> {
-    throw new IllegalStateException("servicio no disponible");
-}).exceptionally(error -> "No se pudo consultar");
-System.out.println(respuesta.join());
-```
-
-</details>
-
-### Tema 3: Virtual threads · Intermedio · 40 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por virtual threads con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender virtual threads te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en virtual threads como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que virtual threads resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Virtual threads se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Virtual threads | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses virtual threads por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: virtual threads funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Virtual threads existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve virtual threads en tu contexto?
-2. ¿Cómo sabrías que virtual threads no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar virtual threads?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-javac -d out src/HilosVirtuales.java
-java -cp out HilosVirtuales
-```
-
-```java
-import java.util.concurrent.Executors;
-
-public class HilosVirtuales {
-    public static void main(String[] args) {
-        try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-            var tarea = executor.submit(() ->
-                Thread.currentThread().isVirtual());
-            try {
-                System.out.println(tarea.get());
-            } catch (Exception error) {
-                throw new RuntimeException(error);
-            }
-        }
-    }
-}
-```
-
-```java
-var conexiones = new java.util.concurrent.Semaphore(2);
-try (var executor = java.util.concurrent.Executors.newVirtualThreadPerTaskExecutor()) {
-    for (int i = 0; i < 5; i++) {
-        int id = i;
-        executor.submit(() -> {
-            conexiones.acquire();
-            try {
-                System.out.println("usando conexión " + id);
-            } finally {
-                conexiones.release();
-            }
-            return null;
-        });
-    }
-}
-```
-
-```java
-try (var executor = Executors.newVirtualThreadPerTaskExecutor()) {
-    for (int i = 1; i <= 3; i++) {
-        int id = i;
-        executor.submit(() -> System.out.println("tarea " + id));
-    }
-}
-```
-
-```java
-import java.time.Duration;
-import java.time.Instant;
-import java.util.concurrent.Executors;
-
-public class Anclaje {
-    public static void main(String[] args) {
-        Instant inicio = Instant.now();
-        try (var hilos = Executors.newVirtualThreadPerTaskExecutor()) {
-            for (int i = 0; i < 8; i++) {
-                Object candado = new Object();
-                hilos.submit(() -> {
-                    synchronized (candado) {
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                });
-            }
-        }
-        long ms = Duration.between(inicio, Instant.now()).toMillis();
-        System.out.println("Java " + Runtime.version().feature() + ": 8 tareas en "
-                + (ms < 600 ? "menos de 600 ms" : "600 ms o mas") + " (" + ms + " ms)");
-    }
-}
-```
-
-```bash
-java -Djdk.virtualThreadScheduler.parallelism=2 -Djdk.virtualThreadScheduler.maxPoolSize=2 src/Anclaje.java
-```
-
-</details>
-
-### Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por condiciones de carrera y sincronización con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender condiciones de carrera y sincronización te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en condiciones de carrera y sincronización como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que condiciones de carrera y sincronización resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Condiciones de carrera y sincronización se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Condiciones de carrera y sincronización | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses condiciones de carrera y sincronización por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: condiciones de carrera y sincronización funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Condiciones de carrera y sincronización existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve condiciones de carrera y sincronización en tu contexto?
-2. ¿Cómo sabrías que condiciones de carrera y sincronización no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar condiciones de carrera y sincronización?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-javac -d out src/ContadorSeguro.java
-java -cp out ContadorSeguro
-```
-
-```java
-int[] saldo = {100};
-boolean[] aceptado = new boolean[2];
-var ambasLecturas = new java.util.concurrent.CountDownLatch(2);
-var iniciarEscritura = new java.util.concurrent.CountDownLatch(1);
-var turnoDos = new java.util.concurrent.CountDownLatch(1);
-Runnable primero = () -> retirarConPausa(0, saldo, aceptado, ambasLecturas,
-    iniciarEscritura, turnoDos);
-Runnable segundo = () -> retirarConPausa(1, saldo, aceptado, ambasLecturas,
-    iniciarEscritura, turnoDos);
-```
-
-```java
-synchronized boolean retirar(int monto) {
-    if (monto > saldo) return false;
-    saldo -= monto;
-    return true;
-}
-```
-
-```java
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
-
-public class ContadorSeguro {
-    public static void main(String[] args) {
-        var contador = new AtomicInteger();
-        IntStream.range(0, 10_000).parallel().forEach(i -> contador.incrementAndGet());
-        System.out.println(contador.get());
-    }
-}
-```
-
-</details>
-
-### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por structured concurrency (structuredtaskscope, java 25) con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender structured concurrency (structuredtaskscope, java 25) te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en structured concurrency (structuredtaskscope, java 25) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que structured concurrency (structuredtaskscope, java 25) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Structured Concurrency (StructuredTaskScope, Java 25) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Structured Concurrency (StructuredTaskScope, Java 25) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses structured concurrency (structuredtaskscope, java 25) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: structured concurrency (structuredtaskscope, java 25) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Structured Concurrency (StructuredTaskScope, Java 25) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve structured concurrency (structuredtaskscope, java 25) en tu contexto?
-2. ¿Cómo sabrías que structured concurrency (structuredtaskscope, java 25) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar structured concurrency (structuredtaskscope, java 25)?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-import java.util.concurrent.StructuredTaskScope;
-
-public class Cotizar {
-    public static void main(String[] args) throws InterruptedException {
-        try (var scope = StructuredTaskScope.open(
-                StructuredTaskScope.Joiner.<String>allSuccessfulOrThrow())) {
-            var distancia = scope.fork(() -> "12 km");
-            var conductor = scope.fork(() -> "disponible");
-            scope.join();
-            System.out.println(distancia.get() + ", " + conductor.get());
-        }
-    }
-}
-```
-
-```bash
-javac --enable-preview --release 25 -d out src/Cotizar.java
-java --enable-preview -cp out Cotizar
-```
-
-```java
-var distancia = scope.fork(() -> {
-    throw new IllegalStateException("no hay ruta");
-});
-var conductor = scope.fork(() -> {
-    try {
-        Thread.sleep(5000);
-        return "disponible";
-    } catch (InterruptedException cancelada) {
-        System.out.println("consulta cancelada");
-        throw cancelada;
-    }
-});
-```
-
-```bash
-javac --enable-preview --release 25 -d out src/Cotizar.java
-java --enable-preview -cp out Cotizar
-```
-
-</details>
-
-### Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por scoped values frente a threadlocal (java 25) con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender scoped values frente a threadlocal (java 25) te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en scoped values frente a threadlocal (java 25) como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que scoped values frente a threadlocal (java 25) resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Scoped Values frente a ThreadLocal (Java 25) se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Scoped Values frente a ThreadLocal (Java 25) | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses scoped values frente a threadlocal (java 25) por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: scoped values frente a threadlocal (java 25) funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Scoped Values frente a ThreadLocal (Java 25) existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve scoped values frente a threadlocal (java 25) en tu contexto?
-2. ¿Cómo sabrías que scoped values frente a threadlocal (java 25) no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar scoped values frente a threadlocal (java 25)?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-import java.lang.ScopedValue;
-
-public class Contexto {
-    static final ScopedValue<String> GUIA = ScopedValue.newInstance();
-
-    static void registrar() {
-        System.out.println("registro " + GUIA.get());
-    }
-
-    public static void main(String[] args) {
-        ScopedValue.where(GUIA, "RT-8").run(Contexto::registrar);
-        System.out.println(GUIA.isBound());
-    }
-}
-```
-
-```bash
-javac -d out src/Contexto.java
-java -cp out Contexto
-```
-
-```java
-ScopedValue.where(GUIA, "RT-8").run(() -> {
-    System.out.println(GUIA.get());
-    ScopedValue.where(GUIA, "RT-9").run(() -> System.out.println(GUIA.get()));
-    System.out.println(GUIA.get());
-});
-```
-
-```java
-ThreadLocal<String> guiaLocal = new ThreadLocal<>();
-try {
-    guiaLocal.set("RT-8");
-    System.out.println(guiaLocal.get());
-} finally {
-    guiaLocal.remove();
-}
-```
-
-</details>
-
-### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por timeouts y cancelación cooperativa sin abandonar recursos con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender timeouts y cancelación cooperativa sin abandonar recursos te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en timeouts y cancelación cooperativa sin abandonar recursos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que timeouts y cancelación cooperativa sin abandonar recursos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Timeouts y cancelación cooperativa sin abandonar recursos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Timeouts y cancelación cooperativa sin abandonar recursos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses timeouts y cancelación cooperativa sin abandonar recursos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: timeouts y cancelación cooperativa sin abandonar recursos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Timeouts y cancelación cooperativa sin abandonar recursos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve timeouts y cancelación cooperativa sin abandonar recursos en tu contexto?
-2. ¿Cómo sabrías que timeouts y cancelación cooperativa sin abandonar recursos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar timeouts y cancelación cooperativa sin abandonar recursos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
 import java.util.concurrent.*;
 
-public class Plazo {
-    public static void main(String[] args) throws Exception {
-        ExecutorService pool = Executors.newSingleThreadExecutor();
-        CountDownLatch started = new CountDownLatch(1);
-        Future<String> result = pool.submit(() -> {
-            started.countDown();
-            try {
-                Thread.sleep(10_000);
-                return "Respuesta";
-            } catch (InterruptedException error) {
-                Thread.currentThread().interrupt();
-                return "Cancelada";
-            }
-        });
-        try {
-            started.await();
-            System.out.println(result.get(50, TimeUnit.MILLISECONDS));
-        } catch (TimeoutException error) {
-            result.cancel(true); // Solicita la interrupción de la tarea.
-            System.out.println("Plazo agotado");
-        } finally {
-            pool.shutdownNow();
-            if (!pool.awaitTermination(2, TimeUnit.SECONDS)) {
-                throw new IllegalStateException("La tarea no cooperó");
-            }
-        }
-        System.out.println("Executor terminado");
+public class DemoCompletable {
+    static CompletableFuture<Double> precioUsd() {
+        return CompletableFuture.supplyAsync(() -> 100.0);
     }
-}
-```
 
-```bash
-javac -d out src/Plazo.java
-java -cp out Plazo
-```
-
-```java
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
-
-public class Cooperar {
-    public static void main(String[] args) throws Exception {
-        var inicio = new CountDownLatch(1);
-        try (var executor = Executors.newSingleThreadExecutor()) {
-            var tarea = executor.submit(() -> {
-                inicio.countDown();
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException cancelada) {
-                    System.out.println("trabajo detenido");
-                }
-            });
-            inicio.await();
-            tarea.cancel(true);
-        }
+    static CompletableFuture<Double> tipoCambio() {
+        return CompletableFuture.supplyAsync(() -> 0.92);
     }
-}
-```
 
-```bash
-javac -d out src/Cooperar.java
-java -cp out Cooperar
-```
-
-```java
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
-
-public class FuturoConPlazo {
     public static void main(String[] args) {
-        var respuesta = CompletableFuture.supplyAsync(() -> {
-            try {
-                Thread.sleep(1000);
-                return "tarifa lista";
-            } catch (InterruptedException cancelada) {
-                Thread.currentThread().interrupt();
-                throw new IllegalStateException(cancelada);
-            }
-        }).orTimeout(100, TimeUnit.MILLISECONDS)
-          .exceptionally(error -> "servicio lento");
-        System.out.println(respuesta.join());
+        CompletableFuture<Double> precioEur = precioUsd()
+            .thenCombine(tipoCambio(), (precio, cambio) -> precio * cambio);
+
+        CompletableFuture<String> mensaje = precioEur
+            .thenApply(eur -> "Precio EUR: " + eur)
+            .exceptionally(ex -> "Error: " + ex.getMessage());
+
+        System.out.println(mensaje.join());
     }
 }
 ```
 
-```bash
-javac -d out src/FuturoConPlazo.java
-java -cp out FuturoConPlazo
+**Desglose del código**
+
+- `supplyAsync` ejecuta en el `ForkJoinPool.commonPool()` por defecto.
+- `thenCombine` es ideal cuando dos tareas son independientes.
+- `thenCompose` se usaría si el segundo futuro depende del valor del primero.
+- `exceptionally` ofrece una ruta de recuperación; evita dejar la excepción sin manejo.
+- `join()` espera resultado y lanza excepción unchecked si falla.
+
+**Ejecución y salida real**
+
+```text
+Precio EUR: 92.0
 ```
 
-</details>
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Pipeline devuelve `CompletableFuture<CompletableFuture<T>>` | Usaste `thenApply` en vez de `thenCompose` | Usa `thenCompose` para dependencias |
+| Error silencioso | No manejaste `exceptionally/handle` | Agrega manejo explícito |
+| Bloqueas con `get()` por todas partes | Perdió el beneficio de composición | Compón y espera al final |
+
+**Verificación rápida**
+
+```bash
+javac DemoCompletable.java && java DemoCompletable
+```
+
+Simula un fallo en `tipoCambio()` lanzando `RuntimeException` y verifica que `exceptionally` responde.
+
+### Tema 3: Virtual threads · Intermedio · 40 min
+
+**Caso guía**
+
+Un servicio debe atender miles de solicitudes que pasan mucho tiempo esperando I/O. Con hilos de plataforma, cada hilo bloqueado consume recursos caros. Los virtual threads permiten modelar una tarea por solicitud con bajo costo.
+
+**Concepto clave / modelo mental**
+
+Los virtual threads (Java 21+) son hilos ligeros gestionados por la JVM. Son adecuados para tareas con mucho bloqueo (I/O, espera de red). No hacen más rápido el CPU puro; hacen más barata la espera.
+
+| Tipo | Bueno para | Límite |
+|---|---|---|
+| Hilo de plataforma | CPU, tareas nativas, pocos hilos | Caro en miles de bloqueos |
+| Virtual thread | Muchas tareas bloqueantes | No reemplaza diseño; cuidado con pinning/synchronized |
+
+**Implementación desde cero**
+
+```java
+import java.time.Duration;
+import java.util.concurrent.*;
+
+public class DemoVirtualThreads {
+    public static void main(String[] args) throws Exception {
+        try (ExecutorService executor = Executors.newVirtualThreadPerTaskExecutor()) {
+            Future<String> a = executor.submit(() -> tarea("A"));
+            Future<String> b = executor.submit(() -> tarea("B"));
+            System.out.println(a.get());
+            System.out.println(b.get());
+        }
+    }
+
+    static String tarea(String id) throws Exception {
+        Thread.sleep(Duration.ofMillis(100));
+        return id + " en " + Thread.currentThread();
+    }
+}
+```
+
+**Desglose del código**
+
+- `newVirtualThreadPerTaskExecutor()` crea un virtual thread por tarea.
+- `Thread.sleep` simula bloqueo; con virtual threads, el hilo de plataforma puede liberarse mientras la tarea espera.
+- El executor es `AutoCloseable`; ciérralo para esperar el trabajo pendiente.
+- Los virtual threads no eliminan la necesidad de sincronización ante estado compartido.
+
+**Ejecución y salida real**
+
+```text
+A en VirtualThread[#...]/runnable@ForkJoinPool-1-worker-...
+B en VirtualThread[#...]/runnable@ForkJoinPool-1-worker-...
+```
+
+La salida exacta varía.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Esperabas acelerar CPU puro | Virtual threads no añaden CPU | Usa paralelismo apropiado o optimiza algoritmo |
+| Bloqueos en código sincronizado/nativo | Pinning o sección crítica larga | Evita bloquear dentro de `synchronized` en I/O; revisa diseño |
+| Sigues compartiendo estado mutable sin control | Concurrencia mal diseñada | Aplica inmutabilidad, confinamiento o sincronización |
+
+**Verificación rápida**
+
+```bash
+javac DemoVirtualThreads.java && java DemoVirtualThreads
+```
+
+Comprueba que ambas tareas completan y el proceso termina. Para carga real, mide con muchas tareas y I/O simulado.
+
+### Tema 4: Condiciones de carrera y sincronización · Avanzado · 45 min
+
+**Caso guía**
+
+Dos hilos incrementan el mismo contador. A veces el resultado es correcto, a veces menor. El bug no siempre aparece, lo que lo hace peligroso.
+
+**Concepto clave / modelo mental**
+
+Una condición de carrera ocurre cuando el resultado depende del orden de intercalación de hilos sobre estado compartido mutable. `count++` no es atómico: lee, suma y escribe.
+
+Herramientas comunes:
+
+| Herramienta | Cuándo usarla |
+|---|---|
+| `synchronized` | Proteger sección crítica simple |
+| `AtomicInteger/Long` | Contadores y actualizaciones atómicas simples |
+| `Lock` | Control más fino que `synchronized` |
+| Inmutabilidad/confined state | Evitar compartir estado mutable |
+
+**Implementación desde cero**
+
+```java
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class DemoRace {
+    static int noSeguro = 0;
+    static AtomicInteger seguro = new AtomicInteger(0);
+
+    public static void main(String[] args) throws Exception {
+        try (ExecutorService ex = Executors.newFixedThreadPool(4)) {
+            for (int i = 0; i < 1000; i++) {
+                ex.submit(() -> { noSeguro++; seguro.incrementAndGet(); });
+            }
+        }
+        System.out.println("noSeguro=" + noSeguro);
+        System.out.println("seguro=" + seguro.get());
+    }
+}
+```
+
+**Desglose del código**
+
+- `noSeguro++` puede perder incrementos cuando dos hilos leen el mismo valor antes de escribir.
+- `AtomicInteger.incrementAndGet()` realiza la operación atómica.
+- El `try-with-resources` espera el cierre del executor antes de imprimir.
+- Para invariantes más complejos, un simple atómico puede no bastar; usa bloqueos o diseña el estado compartido.
+
+**Ejecución y salida real**
+
+```text
+noSeguro=987
+seguro=1000
+```
+
+`noSeguro` puede variar; `seguro` debe ser 1000.
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Resultado cambia entre ejecuciones | Condición de carrera | Sincroniza o usa primitivas atómicas |
+| Deadlock | Locks adquiridos en orden inconsistente | Define orden de adquisición; reduce alcance del lock |
+| Usas `volatile` para `count++` | `volatile` no hace atómica la operación compuesta | Usa `AtomicInteger` o sincronización |
+
+**Verificación rápida**
+
+```bash
+javac DemoRace.java && java DemoRace
+```
+
+Ejecuta varias veces. Si `noSeguro` sale menor que 1000 en alguna ejecución, viste la carrera.
+
+### Tema 5: Structured Concurrency (StructuredTaskScope, Java 25) · Avanzado · 45 min
+
+**Caso guía**
+
+Para responder una solicitud necesitas consultar usuario y pedidos. Son tareas relacionadas: si una falla o se agota el tiempo, no quieres dejar la otra huérfana.
+
+> **Nota de versión:** Structured Concurrency ha evolucionado entre previews. En JDK 27 (con preview habilitado) este ejemplo compila con `--release 27 --enable-preview`. Verifica la API exacta de tu JDK antes de usarla en producción.
+
+**Concepto clave / modelo mental**
+
+Structured concurrency trata tareas concurrentes como una unidad de trabajo con alcance claro. El scope abre, lanza subtareas, espera y cierra. Si el scope termina, las subtareas no quedan sueltas.
+
+Beneficios:
+
+- ciclo de vida claro;
+- cancelación y errores propagados por estructura;
+- código más fácil de razonar que futuros sueltos.
+
+**Implementación desde cero**
+
+```java
+import java.util.concurrent.StructuredTaskScope;
+
+public class DemoStructured {
+    static String usuario() throws InterruptedException {
+        Thread.sleep(100);
+        return "Ada";
+    }
+
+    static String pedidos() throws InterruptedException {
+        Thread.sleep(120);
+        return "3 pedidos";
+    }
+
+    public static void main(String[] args) throws Exception {
+        try (var scope = StructuredTaskScope.open()) {
+            var u = scope.fork(DemoStructured::usuario);
+            var p = scope.fork(DemoStructured::pedidos);
+            scope.join();
+
+            System.out.println(u.get() + " - " + p.get());
+        }
+    }
+}
+```
+
+**Desglose del código**
+
+- `StructuredTaskScope.open()` crea el ámbito de las subtareas.
+- `fork` lanza subtareas relacionadas.
+- `join()` espera la finalización del scope según su política.
+- El `try-with-resources` asegura el cierre del scope.
+- Si una subtarea falla, la política del scope determina cancelación/propagación; revisa la configuración para tu caso.
+
+**Ejecución y salida real**
+
+En JDK 25 con esta API:
+
+```text
+Ada - 3 pedidos
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `cannot find symbol StructuredTaskScope` | JDK no soporta esa API/versión | Verifica JDK 25 y ajusta al API disponible |
+| Subtareas huérfanas | Usaste futuros sin estructura | Agrupa tareas relacionadas en un scope |
+| Ignoras fallos parciales | No definiste política de error | Elige join/fallo/cancelación según el caso de negocio |
+
+**Verificación rápida**
+
+```bash
+javac --release 27 --enable-preview DemoStructured.java
+java --enable-preview DemoStructured
+```
+
+Si tu JDK no tiene esta API exacta, conserva el concepto y usa el equivalente disponible en tu versión.
+
+### Tema 6: Scoped Values frente a ThreadLocal (Java 25) · Avanzado · 45 min
+
+**Caso guía**
+
+Quieres propagar un `requestId` a código llamado dentro de la misma tarea, incluso si se ejecuta en otros hilos/vthreads. Con `ThreadLocal` es fácil olvidar la limpieza o filtrar contexto.
+
+> **Nota de versión:** Scoped Values es una característica final en Java 25. Requiere JDK 25.
+
+**Concepto clave / modelo mental**
+
+`ScopedValue` permite vincular un valor inmutable a un ámbito de ejecución. A diferencia de `ThreadLocal`:
+
+- el valor no se muta; se enlaza por alcance;
+- el alcance es visible en el código;
+- funciona bien con virtual threads y structured concurrency.
+
+| `ThreadLocal` | `ScopedValue` |
+|---|---|
+| Mutable, set/get | Enlazado por scope |
+| Requiere `remove()` | Se limpia al salir del scope |
+| Fácil de filtrar en pools | Modelo de alcance más seguro |
+
+**Implementación desde cero**
+
+```java
+public class DemoScopedValue {
+    static final ScopedValue<String> REQUEST_ID = ScopedValue.newInstance();
+
+    static void procesar() {
+        System.out.println("request=" + REQUEST_ID.get());
+    }
+
+    public static void main(String[] args) {
+        ScopedValue.where(REQUEST_ID, "req-123").run(() -> {
+            procesar();
+        });
+
+        System.out.println("fuera=" + REQUEST_ID.isBound());
+    }
+}
+```
+
+**Desglose del código**
+
+- `ScopedValue.newInstance()` crea la clave.
+- `where(..., ...).run(...)` define el alcance donde el valor está ligado.
+- `REQUEST_ID.get()` solo es válido dentro de un scope donde esté enlazado.
+- `isBound()` permite verificar si hay valor en el contexto actual.
+
+**Ejecución y salida real**
+
+En JDK 25:
+
+```text
+request=req-123
+fuera=false
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| `NoSuchElementException` al hacer `get()` | No hay valor ligado en el scope actual | Verifica `isBound()` o estructura el scope |
+| Usas ScopedValue como estado mutable | Mal modelo | Mantén el valor inmutable; pasa estado explícito si cambia |
+| Olvidas limpieza con ThreadLocal | Patrón viejo en pools | Prefiere ScopedValue cuando el contexto es de alcance |
+
+**Verificación rápida**
+
+```bash
+javac --release 25 DemoScopedValue.java && java DemoScopedValue
+```
+
+Prueba llamar `REQUEST_ID.get()` fuera del scope y captura la excepción para entender el contrato.
+
+### Tema 7: Timeouts y cancelación cooperativa sin abandonar recursos · Avanzado · 45 min
+
+**Caso guía**
+
+Una llamada externa puede tardar demasiado. Quieres limitar el tiempo, cancelar la tarea y asegurarte de que archivos/conexiones se cierren aunque haya timeout.
+
+**Concepto clave / modelo mental**
+
+La cancelación en Java es normalmente **cooperativa**: interrumpir un hilo no mata mágicamente la tarea; la tarea debe observar la interrupción o comprobar una condición.
+
+Buenas prácticas:
+
+- usa timeouts (`get(timeout)`, `orTimeout`, APIs con deadline);
+- maneja `InterruptedException` restaurando la interrupción o saliendo limpiamente;
+- cierra recursos con `try-with-resources`;
+- evita tragar interrupciones.
+
+**Implementación desde cero**
+
+```java
+import java.util.concurrent.*;
+
+public class DemoTimeout {
+    public static void main(String[] args) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<String> futuro = executor.submit(() -> {
+            for (int i = 1; i <= 5; i++) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return "cancelado";
+                }
+                Thread.sleep(200);
+            }
+            return "ok";
+        });
+
+        try {
+            System.out.println(futuro.get(300, TimeUnit.MILLISECONDS));
+        } catch (TimeoutException e) {
+            futuro.cancel(true);
+            System.out.println("timeout");
+        } catch (Exception e) {
+            System.out.println("error: " + e);
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+}
+```
+
+**Desglose del código**
+
+- `get(300, TimeUnit.MILLISECONDS)` aplica timeout al que espera el resultado.
+- `future.cancel(true)` solicita interrupción.
+- La tarea revisa `isInterrupted()` y usa `sleep`, que también responde a interrupción.
+- `shutdownNow()` intenta detener tareas pendientes al cerrar.
+- La tarea devuelve o termina limpiamente; los recursos que abra deben ir en `try-with-resources` dentro de la tarea.
+
+**Ejecución y salida real**
+
+```text
+timeout
+```
+
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| La tarea sigue corriendo tras timeout | No coopera con interrupción | Revisa `isInterrupted()` y APIs interrumpibles |
+| `InterruptedException` atrapada y ignorada | Se perdió la señal | Restablece `Thread.currentThread().interrupt()` o termina |
+| Recursos abiertos tras cancelar | Limpieza no garantizada | Usa `try-with-resources` dentro de la tarea |
+
+**Verificación rápida**
+
+```bash
+javac DemoTimeout.java && java DemoTimeout
+```
+
+Aumenta el timeout a 2000 ms y verifica que la salida cambia a `ok`.
+
+## Cierre del módulo
+
+Concurrencia no es solo “hacer cosas en paralelo”: es coordinar tareas, proteger estado compartido y cerrar recursos bajo fallos y tiempos límite. En el siguiente módulo aplicarás esta base en I/O y NIO.2, donde el costo de esperar y manejar recursos es central.
