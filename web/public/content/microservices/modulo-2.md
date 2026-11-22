@@ -131,7 +131,7 @@ Lo que **no** cambia: las ideas. Variable, decisión, bucle y función son igual
   (Módulo 1). Node arranca en milisegundos con poca memoria y un solo hilo para tu código, ideal para servicios
   dominados por E/S (llamar a otras APIs, bases de datos), pero sin red de seguridad de tipos salvo que uses
   **TypeScript** (Módulo 13).
-- **Ecosistemas.** Java: Maven/Gradle, Spring Boot, librerías empresariales maduras. Node: npm, Express/NestJS,
+- **Ecosistemas.** Java: **Maven/Gradle** (herramientas para compilar y gestionar dependencias), Spring Boot, librerías empresariales maduras. Node: **npm** (gestor de paquetes de Node.js), Express/NestJS,
   enorme cantidad de paquetes pequeños (más agilidad, más riesgo de cadena de suministro).
 - **Alternativas** reales para microservicios además de estos dos: Go (binario único, arranque instantáneo),
   Kotlin (JVM con sintaxis moderna), C#/.NET, Python (FastAPI). El curso usa Java y Node porque dominan el mercado
@@ -711,7 +711,7 @@ Promise { <pending> } false
 «¿Node.js es de un solo hilo? ¿Cómo atiende miles de conexiones a la vez?»
 
 **Respuesta modelo:** el código JavaScript de la aplicación corre en un solo hilo, pero Node no es «de un solo
-hilo» en total: libuv tiene un *pool* de hilos para algunas operaciones (sistema de archivos, DNS, cripto) y el
+hilo» en total: libuv tiene un *pool* de hilos para algunas operaciones (sistema de archivos, **DNS**, resolución de nombres, cripto) y el
 sistema operativo gestiona los sockets de forma asíncrona (epoll, kqueue). Cuando una operación de E/S está
 pendiente, el hilo principal no espera: registra una continuación y el event loop la ejecuta cuando llega el
 resultado. Por eso maneja muchas conexiones concurrentes con poca memoria, siempre que ninguna tarea bloquee el
@@ -733,7 +733,7 @@ http.createServer((req, res) => {
 });
 ```
 
-Se ve como funciones terminadas en `Sync` dentro de un manejador de peticiones. En un diagrama de latencia, todas
+Se ve como funciones terminadas en `Sync` dentro de un manejador de peticiones. En un diagrama de **latencia** (tiempo de respuesta), todas
 las peticiones se ponen en fila detrás de la más lenta: la p99 se dispara aunque la CPU tenga núcleos libres. Usa
 las versiones asíncronas (`fs/promises`, `crypto.pbkdf2`), mueve el cálculo a Worker Threads o a otro servicio. El
 equivalente en Java es fijar (*pinning*) hilos virtuales con bloqueos largos dentro de secciones `synchronized`

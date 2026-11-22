@@ -109,7 +109,7 @@ código en la variable `$?`.
 
 #### 8. EXPLICACIÓN MAESTRA
 
-Un microservicio también es «un programa», pero de los que **no terminan** (lo verás en el siguiente tema). Las
+Un **microservicio** (un servicio pequeño e independiente que forma parte de un sistema mayor) también es «un programa», pero de los que **no terminan** (lo verás en el siguiente tema). Las
 decisiones que tomas hoy, aunque parezcan pequeñas, se repiten a escala:
 
 - **Script frente a programa con funciones.** Podrías escribir todo en 5 líneas sin funciones; funciona, pero no
@@ -369,11 +369,11 @@ test no choca con un servidor que ya tengas encendido.
   (Java, Módulo 0.5) no necesitan dependencias pero obligan a escribir a mano rutas, validación y errores. Express
   o NestJS (Fase 2) y Spring Boot (Fase 1) resuelven eso a cambio de dependencias y convenciones. Para aprender y
   para utilidades mínimas, la librería estándar; para servicios de negocio, un framework.
-- **Modelo de concurrencia.** Node atiende muchos pedidos con un solo hilo y un *event loop*; un servidor Java
+- **Modelo de concurrencia.** Node atiende muchos pedidos con un solo **hilo** (secuencia de ejecución dentro de un proceso) y un *event loop*; un servidor Java
   clásico usa un hilo por pedido (y desde Java 21, hilos virtuales). Lo comparas en el Módulo 0.3.
 
 **Cuándo NO** levantar un servidor: si el trabajo se dispara una vez al día (un reporte nocturno), un programa
-que termina, lanzado por un planificador (`cron`, un *Job* de Kubernetes), cuesta menos y no ocupa un puerto ni
+que termina, lanzado por un planificador (`cron`, un *Job* de **Kubernetes**, plataforma para orquestar contenedores), cuesta menos y no ocupa un puerto ni
 memoria las 24 horas.
 
 #### 9. CÓDIGO EJECUTABLE
@@ -502,7 +502,7 @@ otro puerto: `PORT=3005 node servidor/servidor.js`.
 
 **Respuesta modelo:** porque `listen` registra un socket que espera conexiones; mientras exista ese recurso
 pendiente, el *runtime* (el event loop de Node o los hilos no daemon de la JVM) mantiene vivo el proceso. Se
-apaga con una señal del sistema operativo: `SIGINT` (Ctrl+C) o `SIGTERM` (lo que envían Docker y Kubernetes). Un
+apaga con una señal del sistema operativo: `SIGINT` (Ctrl+C) o `SIGTERM` (lo que envían **Docker**, plataforma de contenedores, y Kubernetes). Un
 apagado correcto (*graceful shutdown*) deja de aceptar conexiones nuevas, termina las que están en curso y libera
 recursos antes de salir; lo implementas en el Módulo 13.
 
@@ -806,6 +806,6 @@ clientes que piden mal. Un código incorrecto (por ejemplo, 200 con `{"error":..
 ```
 
 Se ve como rutas con nombres de tablas, columnas crípticas y campos internos (`FLG_DEL`) en la respuesta. Cada
-cambio en la base de datos rompe a los clientes, y aceptar SQL por parámetro es además una puerta a inyecciones.
+cambio en la base de datos rompe a los clientes, y aceptar **SQL** (lenguaje de consultas a bases de datos) por parámetro es además una puerta a inyecciones.
 En el diagrama técnico, sería borrar el recuadro «API pública» y conectar el cliente directo al recuadro interno.
 Diseña la API desde lo que el cliente necesita (platos, pedidos), no desde cómo guardas los datos.

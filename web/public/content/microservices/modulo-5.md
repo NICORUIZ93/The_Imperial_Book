@@ -1471,7 +1471,7 @@ cómo lo hace Boot por dentro.
 - **Propiedades tipadas:** `@EnableConfigurationProperties(SaludoProperties.class)` enlaza `saludo.*` a un record con
   valores por defecto (`@DefaultValue`).
 - **Diagnóstico:** `--debug` imprime el *Conditions Evaluation Report* (qué coincidió y qué no, y por qué); con
-  Actuator, el endpoint `/actuator/conditions` da lo mismo en JSON.
+  Actuator, el **endpoint** (URL de una API que responde una operación) `/actuator/conditions` da lo mismo en JSON.
 - **Starter propio:** dos artefactos por convención: `saludo-spring-boot-autoconfigure` (este código) y
   `saludo-spring-boot-starter` (un `pom.xml` sin código que depende del anterior y de la librería). El prefijo
   `spring-boot-starter-*` está reservado para los oficiales.

@@ -1,6 +1,6 @@
 # Auditoría de prerrequisitos / desde cero (specs/027)
 
-Temas: 1608. Temas con señal: 365.
+Temas: 1608. Temas con señal: 355.
 
 Heurística determinista: detecta ausencia de declaración de prerrequisitos y términos técnicos de alta señal no vistos antes en el curso ni definidos localmente. No es comprensión semántica completa; sirve para priorizar la migración por lotes.
 
@@ -17,7 +17,7 @@ Heurística determinista: detecta ausencia de declaración de prerrequisitos y t
 | java | 120 | 69 |
 | javascript | 92 | 13 |
 | kotlin-multiplatform | 66 | 8 |
-| microservices | 187 | 10 |
+| microservices | 187 | 0 |
 | node | 78 | 6 |
 | react | 64 | 8 |
 | rutaflow | 29 | 10 |

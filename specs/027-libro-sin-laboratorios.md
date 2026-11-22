@@ -50,8 +50,8 @@ repetirlo todo en cada tema, porque eso haría el libro ilegible.
 - **C7** `en-curso` — **Piloto, una línea por lote**: Fundamentos, Microservicios y Angular.
   Cada tema del lote declara «Para entender esto necesitas…», explica esos conceptos antes de
   usarlos y muestra el código mínimo con qué hace / por qué / qué pasa si cambia.
-  Avance: `foundations` declarado en `cursos-desde-cero.json` y limpio por auditor (2026-11-22);
-  faltan `microservices` y `angular`.
+  Avance: `foundations` y `microservices` declarados en `cursos-desde-cero.json` y limpios por
+  auditor (2026-11-22); falta `angular`.
   Verificación: `python3 scripts/audit_prerrequisitos.py --check --curso <curso>`
 
 - **C8** `pendiente` — Los 13 cursos restantes se migran por capítulos, con `validate.sh` y e2e

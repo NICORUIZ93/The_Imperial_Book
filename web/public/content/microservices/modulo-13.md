@@ -1226,7 +1226,7 @@ token, el **id_token**. Resumen: OAuth2 = «qué puede hacer esta app por ti»; 
 - **Flujos (*grants*):** `authorization_code` (usuarios con navegador; el único recomendado para ellos),
   `client_credentials` (servicio a servicio, sin usuario), `refresh_token` (renovar sin volver a pedir login) y
   `urn:ietf:params:oauth:grant-type:token-exchange` (F066). El *implicit* (token en la URL) y el *password* (la app ve tu
-  contraseña) están desaconsejados por las buenas prácticas de seguridad de OAuth 2.0 (RFC 9700); Spring Security 7
+  contraseña) están desaconsejados por las buenas prácticas de seguridad de **OAuth 2.0** (estándar de autorización delegada, RFC 9700); Spring Security 7
   eliminó el soporte del *password grant* en el cliente.
 - **PKCE (RFC 7636):** el cliente inventa un `code_verifier` aleatorio (43–128 caracteres), envía su hash
   `code_challenge = BASE64URL(SHA256(verifier))` al pedir el `code` y el `verifier` al canjearlo. Quien robe el `code` (una

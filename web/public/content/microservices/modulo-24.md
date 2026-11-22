@@ -1138,7 +1138,7 @@ quita X-Powered-By.
   true` (permite cookies y `Authorization`; prohibido combinarlo con `*`), `-Allow-Methods`, `-Allow-Headers`,
   `-Max-Age` (cuánto se cachea el preflight) y `Vary: Origin` (para que una caché no sirva la respuesta de un origen a
   otro).
-- **Paquete `cors`:** `origin` acepta `true` (refleja el que venga: peligroso), un string, un array, una regex o una
+- **Paquete `cors`:** `origin` acepta `true` (refleja el que venga: peligroso), un string, un array, una **regex** (expresión regular para comparar texto) o una
   función `(origen, listo) => listo(null, permitido)`. La función con un `Set` y comparación exacta es lo más claro.
 - **Helmet 8** activa por defecto: `Content-Security-Policy`, `Cross-Origin-Opener-Policy`,
   `Cross-Origin-Resource-Policy`, `Origin-Agent-Cluster`, `Referrer-Policy`, `Strict-Transport-Security`,

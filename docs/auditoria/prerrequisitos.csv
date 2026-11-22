@@ -246,16 +246,6 @@ kotlin-multiplatform,web/public/content/kotlin-multiplatform/modulo-4.md,Tema 1:
 kotlin-multiplatform,web/public/content/kotlin-multiplatform/modulo-7.md,Tema 8: Deep links en Compose Multiplatform: abrir una pantalla desde un enlace · Avanzado · 45 min,0,url
 kotlin-multiplatform,web/public/content/kotlin-multiplatform/modulo-10.md,Tema 1: Pipeline Gradle multiplataforma en CI · Avanzado · 45 min,0,linux
 kotlin-multiplatform,web/public/content/kotlin-multiplatform/modulo-12.md,Tema 3: Un artefacto compatible necesita más que el mismo número de versión · Avanzado · 45 min,0,maven
-microservices,web/public/content/microservices/modulo-0.md,Qué es un programa,0,microservicio
-microservices,web/public/content/microservices/modulo-0.md,Qué es un servidor,0,docker hilo kubernetes
-microservices,web/public/content/microservices/modulo-0.md,Qué es una API,0,sql
-microservices,web/public/content/microservices/modulo-2.md,Java y Node.js lado a lado: sintaxis y ejecución,0,gradle maven npm
-microservices,web/public/content/microservices/modulo-2.md,"Java y Node.js lado a lado: tipos, errores y concurrencia",0,dns latencia
-microservices,web/public/content/microservices/modulo-3.md,Terminal,0,ssh
-microservices,web/public/content/microservices/modulo-3.md,HTTP,0,tcp yaml
-microservices,web/public/content/microservices/modulo-5.md,"Auto-configuración condicional, @Conditional, starters",0,endpoint
-microservices,web/public/content/microservices/modulo-13.md,OAuth2 y OIDC,0,oauth
-microservices,web/public/content/microservices/modulo-24.md,"Helmet, CORS",0,regex
 node,web/public/content/node/modulo-0.md,"Tema 2: process, global y módulos core · Básico · 45 min",0,linux puerto
 node,web/public/content/node/modulo-1.md,Tema 6: Publicar y versionar un paquete npm (público o privado) · Básico · 45 min,0,git
 node,web/public/content/node/modulo-3.md,Tema 5: Paginación por cursor y límites de entrada comprobables · Intermedio · 45 min,0,sql

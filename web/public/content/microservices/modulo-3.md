@@ -350,7 +350,7 @@ que había) y `>>` (la añade al final).
   no se pueden versionar ni repetir; un comando sí (y es lo que se automatiza en CI/CD, Módulo 23).
 - **Observabilidad básica.** `grep | wc -l` sobre un log es la versión artesanal de lo que harás con Loki o ELK
   (Módulo 21): sirve para un servidor, no para 40 réplicas.
-- **Cuándo NO** usar la terminal para operar producción: cambios manuales sin registro («entré por SSH y
+- **Cuándo NO** usar la terminal para operar producción: cambios manuales sin registro («entré por **SSH**, acceso remoto seguro por terminal, y
   reinicié») rompen la trazabilidad. En producción, los cambios pasan por Git y por un *pipeline* (GitOps,
   Módulo 12).
 
@@ -541,7 +541,7 @@ agrupan por la primera cifra:
 
 #### 7. EXPLICACIÓN INTERMEDIA
 
-- HTTP/1.1 es **texto** sobre una conexión TCP: `curl -i` muestra la línea de estado y las cabeceras;
+- HTTP/1.1 es **texto** sobre una conexión **TCP** (protocolo de transporte confiable): `curl -i` muestra la línea de estado y las cabeceras;
   `curl -v` muestra también la petición (líneas que empiezan con `>`).
 - Las cabeceras no distinguen mayúsculas (`Content-Type` = `content-type`); Node las entrega en minúsculas en
   `req.headers`.
@@ -574,7 +574,7 @@ agrupan por la primera cifra:
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **Node.js 26.13.1 LTS** (también Node 22); solo `node:http`. `package.json` del laboratorio en
-`modulo-3/` (incluye la dependencia del tema YAML; este tema no la usa):
+`modulo-3/` (incluye la dependencia del tema **YAML**, formato de texto para configuración; este tema no la usa):
 
 ```json
 {

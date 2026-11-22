@@ -1,6 +1,6 @@
 {
   "topics": 1608,
-  "findings": 365,
+  "findings": 355,
   "courses": [
     {
       "course": "android",
@@ -1758,94 +1758,7 @@
     {
       "course": "microservices",
       "topics": 187,
-      "findings": [
-        {
-          "file": "web/public/content/microservices/modulo-0.md",
-          "title": "Qué es un programa",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "microservicio"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-0.md",
-          "title": "Qué es un servidor",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "docker",
-            "hilo",
-            "kubernetes"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-0.md",
-          "title": "Qué es una API",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "sql"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-2.md",
-          "title": "Java y Node.js lado a lado: sintaxis y ejecución",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "gradle",
-            "maven",
-            "npm"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-2.md",
-          "title": "Java y Node.js lado a lado: tipos, errores y concurrencia",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "dns",
-            "latencia"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-3.md",
-          "title": "Terminal",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "ssh"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-3.md",
-          "title": "HTTP",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "tcp",
-            "yaml"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-5.md",
-          "title": "Auto-configuración condicional, @Conditional, starters",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "endpoint"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-13.md",
-          "title": "OAuth2 y OIDC",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "oauth"
-          ]
-        },
-        {
-          "file": "web/public/content/microservices/modulo-24.md",
-          "title": "Helmet, CORS",
-          "missing_prereq": false,
-          "unknown_terms": [
-            "regex"
-          ]
-        }
-      ]
+      "findings": []
     },
     {
       "course": "node",
