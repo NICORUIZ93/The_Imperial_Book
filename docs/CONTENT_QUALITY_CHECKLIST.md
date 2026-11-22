@@ -7,13 +7,17 @@ Esta checklist se aplica a **todos los cursos/tracks** y a **cada tema**. No mar
 Mantener encabezado compatible: `### Tema N: ... · Nivel · min`.
 
 Estructura por tema (orden flexible, pero con todos los elementos):
-- **Apertura con problema/contexto real**: párrafo que motive el tema con un caso concreto.
-- **Desarrollo conceptual en prosa**: explicar conceptos en texto corrido, con definiciones claras, propósito, cuándo usar, cuándo no usar, reglas/contrato/invariantes y riesgos. Cada concepto mencionado en el título/alcance debe quedar cubierto.
-- **Ejemplo desde cero**: prerrequisitos, dependencias/versiones, bootstrap/carpeta cuando aplique, código completo.
-- **Recorrido del código**: explicar líneas o bloques relevantes y su intención.
-- **Ejecución y salida real**: comandos desde ruta clara; salida real observada cuando se ejecutó. Si no es factible ejecutar, incluir “Nota de verificación” honesta con razón concreta y setup completo.
-- **Errores frecuentes y diagnóstico**: síntoma, causa probable y corrección, en prosa o lista breve.
-- **Cierre/verificación**: comprobación observable del comportamiento.
+- **Apertura con problema/contexto real**: párrafo que motive el tema con un caso concreto y consecuencia de hacerlo mal.
+- **Modelo mental y desarrollo conceptual en prosa**: explicar cómo funciona por dentro, no solo qué es. Definiciones claras, propósito, cuándo usar, cuándo no usar, alternativas, reglas/contrato/invariantes, trade-offs y riesgos. Cada concepto mencionado en el título/alcance debe quedar cubierto.
+- **Diagrama cuando aporte**: usar Mermaid embebido (```mermaid```) para arquitectura, secuencia, estado, flujo o modelo de datos. El diagrama debe explicar algo concreto; incluir breve lectura. No decorativo.
+- **Contrato/API/configuración**: firmas, payloads, headers, esquemas, defaults, límites, compatibilidad o propiedades cuando aplique.
+- **Ejemplo mínimo enfocado por concepto**: ejecutable, copy/paste runnable (ver sección 2).
+- **Ejemplo realista/integrado**: caso cercano a producción que conecte varios conceptos del tema; puede apoyarse en el mínimo, pero no sustituye mínimos por concepto.
+- **Recorrido del código**: explicar bloques relevantes, decisiones y trade-offs.
+- **Ejecución y salida real**: comandos desde ruta clara; salida real observada cuando se ejecutó. Si no es factible ejecutar, incluir “Nota de verificación” honesta con razón concreta y setup completo, separando lo ejecutado de lo no ejecutado.
+- **Errores frecuentes, edge cases y diagnóstico**: síntoma, causa probable, corrección, y cómo detectarlo (logs/métricas/tests) cuando aplique.
+- **Observabilidad/seguridad/operación**: cuando el tema lo requiera (timeouts, métricas, secretos, despliegue, rollback, etc.).
+- **Cierre/verificación**: checklist de comprobación y puente al siguiente tema.
 
 Estilo:
 - Prosa explicativa primero; código como soporte del razonamiento.
