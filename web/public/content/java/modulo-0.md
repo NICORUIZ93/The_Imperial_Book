@@ -443,7 +443,7 @@ true
 | `possible lossy conversion from double to int` | Intentaste narrowing sin cast | Haz cast explícito solo si aceptas la pérdida |
 | Overflow silencioso: `Integer.MAX_VALUE + 1` da negativo | El `int` se desborda | Usa `long` o `Math.addExact` para detectar |
 
-Ejemplo de overflow:
+Ejemplo de overflow (guarda como `Desbordamiento.java` en la misma carpeta):
 
 ```java
 public class Desbordamiento {
@@ -453,6 +453,13 @@ public class Desbordamiento {
         System.out.println(maximo + 1);
     }
 }
+```
+
+Ejecución:
+
+```bash
+javac Desbordamiento.java
+java Desbordamiento
 ```
 
 Salida real:
@@ -533,12 +540,14 @@ public class CompararStrings {
 
 **Ejecución y salida real**
 
-Para `CompararStrings`:
+Compila y ejecuta `CompararStrings`:
 
 ```bash
 javac CompararStrings.java
 java CompararStrings
 ```
+
+Salida real:
 
 ```text
 false
@@ -546,7 +555,14 @@ true
 true
 ```
 
-Para `TextoIO`, la salida depende de la entrada. Si escribes ` Ada `:
+Compila y ejecuta `TextoIO` (interactivo):
+
+```bash
+javac TextoIO.java
+java TextoIO
+```
+
+Ejemplo de sesión (si escribes ` Ada `):
 
 ```text
 Lenguaje: Java

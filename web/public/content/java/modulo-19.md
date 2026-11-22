@@ -649,10 +649,19 @@ javac DemoClassLoader.java
 java DemoClassLoader
 ```
 
+Salida esperada:
+
 ```text
 true
 true
 java.util.ArrayList
+```
+
+Para el ejemplo `URLClassLoader` (opcional, requiere `plugin.jar` con la clase indicada):
+
+```bash
+javac DemoURLClassLoader.java
+java DemoURLClassLoader
 ```
 
 **Errores comunes y cómo resolverlos**
