@@ -5613,31 +5613,31 @@
     "17": [
       {
         "title": "ES6+: async/await, Promises, destructuring, modules",
-        "fragment": "es6-async-await-promises-destructuring-modules"
+        "fragment": "tema-1-es6-async-await-promises-destructuring-modules"
       },
       {
         "title": "TypeScript: tipos, interfaces, generics, strict mode",
-        "fragment": "typescript-tipos-interfaces-generics-strict-mode"
+        "fragment": "tema-2-typescript-tipos-interfaces-generics-strict-mode"
       },
       {
         "title": "Event Loop: fases, microtasks, macrotasks",
-        "fragment": "event-loop-fases-microtasks-macrotasks"
+        "fragment": "tema-3-event-loop-fases-microtasks-macrotasks"
       },
       {
         "title": "perf_hooks y clinic.js",
-        "fragment": "perf-hooks-y-clinic-js"
+        "fragment": "tema-4-perf-hooks-y-clinic-js"
       },
       {
         "title": "Worker Threads vs Child Processes",
-        "fragment": "worker-threads-vs-child-processes"
+        "fragment": "tema-5-worker-threads-vs-child-processes"
       },
       {
         "title": "Backpressure en Streams",
-        "fragment": "backpressure-en-streams"
+        "fragment": "tema-6-backpressure-en-streams"
       },
       {
         "title": "Graceful shutdown",
-        "fragment": "graceful-shutdown"
+        "fragment": "tema-7-graceful-shutdown"
       }
     ],
     "18": [
