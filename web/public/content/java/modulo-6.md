@@ -18,14 +18,13 @@ Casi toda aplicación real lee o escribe datos: archivos, JSON, configuración, 
 
 Necesitas guardar un reporte, leerlo, crear directorios si no existen y listar archivos generados. Hacerlo con rutas como strings suele producir bugs por separadores y falta de validaciones.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-NIO.2 se basa en dos tipos:
+**Definición formal.** NIO.2 (`java.nio.file`) es la API moderna de I/O de archivos. `Path` representa una ruta del sistema de archivos; `Files` provee operaciones estáticas sobre archivos/directorios. `IOException` y sus subtipos representan fallos de I/O checked.
 
-- `Path`: representa una ruta. No implica que el archivo exista.
-- `Files`: operaciones sobre archivos/directorios: leer, escribir, copiar, mover, borrar, listar.
+**Contrato / invariantes / reglas.** `Path` no implica existencia; es una abstracción de ruta. Métodos como `Files.list`, `Files.walk` y `Files.lines` devuelven streams que deben cerrarse. Las operaciones pueden fallar por permisos, ausencia, existencia previa o concurrencia externa del FS. Las rutas deben construirse con `Path.of/resolve` para evitar concatenación frágil dependiente de plataforma.
 
-Usa `Path.of(...)` en vez de concatenar strings. Prefiere métodos `Files.readString/writeString` para textos pequeños y streams/buffer para archivos grandes.
+**Modelo mental.** `Path` es la dirección; `Files` es el servicio postal/archivo que actúa sobre esa dirección.
 
 **Implementación desde cero**
 
@@ -42,9 +41,7 @@ public class DemoNio {
         Path archivo = dir.resolve("reporte.txt");
         Files.writeString(archivo, "id,total\nG-1,100\nG-2,150\n");
         System.out.println(Files.exists(archivo));
-
-        String contenido = Files.readString(archivo);
-        System.out.println(contenido.trim());
+        System.out.println(Files.readString(archivo).trim());
 
         try (var paths = Files.list(dir)) {
             paths.forEach(p -> System.out.println("archivo: " + p.getFileName()));
@@ -96,17 +93,15 @@ Cambia `Path.of("salida")` a una ruta anidada como `Path.of("tmp","salida")` y c
 
 Recibes y envías datos en JSON. Quieres convertir un objeto Java a JSON y volver a objeto sin escribir parsing manual.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Serializar es convertir un objeto en un formato transportable (JSON). Deserializar es el proceso inverso. Jackson es una biblioteca común para esto en Java.
+**Definición formal.** La *serialización* es la transformación de un objeto en una representación externa (JSON, bytes, etc.); la *deserialización* es la transformación inversa. Jackson es una biblioteca de data-binding/streaming para JSON en Java.
 
-Piezas clave:
+**Contrato / invariantes / reglas.** El mapeo depende de nombres de propiedades, constructores/accesores, configuración de `ObjectMapper` y módulos registrados. La deserialización debe tratar datos no confiables con cuidado (validación, límites, tipos permitidos). La compatibilidad de esquema/versión es un contrato entre productor y consumidor. Este ejemplo requiere dependencia externa en classpath.
 
-- `ObjectMapper`: motor de conversión.
-- POJO o `record`: estructura de datos.
-- Anotaciones como `@JsonProperty`, `@JsonIgnore` cuando el nombre o visibilidad no coincide.
+> **Nota:** requiere `com.fasterxml.jackson.core:jackson-databind`.
 
-> **Nota:** este ejemplo requiere la dependencia Jackson en el classpath. Con Maven: `com.fasterxml.jackson.core:jackson-databind`.
+**Modelo mental.** Serializar es empaquetar un objeto en una caja estándar (JSON); deserializar es reconstruirlo siguiendo la etiqueta de la caja.
 
 **Implementación desde cero**
 
@@ -136,7 +131,7 @@ public class DemoJackson {
 - `writeValueAsString` serializa el objeto a JSON.
 - `readValue` deserializa el JSON al tipo indicado.
 - Un `record` funciona bien como DTO simple.
-- Jackson necesita acceso a campos/componentes o configuración adecuada; si falla la deserialización, revisa nombres, constructor y módulos.
+- Fallos de mapeo suelen indicar nombres/tipos incompatibles o configuración faltante.
 
 **Ejecución y salida real**
 
@@ -157,7 +152,7 @@ Madrid
 
 **Verificación rápida**
 
-Compila y ejecuta con Jackson en el classpath. Cambia una clave JSON y observa el error de mapeo; eso te enseña a leer fallos de deserialización.
+Compila y ejecuta con Jackson en el classpath. Cambia una clave JSON y observa el error de mapeo.
 
 ### Tema 3: Archivos grandes y recursos del classpath · Intermedio · 40 min
 
@@ -165,11 +160,13 @@ Compila y ejecuta con Jackson en el classpath. Cambia una clave JSON y observa e
 
 Debes procesar un archivo grande línea por línea sin cargarlo entero en memoria. Además, necesitas leer una plantilla de configuración empaquetada dentro del JAR.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-- Para archivos grandes, usa streaming: `BufferedReader`, `Files.lines`, o lectura por chunks.
-- Para recursos empaquetados en el classpath, no uses rutas del sistema de archivos; usa `getResourceAsStream`.
-- Los streams de I/O deben cerrarse.
+**Definición formal.** El *procesamiento en streaming* lee datos incrementalmente, manteniendo uso de memoria acotado. El *classpath* es el conjunto de ubicaciones desde donde el cargador de clases busca clases y recursos.
+
+**Contrato / invariantes / reglas.** `BufferedReader`/`Files.lines` permiten procesar línea por línea; `readAllBytes/readString` cargan todo en memoria y no escalan para archivos grandes. `getResourceAsStream` devuelve `null` si el recurso no existe. Los streams deben cerrarse. La codificación debe explicitarse cuando importa (`StandardCharsets.UTF_8`).
+
+**Modelo mental.** Archivo grande: no te tragas el libro entero, lees página por página. Recurso de classpath: está dentro del paquete entregado, no en una ruta cualquiera del disco.
 
 **Implementación desde cero**
 
@@ -181,9 +178,7 @@ import java.util.stream.*;
 public class DemoArchivoGrande {
     public static void main(String[] args) throws Exception {
         Path ruta = Path.of("grande.txt");
-        Files.write(ruta, IntStream.rangeClosed(1, 5)
-            .mapToObj(i -> "linea-" + i)
-            .toList());
+        Files.write(ruta, IntStream.rangeClosed(1, 5).mapToObj(i -> "linea-" + i).toList());
 
         try (BufferedReader br = Files.newBufferedReader(ruta)) {
             String linea;
@@ -195,11 +190,7 @@ public class DemoArchivoGrande {
         }
 
         try (InputStream in = DemoArchivoGrande.class.getResourceAsStream("/config.txt")) {
-            if (in != null) {
-                System.out.println(new String(in.readAllBytes()).trim());
-            } else {
-                System.out.println("recurso no encontrado");
-            }
+            System.out.println(in != null ? new String(in.readAllBytes()).trim() : "recurso no encontrado");
         }
 
         Files.deleteIfExists(ruta);
