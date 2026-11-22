@@ -6133,31 +6133,31 @@
     "6": [
       {
         "title": "Spring MVC: DispatcherServlet, Controllers, Validación",
-        "fragment": "spring-mvc-dispatcherservlet-controllers-validacion"
+        "fragment": "tema-1-spring-mvc-dispatcherservlet-controllers-validacion"
       },
       {
         "title": "DTOs, @JsonProperty, Jackson",
-        "fragment": "dtos-jsonproperty-jackson"
+        "fragment": "tema-2-dtos-jsonproperty-jackson"
       },
       {
         "title": "Manejo global de excepciones (@ControllerAdvice)",
-        "fragment": "manejo-global-de-excepciones-controlleradvice"
+        "fragment": "tema-3-manejo-global-de-excepciones-controlleradvice"
       },
       {
         "title": "Spring Data JPA, Hibernate, entidades, relaciones, transacciones",
-        "fragment": "spring-data-jpa-hibernate-entidades-relaciones-transacciones"
+        "fragment": "tema-4-spring-data-jpa-hibernate-entidades-relaciones-transacciones"
       },
       {
         "title": "Criteria API y Specifications",
-        "fragment": "criteria-api-y-specifications"
+        "fragment": "tema-5-criteria-api-y-specifications"
       },
       {
         "title": "Flyway/Liquibase",
-        "fragment": "flyway-liquibase"
+        "fragment": "tema-6-flyway-liquibase"
       },
       {
         "title": "PostgreSQL y MySQL",
-        "fragment": "postgresql-y-mysql"
+        "fragment": "tema-7-postgresql-y-mysql"
       }
     ],
     "7": [
