@@ -9,7 +9,7 @@ manda sobre esta guía. Esta guía solo fija cómo se aplica en el repositorio.
 |---|---|
 | Lección del módulo | `web/public/content/microservices/modulo-N.md` (N según `docs/temarios/microservicios-inventario.json`) |
 | Metadata del módulo para el track | `docs/microservicios/track/modulo-N.json` (campos en `scripts/build_microservices_track.py`) |
-| Laboratorio del módulo | `examples/microservicios/modulo-N/` con `README.md`, `verificar.sh` y, si usa infraestructura, `docker-compose.yml` |
+| Laboratorio del módulo | los ejemplos autocontenidos dentro de la lección (el árbol `examples/` fue retirado; ver specs/027) |
 | Versiones | `docs/microservicios/08-herramientas-y-versiones.md` (la estable más reciente, verificada) |
 | Lo que no se pudo ejecutar aquí | `verificacion/microservicios/pendiente.md` (una línea por bloque, con archivo:línea) |
 
@@ -75,7 +75,7 @@ Maven Central está bloqueado. Lo que no puedas ejecutar aquí queda completo y 
 python3 scripts/build_microservices_track.py
 python3 scripts/build_web_topic_index.py && python3 scripts/build_curriculum_catalog.py
 python3 scripts/validate_fichas.py --resumen     # tus módulos deben salir con ✔
-find examples/microservicios -name pom.xml -exec python3 -c "import xml.dom.minidom,sys;xml.dom.minidom.parse(sys.argv[1])" {} \;   # Maven rechaza «--» dentro de comentarios XML
+# (histórico) verifica XML en artefactos locales; examples/microservicios fue retirado en specs/027
 ./scripts/validate.sh && (cd web && npm test -- --watch=false)
 ```
 

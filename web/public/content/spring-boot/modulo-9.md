@@ -69,7 +69,7 @@ public CompletableFuture<String> enviarDesdeDentro(String guia) {
 }
 ```
 
-Ejecuta desde la carpeta del laboratorio:
+Ejecuta en tu carpeta de trabajo:
 
 ```bash
 ./mvnw -q -Dtest=AsyncBehaviorTest#autoInvocacionConservaElHiloActual test
@@ -115,7 +115,7 @@ executor.setThreadNamePrefix("notif-");
 executor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
 ```
 
-Ejecuta desde la carpeta del laboratorio:
+Ejecuta en tu carpeta de trabajo:
 
 ```bash
 ./mvnw -q -Dtest=AsyncBehaviorTest#dosActivasUnaEnColaYLaCuartaSeRechaza test

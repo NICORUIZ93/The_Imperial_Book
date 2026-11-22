@@ -2,14 +2,14 @@
 
 > Entregable 6 del prompt del dueño. Cada hoja resume los **comandos y conceptos de las fichas escritas**; todo lo
 > que aparece aquí sale de las fichas (`web/public/content/microservices/modulo-N.md`) y de sus laboratorios en
-> `examples/microservicios/`, no de memoria. Cada fila cita su ficha como «Módulo · tema»: ahí están la explicación
+> el contenido de las lecciones, no de memoria. Cada fila cita su ficha como «Módulo · tema»: ahí están la explicación
 > completa, la salida real y la versión exacta.
 >
 > **Para descargarla:** imprime esta página o expórtala a PDF desde el navegador. Cada fase empieza en su propio
 > encabezado `##`, así que puedes imprimir solo la tuya.
 >
 > **Ojo con las carpetas:** el laboratorio del Módulo *N* no está en `modulo-N`, sino en la carpeta del archivo de
-> la lección (por ejemplo, el Módulo 15 está en `examples/microservicios/modulo-19/`). La correspondencia está en
+> la lección (por ejemplo, el Módulo 15 está en el laboratorio del módulo (retirado; usa los ejemplos de la lección)). La correspondencia está en
 > [03-tabla-de-contenidos.md](03-tabla-de-contenidos.md); en esta hoja cada bloque de comandos la indica.
 
 ## Versiones de bolsillo
@@ -55,7 +55,7 @@ Detalle, motivos y fuentes en [08-herramientas-y-versiones.md](08-herramientas-y
 ### Comandos
 
 ```bash
-# Ejecutar programas — Módulos 0.1 y 0.3 (examples/microservicios/modulo-0 y modulo-2)
+# Ejecutar programas — Módulos 0.1 y 0.3 (Módulos 0.1 y 0.3)
 node programa/receta.js                 # ejecuta un archivo JavaScript
 echo "Código de salida: $?"             # código de salida del último comando
 java Tienda.java                        # Java: compila en memoria y ejecuta (un solo archivo)
@@ -73,7 +73,7 @@ node --test --test-reporter=spec logica/cine.test.js   # tests de Node sin depen
 java TiendaTest.java                                   # test de Java de un solo archivo
 node -e "import('./logica/cine.js').then(m => console.log(m.precioBoleto(60)))"   # probar una función suelta
 
-# Git y terminal — Módulo 0.4 · Git / Terminal (examples/microservicios/modulo-3)
+# Git y terminal — Módulo 0.4 · Git / Terminal (Módulo 0.4)
 git log --oneline --graph --all         # historia del repositorio
 pwd; ls datos; cat datos/app.log        # dónde estoy, qué hay, qué dice
 grep -c INFO datos/app.log              # cuenta líneas que contienen INFO
@@ -87,7 +87,7 @@ PUERTO=9000 MODO=produccion node config.js   # variables solo para este comando
 node --env-file=.env.example config.js       # Node lee un archivo .env sin librerías
 export PUERTO=7000; unset PUERTO             # definir y borrar en la terminal actual
 
-# «Hola Mundo» y Docker — Módulo 0.5 (examples/microservicios/modulo-4)
+# «Hola Mundo» y Docker — Módulo 0.5 (Módulo 0.5)
 java -version; node -v
 java HolaServidor.java && curl -i http://localhost:8080/hola
 docker build -t hola-docker:1 .                      # construye la imagen
@@ -100,7 +100,7 @@ docker compose up --build -d --wait                  # levanta los dos servicios
 
 | Ves | Significa | Arreglo | Ficha |
 |---|---|---|---|
-| `Error: Cannot find module '…/receta.js'` · `MODULE_NOT_FOUND` | Ejecutaste desde la carpeta equivocada. | `pwd`, luego `cd examples/microservicios/modulo-0`. | Módulo 0.1 · Qué es un programa |
+| `Error: Cannot find module '…/receta.js'` · `MODULE_NOT_FOUND` | Ejecutaste desde la carpeta equivocada. | `pwd`, luego entra a tu carpeta de trabajo donde guardaste `receta.js`. | Módulo 0.1 · Qué es un programa |
 | `EADDRINUSE` | Ya hay un proceso escuchando en ese puerto. | Para el otro servidor (Ctrl+C) o usa otro puerto. | Módulo 0.1 · Qué es un servidor |
 | `✖` con `12000 !== 7000` en un test | Error de borde en una condición. | Imprime el valor en el borde y en sus vecinos. | Módulo 0.2 · Lógica de programación |
 | Java muestra `L?piz` en lugar de `Lápiz` | La terminal no usa UTF-8. | Configura la terminal o la configuración regional en UTF-8. | Módulo 0.3 |
@@ -152,7 +152,7 @@ docker compose up --build -d --wait                  # levanta los dos servicios
 ### Comandos
 
 ```bash
-# Maven y arranque — Módulo 1 (examples/microservicios/modulo-5)
+# Maven y arranque — Módulo 1 
 ../mvnw -q package -DskipTests && java -jar target/f019-ioc-di-1.0.0.jar
 java -jar target/f020-autoconfiguracion-1.0.0.jar --debug       # informe de auto-configuración
 java -jar target/f022-perfiles-1.0.0.jar --spring.profiles.active=prod
@@ -274,7 +274,7 @@ kubectl -n argocd get application guestbook -w
 ### Comandos
 
 ```bash
-# Node esencial — Módulo 13 (examples/microservicios/modulo-17)
+# Node esencial — Módulo 13 (Módulo 13)
 npm ci
 npx tsc -p f090-typescript && echo "tipos OK"
 node --cpu-prof --cpu-prof-dir=perfiles f092-perf/servidor-lento.js
@@ -398,7 +398,7 @@ kubectl apply -n argocd -f f147-gitops-argocd/application.yaml
 ### Comandos
 
 ```bash
-# Gobernanza — Módulo 24 (examples/microservicios/modulo-28)
+# Gobernanza — Módulo 24 (Módulo 24)
 node f148-adrs/adr.js f148-adrs/docs/adr lint
 node f148-adrs/adr.js /tmp/adr-demo nuevo "Usamos PostgreSQL para pedidos"
 node f148-adrs/adr.js /tmp/adr-demo aceptar 1
@@ -490,7 +490,7 @@ node f176-fitness-functions/demo.js; echo "código de salida: $?"
 ### Módulos 31–32 · comandos
 
 ```bash
-# Migración desde monolito — Módulo 31 (examples/microservicios/modulo-35)
+# Migración desde monolito — Módulo 31 (Módulo 31)
 node f177-strangler-fig/demo.js
 node f178-coexistencia/demo.js
 node f179-metricas-exito/metricas.js
@@ -498,7 +498,7 @@ node f180-deuda-tecnica/hotspots.js
 node f180-deuda-tecnica/registro-deuda.js
 node f180-deuda-tecnica/decision.js
 
-# Proyecto Final — Módulo 32 (examples/microservicios/modulo-36)
+# Proyecto Final — Módulo 32 (Módulo 32)
 node f181-sistema-reservas/proveedor-pagos.js &          # :8090
 node f181-sistema-reservas/servicio-reservas.js &        # :8081
 curl -si localhost:8081/reservas -H 'content-type: application/json' -H 'idempotency-key: x1' \

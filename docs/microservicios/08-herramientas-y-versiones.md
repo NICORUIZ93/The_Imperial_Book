@@ -200,7 +200,7 @@ BUILD FAILED in 7s
 ```
 
 El arreglo es el resolver oficial de Gradle, en el `settings.gradle.kts` de los 14 builds del curso
-(`examples/microservicios/modulo-5` … `modulo-16/app`, `modulo-36/spring` y `modulo-5/f021-multimodulo`):
+(el laboratorio del módulo (retirado; usa los ejemplos de la lección) … `modulo-16/app`, `modulo-36/spring` y `modulo-5/f021-multimodulo`):
 
 ```kotlin
 plugins {
@@ -209,7 +209,7 @@ plugins {
 ```
 
 Versión confirmada en la fuente primaria (plugins.gradle.org, 2026-11-21); Gradle la pide explícitamente en la
-frase «Toolchain download repositories have not been configured». Con el resolver, el `./verificar.sh` de
+frase «Toolchain download repositories have not been configured». Con el resolver, el el script de verificación del laboratorio (si aplica) de
 `modulo-5` pasó de fallar en 7 s a `RESULTADO: OK` en 46 s: Gradle descargó
 `OpenJDK25U-jdk_aarch64_mac_hotspot_25.0.5.1_2.tar.gz` a `~/.gradle/jdks/` y los logs de Spring arrancaron
 `using Java 25.0.5.1`. Coste: la primera vez baja el JDK (≈200 MB) además de las dependencias; luego queda en

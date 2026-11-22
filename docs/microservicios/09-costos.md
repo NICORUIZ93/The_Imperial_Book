@@ -60,7 +60,7 @@ lo que además es un buen laboratorio de resiliencia.
 
 | Necesidad | Alternativa gratuita | Notas |
 |---|---|---|
-| Kafka, RabbitMQ, NATS, Redis, PostgreSQL, MySQL, MongoDB, Keycloak, Vault, Temporal, Toxiproxy, observabilidad | **Docker Compose** en tu computadora | Es lo que usan los laboratorios (`examples/microservicios/<modulo>/docker-compose.yml`). Versiones en [08-herramientas-y-versiones.md](08-herramientas-y-versiones.md). |
+| Kafka, RabbitMQ, NATS, Redis, PostgreSQL, MySQL, MongoDB, Keycloak, Vault, Temporal, Toxiproxy, observabilidad | **Docker Compose** en tu computadora | Es lo que usan los laboratorios (el laboratorio del módulo (retirado; usa los ejemplos de la lección)). Versiones en [08-herramientas-y-versiones.md](08-herramientas-y-versiones.md). |
 | Kubernetes | **kind** (https://kind.sigs.k8s.io) o k3d / minikube | Clúster de varios nodos dentro de Docker; suficiente para Deployments, probes, HPA (con metrics-server), Helm, Argo CD e Istio. |
 | Servicios de AWS, Azure y GCP | **Floci** (emulador local del repositorio, `docker-compose.yml` de la raíz) | Línea definida en `docs/VERSIONES.md`: Floci 2.2.0 (AWS), floci-az 0.14.0, floci-gcp 0.10.0. |
 | Calidad de código | **SonarQube Community Build** | Gratuita; corre en Docker. |

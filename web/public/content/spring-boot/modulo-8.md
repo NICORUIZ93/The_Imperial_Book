@@ -594,7 +594,7 @@ Correlación: conservar un identificador en petición, resultado y diagnóstico.
 Reintentos: definir errores transitorios y evitar duplicar efectos.
 ```
 
-Ejecuta desde la carpeta del laboratorio y abre `decision-integracion.md`:
+Ejecuta en tu carpeta de trabajo y abre `decision-integracion.md`:
 
 ```bash
 python3 -m unittest -v

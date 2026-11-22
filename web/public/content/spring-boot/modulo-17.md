@@ -596,7 +596,7 @@ Ejecuta el comando desde el código de este tema.
 
 **Contexto:** El store del ejemplo vive en memoria; reiniciar el proceso borra el historial. Sirve para estudiar el modelo y no para guardar pedidos reales.
 
-**Hazlo tú:** Revisa `README.md` y ejecuta toda la suite desde la carpeta del laboratorio:
+**Hazlo tú:** Revisa `README.md` y ejecuta toda la suite en tu carpeta de trabajo:
 
 ```bash
 ./mvnw -q test

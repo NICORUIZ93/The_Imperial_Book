@@ -65,7 +65,7 @@ public class DemoConfigServerApplication {
 }
 ```
 
-Desde la carpeta del laboratorio, arranca la aplicación:
+Desde tu carpeta de trabajo, arranca la aplicación:
 
 ```bash
 ./mvnw spring-boot:run
@@ -126,7 +126,7 @@ Entrega las dos respuestas válidas y explica por qué la respuesta de una app d
 El servicio de pedidos debe encontrar catálogo mediante su nombre de servicio y una dirección configurada, sin guardar esa URL dentro de su código.
 
 **2. Hazlo tú**
-Abre `src/test/java/academia/rutaflow/cloud/ConfigServerAndDiscoveryTest.java` y localiza `resuelveInstanciaCatalogoConSimpleDiscoveryClient`. Ejecuta el test desde la carpeta del laboratorio:
+Abre `src/test/java/academia/rutaflow/cloud/ConfigServerAndDiscoveryTest.java` y localiza `resuelveInstanciaCatalogoConSimpleDiscoveryClient`. Ejecuta el test en tu carpeta de trabajo:
 
 ```java
 package com.example.democonfigserver;
@@ -446,7 +446,7 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **Contexto:** Configurar el objeto no cambia una llamada por sí solo: hay que ejecutar la operación a través de la decoración.
 
-**Hazlo tú:** En el código de este tema, sigue `Bulkhead.of`, `decorateRunnable`, los dos `CountDownLatch` y `getAvailableConcurrentCalls()`. Ejecuta desde la carpeta del laboratorio:
+**Hazlo tú:** En el código de este tema, sigue `Bulkhead.of`, `decorateRunnable`, los dos `CountDownLatch` y `getAvailableConcurrentCalls()`. Ejecuta en tu carpeta de trabajo:
 
 ```bash
 ./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test
@@ -540,7 +540,7 @@ Luis puede presentar un token válido y aun así no tener permiso para guardar u
 
 **2. Hazlo tú**
 
-Inspecciona `src/main/java/academia/rutaflow/security/ApiSecurity.java` y el realm `keycloak/rutaflow-realm.json`. Ejecuta cada prueba desde la carpeta del laboratorio:
+Inspecciona `src/main/java/academia/rutaflow/security/ApiSecurity.java` y el realm `keycloak/rutaflow-realm.json`. Ejecuta cada prueba en tu carpeta de trabajo:
 
 ```bash
 ./mvnw -q -Dtest=ApiSecurityTest#tokenSinRolDeEscrituraRecibe403 test
@@ -569,7 +569,7 @@ El rol permite consultar pedidos, pero no todos los pedidos. El servicio debe co
 
 **2. Hazlo tú**
 
-Lee `PedidoOwnership.java` y `RutaflowApiController.java`. Ejecuta desde la carpeta del laboratorio:
+Lee `PedidoOwnership.java` y `RutaflowApiController.java`. Ejecuta en tu carpeta de trabajo:
 
 ```bash
 ./mvnw -q -Dtest=ApiSecurityTest#tokenSoloLeePedidosDeSuSubject test
@@ -805,7 +805,7 @@ sequenceDiagram
 
 **2. Hazlo tú**
 
-Abre `src/main/proto/tarifa.proto` y ejecuta desde la carpeta del laboratorio:
+Abre `src/main/proto/tarifa.proto` y ejecuta en tu carpeta de trabajo:
 
 ```bash
 ./mvnw -q generate-sources
@@ -1399,7 +1399,7 @@ Entregas responde la ruta del pedido y solicita el inventario a otro servicio. L
 
 **2. Hazlo tú**
 
-Desde la carpeta del laboratorio, construye el jar:
+Desde tu carpeta de trabajo, construye el jar:
 
 ```bash
 ./mvnw -q clean package
