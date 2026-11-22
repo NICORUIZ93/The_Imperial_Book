@@ -1,0 +1,7 @@
+pago aprobado                             POST 202 /reservas/R-a1 -> CONFIRMADA
+mismo POST repetido (Idempotency-Key a1)  POST 202 /reservas/R-a1 -> CONFIRMADA
+tarjeta rechazada                         POST 202 /reservas/R-b2 -> CANCELADA (tarjeta rechazada: fondos insuficientes)
+falla la confirmación                     POST 202 /reservas/R-c3 -> CANCELADA (el organizador canceló el evento)
+otra reserva                              POST 202 /reservas/R-d4 -> CONFIRMADA
+sin plazas (aforo 2)                      POST 202 /reservas/R-e5 -> CANCELADA (sin plazas en concierto-1)
+proveedor: 3 cobros, 1 reembolso(s) · plazas libres: 0

@@ -1,7 +1,6 @@
 # Módulo 10: Mensajería con Kafka: eventos, errores, outbox y contratos
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra un broker real (`@EmbeddedKafka`, sin necesitar Docker), para que "el evento se publicó y se consumió" sea comprobable, no solo descrito. El laboratorio es [`examples/spring-kafka-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-kafka-rutaflow). RabbitMQ, JMS y Spring Cloud Stream siguen en el Módulo 11.
-
+Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado contra un broker real (`@EmbeddedKafka`, sin necesitar Docker), para que "el evento se publicó y se consumió" sea comprobable, no solo descrito. El laboratorio es `spring-kafka-rutaflow`. RabbitMQ, JMS y Spring Cloud Stream siguen en el Módulo 11.
 
 ## Aprende construyendo
 
@@ -10,7 +9,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Un evento permite que quien registra un envío continúe sin llamar directamente a cada sistema que lo usa. Kafka conserva los mensajes y varios grupos pueden procesarlos por separado.
 **Prerrequisitos:** Spring Boot M1 T1 y M2 T1. Proyecto continuo: enviar un evento de creación y permitir ruteo y notificaciones independientes.
-**Laboratorio:** `examples/spring-kafka-rutaflow/`. Usa JDK 25, Spring Boot 4.1.2 y el Maven Wrapper incluido. El mismo proyecto contiene patrones de los temas posteriores (reintentos/DLT y outbox/inbox); en este Tema 1 practica solo los tres subtemas y sus pruebas dirigidas. Si quieres provocar los fallos, copia el directorio a `spring-kafka-practice` y cambia allí las líneas indicadas.
+**Laboratorio:** `spring-kafka-rutaflow`. Usa JDK 25, Spring Boot 4.1.2 y el Maven Wrapper incluido. El mismo proyecto contiene patrones de los temas posteriores (reintentos/DLT y outbox/inbox); en este Tema 1 practica solo los tres subtemas y sus pruebas dirigidas. Si quieres provocar los fallos, copia el directorio a `spring-kafka-practice` y cambia allí las líneas indicadas.
 
 #### Subtema 1.1: Publica el evento con la clave del envío · 10 min
 
@@ -18,7 +17,7 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 El identificador del envío sirve de clave para mantener sus eventos relacionados en una misma partición de Kafka.
 
 **2. Hazlo tú**
-Abre el archivo completo examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/EnvioEventPublisher.java. Confirma que publicar envía topic, clave y evento:
+Abre el archivo completo EnvioEventPublisher.java. Confirma que publicar envía topic, clave y evento:
 
 ```java
 public CompletableFuture<SendResult<String, EnvioCreado>> publicar(EnvioCreado evento) {
@@ -26,14 +25,14 @@ public CompletableFuture<SendResult<String, EnvioCreado>> publicar(EnvioCreado e
 }
 ```
 
-El mensaje contiene dos identificadores distintos: `eventId` identifica este hecho; `envioId` agrupa todos los cambios del envío. El record real vive en `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/EnvioCreado.java`:
+El mensaje contiene dos identificadores distintos: `eventId` identifica este hecho; `envioId` agrupa todos los cambios del envío. El record real vive en el código de este tema:
 
 ```java
 public record EnvioCreado(
         UUID eventId, UUID envioId, int version, Instant occurredAt, String referencia) {}
 ```
 
-En `examples/spring-kafka-rutaflow/src/main/resources/application.yml`, revisa los serializers y deserializers JSON que permiten escribir y leer EnvioCreado:
+En el código de este tema, revisa los serializers y deserializers JSON que permiten escribir y leer EnvioCreado:
 
 ```yaml
 spring:
@@ -52,8 +51,6 @@ spring:
         spring.json.value.default.type: academia.rutaflow.event.EnvioCreado
         spring.json.trusted.packages: academia.rutaflow.event
 ```
-
-Desde examples/spring-kafka-rutaflow/, ejecuta la prueba de integración:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
@@ -77,8 +74,8 @@ Ruteo y notificaciones deben procesar el mismo hecho, cada grupo con su propio a
 **2. Hazlo tú**
 Lee los archivos completos:
 
-- examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/RuteoListener.java
-- examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/NotificacionListener.java
+- RuteoListener.java
+- NotificacionListener.java
 
 Compara el valor de `groupId` en ambos listeners. Este extracto real de `RuteoListener.java` muestra la suscripción y la key que llega en la cabecera:
 
@@ -116,7 +113,7 @@ Escribe qué grupo atiende cada listener y por qué el publicador no tiene que c
 El envío al topic no implica que el listener ya haya terminado. Comprueba el recorrido con un broker embebido y espera a que el consumidor procese el evento.
 
 **2. Hazlo tú**
-Abre `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. La prueba dirige el broker embebido a tres particiones y compara la metadata de Kafka con lo que recibió el consumidor:
+Observa EnvioEventPublisherTest.java y. La prueba dirige el broker embebido a tres particiones y compara la metadata de Kafka con lo que recibió el consumidor:
 
 ```java
 var primero = publisher.publicar(primerEvento).get(10, TimeUnit.SECONDS).getRecordMetadata();
@@ -162,7 +159,7 @@ Entrega los resultados de ambas pruebas y describe qué esperarías si publicara
 **Duración estimada:** 35 min.
 **¿Por qué es importante?** Si el consumidor rechaza un mensaje cada vez, los reintentos deben tener un límite y el mensaje requiere un destino donde el equipo pueda investigarlo.
 **Prerrequisitos:** M10 T1. Proyecto continuo: apartar eventos de envío que no pasan la validación del listener.
-**Laboratorio:** `examples/spring-kafka-rutaflow/`. Continúa en `spring-kafka-practice`, la copia que preparaste en el Tema 1; allí prueba cambios deliberados sin alterar la versión base.
+**Laboratorio:** `spring-kafka-rutaflow`. Continúa en `spring-kafka-practice`, la copia que preparaste en el Tema 1; allí prueba cambios deliberados sin alterar la versión base.
 
 #### Subtema 2.1: Configura reintentos limitados y DLT · 10 min
 
@@ -170,7 +167,7 @@ Entrega los resultados de ambas pruebas y describe qué esperarías si publicara
 Kafka no crea un DLT de aplicación automáticamente. El listener informa el fallo; un manejador decide si vuelve a ejecutar el listener y dónde deja el registro que sigue fallando.
 
 **2. Hazlo tú**
-Abre examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/KafkaLabConfiguration.java y estudia el bean completo errorHandler:
+Observa KafkaLabConfiguration.java y estudia el bean completo errorHandler:
 
 ```java
 @Bean
@@ -202,7 +199,7 @@ Señala dónde se crea el topic original, dónde se crea el DLT y qué bean cone
 Una clave que no coincide con el envío hace que el listener falle siempre. Ese error repetible permite observar cada reintento y comprobar que el mensaje no desaparece.
 
 **2. Hazlo tú**
-Abre examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java y ejecuta el test reintentaYPublicaEnDltCuandoLaKeyNoCoincide:
+Observa EnvioEventPublisherTest.java y ejecuta el test reintentaYPublicaEnDltCuandoLaKeyNoCoincide:
 
 ```bash
 ./mvnw -Dtest=EnvioEventPublisherTest#reintentaYPublicaEnDltCuandoLaKeyNoCoincide test
@@ -271,7 +268,7 @@ Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la sal
 **Duración estimada:** 50 min.
 **¿Por qué es importante?** Un productor puede repetir un envío y un consumidor puede volver a recibir un evento. Evita duplicar el efecto y distingue la transacción del broker de la transacción de la base de datos.
 **Prerrequisitos:** M10 T1 y M10 T2. Proyecto continuo: guardar un envío, publicar su evento y procesarlo sin duplicar la proyección.
-**Laboratorio:** `examples/spring-kafka-rutaflow/`. Usa la copia de M10 T1. El test usa Kafka embebido y H2; comprueba estas fronteras en una sola máquina, no sustituye pruebas con PostgreSQL ni con un clúster Kafka de producción.
+**Laboratorio:** `spring-kafka-rutaflow`. Usa la copia de M10 T1. El test usa Kafka embebido y H2; comprueba estas fronteras en una sola máquina, no sustituye pruebas con PostgreSQL ni con un clúster Kafka de producción.
 
 #### Subtema 3.1 · Reintentar el productor sin duplicar registros de Kafka · 10 min
 
@@ -279,7 +276,7 @@ Restaura la configuración del proyecto a FixedBackOff(100L, 2), conserva la sal
 Si el productor pierde una confirmación, puede repetir el envío. La idempotencia permite que Kafka reconozca ese reintento de la misma sesión del productor. No deduplica dos llamadas de negocio que crean dos envíos.
 
 **2. Hazlo tú**
-Revisa `spring.kafka.producer` en `examples/spring-kafka-rutaflow/src/main/resources/application.yml`:
+Revisa `spring.kafka.producer` en el código de este tema:
 
 ```yaml
 spring:
@@ -312,7 +309,7 @@ Separa en dos frases qué duplicado resuelve Kafka y cuál debe resolver la apli
 PostgreSQL y Kafka no comparten una transacción local. Si guardas primero el envío y falla el proceso antes de publicar, el evento se perdería sin un registro pendiente durable.
 
 **2. Hazlo tú**
-Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java`. En `crear`, la transacción cubre ambas escrituras:
+Observa CrearEnvioService.java y. En `crear`, la transacción cubre ambas escrituras:
 
 ```java
 @Transactional
@@ -357,7 +354,7 @@ Describe qué dato pendiente permite al dispatcher recuperar la publicación si 
 El dispatcher puede publicar dos veces el mismo evento si Kafka confirmó, pero el proceso no alcanzó a guardar `published_at`. El consumidor registra `eventId` en inbox junto a la proyección, dentro de una transacción.
 
 **2. Hazlo tú**
-Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java`. Fíjate en el retorno temprano y en la transacción que contiene el registro y el efecto:
+Observa InboxProcessor.java y. Fíjate en el retorno temprano y en la transacción que contiene el registro y el efecto:
 
 ```java
 @Transactional
@@ -410,7 +407,7 @@ Explica por qué el dispatcher puede publicar al menos una vez y cómo inbox evi
 Una transacción de Kafka agrupa registros del broker. El consumidor `read_committed` oculta los registros abortados; `read_uncommitted` también puede observarlos. Esto no hace que una base SQL forme parte de la transacción Kafka.
 
 **2. Hazlo tú**
-En `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`, estudia `transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted`. El test crea un topic único, un `KafkaTemplate` transaccional y dos consumidores con distinto `isolation.level`. `DefaultKafkaProducerFactory` necesita un prefijo transaccional único:
+En el código de este tema, estudia `transaccionKafkaAbortadaSoloEsVisibleConReadUncommitted`. El test crea un topic único, un `KafkaTemplate` transaccional y dos consumidores con distinto `isolation.level`. `DefaultKafkaProducerFactory` necesita un prefijo transaccional único:
 
 ```java
 producerFactory.setTransactionIdPrefix("rutaflow-tx-" + UUID.randomUUID() + "-");
@@ -540,7 +537,6 @@ Guarda el resultado y explica por qué el replay puede duplicar mensajes, pero n
 
 **Fuente:** [Spring Framework: transacciones declarativas](https://docs.spring.io/spring-framework/reference/data-access/transaction/declarative.html) y [Transactional Outbox](https://microservices.io/patterns/data/transactional-outbox.html).
 
-
 **Aplicación y decisión:** En el proyecto integrador, guarda envío e intención outbox en una misma transacción y permite que el consumidor deduplique reenvíos. No atribuyas atomicidad entre SQL y Kafka a la anotación local del servicio.
 
 ### Tema 5: Rebalanceo de consumer groups y asignación de particiones · Avanzado · 45 min
@@ -550,7 +546,7 @@ Guarda el resultado y explica por qué el replay puede duplicar mensajes, pero n
 **Resultado:** observa cómo cambia la propiedad de las particiones cuando entra otro consumer, mantiene correcto el estado local con los callbacks y decide cuándo sirve la membresía estática.
 **¿Por qué es importante?** Un estado local desactualizado puede hacer que una instancia procese datos de una partición que ya pertenece a otro miembro.
 
-**Necesitas:** M10 T1 y un clon del laboratorio `examples/spring-kafka-rutaflow/`. Prueba el comando desde esa carpeta.
+**Necesitas:** M10 T1 y un clon del laboratorio `spring-kafka-rutaflow`. Prueba el comando desde esa carpeta.
 
 #### Subtema 5.1 · Una partición pertenece a un consumer del grupo · 10 min
 
@@ -605,8 +601,7 @@ public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
 
 Busca `containerProps.setConsumerRebalanceListener(rebalanceListener)`: ahí Spring entrega el listener al contenedor. Ejecuta el mismo test focalizado de 4.1.
 
-
-Para comprobar «Mantener el estado local con callbacks reales», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+Para comprobar «Mantener el estado local con callbacks reales», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -638,8 +633,7 @@ Lee `unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones` en el mismo arc
 ./mvnw -Dtest=EnvioEventPublisherTest#unSegundoConsumidorProvocaRebalanceoYActualizaAsignaciones test
 ```
 
-
-Para comprobar «Ver el rebalanceo al entrar el segundo consumer», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+Para comprobar «Ver el rebalanceo al entrar el segundo consumer», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -677,8 +671,7 @@ spring:
 
 Define un ID estable y único por réplica (por ejemplo, ordinal de StatefulSet). No uses el mismo literal fijo para todas las réplicas de un Deployment. Este laboratorio no simula reinicios ni mide el timeout; no cambies la configuración general de pruebas.
 
-
-Para comprobar «Usar membresía estática solo para reinicios breves», consulta: `examples/spring-kafka-rutaflow/src/test/java/academia/rutaflow/event/EnvioEventPublisherTest.java`. Desde `examples/spring-kafka-rutaflow` repite la comprobación:
+Para comprobar «Usar membresía estática solo para reinicios breves», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -705,7 +698,7 @@ Anota una situación apropiada para membresía estática, el costo de un timeout
 **Duración estimada:** 50 min.
 **Resultado:** filtras eventos, conservas su clave, agregas por ventana y ejecutas la topología con Spring.
 **¿Por qué es importante?** Una salida de prueba en memoria no comprueba despliegue ni restauración de estado en un clúster.
-**Laboratorio:** examples/spring-kafka-streams-rutaflow/. Requiere Java 25.
+**Laboratorio:**. Requiere Java 25.
 
 #### Subtema 6.1 · Filtrar sin cambiar la clave del pedido · 10 min
 
@@ -724,8 +717,6 @@ KStream<String, String> dispatched = input
         .filter((pedidoId, estado) -> "DESPACHADO".equals(estado));
 dispatched.to(OUTPUT, Produced.with(Serdes.String(), Serdes.String()));
 ```
-
-Desde el laboratorio ejecuta:
 
 ```bash
 ./mvnw -Dtest=PedidosTopologyTest#filtraEstadosYConservaLaClaveEnLaSalida test
@@ -768,8 +759,7 @@ Ejecuta el test con timestamps controlados:
 ./mvnw -Dtest=PedidosTopologyTest#actualizaConteoPorVentanaConTiempoControlado test
 ```
 
-
-Para comprobar «Contar por estado dentro de una ventana», consulta: `examples/spring-kafka-streams-rutaflow/src/main/java/academia/rutaflow/streams/PedidosTopology.java`. Desde `examples/spring-kafka-streams-rutaflow` repite la comprobación:
+Para comprobar «Contar por estado dentro de una ventana», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -823,8 +813,6 @@ Spring crea y administra la topología cuando kafka-streams está en el classpat
 
 Compara la anotación EnableKafkaStreams en PedidosTopology.java, la dependencia kafka-streams en pom.xml y spring.kafka.streams.application-id en src/main/resources/application.yml. El README del laboratorio incluye comandos para levantar Kafka, crear tópicos, publicar tres registros y observar las salidas.
 
-Desde examples/spring-kafka-streams-rutaflow ejecuta:
-
 ```bash
 ./mvnw spring-boot:run
 ```
@@ -845,7 +833,6 @@ Enumera los tópicos visibles y explica por qué una aplicación aislada necesit
 
 **Transferencia al proyecto integrador:** conserva una key estable por pedido, separa evento original de proyección agregada y registra application.id, SerDes, tópicos internos y política de estado.
 
-
 **Aplicación y decisión:** Límite del test driver: observa registros y estado con tiempo controlado, sin broker, rebalanceo o ACL. Usa el conteo por ventana en el proyecto integrador solo después de definir tiempo de evento, retención y política para llegadas tardías.
 
 ### Tema 7: Avro y Schema Registry para contratos de eventos · Avanzado · 45 min
@@ -853,7 +840,7 @@ Enumera los tópicos visibles y explica por qué una aplicación aislada necesit
 **Duración estimada:** 50 min.
 **Resultado:** lees datos Avro con un esquema escritor y otro lector, pruebas una evolución y compruebas compatibilidad en Schema Registry.
 **¿Por qué es importante?** Un cambio de campos puede romper consumidores que siguen leyendo eventos creados con una versión anterior.
-**Laboratorio:** examples/spring-avro-rutaflow/. Para Registry real se requiere Docker.
+**Laboratorio:**. Para Registry real se requiere Docker.
 
 #### Subtema 7.1 · Definir el evento en un archivo Avro · 10 min
 
@@ -880,7 +867,6 @@ Abre src/main/avro/PedidoDespachado-v1.avsc:
 Ejecuta la prueba que escribe con v1 y lee con v2:
 
 ```bash
-cd examples/spring-avro-rutaflow
 ./mvnw -Dtest=PedidoSchemaEvolutionTest#lectorV2RellenaElCampoAusenteConSuDefault test
 ```
 
@@ -968,7 +954,7 @@ Schema Registry guarda versiones por subject y aplica el nivel de compatibilidad
 
 **2. Hazlo tú**
 
-Desde examples/spring-avro-rutaflow sigue README.md para iniciar el overlay de Schema Registry local y preparar los archivos JSON para la API. Configura el subject pedidos-value como BACKWARD, registra v1, consulta v2 con el endpoint de compatibilidad, regístralo y consulta el esquema incompatible. No publiques la variante incompatible.
+Desde el código de este tema sigue README.md para iniciar el overlay de Schema Registry local y preparar los archivos JSON para la API. Configura el subject pedidos-value como BACKWARD, registra v1, consulta v2 con el endpoint de compatibilidad, regístralo y consulta el esquema incompatible. No publiques la variante incompatible.
 
 ```bash
 docker compose -f ../spring-kafka-rutaflow/compose.yaml -f compose.registry.yaml up -d
@@ -989,14 +975,11 @@ Entrega las versiones v1/v2, respuesta de compatibilidad y el resultado local de
 
 **Fuentes oficiales:** [especificación Avro 1.12: defaults y resolución lector/escritor](https://avro.apache.org/docs/1.12.0/specification/), [API de Schema Registry](https://docs.confluent.io/platform/current/schema-registry/develop/api.html), [evolución y compatibilidad](https://docs.confluent.io/platform/current/schema-registry/fundamentals/schema-evolution.html), [Avro SerDe de Confluent](https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html) y [compatibilidad Kafka/Confluent 7.9](https://docs.confluent.io/platform/7.9/installation/versions-interoperability.html).
 
-**Transferencia al proyecto integrador:** versiona el .avsc con el código, acuerda subject y compatibilidad con los consumidores, ejecuta lectura cruzada y registra la respuesta de Registry antes de desplegar un productor nuevo.
-
+**Transferencia al proyecto integrador:** versiona el.avsc con el código, acuerda subject y compatibilidad con los consumidores, ejecuta lectura cruzada y registra la respuesta de Registry antes de desplegar un productor nuevo.
 
 **Aplicación y decisión:** En el proyecto integrador, versiona el esquema del evento antes de desplegar un productor nuevo y prueba lectura de datos antiguos. Separa el test de resolución Avro del Registry HTTP real; aprobar el primero no acredita compatibilidad configurada por subject.
 
 ## Capstone del módulo — Eventos con Spring Kafka
-
-Desde `examples/spring-kafka-rutaflow/`, ejecuta `./mvnw test`. Luego levanta Kafka y PostgreSQL con Compose y arranca la aplicación. Entrega la salida de pruebas, una fila outbox publicada, una fila inbox y una evidencia de DLT.
 
 **Cuándo no usar Kafka:** si el servicio necesita una respuesta inmediata de una única llamada interna, empieza con HTTP. Kafka añade retención, grupos, offsets y operación.
 

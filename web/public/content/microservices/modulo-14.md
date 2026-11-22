@@ -3,9 +3,9 @@
 **Fase 1 · Spring Boot de cero a experto** (segunda mitad de la semana 10 de 12). **Duración:** 9 h (5 temas de
 1,5–2 h). **Dificultad:** 3 de 5. **Dependencias:** Módulo 6 (servicios que se llaman entre sí con `RestClient`) y
 Módulo 1 (configuración y perfiles); el tema de alertas usa los percentiles que aparecen en el Módulo 8 (presupuesto de
-latencia). **Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Actuator, Micrometer 1.17.3, Micrometer
+latencia). **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Actuator, Micrometer 1.17.3, Micrometer
 Tracing 1.7.3, OpenTelemetry 1.62.0, logging estructurado), **Prometheus v3.15.1**, **Grafana 13.2.4**, **Jaeger
-2.22.0**, **Zipkin 3.6.1**, Python 3 y `curl`. **Laboratorio:** `examples/microservicios/modulo-14/`
+2.22.0**, **Zipkin 3.6.1**, Python 3 y `curl`. **Laboratorio:** `modulo-14`
 (`./verificar.sh --solo-jdk` corre las demostraciones con solo el JDK y Python; `./verificar.sh` levanta toda la pila).
 
 Un sistema de microservicios falla de formas que no se ven desde un solo servicio: una petición lenta puede deberse a
@@ -46,8 +46,8 @@ Después la haces con Spring Boot y la pila real: `docker compose up -d --wait` 
 
 #### 1. UBICACIÓN
 
-Módulo 10, Lección 1 de 5 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-14/jdk/MetricasPrometheus.java` y
-`examples/microservicios/modulo-14/f070-micrometer-prometheus/`.
+Módulo 10, Lección 1 de 5 · Fase 1 · 2 h
+`f070-micrometer-prometheus`.
 
 #### 2. PRERREQUISITOS
 
@@ -224,7 +224,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -357,7 +356,6 @@ scrape_configs:
 1. Mira el formato y la cardinalidad sin Spring (ejecutado con JDK 25.0.5):
 
 ```bash
-cd examples/microservicios/modulo-14/jdk
 java MetricasPrometheus.java
 ```
 
@@ -516,7 +514,7 @@ valgan igual significa que ninguna petición tardó entre 0,1 y 0,25 s (ni entre
 `curl localhost:8080/actuator/prometheus` funciona en tu máquina.
 
 **Cómo se ve:** en `http://localhost:9090/targets` el error dice algo como `Get "http://host.docker.internal:8080/actuator/prometheus":
-dial tcp ...: connect: connection refused` o `server returned HTTP status 404 Not Found`.
+dial tcp...: connect: connection refused` o `server returned HTTP status 404 Not Found`.
 
 **Diagnóstico:** con *connection refused*, Prometheus (dentro de Docker) no llega a tu máquina: en Linux falta
 `extra_hosts: host.docker.internal:host-gateway` (en el `docker-compose.yml` del laboratorio ya está) o la app escucha en
@@ -558,8 +556,8 @@ Etiqueta solo con conjuntos pequeños y conocidos (`tipo=timeout|validacion|inte
 
 #### 1. UBICACIÓN
 
-Módulo 10, Lección 2 de 5 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-14/jdk/TrazasW3C.java` y
-`examples/microservicios/modulo-14/f071-tracing/`.
+Módulo 10, Lección 2 de 5 · Fase 1 · 2 h
+`f071-tracing`.
 
 #### 2. PRERREQUISITOS
 
@@ -634,7 +632,7 @@ spans y los dibujan como una línea de tiempo, para ver **dónde** se fue el tie
 - **Correlación con logs:** el `traceId` y el `spanId` van al MDC y Spring los añade al log (`[traceId-spanId]` por
   defecto; formato con `logging.pattern.correlation`).
 - **Spans propios:** `Observation.createNotStarted("nombre", registro).lowCardinalityKeyValue(...)
-  .highCardinalityKeyValue(...).observe(() -> ...)`: las de baja cardinalidad van también a métricas; las de alta, solo a
+.highCardinalityKeyValue(...).observe(() ->...)`: las de baja cardinalidad van también a métricas; las de alta, solo a
   la traza.
 
 #### 8. EXPLICACIÓN MAESTRA
@@ -770,7 +768,7 @@ class PedidosController {
 ```
 
 `InventarioController.java` atiende `GET /stock/{sku}` (registra un log, espera 30 ms y devuelve
-`{"sku": ..., "stock": 12}`); la misma app hace de pedidos o de inventario según el nombre y el puerto con que la
+`{"sku":..., "stock": 12}`); la misma app hace de pedidos o de inventario según el nombre y el puerto con que la
 arranques. `src/main/resources/application.properties`:
 
 ```properties
@@ -794,7 +792,6 @@ envía a Zipkin en su formato JSON v2 con `POST /api/v2/spans`).
    «antes» puede cambiar):
 
 ```bash
-cd examples/microservicios/modulo-14/jdk
 java TrazasW3C.java
 ```
 
@@ -997,8 +994,8 @@ autoinstrumentados. Usa W3C Trace Context (`traceparent`) y deja que Micrometer 
 
 #### 1. UBICACIÓN
 
-Módulo 10, Lección 3 de 5 · Fase 1 · 1,5 h · Laboratorio `examples/microservicios/modulo-14/jdk/LogsEstructurados.java`
-y `examples/microservicios/modulo-14/f072-logging-estructurado/`.
+Módulo 10, Lección 3 de 5 · Fase 1 · 1,5 h
+y `f072-logging-estructurado`.
 
 #### 2. PRERREQUISITOS
 
@@ -1087,7 +1084,7 @@ activa el JSON solo en los perfiles de despliegue (`application-prod.properties`
 **Versiones:** JDK 25 LTS · Spring Boot 4.1.3 (logging estructurado integrado, Logback y SLF4J 2 gestionados por el
 BOM) · `spring-boot-starter-webmvc` · `OutputCaptureExtension` de `spring-boot-test` para leer la consola en los tests.
 
-**Antes** — `jdk/LogsEstructurados.java` (y el mismo estilo en Spring con `log.info("Pedido " + id + " de " + email + ...)`):
+**Antes** — `jdk/LogsEstructurados.java` (y el mismo estilo en Spring con `log.info("Pedido " + id + " de " + email +...)`):
 
 ```java
 for (Evento e : EVENTOS) {
@@ -1154,7 +1151,6 @@ correo con SHA-256 y una sal, y hace una «consulta» que agrupa los errores por
 1. Compara texto libre y JSON (ejecutado con JDK 25.0.5):
 
 ```bash
-cd examples/microservicios/modulo-14/jdk
 java LogsEstructurados.java
 ```
 
@@ -1337,7 +1333,7 @@ su contexto.
 
 #### 1. UBICACIÓN
 
-Módulo 10, Lección 4 de 5 · Fase 1 · 1,5 h · Laboratorio `examples/microservicios/modulo-14/grafana/` (aprovisionamiento,
+Módulo 10, Lección 4 de 5 · Fase 1 · 1,5 h(aprovisionamiento,
 `dashboards/pedidos-red.json`, `antes/promedios.json` y `validar_dashboard.py`).
 
 #### 2. PRERREQUISITOS
@@ -1557,7 +1553,6 @@ import json
 import re
 import sys
 
-
 def balanceado(expr: str) -> bool:
     nivel = 0
     for c in expr:
@@ -1565,7 +1560,6 @@ def balanceado(expr: str) -> bool:
         if nivel < 0:
             return False
     return nivel == 0
-
 
 def main(ruta: str) -> int:
     d = json.load(open(ruta, encoding="utf-8"))
@@ -1599,7 +1593,6 @@ def main(ruta: str) -> int:
     print("OK: dashboard válido" if not errores else f"FALLA: {len(errores)} problema(s)")
     return 0 if not errores else 1
 
-
 if __name__ == "__main__":
     sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else "grafana/dashboards/pedidos-red.json"))
 ```
@@ -1625,7 +1618,6 @@ El servicio de Grafana en `docker-compose.yml` monta las dos carpetas:
 1. Valida los dos dashboards (ejecutado con Python 3.13):
 
 ```bash
-cd examples/microservicios/modulo-14
 python3 grafana/validar_dashboard.py grafana/antes/promedios.json; echo "código de salida: $?"
 python3 grafana/validar_dashboard.py grafana/dashboards/pedidos-red.json; echo "código de salida: $?"
 ```
@@ -1711,7 +1703,7 @@ del servicio.
 
 #### 12. ERROR COMÚN
 
-**Síntoma:** el dashboard carga pero todos los paneles muestran «No data» o «Datasource ... was not found».
+**Síntoma:** el dashboard carga pero todos los paneles muestran «No data» o «Datasource... was not found».
 
 **Cómo se ve:** cada panel con un triángulo rojo; al pasar el ratón, el mensaje de fuente no encontrada.
 
@@ -1750,8 +1742,8 @@ esquema en todos los servicios, generados desde el repositorio.
 
 #### 1. UBICACIÓN
 
-Módulo 10, Lección 5 de 5 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-14/jdk/PercentilP99.java`,
-`examples/microservicios/modulo-14/prometheus/reglas.yml`, `prometheus/reglas_test.yml` y `carga.sh`.
+Módulo 10, Lección 5 de 5 · Fase 1 · 2 h
+`reglas.yml`, `prometheus/reglas_test.yml` y `carga.sh`.
 
 #### 2. PRERREQUISITOS
 
@@ -1813,7 +1805,7 @@ seguidos, la alerta suena.
   alertas y dashboards consultan esa serie barata. Convención de nombre `nivel:métrica:operaciones`.
 - **Regla de alerta (`alert`):** `expr` (cuando devuelve series, hay alerta), `for` (cuánto debe sostenerse; mientras
   tanto el estado es `pending`), `labels` (`severity` para enrutar) y `annotations` (resumen y `runbook_url`, con
-  plantillas como `{{ $labels.job }}`). El `and on (job) ... > 0.1` exige tráfico mínimo: con 3 peticiones por minuto el
+  plantillas como `{{ $labels.job }}`). El `and on (job)... > 0.1` exige tráfico mínimo: con 3 peticiones por minuto el
   p99 es ruido.
 - **Prometheus 3:** las ventanas `[5m]` son abiertas por la izquierda (no incluyen la muestra exactamente en el borde);
   usa ventanas de al menos 4 intervalos de raspado.
@@ -1921,7 +1913,6 @@ for (int min = 0; min < p99PorMinuto.length; min++) {
 1. Mira por qué el promedio engaña (ejecutado con JDK 25.0.5; la semilla fija hace la salida reproducible):
 
 ```bash
-cd examples/microservicios/modulo-14/jdk
 java PercentilP99.java
 ```
 

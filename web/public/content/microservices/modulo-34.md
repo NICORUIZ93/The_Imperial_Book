@@ -5,7 +5,7 @@
 fitness functions en producción) y Módulo 25 (sagas, compensaciones e idempotencia); ayudan el Módulo 29 (Ley de
 Conway y carga cognitiva) y el Módulo 5 (monolito frente a microservicios, bounded contexts). **Herramientas:**
 **Node.js 26.13.1 LTS**, **pg 8.23.1** y **PostgreSQL 18.7** (solo la ficha 3). **Laboratorio:**
-`examples/microservicios/modulo-34/` (`./verificar.sh` ejecuta 18 tests y los scripts de las cuatro fichas, la 3 si
+`modulo-34` (`./verificar.sh` ejecuta 18 tests y los scripts de las cuatro fichas, la 3 si
 PostgreSQL responde; `./verificar.sh --compose` levanta PostgreSQL y lo exige todo).
 
 Has pasado treinta módulos aprendiendo a construir microservicios. Este módulo trata de **no construirlos cuando no
@@ -32,14 +32,12 @@ frontera mal puesta entre servicios, es decir, sobre-descomposición.
 **Cómo usar el laboratorio.** Con Node 26 y Docker:
 
 ```bash
-cd examples/microservicios/modulo-34
 npm ci
 docker compose up -d --wait         # PostgreSQL 18.7 :5432 (academia/academia) para la ficha 3
 ./verificar.sh --compose            # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-34`**. Las fichas 1, 2 y 4
 levantan sus propios servidores HTTP con `node:http` en puertos libres y no necesitan Docker.
 
 `package.json` del laboratorio (con `package-lock.json` que fija el árbol completo):
@@ -167,7 +165,7 @@ en `verificacion/microservicios/pendiente.md`.
 
 #### 1. UBICACIÓN
 
-Módulo 30, Lección 1 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-34/f173-monolito-distribuido/`.
+Módulo 30, Lección 1 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -509,7 +507,7 @@ puede desplegarse solo.
 
 #### 1. UBICACIÓN
 
-Módulo 30, Lección 2 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-34/f174-sobre-descomposicion/`.
+Módulo 30, Lección 2 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -864,7 +862,7 @@ detrás de HTTP.
 
 #### 1. UBICACIÓN
 
-Módulo 30, Lección 3 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-34/f175-sagas-innecesarias/`.
+Módulo 30, Lección 3 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1226,7 +1224,7 @@ puntos, y los tres escriben en la misma base de datos tienda: una transacción h
 
 #### 1. UBICACIÓN
 
-Módulo 30, Lección 4 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-34/f176-fitness-functions/`.
+Módulo 30, Lección 4 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1293,7 +1291,7 @@ el cambio se corrige o se discute.
 
 #### 8. EXPLICACIÓN MAESTRA
 
-- **Clasificación útil:** **atómicas** (una característica, como los imports) o **holísticas** (varias a la vez, como
+- **Clasificación útil:**atómicas** (una característica, como los imports) o **holísticas** (varias a la vez, como
   latencia bajo carga); **disparadas** (en cada build) o **continuas** (en producción, Módulo 24); **estáticas**
   (analizan el código) o **dinámicas** (ejecutan el sistema). Este módulo cubre estáticas disparadas (FF1, FF2) y una
   dinámica disparada (FF3).

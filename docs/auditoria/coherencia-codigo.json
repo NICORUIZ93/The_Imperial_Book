@@ -5,36 +5,36 @@
     "C2": "la carpeta que crean los comandos no es donde vive el código",
     "C3": "estructura de archivos dibujada que el tema no crea",
     "C4": "bloque de código largo sin declarar su archivo",
-    "C5": "laboratorio citado cuya ruta no existe en el repo",
-    "C6": "ruta que sí está versionada en `examples/` pero ningún tema manda crear"
+    "C5": "retirado (specs/027)",
+    "C6": "retirado (specs/027)"
   },
   "resumen": {
     "C1": {
-      "temas_con_incidencia": 39,
-      "incidencias": 63
+      "temas_con_incidencia": 52,
+      "incidencias": 80
     },
     "C2": {
-      "temas_con_incidencia": 22,
-      "incidencias": 22
+      "temas_con_incidencia": 17,
+      "incidencias": 17
     },
     "C3": {
       "temas_con_incidencia": 1,
       "incidencias": 4
     },
     "C4": {
-      "temas_con_incidencia": 257,
-      "incidencias": 353
+      "temas_con_incidencia": 265,
+      "incidencias": 366
     },
     "C5": {
       "temas_con_incidencia": 0,
       "incidencias": 0
     },
     "C6": {
-      "temas_con_incidencia": 26,
-      "incidencias": 30
+      "temas_con_incidencia": 0,
+      "incidencias": 0
     }
   },
-  "temas_sin_incidencia": 1284,
+  "temas_sin_incidencia": 1289,
   "por_curso": {
     "android": {
       "C1": 0,
@@ -69,12 +69,12 @@
       "C6": 0
     },
     "devops": {
-      "C1": 6,
+      "C1": 9,
       "C2": 1,
       "C3": 0,
       "C4": 5,
       "C5": 0,
-      "C6": 3
+      "C6": 0
     },
     "flutter": {
       "C1": 1,
@@ -104,7 +104,7 @@
       "C1": 1,
       "C2": 2,
       "C3": 0,
-      "C4": 2,
+      "C4": 7,
       "C5": 0,
       "C6": 0
     },
@@ -125,12 +125,12 @@
       "C6": 0
     },
     "microservices": {
-      "C1": 24,
-      "C2": 4,
+      "C1": 35,
+      "C2": 1,
       "C3": 0,
       "C4": 52,
       "C5": 0,
-      "C6": 24
+      "C6": 0
     },
     "node": {
       "C1": 0,
@@ -157,12 +157,12 @@
       "C6": 0
     },
     "spring-boot": {
-      "C1": 0,
-      "C2": 2,
+      "C1": 3,
+      "C2": 0,
       "C3": 0,
-      "C4": 37,
+      "C4": 45,
       "C5": 0,
-      "C6": 3
+      "C6": 0
     }
   },
   "temas_por_curso": {

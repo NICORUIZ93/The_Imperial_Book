@@ -1,0 +1,167 @@
+consul-1  | ==> Starting Consul agent...
+consul-1  |                Version: '2.1.0'
+consul-1  |             Build Date: '2026-10-21 07:34:22 +0000 UTC'
+consul-1  |                Node ID: '0ec875d3-0977-85b5-d6ec-f9aeb637bbfa'
+consul-1  |              Node name: '992d309ed23f'
+consul-1  |             Datacenter: 'dc1' (Segment: '<all>')
+consul-1  |                 Server: true (Bootstrap: false)
+consul-1  |            Client Addr: [0.0.0.0] (HTTP: 8500, HTTPS: -1, gRPC: 8502, gRPC-TLS: 8503, DNS: 8600)
+consul-1  |           Cluster Addr: 127.0.0.1 (LAN: 8301, WAN: 8302)
+consul-1  |      Gossip Encryption: false
+consul-1  |       Auto-Encrypt-TLS: false
+consul-1  |            ACL Enabled: false
+consul-1  |      Reporting Enabled: false
+consul-1  |     ACL Default Policy: allow
+consul-1  |              HTTPS TLS: Verify Incoming: false, Verify Outgoing: false, Min Version: TLSv1_2
+consul-1  |               gRPC TLS: Verify Incoming: false, Min Version: TLSv1_2
+consul-1  |       Internal RPC TLS: Verify Incoming: false, Verify Outgoing: false (Verify Hostname: false), Min Version: TLSv1_2
+consul-1  | 
+consul-1  | ==> Log data will now stream in as it occurs:
+consul-1  | 
+consul-1  | 2026-11-21T17:46:31.195Z [DEBUG] agent.grpc.balancer: switching server: target=consul://dc1.0ec875d3-0977-85b5-d6ec-f9aeb637bbfa/server.dc1 from=<none> to=<none>
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.server.raft: initial configuration: index=1 servers="[{Suffrage:Voter ID:0ec875d3-0977-85b5-d6ec-f9aeb637bbfa Address:127.0.0.1:8300}]"
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.server.raft: entering follower state: follower="Node at 127.0.0.1:8300 [Follower]" leader-address= leader-id=
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.server.serf.wan: serf: EventMemberJoin: 992d309ed23f.dc1 127.0.0.1
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.server.serf.lan: serf: EventMemberJoin: 992d309ed23f 127.0.0.1
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.router: Initializing LAN area manager
+consul-1  | 2026-11-21T17:46:31.199Z [DEBUG] agent.grpc.balancer: switching server: target=consul://dc1.0ec875d3-0977-85b5-d6ec-f9aeb637bbfa/server.dc1 from=<none> to=dc1-127.0.0.1:8300
+consul-1  | 2026-11-21T17:46:31.199Z [DEBUG] agent.server.reporting: Created reporting manager
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.server: Handled event for server in area: event=member-join server=992d309ed23f.dc1 area=wan
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.server: Adding LAN server: server="992d309ed23f (Addr: tcp/127.0.0.1:8300) (DC: dc1)"
+consul-1  | 2026-11-21T17:46:31.199Z [INFO]  agent.server.autopilot: reconciliation now disabled
+consul-1  | 2026-11-21T17:46:31.200Z [DEBUG] agent.server.autopilot: autopilot is now running
+consul-1  | 2026-11-21T17:46:31.200Z [DEBUG] agent.server.autopilot: state update routine is now running
+consul-1  | 2026-11-21T17:46:31.200Z [INFO]  agent.server.cert-manager: initialized server certificate management
+consul-1  | 2026-11-21T17:46:31.200Z [INFO]  agent: Started DNS server: address=0.0.0.0:8600 network=udp
+consul-1  | 2026-11-21T17:46:31.200Z [INFO]  agent: Started DNS server: address=0.0.0.0:8600 network=tcp
+consul-1  | 2026-11-21T17:46:31.200Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/multicluster/v2/exportedservices
+consul-1  | 2026-11-21T17:46:31.200Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/multicluster/v2/namespaceexportedservices
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/multicluster/v2/partitionexportedservices
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/multicluster/v2/computedexportedservices
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/internal/v1/tombstone
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v1/executive
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v1/artist
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v2/album
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v2/festival
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v1/recordlabel
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v1/album
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v1/concept
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent.http: Registered resource endpoint: endpoint=/api/demo/v2/artist
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent: Starting server: address=[::]:8500 network=tcp protocol=http
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent: Started gRPC listeners: port_name=grpc_tls address=[::]:8503 network=tcp
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent: Started gRPC listeners: port_name=grpc address=[::]:8502 network=tcp
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent: started state syncer
+consul-1  | 2026-11-21T17:46:31.201Z [INFO]  agent: Consul agent running!
+consul-1  | 2026-11-21T17:46:31.273Z [WARN]  agent.server.raft: heartbeat timeout reached, starting election: last-leader-addr= last-leader-id=
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.server.raft: entering candidate state: node="Node at 127.0.0.1:8300 [Candidate]" term=2
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.raft: pre-voting for self: term=2 id=0ec875d3-0977-85b5-d6ec-f9aeb637bbfa
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.raft: calculated votes needed: needed=1 term=2
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.raft: pre-vote received: from=0ec875d3-0977-85b5-d6ec-f9aeb637bbfa term=2 tally=0
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.raft: pre-vote granted: from=0ec875d3-0977-85b5-d6ec-f9aeb637bbfa term=2 tally=1
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.server.raft: pre-vote successful, starting election: term=2 tally=1 refused=0 votesNeeded=1
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.raft: voting for self: term=2 id=0ec875d3-0977-85b5-d6ec-f9aeb637bbfa
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.raft: vote granted: from=0ec875d3-0977-85b5-d6ec-f9aeb637bbfa term=2 tally=1
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.server.raft: election won: term=2 tally=1
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.server.raft: entering leader state: leader="Node at 127.0.0.1:8300 [Leader]"
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: controller running: controller=consul.io/reaper-controller managed_type=internal.v1.Tombstone
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: controller running: controller=consul.io/exported-services-v1-compat managed_type=multicluster.v2.ComputedExportedServices
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: priming caches: controller=consul.io/reaper-controller managed_type=internal.v1.Tombstone
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: priming caches: controller=consul.io/exported-services-v1-compat managed_type=multicluster.v2.ComputedExportedServices
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.server: New leader elected: payload=992d309ed23f
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: controller running: controller=artists managed_type=demo.v2.Artist
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: priming caches: controller=artists managed_type=demo.v2.Artist
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.server: cluster leadership acquired
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: priming caches complete: controller=consul.io/reaper-controller managed_type=internal.v1.Tombstone
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: priming caches complete: controller=artists managed_type=demo.v2.Artist
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server.controller-runtime: priming caches complete: controller=consul.io/exported-services-v1-compat managed_type=multicluster.v2.ComputedExportedServices
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.server.autopilot: reconciliation now enabled
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.leader: started routine: routine="feature-gate reconciliation"
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.leader: started routine: routine="federation state anti-entropy"
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.leader: started routine: routine="federation state pruning"
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.leader: started routine: routine="streaming peering resources"
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.leader: started routine: routine="metrics for streaming peering resources"
+consul-1  | 2026-11-21T17:46:31.273Z [INFO]  agent.leader: started routine: routine="peering deferred deletion"
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] connect.ca.consul: consul CA provider configured: id=fb:50:9b:45:1a:65:15:c1:68:57:73:5f:da:cd:b8:0d:0f:e2:26:eb:68:66:43:11:85:9d:67:a9:7a:56:9c:b9 is_primary=true
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.server: feature-gate cache updated from committed FSM state: status_index=8 policy_index=8 features="map[api-gateway-upstream-routing:false localized-dns:false]" state_store_replaced=false
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.proxycfg: feature-gate store updated, refreshing catalog API Gateway snapshots
+consul-1  | 2026-11-21T17:46:31.273Z [DEBUG] agent.proxycfg: feature-gate refresh: dispatching to feature-gate-aware states: count=0
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  connect.ca: updated root certificates from primary datacenter
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  connect.ca: initialized primary datacenter CA with provider: provider=consul
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: started routine: routine="intermediate cert renew watch"
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: started routine: routine="CA root pruning"
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: started routine: routine="CA root expiration metric"
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: started routine: routine="CA signing expiration metric"
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: started routine: routine="virtual IP version check"
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: started routine: routine="config entry controllers"
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server: successfully established leadership: duration="932.375µs"
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server.api_gateway_controller: rewatching controller subscription: controller=apiGatewayController topic=APIGateway
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server.api_gateway_controller: rewatching controller subscription: controller=apiGatewayController topic=BoundAPIGateway
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server.api_gateway_controller: rewatching controller subscription: controller=apiGatewayController topic=HTTPRoute
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server.api_gateway_controller: rewatching controller subscription: controller=apiGatewayController topic=TCPRoute
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server.api_gateway_controller: rewatching controller subscription: controller=apiGatewayController topic=JWTProvider
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server.api_gateway_controller: rewatching controller subscription: controller=apiGatewayController topic=InlineCertificate
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: stopping routine: routine="virtual IP version check"
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.leader: stopped routine: routine="virtual IP version check"
+consul-1  | 2026-11-21T17:46:31.274Z [INFO]  agent.server: member joined, marking health alive: member=992d309ed23f partition=default
+consul-1  | 2026-11-21T17:46:31.274Z [DEBUG] agent.server.xds_capacity_controller: updating drain rate limit: rate_limit=1
+consul-1  | 2026-11-21T17:46:31.444Z [DEBUG] agent: Skipping remote check since it is managed automatically: check=serfHealth
+consul-1  | 2026-11-21T17:46:31.445Z [INFO]  agent: Synced node info
+consul-1  | 2026-11-21T17:46:31.445Z [DEBUG] agent: Node info in sync
+consul-1  | 2026-11-21T17:46:31.544Z [DEBUG] agent.server.cert-manager: got cache update event: correlationID=leaf error=<nil>
+consul-1  | 2026-11-21T17:46:31.544Z [DEBUG] agent.server.cert-manager: leaf certificate watch fired - updating auto TLS certificate: uri=spiffe://e178019e-0c39-c59d-eecb-37c46278e96c.consul/agent/server/dc/dc1
+consul-1  | 2026-11-21T17:46:31.711Z [INFO]  agent.server: federation state anti-entropy synced
+consul-1  | 2026-11-21T17:46:32.201Z [DEBUG] agent.server.cert-manager: CA config watch fired - updating auto TLS server name: name=server.dc1.peering.e178019e-0c39-c59d-eecb-37c46278e96c.consul
+consul-1  | 2026-11-21T17:46:32.449Z [DEBUG] agent: Skipping remote check since it is managed automatically: check=serfHealth
+consul-1  | 2026-11-21T17:46:32.449Z [DEBUG] agent: Node info in sync
+consul-1  | 2026-11-21T17:46:34.165Z [DEBUG] agent.http: Request finished: method=GET url=/v1/agent/members?segment=_all from=[::1]:51454 latency="123.375µs"
+consul-1  | 2026-11-21T17:46:34.165Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/agent/members
+consul-1  | 2026-11-21T17:46:34.165Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/agent/members
+consul-1  | 2026-11-21T17:46:37.233Z [DEBUG] agent.http: Request finished: method=GET url=/v1/agent/members?segment=_all from=[::1]:51468 latency="30.625µs"
+consul-1  | 2026-11-21T17:46:37.234Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/agent/members
+consul-1  | 2026-11-21T17:46:37.234Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/agent/members
+consul-1  | 2026-11-21T17:46:37.262Z [DEBUG] agent.http: Request finished: method=GET url=/v1/health/service/catalogo?passing=true from=192.168.65.1:28419 latency="641.041µs"
+consul-1  | 2026-11-21T17:46:37.262Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/health/service/catalogo
+consul-1  | 2026-11-21T17:46:37.262Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/health/service/catalogo
+consul-1  | 2026-11-21T17:46:37.705Z [DEBUG] agent.http: Request finished: method=GET url=/v1/catalog/services?wait=2s from=192.168.65.1:40058 latency="219.667µs"
+consul-1  | 2026-11-21T17:46:37.705Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:37.705Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent: Node info in sync
+consul-1  | 2026-11-21T17:46:37.740Z [INFO]  agent: Synced service: service=catalogo-8081
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent: Check in sync: check=service:catalogo-8081
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent.http: Request finished: method=PUT url=/v1/agent/service/register from=192.168.65.1:42148 latency=6.033208ms
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/agent/service/register
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent: Node info in sync
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent: Service in sync: service=catalogo-8081
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent: Check in sync: check=service:catalogo-8081
+consul-1  | 2026-11-21T17:46:37.740Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/agent/service/register
+consul-1  | 2026-11-21T17:46:37.850Z [DEBUG] agent.http: Request finished: method=GET url=/v1/status/leader from=192.168.65.1:40058 latency="98.042µs"
+consul-1  | 2026-11-21T17:46:37.850Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/status/leader
+consul-1  | 2026-11-21T17:46:37.850Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/status/leader
+consul-1  | 2026-11-21T17:46:37.851Z [DEBUG] agent.http: Request finished: method=GET url=/v1/catalog/services from=192.168.65.1:42148 latency="72.333µs"
+consul-1  | 2026-11-21T17:46:37.851Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:37.851Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:37.853Z [DEBUG] agent.http: Request finished: method=GET url=/v1/catalog/services from=192.168.65.1:40058 latency="70.667µs"
+consul-1  | 2026-11-21T17:46:37.853Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:37.853Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:37.861Z [DEBUG] agent: Check status updated: check=service:catalogo-8081 status=passing
+consul-1  | 2026-11-21T17:46:37.862Z [DEBUG] agent: Node info in sync
+consul-1  | 2026-11-21T17:46:37.862Z [DEBUG] agent: Service in sync: service=catalogo-8081
+consul-1  | 2026-11-21T17:46:37.862Z [INFO]  agent: Synced check: check=service:catalogo-8081
+consul-1  | 2026-11-21T17:46:38.281Z [DEBUG] agent.http: Request finished: method=GET url=/v1/health/service/catalogo?passing=true from=192.168.65.1:65446 latency="218.916µs"
+consul-1  | 2026-11-21T17:46:38.281Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/health/service/catalogo
+consul-1  | 2026-11-21T17:46:38.281Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/health/service/catalogo
+consul-1  | 2026-11-21T17:46:38.297Z [DEBUG] agent.http: Request finished: method=GET url=/v1/agent/services from=192.168.65.1:50262 latency=1.347958ms
+consul-1  | 2026-11-21T17:46:38.297Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/agent/services
+consul-1  | 2026-11-21T17:46:38.297Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/agent/services
+consul-1  | 2026-11-21T17:46:38.309Z [DEBUG] agent.http: Request finished: method=GET url=/v1/health/checks/catalogo from=192.168.65.1:36819 latency="288.916µs"
+consul-1  | 2026-11-21T17:46:38.309Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/health/checks/catalogo
+consul-1  | 2026-11-21T17:46:38.309Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/health/checks/catalogo
+consul-1  | 2026-11-21T17:46:38.322Z [DEBUG] agent.http: Request finished: method=GET url=/v1/status/leader from=192.168.65.1:42148 latency="50.959µs"
+consul-1  | 2026-11-21T17:46:38.322Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/status/leader
+consul-1  | 2026-11-21T17:46:38.322Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/status/leader
+consul-1  | 2026-11-21T17:46:38.324Z [DEBUG] agent.http: Request finished: method=GET url=/v1/catalog/services from=192.168.65.1:40058 latency="103.75µs"
+consul-1  | 2026-11-21T17:46:38.324Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:38.324Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:38.325Z [DEBUG] agent.http: Request finished: method=GET url=/v1/catalog/services from=192.168.65.1:42148 latency="52.292µs"
+consul-1  | 2026-11-21T17:46:38.325Z [DEBUG] agent: warning: request content-type is not supported: request-path=/v1/catalog/services
+consul-1  | 2026-11-21T17:46:38.325Z [DEBUG] agent: warning: response content-type header not explicitly set.: request-path=/v1/catalog/services

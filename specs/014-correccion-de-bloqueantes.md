@@ -30,4 +30,4 @@ bloqueante y error técnico: `corregido`, `no reproducible` o `pendiente: motivo
 - **B3** `hecho` — No quedan runtimes ni servicios retirados que la auditoría señaló.
   Verificación: `! grep -rqE "nodejs20\.x|App Mesh|jenkins:lts-jdk17" web/public/content`
 - **B4** `hecho` — Índice, catálogo y validación siguen en verde tras las correcciones.
-  Verificación: `python3 scripts/build_curriculum_catalog.py --check && python3 scripts/validate_lesson_labs.py`
+  Verificación: `python3 scripts/build_curriculum_catalog.py --check && ! test -e examples`

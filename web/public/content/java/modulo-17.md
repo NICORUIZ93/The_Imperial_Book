@@ -15,7 +15,7 @@ No confundas seguridad SQL con consistencia: parametrizar evita que el valor se 
 
 #### Paso 1 · Objetivo y preparación
 
-Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+. El ejemplo ejecutable usa H2 y está en `examples/java-jpa-lab/`.
+Al finalizar podrás consultar e insertar registros usando `DataSource`, `PreparedStatement` y un DAO con responsabilidades acotadas. Requiere JDK 25+. El ejemplo ejecutable usa H2 y está en el código de este tema.
 **Conocimiento previo:** SQL básico (`CREATE TABLE`, `INSERT`, `SELECT`) y el entorno Java del Módulo 0 con Maven del Módulo 8.
 #### Paso 2 · Contexto y caso real
 
@@ -43,7 +43,7 @@ Una referencia con comillas debe buscarse como dato, no convertirse en parte de 
 
 **2. Hazlo tú**
 
-Abre `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioDao.java`:
+Observa EnvioDao.java y:
 
 ```java
 package academia.pedidos;
@@ -75,7 +75,6 @@ public final class EnvioDao {
 Ejecuta el test que comprueba hallado, ausente y texto hostil como valor literal:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=EnvioDaoTest#consultaConParametroYDevuelveAusenteSinError test
 ```
 
@@ -104,10 +103,9 @@ Una referencia que contiene comillas debe buscarse como un valor literal.
 
 **2. Hazlo tú**
 
-En `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`, ejecuta el caso completo que prueba la referencia `RT-1` y el texto `' OR '1'='1`:
+En el código de este tema, ejecuta el caso completo que prueba la referencia `RT-1` y el texto `' OR '1'='1`:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -Dtest=EnvioDaoTest#consultaConParametroYDevuelveAusenteSinError test
 ```
 
@@ -137,7 +135,7 @@ Los parámetros SQL no sustituyen nombres de columna; limita las opciones antes 
 
 **2. Hazlo tú**
 
-Crea `examples/java-jpa-lab/OrdenPermitido.java`:
+Crea `OrdenPermitido.java`:
 
 ```java
 import java.util.Map;
@@ -160,7 +158,7 @@ public class OrdenPermitido {
 }
 ```
 
-Ejecuta `cd examples/java-jpa-lab && java OrdenPermitido.java`.
+Ejecuta `cd java-jpa-lab && java OrdenPermitido.java`.
 
 **Resultado esperado:** `select referencia, estado from envio order by fecha_creacion` y `Orden no permitida`.
 
@@ -232,7 +230,6 @@ try (Connection connection = dataSource.getConnection()) {
 En el mismo laboratorio, ejecuta la prueba que confirma cobro y estado juntos:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=EnvioDaoTest#confirmaLasDosEscriturasJuntas test
 ```
 
@@ -251,7 +248,7 @@ Conserva el test del commit y el test de rollback.
 #### Paso 5 · Práctica guiada
 
 Prueba dos operaciones concurrentes que actualizan el mismo saldo. Reproduce una actualización perdida y corrígela con bloqueo optimista (`version`) o con una operación atómica SQL. Compara `READ_COMMITTED` con el aislamiento predeterminado de tu base.
-**Pista:** si ambas transacciones leen el saldo antes de que la otra confirme su escritura, la segunda sobrescribe silenciosamente el cambio de la primera (actualización perdida); agrega una columna `version` y compara su valor en el `UPDATE ... WHERE version = ?` para detectar el conflicto.
+**Pista:** si ambas transacciones leen el saldo antes de que la otra confirme su escritura, la segunda sobrescribe silenciosamente el cambio de la primera (actualización perdida); agrega una columna `version` y compara su valor en el `UPDATE... WHERE version = ?` para detectar el conflicto.
 
 #### Subtema 2.2: Comprobar que el commit guardó ambos cambios · 10 min
 
@@ -261,10 +258,9 @@ El test comprueba estado e importe después de cerrar la transacción.
 
 **2. Hazlo tú**
 
-Ejecuta el caso en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
+Ejecuta el caso en el código de este tema:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -Dtest=EnvioDaoTest#confirmaLasDosEscriturasJuntas test
 ```
 
@@ -294,14 +290,13 @@ Un cobro sin envío válido no debe quedar guardado.
 
 **2. Hazlo tú**
 
-Ejecuta `revierteElCobroSiNoExisteElEnvio` en `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioDaoTest.java`:
+Ejecuta `revierteElCobroSiNoExisteElEnvio` en el código de este tema:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -Dtest=EnvioDaoTest#revierteElCobroSiNoExisteElEnvio test
 ```
 
-El caso completo comprueba que `liquidar("RT-404", ...)` falla y que el conteo de filas en `cobro` es cero.
+El caso completo comprueba que `liquidar("RT-404",...)` falla y que el conteo de filas en `cobro` es cero.
 
 **Resultado esperado:** `BUILD SUCCESS`; la excepción explica que falta el envío y no queda ningún cobro parcial.
 
@@ -320,4 +315,3 @@ Guarda el error esperado y confirma que la tabla de cobros quedó vacía.
 #### Paso 7 · Cierre y evidencia
 
 Entrega la prueba del rollback, el test concurrente y una explicación del aislamiento elegido para el proyecto integrador de RutaFlow: una liquidación no debe actualizar el estado sin registrar su movimiento; con esto cerrás el módulo. Errores comunes: mantener una transacción abierta mientras se hacen llamadas HTTP u otras operaciones lentas, asumir que `SERIALIZABLE` es siempre necesario sin medir el costo de contención, y no probar el escenario de fallo a mitad de transacción, solo el camino feliz. Fuentes oficiales: https://docs.oracle.com/en/java/javase/25/docs/api/java.sql/java/sql/Connection.html y https://jakarta.ee/specifications/persistence/.
-

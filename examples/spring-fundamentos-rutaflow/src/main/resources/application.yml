@@ -1,5 +1,0 @@
-academia:
-  banner: Base
-  entorno: compartido
-server:
-  port: 8080

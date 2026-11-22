@@ -3,10 +3,10 @@
 **Fase 1 · Spring Boot de cero a experto** (semana 11 de 12). **Duración:** 18 h (6 temas de 2,5–3,5 h).
 **Dificultad:** 4 de 5. **Dependencias:** Módulo 6 (la introducción a RabbitMQ y Kafka: exchange, cola, topic,
 partición, clave y consumer group), Módulo 8 (reintentos y fallbacks) y, de la Fase 0, Docker básico y Docker
-Compose. **Herramientas:** **JDK 25 LTS**, **Spring Boot 4.1.3** (que gestiona Spring for Apache Kafka 4.1.3,
+Compose. **Herramientas:**JDK 25 LTS**, **Spring Boot 4.1.3** (que gestiona Spring for Apache Kafka 4.1.3,
 `kafka-clients` 4.2.2 y Spring AMQP 4.1.3), Apache Kafka 4.4.0 en modo KRaft, Confluent Schema Registry 8.4.1, Avro
 1.12.2, RabbitMQ 4.4.1, NATS 2.15.3 con JetStream y el cliente jnats 2.26.4. **Laboratorio:**
-`examples/microservicios/modulo-15/` (un subproyecto Gradle por tema; `docker-compose.yml` levanta los cuatro brokers y
+`modulo-15` (un subproyecto Gradle por tema; `docker-compose.yml` levanta los cuatro brokers y
 `./verificar.sh` ejecuta todo).
 
 En el Módulo 6 enviaste tu primer evento por RabbitMQ y por Kafka. Funcionaba en la demo. En producción aparecen las
@@ -29,16 +29,6 @@ flowchart LR
 salen flechas al tema 2 (Exactly-Once con transacciones), al tema 3 (Schema Registry y Avro) y al tema 4 (Dead Letter
 Topics). Del tema 4 se pasa al tema 5 (RabbitMQ con publisher confirms y DLQ), y de ahí al tema 6 (NATS core y
 JetStream).
-
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-15`, comprueba `java -version` (debe decir
-`25`) y `docker compose version`, y arranca los brokers con `docker compose up -d --wait` (la primera vez descarga
-unos 2 GB de imágenes). Cada tema tiene su carpeta (`f075-…` a `f080-…`); desde la carpeta del módulo ejecuta
-`./gradlew :<carpeta>:test`. Los tests se conectan a los brokers del `docker-compose.yml` (no a Testcontainers),
-igual que harías con tu entorno local de desarrollo. Las salidas de Gradle y de los contenedores de este módulo están
-pendientes de confirmar en el Mac del dueño (`verificacion/microservicios/pendiente.md`): donde se escribió no hay
-Maven Central ni Docker Hub. Sí se ejecutaron aquí, y su salida está pegada tal cual, el simulador de particiones con
-JDK 25.0.5, la comprobación de murmur2 con la librería `kafka-python`, la codificación Avro con `fastavro`, la
-topología de RabbitMQ en un RabbitMQ 3.12.1 local y los patrones de NATS en un nats-server 2.10.7 local.
 
 | Herramienta | Versión | Quién la fija |
 |---|---|---|
@@ -151,8 +141,8 @@ services:
 
 #### 1. UBICACIÓN
 
-Módulo 11, Lección 1 de 6 · Fase 1 · 3,5 h · Laboratorio `examples/microservicios/modulo-15/f075-kafka-particiones/`
-y el simulador `examples/microservicios/modulo-15/jdk/Particionador.java`.
+Módulo 11, Lección 1 de 6 · Fase 1 · 3,5 h
+y el simulador `Particionador.java`.
 
 #### 2. PRERREQUISITOS
 
@@ -284,7 +274,7 @@ clave) y «¿cuántas copias de mi servicio pueden trabajar a la vez?» (tantas 
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3** con **Spring for Apache Kafka 4.1.3** y **kafka-clients 4.2.2**
 (gestionados por el BOM), broker **Kafka 4.4.0**. Proyecto completo en
-`examples/microservicios/modulo-15/f075-kafka-particiones/`.
+`f075-kafka-particiones`.
 
 > **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
 > mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
@@ -312,7 +302,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -812,7 +801,7 @@ public class Particionador {
 
 #### 10. MINI-LABORATORIO
 
-1. Predice sin Kafka. Desde `examples/microservicios/modulo-15`:
+1. Predice sin Kafka. Desde el código de este tema:
 
 ```bash
 java jdk/Particionador.java
@@ -900,10 +889,10 @@ inventario  pedidos-particionados  2          10              10              0 
 
    **Captura comentada:** son los números de **una** ejecución de los tests: dos de los tres tests publican 30
    mensajes (6 clientes x 5), y la partición 1, con 4 clientes, recibe 4 x 5 x 2 = 40. `LAG 0` significa «el grupo
-   está al día». Si ejecutas los tests otra vez, los números crecen; la proporción 1 : 4 : 1 no cambia.
+   está al día». Si ejecutas los tests otra vez, los números crecen; la proporción 1: 4: 1 no cambia.
 
 4. **Rómpelo a propósito: un consumidor de más.** Cambia `concurrency = "3"` por `"4"` en `Consumidores.java`,
-   arranca la app (`./gradlew :f075-kafka-particiones:bootRun`) y en otra terminal:
+   arranca la app (`./gradlew:f075-kafka-particiones:bootRun`) y en otra terminal:
 
 ```bash
 docker compose exec kafka /opt/kafka/bin/kafka-consumer-groups.sh \
@@ -1004,7 +993,7 @@ resuélvelo de forma explícita (clave compuesta o topic dedicado), no con aleat
 
 #### 1. UBICACIÓN
 
-Módulo 11, Lección 2 de 6 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-15/f076-exactly-once/`.
+Módulo 11, Lección 2 de 6 · Fase 1 · 3 h.
 
 #### 2. PRERREQUISITOS
 
@@ -1121,9 +1110,7 @@ escribes en una base de datos, esa parte no entra en la transacción de Kafka.
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring for Apache Kafka 4.1.3**, **kafka-clients 4.2.2**, broker
 **Kafka 4.4.0** con el log de transacciones a 1 réplica (variables `KAFKA_TRANSACTION_STATE_LOG_*` del
-`docker-compose.yml`). Proyecto completo en `examples/microservicios/modulo-15/f076-exactly-once/`.
-
-`f076-exactly-once/build.gradle.kts`:
+`docker-compose.yml`). `f076-exactly-once/build.gradle.kts`:
 
 ```kotlin
 // F076 · Exactly-Once Semantics: consume, procesa y produce en UNA transacción de Kafka (Spring Boot 4.1.3, JDK 25)
@@ -1488,7 +1475,7 @@ transacción y protege cada efecto externo con una clave de idempotencia.
 
 #### 1. UBICACIÓN
 
-Módulo 11, Lección 3 de 6 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-15/f077-schema-registry-avro/`.
+Módulo 11, Lección 3 de 6 · Fase 1 · 3 h.
 
 #### 2. PRERREQUISITOS
 
@@ -1600,7 +1587,7 @@ qué tipo. Ese acuerdo se llama **esquema**.
 Versiones: **JDK 25**, **Spring Boot 4.1.3** (Spring for Apache Kafka 4.1.3), **Avro 1.12.2** (librería y plugin),
 **kafka-avro-serializer 8.4.1** (repositorio `https://packages.confluent.io/maven/`), **Schema Registry 8.4.1**
 (Confluent Platform 8.4, basada en Kafka 4.4). Proyecto completo en
-`examples/microservicios/modulo-15/f077-schema-registry-avro/`.
+`f077-schema-registry-avro`.
 
 `f077-schema-registry-avro/build.gradle.kts`:
 
@@ -2040,7 +2027,7 @@ curl -s -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
    campo `canal` no tiene valor por defecto. Repite con `pedido-v2-compatible.avsc`: `{"is_compatible":true}`.
 
 4. **Rómpelo a propósito.** En `AvroSinInfraestructuraTest`, cambia el recurso del lector por
-   `/pedido-v2-incompatible.avsc` y ejecuta `./gradlew :f077-schema-registry-avro:test --tests AvroSinInfraestructuraTest`.
+   `/pedido-v2-incompatible.avsc` y ejecuta `./gradlew:f077-schema-registry-avro:test --tests AvroSinInfraestructuraTest`.
 
    **Output esperado:** falla con `org.apache.avro.AvroTypeException: Found academia.avro.Pedido, expecting
    academia.avro.Pedido, missing required field canal` (texto de `Resolver`/`ResolvingGrammarGenerator` de Avro
@@ -2147,7 +2134,7 @@ reglas de compatibilidad, y dinero en enteros (centavos) o `decimal`.
 
 #### 1. UBICACIÓN
 
-Módulo 11, Lección 4 de 6 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-15/f078-dead-letter-topics/`.
+Módulo 11, Lección 4 de 6 · Fase 1 · 2,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -2251,7 +2238,7 @@ pasó, para revisarlos después sin detener el resto.
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring for Apache Kafka 4.1.3** (`DefaultErrorHandler`,
 `DeadLetterPublishingRecoverer`), **kafka-clients 4.2.2**, broker **Kafka 4.4.0**. Proyecto completo en
-`examples/microservicios/modulo-15/f078-dead-letter-topics/`.
+`f078-dead-letter-topics`.
 
 `f078-dead-letter-topics/build.gradle.kts`:
 
@@ -2655,7 +2642,7 @@ listener y que el `DefaultErrorHandler` decida (reintentar o mandar al DLT con t
 
 #### 1. UBICACIÓN
 
-Módulo 11, Lección 5 de 6 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-15/f079-rabbitmq-confirms-dlq/`.
+Módulo 11, Lección 5 de 6 · Fase 1 · 3 h.
 
 #### 2. PRERREQUISITOS
 
@@ -2768,7 +2755,7 @@ broker se cae justo en ese momento? Si no preguntas, **no lo sabes**.
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3** con **Spring AMQP 4.1.3** y el cliente Java de RabbitMQ **5.37.1**
 (gestionados por el BOM), broker **RabbitMQ 4.4.1**. Proyecto completo en
-`examples/microservicios/modulo-15/f079-rabbitmq-confirms-dlq/`.
+`f079-rabbitmq-confirms-dlq`.
 
 `f079-rabbitmq-confirms-dlq/build.gradle.kts`:
 
@@ -3127,7 +3114,7 @@ pedidos.dlq	quorum	0
 ```
 
 4. **Rómpelo a propósito: sin `mandatory`.** Borra `spring.rabbitmq.template.mandatory=true` y ejecuta
-   `./gradlew :f079-rabbitmq-confirms-dlq:test --tests RabbitTest.unMensajeSinRutaSeDevuelveConNoRoute`.
+   `./gradlew:f079-rabbitmq-confirms-dlq:test --tests RabbitTest.unMensajeSinRutaSeDevuelveConNoRoute`.
 
    **Output esperado:** el test falla en `assertThat(r.devuelto()).isNotNull()`: el ack llegó (`r.ack()` es `true`)
    pero el mensaje **desapareció** sin devolución. Esa es la trampa: un ack no significa «está en una cola».
@@ -3209,7 +3196,7 @@ patrón Outbox (Módulo 25).
 
 #### 1. UBICACIÓN
 
-Módulo 11, Lección 6 de 6 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-15/f080-nats/`.
+Módulo 11, Lección 6 de 6 · Fase 1 · 3 h.
 
 #### 2. PRERREQUISITOS
 
@@ -3283,7 +3270,7 @@ envían a un **subject**, un nombre con puntos como `pedidos.creado`.
   convierte al grupo en un consumidor competitivo: cada mensaje a **uno** de sus miembros. Los suscriptores sin grupo
   siguen recibiendo todo (fan-out).
 - **Petición-respuesta.** `connection.request(subject, datos, timeout)` publica con un *reply-to* único (un subject
-  `_INBOX.…`) y espera la primera respuesta. El respondedor contesta con `connection.publish(msg.getReplyTo(), ...)`.
+  `_INBOX.…`) y espera la primera respuesta. El respondedor contesta con `connection.publish(msg.getReplyTo(),...)`.
   Si **no hay respondedores**, el servidor lo avisa con un estado 503 y jnats devuelve `null` al momento (no espera
   el timeout).
 - **JetStream.** Un **stream** captura los subjects que declares (aquí `pagos.>`) y los guarda con su número de
@@ -3318,9 +3305,7 @@ envían a un **subject**, un nombre con puntos como `pedidos.creado`.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3** (solo el núcleo, sin web), cliente **jnats 2.26.4** (`io.nats:jnats`),
-servidor **NATS 2.15.3** con JetStream (`-js`). Proyecto completo en `examples/microservicios/modulo-15/f080-nats/`.
-
-`f080-nats/build.gradle.kts`:
+servidor **NATS 2.15.3** con JetStream (`-js`). `f080-nats/build.gradle.kts`:
 
 ```kotlin
 // F080 · NATS: pub/sub, queue groups, request-reply y JetStream con jnats 2.26.4 (Spring Boot 4.1.3, JDK 25)

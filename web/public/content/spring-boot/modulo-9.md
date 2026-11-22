@@ -20,7 +20,7 @@ Compara ejecutar una llamada "asíncrona" que en realidad corre en el hilo que l
 **Preparación desde cero:** necesitas JDK 25 y el repositorio. Desde su raíz copia el laboratorio completo a una carpeta nueva y entra en ella:
 
 ```bash
-cp -R examples/spring-async-rutaflow practica-async
+cp -R spring-async-rutaflow practica-async
 cd practica-async
 ./mvnw -q clean test
 ```
@@ -278,6 +278,7 @@ public class TarifaCotizacionService {
 curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
+
 Equivalencias Maven/Gradle en el Módulo 1.
 
 **Resultado esperado:** `orquestador.cotizarTotal(...)` suma ambas tarifas; `orquestador.cotizarConFallbackSiFalla(...)` devuelve cero sin propagar la excepción; `orquestador.cotizarConTimeout("RF-BAQ", Duration.ofMillis(200))` devuelve cero a los 200 ms aunque la tarea real tarde 800 ms. **Fallo deliberado:** `servicioAsincrono.cotizarConFallbackAutoinvocado(...)` lanza la excepción directamente en vez de atraparla, porque es una autoinvocación.
@@ -332,7 +333,7 @@ Dos transferencias entre las mismas dos cuentas, en direcciones opuestas, se eje
 
 Cada fila tiene su explicación individual a continuación.
 
-**Dos `ReentrantLock` tomados en orden inverso (núcleo).** Cuando dos hilos necesitan los mismos dos locks pero los piden en orden distinto, cada uno puede quedarse con el primero y esperar indefinidamente el segundo que el otro ya tiene: ningún hilo libera lo que tiene porque ninguno consigue lo que falta. `transferirInseguro(origen, destino, monto)` siempre bloquea `origen` y después `destino`, en ese orden literal de los parámetros. Si un hilo llama `transferirInseguro(A, B, ...)` y otro llama `transferirInseguro(B, A, ...)` casi al mismo tiempo, el primero toma el lock de A y espera el de B, mientras el segundo toma el lock de B y espera el de A.
+**Dos `ReentrantLock` tomados en orden inverso (núcleo).** Cuando dos hilos necesitan los mismos dos locks pero los piden en orden distinto, cada uno puede quedarse con el primero y esperar indefinidamente el segundo que el otro ya tiene: ningún hilo libera lo que tiene porque ninguno consigue lo que falta. `transferirInseguro(origen, destino, monto)` siempre bloquea `origen` y después `destino`, en ese orden literal de los parámetros. Si un hilo llama `transferirInseguro(A, B,...)` y otro llama `transferirInseguro(B, A,...)` casi al mismo tiempo, el primero toma el lock de A y espera el de B, mientras el segundo toma el lock de B y espera el de A.
 
 **Verificación del deadlock con `Thread.join(timeout)` (evidencia).** Un deadlock no se demuestra con una aserción sobre un valor; se demuestra mostrando que el progreso se detuvo. El test arranca ambos hilos sincronizados con un `CyclicBarrier` (para maximizar la probabilidad de colisión) y luego llama a `join(3000)` sobre cada uno: si al menos un hilo sigue `isAlive()` después de los 3 segundos, eso confirma que quedó bloqueado esperando un lock que nunca se liberará. El laboratorio agrega además una pausa de 50 ms entre el primer y el segundo `lock()` para ensanchar la ventana de carrera y hacer el deadlock reproducible de forma confiable, no solo posible.
 
@@ -402,7 +403,7 @@ public void transferir(CuentaRuta origen, CuentaRuta destino, BigDecimal monto) 
 }
 ```
 
-**Primer intento (fallo deliberado):** lanza dos hilos sincronizados con un `CyclicBarrier`, uno llamando `transferirInseguro(A, B, ...)` y otro `transferirInseguro(B, A, ...)`. Con `join(3000)` sobre ambos, al menos uno sigue vivo: deadlock confirmado.
+**Primer intento (fallo deliberado):** lanza dos hilos sincronizados con un `CyclicBarrier`, uno llamando `transferirInseguro(A, B,...)` y otro `transferirInseguro(B, A,...)`. Con `join(3000)` sobre ambos, al menos uno sigue vivo: deadlock confirmado.
 
 Repite el mismo test con `transferir` (la versión con orden consistente): ambos hilos terminan y los saldos vuelven a su valor original.
 
@@ -457,6 +458,7 @@ public class MdcTaskDecorator implements TaskDecorator {
 curl -fsSL https://start.spring.io/starter.zip -d type=maven-project -d dependencies=web -d javaVersion=25 -o app.zip && unzip -o app.zip
 ./mvnw test
 ```
+
 Equivalencias Maven/Gradle en el Módulo 1.
 
 **Resultado esperado:** `transferirInseguro` con direcciones opuestas deja al menos un hilo vivo tras 3 segundos (deadlock); `transferir` con el mismo escenario termina limpio y ambos saldos vuelven a su valor original; el `Semaphore` de 3 permisos nunca deja correr más de 3 tareas a la vez entre 10 lanzadas; sin `TaskDecorator`, `MDC.get("correlationId")` es `null` dentro de la tarea async; con `TaskDecorator`, el mismo valor aparece intacto. **Fallo deliberado:** el deadlock de `transferirInseguro` y la pérdida de `correlationId` sin decorator son ambos fallos reales y reproducibles, no simulados.
@@ -628,7 +630,7 @@ Actualiza los `times(3)` de las pruebas anteriores al nuevo total y ejecuta.
 
 **Resultado esperado:** verde; los dos primeros casos ahora hacen 4 llamadas (1 + 3) y el error de datos solo una. La espera entre intentos es aproximadamente 50, 100 y 200 ms, con hasta 10 ms de variación.
 
-**Fallo deliberado:** quita `includes = ProveedorNoDisponible.class`. **Error esperado:** `unErrorDeDatosNoSeReintenta` falla: `Wanted 1 time ... But was 4 times`. **Diagnóstico:** sin `includes`, se reintenta toda excepción, incluso las que nunca se arreglarán solas. Restaura `includes`.
+**Fallo deliberado:** quita `includes = ProveedorNoDisponible.class`. **Error esperado:** `unErrorDeDatosNoSeReintenta` falla: `Wanted 1 time... But was 4 times`. **Diagnóstico:** sin `includes`, se reintenta toda excepción, incluso las que nunca se arreglarán solas. Restaura `includes`.
 
 **Entiende:** reintenta solo operaciones **idempotentes** (que pueden repetirse sin duplicar efectos) y fallos **transitorios**. Si el método también es `@Transactional`, el reintento envuelve a la transacción: cada intento corre en una transacción nueva. Para reintentar un bloque de código sin anotaciones existe `RetryTemplate` con `RetryPolicy.builder()`.
 

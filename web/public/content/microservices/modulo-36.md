@@ -7,7 +7,7 @@ con Temporal e idempotencia), 28 (costo) y 31 (migración). **Herramientas:** pi
 LTS**, Express **5.3.0**, Temporal TypeScript SDK **1.26.0**, ioredis **6.0.0** y Gatling JS **3.16.101**; pista
 Spring Boot con **JDK 25**, Spring Boot **4.1.3**, Spring Cloud Gateway **5.0.4** (tren 2025.1.4), Temporal Java SDK
 **1.41.1** y Gatling **3.16.1** con el plugin `io.gatling.gradle` **3.16.0**; la pista Spring se construye con **Gradle 9.9.2**; infraestructura: Redis **8.10.2** (Docker
-Compose) y Temporal Server **1.32.1** (`temporal server start-dev`). **Laboratorio:** `examples/microservicios/modulo-36/`
+Compose) y Temporal Server **1.32.1** (`temporal server start-dev`). **Laboratorio:** `modulo-36`
 (`./verificar.sh` ejecuta 26 tests, los scripts de las siete fichas, Redis real, Gatling a 60 reservas/s y las demos
 JDK de la pista Spring; `--compose` añade Redis con Docker y los tests de `spring/` con Gradle).
 
@@ -49,14 +49,12 @@ lo indica en cada ficha.
 **Cómo usar el laboratorio.**
 
 ```bash
-cd examples/microservicios/modulo-36
 npm ci
 ./verificar.sh              # pista Node + Redis local (si hay) + Gatling (si hay Java) + jdk/ → «RESULTADO: OK»
 ./verificar.sh --compose    # además Redis con Docker Compose y (cd spring && ./gradlew test)
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-36`**. El
-`examples/microservicios/modulo-36/README.md` tiene el enunciado, el diagrama C4 y el
+`README.md` tiene el enunciado, el diagrama C4 y el
 mapa de carpetas.
 
 `package.json` (pista Node.js):
@@ -150,7 +148,7 @@ para 3, 4 y 5 integra en tu versión lo de los Módulos 8/19 (Resilience4j u opo
 
 #### 1. UBICACIÓN
 
-Módulo 32, Lección 1 de 7 · Fase 3 · 2 h · Laboratorio `examples/microservicios/modulo-36/f181-sistema-reservas/` y
+Módulo 32, Lección 1 de 7 · Fase 3 · 2 h
 `spring/pagos-externo/` + `spring/reservas/`.
 
 #### 2. PRERREQUISITOS
@@ -590,13 +588,13 @@ curl -s localhost:8081/reservas/R-x1
 ```
 
    **Output esperado:** `HTTP/1.1 202 Accepted` y, en la consulta, un JSON con `"estado":"CONFIRMADA"`. Para la pista
-   Spring, desde `spring/`, `./gradlew :pagos-externo:bootRun` y `./gradlew :reservas:bootRun`
+   Spring, desde `spring/`, `./gradlew:pagos-externo:bootRun` y `./gradlew:reservas:bootRun`
    (necesita Temporal: F182) en los mismos puertos.
 
    > **Build con Gradle (equivalencia Maven).** La pista Spring (`spring/`) se construye con Gradle 9.9.2, Kotlin DSL y
    > catálogo de versiones, por el wrapper `spring/gradlew`: `./mvnw test` → `./gradlew test` ·
-   > `./mvnw -f reservas/pom.xml spring-boot:run` → `./gradlew :reservas:bootRun` · `./mvnw -f carga/pom.xml gatling:test`
-   > → `./gradlew :carga:gatlingRun` · `target/` → `build/`. El `settings.gradle.kts` y el catálogo están en F184.
+   > `./mvnw -f reservas/pom.xml spring-boot:run` → `./gradlew:reservas:bootRun` · `./mvnw -f carga/pom.xml gatling:test`
+   > → `./gradlew:carga:gatlingRun` · `target/` → `build/`. El `settings.gradle.kts` y el catálogo están en F184.
 
 #### 11. VERIFICACIÓN
 
@@ -743,7 +741,7 @@ ninguna caja que guarde el estado.
 
 #### 1. UBICACIÓN
 
-Módulo 32, Lección 2 de 7 · Fase 3 · 2 h · Laboratorio `examples/microservicios/modulo-36/f182-saga-temporal/` y
+Módulo 32, Lección 2 de 7 · Fase 3 · 2 h
 `spring/reservas/`.
 
 #### 2. PRERREQUISITOS
@@ -1193,7 +1191,7 @@ node f182-saga-temporal/iniciar.js                          # 4: tres reservas
    (Ctrl+C) con el proveedor parado, lanza `iniciar.js`, arranca el proveedor y luego el worker: la saga continúa donde
    estaba.
 
-3. Pista Spring (Mac): `cd spring && ./gradlew :reservas:test` ejecuta `ReservaWorkflowTest` con el servidor
+3. Pista Spring (Mac): `cd spring &&./gradlew:reservas:test` ejecuta `ReservaWorkflowTest` con el servidor
    de Temporal **en memoria** de `temporal-testing` (sin Docker ni CLI).
 
 #### 11. VERIFICACIÓN
@@ -1504,7 +1502,7 @@ abonos con el mismo importe.
 
 #### 1. UBICACIÓN
 
-Módulo 32, Lección 3 de 7 · Fase 3 · 1,5 h · Laboratorio `examples/microservicios/modulo-36/f183-gateway-rate-limit/` y
+Módulo 32, Lección 3 de 7 · Fase 3 · 1,5 h
 `spring/gateway/`.
 
 #### 2. PRERREQUISITOS
@@ -2004,7 +2002,7 @@ En un diagrama se ve como un embudo en la **entrada** del sistema cuando el estr
 
 #### 1. UBICACIÓN
 
-Módulo 32, Lección 4 de 7 · Fase 3 · 2 h · Laboratorio `examples/microservicios/modulo-36/f184-carga-gatling/` y
+Módulo 32, Lección 4 de 7 · Fase 3 · 2 h
 `spring/carga/`.
 
 #### 2. PRERREQUISITOS
@@ -2226,7 +2224,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -2370,8 +2367,8 @@ resumen: 1352 reservas · 1352 CONFIRMADA · 0 CANCELADA · 0 PENDIENTE · 429 d
    7 ms: el SLO de la API se cumple con mucho margen y Gatling sale con código 0. El informe HTML queda en
    `logs/gatling/<simulación>/index.html` (gráfico de respuestas por segundo y de percentiles en el tiempo).
 
-2. Pista Spring (Mac), con el gateway de Spring en :8080: `cd spring && ./gradlew :carga:gatlingRun`. Espera
-   el mismo bloque «Global Information» y las dos líneas `Global: … : true`.
+2. Pista Spring (Mac), con el gateway de Spring en:8080: `cd spring &&./gradlew:carga:gatlingRun`. Espera
+   el mismo bloque «Global Information» y las dos líneas `Global: …: true`.
 
 #### 11. VERIFICACIÓN
 
@@ -2518,7 +2515,7 @@ En el pipeline se ve como un paso de «carga» siempre verde, aunque el informe 
 
 #### 1. UBICACIÓN
 
-Módulo 32, Lección 5 de 7 · Fase 3 · 1,5 h · Laboratorio `examples/microservicios/modulo-36/f185-restriccion-sobrevenida/`.
+Módulo 32, Lección 5 de 7 · Fase 3 · 1,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -2880,7 +2877,7 @@ En un ADR se ve como un «Contexto» sin un solo número.
 
 #### 1. UBICACIÓN
 
-Módulo 32, Lección 6 de 7 · Fase 3 · 1,5 h · Laboratorio `examples/microservicios/modulo-36/f186-adr/`.
+Módulo 32, Lección 6 de 7 · Fase 3 · 1,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -3174,7 +3171,7 @@ En el historial de Git se ve como un ADR añadido **semanas después** del commi
 #### 1. UBICACIÓN
 
 Módulo 32, Lección 7 de 7 · Fase 3 · 2 h de preparación + 40 min de defensa · Laboratorio
-`examples/microservicios/modulo-36/f187-defensa-arb/`.
+`f187-defensa-arb`.
 
 #### 2. PRERREQUISITOS
 

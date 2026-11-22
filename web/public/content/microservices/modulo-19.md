@@ -6,7 +6,7 @@ integrador). **Dificultad:** 3 de 5. **Dependencias:** Módulo 13 (promesas, `as
 de bases de datos se explica aquí desde cero. **Herramientas:** **Node.js 26.13.1 LTS**, **mongoose 9.12.2** (driver
 `mongodb` 7.x), **prisma** y **@prisma/client 7.10.1** con **@prisma/adapter-pg 7.10.1**, **sequelize 6.37.8**,
 **pg 8.23.1**, **express 5.3.0**, **tsx 4.23.15**, **TypeScript 6.0.3**; **MongoDB 9.0.8** y **PostgreSQL 18.7** con
-Docker Compose. **Laboratorio:** `examples/microservicios/modulo-19/` (una carpeta por tema;
+Docker Compose. **Laboratorio:** `modulo-19` (una carpeta por tema;
 `./verificar.sh --compose` levanta las bases, ejecuta los tests y cada programa, y guarda los logs en `logs/`).
 
 Hasta ahora tus servicios guardaban los datos en variables: al reiniciar, se perdían. **Persistir** es escribir los
@@ -38,12 +38,11 @@ pooling y transacciones). Una flecha recorre los cuatro temas del 1 al 4.
 **Cómo usar el laboratorio.** Necesitas Node 26 (`nvm install 26 && nvm use 26`) y Docker Desktop encendido:
 
 ```bash
-cd examples/microservicios/modulo-19
 ./verificar.sh --compose     # docker compose up + npm ci + prisma generate + tests + programas → «RESULTADO: OK»
 ```
 
 Para trabajar ficha por ficha, deja las bases arriba y ejecuta las órdenes **desde
-`examples/microservicios/modulo-19`**:
+`modulo-19`**:
 
 ```bash
 docker compose up -d --wait   # MongoDB 9.0.8 en localhost:27019 y PostgreSQL 18.7 en localhost:5519
@@ -158,13 +157,13 @@ export const MONGO_URL = process.env.MONGO_URL ?? 'mongodb://localhost:27019/tie
 
 #### 1. UBICACIÓN
 
-Módulo 15, Lección 1 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-19/f101-mongoose/`.
+Módulo 15, Lección 1 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Objetos y arreglos de JavaScript, JSON (Módulo 0.4) y `async/await` con `try/catch` (Módulo 13).
 - Levantar contenedores con `docker compose up` (Módulo 0.5).
-- `docker compose up -d --wait` y `npm ci` hechos en `examples/microservicios/modulo-19`.
+- `docker compose up -d --wait` y `npm ci` hechos en `modulo-19`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -273,7 +272,7 @@ compuesto etiquetas más precio.
 Versiones: **Node.js 26.13.1 LTS**, **mongoose 9.12.2**, **MongoDB 9.0.8** (`mongo:9.0.8` en Docker Compose). Usa el
 `package.json`, el `docker-compose.yml` y el `config.js` del inicio del módulo.
 
-`examples/microservicios/modulo-19/f101-mongoose/modelo.js`:
+`modelo.js`:
 
 ```javascript
 // Módulo 15 · F101 · MongoDB + Mongoose: el ESQUEMA y el MODELO de un producto del catálogo.
@@ -313,7 +312,7 @@ productoSchema.virtual('agotado').get(function () {
 export const Producto = mongoose.model('Producto', productoSchema); // colección «productos»
 ```
 
-`examples/microservicios/modulo-19/f101-mongoose/repositorio.js`:
+`repositorio.js`:
 
 ```javascript
 // Módulo 15 · F101 · Operaciones del catálogo. Cada función es UNA operación atómica de MongoDB.
@@ -347,10 +346,10 @@ export function vaciar() {
 }
 ```
 
-`examples/microservicios/modulo-19/f101-mongoose/demo.js`:
+`demo.js`:
 
 ```javascript
-// Ejecuta: node f101-mongoose/demo.js   (desde examples/microservicios/modulo-19, con `docker compose up -d --wait`)
+// Ejecuta: node f101-mongoose/demo.js   (desde modulo-19, con `docker compose up -d --wait`)
 import mongoose from 'mongoose';
 import { MONGO_URL } from '../config.js';
 import { Producto } from './modelo.js';
@@ -391,7 +390,6 @@ console.log('Desconectado · estado', mongoose.connection.readyState);
 
 1. Levanta las bases e instala las dependencias (una vez para todo el módulo):
    ```bash
-   cd examples/microservicios/modulo-19
    docker compose up -d --wait
    npm ci
    ```
@@ -692,13 +690,13 @@ populares son los más lentos. La regla: embebe lo que tiene un máximo conocido
 
 #### 1. UBICACIÓN
 
-Módulo 15, Lección 2 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-19/f102-prisma-sequelize/`.
+Módulo 15, Lección 2 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Ficha anterior (qué es una base de datos, conexión, índice único).
 - Clases y objetos de JavaScript; leer tipos básicos de TypeScript (Módulo 13).
-- `docker compose up -d --wait` y `npm ci` hechos en `examples/microservicios/modulo-19`.
+- `docker compose up -d --wait` y `npm ci` hechos en `modulo-19`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -813,7 +811,7 @@ Versiones: **Node.js 26.13.1 LTS**, **sequelize 6.37.8**, **prisma** y **@prisma
 **@prisma/adapter-pg 7.10.1**, **pg 8.23.1**, **tsx 4.23.15**, **PostgreSQL 18.7** (`postgres:18.7`). Usa el
 `package.json`, el `docker-compose.yml` y el `config.js` del inicio del módulo.
 
-`examples/microservicios/modulo-19/f102-prisma-sequelize/sql/001-esquema.sql`:
+`001-esquema.sql`:
 
 ```sql
 -- Módulo 15 · F102 · Esquema relacional que usan los DOS ORM (Prisma y Sequelize leen y escriben estas mismas tablas).
@@ -837,7 +835,7 @@ CREATE TABLE pedidos (
 CREATE INDEX pedidos_cliente_idx ON pedidos (cliente_id);
 ```
 
-`examples/microservicios/modulo-19/f102-prisma-sequelize/preparar.js`:
+`preparar.js`:
 
 ```javascript
 // Módulo 15 · F102 · Aplica sql/001-esquema.sql en la base f102 con el driver pg (no necesitas tener psql instalado).
@@ -926,7 +924,7 @@ export async function totalVendido({ Pedido }) {
 `f102-prisma-sequelize/sequelize-demo.js`:
 
 ```javascript
-// Ejecuta: node f102-prisma-sequelize/sequelize-demo.js   (desde examples/microservicios/modulo-19)
+// Ejecuta: node f102-prisma-sequelize/sequelize-demo.js   (desde modulo-19)
 import { prepararEsquema } from './preparar.js';
 import { conectar, crearClienteConPedidos, pedidosDe, totalVendido } from './sequelize-repo.js';
 
@@ -1035,7 +1033,7 @@ export async function totalVendido(prisma: PrismaClient): Promise<number> {
 `f102-prisma-sequelize/prisma-demo.ts`:
 
 ```typescript
-// Ejecuta: npm run generate && npx tsx f102-prisma-sequelize/prisma-demo.ts   (desde examples/microservicios/modulo-19)
+// Ejecuta: npm run generate && npx tsx f102-prisma-sequelize/prisma-demo.ts   (desde modulo-19)
 import { prepararEsquema } from './preparar.js';
 import { conectar, crearClienteConPedidos, pedidosDe, totalVendido } from './prisma-repo.ts';
 
@@ -1068,7 +1066,6 @@ await prisma.$disconnect();
 
 1. Con las bases arriba (`docker compose up -d --wait`) y `npm ci` hecho, ejecuta la demo de Sequelize:
    ```bash
-   cd examples/microservicios/modulo-19
    node f102-prisma-sequelize/sequelize-demo.js
    ```
 2. Genera el cliente de Prisma y ejecuta su demo:
@@ -1352,13 +1349,13 @@ datos, desaparece. El equivalente en Prisma es usar `prisma db push` contra prod
 
 #### 1. UBICACIÓN
 
-Módulo 15, Lección 3 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-19/f103-database-per-service/`.
+Módulo 15, Lección 3 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Ficha anterior (tablas, claves foráneas, JOIN) y una API con Express (Módulo 14).
 - `fetch` con `async/await` (Módulo 13) y códigos de estado HTTP (Módulo 0.4).
-- `docker compose up -d --wait` y `npm ci` hechos en `examples/microservicios/modulo-19`.
+- `docker compose up -d --wait` y `npm ci` hechos en `modulo-19`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -1457,7 +1454,7 @@ inventario_db con el texto «permission denied for database inventario_db»: ese
 Versiones: **Node.js 26.13.1 LTS** (`fetch` nativo), **express 5.3.0**, **pg 8.23.1**, **PostgreSQL 18.7**. Las dos
 bases y los dos usuarios los crea `initdb/01-bases.sql` (inicio del módulo).
 
-`examples/microservicios/modulo-19/f103-database-per-service/inventario.js`:
+`inventario.js`:
 
 ```javascript
 // Módulo 15 · F103 · Database-per-service: el servicio INVENTARIO es el único dueño de la base inventario_db.
@@ -1500,7 +1497,7 @@ export async function crearInventario() {
 }
 ```
 
-`examples/microservicios/modulo-19/f103-database-per-service/pedidos.js`:
+`pedidos.js`:
 
 ```javascript
 // Módulo 15 · F103 · Database-per-service: el servicio PEDIDOS es dueño de pedidos_db y NO conoce las tablas de inventario.
@@ -1550,7 +1547,7 @@ export async function crearPedidos({ inventarioUrl }) {
 }
 ```
 
-`examples/microservicios/modulo-19/f103-database-per-service/arrancar.js`:
+`arrancar.js`:
 
 ```javascript
 // Módulo 15 · F103 · Levanta los dos servicios en puertos libres (puerto 0) y devuelve sus URL y una función para apagarlos.
@@ -1589,10 +1586,10 @@ if (import.meta.main) {
 }
 ```
 
-`examples/microservicios/modulo-19/f103-database-per-service/demo.js`:
+`demo.js`:
 
 ```javascript
-// Ejecuta: node f103-database-per-service/demo.js   (desde examples/microservicios/modulo-19)
+// Ejecuta: node f103-database-per-service/demo.js   (desde modulo-19)
 import pg from 'pg';
 import { pgUrl } from '../config.js';
 import { arrancar } from './arrancar.js';
@@ -1624,7 +1621,6 @@ await apagar();
 
 1. Con las bases arriba y `npm ci` hecho, ejecuta la demo:
    ```bash
-   cd examples/microservicios/modulo-19
    node f103-database-per-service/demo.js
    ```
 2. Ahora a mano. En una terminal deja los dos servicios encendidos:
@@ -1846,13 +1842,13 @@ distribuido** (Módulo 30).
 
 #### 1. UBICACIÓN
 
-Módulo 15, Lección 4 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-19/f104-pool-transacciones/`.
+Módulo 15, Lección 4 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Fichas 2 y 3 (SQL básico, driver `pg`, restricciones `CHECK`).
 - `Promise.all`, `Promise.allSettled` y `try/catch/finally` (Módulo 13).
-- `docker compose up -d --wait` y `npm ci` hechos en `examples/microservicios/modulo-19`.
+- `docker compose up -d --wait` y `npm ci` hechos en `modulo-19`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -1972,7 +1968,7 @@ libre en el pool.
 Versiones: **Node.js 26.13.1 LTS**, **pg 8.23.1**, **PostgreSQL 18.7**. Usa el `package.json`, el
 `docker-compose.yml` y el `config.js` del inicio del módulo.
 
-`examples/microservicios/modulo-19/f104-pool-transacciones/pool.js`:
+`pool.js`:
 
 ```javascript
 // Módulo 15 · F104 · Connection pooling con pg 8.23.1: un grupo de conexiones abiertas que se prestan y se devuelven.
@@ -2008,7 +2004,7 @@ export async function medir(max, consultas = 20) {
 }
 ```
 
-`examples/microservicios/modulo-19/f104-pool-transacciones/cuentas.js`:
+`cuentas.js`:
 
 ```javascript
 // Módulo 15 · F104 · Transacciones con pg: BEGIN … COMMIT / ROLLBACK sobre UNA conexión prestada del pool.
@@ -2059,10 +2055,10 @@ export async function transferirMal(pool, origen, destino, monto) {
 }
 ```
 
-`examples/microservicios/modulo-19/f104-pool-transacciones/demo.js`:
+`demo.js`:
 
 ```javascript
-// Ejecuta: node f104-pool-transacciones/demo.js   (desde examples/microservicios/modulo-19)
+// Ejecuta: node f104-pool-transacciones/demo.js   (desde modulo-19)
 import { crearPool, medir } from './pool.js';
 import { preparar, saldos, transferir } from './cuentas.js';
 
@@ -2099,7 +2095,6 @@ await pool.end();
 
 1. Con las bases arriba y `npm ci` hecho, ejecuta la demo:
    ```bash
-   cd examples/microservicios/modulo-19
    node f104-pool-transacciones/demo.js
    ```
 2. Provoca una fuga de conexiones (el error común de esta ficha):

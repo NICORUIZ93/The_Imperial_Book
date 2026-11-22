@@ -1,3 +1,0 @@
-[
-  { "prefijo": "/api/pedidos", "destino": "pedidos", "porcentaje": 100, "metodos": ["GET", "POST"] }
-]

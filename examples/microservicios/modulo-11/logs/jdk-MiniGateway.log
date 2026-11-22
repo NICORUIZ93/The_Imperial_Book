@@ -1,0 +1,5 @@
+GET /api/catalogo/productos/7  -> 200 catalogo recibió /productos/7 con X-Request-Id=req-001
+GET /api/inventario/stock/7    -> 200 inventario recibió /stock/7 con X-Request-Id=req-002
+GET /api/pagos/1               -> 404 {"error":"SIN_RUTA","ruta":"/api/pagos/1"}
+GET /api/inventario/stock/7    -> 502 {"error":"SERVICIO_NO_RESPONDE"}
+OK: el gateway enruta, quita el prefijo y propaga X-Request-Id

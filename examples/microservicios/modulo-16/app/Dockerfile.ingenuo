@@ -1,9 +1,0 @@
-# F081 · ANTI-PATRÓN (solo para comparar tamaños y tiempos): una sola etapa con JDK + Gradle + código fuente.
-#   docker build -f app/Dockerfile.ingenuo -t academia/catalogo:ingenuo app
-FROM eclipse-temurin:25-jdk
-WORKDIR /fuente
-# Copia TODO de una vez: cualquier cambio en el código invalida la caché y vuelve a descargar las dependencias.
-COPY . .
-RUN ./gradlew --no-daemon -q bootJar
-# Corre como root, con shell, Gradle, el JDK completo y el código fuente dentro de la imagen.
-CMD java -jar build/libs/catalogo.jar

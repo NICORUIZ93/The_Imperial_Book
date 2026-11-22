@@ -1,6 +1,5 @@
 # Módulo 7: Producción: cloud, DevOps, seguridad y operación
 
-
 ## Aprende construyendo
 
 ### Tema 1: Infraestructura y entrega segura · Avanzado · 45 min
@@ -302,7 +301,7 @@ Una prueba **E2E de sistema** levanta el backend real (con su base de datos real
 
 #### Paso 4 · Demostración guiada desde cero
 
-**Antes de empezar:** esta prueba vive dentro de un backend Spring Boot 4.1.2 con Maven Wrapper, y RutaFlow no lo construye en módulos anteriores (su backend del Módulo 2 es Node). Parte de una copia de `examples/spring-boot-integrador-rutaflow/`, que ya expone `POST /api/entregas` con JWT y PostgreSQL, y agrégale los endpoints `POST /api/auth/login` y `POST /api/entregas/{guia}/confirmar` que la prueba usa. Necesitas Docker en ejecución: Testcontainers levanta el PostgreSQL de la prueba, así que no hace falta `docker compose`.
+**Antes de empezar:** esta prueba vive dentro de un backend Spring Boot 4.1.2 con Maven Wrapper, y RutaFlow no lo construye en módulos anteriores (su backend del Módulo 2 es Node). Parte de una copia de `spring-boot-integrador-rutaflow`, que ya expone `POST /api/entregas` con JWT y PostgreSQL, y agrégale los endpoints `POST /api/auth/login` y `POST /api/entregas/{guia}/confirmar` que la prueba usa. Necesitas Docker en ejecución: Testcontainers levanta el PostgreSQL de la prueba, así que no hace falta `docker compose`.
 
 Crea `src/test/java/io/rutaflow/FlujoEntregaE2ETest.java` con la clase de abajo y ejecútala desde la raíz de ese backend:
 
@@ -389,6 +388,7 @@ flowchart LR
 
 #### Paso 4 · Demostración guiada desde cero
 **Desde cero:** parte de una carpeta vacía, ejecuta el comando que aparece debajo y escribe `src/ejemplo.dart` con el contenido de este tema.
+
 ```bash
 mkdir ejemplo && cd ejemplo
 ```

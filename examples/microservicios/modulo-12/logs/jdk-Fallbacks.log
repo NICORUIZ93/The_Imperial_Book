@@ -1,0 +1,9 @@
+== Inventario sano
+   consulta normal          -> {"sku":"7","stock":12}
+== Inventario caído (fallo inyectado: puerto cerrado)
+   1) valor por defecto     -> {"sku":"7","stock":null,"fuente":"defecto"}
+   2) último valor bueno    -> {"sku":"7","stock":12,"fuente":"cache","edad_ms":300}
+   3) fuente alternativa    -> {"sku":"7","stock":12,"fuente":"replica"}
+   4) reservar (crítico)    -> 503 {"error":"INVENTARIO_NO_DISPONIBLE","reintentar_en_s":30} en 2 ms
+   5) ANTI-PATRÓN mentiroso -> {"sku":"7","stock":99}   <- nadie sabe que es falso
+OK: cada fallback dice de dónde sale el dato; lo crítico falla rápido

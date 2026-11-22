@@ -1,0 +1,284 @@
+== Node.js v26.13.1 · npm 11.20.0
+openjdk version "27.0.1.0.2" 2026-10-21
+== 1. Pista Node.js
+✔ POST /reservas responde 202 con Location y la reserva acaba CONFIRMADA (40.7695ms)
+✔ validación: sin importe positivo responde 400 (3.792708ms)
+✔ el mismo POST con la misma Idempotency-Key no cobra dos veces (26.231709ms)
+✔ GET de una reserva que no existe: 404 (1.479167ms)
+✔ workflows.js se empaqueta para el sandbox de Temporal (310.92875ms)
+✔ workflow-mal.js (importa las actividades) se rechaza (96.035125ms)
+✔ camino feliz: plaza reservada, cobro aprobado y reserva confirmada (17.920042ms)
+✔ tarjeta rechazada (402, no reintentable): se libera la plaza y no se cobra nada (10.014208ms)
+✔ falla el último paso: reembolso y liberación, en orden inverso (15.5835ms)
+✔ sin plazas: la saga termina CANCELADA sin tocar al proveedor (8.185292ms)
+✔ un 429 del proveedor se reintenta con backoff hasta cobrar, y nunca se cobra dos veces (2585.455708ms)
+✔ cubo de fichas: ráfaga de 10, luego 2 por segundo (reloj simulado) (0.844666ms)
+✔ gateway: 401 sin API key, 429 con Retry-After al agotar el cubo y reenvío a reservas (18.087459ms)
+✔ gateway: si el limitador falla (Redis caído) deja pasar en lugar de tumbar el servicio (3.393084ms)
+✔ Gatling: 20 reservas/s durante 3 s cumplen el SLO de la API (16838.484208ms)
+✔ la cola de cobros despacha a ritmo fijo y en orden de llegada (202.731834ms)
+✔ ANTES: con cobro inmediato el proveedor responde 429 y se pierden ventas (2126.573917ms)
+✔ DESPUÉS: con la cola a 9/s no hay ningún 429 y todas se confirman (6598.201292ms)
+✔ fitness function del ADR-0002: 0 respuestas 429, 0 canceladas y p99 hasta el cobro < 60 s (9928.948625ms)
+✔ todos los ADR del proyecto cumplen la plantilla (2.5995ms)
+✔ un ADR sin números ni alternativas no pasa (1.154709ms)
+✔ los pesos de la rúbrica suman 1 (0.410833ms)
+✔ la evaluación de ejemplo aprueba con 3.30 (0.490292ms)
+✔ una media alta NO aprueba si un criterio está en 1 (0.334708ms)
+✔ una nota fuera de 1-4 es un error, no un 0 silencioso (0.163083ms)
+✔ este laboratorio tiene todos los entregables que pide el Comité (0.724125ms)
+ℹ tests 26
+ℹ suites 0
+ℹ pass 26
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39809.664167
+pago aprobado                             POST 202 /reservas/R-a1 -> CONFIRMADA
+mismo POST repetido (Idempotency-Key a1)  POST 202 /reservas/R-a1 -> CONFIRMADA
+tarjeta rechazada                         POST 202 /reservas/R-b2 -> CANCELADA (tarjeta rechazada: fondos insuficientes)
+falla la confirmación                     POST 202 /reservas/R-c3 -> CANCELADA (el organizador canceló el evento)
+otra reserva                              POST 202 /reservas/R-d4 -> CONFIRMADA
+sin plazas (aforo 2)                      POST 202 /reservas/R-e5 -> CANCELADA (sin plazas en concierto-1)
+proveedor: 3 cobros, 1 reembolso(s) · plazas libres: 0
+✔ F181 demo
+sin Idempotency-Key: reservas R-1, R-2 · cobros al cliente: 2
+con Idempotency-Key: reservas R-compra-77 · cobros al cliente: 1
+✔ F181 error común (sin Idempotency-Key)
+Your Workflow code (or a library used by your Workflow code) is importing the following disallowed modules:
+  - '@temporalio/activity'
+✔ F182 error común (red en el workflow)
+3 réplicas con LimitadorMemoria: 30 de 100 aceptadas (contrato: 10)
+(sin REDIS_URL: se omite la comparación con LimitadorRedis)
+✔ F183 error común (limitador en memoria)
+ANTES · cobro inmediato, 3 intentos con backoff de 100 ms:
+  reservas recibidas (HTTP 202):   300 de 300
+  CONFIRMADAS / CANCELADAS:        118 / 182 (60.7 % de ventas perdidas)
+  peticiones al proveedor:         766 · respondidas con 429: 648
+  máximo de cobros en un segundo:  20
+  p99 desde la reserva al cobro:   0.3 s
+✔ F185 antes
+DESPUÉS · cola de cobros a 18/s:
+  reservas recibidas (HTTP 202):   300 de 300
+  CONFIRMADAS / CANCELADAS:        300 / 0 (0.0 % de ventas perdidas)
+  peticiones al proveedor:         300 · respondidas con 429: 0
+  máximo de cobros en un segundo:  18
+  p99 desde la reserva al cobro:   11.5 s
+✔ F185 después
+ERROR · 10 intentos inmediatos, sin backoff:
+  reservas recibidas (HTTP 202):   300 de 300
+  CONFIRMADAS / CANCELADAS:        107 / 193 (64.3 % de ventas perdidas)
+  peticiones al proveedor:         2065 · respondidas con 429: 1958
+  máximo de cobros en un segundo:  20
+  p99 desde la reserva al cobro:   0.0 s
+✔ F185 error común (reintentos sin backoff)
+✔ f186-adr/adr/0001-saga-de-reservas-con-temporal.md
+✔ f186-adr/adr/0002-cobro-asincrono-por-limite-del-proveedor.md
+✔ F186 ADR del proyecto
+✘ f186-adr/adr-mal.md: falta título «# ADR-NNNN: decisión en una frase»; campo Estado; campo Fecha; sección «Contexto»; sección «Opciones consideradas»; sección «Decisión»; sección «Consecuencias»; sección «Fitness function»; sección «Cuándo revisar esta decisión»; números en el contexto (carga, latencia, límite, coste); 3 opciones o más (hay 0): la elegida y 2 alternativas; consecuencias negativas (el trade-off aceptado)
+✔ F186 error común (ADR sin números ni alternativas)
+Estudiante: Estudiante de ejemplo · 2026-11-20 · evaluadores: arquitecta principal, SRE, producto
+1 Descomposición y límites        0.15   3   0.45
+2 Consistencia y saga             0.15   4   0.60
+3 Resiliencia                     0.10   3   0.30
+4 Seguridad                       0.10   2   0.20
+5 Observabilidad                  0.10   3   0.30
+6 Rendimiento y carga             0.10   4   0.40
+7 Restricción sobrevenida y ADR   0.15   4   0.60
+8 Costo (FinOps)                  0.05   3   0.15
+9 Comunicación y defensa          0.10   3   0.30
+Total: 3.30 (aprueba con >= 2.80 y ningún 1)
+Recomendación: APROBADO
+✔ F187 hoja de puntuación
+Estudiante: Defensa con un criterio en 1 · 2026-11-20 · evaluadores: arquitecta principal, SRE, producto
+1 Descomposición y límites        0.15   4   0.60
+2 Consistencia y saga             0.15   4   0.60
+3 Resiliencia                     0.10   4   0.40
+4 Seguridad                       0.10   1   0.10
+5 Observabilidad                  0.10   4   0.40
+6 Rendimiento y carga             0.10   4   0.40
+7 Restricción sobrevenida y ADR   0.15   4   0.60
+8 Costo (FinOps)                  0.05   4   0.20
+9 Comunicación y defensa          0.10   4   0.40
+Total: 3.70 (aprueba con >= 2.80 y ningún 1)
+Recomendación: REPETIR DEFENSA · criterio en 1: Seguridad
+✔ F187 error común (media alta con un 1)
+✔ Diagrama C4 (contexto y contenedores) en el README
+✔ Saga con compensaciones y sus tests
+✔ Gateway con rate limiting y su test
+✔ Simulación de Gatling con aserciones (SLO)
+✔ Medición antes/después de la restricción
+✔ 2 ADR o más, con fitness function ejecutable
+✔ Estimación de costo con precios reales
+✔ Versión Spring Boot (Fase 1) del sistema
+listo para la defensa
+✔ F187 entregables
+# Costo estimado del proyecto (generado por `node costo.js`)
+
+Supuestos: 1,000,000 reservas al mes, ECS sobre Fargate en US East (N. Virginia), 730 h/mes,
+sin descuentos. Precios (USD) de `comun/precios.js`, consultados el 2026-11-19 y el 2026-11-20:
+- 0.000011244 · https://aws.amazon.com/fargate/pricing/ (Linux/x86, US East N. Virginia, ejemplo 1)
+- 0.000001235 · https://aws.amazon.com/fargate/pricing/ (Linux/x86, US East N. Virginia, ejemplo 1)
+- 0.045 · https://aws.amazon.com/vpc/pricing/ (ejemplo de NAT gateway, US East Ohio)
+- 0.045 · https://aws.amazon.com/vpc/pricing/ (ejemplo de NAT gateway, US East Ohio)
+- 0.5 · https://aws.amazon.com/cloudwatch/pricing/ (Logs, clase Standard, ejemplos)
+
+| Partida | USD/mes |
+|---|---|
+| gateway | 36.04 |
+| reservas (API) | 36.04 |
+| worker «reservas» | 36.04 |
+| worker «cobros» | 9.01 |
+| Temporal (autoalojado, sin su base de datos) | 36.04 |
+| Redis (limitador) | 9.01 |
+| NAT gateway (1, horas) | 32.85 |
+| NAT gateway (GB al proveedor: 2 KB por cobro) | 0.09 |
+| logs (12 líneas de 300 B por reserva) | 1.68 |
+| **TOTAL** | **196.79** |
+
+Costo unitario: **0.1968 USD por cada 1000 reservas**. No incluye la base de datos de
+Temporal ni la de reservas (PostgreSQL), ni el balanceador: añádelos con los precios de su página antes de la defensa.
+
+✔ Costo (FinOps)
+== 2. Redis real para el limitador
+REDIS_URL=redis://localhost:6379
+✔ LimitadorRedis: 3 réplicas aceptan en total la capacidad del cubo (10 de 30) (11.167709ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 85.91025
+3 réplicas con LimitadorMemoria: 30 de 100 aceptadas (contrato: 10)
+3 réplicas con LimitadorRedis:   10 de 100 aceptadas (contrato: 10)
+✔ F183 error común con Redis
+== 3. Gatling a 60 reservas/s
+---- Global Information -------------------------------------------------------------|---Total---|-----OK----|----KO----
+> request count                                                                      |     2,704 |     2,704 |         -
+> min response time (ms)                                                             |         0 |         0 |         -
+> max response time (ms)                                                             |       226 |       226 |         -
+> mean response time (ms)                                                            |         1 |         1 |         -
+> response time std deviation (ms)                                                   |         5 |         5 |         -
+> response time 50th percentile (ms)                                                 |         1 |         1 |         -
+> response time 75th percentile (ms)                                                 |         2 |         2 |         -
+> response time 95th percentile (ms)                                                 |         3 |         3 |         -
+> response time 99th percentile (ms)                                                 |         5 |         5 |         -
+> mean throughput (rps)                                                              |    108.16 |    108.16 |         -
+---- Response Time Distribution ----------------------------------------------------------------------------------------
+Global: 99th percentile of response time is less than 300.0 : true (actual : 5.0)
+Global: percentage of failed events is less than 1.0 : true (actual : 0.0)
+sistema listo: gateway :18080 · proveedor sin límite
+resumen: 1352 reservas · 1352 CONFIRMADA · 0 CANCELADA · 0 PENDIENTE · 429 del proveedor: 0
+✔ Gatling, proveedor sin límite: SLO de la API en verde
+---- Global Information -------------------------------------------------------------|---Total---|-----OK----|----KO----
+> request count                                                                      |     2,704 |     2,704 |         -
+> min response time (ms)                                                             |         0 |         0 |         -
+> max response time (ms)                                                             |       146 |       146 |         -
+> mean response time (ms)                                                            |         1 |         1 |         -
+> response time std deviation (ms)                                                   |         3 |         3 |         -
+> response time 50th percentile (ms)                                                 |         1 |         1 |         -
+> response time 75th percentile (ms)                                                 |         1 |         1 |         -
+> response time 95th percentile (ms)                                                 |         2 |         2 |         -
+> response time 99th percentile (ms)                                                 |         4 |         4 |         -
+> mean throughput (rps)                                                              |    108.16 |    108.16 |         -
+---- Response Time Distribution ----------------------------------------------------------------------------------------
+Global: 99th percentile of response time is less than 300.0 : true (actual : 4.0)
+Global: percentage of failed events is less than 1.0 : true (actual : 0.0)
+sistema listo: gateway :18080 · proveedor limitado a 20/s
+resumen: 1352 reservas · 494 CONFIRMADA · 858 CANCELADA · 0 PENDIENTE · 429 del proveedor: 3018
+✔ Gatling, proveedor 20 límite: SLO de la API en verde
+✔ con la restricción, Gatling sigue en verde pero el resumen muestra reservas CANCELADAS (F185)
+== 4. Temporal real y pista Spring Boot
+time=2026-11-21T13:56:13.316 level=WARN msg="Cluster Id in Cluster Metadata config is not a valid uuid. Generating a new Cluster Id" component=metadata-initializer
+Temporal CLI 1.10.1 (Server 1.32.2, UI 2.56.4)
+
+Temporal Server:      localhost:55833
+Temporal Persistence: in-memory
+Temporal Metrics:     http://localhost:55846/metrics
+2026-11-21T18:56:13.863Z [WARN] No workflows registered, not polling for workflow tasks { sdkComponent: 'worker', taskQueue: 'cobros' }
+✔ Temporal: camino feliz (7859.661958ms)
+2026-11-21T18:56:13.948Z [WARN] Activity failed {
+  sdkComponent: 'worker',
+  taskQueue: 'cobros',
+  isLocal: false,
+  attempt: 1,
+  namespace: 'default',
+  taskToken: 'CiQwMWExZmY3Ny01NWZkLTc3OGQtYmNjYi1hMTA3MmE4YWNhNmISGXJlc2VydmEtVC0yLTE3OTUyODczNzM5MzMaJDAxYTFmZjc3LTU4NmQtN2YwZi1iOGM0LTU0NzFkOGExMGU2YyALKAEyATJCBmNvYnJhckoICAEQ64BAGAE=',
+  activityId: '2',
+  activityType: 'cobrar',
+  workflowId: 'reserva-T-2-1795287373933',
+  workflowRunId: '01a1ff77-586d-7f0f-b8c4-5471d8a10e6c',
+  workflowType: 'reservaWorkflow',
+  error: ApplicationFailure: tarjeta rechazada: fondos insuficientes
+      at ApplicationFailure.nonRetryable (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/common/lib/failure.js:208:16)
+      at cobrar (file:///Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/f182-saga-temporal/actividades.js:24:52)
+      at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+      at async Activity.execute (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/activity.js:108:20)
+      at async NativeConnection.withAbortSignal (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/connection.js:172:16)
+      at async Client.withAbortSignal (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/client/lib/base-client.js:67:16)
+      at async /Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/activity.js:174:32
+      at async /Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/worker.js:858:30 {
+    cause: undefined,
+    failure: undefined,
+    type: 'PagoRechazado',
+    nonRetryable: true,
+    details: [],
+    nextRetryDelay: undefined,
+    category: undefined
+  },
+  durationMs: 6
+}
+✔ Temporal: tarjeta rechazada -> CANCELADA con la plaza liberada (29.986292ms)
+2026-11-21T18:56:13.982Z [WARN] Activity failed {
+  sdkComponent: 'worker',
+  taskQueue: 'reservas',
+  isLocal: false,
+  attempt: 1,
+  namespace: 'default',
+  taskToken: 'CiQwMWExZmY3Ny01NWZkLTc3OGQtYmNjYi1hMTA3MmE4YWNhNmISGXJlc2VydmEtVC0zLTE3OTUyODczNzM5NjMaJDAxYTFmZjc3LTU4OGMtNzNjYy1iZTYxLTNlYmIzNjZlOWNlZiARKAEyATNCCWNvbmZpcm1hckoICAEQyIFAGAE=',
+  activityId: '3',
+  activityType: 'confirmar',
+  workflowId: 'reserva-T-3-1795287373963',
+  workflowRunId: '01a1ff77-588c-73cc-be61-3ebb366e9cef',
+  workflowType: 'reservaWorkflow',
+  error: ApplicationFailure: el organizador canceló el evento
+      at ApplicationFailure.nonRetryable (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/common/lib/failure.js:208:16)
+      at confirmar (file:///Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/f182-saga-temporal/actividades.js:34:57)
+      at executeNextHandler (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/activity.js:106:54)
+      at Activity.execute (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/activity.js:108:26)
+      at /Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/activity.js:162:29
+      at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:66:14)
+      at NativeConnection.withAbortSignal (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/connection.js:172:46)
+      at Client.withAbortSignal (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/client/lib/base-client.js:67:38)
+      at Activity.executeWithClient (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/activity.js:161:33)
+      at /Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-36/node_modules/@temporalio/worker/lib/activity.js:174:43 {
+    cause: undefined,
+    failure: undefined,
+    type: 'EventoCerrado',
+    nonRetryable: true,
+    details: [],
+    nextRetryDelay: undefined,
+    category: undefined
+  },
+  durationMs: 0
+}
+✔ Temporal: falla confirmar -> reembolsar y liberar (56.747708ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 3
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 8181.742625
+R-1 CONFIRMADA
+R-2 CANCELADA (tarjeta rechazada) compensadas=[liberarPlaza]
+R-3 CANCELADA (el organizador canceló el evento) compensadas=[reembolsar, liberarPlaza]
+✔ Spring jdk/SagaReserva
+ráfaga en t=0 s: 10 de 11 aceptadas
+t=1 s: true, true, false
+✔ Spring jdk/CuboDeFichas
+RESULTADO: OK · Módulo 32 (Proyecto final y Comité de Arquitectura) verificado (0 bloque(s) omitidos)

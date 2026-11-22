@@ -6,7 +6,7 @@ asíncrono. **Dependencias:** Módulo 17 (estructura, configuración, descubrimi
 (promesas, `async/await`, streams). **Herramientas:** **Node.js 26.13.1 LTS**, **axios 1.21.1**, **@grpc/grpc-js
 1.14.7** + **@grpc/proto-loader 0.8.1**, **@apollo/server 5.5.2** + **graphql 16.15.0** + **dataloader 2.2.3**,
 **kafkajs 2.2.4**, **amqplib 2.4.0**, **@nats-io/transport-node 3.5.0**; brokers **Apache Kafka 4.4.0**, **RabbitMQ
-4.4.1** y **NATS Server 2.15.3** (Docker Compose). **Laboratorio:** `examples/microservicios/modulo-22/`
+4.4.1** y **NATS Server 2.15.3** (Docker Compose). **Laboratorio:** `modulo-22`
 (`./verificar.sh` ejecuta 32 tests sin infraestructura y las demos; `./verificar.sh --compose` levanta los tres
 brokers y ejecuta además los tests y demos de Kafka, RabbitMQ y NATS).
 
@@ -34,12 +34,11 @@ llevan al tema 6 (Sync vs async).
 **Cómo usar el laboratorio.** Con Node 26 activo:
 
 ```bash
-cd examples/microservicios/modulo-22
 ./verificar.sh            # npm ci + 32 tests + demos de REST, gRPC, GraphQL y sync/async → «RESULTADO: OK»
 ./verificar.sh --compose  # además: Kafka, RabbitMQ y NATS con Docker Compose y sus tests
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-22`** después de `npm ci`. Todo el
+Todas las órdenes de las fichas se ejecutan **desde `modulo-22`** después de `npm ci`. Todo el
 módulo es JavaScript con módulos ES que Node ejecuta tal cual. `package.json` del laboratorio (con
 `package-lock.json` que fija el árbol completo):
 
@@ -122,7 +121,7 @@ services:
 
 #### 1. UBICACIÓN
 
-Módulo 18, Lección 1 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-22/f113-rest/`.
+Módulo 18, Lección 1 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -379,7 +378,6 @@ for (const cliente of [clienteFetch('http://localhost:39113', { timeoutMs: 500 }
 
 1. Instala las dependencias fijadas (una sola vez para todo el módulo) y arranca el servicio de inventario:
    ```bash
-   cd examples/microservicios/modulo-22
    npm ci
    node f113-rest/servicio-inventario.js
    ```
@@ -574,7 +572,7 @@ las peticiones de pedidos sin un solo error en el log; y un `catch(() => ({}))` 
 
 #### 1. UBICACIÓN
 
-Módulo 18, Lección 2 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-22/f114-grpc/`.
+Módulo 18, Lección 2 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -826,7 +824,6 @@ if (import.meta.main) {
 
 1. Arranca el servidor gRPC:
    ```bash
-   cd examples/microservicios/modulo-22
    node f114-grpc/servidor.js
    ```
 2. En otra terminal, ejecuta el cliente (una llamada unaria, un stream, un error de negocio y un deadline vencido):
@@ -1020,7 +1017,7 @@ absurdas o falla al decodificar; y un servidor lento deja a todos sus clientes e
 
 #### 1. UBICACIÓN
 
-Módulo 18, Lección 3 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-22/f115-graphql/`.
+Módulo 18, Lección 3 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1289,7 +1286,6 @@ for (const ingenuo of [true, false]) {
 
 1. Arranca el servidor GraphQL:
    ```bash
-   cd examples/microservicios/modulo-22
    node f115-graphql/main.js
    ```
 2. En otra terminal, envía una consulta con campos anidados, una inválida y una mutación que rompe una regla:
@@ -1502,7 +1498,7 @@ y solo los campos que deben verse.
 
 #### 1. UBICACIÓN
 
-Módulo 18, Lección 4 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-22/f116-kafka-rabbit/` (Kafka y
+Módulo 18, Lección 4 de 6 · Fase 2
 RabbitMQ en `docker-compose.yml`).
 
 #### 2. PRERREQUISITOS
@@ -1865,7 +1861,6 @@ for (const senal of ['SIGINT', 'SIGTERM']) process.on(senal, async () => { await
 
 1. Levanta los brokers (la primera vez descarga las imágenes) y espera a que estén sanos:
    ```bash
-   cd examples/microservicios/modulo-22
    docker compose up -d --wait
    ```
 2. **RabbitMQ.** Arranca el consumidor (crea la cola y su binding) y, en otra terminal, publica tres eventos:
@@ -2297,7 +2292,7 @@ sus ventajas: sigue habiendo acoplamiento temporal, solo que ahora más difícil
 
 #### 1. UBICACIÓN
 
-Módulo 18, Lección 5 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-22/f117-nats/` (NATS en
+Módulo 18, Lección 5 de 6 · Fase 2
 `docker-compose.yml`).
 
 #### 2. PRERREQUISITOS
@@ -2492,7 +2487,6 @@ await nc.drain(); // procesa lo pendiente, cancela las suscripciones y cierra
 
 1. Levanta NATS (si ya tienes arriba el `docker compose` de la ficha anterior, ya está) y comprueba su salud:
    ```bash
-   cd examples/microservicios/modulo-22
    docker compose up -d --wait nats
    curl -s localhost:8222/healthz; echo
    ```
@@ -2717,7 +2711,7 @@ instancias: un grupo de cola (o un consumidor durable).
 
 #### 1. UBICACIÓN
 
-Módulo 18, Lección 6 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-22/f118-sync-async/`.
+Módulo 18, Lección 6 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2962,7 +2956,6 @@ notificaciones.cerrar();
 
 1. Ejecuta el experimento completo (arranca los servicios simulados, los tumba y los recupera):
    ```bash
-   cd examples/microservicios/modulo-22
    node f118-sync-async/comparar.js
    ```
 2. Cambia la latencia de notificaciones de 200 a 1000 ms (`servicio('notificaciones', 1000)` en `comparar.js`),

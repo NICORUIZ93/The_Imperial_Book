@@ -3,10 +3,10 @@
 **Fase 1 · Spring Boot de cero a experto** (semana 12 de 12). **Duración:** 22 h (8 temas de 2–3,5 h).
 **Dificultad:** 4 de 5. **Dependencias:** Módulo 0.5 (Docker básico: imagen, contenedor, `docker run`), Módulo 1
 (perfiles y configuración externalizada), Módulo 7 del curso (Spring Cloud: por qué un servicio necesita un nombre
-estable) y Módulo 10 (Actuator y health). **Herramientas:** **JDK 25 LTS**, **Spring Boot 4.1.3**, Docker Engine 29 con
+estable) y Módulo 10 (Actuator y health). **Herramientas:**JDK 25 LTS**, **Spring Boot 4.1.3**, Docker Engine 29 con
 Compose v5, imágenes `eclipse-temurin:25-jdk` y `gcr.io/distroless/java25-debian13:nonroot`, **kind v0.33.0**
 con **Kubernetes 1.37.0**, kubectl 1.37, metrics-server v0.9.0, **Helm 4.3.1** y **Argo CD v3.5.6**.
-**Laboratorio:** `examples/microservicios/modulo-16/` (una sola aplicación, `app/`, que recorre las 8 fichas;
+**Laboratorio:** `modulo-16` (una sola aplicación, `app/`, que recorre las 8 fichas;
 `./verificar.sh` lo ejecuta todo y cada ficha tiene su prueba en `pruebas/fNNN-*.sh`).
 
 Hasta ahora tus servicios corrían con `./gradlew bootRun`. Producción es otra cosa: el código se empaqueta en una
@@ -32,16 +32,6 @@ flowchart LR
 2 (Docker Compose) y al tema 3 (Kubernetes: Deployment, Service, ConfigMap y Secret). Del 3 salen el tema 4 (probes),
 que lleva al 5 (HPA) y al 7 (Blue-Green y Canary), y el tema 6 (Helm). Los temas 6 y 7 confluyen en el 8 (GitOps con
 Argo CD).
-
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-16`. Necesitas Docker Desktop con al menos
-6 GB de RAM, y en macOS `brew install kind kubectl helm` (comprueba `kind version` → `v0.33.0`, `kubectl version
---client` → `v1.37.x`, `helm version` → `v4.3.x`). `./verificar.sh` construye las imágenes, prueba Compose, crea el
-clúster kind `academia-m12` y ejecuta las pruebas de cada ficha (15–25 minutos la primera vez). Para trabajar ficha a
-ficha: `./verificar.sh --conservar` deja el clúster creado, y luego ejecutas `./pruebas/f083-objetos.sh`, etc. Al
-terminar: `kind delete cluster --name academia-m12`. En el entorno donde se escribió no hay Docker Hub, Maven Central
-ni kind: aquí se validaron los manifiestos contra el esquema de Kubernetes 1.37 (`kubernetes-validate` 1.37.0, modo
-estricto), los `docker-compose.yml` con `docker compose config`, los guiones con `shellcheck` y la clase `SondaSalud`
-con JDK 25.0.5; lo demás está en `verificacion/microservicios/pendiente.md`.
 
 | Herramienta | Versión | Dónde se fija |
 |---|---|---|
@@ -86,7 +76,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -403,7 +392,7 @@ public final class SondaSalud {
 }
 ```
 
-Sus tests (sin Docker ni clúster: `(cd app && ./gradlew test)` desde `modulo-16`):
+Sus tests (sin Docker ni clúster: `(cd app &&./gradlew test)` desde `modulo-16`):
 
 `app/src/test/java/academia/catalogo/CatalogoTest.java`:
 
@@ -565,7 +554,7 @@ pods_asentados() {
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 1 de 8 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-16/app/Dockerfile` y la prueba
+Módulo 12, Lección 1 de 8 · Fase 1 · 3 h la prueba
 `pruebas/f081-imagen.sh`.
 
 #### 2. PRERREQUISITOS
@@ -627,7 +616,7 @@ Un **Dockerfile** es la receta para crear una imagen: un paquete con tu programa
 
 #### 7. EXPLICACIÓN INTERMEDIA
 
-- **Etapas.** `FROM ... AS compilacion` nombra una etapa; `COPY --from=compilacion` copia archivos de ella. Solo la
+- **Etapas.** `FROM... AS compilacion` nombra una etapa; `COPY --from=compilacion` copia archivos de ella. Solo la
   última `FROM` define la imagen que se publica.
 - **Caché de capas.** Cada instrucción crea una capa; Docker reutiliza las capas mientras sus entradas no cambien.
   Copiar primero el wrapper y los archivos de build (`settings.gradle.kts`, `build.gradle.kts`, `gradle/`) y descargar
@@ -641,7 +630,7 @@ Un **Dockerfile** es la receta para crear una imagen: un paquete con tu programa
 - **Distroless de Java.** `gcr.io/distroless/java25-debian13` trae Temurin OpenJDK 25 (JRE) sobre Debian 13; la
   etiqueta `:nonroot` fija el usuario 65532. No hay shell: el `ENTRYPOINT` debe ir en **forma exec** (JSON).
 - **Forma exec y PID 1.** `ENTRYPOINT ["java","-jar","catalogo.jar"]` hace que `java` sea el proceso 1 del contenedor y
-  reciba `SIGTERM` de `docker stop` o de Kubernetes. Con la forma *shell* (`CMD java -jar ...`), el proceso 1 es
+  reciba `SIGTERM` de `docker stop` o de Kubernetes. Con la forma *shell* (`CMD java -jar...`), el proceso 1 es
   `/bin/sh` y la señal puede no llegar a Java: el contenedor muere a los 10 s por `SIGKILL`, sin apagado ordenado.
 - **Memoria.** La JVM detecta el límite de memoria del contenedor (cgroups) y por defecto usa el 25 % para el heap.
   `-XX:MaxRAMPercentage=75` (vía `JAVA_TOOL_OPTIONS`) es un punto de partida habitual para un servicio que solo corre
@@ -653,7 +642,7 @@ Un **Dockerfile** es la receta para crear una imagen: un paquete con tu programa
 
 - **Superficie de ataque y CVE.** Cada paquete del sistema operativo es un posible CVE que tu escáner (Trivy, Módulo 9)
   reportará y que tendrás que justificar. Distroless reduce la lista a lo que Java necesita. El coste: no puedes hacer
-  `docker exec ... sh` para depurar. Alternativas: la variante `:debug` (trae `busybox`) solo en entornos de prueba, o
+  `docker exec... sh` para depurar. Alternativas: la variante `:debug` (trae `busybox`) solo en entornos de prueba, o
   `kubectl debug` con un contenedor efímero que comparte el espacio de procesos del pod.
 - **Alternativas de base.** (1) `eclipse-temurin:25-jre` (Ubuntu): con shell y `apt`, más fácil de depurar, más CVE.
   (2) Alpine (musl): pequeña, pero musl cambia detalles de DNS y rendimiento con algunas librerías nativas.
@@ -680,7 +669,6 @@ descarga el wrapper), base de ejecución `gcr.io/distroless/java25-debian13:nonr
 ```dockerfile
 # syntax=docker/dockerfile:1
 # F081 · Dockerfile multi-stage + distroless para el servicio «catalogo» (Spring Boot 4.1.3, JDK 25)
-# Construye desde examples/microservicios/modulo-16:
 #   docker build -t academia/catalogo:1.0.0 app
 #   docker build -t academia/catalogo:1.1.0 --build-arg VERSION=1.1.0 app
 
@@ -798,7 +786,7 @@ docker rm f081-prueba >/dev/null
 
 #### 10. MINI-LABORATORIO
 
-1. Construye las dos imágenes y compáralas (desde `examples/microservicios/modulo-16`):
+1. Construye las dos imágenes y compáralas (desde el código de este tema):
 
 ```bash
 docker build --provenance=false -t academia/catalogo:1.0.0 app
@@ -815,9 +803,9 @@ docker image ls academia/catalogo
 2. Cambia una línea de `CatalogoController.java` (por ejemplo, el nombre de un producto) y reconstruye la `1.0.0`.
 
    **Output esperado:** BuildKit marca `CACHED` en los `COPY` del wrapper y de los archivos de build y en
-   `RUN ./gradlew --no-daemon -q descargarDependencias` (pendiente de verificación en el Mac); solo se
+   `RUN./gradlew --no-daemon -q descargarDependencias` (pendiente de verificación en el Mac); solo se
    repiten `COPY src`, `gradlew bootJar`, la extracción y la última capa `application/`. Reconstruye la `ingenuo` con el
-   mismo cambio: descarga otra vez todas las dependencias, porque `COPY . .` invalidó la caché.
+   mismo cambio: descarga otra vez todas las dependencias, porque `COPY..` invalidó la caché.
 
 3. Pásale la prueba:
 
@@ -850,7 +838,7 @@ docker image ls academia/catalogo
 
    **Output esperado:** BuildKit avisa con la regla `JSONArgsRecommended` («JSON arguments recommended for
    ENTRYPOINT/CMD to prevent unintended behavior related to OS signals») y el contenedor **no arranca**: la forma
-   shell ejecuta `/bin/sh -c ...` y distroless no tiene `/bin/sh`. Restaura la forma exec.
+   shell ejecuta `/bin/sh -c...` y distroless no tiene `/bin/sh`. Restaura la forma exec.
 
 #### 11. VERIFICACIÓN
 
@@ -877,7 +865,7 @@ void elDockerfileCumpleLasReglasDeLaCasa() throws Exception {
 }
 ```
 
-**Pregunta de comprobación:** ¿por qué `COPY settings.gradle.kts build.gradle.kts ./` va antes que `COPY src ./src`?
+**Pregunta de comprobación:** ¿por qué `COPY settings.gradle.kts build.gradle.kts./` va antes que `COPY src./src`?
 
 <details>
 <summary>Respuesta</summary>
@@ -907,7 +895,7 @@ un contenedor auxiliar en la misma red (`docker run --rm -it --network container
 salud dentro de la imagen, usa una sonda en Java como `SondaSalud` (ficha siguiente), no `curl`.
 
 **Segundo error frecuente:** construir en un Mac con Apple Silicon y desplegar en nodos `amd64`: el pod falla con
-`exec format error`. Construye para la plataforma del destino (`docker build --platform linux/amd64 ...`) o una imagen
+`exec format error`. Construye para la plataforma del destino (`docker build --platform linux/amd64...`) o una imagen
 multiplataforma con `docker buildx build --platform linux/amd64,linux/arm64`.
 
 #### 13. PREGUNTA DE ENTREVISTA
@@ -934,7 +922,7 @@ apagado ordenado. Evítala: multi-stage, base mínima, usuario no root y forma e
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 2 de 8 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-16/docker-compose.yml`,
+Módulo 12, Lección 2 de 8 · Fase 1 · 2,5 h
 `compose/` y la prueba `pruebas/f082-compose.sh`.
 
 #### 2. PRERREQUISITOS
@@ -1189,7 +1177,7 @@ docker inspect modulo16-catalogo-1 --format '{{range .Config.Env}}{{println .}}{
    `["CMD-SHELL", "curl -f http://localhost:8080/actuator/health/readiness"]` y ejecuta `docker compose up -d --wait`.
 
    **Output esperado:** el catálogo nunca llega a `healthy` (en distroless no hay shell ni curl), `--wait` termina con
-   error tras los reintentos y `entrada` no arranca. `docker inspect --format '{{json .State.Health}}'
+   error tras los reintentos y `entrada` no arranca. `docker inspect --format '{{json.State.Health}}'
    modulo16-catalogo-1` muestra los intentos fallidos con su `Output`. Restaura el `test`.
 
 5. Detén todo: `docker compose down`.
@@ -1266,7 +1254,7 @@ entrada publicados, y secretos por archivo (`secrets:`) o variables que vienen d
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 3 de 8 · Fase 1 · 3,5 h · Laboratorio `examples/microservicios/modulo-16/k8s/base/`,
+Módulo 12, Lección 3 de 8 · Fase 1 · 3,5 h
 `kind/cluster.yaml` y la prueba `pruebas/f083-objetos.sh`.
 
 #### 2. PRERREQUISITOS
@@ -1732,7 +1720,7 @@ declarativo en Git, etiqueta exacta, ConfigMap para configuración y Secret (ges
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 4 de 8 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-16/k8s/base/deployment.yaml`
+Módulo 12, Lección 4 de 8 · Fase 1 · 2,5 h
 (sección de probes), `app/.../DisponibilidadController.java` y la prueba `pruebas/f084-probes.sh`.
 
 #### 2. PRERREQUISITOS
@@ -1979,7 +1967,7 @@ Test que debe pasar:
 ./pruebas/f084-probes.sh
 ```
 
-Resultado esperado: termina con código 0 (y `CatalogoTest` dentro de `(cd app && ./gradlew test)`).
+Resultado esperado: termina con código 0 (y `CatalogoTest` dentro de `(cd app &&./gradlew test)`).
 
 Reto: cambia `CATALOGO_ARRANQUE_LENTO_SEGUNDOS` a `"90"` en el Deployment, aplica y observa: ¿se reinicia el pod?
 Antes de probarlo, calcula con los valores de las probes qué pasará. Después, sube el `failureThreshold` de la
@@ -2066,7 +2054,7 @@ dependencias gestionadas con circuit breakers.
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 5 de 8 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-16/k8s/hpa/` y la prueba
+Módulo 12, Lección 5 de 8 · Fase 1 · 2,5 h la prueba
 `pruebas/f085-hpa.sh`.
 
 #### 2. PRERREQUISITOS
@@ -2402,7 +2390,7 @@ capacidad (Cluster Autoscaler o Karpenter).
 **HPA más `replicas` fijo en el manifiesto aplicado por CI.** Se ve así: el pipeline aplica un Deployment con
 `replicas: 2` en cada despliegue mientras el HPA lo había subido a 5 por un pico. Resultado: cada despliegue en hora
 punta **reduce** la capacidad a 2 y el HPA tarda en recuperarla. Evítalo: cuando hay HPA, el manifiesto no declara
-`replicas` (o el chart lo omite con `{{- if not .Values.autoscaling.enabled }}`), y el HPA es el único dueño de esa
+`replicas` (o el chart lo omite con `{{- if not.Values.autoscaling.enabled }}`), y el HPA es el único dueño de esa
 cifra.
 
 ---
@@ -2410,7 +2398,7 @@ cifra.
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 6 de 8 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-16/charts/catalogo/` y la
+Módulo 12, Lección 6 de 8 · Fase 1 · 3 h la
 prueba `pruebas/f086-helm.sh`.
 
 #### 2. PRERREQUISITOS
@@ -2467,11 +2455,11 @@ archivo de **valores** que los rellena. Con un comando instalas el paquete; Helm
   `values.yaml` (valores por defecto), `templates/` (manifiestos con plantillas; los que empiezan por `_` no se
   renderizan, solo definen funciones con `define`), `templates/NOTES.txt` (mensaje tras instalar) y
   `templates/tests/` (pods de prueba con la anotación `helm.sh/hook: test`).
-- **Plantillas.** Lenguaje de plantillas de Go con funciones Sprig: `{{ .Values.image.tag | default .Chart.AppVersion }}`,
+- **Plantillas.** Lenguaje de plantillas de Go con funciones Sprig: `{{.Values.image.tag | default.Chart.AppVersion }}`,
   `quote`, `b64enc`, `toYaml`, `nindent`, `include` (llama a un `define` y permite encadenar con `|`), `if`,
   `range`. Objetos disponibles: `.Values`, `.Chart`, `.Release` (nombre, namespace, revisión), `.Template`.
 - **Ciclo de vida.** `helm install demo charts/catalogo -n ns --create-namespace --wait` crea la revisión 1;
-  `helm upgrade ... --set image.tag=1.1.0` la 2; `helm history` las lista; `helm rollback demo 1` crea la 3 con la
+  `helm upgrade... --set image.tag=1.1.0` la 2; `helm history` las lista; `helm rollback demo 1` crea la 3 con la
   configuración de la 1. Helm guarda cada revisión en un Secret `sh.helm.release.v1.<release>.v<N>` del namespace.
 - **Helm 4.** Según la documentación de Helm 4.3: los charts `apiVersion: v2` siguen funcionando igual; las
   instalaciones nuevas usan **server-side apply** por defecto (las actualizaciones siguen el método de la release);
@@ -2479,7 +2467,7 @@ archivo de **valores** que los rellena. Con un comando instalas el paquete; Helm
   aviso); los *post-renderers* ahora son plugins.
 - **Depurar.** `helm lint` (errores de estructura), `helm template` (renderiza sin clúster: ideal para revisar y para
   CI) y `helm install --dry-run=server`.
-- **El hash del ConfigMap.** La anotación `checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") .
+- **El hash del ConfigMap.** La anotación `checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml").
   | sha256sum }}` cambia cuando cambia el ConfigMap, y eso cambia la plantilla del pod: Kubernetes hace un rollout y
   los pods leen la configuración nueva (resuelve el problema del tema 3).
 
@@ -2874,7 +2862,7 @@ Test que debe pasar:
 Resultado esperado: termina con código 0 (incluye tres `helm test` en verde).
 
 Reto: crea `charts/catalogo/values-prod.yaml` con `replicaCount: 3`, `config.color: prod` y `autoscaling.enabled:
-true`, y añade a la prueba dos comprobaciones con `helm template ... -f charts/catalogo/values-prod.yaml`: que aparece
+true`, y añade a la prueba dos comprobaciones con `helm template... -f charts/catalogo/values-prod.yaml`: que aparece
 `kind: HorizontalPodAutoscaler` y que **no** aparece `replicas:` en el Deployment (el HPA es su dueño).
 
 **Pregunta de comprobación:** ¿qué diferencia hay entre `version` y `appVersion` en `Chart.yaml`?
@@ -2936,7 +2924,7 @@ valida con `values.schema.json` y prueba con `helm template` en CI.
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 7 de 8 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-16/k8s/despliegues/` y la
+Módulo 12, Lección 7 de 8 · Fase 1 · 3 h la
 prueba `pruebas/f087-despliegues.sh`.
 
 #### 2. PRERREQUISITOS
@@ -3015,7 +3003,7 @@ Las dos se pueden hacer con las piezas de Kubernetes que ya conoces: Deployments
 
 #### 8. EXPLICACIÓN MAESTRA
 
-- **Controladores de despliegue progresivo.** **Argo Rollouts** y **Flagger** automatizan esto: sustituyen al
+- **Controladores de despliegue progresivo.**Argo Rollouts** y **Flagger** automatizan esto: sustituyen al
   Deployment (o lo envuelven), mueven el tráfico por pasos (5 %, 25 %, 50 %…) usando un *ingress*, la Gateway API o
   una malla de servicios para porcentajes exactos, consultan Prometheus en cada paso (análisis) y revierten solos si
   las métricas empeoran. Alternativa sin controlador: la **Gateway API** con `HTTPRoute` y pesos (`weight`) por
@@ -3367,7 +3355,7 @@ criterio de aborto.
 
 #### 1. UBICACIÓN
 
-Módulo 12, Lección 8 de 8 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-16/argocd/` y la prueba
+Módulo 12, Lección 8 de 8 · Fase 1 · 3 h la prueba
 `pruebas/f088-argocd.sh`.
 
 #### 2. PRERREQUISITOS
@@ -3515,7 +3503,7 @@ spec:
   source:
     repoURL: https://github.com/TU-USUARIO/The_Imperial_Book.git
     targetRevision: main
-    path: examples/microservicios/modulo-16/charts/catalogo
+    path: catalogo
     helm:
       valueFiles:
         - values.yaml
@@ -3677,7 +3665,7 @@ puede clonar** (`repoURL` con errata, repositorio privado sin credenciales, `tar
 equivocado). El mensaje exacto lo da `.status.conditions` y los logs de `argocd-repo-server`.
 
 **Arreglo:** corrige `repoURL`/`targetRevision`/`path`; para repositorios privados, registra credenciales con un
-Secret de tipo repositorio (`argocd repo add ...` o un Secret con la etiqueta
+Secret de tipo repositorio (`argocd repo add...` o un Secret con la etiqueta
 `argocd.argoproj.io/secret-type: repository`). En `argocd/catalogo.yaml`, el valor `TU-USUARIO` provoca justo este
 error hasta que lo cambies.
 

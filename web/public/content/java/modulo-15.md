@@ -16,7 +16,7 @@ Este capítulo endurece el proyecto multi-módulo que creaste en el [Módulo 8, 
 
 **2. Hazlo tú**
 
-Desde la raíz del repositorio copia el ejemplo completo, incluida `examples/java-maven/pom.xml`: `cp -R examples/java-maven ejemplo-maven-avanzado`, entra con `cd ejemplo-maven-avanzado` y ejecuta `mvn -pl app -am clean verify`.
+Desde la raíz del repositorio copia el ejemplo completo, incluida `pom.xml`: `cp -R java-maven ejemplo-maven-avanzado`, entra con `cd ejemplo-maven-avanzado` y ejecuta `mvn -pl app -am clean verify`.
 
 **Resultado esperado:** los módulos se construyen en orden y `app` puede usar `domain`.
 
@@ -79,7 +79,7 @@ Conserva la salida de ambas validaciones y anota el rango admitido.
 #### Fragmento real
 
 ```bash
-cp -R examples/java-maven ejemplo-maven-avanzado
+cp -R java-maven ejemplo-maven-avanzado
 cd ejemplo-maven-avanzado
 mvn -pl app -am clean verify
 ```
@@ -104,7 +104,7 @@ El build no debe depender de la versión Gradle que cada persona instaló global
 
 **2. Hazlo tú**
 
-Desde la raíz copia `examples/java-gradle/build.gradle.kts` y los otros archivos de `examples/java-gradle` a `ejemplo-gradle-reproducible`, entra a la carpeta y corre `gradle wrapper --gradle-version 9.1.0`, `./gradlew --version` y `./gradlew clean build`.
+Desde la raíz copia `build.gradle.kts` y los otros archivos de `java-gradle` a `ejemplo-gradle-reproducible`, entra a la carpeta y corre `gradle wrapper --gradle-version 9.1.0`, `./gradlew --version` y `./gradlew clean build`.
 
 **Resultado esperado:** el wrapper informa Gradle 9.1.0 y el build ejecuta con esa versión.
 
@@ -167,7 +167,7 @@ Guarda el archivo generado y explica qué riesgo cubre cada mecanismo. Fuente: [
 #### Fragmento real
 
 ```bash
-cp -R examples/java-gradle ejemplo-gradle-reproducible
+cp -R java-gradle ejemplo-gradle-reproducible
 cd ejemplo-gradle-reproducible
 gradle wrapper --gradle-version 9.1.0
 ./gradlew clean build
@@ -524,7 +524,7 @@ Una solicitud pasa por varias capas y todas sus líneas deben compartir `traceId
 
 **2. Hazlo tú**
 
-En `src/main/java/ProcesarEntrega.java`, envuelve el manejo con `try (var ignored = MDC.putCloseable("traceId", traceId)) { ... }`. Ejecuta `./gradlew run` con dos IDs distintos y comprueba que aparecen en sus eventos.
+En `src/main/java/ProcesarEntrega.java`, envuelve el manejo con `try (var ignored = MDC.putCloseable("traceId", traceId)) {... }`. Ejecuta `./gradlew run` con dos IDs distintos y comprueba que aparecen en sus eventos.
 
 **Resultado esperado:** cada operación lleva su propio `traceId`.
 
@@ -585,7 +585,6 @@ Ejecuta:
 Modifica `ProcesarEntrega.java` para llamar `MDC.put("traceId", traceId)` sin el `try-with-resources` de `putCloseable`, procesa dos solicitudes con IDs distintos en el mismo hilo reutilizado y observa si el segundo evento conserva el `traceId` del primero.
 
 ---
-
 
 ## Construcción guiada del capítulo
 

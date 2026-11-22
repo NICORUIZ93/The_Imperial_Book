@@ -3,10 +3,10 @@
 **Fase 3 · Nivel maestro: arquitectura avanzada** (semana 3 de 8). **Duración:** 10 h (4 temas de unos 110 min y
 2 h 40 min de laboratorio integrador). **Dificultad:** 5 de 5. **Dependencias:** Módulo 11 (Kafka profundo, EOS,
 Schema Registry, RabbitMQ y NATS en Java), Módulo 18 (KafkaJS, amqplib y NATS en Node), Módulo 22 (confirms, acks y
-DLQ) y Módulo 25 (outbox, idempotencia y exactly-once). **Herramientas:** **Node.js 26.13.1 LTS**, **kafkajs 2.2.4** con
+DLQ) y Módulo 25 (outbox, idempotencia y exactly-once). **Herramientas:**Node.js 26.13.1 LTS**, **kafkajs 2.2.4** con
 **Apache Kafka 4.4.0**, **@kafkajs/confluent-schema-registry 4.1.0** y **avsc 5.7.9** con **Confluent Schema Registry
 8.4.1**, **amqplib 2.4.0** con **RabbitMQ 4.4.1**, **@nats-io/transport-node, jetstream y kv 3.5.0** con **NATS Server
-2.15.3**. **Laboratorio:** `examples/microservicios/modulo-30/` (`./verificar.sh` ejecuta lo que no necesita
+2.15.3**. **Laboratorio:** `modulo-30` (`./verificar.sh` ejecuta lo que no necesita
 infraestructura y lo de RabbitMQ y NATS si responden; `./verificar.sh --compose` levanta los cuatro servicios y lo exige
 todo).
 
@@ -30,14 +30,12 @@ Notification frente a Event-Carried State Transfer), que es una decisión de dis
 **Cómo usar el laboratorio.** Con Node 26 y Docker:
 
 ```bash
-cd examples/microservicios/modulo-30
 npm ci
 docker compose up -d --wait         # Kafka :9092 · Schema Registry :8081 · RabbitMQ :5672/15672 · NATS :4222/8222
 ./verificar.sh --compose            # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-30`**. La ficha 4 no necesita
 infraestructura; la ficha 1 hace sin infraestructura todo lo de Avro y usa Kafka y Schema Registry solo para su tramo
 final.
 
@@ -185,7 +183,7 @@ describen como **esperadas** y están anotadas, con el comando, en `verificacion
 
 #### 1. UBICACIÓN
 
-Módulo 26, Lección 1 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-30/f157-kafka-schema/`.
+Módulo 26, Lección 1 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -621,7 +619,7 @@ producer.send({ topic, messages: [{ value: await registry.encode(idEsquema, pedi
 
 #### 1. UBICACIÓN
 
-Módulo 26, Lección 2 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-30/f158-rabbitmq/`.
+Módulo 26, Lección 2 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1063,7 +1061,7 @@ canal.ack(msg);
 
 #### 1. UBICACIÓN
 
-Módulo 26, Lección 3 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-30/f159-nats/`.
+Módulo 26, Lección 3 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1458,7 +1456,7 @@ const ack = await js.publish('f159.pedidos.creado', JSON.stringify(pedido), { ms
 
 #### 1. UBICACIÓN
 
-Módulo 26, Lección 4 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-30/f160-ecst/`.
+Módulo 26, Lección 4 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 

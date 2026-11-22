@@ -6,7 +6,7 @@ Módulo 15 (PostgreSQL con `pg`, database-per-service); de la Fase 0, Docker bá
 **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **jest 30.5.2** con **ts-jest 29.4.15**,
 **supertest 7.3.2**, **express 5.3.0**, **@pact-foundation/pact 17.1.4** y **@pact-foundation/pact-cli 18.10.9**,
 **testcontainers** y **@testcontainers/postgresql 12.2.2**, **pg 8.23.1**; **Pact Broker 2.124.0** y
-**PostgreSQL 18.7** con Docker. **Laboratorio:** `examples/microservicios/modulo-20/` (una carpeta por tema;
+**PostgreSQL 18.7** con Docker. **Laboratorio:** `modulo-20` (una carpeta por tema;
 `./verificar.sh --compose` ejecuta todos los tests, los errores que deben fallar y el flujo con el Pact Broker, y
 guarda los logs en `logs/`).
 
@@ -33,11 +33,10 @@ Testcontainers para Node (integración con PostgreSQL real, segundos). Una flech
 Docker Desktop encendido:
 
 ```bash
-cd examples/microservicios/modulo-20
 ./verificar.sh --compose     # npm ci + tsc + Jest + errores esperados + Pact Broker + Testcontainers → «RESULTADO: OK»
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-20`** después de `npm ci`. El
+Todas las órdenes de las fichas se ejecutan **desde `modulo-20`** después de `npm ci`. El
 `package.json`, compartido por las cuatro fichas (`package-lock.json` fija el árbol completo):
 
 ```json
@@ -130,13 +129,13 @@ otro nombre de proyecto).
 
 #### 1. UBICACIÓN
 
-Módulo 16, Lección 1 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-20/f105-jest/`.
+Módulo 16, Lección 1 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Funciones, clases, promesas y `async/await` (Módulo 13); tipos e interfaces de TypeScript (Módulo 13).
 - Haber leído la salida de un test con `node --test` (Módulos 13 a 15).
-- `npm ci` hecho en `examples/microservicios/modulo-20`.
+- `npm ci` hecho en `modulo-20`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -243,7 +242,7 @@ diferencia.
 Versiones: **Node.js 26.13.1 LTS**, **jest 30.5.2**, **ts-jest 29.4.15**, **typescript 6.0.3**, `@types/jest`
 30.0.0. Usa el `package.json`, el `jest.config.js` y el `tsconfig.json` del inicio del módulo.
 
-`examples/microservicios/modulo-20/f105-jest/src/carrito.ts`:
+`carrito.ts`:
 
 ```typescript
 // Módulo 16 · F105 · Jest: lógica PURA (sin red, sin reloj, sin base de datos). Es lo más fácil y barato de probar.
@@ -267,7 +266,7 @@ export function calcularTotal(items: Item[], cupon?: string): number {
 }
 ```
 
-`examples/microservicios/modulo-20/f105-jest/src/notificador.ts`:
+`notificador.ts`:
 
 ```typescript
 // Módulo 16 · F105 · Un módulo con efecto externo (en la vida real enviaría un correo). En los tests se reemplaza con jest.mock.
@@ -276,7 +275,7 @@ export async function enviarCorreo(destino: string, asunto: string): Promise<voi
 }
 ```
 
-`examples/microservicios/modulo-20/f105-jest/src/cotizador.ts`:
+`cotizador.ts`:
 
 ```typescript
 // Módulo 16 · F105 · Código CON dependencias: un servicio de tasas de cambio (red), el reloj y un notificador.
@@ -323,7 +322,6 @@ export class Cotizador {
 
 1. Instala las dependencias fijadas (una vez para todo el módulo) y ejecuta los tests de esta ficha:
    ```bash
-   cd examples/microservicios/modulo-20
    npm ci
    npx jest f105-jest --selectProjects unit --verbose
    ```
@@ -679,13 +677,13 @@ diferencia.
 
 #### 1. UBICACIÓN
 
-Módulo 16, Lección 2 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-20/f106-supertest/`.
+Módulo 16, Lección 2 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Ficha anterior (Jest: `test`, `expect`, `beforeEach`, dobles).
 - Una API con Express: rutas, middleware, manejo de errores y códigos de estado (Módulo 14).
-- `npm ci` hecho en `examples/microservicios/modulo-20`.
+- `npm ci` hecho en `modulo-20`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -787,7 +785,7 @@ Versiones: **Node.js 26.13.1 LTS**, **express 5.3.0**, **supertest 7.3.2** (`@ty
 30.5.2**, **ts-jest 29.4.15**, **typescript 6.0.3**. Usa el `package.json`, el `jest.config.js` y el `tsconfig.json`
 del inicio del módulo.
 
-`examples/microservicios/modulo-20/f106-supertest/src/app.ts`:
+`app.ts`:
 
 ```typescript
 // Módulo 16 · F106 · Supertest: la API se construye en una función que NO abre ningún puerto.
@@ -851,7 +849,7 @@ export function crearApp(repositorio: Repositorio): Express {
 }
 ```
 
-`examples/microservicios/modulo-20/f106-supertest/src/servidor.ts`:
+`servidor.ts`:
 
 ```typescript
 // Módulo 16 · F106 · El ÚNICO archivo que abre un puerto. Los tests no lo importan nunca: importan crearApp de app.ts.
@@ -868,7 +866,6 @@ crearApp(repositorioEnMemoria([{ sku: 'TEC-001', nombre: 'Teclado', precio: 1200
 
 1. Ejecuta los tests de la API:
    ```bash
-   cd examples/microservicios/modulo-20
    npx jest f106-supertest --selectProjects unit --verbose
    ```
 2. Rompe la API a propósito: en `f106-supertest/src/app.ts` cambia `res.status(201)` por `res.status(200)`, repite el
@@ -1104,13 +1101,13 @@ todos con mensajes que no señalan la causa.
 
 #### 1. UBICACIÓN
 
-Módulo 16, Lección 3 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-20/f107-pact/`.
+Módulo 16, Lección 3 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Fichas 1 y 2 (Jest y una API de Express bajo prueba).
 - Database-per-service (Módulo 15): pedidos consulta el stock **por la API** de inventario.
-- `npm ci` hecho en `examples/microservicios/modulo-20`; Docker encendido para los pasos con el Pact Broker.
+- `npm ci` hecho en `modulo-20`; Docker encendido para los pasos con el Pact Broker.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -1230,7 +1227,7 @@ Versiones: **Node.js 26.13.1 LTS**, **@pact-foundation/pact 17.1.4** (especifica
 **@pact-foundation/pact-cli 18.10.9**, **jest 30.5.2**, **ts-jest 29.4.15**, **express 5.3.0**; **Pact Broker
 2.124.0** (imagen `pactfoundation/pact-broker:3.2.0-pactbroker2.124.0`) con **PostgreSQL 18.7**.
 
-**Consumidor** — `examples/microservicios/modulo-20/f107-pact/consumidor/cliente-inventario.ts`:
+**Consumidor** — `cliente-inventario.ts`:
 
 ```typescript
 // Módulo 16 · F107 · Contract Testing con Pact: el CONSUMIDOR. El servicio «pedidos» usa este cliente para hablar con «inventario».
@@ -1391,7 +1388,7 @@ describe('inventario cumple los contratos de sus consumidores', () => {
 });
 ```
 
-`examples/microservicios/modulo-20/docker-compose.yml` (el Pact Broker y su base):
+`docker-compose.yml` (el Pact Broker y su base):
 
 ```yaml
 # Módulo 16 (modulo-20) · Testing en Node.js
@@ -1432,7 +1429,6 @@ services:
 
 1. Genera el contrato desde el consumidor y míralo:
    ```bash
-   cd examples/microservicios/modulo-20
    npm run test:pact:consumidor
    cat f107-pact/pacts/pedidos-inventario.json
    ```
@@ -1767,13 +1763,13 @@ proveedor.
 
 #### 1. UBICACIÓN
 
-Módulo 16, Lección 4 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-20/f108-testcontainers/`.
+Módulo 16, Lección 4 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Fichas 1 y 2 (Jest, ciclo de vida `beforeAll/afterAll/beforeEach`).
 - PostgreSQL con el driver `pg` y pool de conexiones (Módulo 15).
-- Docker encendido (`docker info` responde) y `npm ci` hecho en `examples/microservicios/modulo-20`.
+- Docker encendido (`docker info` responde) y `npm ci` hecho en `modulo-20`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -1887,7 +1883,7 @@ Versiones: **Node.js 26.13.1 LTS**, **testcontainers 12.2.2** y **@testcontainer
 el `jest.config.js` y el `tsconfig.json` del inicio del módulo. Este tema **no** usa `docker-compose.yml`: el
 contenedor lo crea el test.
 
-`examples/microservicios/modulo-20/f108-testcontainers/repositorio-pedidos.ts`:
+`repositorio-pedidos.ts`:
 
 ```typescript
 // Módulo 16 · F108 · Testcontainers para Node: un repositorio que usa SQL PROPIO de PostgreSQL (ON CONFLICT, jsonb, FILTER).
@@ -1949,7 +1945,7 @@ export class RepositorioDePedidos {
 }
 ```
 
-`examples/microservicios/modulo-20/f108-testcontainers/repositorio.test.ts`:
+`repositorio.test.ts`:
 
 ```typescript
 // Verificación F108: npm run test:contenedores   (necesita Docker en marcha; la primera vez descarga postgres:18.7)
@@ -2029,7 +2025,6 @@ describe('RepositorioDePedidos contra PostgreSQL real', () => {
 1. Comprueba que Docker responde y ejecuta los tests (la primera vez descarga `postgres:18.7` y
    `testcontainers/ryuk`; puede tardar un minuto):
    ```bash
-   cd examples/microservicios/modulo-20
    docker info --format '{{.ServerVersion}}'
    npm run test:contenedores
    ```

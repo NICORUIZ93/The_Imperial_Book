@@ -2,10 +2,10 @@
 
 **Fase 1 · Spring Boot de cero a experto** (segunda mitad de la semana 6 de 12). **Duración:** 10 h (4 temas de
 2–3 h). **Dificultad:** 3 de 5 en los temas 1 y 2 y 4 de 5 en los temas 3 y 4. **Dependencias:** Módulo 2 (APIs
-REST, JDBC y PostgreSQL) y Módulo 3 (tests con JUnit y `@SpringBootTest`). **Herramientas:** **JDK 25 LTS**,
+REST, JDBC y PostgreSQL) y Módulo 3 (tests con JUnit y `@SpringBootTest`). **Herramientas:**JDK 25 LTS**,
 **Spring Boot 4.1.3** (Spring Data Redis 4.1.3 con el cliente Lettuce 7.5.2), **Redis 8.10.2** y **PostgreSQL 18.7**
 en Docker Compose, y **Python 3.10+** (solo la biblioteca estándar) para los simuladores. **Laboratorio:**
-`examples/microservicios/modulo-8/` (`./verificar.sh` levanta los contenedores, ejecuta los simuladores y los tests
+`modulo-8` (`./verificar.sh` levanta los contenedores, ejecuta los simuladores y los tests
 de Gradle y los apaga).
 
 Un microservicio rápido no es el que tiene el código más ingenioso, sino el que **no repite trabajo caro**. La caché
@@ -24,17 +24,6 @@ flowchart LR
 **Texto alternativo:** cuatro temas. El tema 1 (@Cacheable, @CacheEvict y TTL: caché declarativa en Redis) lleva al
 tema 2 (patrones Read-Through, Write-Through y Write-Behind) y al tema 4 (cache stampede). El tema 2 lleva al tema 3
 (Redlock y fencing tokens), y el tema 3 también lleva al tema 4, que usa un candado para resolver la estampida.
-
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-8`, levanta la infraestructura con
-`docker compose up -d --wait` (un Redis principal en 6379, tres Redis independientes en 6380–6382 para Redlock y
-PostgreSQL en 5432) y trabaja cada tema en su carpeta con `../gradlew test`. La carpeta `simuladores/` contiene
-programas en Python que hablan con **los mismos Redis** usando un cliente mínimo de menos de 60 líneas (`resp.py`), para que
-veas cada comando (`SET NX PX`, `EVAL`, `INCR`, `XADD`…) sin capas intermedias. Las salidas de los simuladores de
-esta lección son **reales** (se ejecutaron con Python 3.13.18 contra Redis 7.0.15, que tiene los mismos comandos que
-8.10.2, y volvieron a pasar el 2026-11-21 con Python 3.15.2: `Ran 9 tests in 2.498s · OK`). Las salidas de Gradle
-se confirmaron en el Mac del dueño el 2026-11-21: `bash ./verificar.sh --compose` terminó en `RESULTADO: OK ·
-Módulo 4 (Caching y rendimiento) verificado` en 20 s, con **32 tests y 0 fallos** repartidos en f037 3 · f038 3 ·
-f039 4 · f040 22, contados sobre los `TEST-*.xml` que genera el propio build.
 
 `docker-compose.yml` del módulo:
 
@@ -99,10 +88,8 @@ Requisitos: Python 3.10+ (probado con 3.13.18) y Redis 7.0+ (probado con 7.0.15;
 import os
 import socket
 
-
 class RespError(Exception):
     """Error devuelto por Redis (respuesta que empieza con '-')."""
-
 
 class Redis:
     def __init__(self, host: str = "localhost", port: int = 6379, timeout: float = 2.0):
@@ -142,7 +129,6 @@ class Redis:
     def cerrar(self):
         self.sock.close()
 
-
 def conectar(variable: str = "REDIS_PORT", defecto: int = 6379) -> Redis:
     """Conecta a localhost:<puerto>; el puerto se puede cambiar con una variable de entorno."""
     return Redis(os.environ.get("REDIS_HOST", "localhost"), int(os.environ.get(variable, defecto)))
@@ -153,7 +139,7 @@ def conectar(variable: str = "REDIS_PORT", defecto: int = 6379) -> Redis:
 
 #### 1. UBICACIÓN
 
-Módulo 4, Lección 1 de 4 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-8/f037-cache-redis/`.
+Módulo 4, Lección 1 de 4 · Fase 1 · 3 h.
 
 #### 2. PRERREQUISITOS
 
@@ -271,7 +257,7 @@ las siguientes se sirven desde ahí.
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **Lettuce 7.5.2** (gestionados por el
 BOM), **Redis 8.10.2** (`docker-compose.yml` del módulo). Proyecto completo en
-`examples/microservicios/modulo-8/f037-cache-redis/`.
+`f037-cache-redis`.
 
 > **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
 > mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
@@ -299,7 +285,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -664,7 +649,6 @@ class CacheRedisTest {
 1. Levanta Redis y arranca la app:
 
 ```bash
-cd examples/microservicios/modulo-8
 docker compose up -d --wait redis
 cd f037-cache-redis && ../gradlew bootRun
 ```
@@ -679,7 +663,7 @@ curl -s -o /dev/null -w "%{time_total}\n" localhost:8080/productos/1
    **Output esperado:** la primera tarda algo más de 0,2 s (el repositorio duerme 200 ms) y la segunda unos pocos
    milisegundos, por ejemplo `0.236117` y `0.004512` (los números exactos varían).
 
-3. Mira la clave en Redis (desde `examples/microservicios/modulo-8`):
+3. Mira la clave en Redis (desde el código de este tema):
 
 ```bash
 docker compose exec redis redis-cli --scan --pattern 'productos::*'
@@ -728,7 +712,6 @@ python3 -c "from resp import conectar; r=conectar(); print(r.ejecutar('SET','dem
 Test que debe pasar (con `docker compose up -d --wait redis`):
 
 ```bash
-cd examples/microservicios/modulo-8/f037-cache-redis
 ../gradlew test
 ```
 
@@ -820,8 +803,8 @@ crecer. Toda caché necesita un TTL y una forma de invalidar.
 
 #### 1. UBICACIÓN
 
-Módulo 4, Lección 2 de 4 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-8/f038-patrones-cache/` y
-`examples/microservicios/modulo-8/simuladores/patrones.py`.
+Módulo 4, Lección 2 de 4 · Fase 1 · 2,5 h
+`patrones.py`.
 
 #### 2. PRERREQUISITOS
 
@@ -929,7 +912,7 @@ Hay dos sitios donde vive el mismo dato: la **base de datos** (lenta, pero segur
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **driver PostgreSQL 42.7.14**, imágenes
-**`redis:8.10.2`** y **`postgres:18.7`**. Proyecto en `examples/microservicios/modulo-8/f038-patrones-cache/`.
+**`redis:8.10.2`** y **`postgres:18.7`**. Proyecto en el código de este tema.
 
 `f038-patrones-cache/build.gradle.kts`:
 
@@ -1313,7 +1296,6 @@ from resp import conectar
 
 LATENCIA_BD = 0.02  # 20 ms por operación de base de datos
 
-
 class BaseDeDatos:
     def __init__(self):
         self.con = sqlite3.connect(":memory:")
@@ -1340,7 +1322,6 @@ class BaseDeDatos:
         with self.con:
             self.con.executemany("UPDATE producto SET precio = ? WHERE id = ?", [(p, i) for i, p in cambios.items()])
 
-
 class CacheReadThrough:
     """La aplicación solo habla con la caché; la caché sabe cargar desde la base (el 'loader')."""
 
@@ -1356,7 +1337,6 @@ class CacheReadThrough:
         self.r.ejecutar("SET", clave, valor, "EX", self.ttl)
         return valor, "MISS"
 
-
 class CacheWriteThrough(CacheReadThrough):
     """Cada escritura va a la base Y a la caché antes de responder: la caché nunca queda vieja."""
 
@@ -1364,7 +1344,6 @@ class CacheWriteThrough(CacheReadThrough):
         self.bd.escribir_precio(id_, precio)            # 1. base (fuente de verdad)
         nombre = self.bd.con.execute("SELECT nombre FROM producto WHERE id = ?", (id_,)).fetchone()[0]
         self.r.ejecutar("SET", f"producto::{id_}", f"{nombre}|{precio}", "EX", self.ttl)  # 2. caché
-
 
 class CacheWriteBehind(CacheReadThrough):
     """La escritura va solo a la caché y a una cola (Redis Stream); un trabajador vacía la cola a la base."""
@@ -1389,7 +1368,6 @@ class CacheWriteBehind(CacheReadThrough):
         self.r.ejecutar("XDEL", self.COLA, *[e[0] for e in entradas])
         return len(entradas)
 
-
 def demo_read_through(r):
     bd = BaseDeDatos()
     cache = CacheReadThrough(r, bd)
@@ -1397,7 +1375,6 @@ def demo_read_through(r):
     estados = [cache.obtener(1)[1] for _ in range(3)]
     bd.con.close()
     return {"estados": estados, "lecturas_bd": bd.lecturas}
-
 
 def demo_write_through(r):
     bd = BaseDeDatos()
@@ -1409,7 +1386,6 @@ def demo_write_through(r):
     precio_bd = bd.leer(1)
     bd.con.close()
     return {"valor": valor, "estado": estado, "precio_bd": precio_bd, "escrituras_bd": bd.escrituras}
-
 
 def demo_write_behind(r):
     bd = BaseDeDatos()
@@ -1426,7 +1402,6 @@ def demo_write_behind(r):
     bd.con.close()
     return {"antes": antes, "procesadas": procesadas, "despues": despues,
             "escrituras_bd": bd.escrituras, "ms_101_escrituras": ms_escribir}
-
 
 if __name__ == "__main__":
     r = conectar()
@@ -1447,7 +1422,6 @@ if __name__ == "__main__":
 1. Levanta la infraestructura y ejecuta el simulador:
 
 ```bash
-cd examples/microservicios/modulo-8
 docker compose up -d --wait
 cd simuladores && python3 patrones.py
 ```
@@ -1475,7 +1449,6 @@ cd ../f038-patrones-cache
    y en otra, escribe directamente en el stream y míralo:
 
 ```bash
-cd examples/microservicios/modulo-8
 docker compose exec redis redis-cli XADD cola:precios '*' id 1 precio 175
 docker compose exec redis redis-cli XLEN cola:precios
 ```
@@ -1500,7 +1473,6 @@ docker compose exec redis redis-cli XLEN cola:precios
 Tests que deben pasar (con `docker compose up -d --wait`):
 
 ```bash
-cd examples/microservicios/modulo-8
 (cd simuladores && python3 -m unittest -v test_simuladores.PatronesTest)
 (cd f038-patrones-cache && ../gradlew test)
 ```
@@ -1521,7 +1493,6 @@ import patrones
 import redlock_fencing
 import stampede
 from resp import conectar
-
 
 class PatronesTest(unittest.TestCase):
     def setUp(self):
@@ -1547,7 +1518,6 @@ class PatronesTest(unittest.TestCase):
         self.assertEqual("Teclado|200", wb["despues"]["bd"])
         self.assertEqual(1, wb["escrituras_bd"])
 
-
 class RedlockTest(unittest.TestCase):
     def test_quorum_de_dos_sobre_tres(self):
         a, b, c = redlock_fencing.escenario_mayoria()
@@ -1565,7 +1535,6 @@ class RedlockTest(unittest.TestCase):
         self.assertEqual("total=200 (B)", s["final"])
         self.assertEqual(0, s["liberados_por_a"])
 
-
 class StampedeTest(unittest.TestCase):
     def test_sin_proteccion_todos_van_a_la_base(self):
         self.assertEqual(stampede.HILOS, stampede.carrera(stampede.sin_proteccion, 11)["consultas"])
@@ -1577,7 +1546,6 @@ class StampedeTest(unittest.TestCase):
     def test_si_el_ganador_muere_el_ttl_del_candado_evita_el_bloqueo_eterno(self):
         res = stampede.carrera(stampede.con_candado, 13, primer_ganador_muere=threading.Event(), ttl_candado_ms=500)
         self.assertEqual((2, stampede.HILOS - 1), (res["consultas"], res["respuestas"]))
-
 
 if __name__ == "__main__":
     unittest.main()
@@ -1650,8 +1618,8 @@ la fuente de verdad debe ser duradera.
 
 #### 1. UBICACIÓN
 
-Módulo 4, Lección 3 de 4 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-8/f039-redlock-fencing/` y
-`examples/microservicios/modulo-8/simuladores/redlock_fencing.py`.
+Módulo 4, Lección 3 de 4 · Fase 1 · 3 h
+`redlock_fencing.py`.
 
 #### 2. PRERREQUISITOS
 
@@ -1739,7 +1707,7 @@ quien llegue con un número viejo.
 - **Fencing token.** Un número estrictamente creciente que obtienes **después** de tomar el candado (`INCR
   fencing:recurso`) y que envías con cada escritura. El **recurso** (la base, el almacén) guarda el último token
   aceptado y rechaza los menores o iguales, de forma atómica (aquí, otro Lua; en SQL,
-  `UPDATE … SET token = :t WHERE id = :id AND token < :t`).
+  `UPDATE … SET token =:t WHERE id =:id AND token <:t`).
 
 #### 8. EXPLICACIÓN MAESTRA
 
@@ -1767,7 +1735,7 @@ quien llegue con un número viejo.
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**, **Lettuce 7.5.2**, imágenes
 **`redis:8.10.2`** (4 instancias). Sin librerías de candados: el algoritmo se ve entero. Proyecto en
-`examples/microservicios/modulo-8/f039-redlock-fencing/`.
+`f039-redlock-fencing`.
 
 `f039-redlock-fencing/build.gradle.kts`:
 
@@ -2173,13 +2141,11 @@ end
 return 0
 """
 
-
 def _nodo(puerto):
     try:
         return Redis("localhost", puerto, timeout=0.05)   # timeout corto: un nodo caído no frena al resto
     except OSError:
         return None
-
 
 class Redlock:
     def __init__(self, puertos=NODOS):
@@ -2222,14 +2188,12 @@ class Redlock:
                 r.cerrar()
         return liberados
 
-
 def limpiar(recurso):
     for puerto in NODOS + [PUERTO_ALMACEN]:
         r = _nodo(puerto)
         if r:
             r.ejecutar("DEL", recurso, "almacen:factura", "almacen:factura:token", "fencing:" + recurso)
             r.cerrar()
-
 
 def escenario_mayoria():
     lock = Redlock()
@@ -2242,7 +2206,6 @@ def escenario_mayoria():
     caido.liberar("lock:factura", b["valor"])
     c = dos_caidos.adquirir("lock:factura", 1000)
     return a, b, c
-
 
 def escenario_pausa(con_fencing: bool):
     """A toma el candado, se pausa (GC, swap...) más que el TTL; B toma el candado y escribe; A despierta y escribe."""
@@ -2273,7 +2236,6 @@ def escenario_pausa(con_fencing: bool):
     return {"a": a, "b": b, "token_a": token_a, "token_b": token_b, "acepta_b": acepta_b,
             "acepta_a": acepta_a, "liberados_por_a": liberados_por_a, "final": final}
 
-
 if __name__ == "__main__":
     a, b, c = escenario_mayoria()
     print(f"3 nodos vivos      -> candado: {'SÍ' if a['valor'] else 'NO'} ({a['nodos']}/3 nodos, validez {a['validez_ms']:.0f} ms de 1000)")
@@ -2292,7 +2254,6 @@ if __name__ == "__main__":
 1. Levanta los 4 Redis y ejecuta el simulador:
 
 ```bash
-cd examples/microservicios/modulo-8
 docker compose up -d --wait redis redis-a redis-b redis-c
 cd simuladores && python3 redlock_fencing.py
 ```
@@ -2339,7 +2300,6 @@ cd .. && docker compose start redis-b redis-c
 Tests que deben pasar (con los 4 Redis levantados):
 
 ```bash
-cd examples/microservicios/modulo-8
 (cd simuladores && python3 -m unittest -v test_simuladores.RedlockTest)
 (cd f039-redlock-fencing && ../gradlew test)
 ```
@@ -2412,8 +2372,8 @@ la operación idempotente, o reduce lo que se hace bajo el candado.
 
 #### 1. UBICACIÓN
 
-Módulo 4, Lección 4 de 4 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-8/f040-cache-stampede/` y
-`examples/microservicios/modulo-8/simuladores/stampede.py`.
+Módulo 4, Lección 4 de 4 · Fase 1 · 2 h
+`stampede.py`.
 
 #### 2. PRERREQUISITOS
 
@@ -2519,7 +2479,7 @@ el resultado. Para que solo una vaya se usa un **candado** en Redis, como el de 
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25** (hilos virtuales en el test), **Spring Boot 4.1.3**, **Spring Data Redis 4.1.3**,
-**Lettuce 7.5.2**, imagen **`redis:8.10.2`**. Proyecto en `examples/microservicios/modulo-8/f040-cache-stampede/`.
+**Lettuce 7.5.2**, imagen **`redis:8.10.2`**. Proyecto en el código de este tema.
 
 `f040-cache-stampede/build.gradle.kts`:
 
@@ -2836,7 +2796,6 @@ HILOS = 50
 LATENCIA_BD = 0.2
 LIBERAR = "if redis.call('GET', KEYS[1]) == ARGV[1] then return redis.call('DEL', KEYS[1]) else return 0 end"
 
-
 class Base:
     def __init__(self):
         self.consultas = 0
@@ -2848,7 +2807,6 @@ class Base:
         time.sleep(LATENCIA_BD)                            # consulta cara
         return f"producto-{id_}"
 
-
 def sin_proteccion(r, base, id_):
     clave = f"producto::{id_}"
     valor = r.ejecutar("GET", clave)
@@ -2856,7 +2814,6 @@ def sin_proteccion(r, base, id_):
         valor = base.consultar(id_)                        # ...y todos van a la base
         r.ejecutar("SET", clave, valor, "EX", 60)
     return valor
-
 
 def con_candado(r, base, id_, primer_ganador_muere=None, ttl_candado_ms=2000):
     clave, candado = f"producto::{id_}", f"lock:producto::{id_}"
@@ -2878,7 +2835,6 @@ def con_candado(r, base, id_, primer_ganador_muere=None, ttl_candado_ms=2000):
             return valor
         time.sleep(0.02)                                    # perdedores: esperan y vuelven a mirar la caché
     raise TimeoutError("la caché no se llenó a tiempo")
-
 
 def carrera(estrategia, id_, **kw):
     r0 = conectar()
@@ -2909,7 +2865,6 @@ def carrera(estrategia, id_, **kw):
     return {"consultas": base.consultas, "respuestas": len(resultados), "errores": errores,
             "ms": (time.monotonic() - inicio) * 1000}
 
-
 if __name__ == "__main__":
     a = carrera(sin_proteccion, 1)
     print(f"SIN protección  -> {a['respuestas']} respuestas, {a['consultas']} consultas a la base")
@@ -2925,7 +2880,6 @@ if __name__ == "__main__":
 1. Ejecuta el simulador:
 
 ```bash
-cd examples/microservicios/modulo-8
 docker compose up -d --wait redis
 cd simuladores && python3 stampede.py
 ```
@@ -2966,7 +2920,6 @@ docker compose exec redis redis-cli MONITOR | grep -c '"lock:catalogo::2"'
 Tests que deben pasar (con `docker compose up -d --wait redis`):
 
 ```bash
-cd examples/microservicios/modulo-8
 (cd simuladores && python3 -m unittest -v test_simuladores.StampedeTest)
 (cd f040-cache-stampede && ../gradlew test)
 ```

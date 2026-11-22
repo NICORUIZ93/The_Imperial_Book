@@ -1,8 +1,0 @@
-server:
-  port: 8081
-temporal:
-  direccion: ${TEMPORAL_ADDRESS:localhost:7233}   # `temporal server start-dev` escucha aquí
-pagos:
-  url: ${PAGOS_URL:http://localhost:8090}
-reservas:
-  cobros-por-segundo: ${COBROS_POR_SEGUNDO:0}     # 0 = sin límite (antes); 18 = ADR-0002 (después)

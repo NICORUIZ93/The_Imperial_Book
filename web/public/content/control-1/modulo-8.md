@@ -400,14 +400,14 @@ usa los valores del Ejemplo 3 (\(R_a=2,\ K=0{,}5,\ J=0{,}05,\ B=0{,}01\), sin in
 **Fuentes oficiales:** [Modelado de sistemas, Feedback Systems (Åström y Murray)](https://fbswiki.org/wiki/index.php/System_Modeling).
 
 - Térmico (horno)Capacidad térmica \(C\) y resistencia térmica \(R\) hacia el ambiente. Balance de energía: lo que entra menos lo que sale se acumula.
-  
+
   \[C\frac{dT}{dt} = q - \frac{T - T_a}{R}\]
-  
+
   Con \(\theta = T - T_a\): \(\dfrac{\Theta}{Q} = \dfrac{R}{RCs+1}\).
 - Hidráulico (tanque)Área \(A\) y válvula de salida con resistencia \(R\) (\(q_o = h/R\)). Balance de masa:
-  
+
   \[A\frac{dh}{dt} = q_i - \frac{h}{R}\]
-  
+
   \(\dfrac{H}{Q_i} = \dfrac{R}{ARs+1}\).
 
 #### Ejemplo 1 · Tanque · *Intermedio*
@@ -502,7 +502,7 @@ cambia `A, R` a los del horno del Ejemplo 2 (\(C_t=500\), \(R_t=0{,}2\), usando 
 
 **Límite:** este modelo de primer orden asume mezcla perfecta y una pérdida lineal con la salida; un tanque con válvula de salida turbulenta real (\(q\propto\sqrt h\)) no es lineal y esta fórmula es solo una linealización alrededor de un punto de operación.
 
-**Conexión con el proyecto integrador:** el proyecto `examples/control-1-tanque/` usa exactamente este modelo lineal, con \(A=2\) m² y salida \(q=0{,}5h\) (es decir \(R=1/0{,}5=2\) s/m²). Calcula \(G(s)=R/(ARs+1)\) con esos valores (\(K=2\), \(\tau=4\) s) y anótalo como el primer dato de tu bitácora antes de ejecutar `simular.py`.
+**Conexión con el proyecto integrador:** el proyecto `control-1-tanque` usa exactamente este modelo lineal, con \(A=2\) m² y salida \(q=0{,}5h\) (es decir \(R=1/0{,}5=2\) s/m²). Calcula \(G(s)=R/(ARs+1)\) con esos valores (\(K=2\), \(\tau=4\) s) y anótalo como el primer dato de tu bitácora antes de ejecutar `simular.py`.
 
 ### Tema 5: Analogías entre sistemas eléctricos, mecánicos y térmicos · Avanzado · 40 min
 
@@ -613,18 +613,17 @@ usa la analogía del Ejemplo 5 (\(J=0{,}5\), \(B=2\) ↔ \(L=0{,}5\), \(R=2\)) y
 #### Práctica para resolver sola o solo
 
 - **1.**\(m = 2\), \(b = 8\), \(k = 50\). \(\omega_n\), \(\zeta\), \(G(s)\).
-  
+
   <details><summary>Respuesta</summary>
-  
+
   \(G = \dfrac{1}{2s^2+8s+50} = \dfrac{0{,}5}{s^2+4s+25}\); \(\omega_n = 5\), \(\zeta = 0{,}4\).
-  
+
   </details>
 
 - **2.**Horno con \(R = 0{,}5\) °C/W y \(C = 400\) J/°C. \(\tau\) y aumento con 200 W.
-  
-  <details><summary>Respuesta</summary>
-  
-  \(\tau = RC = 200\) s; \(\Delta\theta = 200\cdot0{,}5 = 100\) °C.
-  
-  </details>
 
+  <details><summary>Respuesta</summary>
+
+  \(\tau = RC = 200\) s; \(\Delta\theta = 200\cdot0{,}5 = 100\) °C.
+
+  </details>

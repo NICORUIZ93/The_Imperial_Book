@@ -2,12 +2,12 @@
 
 **Fase 2 · Node.js de cero a experto** (una semana de 12). **Duración:** 12 h (6 temas de unos 100 min y 2 h de
 laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 14 (Express, middleware, validación con
-Zod), Módulo 15 (MongoDB) y Módulo 19 (timeouts y fallbacks, para fallar cerrado). **Herramientas:** **Node.js 26.13.1
+Zod), Módulo 15 (MongoDB) y Módulo 19 (timeouts y fallbacks, para fallar cerrado). **Herramientas:**Node.js 26.13.1
 LTS**, **express 5.3.0**, **jsonwebtoken 9.0.3**, **passport 0.7.0** con **passport-local 1.0.0** y **passport-jwt
 4.0.1**, **helmet 8.3.0**, **cors 2.8.6**, **zod 4.6.7**, **mongodb 7.9.1** (driver) con **MongoDB 9.0.8**,
 **@aws-sdk/client-secrets-manager 3.1173.0**, **node-vault 0.13.0** con **Vault 2.2.0**, **@azure/keyvault-secrets
 4.12.0** y **@azure/identity 4.14.1**; emuladores **Floci 2.2.0** (AWS) y **Floci-Az 0.14.0** (Azure).
-**Laboratorio:** `examples/microservicios/modulo-24/` (`./verificar.sh` ejecuta 34 tests y cada ataque contra las dos
+**Laboratorio:** `modulo-24` (`./verificar.sh` ejecuta 34 tests y cada ataque contra las dos
 versiones; `./verificar.sh --compose` añade MongoDB y los tres gestores de secretos).
 
 La seguridad de un microservicio no es una capa que se pone al final: es **cada decisión** sobre quién entra, qué ve,
@@ -37,13 +37,11 @@ común. El tema 5 lleva al tema 6 (secretos con AWS Secrets Manager, Vault y Azu
 **Cómo usar el laboratorio.** Con Node 26:
 
 ```bash
-cd examples/microservicios/modulo-24
 npm ci
 ./verificar.sh              # 34 tests + ataques de las 6 fichas (sin Docker) → «RESULTADO: OK»
 ./verificar.sh --compose    # además MongoDB 9.0.8, Floci, Floci-Az y Vault 2.2.0 con Docker Compose
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-24`** después de `npm ci`. Los
 archivos `antes.js` son vulnerables **a propósito**: no copies nada de ellos.
 
 `package.json` del laboratorio (con `package-lock.json` que fija el árbol completo; `npm audit --omit=dev` respondió
@@ -132,7 +130,7 @@ services:
 
 #### 1. UBICACIÓN
 
-Módulo 20, Lección 1 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-24/f124-jwt/`.
+Módulo 20, Lección 1 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -627,7 +625,7 @@ cada caja y una sola llave (privada) en el emisor.
 
 #### 1. UBICACIÓN
 
-Módulo 20, Lección 2 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-24/f125-passport/`.
+Módulo 20, Lección 2 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1075,7 +1073,7 @@ verificación.
 
 #### 1. UBICACIÓN
 
-Módulo 20, Lección 3 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-24/f126-helmet-cors/`.
+Módulo 20, Lección 3 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1497,7 +1495,7 @@ Cómo se ve en el código: cualquier `origin:` de `cors()` que no sea una lista 
 
 #### 1. UBICACIÓN
 
-Módulo 20, Lección 4 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-24/f127-nosql/`.
+Módulo 20, Lección 4 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2018,7 +2016,7 @@ variable que viene de `req` sin pasar por un esquema.
 
 #### 1. UBICACIÓN
 
-Módulo 20, Lección 5 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-24/f128-owasp/`.
+Módulo 20, Lección 5 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2504,7 +2502,7 @@ En un diagrama se ve como un candado solo en la puerta exterior del edificio y t
 
 #### 1. UBICACIÓN
 
-Módulo 20, Lección 6 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-24/f129-secretos/`.
+Módulo 20, Lección 6 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2612,7 +2610,7 @@ porque la clave se rotó, el servicio llama a obtener con forzar true y vuelve a
   Secrets Manager usa `AWSPENDING` → `AWSCURRENT`). El servicio que recibe un error de autenticación recarga **una vez**
   y reintenta; si vuelve a fallar, no insiste (alerta).
 - **Fugas típicas además del código:** logs (incluido el log de errores del driver, que a veces imprime la cadena de
-  conexión), endpoints de diagnóstico, variables en la salida de CI, capas de imágenes Docker (`ENV` y `COPY .env`),
+  conexión), endpoints de diagnóstico, variables en la salida de CI, capas de imágenes Docker (`ENV` y `COPY.env`),
   historial de Git. Herramientas como gitleaks o el *push protection* de GitHub detectan secretos antes de que entren.
 - **Cuándo NO usar un gestor externo:** un proyecto personal sin nube puede vivir con `--env-file` (Node 26) fuera del
   repositorio; lo que nunca es aceptable es el secreto dentro del código.
@@ -3197,7 +3195,7 @@ de Vault, que caducan solas, y activo la auditoría del gestor para saber quién
 #### 14. ANTI-PATRÓN RELACIONADO
 
 **El `.env` de producción en el repositorio (o en la imagen).** Evita commitear un `.env` «solo de staging», copiarlo
-con `COPY . .` dentro de la imagen Docker o pasarlo con `ENV` en el Dockerfile: queda en el historial de Git y en cada
+con `COPY..` dentro de la imagen Docker o pasarlo con `ENV` en el Dockerfile: queda en el historial de Git y en cada
 capa de la imagen, y borrarlo después no lo borra del historial.
 
 ```dockerfile

@@ -12,10 +12,8 @@ El laboratorio fija Java 25 y Spring Boot 4.1.2. Todas las pruebas pasan por el 
 
 **Prerrequisitos:** M2, DTOs, JSON y HTTP. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-graphql-rutaflow practica-m24-t1
+cp -R spring-graphql-rutaflow practica-m24-t1
 cd practica-m24-t1
 ./mvnw -q test
 ```
@@ -96,10 +94,8 @@ cd practica-m24-t1
 
 **Prerrequisitos:** M14 T1 y colecciones Java. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-graphql-rutaflow practica-m24-t2
+cp -R spring-graphql-rutaflow practica-m24-t2
 cd practica-m24-t2
 ./mvnw -q test
 ```
@@ -172,7 +168,6 @@ cd practica-m24-t2
 
 **Fuente primaria:** [Spring GraphQL: BatchMapping](https://docs.spring.io/spring-graphql/reference/controllers.html#controllers.batch-mapping)
 
-
 **Aplicación y decisión:** Límite de la demostración N+1: el contador mide llamadas al método batch, no consultas SQL ni tiempo ahorrado. Mantén autorización por empresa y mide el repositorio real antes de convertir ese conteo en una recomendación de rendimiento.
 
 ### Tema 3: mutations y subscriptions · Avanzado · 30 min
@@ -183,10 +178,8 @@ cd practica-m24-t2
 
 **Prerrequisitos:** M14 T1, Flux y pruebas Reactor. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-graphql-rutaflow practica-m24-t3
+cp -R spring-graphql-rutaflow practica-m24-t3
 cd practica-m24-t3
 ./mvnw -q test
 ```
@@ -267,10 +260,8 @@ cd practica-m24-t3
 
 **Prerrequisitos:** M6 y M14 T1–T3. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-graphql-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-graphql-rutaflow practica-m24-t4
+cp -R spring-graphql-rutaflow practica-m24-t4
 cd practica-m24-t4
 ./mvnw -q test
 ```

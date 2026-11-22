@@ -2,9 +2,9 @@
 
 Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2. Ejecuta los ejemplos con la base H2 de pruebas; el test comprueba datos reales, no repositorios simulados.
 
-**Prerrequisito sin Spring:** el lado propietario de una relación, las cascadas y el conteo básico de N+1 se enseñan una sola vez, en [Java M16 T1–T2](/curso/java/16), con el mismo laboratorio `examples/java-jpa-lab`. Aquí se usa ese modelo mental y se añade lo propio de Spring Data: repositorios derivados, `@EntityGraph`, páginas DTO y migraciones.
+**Prerrequisito sin Spring:** el lado propietario de una relación, las cascadas y el conteo básico de N+1 se enseñan una sola vez, en [Java M16 T1–T2](/curso/java/16), con el mismo laboratorio `java-jpa-lab`. Aquí se usa ese modelo mental y se añade lo propio de Spring Data: repositorios derivados, `@EntityGraph`, páginas DTO y migraciones.
 
-**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
@@ -471,7 +471,7 @@ Ejecuta desde la raíz:
 
 **Resultado esperado:** pasan los tres tests. El fetch plan explícito de `@EntityGraph` evita las tres lecturas posteriores para esta relación.
 
-**Fallo deliberado y diagnóstico:** cambia `attributePaths = "pedidos"` por `attributePaths = "pedido"`. El test falla al ejecutar `findAll()` con `Unable to locate Attribute ... [pedido] on ... Cliente`; `pedido` no coincide con la propiedad `pedidos`. Restaura el plural.
+**Fallo deliberado y diagnóstico:** cambia `attributePaths = "pedidos"` por `attributePaths = "pedido"`. El test falla al ejecutar `findAll()` con `Unable to locate Attribute... [pedido] on... Cliente`; `pedido` no coincide con la propiedad `pedidos`. Restaura el plural.
 
 **Entiende:** `JOIN FETCH` deja visible la forma JPQL; `@EntityGraph` declara atributos a cargar en el método. Ambos resuelven este acceso concreto. Una colección grande puede multiplicar filas y `JOIN FETCH` de colección junto con paginación requiere cuidado; mide el caso real y evita cargar relaciones que la pantalla no usa. [Spring Data JPA — `@EntityGraph`](https://docs.spring.io/spring-data/jpa/docs/current/api/org/springframework/data/jpa/repository/EntityGraph.html).
 
@@ -482,7 +482,7 @@ Ejecuta desde la raíz:
 
 **¿Por qué es importante?** El Tema 2 corrigió el N+1 con `JOIN FETCH`/`@EntityGraph`. Falta el otro extremo: qué pasa cuando la respuesta HTTP toca una relación que nunca se cargó, y cómo paginar sin traer entidades completas.
 
-**Prerrequisitos:** Tema 2 de este módulo y [Java M16 T1–T2](/curso/java/16) (lado propietario, `LAZY`/`EAGER` y conteo de N+1 con el mismo laboratorio `examples/java-jpa-lab`, sin Spring). Este tema no repite esas prácticas.
+**Prerrequisitos:** Tema 2 de este módulo y [Java M16 T1–T2](/curso/java/16) (lado propietario, `LAZY`/`EAGER` y conteo de N+1 con el mismo laboratorio `java-jpa-lab`, sin Spring). Este tema no repite esas prácticas.
 
 **Evidencia final:** la prueba que espera `LazyInitializationException` al cerrar el `EntityManager` y una página de resumen con dos campos, su total y la señal de página siguiente.
 
@@ -490,7 +490,7 @@ Ejecuta desde la raíz:
 
 **Contexto:** Una relación `LAZY` puede consultarse mientras el contexto de persistencia sigue abierto. Si entregas una entidad con una asociación sin cargar y cierras ese contexto, ya no hay sesión que pueda buscarla.
 
-**Hazlo tú:** Abre `examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java`. Ejecuta la prueba que escribe en un contexto, vuelve a leer en otro y cierra el segundo antes de tocar el cliente:
+**Hazlo tú:** Observa PedidoJpaLabTest.java y. Ejecuta la prueba que escribe en un contexto, vuelve a leer en otro y cierra el segundo antes de tocar el cliente:
 
 ```bash
 ./mvnw -Dtest=PedidoJpaLabTest#accederRelacionLazyDespuesDeSepararLaEntidadFallaConDiagnosticoClaro test

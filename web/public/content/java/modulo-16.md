@@ -23,10 +23,9 @@ Un pedido debe conservar el ID de su cliente incluso después de cerrar el conte
 
 **2. Hazlo tú**
 
-Abre **examples/java-jpa-lab/src/main/java/academia/pedidos/Cliente.java** y **Pedido.java**. Ejecuta:
+Abre **Cliente.java** y **Pedido.java**. Ejecuta:
 
 ~~~bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
 ~~~
 
@@ -50,7 +49,7 @@ Un pedido sin referencia no se debe guardar.
 
 **2. Hazlo tú**
 
-En **examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java** agrega la validación de referencia y la restricción de columna requerida. Añade un caso válido y otro vacío en **src/test/java/academia/pedidos/PedidoJpaLabTest.java** y ejecuta ./mvnw -q test desde examples/java-jpa-lab.
+En **Pedido.java** agrega la validación de referencia y la restricción de columna requerida. Añade un caso válido y otro vacío en **src/test/java/academia/pedidos/PedidoJpaLabTest.java** y ejecuta ./mvnw -q test desde el código de este tema.
 
 **Resultado esperado:** la referencia vacía se rechaza y el pedido válido se persiste.
 
@@ -91,7 +90,6 @@ Guarda el test y la política elegida. Fuente: [Jakarta Persistence](https://jak
 #### Fragmento real
 
 ```java
-// examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java
 @Entity
 public class Pedido {
     @Id @GeneratedValue
@@ -109,7 +107,6 @@ public class Pedido {
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
 ```
 
@@ -133,7 +130,7 @@ Un cliente tiene como máximo un perfil de entrega.
 
 **2. Hazlo tú**
 
-Crea **examples/java-jpa-lab/src/main/java/academia/pedidos/PerfilEntrega.java** con @OneToOne y una clave cliente_id con restricción única. Agrega test de unicidad en **PedidoJpaLabTest.java** y ejecuta ./mvnw -q test.
+Crea **PerfilEntrega.java** con @OneToOne y una clave cliente_id con restricción única. Agrega test de unicidad en **PedidoJpaLabTest.java** y ejecuta ./mvnw -q test.
 
 **Resultado esperado:** la base rechaza el segundo perfil para el mismo cliente.
 
@@ -198,7 +195,6 @@ Guarda la consulta y el criterio de elección. Fuente: [Jakarta Persistence](htt
 #### Fragmento real
 
 ```java
-// examples/java-jpa-lab/src/main/java/academia/pedidos/PerfilEntrega.java
 @Entity
 public class PerfilEntrega {
     @Id @GeneratedValue
@@ -213,7 +209,6 @@ public class PerfilEntrega {
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q test
 ```
 
@@ -259,7 +254,7 @@ Operaciones lista pedidos por cliente en orden de referencia.
 
 **2. Hazlo tú**
 
-En **PedidoRepository.java** revisa listarPorCliente y la consulta select p from Pedido p where p.cliente.id = :clienteId order by p.referencia. Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test`.
+En **PedidoRepository.java** revisa listarPorCliente y la consulta select p from Pedido p where p.cliente.id =:clienteId order by p.referencia. Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test`.
 
 **Resultado esperado:** devuelve RT-101 y RT-102 en ese orden.
 
@@ -281,7 +276,7 @@ Editar un objeto desconectado no actualiza automáticamente su fila.
 
 **2. Hazlo tú**
 
-En **Pedido.java** agrega un método de dominio cambiarReferencia(String valor). En **PedidoJpaLabTest.java** persiste un pedido, llama entityManager.clear(), cambia la referencia del objeto separado con ese método y vuelve a consultar. Ejecuta ./mvnw -q test.
+En **Pedido.java** agrega un método de dominio cambiarReferencia(String valor). En **PedidoJpaLabTest.java** persiste un pedido, llama entityManager.clear(), cambia la referencia del objeto separado con ese método y vuelve a consultar. Ejecuta./mvnw -q test.
 
 **Resultado esperado:** la base conserva el dato anterior porque esa instancia ya no está administrada.
 
@@ -314,7 +309,6 @@ Pedido recargado = entityManager.find(Pedido.class, pedido.getId());
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=PedidoJpaLabTest#guardaLosDosLadosYConsultaPorClienteConJpql test
 ```
 
@@ -334,7 +328,7 @@ Operaciones quiere encontrar guías cuya referencia comience con RT-.
 
 **2. Hazlo tú**
 
-Abre **examples/java-jpa-lab/src/main/java/academia/pedidos/BusquedaPedido.java** y ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` desde examples/java-jpa-lab.
+Abre **BusquedaPedido.java** y ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` desde el código de este tema.
 
 **Resultado esperado:** el resultado incluye RT-201 y excluye OT-202.
 
@@ -378,7 +372,7 @@ El equipo quiere consultas legibles con campos revisados por compilador.
 
 **2. Hazlo tú**
 
-En **examples/java-jpa-lab/pom.xml** agrega Querydsl JPA para Jakarta y su procesador, según la guía oficial. Genera Q-types, escribe la consulta de prefijo equivalente a Criteria y ejecuta ./mvnw -q test.
+En **pom.xml** agrega Querydsl JPA para Jakarta y su procesador, según la guía oficial. Genera Q-types, escribe la consulta de prefijo equivalente a Criteria y ejecuta ./mvnw -q test.
 
 **Resultado esperado:** ambas consultas producen las mismas referencias.
 
@@ -401,7 +395,6 @@ Con Querydsl, inspecciona el archivo de tipos generado y confirma que el plugin 
 #### Fragmento real
 
 ```java
-// examples/java-jpa-lab/src/main/java/academia/pedidos/BusquedaPedido.java
 CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 CriteriaQuery<Pedido> query = cb.createQuery(Pedido.class);
 Root<Pedido> raiz = query.from(Pedido.class);
@@ -411,7 +404,6 @@ query.where(cb.like(raiz.get("referencia"), "RT-%"));
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test
 ```
 
@@ -435,7 +427,7 @@ La pantalla necesita el nombre del cliente al presentar un pedido.
 
 **2. Hazlo tú**
 
-En **Pedido.java** conserva @ManyToOne(fetch = FetchType.LAZY). En **PedidoJpaLabTest.java** limpia el contexto con entityManager.clear() y lee pedido.getCliente().getNombre() dentro del test. Ejecuta ./mvnw -q test.
+En **Pedido.java** conserva @ManyToOne(fetch = FetchType.LAZY). En **PedidoJpaLabTest.java** limpia el contexto con entityManager.clear() y lee pedido.getCliente().getNombre() dentro del test. Ejecuta./mvnw -q test.
 
 **Resultado esperado:** Hibernate carga la asociación mientras la transacción está activa.
 
@@ -457,7 +449,7 @@ Un listado carga N pedidos y luego consulta cada cliente por separado.
 
 **2. Hazlo tú**
 
-En **examples/java-jpa-lab/src/test/java/academia/pedidos/PedidoJpaLabTest.java**, ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde examples/java-jpa-lab y observa Hibernate Statistics.
+En **PedidoJpaLabTest.java**, ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde el código de este tema y observa Hibernate Statistics.
 
 **Resultado esperado:** N+1 produce más sentencias que la lectura con EntityGraph.
 
@@ -500,7 +492,6 @@ Anota campos de listado y de detalle.
 #### Fragmento real
 
 ```java
-// examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java
 @EntityGraph(attributePaths = "cliente")
 List<Pedido> findAllWithClienteByOrderByReferenciaAsc();
 ```
@@ -508,7 +499,6 @@ List<Pedido> findAllWithClienteByOrderByReferenciaAsc();
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test
 ```
 
@@ -532,7 +522,7 @@ La vista de pedido necesita mostrar el nombre del cliente.
 
 **2. Hazlo tú**
 
-En **examples/java-jpa-lab/src/main/java/academia/pedidos/PedidoRepository.java** revisa @EntityGraph(attributePaths = "cliente"). Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` y `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde examples/java-jpa-lab.
+En **PedidoRepository.java** revisa @EntityGraph(attributePaths = "cliente"). Ejecuta `./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test` y `./mvnw -q -Dtest=PedidoJpaLabTest#comparaNMasUnoConCargaPorEntityGraph test` desde el código de este tema.
 
 **Resultado esperado:** aparece el cliente y la ruta de detalle reduce consultas observadas.
 
@@ -554,7 +544,7 @@ Dos búsquedas del mismo ID ocurren dentro del mismo EntityManager.
 
 **2. Hazlo tú**
 
-En **PedidoJpaLabTest.java** llama dos veces find para el mismo pedido, compara identidad, llama clear() y busca de nuevo. Ejecuta ./mvnw -q test.
+En **PedidoJpaLabTest.java** llama dos veces find para el mismo pedido, compara identidad, llama clear() y busca de nuevo. Ejecuta./mvnw -q test.
 
 **Resultado esperado:** dentro del mismo contexto se reutiliza instancia; después de clear se carga otra.
 
@@ -576,7 +566,7 @@ El catálogo puede leerse muchas veces, pero una tarifa mutable puede quedar obs
 
 **2. Hazlo tú**
 
-En **examples/java-jpa-lab/pom.xml** habilita un proveedor de caché compatible con la versión fijada de Spring/Hibernate; marca solo el catálogo como cacheable y compara lecturas desde dos EntityManager. Ejecuta ./mvnw -q test.
+En **pom.xml** habilita un proveedor de caché compatible con la versión fijada de Spring/Hibernate; marca solo el catálogo como cacheable y compara lecturas desde dos EntityManager. Ejecuta./mvnw -q test.
 
 **Resultado esperado:** la medición indica si se evita SQL bajo esa configuración.
 
@@ -608,7 +598,6 @@ Pedido tercero = entityManager.find(Pedido.class, id); // instancia nueva
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q -Dtest=PedidoJpaLabTest#entityGraphCargaClienteYCriteriaBuscaPorPrefijo test
 ```
 
@@ -632,7 +621,7 @@ Dos transacciones cargan el mismo pedido y guardan cambios.
 
 **2. Hazlo tú**
 
-En **examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java** revisa @Version; crea un test que cargue dos instancias, guarde la primera y después la segunda. Ejecuta ./mvnw -q test.
+En **Pedido.java** revisa @Version; crea un test que cargue dos instancias, guarde la primera y después la segunda. Ejecuta./mvnw -q test.
 
 **Resultado esperado:** la segunda escritura detecta una versión obsoleta.
 
@@ -699,7 +688,6 @@ Una transacción aplicada por proxy afecta llamadas que atraviesan ese proxy; un
 #### Fragmento real
 
 ```java
-// examples/java-jpa-lab/src/main/java/academia/pedidos/Pedido.java
 @Entity
 public class Pedido {
     @Version
@@ -710,7 +698,6 @@ public class Pedido {
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q test
 ```
 
@@ -734,7 +721,7 @@ Añadir estado al pedido no debería depender de Hibernate recreando la tabla al
 
 **2. Hazlo tú**
 
-Crea V1__crear_tablas.sql y V2__agregar_estado_pedido.sql bajo **examples/java-jpa-lab/src/main/resources/db/migration/**. Configura Flyway en **examples/java-jpa-lab/pom.xml** y ejecuta `./mvnw -q test` desde examples/java-jpa-lab.
+Crea V1__crear_tablas.sql y V2__agregar_estado_pedido.sql bajo **migration**. Configura Flyway en **pom.xml** y ejecuta `./mvnw -q test` desde el código de este tema.
 
 **Resultado esperado:** se aplican migraciones en orden y el log informa las versiones.
 
@@ -756,7 +743,7 @@ H2 puede aceptar SQL que el motor de producción interpreta distinto.
 
 **2. Hazlo tú**
 
-En **examples/java-jpa-lab/pom.xml** fija Flyway mediante el BOM de Spring Boot 4.1.2, agrega org.flywaydb:flyway-database-postgresql, org.postgresql:postgresql:42.7.14 y org.testcontainers:testcontainers-junit-jupiter:2.0.5 y testcontainers-postgresql:2.0.5 en scope test. Crea **src/test/java/academia/pedidos/PedidoPostgresTest.java** con @Testcontainers y PostgreSQLContainer<>("postgres:17.11-alpine3.24"). Ejecuta ./mvnw -q -Dtest=PedidoPostgresTest test con Docker activo.
+En **pom.xml** fija Flyway mediante el BOM de Spring Boot 4.1.2, agrega org.flywaydb:flyway-database-postgresql, org.postgresql:postgresql:42.7.14 y org.testcontainers:testcontainers-junit-jupiter:2.0.5 y testcontainers-postgresql:2.0.5 en scope test. Crea **src/test/java/academia/pedidos/PedidoPostgresTest.java** con @Testcontainers y PostgreSQLContainer<>("postgres:17.11-alpine3.24"). Ejecuta./mvnw -q -Dtest=PedidoPostgresTest test con Docker activo.
 
 **Resultado esperado:** migraciones y repositorio corren contra PostgreSQL desechable.
 
@@ -795,14 +782,13 @@ Guarda migración, error y consulta de comprobación.
 #### Fragmento real
 
 ```sql
--- examples/java-jpa-lab/src/main/resources/db/migration/V2__agregar_estado_pedido.sql
+-- V2__agregar_estado_pedido.sql
 ALTER TABLE pedido ADD COLUMN estado VARCHAR(20) NOT NULL DEFAULT 'PENDIENTE';
 ```
 
 Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -q test
 ```
 

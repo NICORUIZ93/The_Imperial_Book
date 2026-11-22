@@ -594,39 +594,38 @@ cambia los datos a los del Ejemplo 3 (`y_inf=2.5, t_obs=12, y_obs=1.58`) y confi
 
 **Límite:** esta fórmula identifica un modelo de primer orden sin retardo; si la curva tarda en arrancar (Ejemplo 5), primero hay que restar ese retardo \(T\) del tiempo observado antes de aplicar la fórmula, o \(\tau\) saldrá sobreestimado.
 
-**Conexión con el proyecto integrador:** ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` y abre `tanque-P.csv`. Antes de \(t=5\) s la altura está quieta en 1,0 m, así que ahí no hay transitorio que medir: usa las filas **desde** \(t=5\) s. Toma \(\Delta y = y_\infty - 1{,}0\) con la altura final, busca la primera fila que alcanza \(1{,}0 + 0{,}632\,\Delta y\) y resta 5 s a su tiempo. Ese CSV es el **lazo cerrado con P** (\(K_p=0{,}8\)), no la planta sola: debes obtener \(K = \Delta y/\Delta r \approx 0{,}615\) (con \(\Delta r = 0{,}5\) m) y \(\tau \approx 1{,}54\) s. Compáralo con el lazo cerrado que sale de la planta \(G(s)=2/(4s+1)\) del módulo 8: \(T(s)=\dfrac{0{,}8\,G}{1+0{,}8\,G}=\dfrac{1{,}6}{4s+2{,}6}=\dfrac{0{,}615}{1{,}54\,s+1}\). La realimentación hace la respuesta más rápida (\(\tau\) pasa de 4 s a 1,54 s) a cambio de un error permanente. Anota ambos modelos en tu bitácora.
+**Conexión con el proyecto integrador:** ejecuta `python3 simular.py --salida /tmp/control-1-tanque` y abre `tanque-P.csv`. Antes de \(t=5\) s la altura está quieta en 1,0 m, así que ahí no hay transitorio que medir: usa las filas **desde** \(t=5\) s. Toma \(\Delta y = y_\infty - 1{,}0\) con la altura final, busca la primera fila que alcanza \(1{,}0 + 0{,}632\,\Delta y\) y resta 5 s a su tiempo. Ese CSV es el **lazo cerrado con P** (\(K_p=0{,}8\)), no la planta sola: debes obtener \(K = \Delta y/\Delta r \approx 0{,}615\) (con \(\Delta r = 0{,}5\) m) y \(\tau \approx 1{,}54\) s. Compáralo con el lazo cerrado que sale de la planta \(G(s)=2/(4s+1)\) del módulo 8: \(T(s)=\dfrac{0{,}8\,G}{1+0{,}8\,G}=\dfrac{1{,}6}{4s+2{,}6}=\dfrac{0{,}615}{1{,}54\,s+1}\). La realimentación hace la respuesta más rápida (\(\tau\) pasa de 4 s a 1,54 s) a cambio de un error permanente. Anota ambos modelos en tu bitácora.
 
 #### Práctica para resolver sola o solo
 
 - **1.**Impulso y escalón de \(\dfrac{8}{4s+2}\).
-  
+
   <details><summary>Respuesta</summary>
-  
+
   \(\dfrac{4}{2s+1}\): impulso \(2e^{-0{,}5t}\), escalón \(4(1-e^{-0{,}5t})\).
-  
+
   </details>
 
 - **2.**Escalón de \(\dfrac{3e^{-2s}}{s+3}\).
-  
+
   <details><summary>Respuesta</summary>
-  
+
   \(\left(1-e^{-3(t-2)}\right)u(t-2)\).
-  
+
   </details>
 
 - **3.**Con escalón unitario la salida llega a 10 y vale 6,32 en \(t = 0{,}3\) s, sin retardo. Halla \(G\).
-  
+
   <details><summary>Respuesta</summary>
-  
+
   \(\dfrac{10}{0{,}3s+1}\).
-  
+
   </details>
 
 - **4.**Impulso de \(\dfrac{6e^{-s}}{3s+1}\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(2e^{-(t-1)/3}u(t-1)\).
-  
-  </details>
 
+  <details><summary>Respuesta</summary>
+
+  \(2e^{-(t-1)/3}u(t-1)\).
+
+  </details>

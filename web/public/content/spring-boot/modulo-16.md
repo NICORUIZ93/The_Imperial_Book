@@ -1,6 +1,5 @@
 # Módulo 16: Microservicios con Spring Cloud
 
-
 ## Aprende construyendo
 
 Cada tema demuestra un patrón de Spring Cloud con verificación real: config server nativo servido por HTTP, `SimpleDiscoveryClient` real de Spring Cloud Commons, Gateway enrutando de verdad contra un backend embebido, un `CircuitBreaker` de Resilience4j abriéndose por conteo real de fallos, seguridad de recurso probada con el post-processor oficial de `spring-security-test`, y un deadline HTTP real medido en milisegundos. Continúa sobre el proyecto `demo-cloud`.
@@ -18,10 +17,9 @@ Cada tema demuestra un patrón de Spring Cloud con verificación real: config se
 Un servicio de pedidos debe obtener un valor compartido por HTTP para que puedas cambiarlo sin editar su código fuente.
 
 **2. Hazlo tú**
-Crea el proyecto `demo-config-server` con Spring Initializr, Java 25 y las dependencias web y `cloud-config-server`. Spring Initializr selecciona el BOM compatible. Para ejecutar la versión comprobada que acompaña este curso, usa `examples/spring-cloud-config-discovery-rutaflow/` desde la raíz del repositorio:
+Crea el proyecto `demo-config-server` con Spring Initializr, Java 25 y las dependencias web y `cloud-config-server`. Spring Initializr selecciona el BOM compatible. Para ejecutar la versión comprobada que acompaña este curso, usa `spring-cloud-config-discovery-rutaflow` desde la raíz del repositorio:
 
 ```bash
-cd examples/spring-cloud-config-discovery-rutaflow
 ./mvnw -q clean test
 ```
 
@@ -196,7 +194,6 @@ flowchart LR
 
 **Transferencia al proyecto integrador:** carga el descuento desde configuración externa y resuelve por nombre la instancia del servicio que administra catálogo.
 
-
 **Aplicación y decisión:** En el proyecto integrador, decide qué configuración admite recarga y cuál exige reinicio. Límite: SimpleDiscoveryClient usa instancias declaradas; no es descubrimiento automático ni garantiza que el destino esté disponible.
 
 ### Tema 2: Spring Cloud Gateway · Intermedio · 35 min
@@ -206,7 +203,7 @@ El gateway recibe una petición y la reenvía al servicio elegido. En este tema 
 **¿Por qué es importante?** Con un gateway puedes ofrecer una dirección de entrada estable aunque los servicios vivan en procesos distintos. Cada petición debe llegar al servicio correcto y el servicio debe seguir autorizando sus propios datos.
 
 **Prerrequisitos:** M16 T1 y saber iniciar una app Spring Boot. El ejemplo verificado usa Java 25, Boot 4.1.2 y Cloud 2025.1.4; para Boot 4.1.x la matriz de Spring Cloud pide la línea 2025.1.2 o posterior. Gateway WebFlux necesita Netty y WebFlux, no una app Servlet.
-**Laboratorio del tema:** `examples/spring-gateway-rutaflow/`. Ejecuta sus pruebas desde esa carpeta con `./mvnw -q clean test`; las rutas y el servicio HTTP local se comprueban sin instalar otro servicio.
+**Laboratorio del tema:** `spring-gateway-rutaflow`. Ejecuta sus pruebas desde esa carpeta con `./mvnw -q clean test`; las rutas y el servicio HTTP local se comprueban sin instalar otro servicio.
 
 #### Subtema 2.1: Crea una ruta para pedidos · 15 min
 
@@ -332,7 +329,6 @@ Conserva dos evidencias: respuesta y log del caso correcto; respuesta y ausencia
 
 **Cuándo usarlo:** cuando varios servicios necesitan un punto de entrada con rutas compartidas. Si solo publicas un servicio sencillo, añade el gateway cuando exista una necesidad concreta de enrutamiento o políticas transversales.
 
-
 **Aplicación y decisión:** En el proyecto integrador, el gateway enruta hacia servicios que siguen aplicando autorización por recurso. No concentres toda la seguridad en una ruta pública del gateway: un acceso interno puede saltarse ese punto de entrada.
 
 ### Tema 3: Circuit breaker con Resilience4j · Intermedio · 30 min
@@ -350,7 +346,7 @@ Conserva dos evidencias: respuesta y log del caso correcto; respuesta y ausencia
 El circuito mide resultados. No se abre por un solo fallo si todavía no alcanza el mínimo de llamadas configurado.
 
 **2. Hazlo tú**
-Abre `examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/CircuitBreakerConfiguration.java` y lee los dos límites `slidingWindowSize` y `minimumNumberOfCalls`. Ejecuta desde `examples/spring-resilience-rutaflow/`:
+Observa CircuitBreakerConfiguration.java y lee los dos límites `slidingWindowSize` y `minimumNumberOfCalls`. Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -Dtest=CircuitBreakerBehaviorTest#abreDespuesDeCuatroFallosYBloqueaLaQuintaLlamada test
@@ -372,7 +368,7 @@ Anota el umbral, tamaño de ventana y cantidad mínima de llamadas.
 El circuito debe rechazar rápido cuando está abierto, sin volver a invocar el servicio que ya está fallando.
 
 **2. Hazlo tú**
-Abre `examples/spring-resilience-rutaflow/src/main/java/academia/rutaflow/resilience/PedidosClient.java` y localiza `executeSupplier`. Ejecuta desde `examples/spring-resilience-rutaflow/`:
+Observa PedidosClient.java y localiza `executeSupplier`. Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -Dtest=CircuitBreakerBehaviorTest#openImpideLaQuintaPeticionHttpAlBackend test
@@ -394,7 +390,7 @@ Conserva el error de llamada bloqueada y explica qué valor comprobó el contado
 Tras una pausa, el circuito permite unas pocas llamadas de prueba para saber si el servicio ya se recuperó.
 
 **2. Hazlo tú**
-Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/CircuitBreakerBehaviorTest.java` y ejecuta desde `examples/spring-resilience-rutaflow/`:
+Observa CircuitBreakerBehaviorTest.java y ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -Dtest=CircuitBreakerBehaviorTest#vuelveACerradoCuandoLasDosLlamadasDePruebaTienenExito test
@@ -436,11 +432,11 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 2 permisos / período ──> [RateLimiter: 2] ─────> la tercera se rechaza
 ```
 
-**Hazlo tú:** Abre `examples/spring-resilience-rutaflow/README.md` y `src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java`. En una hoja, dibuja dos llamadas ocupando los dos espacios del Bulkhead y tres solicitudes que compiten por dos permisos del RateLimiter.
+**Hazlo tú:** Observa README.md y `src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java`. En una hoja, dibuja dos llamadas ocupando los dos espacios del Bulkhead y tres solicitudes que compiten por dos permisos del RateLimiter.
 
 **Resultado esperado:** El primer límite depende de cuántas llamadas siguen activas; el segundo, de cuántos permisos quedan en el período. La tercera llamada de cada ejemplo se rechaza por una razón distinta.
 
-**Fallo deliberado:** Cambia `maxConcurrentCalls(2)` por `maxConcurrentCalls(3)` y ejecuta `./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test` desde `examples/spring-resilience-rutaflow/`. **Diagnóstico:** El test debe fallar porque hay un espacio disponible para la tercera llamada. Restaura el límite a 2 y corre la prueba de nuevo.
+**Fallo deliberado:** Cambia `maxConcurrentCalls(2)` por `maxConcurrentCalls(3)` y ejecuta `./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test` desde el código de este tema. **Diagnóstico:** El test debe fallar porque hay un espacio disponible para la tercera llamada. Restaura el límite a 2 y corre la prueba de nuevo.
 
 **Entiende:** El Bulkhead de semáforo regula el acceso; no crea un grupo aislado de hilos. Resilience4j también ofrece `ThreadPoolBulkhead`, que sí usa un pool y una cola limitada. No prometas que estas primitivas aíslan toda la aplicación.
 
@@ -450,7 +446,7 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **Contexto:** Configurar el objeto no cambia una llamada por sí solo: hay que ejecutar la operación a través de la decoración.
 
-**Hazlo tú:** En `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java`, sigue `Bulkhead.of`, `decorateRunnable`, los dos `CountDownLatch` y `getAvailableConcurrentCalls()`. Ejecuta desde la carpeta del laboratorio:
+**Hazlo tú:** En el código de este tema, sigue `Bulkhead.of`, `decorateRunnable`, los dos `CountDownLatch` y `getAvailableConcurrentCalls()`. Ejecuta desde la carpeta del laboratorio:
 
 ```bash
 ./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#semaphoreBulkheadRechazaUnaTerceraLlamadaMientrasDosSiguenDentro test
@@ -458,7 +454,7 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **Resultado esperado:** El test espera a que dos tareas reales entren, observa cero espacios disponibles y comprueba `BulkheadFullException` en la tercera; luego libera ambas tareas y termina sin dejar hilos ocupados.
 
-**Fallo deliberado:** Quita `Bulkhead.decorateRunnable(bulkhead, ...)` de la tercera llamada y ejecútala directamente. **Diagnóstico:** El rechazo desaparece y la prueba falla. Restaura la decoración y repite el comando.
+**Fallo deliberado:** Quita `Bulkhead.decorateRunnable(bulkhead,...)` de la tercera llamada y ejecútala directamente. **Diagnóstico:** El rechazo desaparece y la prueba falla. Restaura la decoración y repite el comando.
 
 **Entiende:** El límite solo cubre el código que atraviesa este Bulkhead. Si una ruta alternativa llama directo al servicio externo, esta protección no la alcanza.
 
@@ -468,7 +464,7 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **Contexto:** El RateLimiter renueva un número de permisos al empezar cada período. Con espera cero, una llamada sin permiso se rechaza en vez de quedarse esperando.
 
-**Hazlo tú:** Abre `examples/spring-resilience-rutaflow/src/test/java/academia/rutaflow/resilience/BulkheadRateLimiterBehaviorTest.java` y localiza `rateLimiterEntregaDosPermisosYRechazaElTerceroEnElMismoPeriodo`. Ejecuta:
+**Hazlo tú:** Observa BulkheadRateLimiterBehaviorTest.java y localiza `rateLimiterEntregaDosPermisosYRechazaElTerceroEnElMismoPeriodo`. Ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=BulkheadRateLimiterBehaviorTest#rateLimiterEntregaDosPermisosYRechazaElTerceroEnElMismoPeriodo test
@@ -486,7 +482,7 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **Contexto:** Un límite elegido sin medir la dependencia puede rechazar tráfico útil o dejar pasar más carga de la que soporta.
 
-**Hazlo tú:** Revisa `examples/spring-resilience-rutaflow/pom.xml`, `README.md` y los dos tests nuevos. Ejecuta la suite completa:
+**Hazlo tú:** Revisa `pom.xml`, `README.md` y los dos tests nuevos. Ejecuta la suite completa:
 
 ```bash
 ./mvnw -q clean test
@@ -510,8 +506,6 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 
 **¿Por qué es importante?** El Resource Server valida el token, pero el servicio debe decidir además qué acción y qué registro puede usar esa persona. Pasar por un gateway no sustituye esta decisión.
 
-**Laboratorio:** `examples/spring-security-keycloak-rutaflow/`. El proyecto trae una app Boot, pruebas con tokens simulados, un realm importable y comandos para verificar tokens reales de Keycloak.
-
 #### Subtema 5.1: Valida el emisor del token · 15 min
 
 **1. Contexto**
@@ -519,8 +513,6 @@ Dibuja los estados y registra cuántas llamadas se permiten en la prueba de recu
 Una firma válida no basta si el token lo emitió otro proveedor. El `issuer-uri` conecta el Resource Server con el documento OIDC y las claves públicas del realm que acepta.
 
 **2. Hazlo tú**
-
-Desde `examples/spring-security-keycloak-rutaflow/`, ejecuta las pruebas y revisa `src/main/resources/application.yml`:
 
 ```bash
 ./mvnw -q clean test
@@ -605,7 +597,7 @@ Tras iniciar sesión en el gateway, este puede pasar el access token a la API qu
 
 **2. Hazlo tú**
 
-Abre `examples/spring-token-relay-rutaflow/src/main/resources/application.yml` y busca el filtro `TokenRelay=`. Revisa también el starter OAuth2 Client en su `pom.xml`. Levanta Keycloak y la API según `examples/spring-security-keycloak-rutaflow/README.md`; luego inicia Gateway desde `examples/spring-token-relay-rutaflow/`:
+Observa application.yml y busca el filtro `TokenRelay=`. Revisa también el starter OAuth2 Client en su `pom.xml`. Levanta Keycloak y la API según `README.md`; luego inicia Gateway desde el código de este tema:
 
 ```bash
 ./mvnw spring-boot:run
@@ -635,7 +627,6 @@ Guarda el resultado del pedido propio y ajeno. Este recorrido manual requiere Ke
 
 **Fuentes oficiales:** [Resource Server JWT de Spring Security](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [administración de roles y tokens de Keycloak](https://www.keycloak.org/docs/26.8.1/server_admin/), [contenedor e importación de realms](https://www.keycloak.org/server/containers) y [TokenRelay de Spring Cloud Gateway](https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway-server-webflux/gatewayfilter-factories/tokenrelay-factory.html).
 
-
 **Aplicación y decisión:** En el proyecto integrador, conserva identidad verificada al reenviar el token y valida audiencia/issuer en el receptor. Límite: reenviar un Bearer no concede permiso para cualquier entrega ni acredita rotación de claves o cierre de sesión.
 
 ### Tema 6: HTTP Interfaces, deadlines y descubrimiento según el entorno · Avanzado · 40 min
@@ -645,8 +636,6 @@ Guarda el resultado del pedido propio y ajeno. Este recorrido manual requiere Ke
 **Meta observable:** declara un cliente con `@HttpExchange`, llama a un servicio por su nombre lógico y demuestra con una medición que el timeout corta una respuesta lenta.
 
 **¿Por qué es importante?** Una dependencia lenta puede retener recursos y retrasar una entrega; saber a qué instancia llamar y cuánto esperar permite reaccionar con límites explícitos.
-
-**Laboratorio:** `examples/spring-http-deadline-rutaflow/`. No necesita Docker ni un servicio externo.
 
 ```mermaid
 sequenceDiagram
@@ -668,7 +657,7 @@ La interfaz deja visible qué operación llama RutaFlow; Spring construye el cli
 
 **2. Hazlo tú**
 
-Desde la carpeta del laboratorio, ejecuta:
+Ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=RouteClientDeadlineTest#interfaceHttpLlegaAlServicioEncontradoPorElNombre test
@@ -737,10 +726,7 @@ El cliente usa `route-catalog`; la ubicación física puede cambiar entre desarr
 
 Lee `src/main/resources/application.yml` y ejecuta la prueba de `RouteClientDeadlineTest` que llama al nombre lógico. La prueba asigna al `SimpleDiscoveryClient` la URI del servidor local; el `RestClient` lleva `@LoadBalanced`.
 
-Archivo concreto para esta comprobación: `examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClientConfiguration.java`.
-
-
-Para comprobar «Resuelve el nombre del servicio por entorno», consulta: `examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClientConfiguration.java`. Desde `examples/spring-http-deadline-rutaflow` repite la comprobación:
+Para comprobar «Resuelve el nombre del servicio por entorno», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -774,8 +760,7 @@ Como práctica independiente, añade un endpoint lento a la prueba y propone tie
 ./mvnw -q clean test
 ```
 
-
-Para comprobar «Ajusta el cliente al presupuesto de la operación», consulta: `examples/spring-http-deadline-rutaflow/src/main/java/academia/rutaflow/http/RouteClientConfiguration.java`. Desde `examples/spring-http-deadline-rutaflow` repite la comprobación:
+Para comprobar «Ajusta el cliente al presupuesto de la operación», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -802,8 +787,6 @@ Los límites de espera son una pieza del presupuesto de latencia del proyecto in
 **Duración:** 40 min. **Prerrequisito:** Tema 6 de este módulo. **Meta observable:** genera Java desde un `.proto`, publica un servicio Spring gRPC y llama al stub por un canal TCP local.
 
 **¿Por qué es importante?** Dos servicios necesitan acordar sus mensajes y cómo cambian con el tiempo. El contrato generado reduce conversiones manuales; un cambio inseguro puede romper clientes que se despliegan después.
-
-**Laboratorio:** `examples/spring-grpc-rutaflow/`. No mide rendimiento relativo contra REST/JSON.
 
 ```mermaid
 sequenceDiagram
@@ -920,8 +903,7 @@ Un servicio móvil o retrasado puede conservar una versión anterior del cliente
 
 En una copia de `tarifa.proto`, cambia el significado de `distancia_km = 1` por millas manteniendo el tag 1. Predice qué leerá un cliente viejo y no publiques ese cambio. Luego añade un campo nuevo con tag 2.
 
-
-Para comprobar «Cambia el contrato sin romper datos», consulta: `examples/spring-grpc-rutaflow/src/main/proto/tarifa.proto`. Desde `examples/spring-grpc-rutaflow` repite la comprobación:
+Para comprobar «Cambia el contrato sin romper datos», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -954,8 +936,6 @@ Entrega `./mvnw -q clean test` en verde y una propuesta de evolución con `reser
 **Duración:** 35 min. **Prerrequisito:** Módulo 4 de este track (entidades y JPA). **Meta observable:** protege una regla de negocio dentro de un agregado y explica qué contexto es dueño de esos datos.
 
 **¿Por qué es importante?** Separar tablas en servicios antes de entender el negocio produce llamadas circulares y cambios coordinados. Primero aclara las reglas y la propiedad; luego decide si realmente necesitas desplegar los módulos por separado.
-
-**Laboratorio:** `examples/spring-ddd-rutaflow/`. Las pruebas no necesitan Spring, Kafka, HTTP ni base de datos.
 
 ```mermaid
 flowchart LR
@@ -1007,8 +987,6 @@ Una regla útil sigue siendo verificable sin arrancar servicios ni una base de d
 
 **2. Hazlo tú**
 
-Desde `examples/spring-ddd-rutaflow/`, ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=JourneyTest#unaJornadaCerradaRechazaNuevasPosiciones test
 ```
@@ -1037,8 +1015,7 @@ Una foreign key de Facturación hacia la tabla de Operaciones acopla despliegues
 
 Ejecuta `./mvnw -q -Dtest=JourneyTest#laListaExpuestaNoPermiteModificarElAgregado test` y revisa que `positions()` devuelve `List.copyOf`.
 
-
-Para comprobar «Evita compartir almacenamiento entre contextos», consulta: `examples/spring-ddd-rutaflow/src/main/java/academia/rutaflow/operations/Journey.java`. Desde `examples/spring-ddd-rutaflow` repite la comprobación:
+Para comprobar «Evita compartir almacenamiento entre contextos», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -1056,10 +1033,10 @@ Para colaborar, define un contrato o evento versionado con los datos que el otro
 
 Escribe qué datos posee Operaciones y cuál copia mínima podría necesitar Facturación.
 
-
 ```bash
 ./mvnw -q -Dtest=JourneyTest#laListaExpuestaNoPermiteModificarElAgregado test
 ```
+
 #### Subtema 8.4: Decide si separar el despliegue · 10 min
 
 **1. Contexto**
@@ -1096,7 +1073,7 @@ Entrega los tests y una decisión explicada sobre qué módulo sería dueño de 
 
 **Prerrequisitos:** clases e interfaces Java, excepciones, pruebas JUnit y beans de Spring. La Saga distribuida retoma el concepto del track; aquí se ejecuta en código.
 
-**Evidencia del tema:** tres pruebas del [laboratorio de Temporal](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-temporal-rutaflow): un fallo temporal que se recupera, un cobro rechazado tras agotar intentos y una notificación fallida después del cobro.
+**Evidencia del tema:** tres pruebas del [laboratorio de Temporal](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/spring-temporal-rutaflow): un fallo temporal que se recupera, un cobro rechazado tras agotar intentos y una notificación fallida después del cobro.
 
 ```mermaid
 sequenceDiagram
@@ -1125,7 +1102,7 @@ Un Workflow conserva el orden del proceso. Una Activity realiza una tarea que pu
 
 **2. Hazlo tú**
 
-Desde `examples/spring-temporal-rutaflow/`, abre `src/main/java/academia/rutaflow/temporal/PedidoWorkflow.java` y `PedidoActivities.java`. Ejecuta:
+Desde el código de este tema, abre `src/main/java/academia/rutaflow/temporal/PedidoWorkflow.java` y `PedidoActivities.java`. Ejecuta:
 
 ```bash
 ./mvnw -q -DskipTests package
@@ -1248,7 +1225,7 @@ Ejecuta toda la suite con `./mvnw -q clean test`. Entrega el código de salida y
 
 ### Tema 10: Spring Cloud Bus para propagar cambios de configuración · Avanzado · 40 min
 
-Duración: 35–45 min. **Meta:** propagar un límite operacional entre dos instancias y comprobarlo con HTTP. El laboratorio runnable está en `examples/spring-cloud-bus-rutaflow/`. Usa Spring Boot 4.1.2 y Spring Cloud 2025.1.4; la matriz oficial indica compatibilidad del tren 2025.1 con Boot 4.1. No necesitas Config Server para este ejercicio: `busenv` añade un override temporal para demostrar el transporte. En un sistema real, conserva la configuración duradera en su fuente central.
+Duración: 35–45 min. **Meta:** propagar un límite operacional entre dos instancias y comprobarlo con HTTP. El laboratorio runnable está en el código de este tema. Usa Spring Boot 4.1.2 y Spring Cloud 2025.1.4; la matriz oficial indica compatibilidad del tren 2025.1 con Boot 4.1. No necesitas Config Server para este ejercicio: `busenv` añade un override temporal para demostrar el transporte. En un sistema real, conserva la configuración duradera en su fuente central.
 
 #### Subtema 10.1: Arranca el broker y revisa las dependencias · 8 min
 
@@ -1258,10 +1235,9 @@ El límite de pedidos debe llegar a dos réplicas. Ambas necesitan conectarse al
 
 **2. Hazlo tú**
 
-En `examples/spring-cloud-bus-rutaflow/`, abre `pom.xml` y encuentra `spring-cloud-starter-bus-amqp`. Revisa también `compose.yaml`; inicia RabbitMQ:
+En el código de este tema, abre `pom.xml` y encuentra `spring-cloud-starter-bus-amqp`. Revisa también `compose.yaml`; inicia RabbitMQ:
 
 ```bash
-cd examples/spring-cloud-bus-rutaflow
 docker compose up -d
 docker compose ps
 ```
@@ -1287,7 +1263,7 @@ Bus debe reconocer las dos copias del servicio `rutaflow-policy` como participan
 
 **2. Hazlo tú**
 
-En dos terminales, desde la carpeta del laboratorio, ejecuta:
+En dos terminales, Ejecuta:
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.arguments='--server.port=8081'
@@ -1380,12 +1356,11 @@ Entrega la salida del script, el valor tras reinicio y un plan de acceso para pr
 
 **¿Por qué es importante?** Si el límite operativo cambia en una sola réplica, los pedidos reciben decisiones distintas; Bus comunica el cambio al grupo y las lecturas HTTP comprueban qué instancias lo aplicaron.
 
-
 **Aplicación y decisión:** En el proyecto integrador, registra qué propiedad cambió y qué instancias la recibieron antes de afirmar que la configuración convergió. Un build del ejemplo Cloud Bus no prueba por sí solo un evento propagado por RabbitMQ.
 
 ### Tema 11: Micrometer Tracing entre servicios · Avanzado · 45 min
 
-Duración: 35–45 min. **Meta:** seguir una petición desde Entregas hasta Inventario y comprobar que ambos procesos comparten trace ID. El laboratorio en `examples/spring-tracing-rutaflow/` usa Spring Boot 4.1.2, Micrometer Tracing, OpenTelemetry y Jaeger con OTLP. Spring Boot documenta `spring-boot-starter-opentelemetry` y sus propiedades de exportación; el cliente HTTP debe salir del `RestClient.Builder` autoconfigurado para propagar el contexto.
+Duración: 35–45 min. **Meta:** seguir una petición desde Entregas hasta Inventario y comprobar que ambos procesos comparten trace ID. El laboratorio en el código de este tema usa Spring Boot 4.1.2, Micrometer Tracing, OpenTelemetry y Jaeger con OTLP. Spring Boot documenta `spring-boot-starter-opentelemetry` y sus propiedades de exportación; el cliente HTTP debe salir del `RestClient.Builder` autoconfigurado para propagar el contexto.
 
 #### Subtema 11.1: Arranca Jaeger y conoce el rastro · 8 min
 
@@ -1395,7 +1370,7 @@ Un usuario informa que consultar `RF-314` tarda. El log de Entregas dice que ter
 
 **2. Hazlo tú**
 
-Desde `examples/spring-tracing-rutaflow/`, inicia Jaeger con Docker Compose o Podman Compose y revisa su estado:
+Desde el código de este tema, inicia Jaeger con Docker Compose o Podman Compose y revisa su estado:
 
 ```bash
 docker compose up -d
@@ -1529,12 +1504,11 @@ Entrega la misma traza con sampling activo, el resultado de sampling en cero y l
 
 **¿Por qué es importante?** Un trace ID compartido permite ver el tiempo y el resultado de cada salto entre servicios en una sola solicitud.
 
-
 **Aplicación y decisión:** En el proyecto integrador, sigue una solicitud entre Entregas e Inventario mediante el trace ID, manteniendo datos personales fuera de etiquetas. Límite: compilar el exporter no demuestra que Jaeger recibió spans; ejecuta la verificación de traza para acreditar exportación.
 
 ### Tema 12: Contract testing entre productor y consumidor · Avanzado · 40 min
 
-Duración: 35–45 min. **Meta:** comprobar el mismo JSON desde dos lados: pruebas generadas contra Conductores y prueba de Pedidos contra el stub publicado. El laboratorio `examples/spring-cloud-contract-rutaflow/` usa Spring Boot 4.1.2, Spring Cloud 2025.1.4 y Spring Cloud Contract 5.0.3. Los equipos acuerdan el contrato; en este ejemplo vive en el repositorio del productor.
+Duración: 35–45 min. **Meta:** comprobar el mismo JSON desde dos lados: pruebas generadas contra Conductores y prueba de Pedidos contra el stub publicado. El laboratorio `spring-cloud-contract-rutaflow` usa Spring Boot 4.1.2, Spring Cloud 2025.1.4 y Spring Cloud Contract 5.0.3. Los equipos acuerdan el contrato; en este ejemplo vive en el repositorio del productor.
 
 #### Subtema 12.1: Define la respuesta pública que necesita Pedidos · 8 min
 
@@ -1606,8 +1580,6 @@ Guarda el resultado de Maven y el fragmento de JSON que la prueba verifica.
 El equipo Pedidos necesita probar su cliente antes de desplegar Conductores. Un stub reproduce solo la respuesta pactada.
 
 **2. Hazlo tú**
-
-Desde `examples/spring-cloud-contract-rutaflow/` ejecuta el flujo completo:
 
 ```bash
 ./scripts/verify-contracts.sh

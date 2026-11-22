@@ -1,0 +1,28 @@
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.3)
+
+2026-11-21T12:46:36.645-05:00  INFO 12468 --- [catalogo] [           main] academia.consul.CatalogoConsulApp        : Starting CatalogoConsulApp v1.0.0 using Java 27.0.1.0.2 with PID 12468 (/Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-11/f052-consul/build/libs/f052-consul-1.0.0.jar started by nicolasruiz in /Users/nicolasruiz/Documents/GitHub/Academia_Floci/examples/microservicios/modulo-11)
+2026-11-21T12:46:36.647-05:00  INFO 12468 --- [catalogo] [           main] academia.consul.CatalogoConsulApp        : No active profile set, falling back to 1 default profile: "default"
+2026-11-21T12:46:36.995-05:00  INFO 12468 --- [catalogo] [           main] o.s.cloud.context.scope.GenericScope     : BeanFactory id=58f52395-7c82-3dd0-8158-eb7bf90a298f
+2026-11-21T12:46:37.118-05:00  INFO 12468 --- [catalogo] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8081 (http)
+2026-11-21T12:46:37.124-05:00  INFO 12468 --- [catalogo] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-11-21T12:46:37.124-05:00  INFO 12468 --- [catalogo] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.27]
+2026-11-21T12:46:37.135-05:00  INFO 12468 --- [catalogo] [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 464 ms
+2026-11-21T12:46:37.620-05:00  WARN 12468 --- [catalogo] [           main] iguration$LoadBalancerCaffeineWarnLogger : Spring Cloud LoadBalancer is currently working with the default cache. While this cache implementation is useful for development and tests, it's recommended to use Caffeine cache in production.You can switch to using Caffeine cache, by adding it and org.springframework.cache.caffeine.CaffeineCacheManager to the classpath.
+2026-11-21T12:46:37.623-05:00  INFO 12468 --- [catalogo] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-11-21T12:46:37.677-05:00  INFO 12468 --- [catalogo] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8081 (http) with context path '/'
+2026-11-21T12:46:37.682-05:00  INFO 12468 --- [catalogo] [           main] o.s.c.c.s.ConsulServiceRegistry          : Registering service with consul: [NewService@4ad896f7 id = 'catalogo-8081', name = 'catalogo', tags = list[[empty]], address = 'host.docker.internal', meta = map['secure' -> 'false'], port = 8081, enableTagOverride = [null], check = [NewService.Check@c318864 args = [null], dockerContainerID = [null], shell = [null], interval = '10s', ttl = [null], http = 'http://host.docker.internal:8081/actuator/health', method = [null], header = map[[empty]], tcp = [null], timeout = [null], deregisterCriticalServiceAfter = [null], tlsSkipVerify = [null], status = [null], grpc = [null], grpcUseTLS = [null]], checks = [null]]
+2026-11-21T12:46:37.752-05:00  INFO 12468 --- [catalogo] [           main] academia.consul.CatalogoConsulApp        : Started CatalogoConsulApp in 1.281 seconds (process running for 1.49)
+2026-11-21T12:46:37.828-05:00  INFO 12468 --- [catalogo] [nio-8081-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-11-21T12:46:37.828-05:00  INFO 12468 --- [catalogo] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-11-21T12:46:37.828-05:00  INFO 12468 --- [catalogo] [nio-8081-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 0 ms
+2026-11-21T12:46:38.427-05:00  INFO 12468 --- [catalogo] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-11-21T12:46:38.428-05:00  INFO 12468 --- [catalogo] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-11-21T12:46:38.429-05:00  INFO 12468 --- [catalogo] [ionShutdownHook] o.s.c.c.s.ConsulServiceRegistry          : Deregistering service with consul: catalogo-8081

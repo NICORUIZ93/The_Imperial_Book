@@ -1,2 +1,0 @@
-sin-san.crt (solo URI SPIFFE)  -> rechazado en la conexión (ERR_TLS_CERT_ALTNAME_INVALID)
-pagos.crt (DNS, IP y URI)      -> 200 {"ok":true}

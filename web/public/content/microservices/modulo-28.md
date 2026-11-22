@@ -4,8 +4,8 @@
 de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** la Fase 1 o la Fase 2 completa (necesitas haber
 construido y desplegado servicios para tener decisiones que gobernar); ayudan el Módulo 21 (observabilidad: las
 métricas de la ficha 4) y el Módulo 23 (canary y GitOps, donde las fitness functions hacen de puerta).
-**Herramientas:** **Node.js 26.13.1 LTS**, **prom-client 15.1.3**, **Prometheus v3.15.1** (solo para la ficha 4 con
-`--compose`) y, como alternativa para C4, **Structurizr DSL**. **Laboratorio:** `examples/microservicios/modulo-28/`
+**Herramientas:**Node.js 26.13.1 LTS**, **prom-client 15.1.3**, **Prometheus v3.15.1** (solo para la ficha 4 con
+`--compose`) y, como alternativa para C4, **Structurizr DSL**. **Laboratorio:** `modulo-28`
 (`./verificar.sh` ejecuta 21 tests y los scripts de las cuatro fichas sin infraestructura; `./verificar.sh --compose`
 añade Prometheus).
 
@@ -40,14 +40,12 @@ Structurizr de la ficha 2.
 **Cómo usar el laboratorio.** Con Node 26:
 
 ```bash
-cd examples/microservicios/modulo-28
 npm ci
 ./verificar.sh              # 21 tests + scripts de las 4 fichas → «RESULTADO: OK»
 ./verificar.sh --compose    # además Prometheus v3.15.1 y las fitness functions con PromQL
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-28`** después de `npm ci`. El
-`examples/microservicios/modulo-28/README.md` tiene el mapa de carpetas.
+`README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio (con `package-lock.json`):
 
@@ -76,7 +74,7 @@ Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/mo
 
 #### 1. UBICACIÓN
 
-Módulo 24, Lección 1 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-28/f148-adrs/`.
+Módulo 24, Lección 1 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -607,7 +605,7 @@ frente a una pila numerada de documentos junto al código.
 
 #### 1. UBICACIÓN
 
-Módulo 24, Lección 2 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-28/f149-c4/`.
+Módulo 24, Lección 2 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1072,7 +1070,7 @@ cuatro mapas apilados con zoom creciente.
 
 #### 1. UBICACIÓN
 
-Módulo 24, Lección 3 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-28/f150-atam/`.
+Módulo 24, Lección 3 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1494,7 +1492,7 @@ En un diagrama se ve como una balanza sin pesas, frente a un árbol con hojas nu
 
 #### 1. UBICACIÓN
 
-Módulo 24, Lección 4 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-28/f151-fitness/`.
+Módulo 24, Lección 4 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 

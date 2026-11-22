@@ -3,11 +3,11 @@
 **Fase 2 · Node.js de cero a experto** (una semana de 12). **Duración:** 12 h (6 temas de unos 100 min y 2 h de
 laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 0.5 (primer Dockerfile y Docker Compose) y
 Módulo 21 (observabilidad: las métricas que miran el HPA y el canary); ayuda haber hecho el Módulo 13 (graceful
-shutdown) y el Módulo 19 (timeouts). **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **express
+shutdown) y el Módulo 19 (timeouts). **Herramientas:**Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **express
 5.3.0**, **yaml 2.9.1**, imagen **`node:26.13.1-alpine`**, **Docker Engine 29.10.0** con **Compose v5.6.1** o
 posterior, **Kubernetes 1.37** en **kind v0.33.0**, **metrics-server v0.9.1**, **GitHub Actions** (`actions/checkout`
 v7.0.1 y `actions/setup-node` v7.1.0 fijadas por SHA), **Argo Rollouts v1.10.1** y **Argo CD v3.5.6**.
-**Laboratorio:** `examples/microservicios/modulo-27/` (`./verificar.sh` ejecuta 29 tests y los scripts de las seis
+**Laboratorio:** `modulo-27` (`./verificar.sh` ejecuta 29 tests y los scripts de las seis
 fichas sin Docker; `./verificar.sh --compose` construye la imagen y, si tienes kind y kubectl, despliega en un clúster
 local y comprueba el HPA).
 
@@ -44,14 +44,12 @@ números.
 **Cómo usar el laboratorio.** Con Node 26 (y Docker para `--compose`):
 
 ```bash
-cd examples/microservicios/modulo-27
 npm ci && npm run build
 ./verificar.sh              # 29 tests + scripts de las 6 fichas → «RESULTADO: OK»
 ./verificar.sh --compose    # además imagen con Docker/Compose y, con kind y kubectl, el clúster «curso»
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-27`** después de `npm ci && npm
-run build`. Lee el `examples/microservicios/modulo-27/README.md` para el mapa de
+run build`. Lee el `README.md` para el mapa de
 carpetas.
 
 `package.json` del laboratorio (con `package-lock.json` que fija el árbol completo):
@@ -192,7 +190,7 @@ process.on('SIGTERM', () => {
 
 #### 1. UBICACIÓN
 
-Módulo 23, Lección 1 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-27/f142-dockerfile/`.
+Módulo 23, Lección 1 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -712,7 +710,7 @@ problemas con musl.
 
 #### 14. ANTI-PATRÓN RELACIONADO
 
-**El «Dockerfile de portátil»: una sola etapa, `COPY . .` y `npm start`.** Evita copiar todo el contexto antes de
+**El «Dockerfile de portátil»: una sola etapa, `COPY..` y `npm start`.** Evita copiar todo el contexto antes de
 instalar, instalar con `npm install` y arrancar con npm como root:
 
 ```dockerfile
@@ -736,8 +734,8 @@ a tres cajas en fila donde solo la última, pequeña, sale hacia el registro de 
 
 #### 1. UBICACIÓN
 
-Módulo 23, Lección 2 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-27/f143-kubernetes/` y manifiestos en
-`examples/microservicios/modulo-27/k8s/`.
+Módulo 23, Lección 2 de 6 · Fase 2 manifiestos en
+`k8s`.
 
 #### 2. PRERREQUISITOS
 
@@ -1225,8 +1223,8 @@ En un diagrama se ve como un Service que envía flechas a un pod con el reloj de
 
 #### 1. UBICACIÓN
 
-Módulo 23, Lección 3 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-27/f144-hpa/` y
-`examples/microservicios/modulo-27/k8s/40-hpa.yaml`.
+Módulo 23, Lección 3 de 6 · Fase 2
+`40-hpa.yaml`.
 
 #### 2. PRERREQUISITOS
 
@@ -1645,7 +1643,7 @@ En un diagrama se ve como dos termostatos conectados al mismo radiador, cada uno
 
 #### 1. UBICACIÓN
 
-Módulo 23, Lección 4 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-27/f145-github-actions/`.
+Módulo 23, Lección 4 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1952,7 +1950,7 @@ job pruebas: OK
    verificar en el Mac con `./verificar.sh --compose`).
 
 3. **En GitHub** (pendiente de verificar con tu cuenta): crea un repositorio con el contenido de
-   `examples/microservicios/modulo-27`, copia `ci.yml` a `.github/workflows/ci.yml`, sube a una rama y abre un PR.
+   `modulo-27`, copia `ci.yml` a `.github/workflows/ci.yml`, sube a una rama y abre un PR.
    **Qué debes ver:** en la pestaña *Actions*, el job `pruebas` en verde con sus pasos `npm ci`, `npm run build` y
    `npm test`, y el job `imagen` construyendo y pasando la prueba de humo **sin** el paso «Publicar» (marcado como
    omitido). Al fusionar en `main`, el paso «Publicar» se ejecuta y la imagen aparece en *Packages* con la etiqueta de
@@ -2075,7 +2073,7 @@ cualquiera que pase, frente a una caja fuerte (variable de entorno) que solo abr
 
 #### 1. UBICACIÓN
 
-Módulo 23, Lección 5 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-27/f146-blue-green-canary/`.
+Módulo 23, Lección 5 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2588,7 +2586,7 @@ En un diagrama se ve como una escalera de porcentajes sin ningún rombo de decis
 
 #### 1. UBICACIÓN
 
-Módulo 23, Lección 6 de 6 · Fase 2 · Laboratorio `examples/microservicios/modulo-27/f147-gitops-argocd/`.
+Módulo 23, Lección 6 de 6 · Fase 2.
 
 #### 2. PRERREQUISITOS
 

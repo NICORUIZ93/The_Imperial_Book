@@ -9,10 +9,7 @@ Qué mide (seis comprobaciones mecánicas, todas verificables a mano en el archi
   C3 declarado_no_creado       la estructura de archivos que el tema muestra no aparece en ningún
                                «Guarda en …» / `cat > …` del propio tema.
   C4 bloque_sin_archivo        un bloque de código de 4+ líneas que no declara a qué archivo pertenece.
-  C5 puntero_roto              el tema manda a ejecutar un laboratorio (`verify.sh`, `examples/…`) cuya
-                               ruta no existe en el repo.
-  C6 ruta_versionada           la ruta sí está versionada en `examples/`, pero ningún tema manda crearla:
-                               el estudiante solo la tiene si clonó el repo, no si siguió la lección.
+  (C5/C6 retirados en specs/027: el libro no depende de laboratorios externos.)
 
 No se cuenta como defecto, solo como contexto, la **reutilización explicada**: una frase que dice
 «la raíz del proyecto del Módulo 0» o «el archivo que ya existe» cumple la regla del prompt, que prohíbe
@@ -161,20 +158,6 @@ EXPLICADA = re.compile(r"m[óo]dulo\s*\d+|tema\s*\d+|del\s+(?:cap[íi]tulo|lecci
 COMENTARIO = re.compile(r"^\s*(?:#|//|--|/?\*+)(?:\s|$)")
 
 
-def indice_ejemplos() -> tuple[set[str], set[str]]:
-    """Nombres de archivo que sí existen en `examples/`: están versionados aunque ningún tema los cree."""
-    sueltos: set[str] = set()
-    colas: set[str] = set()
-    carpeta = ROOT / "examples"
-    if carpeta.is_dir():
-        for path in carpeta.rglob("*"):
-            if not path.is_file():
-                continue
-            piezas = path.relative_to(carpeta).parts
-            sueltos.add(path.name)
-            if len(piezas) >= 2:
-                colas.add("/".join(piezas[-2:]))
-    return sueltos, colas
 # Un diagrama nombra archivos para explicar el sistema, no para mandarlos crear: no es un uso.
 DIAGRAMAS = {"mermaid", "diagram", "dot", "graphviz", "plantuml", "puml", "d2", "nomnoml"}
 # Lenguajes que viven en un archivo: un bloque de estos DEBE decir en qué archivo se guarda.
@@ -216,7 +199,6 @@ ANCLA_RENGOLON = re.compile(r"^\s*(?:[-*]\s*)?`([^`]*\." + EXT + r")`\s*[:—–
 ANCLA_COMENTARIO = re.compile(
     r"^\s*(?://|#|<!--|--|/?\*)\s*(?:archivo|fichero|file|ruta|path|script)?\s*[:\-]?\s*"
     r"([\w./@+-]*\." + EXT + r")\s*(?:[:.\s—–\-]|$)", re.M | re.I)
-EJEMPLO = re.compile(r"examples/[\w./@+-]+|[\w./@+-]*verify\.sh|[\w./@+-]*verificar\.sh", re.I)
 # AWS escribe archivos locales sin redirección: `aws s3 cp s3://bucket/clave descarga.txt` y
 # `aws lambda invoke … respuesta.json` terminan creando ese archivo. Son destinos, no insumos, así que
 # el renglón que los nombra no puede contarse como un contexto dado por hecho.
@@ -225,8 +207,6 @@ CREAR_DESTINO = re.compile(
     r"|\binvoke(?:-model)?\b[^\n]*?\s(?:--\S+\s+)*((?!file://)[\w./@+-]+\." + EXT + r")\s*$)", re.I)
 ARBOL = re.compile(r"[├└]──\s*([^\s─│]+)")
 
-
-LAB_SUELTOS, LAB_COLAS = indice_ejemplos()
 
 
 def rutas_de(texto: str) -> list[str]:
@@ -432,8 +412,8 @@ def medir(bloque: dict, previas: set[str], carpetas_previas: set[str],
     cubiertas = creadas | previas
     raices = {normaliza(c) for c in carpetas | carpetas_previas if normaliza(c)}
 
-    inventadas, reutilizadas, versionadas, fuera_raiz = [], [], [], []
-    declarado_no_creado, punteros_rotos = [], []
+    inventadas, reutilizadas, fuera_raiz = [], [], []
+    declarado_no_creado = []
     for ruta, contexto in usos:
         normalizada = normaliza(ruta)
         if any(misma(normalizada, c) for c in cubiertas | rutas_track):
@@ -441,14 +421,10 @@ def medir(bloque: dict, previas: set[str], carpetas_previas: set[str],
         if EXPLICADA.search(contexto):
             reutilizadas.append(normalizada)     # «la raíz del proyecto del Módulo 0»: explicado, no asumido
             continue
-        cola = "/".join(normalizada.split("/")[-2:])
-        if cola in LAB_COLAS or ("/" not in normalizada and normalizada in LAB_SUELTOS):
-            versionadas.append(normalizada)      # existe en examples/, pero ningún tema lo crea
-            continue
         if (ROOT / normalizada).exists():
             continue                             # `docs/VERSIONES.md`: archivo real del repo, no un vacío
         inventadas.append(normalizada)
-    inventadas, reutilizadas, versionadas = (sorted(set(x)) for x in (inventadas, reutilizadas, versionadas))
+    inventadas, reutilizadas = (sorted(set(x)) for x in (inventadas, reutilizadas))
 
     # C2: los comandos crean una carpeta y el código del tema vive en otra.
     usadas_con_raiz = {r.split("/")[0] for r, _ in usos if "/" in r}
@@ -520,46 +496,12 @@ def medir(bloque: dict, previas: set[str], carpetas_previas: set[str],
             continue
         sin_archivo += 1
 
-    # C5: laboratorios citados que no existen en el repo.
-    # `…/modulo-7/f034-pact-` + renglón nuevo + `consumidor/` es una palabra partida por el salto de
-    # línea del markdown: sin reunirla, la cita apunta a una carpeta que no existe.
-    citas = re.sub(r"(?<=\w)-\n(?=\w)", "-", texto_sin_fence)
-    for hallazgo in EJEMPLO.finditer(citas):
-        cruce = hallazgo.group()
-        # Un `examples/...` que el tema manda CREAR no es un puntero a un laboratorio existente:
-        # `Crea **…/PerfilEntrega.java**` es una instrucción, no una cita rota. Tampoco lo es un
-        # patrón con comodín (`f034-pact-*`), que nombra un conjunto, no una ruta.
-        antes = citas[max(0, hallazgo.start() - 60):hallazgo.start()]
-        if re.search(r"\b(?:crea|crear|creas|cread|escribe|escribir|añade|agrega|genera)\b\s+(?:el|la|los|las|un|una|nuevo|nueva)?\s*[*`\-]*$", antes, re.I):
-            continue
-        if citas[hallazgo.end():hallazgo.end() + 1] == "*":
-            continue
-        # El punto final de una frase («ejecutá ./mvnw desde examples/java-jpa-lab.») no forma parte del
-        # nombre, y un guiño partido por el renglón («f034-pact-\nconsumidor/») deja un prefijo: si ese
-        # prefijo identifica un laboratorio único, la cita es buena y el renglón la escribió mal.
-        candidato = cruce.strip("`").strip().rstrip(".,:;)")
-        if "/" in candidato and candidato.split("/")[-1] in ("", ".", ".."):
-            continue
-        if candidato.startswith("examples/"):
-            if (ROOT / candidato).exists():
-                continue
-            prefijo = candidato.split("/")[-1]
-            if len(prefijo) > 3 and prefijo != prefijo.rstrip("-_"):
-                if len({p.name for p in (ROOT / "examples").rglob("*")
-                        if p.is_dir() and p.name.startswith(prefijo)}) == 1:
-                    continue
-            punteros_rotos.append(candidato)
-        else:
-            nombre = candidato.split("/")[-1]
-            if nombre in ("verify.sh", "verificar.sh") and nombre not in LAB_SUELTOS:
-                punteros_rotos.append(candidato)
-
     return {"C1": len(inventadas), "C2": len(fuera_raiz), "C3": len(declarado_no_creado),
-            "C4": sin_archivo, "C5": len(punteros_rotos), "C6": len(versionadas),
+            "C4": sin_archivo, "C5": 0, "C6": 0,
             "bloques_largos": bloques_largos, "explicadas": len(reutilizadas),
-            "inventadas": inventadas[:6], "fuera_raiz": fuera_raiz[:3], "versionadas": versionadas[:4],
+            "inventadas": inventadas[:6], "fuera_raiz": fuera_raiz[:3], "versionadas": [],
             "explicadas_lista": reutilizadas[:4],
-            "declarado_no_creado": declarado_no_creado[:4], "punteros_rotos": punteros_rotos[:3]}
+            "declarado_no_creado": declarado_no_creado[:4], "punteros_rotos": []}
 
 
 CHECKS = {
@@ -567,8 +509,8 @@ CHECKS = {
     "C2": "la carpeta que crean los comandos no es donde vive el código",
     "C3": "estructura de archivos dibujada que el tema no crea",
     "C4": "bloque de código largo sin declarar su archivo",
-    "C5": "laboratorio citado cuya ruta no existe en el repo",
-    "C6": "ruta que sí está versionada en `examples/` pero ningún tema manda crear",
+    "C5": "retirado (specs/027)",
+    "C6": "retirado (specs/027)",
 }
 
 

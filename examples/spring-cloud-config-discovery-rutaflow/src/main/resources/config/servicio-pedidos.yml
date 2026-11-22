@@ -1,4 +1,0 @@
-pedidos:
-  descuento-maximo: 15
-catalogo:
-  endpoint: http://localhost:8081

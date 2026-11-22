@@ -1,2 +1,0 @@
-# El archivo .env con valores reales nunca se versiona; solo .env.example (valores falsos).
-.env

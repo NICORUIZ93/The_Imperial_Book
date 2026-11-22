@@ -23,7 +23,7 @@ El rol permite entrar a una clase de operación; la comprobación de propiedad a
 
 **Contexto:** cuando aparece un endpoint nuevo, no debe quedar accesible por accidente. El laboratorio da acceso solo a las rutas que nombra y niega las demás.
 
-**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java`. Observa las reglas:
+**Hazlo tú:** abre `ApiSecurity.java`. Observa las reglas:
 
 ```java
 .requestMatchers(HttpMethod.POST, "/api/ubicaciones/**")
@@ -31,8 +31,6 @@ El rol permite entrar a una clase de operación; la comprobación de propiedad a
 .requestMatchers(HttpMethod.GET, "/api/pedidos/**").authenticated()
 .anyRequest().denyAll()
 ```
-
-Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 ```bash
 ./mvnw -Dtest=ApiSecurityTest#sinBearerTokenRecibe401 test
@@ -50,7 +48,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 **Contexto:** Keycloak pone los roles del realm dentro de `realm_access.roles`; Spring Security necesita saber cómo convertirlos a authorities para que `hasAuthority` pueda compararlos.
 
-**Hazlo tú:** revisa `realmRoleAuthorities()` en `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java`. Sigue el prefijo `ROLE_` y ejecuta la prueba:
+**Hazlo tú:** revisa `realmRoleAuthorities()` en el código de este tema. Sigue el prefijo `ROLE_` y ejecuta la prueba:
 
 ```bash
 ./mvnw -Dtest=ApiSecurityTest#rolDeEscrituraPermiteGuardarUbicacion test
@@ -68,7 +66,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 **Contexto:** una persona puede estar identificada correctamente y aun así no tener permiso para una acción.
 
-**Hazlo tú:** desde `examples/spring-security-keycloak-rutaflow`, compara los dos tests de `ApiSecurityTest.java`:
+**Hazlo tú:** desde el código de este tema, compara los dos tests de `ApiSecurityTest.java`:
 
 ```bash
 ./mvnw -Dtest=ApiSecurityTest#sinBearerTokenRecibe401+tokenSinRolDeEscrituraRecibe403 test
@@ -86,7 +84,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 **Contexto:** un rol puede permitir consultar pedidos, pero no revela si la persona puede consultar cualquier pedido. La propiedad del recurso es una comprobación separada.
 
-**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/RutaflowApiController.java` y sigue `jwt.getSubject()` hasta `PedidoOwnership.requireOwner`. Ejecuta:
+**Hazlo tú:** abre `RutaflowApiController.java` y sigue `jwt.getSubject()` hasta `PedidoOwnership.requireOwner`. Ejecuta:
 
 ```bash
 ./mvnw -Dtest=ApiSecurityTest#tokenSoloLeePedidosDeSuSubject test
@@ -100,7 +98,7 @@ Desde `examples/spring-security-keycloak-rutaflow`, ejecuta la prueba sin token:
 
 **Cierra:** en el proyecto integrador de RutaFlow, prueba dueño, otra persona y recurso inexistente. Anota qué autoridad permite entrar y qué dato del dominio demuestra la propiedad.
 
-Las pruebas anteriores usan un `JwtDecoder` simulado: comprueban reglas y ownership, no la firma ni la expiración del token. Para probar el issuer real, el laboratorio incluye Keycloak y su realm local; sigue `examples/spring-security-keycloak-rutaflow/README.md` y ejecuta el recorrido con Docker.
+Las pruebas anteriores usan un `JwtDecoder` simulado: comprueban reglas y ownership, no la firma ni la expiración del token. Para probar el issuer real, el laboratorio incluye Keycloak y su realm local; sigue `README.md` y ejecuta el recorrido con Docker.
 
 **Fuentes primarias:** [Spring Security: autorización de peticiones HTTP](https://docs.spring.io/spring-security/reference/servlet/authorization/authorize-http-requests.html); [Spring Security: Resource Server JWT](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html).
 
@@ -125,13 +123,13 @@ flowchart LR
 
 **Contexto:** una entrega con destinatario vacío no debe llegar al servicio ni quedar guardada en PostgreSQL.
 
-**Hazlo tú:** abre `examples/spring-boot-integrador-rutaflow/src/main/java/academia/rutaflow/integrador/entrega/CrearEntregaRequest.java`:
+**Hazlo tú:** abre `CrearEntregaRequest.java`:
 
 ```java
 public record CrearEntregaRequest(@NotBlank @Size(max = 200) String destinatario) {}
 ```
 
-Abre `EntregaController.java` y comprueba que el body lleva `@Valid`. Ejecuta desde `examples/spring-boot-integrador-rutaflow`:
+Abre `EntregaController.java` y comprueba que el body lleva `@Valid`. Ejecuta desde el código de este tema:
 
 ```bash
 ./scripts/verify-integration.sh
@@ -149,10 +147,9 @@ Abre `EntregaController.java` y comprueba que el body lleva `@Valid`. Ejecuta de
 
 **Contexto:** una aplicación web de desarrollo necesita leer respuestas desde `localhost:4200`; no por eso cualquier sitio debe poder leer la API.
 
-**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/java/academia/rutaflow/security/ApiSecurity.java`. La `CorsConfigurationSource` permite un origen, métodos y headers concretos; `ApiSecurityTest` manda una solicitud preflight:
+**Hazlo tú:** abre `ApiSecurity.java`. La `CorsConfigurationSource` permite un origen, métodos y headers concretos; `ApiSecurityTest` manda una solicitud preflight:
 
 ```bash
-cd examples/spring-security-keycloak-rutaflow
 ./mvnw -Dtest=ApiSecurityTest#corsPermiteOrigenLocalDeclaradoYRechazaOtroOrigen test
 ```
 
@@ -168,10 +165,9 @@ cd examples/spring-security-keycloak-rutaflow
 
 **Contexto:** base64 permite leer un payload, pero no verificar quién firmó el JWT ni si sigue vigente. El Resource Server debe consultar las claves del emisor que tu aplicación decidió confiar.
 
-**Hazlo tú:** abre `examples/spring-security-keycloak-rutaflow/src/main/resources/application.yml`. Localiza `issuer-uri`; debe coincidir exactamente con el `iss` de los tokens del realm. Para recorrer la configuración real, sigue `examples/spring-security-keycloak-rutaflow/README.md`:
+**Hazlo tú:** abre `application.yml`. Localiza `issuer-uri`; debe coincidir exactamente con el `iss` de los tokens del realm. Para recorrer la configuración real, sigue `README.md`:
 
 ```bash
-cd examples/spring-security-keycloak-rutaflow
 docker compose up -d
 curl -fsS http://localhost:8081/realms/rutaflow/.well-known/openid-configuration
 ```
@@ -188,7 +184,7 @@ curl -fsS http://localhost:8081/realms/rutaflow/.well-known/openid-configuration
 
 **Contexto:** un endpoint que recibe una URL puede ser usado para pedir datos a servicios locales, a rangos privados o al endpoint de metadata. Controla el destino antes de abrir la conexión.
 
-**Hazlo tú:** abre `examples/spring-ssrf/src/main/java/com/academia/SafeClient.java`. Observa timeout, redirecciones deshabilitadas y `InetAddressFilter.externalAddresses()`. Ejecuta desde `examples/spring-ssrf`:
+**Hazlo tú:** abre `SafeClient.java`. Observa timeout, redirecciones deshabilitadas y `InetAddressFilter.externalAddresses()`. Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw test

@@ -1,6 +1,0 @@
- Image hashicorp/vault:2.2.0 Pulling 
- Image postgres:18.7 Pulling 
- Image postgres:18.7 Error failed to resolve reference "docker.io/library/postgres:18.7": failed to do request: Head "https://registry-1.docker.io/v2/library/postgres/manifests/18.7": Forbidden (agent proxy: no rule or network setting allows this host)
- Image hashicorp/vault:2.2.0 Interrupted 
-Error response from daemon: failed to resolve reference "docker.io/library/postgres:18.7": failed to do request: Head "https://registry-1.docker.io/v2/library/postgres/manifests/18.7": Forbidden (agent proxy: no rule or network setting allows this host)
-Error response from daemon: No such image: hashicorp/vault:2.2.0

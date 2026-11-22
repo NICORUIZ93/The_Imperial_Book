@@ -6,9 +6,6 @@ dominio, database-per-service), Spring MVC y testing (Módulos 2 y 3), Docker Co
 **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (RestClient/RestTemplate, WebClient, gRPC nativo con Spring gRPC 1.1.2 y
 grpc-java 1.84.1, Spring for GraphQL 2.0, Spring AMQP 4.1.3, Spring for Apache Kafka 4.1.3), **Spring Cloud 2025.1.4**
 (OpenFeign), **RabbitMQ 4.4.1** y **Apache Kafka 4.4.0** en Docker Compose, y Gradle 9.9.2 mediante `./gradlew`.
-**Laboratorio:** `examples/microservicios/modulo-10/` (un subproyecto Gradle por tema; `./verificar.sh` levanta los
-brokers y ejecuta todos los tests).
-
 Cuando un sistema se parte en servicios, las llamadas a métodos se vuelven **mensajes por la red**. Este módulo te da
 las cinco herramientas para hacerlo y, sobre todo, el criterio para elegir: pedir algo y esperar la respuesta (REST,
 gRPC, GraphQL) o avisar que algo pasó y seguir (RabbitMQ, Kafka).
@@ -32,10 +29,6 @@ flowchart LR
 RestTemplate, WebClient y OpenFeign), el tema 2 (gRPC) y el tema 3 (GraphQL). El bloque «Asíncrono: aviso y sigo»
 contiene el tema 4 (RabbitMQ y Kafka). Los temas 3 y 4 llevan al tema 5, sync vs async: criterios de decisión.
 
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-10` y ejecuta `./verificar.sh`. Para un solo
-tema: `cd f048-grpc && ../gradlew test`. Solo el tema 4 necesita Docker (`docker compose up -d --wait` en la carpeta del
-módulo).
-
 ---
 
 ### REST síncrono: RestTemplate, WebClient, OpenFeign
@@ -43,7 +36,7 @@ módulo).
 #### 1. UBICACIÓN
 
 Módulo 6, Lección 1 de 5 · Fase 1 · `web/public/content/microservices/modulo-10.md` · Laboratorio
-`examples/microservicios/modulo-10/f047-rest-sincrono/`.
+`f047-rest-sincrono`.
 
 #### 2. PRERREQUISITOS
 
@@ -501,7 +494,6 @@ public class InventarioFalso {
 
 1. Arranca el inventario falso (solo JDK) y compruébalo con `curl`:
    ```bash
-   cd examples/microservicios/modulo-10/f047-rest-sincrono
    java inventario-falso/InventarioFalso.java 9091 &
    curl -s localhost:9091/inventario/CAFE; echo
    curl -s -o /dev/null -w "%{http_code}\n" localhost:9091/inventario/TE
@@ -552,7 +544,6 @@ quedaría ocupando un hilo de pedidos durante los 2 s (o para siempre, si invent
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-10/f047-rest-sincrono
 ../gradlew test
 ```
 
@@ -696,7 +687,7 @@ guarda copias locales alimentadas por eventos o pasa a comunicación asíncrona 
 
 #### 1. UBICACIÓN
 
-Módulo 6, Lección 2 de 5 · Fase 1 · Laboratorio `examples/microservicios/modulo-10/f048-grpc/`.
+Módulo 6, Lección 2 de 5 · Fase 1.
 
 #### 2. PRERREQUISITOS
 
@@ -1106,7 +1097,6 @@ message Existencia {
 
 1. Mira el mensaje en el cable y el efecto de cambiar los números de campo:
    ```bash
-   cd examples/microservicios/modulo-10/f048-grpc
    ./protobuf/demo-binario.sh
    ```
 2. Genera el código y arranca el servidor gRPC:
@@ -1162,7 +1152,6 @@ disponibles: 12
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-10/f048-grpc
 ../gradlew test
 ```
 
@@ -1293,7 +1282,7 @@ nombre) y agrega siempre números nuevos.
 
 #### 1. UBICACIÓN
 
-Módulo 6, Lección 3 de 5 · Fase 1 · Laboratorio `examples/microservicios/modulo-10/f049-graphql/`.
+Módulo 6, Lección 3 de 5 · Fase 1.
 
 #### 2. PRERREQUISITOS
 
@@ -1621,7 +1610,6 @@ public class GraphQlApp {
 
 1. Arranca el servicio:
    ```bash
-   cd examples/microservicios/modulo-10/f049-graphql
    ../gradlew -q bootRun
    ```
 2. En otra terminal, envía tres documentos con `curl`:
@@ -1655,7 +1643,6 @@ indefinido (menciona `costo` y el tipo `Producto`) y cuya extensión `classifica
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-10/f049-graphql
 ../gradlew test
 ```
 
@@ -1766,7 +1753,7 @@ corresponda) y trátalo como un contrato que evoluciona agregando campos y marca
 
 #### 1. UBICACIÓN
 
-Módulo 6, Lección 4 de 5 · Fase 1 · Laboratorio `examples/microservicios/modulo-10/f050-mensajeria/` (con
+Módulo 6, Lección 4 de 5 · Fase 1
 `docker-compose.yml` en la carpeta del módulo). Se profundiza en el Módulo 11 (mensajería avanzada).
 
 #### 2. PRERREQUISITOS
@@ -2136,7 +2123,6 @@ public class MensajeriaApp {
 
 1. Levanta los brokers y espera a que estén sanos:
    ```bash
-   cd examples/microservicios/modulo-10
    docker compose up -d --wait
    docker compose ps
    ```
@@ -2180,7 +2166,6 @@ borra.
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-10
 docker compose up -d --wait
 cd f050-mensajeria && ../gradlew test
 ```
@@ -2280,7 +2265,7 @@ llamada síncrona con timeout (temas 1 y 2); usa mensajes para avisar hechos que
 
 #### 1. UBICACIÓN
 
-Módulo 6, Lección 5 de 5 · Fase 1 · Laboratorio `examples/microservicios/modulo-10/f051-sync-async/`.
+Módulo 6, Lección 5 de 5 · Fase 1.
 
 #### 2. PRERREQUISITOS
 
@@ -2603,7 +2588,6 @@ class PedidosController {
 
 1. Ejecuta los criterios y la aritmética de cadenas (solo JDK):
    ```bash
-   cd examples/microservicios/modulo-10/f051-sync-async
    javac -d /tmp/f051 src/main/java/academia/decision/Necesidad.java src/main/java/academia/decision/CriteriosDeComunicacion.java
    java -cp /tmp/f051 academia.decision.CriteriosDeComunicacion
    ```
@@ -2639,7 +2623,6 @@ paso 2 la diferencia de tiempo es el trabajo que el estilo asíncrono saca del c
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-10/f051-sync-async
 ../gradlew test
 ```
 

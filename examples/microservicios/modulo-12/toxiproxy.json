@@ -1,8 +1,0 @@
-[
-  {
-    "name": "inventario",
-    "listen": "0.0.0.0:21212",
-    "upstream": "inventario:9000",
-    "enabled": true
-  }
-]

@@ -2,10 +2,10 @@
 
 **Fase 1 · Spring Boot de cero a experto** (media semana según la tabla de contenidos). **Duración:** 10 h (4 temas
 de 2–3 h). **Dificultad:** 4 de 5. **Dependencias:** Módulo 6 (llamadas entre servicios) y Módulo 7 (descubrimiento,
-gateway, balanceo y BFF). **Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3**, **Resilience4j 2.4.0**
+gateway, balanceo y BFF). **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3**, **Resilience4j 2.4.0**
 (`resilience4j-spring-boot4`), Spring Cloud 2025.1.4 (BOM), **Toxiproxy 2.13.0** con Docker Compose, Testcontainers
 2.0.5 (módulo Toxiproxy) y toxiproxy-java 2.1.11, Gradle 9.9.2 por el wrapper y `curl`. **Laboratorio:**
-`examples/microservicios/modulo-12/` (una demostración con JDK puro por tema en `jdk/`, un subproyecto Gradle por tema,
+`modulo-12` (una demostración con JDK puro por tema en `jdk/`, un subproyecto Gradle por tema,
 `docker-compose.yml` con el inventario y Toxiproxy, y `simular-fallo.sh`).
 
 En un sistema distribuido **algo siempre está fallando**: una red que pierde paquetes, un servicio en plena
@@ -37,17 +37,12 @@ defecto o fallar rápido). Las llamadas salen hacia Toxiproxy en el puerto 21212
 cuelgues o cortes, y de ahí al inventario en el 9000. Un experimento de caos (tema 4) inyecta fallos en Toxiproxy con
 una línea punteada.
 
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-12`. `./verificar.sh --solo-jdk` ejecuta las
-cuatro demostraciones (solo JDK 25). Para Toxiproxy: `docker compose up -d --wait` levanta el inventario (puerto
-9000) y Toxiproxy (API en 8474, proxy en 21212); los proyectos Spring llaman a `http://localhost:21212`, así que todo
-lo que inyectes con `./simular-fallo.sh` lo sufren ellos.
-
 ---
 ### Resilience4j: Circuit Breaker, Retry, RateLimiter, Bulkhead, TimeLimiter
 
 #### 1. UBICACIÓN
 
-Módulo 8, Lección 1 de 4 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-12/`: `jdk/Patrones.java` (con
+Módulo 8, Lección 1 de 4 · Fase 1 · 3 h: `jdk/Patrones.java` (con
 `jdk/Inventario.java` y `jdk/ProxyDeFallos.java`), `f057-resilience4j/` y `simular-fallo.sh`.
 
 #### 2. PRERREQUISITOS
@@ -399,7 +394,6 @@ import java.util.concurrent.TimeoutException;
 
 public class Patrones {
 
-
     static final HttpClient HTTP = HttpClient.newBuilder().connectTimeout(Duration.ofMillis(500)).build();
     static ProxyDeFallos proxy;
     static long t0;
@@ -680,7 +674,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -957,7 +950,6 @@ para cada patrón inyecta un fallo: latencia de 2000 ms (TimeLimiter), dos respu
 1. Ejecuta:
 
 ```bash
-cd examples/microservicios/modulo-12
 java jdk/Patrones.java
 ```
 
@@ -1240,7 +1232,7 @@ nunca sobre 4xx ni sobre un circuito abierto, y siempre con timeout.
 
 #### 1. UBICACIÓN
 
-Módulo 8, Lección 2 de 4 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-12/`: `jdk/Presupuesto.java`,
+Módulo 8, Lección 2 de 4 · Fase 1 · 2,5 h: `jdk/Presupuesto.java`,
 `f058-presupuesto/` y `simular-fallo.sh`.
 
 #### 2. PRERREQUISITOS
@@ -1688,7 +1680,6 @@ inventario, pone `ProxyDeFallos` delante del inventario con `latencia(1500)` y e
 1. Ejecuta:
 
 ```bash
-cd examples/microservicios/modulo-12
 java jdk/Presupuesto.java
 ```
 
@@ -1912,7 +1903,7 @@ HTTP lleva *connect* y *read timeout* explícitos, derivados del presupuesto.
 
 #### 1. UBICACIÓN
 
-Módulo 8, Lección 3 de 4 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-12/`: `jdk/Fallbacks.java`,
+Módulo 8, Lección 3 de 4 · Fase 1 · 2 h: `jdk/Fallbacks.java`,
 `f059-fallbacks/` y `simular-fallo.sh`.
 
 #### 2. PRERREQUISITOS
@@ -2348,7 +2339,6 @@ el puerto del proxy con `proxy.caer()` y aplica cada estrategia.
 1. Ejecuta:
 
 ```bash
-cd examples/microservicios/modulo-12
 java jdk/Fallbacks.java
 ```
 
@@ -2547,7 +2537,7 @@ y lo dices al cliente.
 
 #### 1. UBICACIÓN
 
-Módulo 8, Lección 4 de 4 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-12/`: `jdk/Caos.java`,
+Módulo 8, Lección 4 de 4 · Fase 1 · 2,5 h: `jdk/Caos.java`,
 `caos/experimento.sh`, `simular-fallo.sh`, `toxiproxy.json`, `docker-compose.yml` y `f060-caos/`
 (Testcontainers + Toxiproxy).
 
@@ -3031,7 +3021,6 @@ inventario:
 1. Ejecuta el experimento contra las dos versiones del BFF:
 
 ```bash
-cd examples/microservicios/modulo-12
 java jdk/Caos.java
 ```
 
@@ -3097,7 +3086,7 @@ caos/experimento.sh 600 300
 
    **Output esperado:** las seis líneas del experimento terminando en `6. hipótesis CONFIRMADA`, con `degradadas=20/20`
    en el paso 4 y `p95` alrededor de 200–250 ms. Ahora rompe la protección: detén el BFF (`kill %1`), arráncalo
-   con `(cd f060-caos && ../gradlew -q bootRun --args=--inventario.timeout=5s &)` y repite: el paso 4 da un p95 de unos 600 ms y `6. hipótesis REFUTADA` (código de salida
+   con `(cd f060-caos &&../gradlew -q bootRun --args=--inventario.timeout=5s &)` y repite: el paso 4 da un p95 de unos 600 ms y `6. hipótesis REFUTADA` (código de salida
    1). Termina con `kill %1` y `docker compose down`.
 
 #### 11. VERIFICACIÓN

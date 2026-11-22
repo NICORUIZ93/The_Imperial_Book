@@ -4,7 +4,7 @@
 de 5. **Dependencias:** Módulos 0.1 a 0.4 (servidor, API, Java y Node lado a lado, terminal, HTTP, variables de
 entorno). **Herramientas:** **JDK 25 LTS (25.0.5)**, **Node.js 26.13.1 LTS**, **Docker Engine 29.10.0** con
 **Docker Compose v5.6.1** o posterior (en macOS y Windows, Docker Desktop los trae). **Laboratorio:**
-`examples/microservicios/modulo-4/` (se verifica con `./verificar.sh` y, con conexión a Docker Hub,
+`modulo-4` (se verifica con `./verificar.sh` y, con conexión a Docker Hub,
 `./verificar.sh --compose`).
 
 Este módulo cierra la Fase 0: instalas las herramientas, escribes el «Hola Mundo» clásico en Java y en Node.js,
@@ -32,7 +32,7 @@ Docker (imagen y contenedor) y terminan en docker compose up, que arranca los do
 #### 1. UBICACIÓN
 
 Módulo 0.5, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modulo-4.md` · Laboratorio
-`examples/microservicios/modulo-4/java/`.
+`java`.
 
 #### 2. PRERREQUISITOS
 
@@ -126,7 +126,7 @@ instalado. Después lo convertimos en un **servidor**, como en el Módulo 0.1, p
 #### 9. CÓDIGO EJECUTABLE
 
 Versión: **JDK 25 LTS (25.0.5)**. Sin dependencias ni `pom.xml`: todo viene en el JDK (en la Fase 1 crearás el
-`pom.xml` de Spring Boot). `examples/microservicios/modulo-4/java/HolaMundo.java`:
+`pom.xml` de Spring Boot). `HolaMundo.java`:
 
 ```java
 // Módulo 0.5 · Primer «Hola Mundo» en Java (forma clásica, la que verás en todo proyecto Spring Boot).
@@ -139,7 +139,7 @@ public class HolaMundo {                       // 1. una clase con el MISMO nomb
 }
 ```
 
-`examples/microservicios/modulo-4/java/HolaCompacto.java`:
+`HolaCompacto.java`:
 
 ```java
 // Módulo 0.5 · «Hola Mundo» compacto: desde JDK 25 un archivo puede tener solo un método main (JEP 512).
@@ -150,7 +150,7 @@ void main() {
 }
 ```
 
-`examples/microservicios/modulo-4/java/HolaServidor.java`:
+`HolaServidor.java`:
 
 ```java
 // Módulo 0.5 · «Hola Mundo» como servidor HTTP en Java, solo con el JDK (sin Spring todavía).
@@ -194,7 +194,6 @@ public class HolaServidor {
 1. Comprueba la instalación y ejecuta las dos formas del «Hola Mundo»:
    ```bash
    java -version
-   cd examples/microservicios/modulo-4/java
    java HolaMundo.java
    java HolaCompacto.java
    ```
@@ -301,7 +300,7 @@ en todas partes con una **imagen Docker** que trae el JDK exacto (tercera ficha 
 
 #### 1. UBICACIÓN
 
-Módulo 0.5, Lección 2 de 3 · Fase 0 · Laboratorio `examples/microservicios/modulo-4/node/`.
+Módulo 0.5, Lección 2 de 3 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -393,7 +392,7 @@ en un servidor.
 
 #### 9. CÓDIGO EJECUTABLE
 
-Versión: **Node.js 26.13.1 LTS**. Sin dependencias. `examples/microservicios/modulo-4/node/package.json`:
+Versión: **Node.js 26.13.1 LTS**. Sin dependencias. `package.json`:
 
 ```json
 {
@@ -412,7 +411,7 @@ Versión: **Node.js 26.13.1 LTS**. Sin dependencias. `examples/microservicios/mo
 }
 ```
 
-`examples/microservicios/modulo-4/node/hola.js`:
+`hola.js`:
 
 ```javascript
 // Módulo 0.5 · Primer «Hola Mundo» en Node.js: una sola línea basta.
@@ -421,7 +420,7 @@ Versión: **Node.js 26.13.1 LTS**. Sin dependencias. `examples/microservicios/mo
 console.log(`Hola Mundo desde Node.js ${process.versions.node.split('.')[0]}`);
 ```
 
-`examples/microservicios/modulo-4/node/servidor.js`:
+`servidor.js`:
 
 ```javascript
 // Módulo 0.5 · «Hola Mundo» como servidor HTTP en Node.js, solo con 'node:http' (sin Express todavía).
@@ -456,7 +455,6 @@ if (import.meta.main) {
 1. Comprueba la instalación y ejecuta el «Hola Mundo» de consola:
    ```bash
    node -v
-   cd examples/microservicios/modulo-4/node
    node hola.js
    ```
 2. **Terminal 1:** `npm start`. **Terminal 2:**
@@ -524,8 +522,8 @@ npm error enoent Could not read package.json: Error: ENOENT: no such file or dir
 ```
 
 **Diagnóstico:** la línea `path` dice dónde buscó: npm lee el `package.json` de la **carpeta actual**, y no estás
-en `modulo-4/node`. **Arreglo:** `cd examples/microservicios/modulo-4/node` y repite (o `npm --prefix
-examples/microservicios/modulo-4/node start`).
+en `modulo-4/node`. **Arreglo:** `cd node` y repite (o `npm --prefix
+node start`).
 
 #### 13. PREGUNTA DE ENTREVISTA
 
@@ -559,9 +557,9 @@ siempre tardan exactamente 10 s (o 30 s) en detenerse y terminan con código 137
 
 #### 1. UBICACIÓN
 
-Módulo 0.5, Lección 3 de 3 · Fase 0 · Laboratorio `examples/microservicios/modulo-4/docker-basico/`,
-`examples/microservicios/modulo-4/java/Dockerfile`, `examples/microservicios/modulo-4/node/Dockerfile` y
-`examples/microservicios/modulo-4/docker-compose.yml`.
+Módulo 0.5, Lección 3 de 3 · Fase 0
+`Dockerfile`, `Dockerfile` y
+`docker-compose.yml`.
 
 #### 2. PRERREQUISITOS
 
@@ -666,7 +664,7 @@ anfitrión, por eso arranca en milisegundos.
 
 Versiones: **Docker Engine 29.10.0** con **Docker Compose v5.6.1** o posterior; imágenes base **ubuntu:24.04**,
 **eclipse-temurin:25-jdk** (JDK 25 LTS) y **node:26-alpine** (Node.js 26 LTS). No hay dependencias de npm ni de
-Maven. `examples/microservicios/modulo-4/docker-basico/Dockerfile`:
+Maven. `Dockerfile`:
 
 ```dockerfile
 # Módulo 0.5 · Docker básico: la receta (Dockerfile) más pequeña posible.
@@ -678,7 +676,7 @@ ENV MENSAJE="valor por defecto de la imagen"
 CMD ["./hola.sh"]
 ```
 
-`examples/microservicios/modulo-4/docker-basico/hola.sh` (con permiso de ejecución, `chmod +x`):
+`hola.sh` (con permiso de ejecución, `chmod +x`):
 
 ```bash
 #!/bin/sh
@@ -689,7 +687,7 @@ echo "Usuario: $(whoami) · Directorio: $(pwd)"
 echo "Mensaje recibido por variable de entorno: ${MENSAJE:-(ninguno)}"
 ```
 
-`examples/microservicios/modulo-4/java/Dockerfile`:
+`Dockerfile`:
 
 ```dockerfile
 # Módulo 0.5 · Imagen Docker del «Hola Mundo» Java.
@@ -703,7 +701,7 @@ EXPOSE 8080
 CMD ["java", "HolaServidor"]
 ```
 
-`examples/microservicios/modulo-4/node/Dockerfile`:
+`Dockerfile`:
 
 ```dockerfile
 # Módulo 0.5 · Imagen Docker del «Hola Mundo» Node.js.
@@ -717,7 +715,7 @@ USER node
 CMD ["node", "servidor.js"]
 ```
 
-`examples/microservicios/modulo-4/docker-compose.yml`:
+`docker-compose.yml`:
 
 ```yaml
 # Módulo 0.5 · Los dos «Hola Mundo» (Java y Node.js) arrancados juntos con Docker Compose.
@@ -740,7 +738,7 @@ services:
 
 #### 10. MINI-LABORATORIO
 
-1. Construye la imagen y ejecuta el contenedor (desde `examples/microservicios/modulo-4/docker-basico`):
+1. Construye la imagen y ejecuta el contenedor (desde `docker-basico`):
    ```bash
    docker build -t hola-docker:1 .
    docker run --rm hola-docker:1
@@ -757,7 +755,7 @@ services:
    docker ps -a --filter name=contador --format '{{.Names}} {{.Status}}'
    docker rm contador
    ```
-3. Los dos «Hola Mundo» juntos (desde `examples/microservicios/modulo-4`; descarga `eclipse-temurin:25-jdk` y
+3. Los dos «Hola Mundo» juntos (desde `modulo-4`; descarga `eclipse-temurin:25-jdk` y
    `node:26-alpine` la primera vez):
    ```bash
    docker compose up --build -d --wait

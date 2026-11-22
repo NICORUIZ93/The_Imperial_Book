@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-Construirás una app de conductor desde una lista vacía hasta una entrega sincronizada. El foco es operar con señal inestable y ubicaciones cambiantes, no repetir el mapa del módulo 14. Trabaja sobre el proyecto de referencia `examples/flutter_rutaflow/` (fija `flutter_riverpod: ^2.4.0`, por eso todavía usa `StateProvider` sin la importación `legacy.dart` de Riverpod 3); no uses credenciales de producción.
+Construirás una app de conductor desde una lista vacía hasta una entrega sincronizada. El foco es operar con señal inestable y ubicaciones cambiantes, no repetir el mapa del módulo 14. Trabaja sobre el proyecto de referencia `flutter_rutaflow` (fija `flutter_riverpod: ^2.4.0`, por eso todavía usa `StateProvider` sin la importación `legacy.dart` de Riverpod 3); no uses credenciales de producción.
 
 ---
 
@@ -11,7 +11,7 @@ Construirás una app de conductor desde una lista vacía hasta una entrega sincr
 **Duración estimada:** 30 min.
 **¿Por qué es importante?** Una sola fuente de estado evita que distintas pantallas muestren versiones distintas de la jornada.
 
-**Prerrequisitos:** Flutter M1 T1 (widgets) y Dart M0 T3 (async/await). Proyecto continuo: `examples/flutter_rutaflow/`, la app de turnos del conductor.
+**Prerrequisitos:** Flutter M1 T1 (widgets) y Dart M0 T3 (async/await). Proyecto continuo: `flutter_rutaflow`, la app de turnos del conductor.
 
 #### Subtema 1.1: Representa paradas con estado inmutable · 10 min
 
@@ -19,7 +19,7 @@ Construirás una app de conductor desde una lista vacía hasta una entrega sincr
 Si cada pantalla guarda su propia copia, una puede mostrar una parada entregada y otra pendiente. Un provider ofrece un solo estado compartido.
 
 **2. Hazlo tú**
-Abre `examples/flutter_rutaflow/lib/features/shift/shift_provider.dart`. Revisa `Stop`, `ShiftNotifier.build` y `load`; inicializan una lista vacía y guardan una copia que no se puede modificar desde afuera. Ejecuta desde `examples/flutter_rutaflow/`:
+Observa shift_provider.dart y. Revisa `Stop`, `ShiftNotifier.build` y `load`; inicializan una lista vacía y guardan una copia que no se puede modificar desde afuera. Ejecuta desde el código de este tema:
 
 ```bash
 flutter test --no-pub test/features/shift/shift_provider_test.dart
@@ -41,7 +41,7 @@ Escribe qué estado inicial tiene una jornada y por qué `load` no conserva la l
 La lista puede cambiar de orden. Identificar una parada por su id evita completar la dirección incorrecta.
 
 **2. Hazlo tú**
-Abre `examples/flutter_rutaflow/lib/features/shift/shift_provider.dart` y localiza `complete`. Ejecuta la prueba que carga dos paradas y completa `p-1`:
+Observa shift_provider.dart y localiza `complete`. Ejecuta la prueba que carga dos paradas y completa `p-1`:
 
 ```bash
 flutter test --no-pub test/features/shift/shift_provider_test.dart
@@ -63,7 +63,7 @@ Guarda el antes y el después y explica qué fila cambió.
 La misma acción debe comportarse de forma previsible si el servidor envía un id desconocido.
 
 **2. Hazlo tú**
-Abre `examples/flutter_rutaflow/test/features/shift/shift_provider_test.dart` y ejecuta las dos pruebas del `ProviderContainer`:
+Observa shift_provider_test.dart y ejecuta las dos pruebas del `ProviderContainer`:
 
 ```bash
 flutter test --no-pub test/features/shift/shift_provider_test.dart
@@ -88,7 +88,7 @@ Entrega las salidas de ambas pruebas y anota un caso que todavía falta, como ca
 
 **Fuente oficial:** [Riverpod: providers y Notifier](https://riverpod.dev/docs/providers/notifier_provider).
 
-**Proyecto integrador:** `ShiftNotifier` es el estado real que `examples/flutter_rutaflow/` comparte entre la pantalla de mapa, la lista de paradas y las notificaciones de entrega del conductor. **Límite:** usa un `NotifierProvider` compartido cuando varias pantallas necesitan leer y reaccionar al mismo estado; si el dato solo vive dentro de un único widget y nadie más lo consulta, un `StatefulWidget` local es más simple que levantar un provider global.
+**Proyecto integrador:** `ShiftNotifier` es el estado real que `flutter_rutaflow` comparte entre la pantalla de mapa, la lista de paradas y las notificaciones de entrega del conductor. **Límite:** usa un `NotifierProvider` compartido cuando varias pantallas necesitan leer y reaccionar al mismo estado; si el dato solo vive dentro de un único widget y nadie más lo consulta, un `StatefulWidget` local es más simple que levantar un provider global.
 
 ### Tema 2: mapa y permiso de ubicación · Intermedio · 35 min
 

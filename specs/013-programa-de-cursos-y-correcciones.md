@@ -26,7 +26,7 @@ editorial con el «estado final» del libro (Parte 2).
 ## Criterios
 
 - **P1** `hecho` — Ninguna lección cita un laboratorio inexistente y `examples/` no guarda nada sin uso.
-  Verificación: `python3 scripts/validate_lesson_labs.py`
+  Verificación: `! test -e examples && ! grep -rIl "examples/" web/public/content web/src/app --include="*.md" --include="*.ts" --include="*.html"`
 - **P2** `hecho` — La página Temario se genera desde el índice real y está al día.
   Verificación: `python3 scripts/build_curriculum_catalog.py --check`
 - **P3** `hecho` — La app ya no escribe claves con «floci» y sigue leyendo las anteriores.

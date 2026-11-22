@@ -4,8 +4,8 @@
 de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 5 (Strangler Fig y database-per-service:
 allí viste la idea; aquí la llevas a un monolito con años de historia), Módulo 24 (ADR y fitness functions), Módulo 25
 (outbox y CDC: la forma correcta de sacar los datos del monolito) y Módulo 30 (anti-patrones y cuándo NO usar
-microservicios). **Herramientas:** **Node.js 26.13.1 LTS** sin dependencias de npm (SQLite 3.54.1 viene dentro de
-Node como `node:sqlite`) y **Git** (el de tu sistema, 2.x). **Laboratorio:** `examples/microservicios/modulo-35/`
+microservicios). **Herramientas:**Node.js 26.13.1 LTS** sin dependencias de npm (SQLite 3.54.1 viene dentro de
+Node como `node:sqlite`) y **Git** (el de tu sistema, 2.x). **Laboratorio:** `modulo-35`
 (`./verificar.sh` ejecuta 17 tests y los scripts de las cuatro fichas; `--compose` se acepta, pero este módulo no
 levanta contenedores).
 
@@ -33,19 +33,17 @@ flecha punteada que vuelve al tema 1, si se sube el porcentaje de tráfico que v
 2.43 en Linux, y sus salidas están pegadas tal cual. Los datos de despliegues (F179) y el historial de Git (F180) son
 **sintéticos y deterministas** (semilla fija y fechas fijas) para que obtengas los mismos números. La versión Spring
 Boot de la fachada Strangler Fig ya la construiste en el Módulo 5
-(`examples/microservicios/modulo-9/f045-strangler-fig/`): aquí se usa Node para todo el módulo, igual que el resto de la
+(`f045-strangler-fig`): aquí se usa Node para todo el módulo, igual que el resto de la
 Fase 3.
 
 **Cómo usar el laboratorio.** Con Node 26 y Git:
 
 ```bash
-cd examples/microservicios/modulo-35
 npm ci                      # no instala nada: el lockfile está vacío a propósito
 ./verificar.sh              # 17 tests + scripts de las 4 fichas → «RESULTADO: OK»
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-35`**. El
-`examples/microservicios/modulo-35/README.md` tiene el mapa de carpetas.
+`README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio:
 
@@ -108,7 +106,7 @@ export { http };
 
 #### 1. UBICACIÓN
 
-Módulo 31, Lección 1 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-35/f177-strangler-fig/`.
+Módulo 31, Lección 1 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 
@@ -526,7 +524,7 @@ regar.
 
 #### 1. UBICACIÓN
 
-Módulo 31, Lección 2 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-35/f178-coexistencia/`.
+Módulo 31, Lección 2 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 
@@ -924,7 +922,7 @@ En un diagrama se ve como dos cajas de servicio con flechas a **la misma** base 
 
 #### 1. UBICACIÓN
 
-Módulo 31, Lección 3 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-35/f179-metricas-exito/`.
+Módulo 31, Lección 3 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 
@@ -1254,7 +1252,7 @@ En un diagrama de Gantt se ve como barras que avanzan solas mientras el semáfor
 
 #### 1. UBICACIÓN
 
-Módulo 31, Lección 4 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-35/f180-deuda-tecnica/`.
+Módulo 31, Lección 4 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 

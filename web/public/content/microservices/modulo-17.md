@@ -5,7 +5,7 @@ laboratorio integrador). **Dificultad:** 2 de 5 en ES6+ y TypeScript, 3 de 5 en 
 y apagado. **Dependencias:** Fase 0 (Módulo 0.3: ejecutar Node y leer un test; Módulo 0.4: terminal, HTTP, JSON y
 variables de entorno; Módulo 0.5: Docker básico). Esta fase **no** necesita la Fase 1: todo lo de Node se explica
 aquí desde cero. **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, `@types/node` 26.6.6 y, solo para
-el tema de perfiles, **clinic 13.0.0** por `npx`. **Laboratorio:** `examples/microservicios/modulo-17/` (una carpeta
+el tema de perfiles, **clinic 13.0.0** por `npx`. **Laboratorio:** `modulo-17` (una carpeta
 por tema; `./verificar.sh` instala con `npm ci`, comprueba tipos, ejecuta los 24 tests y cada programa).
 
 Un microservicio en Node.js es **un solo hilo de JavaScript** que atiende a miles de clientes a la vez sin
@@ -41,12 +41,11 @@ y el tema 2 (TypeScript). «El motor» contiene el tema 3 (Event Loop), el tema 
 ejecuta:
 
 ```bash
-cd examples/microservicios/modulo-17
 ./verificar.sh              # npm ci + tsc + 24 tests + programas de cada ficha → «RESULTADO: OK»
 ./verificar.sh --clinic     # además, clinic doctor (descarga clinic 13.0.0 con npx la primera vez)
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-17`** después de `npm ci`.
+Todas las órdenes de las fichas se ejecutan **desde `modulo-17`** después de `npm ci`.
 El `package.json` del laboratorio, compartido por las siete fichas, es este (y `package-lock.json` fija el árbol
 completo):
 
@@ -77,7 +76,7 @@ completo):
 
 #### 1. UBICACIÓN
 
-Módulo 13, Lección 1 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-17/f089-es6/`.
+Módulo 13, Lección 1 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -188,7 +187,7 @@ primera parte, «en serie», el programa pide c1, espera «Ana», pide c2, esper
 Versiones: **Node.js 26.13.1 LTS** (también funciona desde Node 22), sin dependencias; usa el `package.json` del
 laboratorio (`"type": "module"`).
 
-`examples/microservicios/modulo-17/f089-es6/pedidos.js`:
+`pedidos.js`:
 
 ```javascript
 // Módulo 13 · F089 · ES6+: async/await, Promises, destructuring, modules.
@@ -246,10 +245,10 @@ export function conCiudad(cliente, ciudad) {
 }
 ```
 
-`examples/microservicios/modulo-17/f089-es6/demo.js`:
+`demo.js`:
 
 ```javascript
-// Ejecuta: node f089-es6/demo.js   (desde examples/microservicios/modulo-17)
+// Ejecuta: node f089-es6/demo.js   (desde modulo-17)
 import { calcularTotal, nombresEnSerie, nombresEnParalelo, informe, conCiudad, buscarCliente } from './pedidos.js';
 
 const pedido = { items: [{ precio: 10000, cantidad: 2 }, { precio: 5000, cantidad: 1 }], descuento: 0.1 };
@@ -277,7 +276,6 @@ console.log('Copia:', anaEnMedellin, '| original intacto:', ana.ciudad);
 
 1. Instala las dependencias fijadas del laboratorio (una sola vez para todo el módulo):
    ```bash
-   cd examples/microservicios/modulo-17
    npm ci
    ```
 2. Ejecuta la demo y compara los tiempos en serie y en paralelo:
@@ -449,12 +447,12 @@ como una pared de conexiones simultáneas y errores `ECONNRESET` en el servicio 
 
 #### 1. UBICACIÓN
 
-Módulo 13, Lección 2 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-17/f090-typescript/`.
+Módulo 13, Lección 2 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
 - Ficha anterior (ES6+: módulos, destructuring, promesas).
-- `npm ci` hecho en `examples/microservicios/modulo-17` (instala `typescript` 6.0.3 y `@types/node` 26.6.6).
+- `npm ci` hecho en `modulo-17` (instala `typescript` 6.0.3 y `@types/node` 26.6.6).
 
 #### 3. OBJETIVO DE APRENDIZAJE
 
@@ -522,7 +520,7 @@ ejecutar»; si no, en una caja verde «tipos correctos». Por abajo va directo a
   `verbatimModuleSyntax` (los imports de solo tipos se escriben `import type`). Los imports llevan la extensión
   `.ts`, como pide Node (`allowImportingTsExtensions`).
 
-`examples/microservicios/modulo-17/f090-typescript/tsconfig.json`:
+`tsconfig.json`:
 
 ```jsonc
 {
@@ -570,7 +568,7 @@ ejecutar»; si no, en una caja verde «tipos correctos». Por abajo va directo a
 Versiones: **Node.js 26.13.1 LTS** (ejecuta `.ts` sin compilar), **typescript 6.0.3** y **@types/node 26.6.6**
 (devDependencies del `package.json` del laboratorio).
 
-`examples/microservicios/modulo-17/f090-typescript/src/inventario.ts`:
+`inventario.ts`:
 
 ```typescript
 // Módulo 13 · F090 · TypeScript: tipos, interfaces, generics, strict mode.
@@ -639,7 +637,7 @@ export function iva(categoria: Categoria): number {
 }
 ```
 
-`examples/microservicios/modulo-17/f090-typescript/src/demo.ts`:
+`demo.ts`:
 
 ```typescript
 // Ejecuta: node f090-typescript/src/demo.ts   (Node 26 quita los tipos y ejecuta)
@@ -816,7 +814,7 @@ Se ve en el código como una nube de `any`, `as` y `!`; en las métricas, como u
 
 #### 1. UBICACIÓN
 
-Módulo 13, Lección 3 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-17/f091-event-loop/`.
+Módulo 13, Lección 3 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -911,7 +909,7 @@ nextTick, luego las microtasks (promesas, queueMicrotask)».
 
 Versiones: **Node.js 26.13.1 LTS** (también desde Node 22), sin dependencias.
 
-`examples/microservicios/modulo-17/f091-event-loop/orden.js`:
+`orden.js`:
 
 ```javascript
 // Módulo 13 · F091 · Event Loop: fases, microtasks y macrotasks.
@@ -1013,7 +1011,7 @@ reporte listo
 4, `/salud` debería tardar 1 ms, pero espera detrás del bucle de 1 s de `/reporte`: con un timeout de 300 ms, el health
 check de Kubernetes daría el pod por muerto.
 
-`examples/microservicios/modulo-17/f091-event-loop/bloqueo.js`:
+`bloqueo.js`:
 
 ```javascript
 // F091 · Error común: un cálculo síncrono en un handler congela TODAS las peticiones del proceso.
@@ -1138,7 +1136,7 @@ promisificado).
 
 #### 1. UBICACIÓN
 
-Módulo 13, Lección 4 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-17/f092-perf/`.
+Módulo 13, Lección 4 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1238,7 +1236,7 @@ Prometheus (Módulo 21). Por fuera, sin tocar el código, node --cpu-prof genera
 Versiones: **Node.js 26.13.1 LTS** (también desde Node 22), sin dependencias; **clinic 13.0.0** solo por `npx` en el
 laboratorio.
 
-`examples/microservicios/modulo-17/f092-perf/medir.js`:
+`medir.js`:
 
 ```javascript
 // Módulo 13 · F092 · perf_hooks: medir duración, retraso del Event Loop y uso del Event Loop.
@@ -1301,7 +1299,7 @@ if (import.meta.main) {
 }
 ```
 
-`examples/microservicios/modulo-17/f092-perf/servidor-lento.js` (lo que vamos a perfilar):
+`servidor-lento.js` (lo que vamos a perfilar):
 
 ```javascript
 // F092 · Servidor con un endpoint que bloquea el Event Loop, para perfilarlo con clinic.js o con --cpu-prof.
@@ -1327,7 +1325,7 @@ servidor.listen(0, async () => {
 });
 ```
 
-`examples/microservicios/modulo-17/f092-perf/resumir-perfil.js`:
+`resumir-perfil.js`:
 
 ```javascript
 // F092 · Lee un .cpuprofile (generado con node --cpu-prof) y muestra las 5 funciones con más tiempo propio.
@@ -1518,7 +1516,7 @@ Prometheus) para lo continuo y perfiles para lo puntual.
 
 #### 1. UBICACIÓN
 
-Módulo 13, Lección 5 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-17/f093-workers/`.
+Módulo 13, Lección 5 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1614,7 +1612,7 @@ execFile o spawn y lee su stdin, stdout y stderr.
 
 Versiones: **Node.js 26.13.1 LTS** (también desde Node 22), sin dependencias.
 
-`examples/microservicios/modulo-17/f093-workers/fibonacci.js`, `worker-fib.js` e `hijo-fib.js`:
+`fibonacci.js`, `worker-fib.js` e `hijo-fib.js`:
 
 ```javascript
 // F093 · Trabajo de CPU puro (recursivo a propósito para que tarde): fib(32) ≈ 30–60 ms, fib(36) ≈ 200–500 ms.
@@ -1642,7 +1640,7 @@ process.on('message', ({ n }) => {
 });
 ```
 
-`examples/microservicios/modulo-17/f093-workers/comparar.js`:
+`comparar.js`:
 
 ```javascript
 // Módulo 13 · F093 · Worker Threads vs Child Processes.
@@ -1837,7 +1835,7 @@ peores que sin worker. Para I/O, `await` directo; para CPU, un pool fijo creado 
 
 #### 1. UBICACIÓN
 
-Módulo 13, Lección 6 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-17/f094-backpressure/`.
+Módulo 13, Lección 6 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1926,7 +1924,7 @@ destino. Cuando llega el trozo 16, write devuelve false porque el buffer está l
 
 Versiones: **Node.js 26.13.1 LTS** (también desde Node 22), sin dependencias.
 
-`examples/microservicios/modulo-17/f094-backpressure/backpressure.js`:
+`backpressure.js`:
 
 ```javascript
 // Módulo 13 · F094 · Backpressure en Streams.
@@ -2091,7 +2089,7 @@ Kubernetes lo reinicia con `OOMKilled`, o Node muere con:
 FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
 ```
 
-`examples/microservicios/modulo-17/f094-backpressure/sin-freno.js`:
+`sin-freno.js`:
 
 ```javascript
 // F094 · Error común: productor rápido + consumidor lento + ignorar write() = memoria sin límite.
@@ -2150,7 +2148,7 @@ Se ve como picos de memoria proporcionales al tamaño de los archivos y, a la la
 
 #### 1. UBICACIÓN
 
-Módulo 13, Lección 7 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-17/f095-graceful/`.
+Módulo 13, Lección 7 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2244,7 +2242,7 @@ y termina con código 137.
 
 Versiones: **Node.js 26.13.1 LTS** (también desde Node 22), sin dependencias.
 
-`examples/microservicios/modulo-17/f095-graceful/servidor.js`:
+`servidor.js`:
 
 ```javascript
 // Módulo 13 · F095 · Graceful shutdown: apagar sin cortar las peticiones en curso.
@@ -2295,7 +2293,7 @@ process.on('SIGINT', () => apagar('SIGINT'));   // Ctrl + C en la terminal
 servidor.listen(PUERTO, () => console.log(`escuchando en ${PUERTO} (PID ${process.pid})`));
 ```
 
-`examples/microservicios/modulo-17/f095-graceful/sin-graceful.js` (el contraejemplo):
+`sin-graceful.js` (el contraejemplo):
 
 ```javascript
 // F095 · Anti-patrón: el mismo servidor SIN manejar SIGTERM. Node muere al instante y corta lo que estaba en curso.

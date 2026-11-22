@@ -1,0 +1,2 @@
+3 réplicas con LimitadorMemoria: 30 de 100 aceptadas (contrato: 10)
+3 réplicas con LimitadorRedis:   10 de 100 aceptadas (contrato: 10)

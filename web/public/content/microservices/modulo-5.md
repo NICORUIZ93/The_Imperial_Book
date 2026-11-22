@@ -3,9 +3,9 @@
 **Fase 1 · Spring Boot de cero a experto** (semanas 1 y 2 de 12). **Duración:** 16 h (8 temas de 1,5–2,5 h).
 **Dificultad:** 2 de 5 en los temas 1–6 y 4 de 5 en CRaC y GraalVM. **Dependencias:** Fase 0 completa (Módulos
 0.1–0.5: terminal, Git, HTTP, JSON, YAML, variables de entorno, primer «Hola Mundo» en Java y Docker básico).
-**Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6), Gradle
+**Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6), Gradle
 9.9.2 (Kotlin DSL) mediante el wrapper `./gradlew` y Docker con Compose v5 para CRaC y Native Image. **Laboratorio:**
-`examples/microservicios/modulo-5/` (un subproyecto Gradle por tema; `./verificar.sh` ejecuta todos los
+`modulo-5` (un subproyecto Gradle por tema; `./verificar.sh` ejecuta todos los
 tests).
 
 Antes de construir microservicios necesitas dominar las dos herramientas con las que se escriben en esta fase: el
@@ -37,17 +37,12 @@ bloque «Spring Boot esencial»: tema 3 (IoC, DI, ciclo de vida, ApplicationCont
 (auto-configuración), del que salen el tema 5 (multi-módulo) y el tema 6 (perfiles). Del tema 6 salen dos flechas al
 bloque «Arranque rápido»: tema 7 (CRaC) y tema 8 (GraalVM Native Image).
 
-**Cómo usar el laboratorio.** Clona el repositorio, entra en `examples/microservicios/modulo-5` y ejecuta
-`java -version` (debe decir `25`). Cada tema tiene su carpeta (`f017-java-moderno`, `f018-virtual-threads`…); dentro
-de ella usa `../gradlew` (el wrapper del módulo descarga Gradle 9.9.2 la primera vez). La primera compilación de Spring
-descarga dependencias de Maven Central y tarda unos minutos; las siguientes, segundos.
-
 ---
 ### Java 21: Streams, Lambdas, Optional, Records, Pattern Matching
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 1 de 8 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-5/f017-java-moderno/`.
+Módulo 1, Lección 1 de 8 · Fase 1 · 2,5 h.
 El título conserva «Java 21» del temario: son las funciones que Java 21 (LTS) dejó estables. Aquí las usas con
 **JDK 25 LTS**, que las mantiene y añade el patrón `_` (Java 22) que también verás.
 
@@ -118,7 +113,7 @@ ordenar). Java moderno te da cinco herramientas para escribir eso con menos cód
 
 #### 7. EXPLICACIÓN INTERMEDIA
 
-**Records.** Son clases `final` con campos `private final`. El *constructor compacto* (`public Producto { ... }`)
+**Records.** Son clases `final` con campos `private final`. El *constructor compacto* (`public Producto {... }`)
 valida antes de asignar: así es imposible crear un `Producto` con precio negativo. `equals` compara por valor, por eso
 `assertEquals(new Producto(...), otro)` funciona sin escribir nada.
 
@@ -191,7 +186,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -403,7 +397,6 @@ public class JavaModerno {
 1. Entra en la carpeta del tema:
 
 ```bash
-cd examples/microservicios/modulo-5/f017-java-moderno
 java -version
 ```
 
@@ -537,7 +530,7 @@ de proveedores) chocan. El mensaje te dice la clave (`LIB-1`) y los dos valores 
 consumido.
 
 **Arreglo:** decide qué hacer con el duplicado con el tercer argumento:
-`Collectors.toMap(Producto::sku, p -> p, (a, b) -> a.precio().compareTo(b.precio()) <= 0 ? a : b)` (se queda con el
+`Collectors.toMap(Producto::sku, p -> p, (a, b) -> a.precio().compareTo(b.precio()) <= 0 ? a: b)` (se queda con el
 más barato), o usa `groupingBy` si necesitas todos.
 
 #### 13. PREGUNTA DE ENTREVISTA
@@ -572,7 +565,7 @@ el *stream con efectos*: `lista.stream().forEach(x -> otraLista.add(x))`; usa `t
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 2 de 8 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-5/f018-virtual-threads/`.
+Módulo 1, Lección 2 de 8 · Fase 1 · 2 h.
 
 #### 2. PRERREQUISITOS
 
@@ -633,7 +626,7 @@ normal, línea tras línea, sin `callbacks`.
 
 - **Creación:** `Thread.ofVirtual().name("pedido-42").start(tarea)` o, lo habitual,
   `Executors.newVirtualThreadPerTaskExecutor()`, que crea **un hilo virtual nuevo por tarea** (no hay pool que
-  dimensionar). `ExecutorService` es `AutoCloseable` desde Java 19: `try (executor) { ... }` espera a que todas las
+  dimensionar). `ExecutorService` es `AutoCloseable` desde Java 19: `try (executor) {... }` espera a que todas las
   tareas terminen.
 - **Carriers:** los hilos virtuales se ejecutan sobre un `ForkJoinPool` con tantos hilos como núcleos
   (`jdk.virtualThreadScheduler.parallelism`). Al bloquearse en E/S, `sleep`, `BlockingQueue` o `ReentrantLock`, el
@@ -796,7 +789,6 @@ public class HilosVirtuales {
 1. Entra en la carpeta y ejecuta la comparación:
 
 ```bash
-cd examples/microservicios/modulo-5/f018-virtual-threads
 java src/main/java/academia/hilos/HilosVirtuales.java
 ```
 
@@ -933,7 +925,7 @@ inmutables compartidos (`DateTimeFormatter.ISO_LOCAL_DATE`) en lugar de cachés 
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 3 de 8 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-5/f019-ioc-di/`.
+Módulo 1, Lección 3 de 8 · Fase 1 · 2 h.
 
 #### 2. PRERREQUISITOS
 
@@ -1244,7 +1236,6 @@ public class IocApp {
 1. Compila y ejecuta:
 
 ```bash
-cd examples/microservicios/modulo-5/f019-ioc-di
 ../gradlew -q bootJar
 java -jar build/libs/f019-ioc-di-1.0.0.jar
 ```
@@ -1406,7 +1397,7 @@ encontrado» aparece en mitad de una petición en vez de al arrancar. Usa `getBe
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 4 de 8 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-5/f020-autoconfiguracion/`.
+Módulo 1, Lección 4 de 8 · Fase 1 · 2 h.
 
 #### 2. PRERREQUISITOS
 
@@ -1684,7 +1675,6 @@ public class SaludoApp {
 1. Compila y ejecuta sin configurar nada:
 
 ```bash
-cd examples/microservicios/modulo-5/f020-autoconfiguracion
 ../gradlew -q bootJar
 java -jar build/libs/f020-autoconfiguracion-1.0.0.jar
 ```
@@ -1717,7 +1707,7 @@ java -jar build/libs/f020-autoconfiguracion-1.0.0.jar --debug --logging.level.ro
 
    **Output esperado (fragmento):** en *Positive matches* aparece `SaludoAutoConfiguration matched:` con una línea
    `@ConditionalOnClass found required class 'academia.saludo.autoconfigure.Saludador'` y otra de
-   `@ConditionalOnProperty`; `SaludoAutoConfiguration#saludador matched:` con `@ConditionalOnMissingBean ... did not
+   `@ConditionalOnProperty`; `SaludoAutoConfiguration#saludador matched:` con `@ConditionalOnMissingBean... did not
    find any beans`; y en *Negative matches* aparece `SaludoAutoConfiguration#firmaFormal`.
 
    **Captura comentada:** el informe es la «lista de chequeo del hotel» impresa: cada fila dice qué condición se
@@ -1854,7 +1844,7 @@ completo de la clase y compruébalo dentro del jar con
 Spring Boot procesa primero las definiciones de la aplicación (escaneo y `@Bean` del usuario) y deja las
 auto-configuraciones para el final mediante un `DeferredImportSelector`; así, cuando se evalúa la condición, el bean del
 usuario ya está registrado y la auto-configuración se retira. Entre auto-configuraciones el orden se fija con
-`@AutoConfiguration(before = ..., after = ...)`. Se puede comprobar con `--debug` o `/actuator/conditions`.
+`@AutoConfiguration(before =..., after =...)`. Se puede comprobar con `--debug` o `/actuator/conditions`.
 
 #### 14. ANTI-PATRÓN RELACIONADO
 
@@ -1878,7 +1868,7 @@ fantasma imposibles de desactivar. Regla: cada `@Bean` de una auto-configuració
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 5 de 8 · Fase 1 · 1,5 h · Laboratorio `examples/microservicios/modulo-5/f021-multimodulo/`.
+Módulo 1, Lección 5 de 8 · Fase 1 · 1,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -1979,7 +1969,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -2168,7 +2157,6 @@ class DescuentoController {
 1. Construye todo y observa el orden de las tareas:
 
 ```bash
-cd examples/microservicios/modulo-5/f021-multimodulo
 ../gradlew build --console=plain
 ```
 
@@ -2220,7 +2208,7 @@ curl -s "localhost:8080/descuentos?total=250000" | jq .descuento
 4. Compara los dos jars: `ls -l tienda-dominio/build/libs/*.jar tienda-api/build/libs/*.jar`. El de la API pesa megas (lleva
    Spring y Tomcat dentro); el del dominio, kilobytes. Junto al de la API verás `tienda-api-1.0.0-plain.jar`: el jar
    normal, sin dependencias, que Gradle conserva con el clasificador `plain`. Medido el 2026-11-21 con Gradle 9.9.2 y
-   el plugin de Spring Boot (`./gradlew :f021-multimodulo:tienda-api:build`): `tienda-dominio-1.0.0.jar` 1.693 bytes ·
+   el plugin de Spring Boot (`./gradlew:f021-multimodulo:tienda-api:build`): `tienda-dominio-1.0.0.jar` 1.693 bytes ·
    `tienda-api-1.0.0-plain.jar` 2.171 bytes · `tienda-api-1.0.0.jar` **19.992.406 bytes** (≈19 MB). Ese factor de
    ~11.800× entre el jar gordo y el del dominio es justo lo que hace que un módulo de dominio se pueda reutilizar sin
    arrastrar un servidor web.
@@ -2296,7 +2284,7 @@ class DescuentoControllerTest {
 <details>
 <summary>Respuesta</summary>
 
-`../gradlew :tienda-dominio:buildDependents`: construye y prueba el dominio y todos los módulos que dependen de él (aquí, la
+`../gradlew:tienda-dominio:buildDependents`: construye y prueba el dominio y todos los módulos que dependen de él (aquí, la
 API). En Maven era `-pl tienda-dominio -amd test`.
 </details>
 
@@ -2340,7 +2328,7 @@ dominio hace falta el jar de la API. Gradle no puede decidir qué tarea ejecutar
 **Respuesta modelo:** solo en el módulo que produce la aplicación ejecutable. La tarea `bootJar` (en Maven, el goal
 `repackage` de `spring-boot-maven-plugin`) crea un *fat jar* con las clases en `BOOT-INF/classes` y las dependencias en
 `BOOT-INF/lib`. Si un módulo de librería se publica así, quien lo consume desde un repositorio no encuentra sus
-clases y falla con «package ... does not exist». Las versiones de plugins y dependencias se centralizan (en Gradle, el
+clases y falla con «package... does not exist». Las versiones de plugins y dependencias se centralizan (en Gradle, el
 catálogo de versiones y `apply false` en la raíz; en Maven, `pluginManagement`/`dependencyManagement` del padre), pero
 el plugin se **aplica** solo donde corresponde.
 
@@ -2363,7 +2351,7 @@ cada servicio tenga su propio dominio.
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 6 de 8 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-5/f022-perfiles/`.
+Módulo 1, Lección 6 de 8 · Fase 1 · 2 h.
 
 #### 2. PRERREQUISITOS
 
@@ -2419,7 +2407,7 @@ valores de ese entorno.
   `SPRING_PROFILES_ACTIVE=prod` o en tests con `@ActiveProfiles`.
 - **Precedencia (de menor a mayor, resumida):** valores por defecto → `application.yml` → `application-{perfil}.yml`
   → archivos fuera del jar (`./config/application.yml`) → variables de entorno → propiedades del sistema
-  (`-Dclave=valor`) → argumentos `--clave=valor`. Los tests (`@SpringBootTest(properties = ...)`) están por encima.
+  (`-Dclave=valor`) → argumentos `--clave=valor`. Los tests (`@SpringBootTest(properties =...)`) están por encima.
 - **Relaxed binding:** `tienda.descuento-maximo` en YAML, `descuentoMaximo` en Java y `TIENDA_DESCUENTOMAXIMO` en una
   variable de entorno son la misma propiedad (puntos → `_`, sin guiones, mayúsculas).
 - **Placeholders:** `${TIENDA_BD_URL:}` lee otra propiedad o variable; lo que va después de `:` es el valor por
@@ -2571,7 +2559,6 @@ public class PerfilesApp {
 1. Compila y arranca sin perfil:
 
 ```bash
-cd examples/microservicios/modulo-5/f022-perfiles
 ../gradlew -q bootJar
 java -jar build/libs/f022-perfiles-1.0.0.jar
 ```
@@ -2758,8 +2745,8 @@ para comportamientos distintos.
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 7 de 8 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-5/f023-crac/` y servicios
-`crac-checkpoint` / `crac-restore` de `examples/microservicios/modulo-5/docker-compose.yml`.
+Módulo 1, Lección 7 de 8 · Fase 1 · 2 h servicios
+`crac-checkpoint` / `crac-restore` de `docker-compose.yml`.
 
 #### 2. PRERREQUISITOS
 
@@ -2806,7 +2793,7 @@ sequenceDiagram
 **Texto alternativo:** diagrama de secuencia con cinco participantes. Docker Compose lanza una JVM con CRaC con la
 propiedad spring.context.checkpoint=onRefresh y la carpeta de checkpoint. Spring crea el contexto y los beans; en la
 fase onRefresh, antes de arrancar los componentes con ciclo de vida, pide el checkpoint. CRIU vuelca la memoria del
-proceso en archivos .img del volumen y el proceso termina. Luego Docker Compose lanza otra JVM con CRaCRestoreFrom,
+proceso en archivos.img del volumen y el proceso termina. Luego Docker Compose lanza otra JVM con CRaCRestoreFrom,
 que carga la imagen; Spring ejecuta start() en cada Lifecycle (Tomcat y ConexionExterna) y la app atiende en el
 puerto 8080 en milisegundos.
 
@@ -2849,7 +2836,7 @@ que sirve para desarrollar, no para medir), por eso aquí lo haces dentro de Doc
 **Seguridad:** el checkpoint es un volcado de memoria: contiene contraseñas, claves y *tokens* que la app tuviera
 cargados. Trátalo como un secreto (no lo subas a un registro público) y, si puedes, carga los secretos **después** del
 restore. **Coherencia:** al restaurar, el reloj, el *hostname* y los números aleatorios ya generados vienen del pasado;
-con `@Scheduled(fixedRate = ...)` se ejecutan de golpe todas las ejecuciones «perdidas» (usa `fixedDelay` o cron).
+con `@Scheduled(fixedRate =...)` se ejecutan de golpe todas las ejecuciones «perdidas» (usa `fixedDelay` o cron).
 
 **Cuándo NO:** si el servicio corre siempre encendido (arranca una vez por semana) la complejidad no compensa; en
 macOS/Windows sin contenedores; o si tu organización no puede proteger los archivos del checkpoint.
@@ -2989,7 +2976,7 @@ COPY build/libs/f023-crac-1.0.0.jar /app/app.jar
 EXPOSE 8080
 ```
 
-Fragmento de `examples/microservicios/modulo-5/docker-compose.yml` que usa este tema:
+Fragmento de `docker-compose.yml` que usa este tema:
 
 ```yaml
 services:
@@ -3014,7 +3001,6 @@ services:
 1. Mide el arranque normal en tu JDK (cualquier sistema):
 
 ```bash
-cd examples/microservicios/modulo-5
 ./gradlew -q :f023-crac:bootJar
 java -jar f023-crac/build/libs/f023-crac-1.0.0.jar
 ```
@@ -3104,7 +3090,7 @@ Docker: `./verificar.sh --docker` desde `modulo-5` debe terminar con `RESULTADO:
 <summary>Respuesta</summary>
 
 Porque el checkpoint se crea antes de que Spring arranque los `Lifecycle`: `start()` nunca se llamó antes de guardar.
-Tras el restore, Spring llama a `start()` por primera vez. En el modo bajo demanda (`jcmd ... JDK.checkpoint`) la
+Tras el restore, Spring llama a `start()` por primera vez. En el modo bajo demanda (`jcmd... JDK.checkpoint`) la
 conexión ya estaba abierta: Spring llama a `stop()`, guarda y luego `start()`, y verías 2.
 </details>
 
@@ -3160,8 +3146,8 @@ carga credenciales después del restore (por ejemplo, desde Vault en el `start()
 
 #### 1. UBICACIÓN
 
-Módulo 1, Lección 8 de 8 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-5/f024-graalvm-native/` y
-servicios `native-build` / `native-run` de `examples/microservicios/modulo-5/docker-compose.yml`.
+Módulo 1, Lección 8 de 8 · Fase 1 · 2,5 h
+servicios `native-build` / `native-run` de `docker-compose.yml`.
 
 #### 2. PRERREQUISITOS
 
@@ -3230,7 +3216,7 @@ antemano** todo lo que tu programa va a usar.
   (`./mvnw -Pnative native:compile`). `./gradlew nativeCompile` necesita GraalVM 25 con `native-image` y un compilador de C; en Docker usas
   `ghcr.io/graalvm/native-image-community:25`. Alternativa sin GraalVM local: `./gradlew bootBuildImage`
   (buildpacks de Paketo).
-- **Probar AOT en la JVM:** `java -Dspring.aot.enabled=true -jar ...` usa el código generado sin compilar a nativo:
+- **Probar AOT en la JVM:** `java -Dspring.aot.enabled=true -jar...` usa el código generado sin compilar a nativo:
   detecta temprano problemas de condiciones fijas.
 
 #### 8. EXPLICACIÓN MAESTRA
@@ -3398,13 +3384,12 @@ public class NativoApp {
 1. Línea base en la JVM:
 
 ```bash
-cd examples/microservicios/modulo-5
 ./gradlew -q :f024-graalvm-native:bootJar
 java -jar f024-graalvm-native/build/libs/f024-graalvm-native-1.0.0.jar
 ```
 
    **Output esperado:** `Started NativoApp in X seconds`. En otra terminal,
-   `curl -s "localhost:8080/impuesto?base=100000" | jq .impuesto` responde `19000`. Anota X y detén con `Ctrl+C`.
+   `curl -s "localhost:8080/impuesto?base=100000" | jq.impuesto` responde `19000`. Anota X y detén con `Ctrl+C`.
 
 2. Compila el binario nativo dentro del contenedor de GraalVM (tarda varios minutos; Docker Desktop necesita al menos
    8 GB de memoria asignada):
@@ -3507,7 +3492,7 @@ por ejemplo `java.lang.ClassNotFoundException: academia.nativo.CalculadoraIva`, 
 
 **Diagnóstico:** la clase nunca entró en el binario porque nada la referenciaba de forma estática. Para encontrar todo
 lo que falta de una vez, ejecuta la app en la JVM con el agente de trazado de GraalVM
-(`java -agentlib:native-image-agent=config-output-dir=agente -jar ...`), recorre los flujos y revisa la metadata que
+(`java -agentlib:native-image-agent=config-output-dir=agente -jar...`), recorre los flujos y revisa la metadata que
 genera.
 
 **Arreglo:** declara la pista (`hints.reflection().registerType(...)`) en un `RuntimeHintsRegistrar` importado con

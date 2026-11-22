@@ -1,4 +1,0 @@
-[
-  { "name": "inventario", "listen": "0.0.0.0:21212", "upstream": "inventario:9000", "enabled": true },
-  { "name": "redis", "listen": "0.0.0.0:26379", "upstream": "redis:6379", "enabled": true }
-]

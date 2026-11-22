@@ -1,0 +1,664 @@
+Log: logs/verificar-20261121-135651.log
+
+== JDK 25
+openjdk version "27.0.1.0.2" 2026-10-21
+OpenJDK Runtime Environment Temurin-27.0.1.0.2+1 (build 27.0.1.0.2+1)
+OpenJDK 64-Bit Server VM Temurin-27.0.1.0.2+1 (build 27.0.1.0.2+1, mixed mode, sharing)
+   (se esperaba «version "25»)
+
+== Docker
+29.9.3
+
+== kind v0.33
+kind v0.33.0 go1.27.1 darwin/arm64
+
+== kubectl 1.37
+Client Version: v1.37.2
+Kustomize Version: v5.8.1
+
+== Helm 4
+v4.3.2+g8346aaa
+
+== Tests de la app catalogo (configuración y probes)
+
+== F081 · docker build academia/catalogo:1.0.0 (multi-stage + distroless)
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.12kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 ...
+
+#3 [auth] docker/dockerfile:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 1.4s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183
+#4 resolve docker.io/docker/dockerfile:1@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183 done
+#4 CACHED
+
+#5 [internal] load metadata for docker.io/library/eclipse-temurin:25-jdk
+#5 ...
+
+#6 [auth] library/eclipse-temurin:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#7 [internal] load metadata for gcr.io/distroless/java25-debian13:nonroot
+#7 DONE 0.9s
+
+#5 [internal] load metadata for docker.io/library/eclipse-temurin:25-jdk
+#5 DONE 1.2s
+
+#8 [internal] load .dockerignore
+#8 transferring context: 173B done
+#8 DONE 0.0s
+
+#9 [stage-1 1/6] FROM gcr.io/distroless/java25-debian13:nonroot@sha256:b0a31b9a063a6fb8132ec93da4cfd8515421ad35e40d7ac79fbebbaaae98227f
+#9 resolve gcr.io/distroless/java25-debian13:nonroot@sha256:b0a31b9a063a6fb8132ec93da4cfd8515421ad35e40d7ac79fbebbaaae98227f done
+#9 DONE 0.0s
+
+#10 [compilacion  1/10] FROM docker.io/library/eclipse-temurin:25-jdk@sha256:ce2ef9d2d67a68de5e196d4de9d743327c44a10b57fe02ec39f572c652cacfd3
+#10 resolve docker.io/library/eclipse-temurin:25-jdk@sha256:ce2ef9d2d67a68de5e196d4de9d743327c44a10b57fe02ec39f572c652cacfd3 done
+#10 DONE 0.0s
+
+#11 [internal] load build context
+#11 transferring context: 1.26kB done
+#11 DONE 0.0s
+
+#12 [compilacion  6/10] COPY settings.gradle.kts build.gradle.kts ./
+#12 CACHED
+
+#13 [compilacion  5/10] RUN ./gradlew --no-daemon --version
+#13 CACHED
+
+#14 [stage-1 4/6] COPY --from=compilacion /fuente/extraido/spring-boot-loader/ ./
+#14 CACHED
+
+#15 [stage-1 2/6] WORKDIR /app
+#15 CACHED
+
+#16 [compilacion  3/10] COPY gradlew ./
+#16 CACHED
+
+#17 [stage-1 5/6] COPY --from=compilacion /fuente/extraido/snapshot-dependencies/ ./
+#17 CACHED
+
+#18 [compilacion  9/10] RUN ./gradlew --no-daemon -q bootJar
+#18 CACHED
+
+#19 [compilacion  8/10] COPY src ./src
+#19 CACHED
+
+#20 [stage-1 3/6] COPY --from=compilacion /fuente/extraido/dependencies/ ./
+#20 CACHED
+
+#21 [compilacion  4/10] COPY gradle ./gradle
+#21 CACHED
+
+#22 [compilacion  2/10] WORKDIR /fuente
+#22 CACHED
+
+#23 [compilacion  7/10] RUN ./gradlew --no-daemon -q descargarDependencias
+#23 CACHED
+
+#24 [compilacion 10/10] RUN java -Djarmode=tools -jar build/libs/catalogo.jar extract --layers --destination extraido
+#24 CACHED
+
+#25 [stage-1 6/6] COPY --from=compilacion /fuente/extraido/application/ ./
+#25 CACHED
+
+#26 exporting to image
+#26 exporting layers done
+#26 exporting manifest sha256:fbac49199152a5623980da2dede3f5b5a73855666f33c535c22b3360c808da64 done
+#26 exporting config sha256:e86dd78b81c37b496f7db9f4f81dca18a4f3342730b27cbbab0d359c81f38d21 done
+#26 naming to docker.io/academia/catalogo:1.0.0 done
+#26 unpacking to docker.io/academia/catalogo:1.0.0 done
+#26 DONE 0.0s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/2843wc6of63d2iwzh0di2lovy
+
+== F081 · docker build academia/catalogo:1.1.0
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.12kB done
+#1 DONE 0.0s
+
+#2 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#2 DONE 0.2s
+
+#3 docker-image://docker.io/docker/dockerfile:1@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183
+#3 resolve docker.io/docker/dockerfile:1@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183 done
+#3 CACHED
+
+#4 [internal] load metadata for docker.io/library/eclipse-temurin:25-jdk
+#4 DONE 0.2s
+
+#5 [internal] load metadata for gcr.io/distroless/java25-debian13:nonroot
+#5 DONE 0.2s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 173B done
+#6 DONE 0.0s
+
+#7 [stage-1 1/6] FROM gcr.io/distroless/java25-debian13:nonroot@sha256:b0a31b9a063a6fb8132ec93da4cfd8515421ad35e40d7ac79fbebbaaae98227f
+#7 resolve gcr.io/distroless/java25-debian13:nonroot@sha256:b0a31b9a063a6fb8132ec93da4cfd8515421ad35e40d7ac79fbebbaaae98227f done
+#7 DONE 0.0s
+
+#8 [compilacion  1/10] FROM docker.io/library/eclipse-temurin:25-jdk@sha256:ce2ef9d2d67a68de5e196d4de9d743327c44a10b57fe02ec39f572c652cacfd3
+#8 resolve docker.io/library/eclipse-temurin:25-jdk@sha256:ce2ef9d2d67a68de5e196d4de9d743327c44a10b57fe02ec39f572c652cacfd3 done
+#8 DONE 0.0s
+
+#9 [internal] load build context
+#9 transferring context: 1.26kB done
+#9 DONE 0.0s
+
+#10 [compilacion  7/10] RUN ./gradlew --no-daemon -q descargarDependencias
+#10 CACHED
+
+#11 [compilacion  5/10] RUN ./gradlew --no-daemon --version
+#11 CACHED
+
+#12 [stage-1 4/6] COPY --from=compilacion /fuente/extraido/spring-boot-loader/ ./
+#12 CACHED
+
+#13 [compilacion  9/10] RUN ./gradlew --no-daemon -q bootJar
+#13 CACHED
+
+#14 [compilacion  8/10] COPY src ./src
+#14 CACHED
+
+#15 [compilacion  2/10] WORKDIR /fuente
+#15 CACHED
+
+#16 [stage-1 3/6] COPY --from=compilacion /fuente/extraido/dependencies/ ./
+#16 CACHED
+
+#17 [compilacion  3/10] COPY gradlew ./
+#17 CACHED
+
+#18 [compilacion 10/10] RUN java -Djarmode=tools -jar build/libs/catalogo.jar extract --layers --destination extraido
+#18 CACHED
+
+#19 [compilacion  4/10] COPY gradle ./gradle
+#19 CACHED
+
+#20 [stage-1 5/6] COPY --from=compilacion /fuente/extraido/snapshot-dependencies/ ./
+#20 CACHED
+
+#21 [compilacion  6/10] COPY settings.gradle.kts build.gradle.kts ./
+#21 CACHED
+
+#22 [stage-1 2/6] WORKDIR /app
+#22 CACHED
+
+#23 [stage-1 6/6] COPY --from=compilacion /fuente/extraido/application/ ./
+#23 CACHED
+
+#24 exporting to image
+#24 exporting layers done
+#24 exporting manifest sha256:fb37d84c3c60ce51ac6d0b9877646688060f5164cb72e25769a830fde38a4e7e done
+#24 exporting config sha256:50d49eeecad6555a0aefdfca268c44000cec852322136069224e53b00433b043 done
+#24 naming to docker.io/academia/catalogo:1.1.0 done
+#24 unpacking to docker.io/academia/catalogo:1.1.0 done
+#24 DONE 0.0s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/veh2puam0fbl7xgmqbrfw9wa9
+
+== F081 · docker build academia/catalogo:ingenuo (para comparar)
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile.ingenuo
+#1 transferring dockerfile: 574B done
+#1 WARN: JSONArgsRecommended: JSON arguments recommended for CMD to prevent unintended behavior related to OS signals (line 9)
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/eclipse-temurin:25-jdk
+#2 DONE 0.0s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 173B done
+#3 DONE 0.0s
+
+#4 [1/4] FROM docker.io/library/eclipse-temurin:25-jdk@sha256:884a2f8692cc1e2c7e21f95914adf0ae0eafee9a7eb663a12169cc44468256ec
+#4 resolve docker.io/library/eclipse-temurin:25-jdk@sha256:884a2f8692cc1e2c7e21f95914adf0ae0eafee9a7eb663a12169cc44468256ec done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 8.94kB done
+#5 DONE 0.0s
+
+#6 [3/4] COPY . .
+#6 CACHED
+
+#7 [2/4] WORKDIR /fuente
+#7 CACHED
+
+#8 [4/4] RUN ./gradlew --no-daemon -q bootJar
+#8 CACHED
+
+#9 exporting to image
+#9 exporting layers done
+#9 exporting manifest sha256:54c235482e9e8fa3cbd4800cc29ffad0ff45270babe345c9c3be2f31c1fffc56 done
+#9 exporting config sha256:dd5f500e594634f7ca4a99a4be155e837895c905ec1d1a5f8e4a728350eeadf9 done
+#9 naming to docker.io/academia/catalogo:ingenuo done
+#9 unpacking to docker.io/academia/catalogo:ingenuo done
+#9 DONE 0.0s
+
+ [33m1 warning found (use docker --debug to expand):
+[0m - JSONArgsRecommended: JSON arguments recommended for CMD to prevent unintended behavior related to OS signals (line 9)
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/zqg4x9q1dud4gn30rpojcjzq7
+IMAGE                       ID             DISK USAGE   CONTENT SIZE   EXTRA
+academia/catalogo:1.0.0     fbac49199152        356MB         91.8MB        
+academia/catalogo:1.1.0     fb37d84c3c60        356MB         91.8MB        
+academia/catalogo:ingenuo   54c235482e9e       1.09GB          348MB        
+
+== F081 · imagen: no root, sin shell, más pequeña, SIGTERM
+   usuario de la imagen: «65532»
+   ✔ no corre como root
+   ✔ no hay shell dentro de la imagen
+   tamaño distroless: 355 MB
+   tamaño ingenuo:    1087 MB
+   ✔ la imagen multi-stage es más pequeña
+   ✔ el contenedor responde en :18081
+   ✔ contiene «"version":"1.0.0"»
+   docker stop: código 143 en 0 s
+   ✔ java es PID 1 y atiende SIGTERM
+
+== F082 · Docker Compose
+ Image academia/catalogo:1.0.0 Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 696B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 2.12kB done
+#2 DONE 0.0s
+
+#3 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#3 DONE 0.2s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183
+#4 resolve docker.io/docker/dockerfile:1@sha256:572cebbc2b15e6f84c077742952674889cb63cd5e9b80abdffcbe587b6f19183 0.0s done
+#4 CACHED
+
+#5 [internal] load metadata for gcr.io/distroless/java25-debian13:nonroot
+#5 ...
+
+#6 [internal] load metadata for docker.io/library/eclipse-temurin:25-jdk
+#6 DONE 0.2s
+
+#5 [internal] load metadata for gcr.io/distroless/java25-debian13:nonroot
+#5 DONE 0.2s
+
+#7 [internal] load .dockerignore
+#7 transferring context: 173B done
+#7 DONE 0.0s
+
+#8 [stage-1 1/6] FROM gcr.io/distroless/java25-debian13:nonroot@sha256:b0a31b9a063a6fb8132ec93da4cfd8515421ad35e40d7ac79fbebbaaae98227f
+#8 resolve gcr.io/distroless/java25-debian13:nonroot@sha256:b0a31b9a063a6fb8132ec93da4cfd8515421ad35e40d7ac79fbebbaaae98227f done
+#8 DONE 0.0s
+
+#9 [compilacion  1/10] FROM docker.io/library/eclipse-temurin:25-jdk@sha256:ce2ef9d2d67a68de5e196d4de9d743327c44a10b57fe02ec39f572c652cacfd3
+#9 resolve docker.io/library/eclipse-temurin:25-jdk@sha256:ce2ef9d2d67a68de5e196d4de9d743327c44a10b57fe02ec39f572c652cacfd3 done
+#9 DONE 0.0s
+
+#10 [internal] load build context
+#10 transferring context: 1.26kB done
+#10 DONE 0.0s
+
+#11 [stage-1 2/6] WORKDIR /app
+#11 CACHED
+
+#12 [compilacion  8/10] COPY src ./src
+#12 CACHED
+
+#13 [stage-1 4/6] COPY --from=compilacion /fuente/extraido/spring-boot-loader/ ./
+#13 CACHED
+
+#14 [compilacion  2/10] WORKDIR /fuente
+#14 CACHED
+
+#15 [compilacion  7/10] RUN ./gradlew --no-daemon -q descargarDependencias
+#15 CACHED
+
+#16 [compilacion  3/10] COPY gradlew ./
+#16 CACHED
+
+#17 [compilacion  4/10] COPY gradle ./gradle
+#17 CACHED
+
+#18 [compilacion 10/10] RUN java -Djarmode=tools -jar build/libs/catalogo.jar extract --layers --destination extraido
+#18 CACHED
+
+#19 [stage-1 3/6] COPY --from=compilacion /fuente/extraido/dependencies/ ./
+#19 CACHED
+
+#20 [compilacion  9/10] RUN ./gradlew --no-daemon -q bootJar
+#20 CACHED
+
+#21 [compilacion  6/10] COPY settings.gradle.kts build.gradle.kts ./
+#21 CACHED
+
+#22 [stage-1 5/6] COPY --from=compilacion /fuente/extraido/snapshot-dependencies/ ./
+#22 CACHED
+
+#23 [compilacion  5/10] RUN ./gradlew --no-daemon --version
+#23 CACHED
+
+#24 [stage-1 6/6] COPY --from=compilacion /fuente/extraido/application/ ./
+#24 CACHED
+
+#25 exporting to image
+#25 exporting layers done
+#25 exporting manifest sha256:8510f4a49e0b7264e4047181d87eb287b1520e088ece5a66fe8399246b1bc25c done
+#25 exporting config sha256:0075be231f327a6251b54b7da0e9a4412ac4b4dcca304e617233035e6eca1d3b done
+#25 exporting attestation manifest sha256:8b1fda71346484a65e5a199cd37bf3d5b733f236ef92f805e79a66e9536971d6
+#25 exporting attestation manifest sha256:8b1fda71346484a65e5a199cd37bf3d5b733f236ef92f805e79a66e9536971d6 done
+#25 exporting manifest list sha256:117c07d753c7bbc55ec68283046114553a9ac4e82e05d3d5867b73dc6a748e15 done
+#25 naming to docker.io/academia/catalogo:1.0.0 done
+#25 unpacking to docker.io/academia/catalogo:1.0.0 done
+#25 DONE 0.0s
+
+#26 resolving provenance for metadata file
+#26 DONE 0.0s
+ Image academia/catalogo:1.0.0 Built 
+ Network modulo16_default Creating 
+ Network modulo16_default Created 
+ Container modulo16-catalogo-1 Creating 
+ Container modulo16-catalogo-1 Created 
+ Container modulo16-entrada-1 Creating 
+ Container modulo16-entrada-1 Created 
+ Container modulo16-catalogo-1 Starting 
+ Container modulo16-catalogo-1 Started 
+ Container modulo16-catalogo-1 Waiting 
+ Container modulo16-catalogo-1 Healthy 
+ Container modulo16-entrada-1 Starting 
+ Container modulo16-entrada-1 Started 
+ Container modulo16-catalogo-1 Waiting 
+ Container modulo16-entrada-1 Waiting 
+ Container modulo16-catalogo-1 Healthy 
+ Container modulo16-entrada-1 Healthy 
+NAME                  IMAGE                     COMMAND                  SERVICE    CREATED          STATUS                    PORTS
+modulo16-catalogo-1   academia/catalogo:1.0.0   "java -jar catalogo.…"   catalogo   12 seconds ago   Up 11 seconds (healthy)   8080/tcp
+modulo16-entrada-1    nginx:1.30.6-alpine       "/docker-entrypoint.…"   entrada    12 seconds ago   Up 5 seconds (healthy)    0.0.0.0:8088->80/tcp, [::]:8088->80/tcp
+   ✔ contiene «healthy»
+   ✔ contiene «"mensaje":"Hola desde Docker Compose"»
+   ✔ contiene «"claveApiConfigurada":true»
+ Container modulo16-entrada-1 Stopping 
+ Container modulo16-entrada-1 Stopped 
+ Container modulo16-entrada-1 Removing 
+ Container modulo16-entrada-1 Removed 
+ Container modulo16-catalogo-1 Stopping 
+ Container modulo16-catalogo-1 Stopped 
+ Container modulo16-catalogo-1 Removing 
+ Container modulo16-catalogo-1 Removed 
+ Network modulo16_default Removing 
+ Network modulo16_default Removed 
+
+== kind: clúster academia-m12 (Kubernetes 1.37.0) con las imágenes cargadas
+   el clúster academia-m12 ya existe: se reutiliza
+Image: "academia/catalogo:1.0.0" with ID "sha256:117c07d753c7bbc55ec68283046114553a9ac4e82e05d3d5867b73dc6a748e15" not yet present on node "academia-m12-control-plane", loading...
+Image: "academia/catalogo:1.1.0" with ID "sha256:fb37d84c3c60ce51ac6d0b9877646688060f5164cb72e25769a830fde38a4e7e" not yet present on node "academia-m12-control-plane", loading...
+
+== F083 · Deployments, Services, ConfigMaps, Secrets
+namespace/catalogo unchanged
+configmap/catalogo-config unchanged
+deployment.apps/catalogo unchanged
+namespace/catalogo unchanged
+secret/catalogo-secreto configured
+service/catalogo unchanged
+deployment "catalogo" successfully rolled out
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                    SELECTOR
+deployment.apps/catalogo   2/2     2            2           41m   catalogo     academia/catalogo:1.0.0   app=catalogo
+
+NAME                                  DESIRED   CURRENT   READY   AGE   CONTAINERS   IMAGES                    SELECTOR
+replicaset.apps/catalogo-645c5f7465   0         0         0       41m   catalogo     academia/catalogo:1.0.0   app=catalogo,pod-template-hash=645c5f7465
+replicaset.apps/catalogo-754f776557   0         0         0       41m   catalogo     academia/catalogo:1.0.0   app=catalogo,pod-template-hash=754f776557
+replicaset.apps/catalogo-8cd8f47dc    2         2         2       40m   catalogo     academia/catalogo:1.0.0   app=catalogo,pod-template-hash=8cd8f47dc
+
+NAME                           READY   STATUS    RESTARTS      AGE   IP            NODE                         NOMINATED NODE   READINESS GATES
+pod/catalogo-8cd8f47dc-djjdk   1/1     Running   1 (40m ago)   40m   10.244.0.9    academia-m12-control-plane   <none>           <none>
+pod/catalogo-8cd8f47dc-fpmcv   1/1     Running   0             40m   10.244.0.10   academia-m12-control-plane   <none>           <none>
+
+NAME               TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE   SELECTOR
+service/catalogo   NodePort   10.96.180.178   <none>        80:30080/TCP   41m   app=catalogo
+   ✔ contiene «"mensaje":"Hola desde Kubernetes"»
+   ✔ contiene «"claveApiConfigurada":true»
+   ✔ el Service tiene 2 endpoints listos
+configmap/catalogo-config patched
+   ✔ contiene «"mensaje":"Hola desde Kubernetes"»
+deployment.apps/catalogo restarted
+Waiting for deployment "catalogo" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "catalogo" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "catalogo" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "catalogo" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "catalogo" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "catalogo" rollout to finish: 1 old replicas are pending termination...
+deployment "catalogo" successfully rolled out
+   ✔ los pods nuevos leen el ConfigMap nuevo
+configmap/catalogo-config configured
+deployment.apps/catalogo restarted
+Waiting for deployment "catalogo" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "catalogo" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "catalogo" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "catalogo" rollout to finish: 1 out of 2 new replicas have been updated...
+Waiting for deployment "catalogo" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "catalogo" rollout to finish: 1 old replicas are pending termination...
+Waiting for deployment "catalogo" rollout to finish: 1 old replicas are pending termination...
+deployment "catalogo" successfully rolled out
+   ✔ el rollout terminó del todo: 2 pods, ninguno terminando
+
+== F084 · Readiness/Liveness Probes
+deployment "catalogo" successfully rolled out
+   ✔ quedan exactamente 2 pods y ninguno terminando
+   ✔ el Service tiene 2 endpoints listos
+   pod elegido: catalogo-88cbbb764-4k6jp
+   ✔ port-forward listo
+{"readiness":"REFUSING_TRAFFIC"}
+   ✔ readiness 503 -> el pod sale del Service (queda 1 endpoint listo)
+   ✔ readiness NO reinicia el pod (restartCount=0)
+{"readiness":"ACCEPTING_TRAFFIC"}
+   ✔ vuelve a tener 2 endpoints listos
+{"liveness":"BROKEN"}
+pruebas/comun.sh: line 10: 21256 Terminated: 15          $K -n catalogo port-forward "pod/$POD" 18084:8080 > /dev/null 2>&1
+   ✔ liveness 503 x3 -> el kubelet reinicia el contenedor (restartCount=1)
+7s          Normal    Killing     pod/catalogo-88cbbb764-4k6jp   Container catalogo failed liveness probe, will be restarted
+2s          Normal    Pulled      pod/catalogo-88cbbb764-4k6jp   Container image "academia/catalogo:1.0.0" already present on machine and can be accessed by the pod
+2s          Normal    Created     pod/catalogo-88cbbb764-4k6jp   Container created
+2s          Normal    Started     pod/catalogo-88cbbb764-4k6jp   Container started
+1s          Warning   Unhealthy   pod/catalogo-88cbbb764-4k6jp   Readiness probe failed: Get "http://10.244.0.41:8080/actuator/health/readiness": dial tcp 10.244.0.41:8080: connect: connection refused
+Waiting for deployment "catalogo" rollout to finish: 1 of 2 updated replicas are available...
+deployment "catalogo" successfully rolled out
+
+== F085 · HPA
+   ✔ metrics-server ya está en el nodo academia-m12-control-plane
+deployment "metrics-server" successfully rolled out
+   ✔ kubectl top devuelve métricas
+horizontalpodautoscaler.autoscaling/catalogo created
+   ✔ el HPA lee la CPU (TARGETS deja de ser <unknown>)
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+catalogo   Deployment/catalogo   cpu: 8%/50%   2         5         2          0s
+pod/carga created
+   ✘ con carga, el HPA sube a más de 2 réplicas (no ocurrió en el tiempo esperado)
+NAME       REFERENCE             TARGETS       MINPODS   MAXPODS   REPLICAS   AGE
+catalogo   Deployment/catalogo   cpu: 7%/50%   2         5         2          5m
+Deployment pods:       2 current / 2 desired
+Conditions:
+  Type            Status  Reason            Message
+  ----            ------  ------            -------
+  AbleToScale     True    ReadyForNewScale  recommended size matches current size
+  ScalingActive   True    ValidMetricFound  the HPA was able to successfully calculate a replica count from cpu resource utilization (percentage of request)
+  ScalingLimited  True    TooFewReplicas    the desired replica count is less than the minimum replica count
+Events:           <none>
+pod "carga" deleted from catalogo namespace
+horizontalpodautoscaler.autoscaling "catalogo" deleted from catalogo namespace
+deployment.apps/catalogo scaled
+
+== F086 · Helm
+==> Linting charts/catalogo
+[INFO] Chart.yaml: icon is recommended
+
+1 chart(s) linted, 0 chart(s) failed
+   ✔ contiene «image: "academia/catalogo:1.1.0"»
+   ✔ contiene «kind: HorizontalPodAutoscaler»
+NAME: demo
+LAST DEPLOYED: Sat Nov 21 14:03:29 2026
+NAMESPACE: catalogo-helm
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+NOTES:
+Catálogo 1.0.0 instalado como «demo» en catalogo-helm.
+
+Pruébalo:
+  kubectl -n catalogo-helm port-forward svc/demo-catalogo 8085:80
+  curl -s localhost:8085/api/info
+
+Test del chart:
+  helm test demo -n catalogo-helm
+NAME: demo
+LAST DEPLOYED: Sat Nov 21 14:03:29 2026
+NAMESPACE: catalogo-helm
+STATUS: deployed
+REVISION: 1
+DESCRIPTION: Install complete
+TEST SUITE:     demo-catalogo-test
+Last Started:   Sat Nov 21 14:03:33 2026
+Last Completed: Sat Nov 21 14:08:33 2026
+Phase:          Failed
+
+Error: resource Pod/catalogo-helm/demo-catalogo-test not ready. status: InProgress, message: Pod in progress
+context deadline exceeded
+unable to get logs for pod demo-catalogo-test, container wget: container "wget" in pod "demo-catalogo-test" is waiting to start: trying and failing to pull image
+Release "demo" has been upgraded. Happy Helming!
+NAME: demo
+LAST DEPLOYED: Sat Nov 21 14:08:33 2026
+NAMESPACE: catalogo-helm
+STATUS: deployed
+REVISION: 2
+DESCRIPTION: Upgrade complete
+NOTES:
+Catálogo 1.1.0 instalado como «demo» en catalogo-helm.
+
+Pruébalo:
+  kubectl -n catalogo-helm port-forward svc/demo-catalogo 8085:80
+  curl -s localhost:8085/api/info
+
+Test del chart:
+  helm test demo -n catalogo-helm
+   ✔ tras el upgrade quedan 2 pods, ninguno terminando
+NAME: demo
+LAST DEPLOYED: Sat Nov 21 14:08:33 2026
+NAMESPACE: catalogo-helm
+STATUS: deployed
+REVISION: 2
+DESCRIPTION: Upgrade complete
+TEST SUITE:     demo-catalogo-test
+Last Started:   Sat Nov 21 14:08:42 2026
+Last Completed: Sat Nov 21 14:13:42 2026
+Phase:          Failed
+
+Error: resource Pod/catalogo-helm/demo-catalogo-test not ready. status: InProgress, message: Pod in progress
+context deadline exceeded
+unable to get logs for pod demo-catalogo-test, container wget: container "wget" in pod "demo-catalogo-test" is waiting to start: trying and failing to pull image
+REVISION	UPDATED                 	STATUS    	CHART         	APP VERSION	DESCRIPTION     
+1       	Sat Nov 21 14:03:29 2026	superseded	catalogo-0.1.0	1.0.0      	Install complete
+2       	Sat Nov 21 14:08:33 2026	deployed  	catalogo-0.1.0	1.0.0      	Upgrade complete
+   ✔ contiene «1.1.0»
+Rollback was a success! Happy Helming!
+   ✔ tras el rollback quedan 2 pods, ninguno terminando
+NAME: demo
+LAST DEPLOYED: Sat Nov 21 14:13:43 2026
+NAMESPACE: catalogo-helm
+STATUS: deployed
+REVISION: 3
+DESCRIPTION: Rollback to 1
+TEST SUITE:     demo-catalogo-test
+Last Started:   Sat Nov 21 14:13:52 2026
+Last Completed: Sat Nov 21 14:18:52 2026
+Phase:          Failed
+
+Error: resource Pod/catalogo-helm/demo-catalogo-test not ready. status: InProgress, message: Pod in progress
+context deadline exceeded
+unable to get logs for pod demo-catalogo-test, container wget: container "wget" in pod "demo-catalogo-test" is waiting to start: trying and failing to pull image
+   ✔ contiene «academia/catalogo:1.0.0»
+release "demo" uninstalled
+
+== F087 · Blue-Green y Canary
+namespace/despliegues created
+deployment.apps/catalogo-azul created
+deployment.apps/catalogo-verde created
+service/catalogo-bg created
+Waiting for deployment "catalogo-azul" rollout to finish: 0 of 2 updated replicas are available...
+Waiting for deployment "catalogo-azul" rollout to finish: 1 of 2 updated replicas are available...
+deployment "catalogo-azul" successfully rolled out
+deployment "catalogo-verde" successfully rolled out
+   ✔ contiene «"color":"azul"»
+service/catalogo-bg patched
+   ✔ todo el tráfico va a verde (1.1.0)
+   ✔ 20 de 20 peticiones en verde
+service/catalogo-bg patched
+   ✔ rollback: de vuelta en azul
+deployment.apps "catalogo-azul" deleted from despliegues namespace
+deployment.apps "catalogo-verde" deleted from despliegues namespace
+service "catalogo-bg" deleted from despliegues namespace
+deployment.apps/catalogo-estable created
+deployment.apps/catalogo-canario created
+service/catalogo-canary created
+Waiting for deployment "catalogo-estable" rollout to finish: 0 of 3 updated replicas are available...
+Waiting for deployment "catalogo-estable" rollout to finish: 1 of 3 updated replicas are available...
+Waiting for deployment "catalogo-estable" rollout to finish: 2 of 3 updated replicas are available...
+deployment "catalogo-estable" successfully rolled out
+deployment "catalogo-canario" successfully rolled out
+   ✔ el Service canary tiene los 4 pods como endpoints listos
+   ✔ el canario ya responde a través del Service
+   canario: 28 de 100 peticiones (esperado ≈ 25 con 1 de 4 pods)
+   ✔ el canario recibe una fracción del tráfico
+namespace "despliegues" deleted
+
+== F088 · GitOps con Argo CD
+namespace/argocd unchanged
+error: deployment "argocd-server" exceeded its progress deadline
+error: deployment "argocd-repo-server" exceeded its progress deadline
+error: deployment "argocd-redis" exceeded its progress deadline
+Waiting for 1 pods to be ready...
+error: timed out waiting for the condition
+application.argoproj.io/guestbook created
+   ✘ guestbook: Synced y Healthy (no ocurrió en el tiempo esperado)
+NAME        SYNC STATUS   HEALTH STATUS
+guestbook                 
+Error from server (NotFound): namespaces "guestbook" not found
+   ✘ selfHeal: Argo CD devuelve guestbook-ui a 1 réplica (no ocurrió en el tiempo esperado)
+
+application.argoproj.io "guestbook" deleted from argocd namespace
+
+== kind delete cluster --name academia-m12
+Deleting cluster "academia-m12" ...
+Deleted nodes: ["academia-m12-control-plane"]
+
+Resumen:
+  ✘ JDK 25
+  ✔ Docker
+  ✔ kind v0.33
+  ✔ kubectl 1.37
+  ✔ Helm 4
+  ✔ Tests de la app catalogo (configuración y probes)
+  ✔ F081 · docker build academia/catalogo:1.0.0 (multi-stage + distroless)
+  ✔ F081 · docker build academia/catalogo:1.1.0
+  ✔ F081 · docker build academia/catalogo:ingenuo (para comparar)
+  ✔ F081 · imagen: no root, sin shell, más pequeña, SIGTERM
+  ✔ F082 · Docker Compose
+  ✔ kind: clúster academia-m12 (Kubernetes 1.37.0) con las imágenes cargadas
+  ✔ F083 · Deployments, Services, ConfigMaps, Secrets
+  ✔ F084 · Readiness/Liveness Probes
+  ✘ F085 · HPA
+  ✘ F086 · Helm
+  ✔ F087 · Blue-Green y Canary
+  ✘ F088 · GitOps con Argo CD
+RESULTADO: FALLA (4 pasos) · revisa arriba los pasos marcados con ✘

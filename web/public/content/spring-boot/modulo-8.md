@@ -32,7 +32,7 @@ flowchart LR
 
 **Contexto:** una revisión que debe ocurrir cinco minutos después de terminar no tiene la misma regla que una tarea que inicia cada cinco minutos.
 
-**Hazlo tú:** abre `examples/spring-scheduling-rutaflow/src/main/java/academia/rutaflow/scheduling/PedidosScheduler.java`. Lee `fixedDelayString` y los valores en `application.yml`:
+**Hazlo tú:** abre `PedidosScheduler.java`. Lee `fixedDelayString` y los valores en `application.yml`:
 
 ```java
 @Scheduled(fixedDelayString = "${app.revision.delay-ms}",
@@ -59,7 +59,7 @@ public void revisarPendientes() {
 }
 ```
 
-Sigue la llamada desde scheduler hasta servicio. Ejecuta desde `examples/spring-scheduling-rutaflow`:
+Sigue la llamada desde scheduler hasta servicio. Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -q test
@@ -95,7 +95,7 @@ Sigue la llamada desde scheduler hasta servicio. Ejecuta desde `examples/spring-
 
 **Contexto:** si hay tres copias de la aplicación, cada proceso puede registrar su propio scheduler.
 
-**Hazlo tú:** en `examples/spring-scheduling-rutaflow/README.md`, crea una nota para dos réplicas que intentan tomar `pedido-42`. Escribe qué reclamo atómico deja a una sola procesar la fila y qué ve la segunda. Ejecuta `./mvnw -q test` para confirmar que el lab local solo cubre registro y delegación.
+**Hazlo tú:** en el código de este tema, crea una nota para dos réplicas que intentan tomar `pedido-42`. Escribe qué reclamo atómico deja a una sola procesar la fila y qué ve la segunda. Ejecuta `./mvnw -q test` para confirmar que el lab local solo cubre registro y delegación.
 
 **Resultado esperado:** la tarea local puede ocurrir una vez por réplica; la regla de negocio impide aplicar dos veces el mismo cambio.
 
@@ -119,14 +119,12 @@ Sigue la llamada desde scheduler hasta servicio. Ejecuta desde `examples/spring-
 
 **Contexto:** al aceptar una imagen, RutaFlow debe guardar sus metadatos y pedir una notificación sin acoplar el servicio al proveedor push.
 
-**Hazlo tú:** abre `examples/spring-boot-upload-push-rutaflow/src/main/java/academia/rutaflow/upload/UploadService.java` y sigue `publishEvent` hasta `PushAfterCommitListener.java`:
+**Hazlo tú:** abre `UploadService.java` y sigue `publishEvent` hasta `PushAfterCommitListener.java`:
 
 ```java
 @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
 public void afterCommit(UploadAccepted event) { gateway.send(event); }
 ```
-
-Desde `examples/spring-boot-upload-push-rutaflow`, ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=UploadPushIntegrationTest#imagenValidaSeGuardaYNotificaDespuesDelCommit test
@@ -144,7 +142,7 @@ Desde `examples/spring-boot-upload-push-rutaflow`, ejecuta:
 
 **Contexto:** el listener no debe anunciar una operación que la base de datos terminó revirtiendo.
 
-**Hazlo tú:** abre `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java` y ejecuta:
+**Hazlo tú:** abre `UploadPushIntegrationTest.java` y ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=UploadPushIntegrationTest#rollbackNoDejaArchivoMetadataNiPush test
@@ -162,7 +160,7 @@ Desde `examples/spring-boot-upload-push-rutaflow`, ejecuta:
 
 **Contexto:** si el mensaje debe sobrevivir al reinicio, guardar solo el envío y luego llamar Kafka deja una ventana en la que el envío existe pero el evento se pierde.
 
-**Hazlo tú:** abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/outbox/CrearEnvioService.java` y comprueba que ambos `INSERT` están dentro del mismo método `@Transactional`. Ejecuta desde `examples/spring-kafka-rutaflow`:
+**Hazlo tú:** abre `CrearEnvioService.java` y comprueba que ambos `INSERT` están dentro del mismo método `@Transactional`. Ejecuta desde el código de este tema:
 
 ```java
 @Transactional
@@ -194,7 +192,7 @@ public EnvioCreado crear(String referencia) {
 
 **Contexto:** si el ACK de Kafka llegó pero falló la marca SQL, el dispatcher volverá a enviar el evento. El consumidor debe tolerar esa entrega repetida.
 
-**Hazlo tú:** abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java` y el test `EnvioEventPublisherTest.java`. Ejecuta:
+**Hazlo tú:** abre `InboxProcessor.java` y el test `EnvioEventPublisherTest.java`. Ejecuta:
 
 ```java
 if (existente != null && existente > 0) return false;
@@ -229,7 +227,7 @@ jdbc.update("INSERT INTO evento_procesado (event_id, processed_at) VALUES (?, ?)
 
 **Contexto:** queremos revisar destinatario, asunto y texto antes de depender de una cuenta SMTP.
 
-**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/JavaMailCorreoGateway.java` y su test `JavaMailCorreoGatewayTest.java`:
+**Hazlo tú:** abre `JavaMailCorreoGateway.java` y su test `JavaMailCorreoGatewayTest.java`:
 
 ```java
 SimpleMailMessage message = new SimpleMailMessage();
@@ -239,8 +237,6 @@ message.setSubject(correo.asunto());
 message.setText(correo.texto());
 sender.send(message);
 ```
-
-Desde `examples/spring-mail-rutaflow`, ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=JavaMailCorreoGatewayTest test
@@ -258,7 +254,7 @@ Desde `examples/spring-mail-rutaflow`, ejecuta:
 
 **Contexto:** el servidor de salida (SMTP) y sus credenciales cambian entre tu equipo, pruebas y producción; el código debe poder moverse sin editarlo.
 
-**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/resources/application.yml`:
+**Hazlo tú:** abre `application.yml`:
 
 ```yaml
 spring:
@@ -290,7 +286,7 @@ Ejecuta la prueba sin servidor:
 
 **Contexto:** si el envío se confirma y el proceso se cierra antes de llamar SMTP, la confirmación debe quedar esperando en una fila recuperable.
 
-**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/ConfirmarEnvioService.java`:
+**Hazlo tú:** abre `ConfirmarEnvioService.java`:
 
 ```java
 @Transactional
@@ -306,7 +302,7 @@ public UUID confirmar(String referencia, String destinatario) {
 }
 ```
 
-En `examples/spring-mail-rutaflow`, ejecuta las pruebas de transacción y reintento:
+En el código de este tema, ejecuta las pruebas de transacción y reintento:
 
 ```bash
 ./mvnw -q -Dtest=MailOutboxTest#confirmacionYCorreoPendienteSeGuardanEnLaMismaTransaccion test
@@ -325,7 +321,7 @@ En `examples/spring-mail-rutaflow`, ejecuta las pruebas de transacción y reinte
 
 **Contexto:** repetir para siempre tapa errores permanentes y puede llenar la cola.
 
-**Hazlo tú:** abre `examples/spring-mail-rutaflow/src/main/java/academia/rutaflow/mail/MailOutboxDispatcher.java` y ejecuta:
+**Hazlo tú:** abre `MailOutboxDispatcher.java` y ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=MailOutboxTest#agotaTresIntentosYConservaElErrorSinSeguirEnviando test
@@ -345,8 +341,6 @@ En `examples/spring-mail-rutaflow`, ejecuta las pruebas de transacción y reinte
 
 **Meta:** cachear consultas repetidas, invalidar una tarifa que cambió y elegir entre memoria local y un almacén compartido.
 
-**Preparación:** JDK 25, Maven Wrapper incluido y los archivos del repositorio. Todos los comandos de este tema se ejecutan desde `examples/spring-cache-rutaflow`. Primero trabaja con Caffeine sin servicios externos; el último subtema necesita Redis local.
-
 **¿Por qué es importante?** la segunda lectura puede evitar trabajo repetido, pero una copia vieja puede mostrar una tarifa equivocada.
 
 **Evidencia final:** tests que cuentan lecturas, separan zonas, verifican invalidación y leen los límites de tamaño y duración configurados.
@@ -357,7 +351,7 @@ En `examples/spring-mail-rutaflow`, ejecuta las pruebas de transacción y reinte
 
 **Contexto:** la tarifa de una zona se consulta varias veces y el repositorio de ejemplo cuenta cada lectura.
 
-**Hazlo tú:** abre `examples/spring-cache-rutaflow/src/main/java/academia/rutaflow/cache/TarifaService.java`:
+**Hazlo tú:** abre `TarifaService.java`:
 
 ```java
 @Cacheable(cacheNames = "tarifas", key = "#zona")
@@ -366,8 +360,6 @@ public Tarifa buscar(String zona) {
             .orElseThrow(() -> new IllegalArgumentException("Zona desconocida: " + zona));
 }
 ```
-
-Desde `examples/spring-cache-rutaflow`, ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=TarifaServiceTest#segundaConsultaReutilizaLaTarifaCacheada test
@@ -421,7 +413,7 @@ public Tarifa actualizarYCachear(Tarifa tarifa) {
 
 **Contexto:** sin límite, una caché local puede crecer; sin expiración, una tarifa vieja puede quedarse hasta que alguien la invalide.
 
-**Hazlo tú:** abre `examples/spring-cache-rutaflow/src/main/resources/application.yml` y ejecuta:
+**Hazlo tú:** abre `application.yml` y ejecuta:
 
 ```yaml
 spring:
@@ -520,10 +512,8 @@ Consulta también [Spring Framework: `@CachePut`, proxies y carga sincronizada](
 
 **Meta:** extraer un identificador de un mensaje local SOAP 1.2, distinguir namespace de prefijo y rechazar versión, identificador o respuesta de fallo incorrectos. **Prerrequisitos:** HTTP, XML básico y funciones del track Fundamentos. Duración: 30 min. No necesitas Java ni Maven para este ejemplo de contrato.
 
-**Preparación:** desde la raíz del repositorio copia `examples/soap-contract-rutaflow` a una carpeta nueva:
-
 ```bash
-cp -R examples/soap-contract-rutaflow practica-soap
+cp -R soap-contract-rutaflow practica-soap
 cd practica-soap
 python3 -m unittest -v
 ```
@@ -534,7 +524,7 @@ python3 -m unittest -v
 
 **Contexto:** un socio de RutaFlow envía XML; el adaptador debe extraer la identidad del envío antes de llamar al caso de uso. **Analogía:** como traducir un formulario, primero reconoce sus campos y luego aplica las reglas del negocio.
 
-**Hazlo tú:** abre `soap_contrato.py` (original en `examples/soap-contract-rutaflow/soap_contrato.py`) en tu copia. `MENSAJE` contiene el sobre `Envelope`, un cuerpo `Body` y la operación `ConsultarEnvio` con su `id`. Ejecuta desde `practica-soap`:
+**Hazlo tú:** abre `soap_contrato.py` (original en el código de este tema) en tu copia. `MENSAJE` contiene el sobre `Envelope`, un cuerpo `Body` y la operación `ConsultarEnvio` con su `id`. Ejecuta desde `practica-soap`:
 
 ```bash
 python3 soap_contrato.py
@@ -553,7 +543,7 @@ python3 -m unittest test_soap_contrato.ContratoTest.test_extrae_identificador -v
 
 **Contexto:** dos socios pueden escribir prefijos distintos para el mismo vocabulario XML. La identidad se determina por el URI del namespace y el nombre local, no por las letras visibles antes de los dos puntos.
 
-**Hazlo tú:** abre `test_soap_contrato.py` (original en `examples/soap-contract-rutaflow/test_soap_contrato.py`) y sigue `test_prefijo_no_cambia_identidad`. Cambia `s` por `env` en la declaración y etiquetas manteniendo el URI. Ejecuta:
+**Hazlo tú:** abre `test_soap_contrato.py` (original en el código de este tema) y sigue `test_prefijo_no_cambia_identidad`. Cambia `s` por `env` en la declaración y etiquetas manteniendo el URI. Ejecuta:
 
 ```bash
 python3 -m unittest test_soap_contrato.ContratoTest.test_prefijo_no_cambia_identidad -v
@@ -571,7 +561,7 @@ python3 -m unittest test_soap_contrato.ContratoTest.test_prefijo_no_cambia_ident
 
 **Contexto:** un mensaje bien formado puede indicar fallo o carecer de datos obligatorios. Convertirlo a una respuesta de éxito escondería el problema del socio.
 
-**Hazlo tú:** abre las validaciones de `soap_contrato.py` (original en `examples/soap-contract-rutaflow/soap_contrato.py`) y ejecuta ambos casos negativos desde tu carpeta:
+**Hazlo tú:** abre las validaciones de `soap_contrato.py` (original en el código de este tema) y ejecuta ambos casos negativos desde tu carpeta:
 
 ```bash
 python3 -m unittest test_soap_contrato.ContratoTest.test_rechaza_version_y_id_vacio test_soap_contrato.ContratoTest.test_fault_no_se_convierte_en_exito -v
@@ -633,7 +623,7 @@ python3 -m unittest -v
 **Preparación:** JDK 25 y repositorio. Desde su raíz copia el laboratorio a una carpeta nueva:
 
 ```bash
-cp -R examples/rutaflow-material/spring-ai practica-spring-ai
+cp -R spring-ai practica-spring-ai
 cd practica-spring-ai
 ./mvnw -q clean test
 ```
@@ -802,8 +792,6 @@ class ChatToolsTest {
 
 **¿Por qué es importante?** recuperar un documento relevante de otra empresa sigue siendo una fuga. En el proyecto integrador RutaFlow, la autorización debe actuar antes de entregar contexto al modelo.
 
-**Preparación independiente:** copia `examples/rutaflow-material/spring-ai` a `practica-rag`, entra y ejecuta `./mvnw -q -Dtest=RagScopeTest test`. Si ya tienes `practica-spring-ai`, usa esa misma copia. Requiere JDK 25; el `pom.xml` completo está en M8 T5 y el wrapper viene incluido.
-
 #### Subtema 7.1 · Filtra la empresa antes de construir contexto · 9 min
 
 **Contexto:** RAG añade documentos recuperados al contexto de una solicitud. Un flujo completo incluye ingestión, particionado, recuperación y generación. Aquí aislamos la frontera de recuperación con búsqueda literal; no usamos embeddings ni vector store.
@@ -818,7 +806,7 @@ class ChatToolsTest {
 
 **Fallo deliberado:** quita el filtro por empresa de `recuperar`. **Diagnóstico:** la colección contiene también el documento de B y la prueba falla. Restaura el filtro; no intentes compensarlo añadiendo «ignora datos de B» al prompt.
 
-**Entiende:** **analogía:** en una biblioteca, encontrar la sección adecuada no da permiso para abrir cualquier expediente. El límite de esa comparación es que también hay que controlar ingestión, cambios de permisos y almacenamiento. El parámetro `empresaAutorizada` debe venir de la sesión del servidor; este test lo suministra directamente y no implementa autenticación.
+**Entiende:**analogía:** en una biblioteca, encontrar la sección adecuada no da permiso para abrir cualquier expediente. El límite de esa comparación es que también hay que controlar ingestión, cambios de permisos y almacenamiento. El parámetro `empresaAutorizada` debe venir de la sesión del servidor; este test lo suministra directamente y no implementa autenticación.
 
 <details>
 <summary>Código completo de la recuperación local y sus cuatro pruebas</summary>

@@ -3,7 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semana 1 de 4). **Duración:** 6 h (2 temas de 3 h). **Dificultad:** 1 de 5.
 **Dependencias:** Módulo 0.1 (ejecutar un programa con `node` y correr un test con `node --test`).
 **Herramientas:** Node.js 26.13.1 LTS, sin dependencias externas. **Laboratorio:**
-`examples/microservicios/modulo-1/` (se verifica con `./verificar.sh`).
+`modulo-1` (se verifica con `./verificar.sh`).
 
 Aquí aprendes los cuatro ladrillos con los que se escribe cualquier programa (variables, decisiones,
 repeticiones y funciones) y la forma de pensar que te permite convertir un problema del mundo real en pasos que
@@ -27,7 +27,7 @@ herramientas), se expresa con la lógica de programación (cuatro ladrillos) y t
 #### 1. UBICACIÓN
 
 Módulo 0.2, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-1.md` · Laboratorio
-`examples/microservicios/modulo-1/logica/`.
+`logica`.
 
 #### 2. PRERREQUISITOS
 
@@ -141,7 +141,7 @@ laboratorio:
 }
 ```
 
-Archivo `examples/microservicios/modulo-1/logica/cine.js`:
+Archivo `cine.js`:
 
 ```javascript
 // Módulo 0.2 · Lógica de programación
@@ -192,7 +192,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Desde `examples/microservicios/modulo-1`, ejecuta el programa:
+1. Desde `modulo-1`, ejecuta el programa:
    ```bash
    node logica/cine.js
    ```
@@ -317,7 +317,7 @@ false;`) que mantienen el código plano.
 
 #### 1. UBICACIÓN
 
-Módulo 0.2, Lección 2 de 2 · Fase 0 · Laboratorio `examples/microservicios/modulo-1/pensamiento/`.
+Módulo 0.2, Lección 2 de 2 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -412,7 +412,7 @@ Cuando tienes las cuatro, pasar a código es casi traducir.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22). Sin dependencias; usa el `package.json` del tema
-anterior. Archivo `examples/microservicios/modulo-1/pensamiento/cambio.js`:
+anterior. Archivo `cambio.js`:
 
 ```javascript
 // Módulo 0.2 · Pensamiento computacional
@@ -466,7 +466,7 @@ if (import.meta.main) {
 
 1. **Primero sin computadora:** en papel, descompón «dar el vuelto de 50000 para una compra de 13700» y escribe
    cuántas piezas de cada valor entregarías.
-2. Desde `examples/microservicios/modulo-1`, compara tu papel con el programa:
+2. Desde `modulo-1`, compara tu papel con el programa:
    ```bash
    node pensamiento/cambio.js
    ```

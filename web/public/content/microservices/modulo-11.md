@@ -2,10 +2,10 @@
 
 **Fase 1 · Spring Boot de cero a experto** (media semana según la tabla de contenidos). **Duración:** 11 h (5 temas
 de 2–2,5 h). **Dificultad:** 3 de 5. **Dependencias:** Módulo 6 (comunicación entre servicios con `RestClient`), y
-del Módulo 1 los perfiles y la configuración externalizada. **Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot
+del Módulo 1 los perfiles y la configuración externalizada. **Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot
 4.1.3**, **Spring Cloud 2025.1.4 «Oakwood»** (Gateway 5.0.4, Netflix Eureka 5.0.3, Consul 5.0.4, Config 5.0.6,
 Commons/LoadBalancer 5.0.4), **Consul 2.1.0** con Docker Compose, Testcontainers 2.0.5, Gradle 9.9.2 por el wrapper
-y `curl`. **Laboratorio:** `examples/microservicios/modulo-11/` (una demostración con JDK puro por tema en `jdk/` y
+y `curl`. **Laboratorio:** `modulo-11` (una demostración con JDK puro por tema en `jdk/` y
 un subproyecto Gradle por tema; `./verificar.sh` lo ejecuta todo).
 
 En el Módulo 6 tus servicios se llamaban con URLs fijas (`http://localhost:8082`). En producción eso no aguanta: las
@@ -42,17 +42,12 @@ catálogo (puertos 8081 y 8082) y a inventario, eligiendo instancia con el LoadB
 Con líneas punteadas, cada servicio se registra y manda latidos a un «Registro» Eureka o Consul (tema 1), que los BFF
 consultan; y un «Config Server» (tema 3) entrega la configuración a cada servicio al arrancar.
 
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-11` y ejecuta `java -version` (debe decir
-`25`). Cada tema empieza con una demostración en `jdk/` que solo necesita el JDK (`java jdk/Registro.java`): ves el
-mecanismo por dentro, sin magia. Después pasas al proyecto Spring Cloud de su carpeta (`f052-eureka`,
-`f053-gateway`…), donde usas `../gradlew`. La primera compilación descarga Gradle y las dependencias; tarda unos minutos.
-
 ---
 ### Service Discovery: Eureka, Consul
 
 #### 1. UBICACIÓN
 
-Módulo 7, Lección 1 de 5 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-11/`: `jdk/Registro.java`,
+Módulo 7, Lección 1 de 5 · Fase 1 · 2,5 h: `jdk/Registro.java`,
 `f052-eureka/` (servidor Eureka + servicio `catalogo`) y `f052-consul/` (el mismo servicio registrado en Consul).
 
 #### 2. PRERREQUISITOS
@@ -363,7 +358,6 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
 
-
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
@@ -648,7 +642,7 @@ services:
 
 #### 10. MINI-LABORATORIO
 
-1. **El mecanismo, sin Spring.** Desde `examples/microservicios/modulo-11`:
+1. **El mecanismo, sin Spring.** Desde el código de este tema:
 
 ```bash
 java jdk/Registro.java
@@ -902,7 +896,7 @@ nombres lógicos (`catalogo`), lista local refrescada periódicamente y timeouts
 
 #### 1. UBICACIÓN
 
-Módulo 7, Lección 2 de 5 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-11/`: `jdk/MiniGateway.java`
+Módulo 7, Lección 2 de 5 · Fase 1 · 2,5 h: `jdk/MiniGateway.java`
 y `f053-gateway/`.
 
 #### 2. PRERREQUISITOS
@@ -1002,7 +996,7 @@ llamadas en una respuesta). Spring Cloud Gateway hace muy bien las dos primeras;
 
 **Cuándo NO usarlo.** Con un solo servicio o un monolito, un gateway propio es una pieza más que desplegar, monitorear
 y que puede caerse: un balanceador de la nube o un Ingress basta. Tampoco lo uses como «orquestador»: si empiezas a
-escribir `if (pedido.total > ...)` en un filtro, has creado un monolito en el borde que todos los equipos tienen que
+escribir `if (pedido.total >...)` en un filtro, has creado un monolito en el borde que todos los equipos tienen que
 modificar (el anti-patrón de este tema).
 
 **Trade-offs:** el gateway es un **punto único de fallo** y un salto de red más (añade latencia, normalmente pocos
@@ -1434,7 +1428,7 @@ pertenecen al servicio de precios; el gateway solo enruta y aplica políticas tr
 
 #### 1. UBICACIÓN
 
-Módulo 7, Lección 3 de 5 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-11/`: `jdk/ConfigCentral.java` y
+Módulo 7, Lección 3 de 5 · Fase 1 · 2 h: `jdk/ConfigCentral.java` y
 `f054-config/` (Config Server + cliente `catalogo` + carpeta `config-repo/`).
 
 #### 2. PRERREQUISITOS
@@ -2023,7 +2017,7 @@ comprueba `sinConfigServerElClienteNoArranca`).
 **Otro síntoma frecuente:** el servicio arranca pero usa los valores generales (`catalogo.pagina=10`).
 `curl -s localhost:8888/catalog/prod | jq '.propertySources[].name'` muestra solo las fuentes `application`: el nombre
 que envía el cliente (`spring.application.name`) no coincide con el del archivo. El log del cliente lo revela en
-`Located environment: name=catalog, profiles=[prod], ...`. Alinea el nombre y comprueba siempre con
+`Located environment: name=catalog, profiles=[prod],...`. Alinea el nombre y comprueba siempre con
 `GET /{app}/{perfil}` qué devuelve el servidor.
 
 #### 13. PREGUNTA DE ENTREVISTA
@@ -2061,7 +2055,7 @@ datos de negocio van en la base de datos del servicio dueño (con su API), y los
 
 #### 1. UBICACIÓN
 
-Módulo 7, Lección 4 de 5 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-11/`: `jdk/Balanceador.java` y
+Módulo 7, Lección 4 de 5 · Fase 1 · 2 h: `jdk/Balanceador.java` y
 `f055-loadbalancer/`.
 
 #### 2. PRERREQUISITOS
@@ -2124,7 +2118,7 @@ ellas.
   el classpath, la lista llega del registro sin cambiar el código.
 - **Algoritmos:** `RoundRobinLoadBalancer` (por defecto; empieza en una posición aleatoria y avanza con un contador
   atómico) y `RandomLoadBalancer`. Se cambia por servicio con `@LoadBalancerClient(name = "catalogo",
-  configuration = ...)` declarando un bean `ReactorLoadBalancer<ServiceInstance>`.
+  configuration =...)` declarando un bean `ReactorLoadBalancer<ServiceInstance>`.
 - **Proveedores de instancias encadenados** (`ServiceInstanceListSupplier.builder()`): `.withDiscoveryClient()`,
   `.withCaching()` (35 s por defecto), `.withHealthChecks()` (consulta `/actuator/health` de cada instancia
   periódicamente y descarta las que fallan), `.withZonePreference()`, `.withSameInstancePreference()`. Por
@@ -2589,7 +2583,7 @@ salud y actualización de la lista.
 
 #### 1. UBICACIÓN
 
-Módulo 7, Lección 5 de 5 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-11/`: `jdk/Bff.java` y
+Módulo 7, Lección 5 de 5 · Fase 1 · 2 h: `jdk/Bff.java` y
 `f056-bff/` (dos aplicaciones: `BffMovilApp` en el puerto 8091 y `BffWebApp` en el 8092).
 
 #### 2. PRERREQUISITOS
@@ -3158,7 +3152,7 @@ cuando termina la anterior, en lugar de barras superpuestas.
 **Diagnóstico:** busca en el código un `join()`, `get()` o `retrieve().body(...)` bloqueante **entre** el
 lanzamiento de dos llamadas independientes. En el ejemplo: `producto.join()` antes de pedir el stock.
 
-**Arreglo:** lanza todas las llamadas independientes primero y espera después (`var a = ...; var b = ...;
+**Arreglo:** lanza todas las llamadas independientes primero y espera después (`var a =...; var b =...;
 a.join(); b.join();`), o usa `CompletableFuture.allOf(...)`. Solo las llamadas que necesitan datos de otra van en
 secuencia.
 

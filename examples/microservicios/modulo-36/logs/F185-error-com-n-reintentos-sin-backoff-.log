@@ -1,0 +1,6 @@
+ERROR · 10 intentos inmediatos, sin backoff:
+  reservas recibidas (HTTP 202):   300 de 300
+  CONFIRMADAS / CANCELADAS:        107 / 193 (64.3 % de ventas perdidas)
+  peticiones al proveedor:         2065 · respondidas con 429: 1958
+  máximo de cobros en un segundo:  20
+  p99 desde la reserva al cobro:   0.0 s

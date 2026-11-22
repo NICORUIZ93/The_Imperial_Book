@@ -1,8 +1,0 @@
-Microservicios (6 servicios, 3 zonas) · 3,000,000 pedidos/mes
-  cómputo (Fargate)          270.30 USD   67.9 %
-  NAT gateway (horas)         98.55 USD   24.8 %
-  NAT gateway (GB)             6.75 USD    1.7 %
-  tráfico entre zonas          3.68 USD    0.9 %
-  logs (ingesta)              18.86 USD    4.7 %
-  TOTAL                      398.14 USD
-  costo unitario: 0.1327 USD por cada 1000 pedidos

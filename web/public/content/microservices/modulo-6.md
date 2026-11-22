@@ -2,10 +2,10 @@
 
 **Fase 1 · Spring Boot de cero a experto** (semanas 3 y 4 de 12). **Duración:** 15 h (7 temas de 1,5–3 h).
 **Dificultad:** 2 de 5 en Spring MVC y DTOs, 3 de 5 en JPA, consultas dinámicas y migraciones. **Dependencias:**
-Módulo 1 completo (records, DI, perfiles) y Módulo 0.4 (HTTP, JSON, `curl`). **Herramientas:** **JDK 25 LTS
+Módulo 1 completo (records, DI, perfiles) y Módulo 0.4 (HTTP, JSON, `curl`). **Herramientas:**JDK 25 LTS
 (25.0.5)**, **Spring Boot 4.1.3** (Spring Framework 7.0.11, Jackson 3, Hibernate ORM 7.4, Spring Data JPA 4.1), Flyway 12.4,
 Liquibase 5.0, **PostgreSQL 18.7** y **MySQL 9.7.4 LTS** con Docker Compose, `curl` y `jq` (incluido en macOS 15 o
-superior; en Linux, `sudo apt install jq`). **Laboratorio:** `examples/microservicios/modulo-6/` (un subproyecto Gradle
+superior; en Linux, `sudo apt install jq`). **Laboratorio:** `modulo-6` (un subproyecto Gradle
 por tema; `./verificar.sh` levanta las bases, ejecuta todos los tests y las apaga).
 
 Aquí tu servicio aprende a hablar HTTP y a recordar: recibe peticiones, valida, responde con contratos estables,
@@ -32,17 +32,12 @@ transaccional que usa Spring Data JPA con Hibernate (tema 4) y consultas dinámi
 (tema 5). Ambos llegan a una base de datos cuyo esquema se versiona con Flyway o Liquibase (tema 6), que puede ser
 PostgreSQL 18.7 o MySQL 9.7.4 (tema 7).
 
-**Cómo usar el laboratorio.** Desde `examples/microservicios/modulo-6` arranca las bases una vez con
-`docker compose up -d --wait` (PostgreSQL en el puerto 5432 y MySQL en el 3306, usuario y contraseña `tienda`, una base
-por tema para que no se pisen) y entra en la carpeta de cada tema. Los temas 1–3 no necesitan base de datos. Al
-terminar, `docker compose down` borra los contenedores y sus datos.
-
 ---
 ### Spring MVC: DispatcherServlet, Controllers, Validación
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 1 de 7 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-6/f025-spring-mvc/`.
+Módulo 2, Lección 1 de 7 · Fase 1 · 2,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -118,7 +113,7 @@ convertirlo en un objeto Java, **validarlo** con las reglas que escribiste (`@No
   `@RequestMapping("/productos")` en la clase fija el prefijo. Argumentos: `@PathVariable` (parte de la ruta),
   `@RequestParam` (`?total=...`), `@RequestBody` (cuerpo JSON), `@RequestHeader`.
 - **Respuestas:** devolver un objeto da `200`; `ResponseEntity.created(uri).body(x)` da `201` con `Location`;
-  `ResponseStatusException(HttpStatus.NOT_FOUND, ...)` da `404`.
+  `ResponseStatusException(HttpStatus.NOT_FOUND,...)` da `404`.
 - **Validación:** con `spring-boot-starter-validation` (Hibernate Validator 9.1), `@Valid` sobre un `@RequestBody`
   valida antes de llamar al método; si falla, lanza `MethodArgumentNotValidException` y Spring responde `400`. Para
   `@PathVariable`/`@RequestParam` con restricciones (`@Min`), Spring 6.1+ aplica validación de método automáticamente
@@ -176,7 +171,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -393,7 +387,6 @@ class ProductoController {
 1. Arranca la API:
 
 ```bash
-cd examples/microservicios/modulo-6/f025-spring-mvc
 ../gradlew -q bootRun
 ```
 
@@ -564,7 +557,7 @@ El controlador traduce HTTP ↔ dominio: DTO validado con `@Valid`, una llamada 
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 2 de 7 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-6/f026-dtos-jackson/`.
+Módulo 2, Lección 2 de 7 · Fase 1 · 2 h.
 
 #### 2. PRERREQUISITOS
 
@@ -621,7 +614,7 @@ anotaciones le dices cómo hacerlo.
 - **Records:** Jackson los serializa por sus componentes y los deserializa por su constructor canónico; las anotaciones
   se ponen en el componente (`@JsonProperty("nombre_completo") String nombreCompleto`).
 - **Anotaciones clave:** `@JsonProperty` (nombre en el JSON), `@JsonInclude(NON_NULL)` (omite nulos),
-  `@JsonFormat(pattern = ...)` (fechas y números), `@JsonIgnore` (excluye un campo), `@JsonIgnoreProperties` y
+  `@JsonFormat(pattern =...)` (fechas y números), `@JsonIgnore` (excluye un campo), `@JsonIgnoreProperties` y
   `@JsonAlias` (acepta nombres alternativos al leer). Para todo el servicio, `spring.jackson.property-naming-strategy=SNAKE_CASE`
   cambia la convención sin anotar campo por campo.
 - **Valores por defecto de Jackson 3 que debes conocer:** las fechas `java.time` se escriben como texto ISO-8601 (no
@@ -842,7 +835,6 @@ public class DtoApp {
 1. Arranca la API:
 
 ```bash
-cd examples/microservicios/modulo-6/f026-dtos-jackson
 ../gradlew -q bootRun
 ```
 
@@ -965,7 +957,7 @@ el DTO y el mapper. Esa es la protección que da separar modelo y contrato.
 
 **Síntoma:** copias un ejemplo de internet con `ObjectMapper` en un proyecto Spring Boot 4 y no compila.
 
-**Cómo se ve** (salida real de `javac` 25 cuando Jackson 2 no está en el classpath, como ocurre en un proyecto Boot 4; Gradle la muestra tal cual, bajo `> Task :compileJava FAILED`):
+**Cómo se ve** (salida real de `javac` 25 cuando Jackson 2 no está en el classpath, como ocurre en un proyecto Boot 4; Gradle la muestra tal cual, bajo `> Task:compileJava FAILED`):
 
 ```text
 academia/dto/Viejo.java:3: error: package com.fasterxml.jackson.databind does not exist
@@ -1010,7 +1002,7 @@ con lo editable, DTO de salida solo con lo visible.
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 3 de 7 · Fase 1 · 1,5 h · Laboratorio `examples/microservicios/modulo-6/f027-controller-advice/`.
+Módulo 2, Lección 3 de 7 · Fase 1 · 1,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -1066,7 +1058,7 @@ uniforme. El formato estándar se llama **Problem Details** y Spring lo trae lis
 - **`@RestControllerAdvice`** = `@ControllerAdvice` + `@ResponseBody`. Cada método `@ExceptionHandler(Tipo.class)`
   atiende ese tipo de excepción y sus subclases; Spring elige el handler cuyo tipo es **más cercano** a la excepción
   lanzada, por eso el de `Exception.class` solo atrapa lo que nadie más atendió. Se puede restringir el alcance con
-  `@RestControllerAdvice(basePackages = ...)`.
+  `@RestControllerAdvice(basePackages =...)`.
 - **`ProblemDetail`** (RFC 9457, que reemplaza a la 7807): campos estándar `type` (URI que identifica el tipo de
   problema), `title`, `status`, `detail`, `instance` (la ruta, que Spring rellena si la dejas vacía) y propiedades
   extra con `setProperty`. El *content type* es `application/problem+json`.
@@ -1279,7 +1271,6 @@ public class ErroresApp {
 1. Arranca la API:
 
 ```bash
-cd examples/microservicios/modulo-6/f027-controller-advice
 ../gradlew -q bootRun
 ```
 
@@ -1332,7 +1323,7 @@ curl -s localhost:8080/productos/CAF-1/fallo | jq -r .detail
 ```
 
    **Output esperado:** `Ocurrió un error interno. Si persiste, comparte este código con soporte.` **Captura
-   comentada:** en la terminal de la app aparece `ERROR ... Error no controlado` con la traza y el mensaje
+   comentada:** en la terminal de la app aparece `ERROR... Error no controlado` con la traza y el mensaje
    `password=postgres; host=10.0.0.12`; el cliente no ve nada de eso.
 
 5. **Fallo deliberado:** borra el método `inesperado` del *advice*, reinicia y repite el paso 4 sin `jq`: Spring
@@ -1461,13 +1452,13 @@ veces credenciales. Deja que la excepción suba hasta el *advice*.
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 4 de 7 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-6/f028-jpa/` + PostgreSQL 18.7
+Módulo 2, Lección 4 de 7 · Fase 1 · 3 h PostgreSQL 18.7
 del `docker-compose.yml` del módulo (base `f028`).
 
 #### 2. PRERREQUISITOS
 
 - Lecciones 1–3 de este módulo.
-- SQL básico: `CREATE TABLE`, `INSERT`, `SELECT ... JOIN`, clave primaria y foránea (se repasan en la lección 7).
+- SQL básico: `CREATE TABLE`, `INSERT`, `SELECT... JOIN`, clave primaria y foránea (se repasan en la lección 7).
 - Docker Compose (Módulo 0.5): `docker compose up -d --wait`.
 
 #### 3. OBJETIVO DE APRENDIZAJE
@@ -1571,7 +1562,7 @@ que se guarden **todos o ninguno**.
 | `JdbcClient` / Spring Data JDBC | SQL explícito y predecible, sin sesión ni *proxies* | Más código para relaciones y mapeo; sin *dirty checking*. |
 | jOOQ | SQL tipado y generado desde el esquema, consultas complejas seguras | Licencia comercial para algunos motores; generación de código en el build. |
 
-**Problemas que verás en producción:** **N+1** (listar 100 pedidos y acceder a sus líneas dispara 1 + 100 consultas;
+**Problemas que verás en producción:**N+1** (listar 100 pedidos y acceder a sus líneas dispara 1 + 100 consultas;
 se detecta activando el log de SQL o `hibernate.generate_statistics` y se resuelve con `@EntityGraph`, `JOIN FETCH` o
 `@BatchSize`); transacciones largas que retienen conexiones (con hilos virtuales, el pool de conexiones es el límite);
 y auto-invocación (`this.crear()` dentro del mismo bean no pasa por el proxy y no abre transacción).
@@ -1927,12 +1918,11 @@ CREATE DATABASE f031 OWNER tienda;
 1. Levanta las bases (una vez para todo el módulo):
 
 ```bash
-cd examples/microservicios/modulo-6
 docker compose up -d --wait
 docker compose ps --format "{{.Service}} {{.Status}}"
 ```
 
-   **Output esperado:** dos líneas, `mysql Up ... (healthy)` y `postgres Up ... (healthy)`.
+   **Output esperado:** dos líneas, `mysql Up... (healthy)` y `postgres Up... (healthy)`.
 
 2. Ejecuta la demostración y mira el SQL que genera Hibernate:
 
@@ -1981,7 +1971,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-/** Requiere el PostgreSQL del módulo: docker compose up -d --wait (desde examples/microservicios/modulo-6). */
+/** Requiere el PostgreSQL del módulo: docker compose up -d --wait (desde modulo-6). */
 @SpringBootTest(properties = "spring.main.web-application-type=none")
 class PedidoJpaTest {
 
@@ -2098,7 +2088,7 @@ transacciones viven en la capa de servicio, cortas, y lo que sale por HTTP son D
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 5 de 7 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-6/f029-criteria-specifications/` +
+Módulo 2, Lección 5 de 7 · Fase 1 · 2 h
 PostgreSQL 18.7 (base `f029`).
 
 #### 2. PRERREQUISITOS
@@ -2154,7 +2144,7 @@ de texto SQL), y las **Specifications** de Spring Data son piezas reutilizables 
 #### 7. EXPLICACIÓN INTERMEDIA
 
 - **Criteria API (JPA):** `CriteriaBuilder cb = em.getCriteriaBuilder()` fabrica expresiones y predicados;
-  `CriteriaQuery<T>` es la consulta; `Root<Producto>` es el `FROM`. `cb.construct(PromedioCategoria.class, ...)`
+  `CriteriaQuery<T>` es la consulta; `Root<Producto>` es el `FROM`. `cb.construct(PromedioCategoria.class,...)`
   proyecta directo a un record (sin cargar entidades). Los tipos genéricos importan: `root.<BigDecimal>get("precio")`
   le dice al compilador que es comparable con un `BigDecimal`.
 - **`Specification<T>`** (Spring Data JPA) es una interfaz funcional `(root, query, cb) -> Predicate`. El repositorio
@@ -2451,11 +2441,10 @@ public class ConsultasApp {
 1. Con las bases arriba (`docker compose up -d --wait` en `modulo-6`), ejecuta la demostración:
 
 ```bash
-cd examples/microservicios/modulo-6/f029-criteria-specifications
 ../gradlew -q bootRun | grep -E "^Encontrado|^Reporte|where"
 ```
 
-   **Output esperado:** la consulta generada contiene `where lower(p1_0.nombre) like ? ... and p1_0.precio>=? and
+   **Output esperado:** la consulta generada contiene `where lower(p1_0.nombre) like ?... and p1_0.precio>=? and
    p1_0.activo` (los alias los pone Hibernate) y luego:
 
 ```text
@@ -2603,13 +2592,13 @@ Inyección (JPQL/SQL *injection*), consultas imposibles de cachear en el plan y 
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 6 de 7 · Fase 1 · 2 h · Laboratorios `examples/microservicios/modulo-6/f030-flyway/` y
-`examples/microservicios/modulo-6/f030-liquibase/` + PostgreSQL 18.7 (bases `f030_flyway` y `f030_liquibase`).
+Módulo 2, Lección 6 de 7 · Fase 1 · 2 h · Laboratorios `f030-flyway` y
+`f030-liquibase` + PostgreSQL 18.7 (bases `f030_flyway` y `f030_liquibase`).
 
 #### 2. PRERREQUISITOS
 
 - Lección 4: entidades y `ddl-auto` (y por qué `create-drop` no sirve fuera del laboratorio).
-- SQL DDL: `CREATE TABLE`, `ALTER TABLE ... ADD COLUMN`, restricciones `NOT NULL`, `UNIQUE`, `CHECK`.
+- SQL DDL: `CREATE TABLE`, `ALTER TABLE... ADD COLUMN`, restricciones `NOT NULL`, `UNIQUE`, `CHECK`.
 - Módulo 0.4: Git (las migraciones se versionan como código).
 
 #### 3. OBJETIVO DE APRENDIZAJE
@@ -2975,7 +2964,6 @@ public class LiquibaseApp {
 1. Con las bases arriba (`docker compose up -d --wait` en `modulo-6`), aplica las migraciones de Flyway:
 
 ```bash
-cd examples/microservicios/modulo-6/f030-flyway
 ../gradlew -q bootRun | grep -E "^Migración|^Producto|Successfully applied|Schema"
 ```
 
@@ -3099,7 +3087,6 @@ class ChangelogTest {
 ```
 
 ```bash
-cd examples/microservicios/modulo-6/f030-flyway && ../gradlew test
 cd ../f030-liquibase && ../gradlew test
 ```
 
@@ -3171,7 +3158,7 @@ de forma impredecible. Todo cambio de esquema pasa por una migración versionada
 
 #### 1. UBICACIÓN
 
-Módulo 2, Lección 7 de 7 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-6/f031-postgresql-mysql/` +
+Módulo 2, Lección 7 de 7 · Fase 1 · 2 h
 PostgreSQL 18.7 y MySQL 9.7.4 del `docker-compose.yml` del módulo (base `f031` en ambos).
 
 #### 2. PRERREQUISITOS
@@ -3231,8 +3218,8 @@ con pruebas, dónde son iguales y dónde no.
 - **Claves autogeneradas:** PostgreSQL usa `GENERATED ALWAYS AS IDENTITY` (estándar SQL; impide insertar ids a mano sin
   `OVERRIDING SYSTEM VALUE`) o secuencias; MySQL usa `AUTO_INCREMENT`. Con `GenerationType.IDENTITY` la entidad sirve
   para ambos.
-- **Upsert:** PostgreSQL `INSERT ... ON CONFLICT (sku) DO UPDATE SET stock = productos.stock + EXCLUDED.stock`; MySQL
-  `INSERT ... VALUES (...) AS nuevo ON DUPLICATE KEY UPDATE stock = productos.stock + nuevo.stock` (la forma
+- **Upsert:** PostgreSQL `INSERT... ON CONFLICT (sku) DO UPDATE SET stock = productos.stock + EXCLUDED.stock`; MySQL
+  `INSERT... VALUES (...) AS nuevo ON DUPLICATE KEY UPDATE stock = productos.stock + nuevo.stock` (la forma
   `VALUES(stock)` está obsoleta desde 8.0.20). Ambos son atómicos.
 - **Texto y *collation*:** en MySQL 8+/9 la *collation* por defecto `utf8mb4_0900_ai_ci` ignora mayúsculas (*ci*) y
   tildes (*ai*): `'CAFE DE HUILA' = 'Café de Huila'` es verdadero. En PostgreSQL la comparación por defecto es exacta
@@ -3533,7 +3520,6 @@ public class MotoresApp {
 1. Con las bases arriba (`docker compose up -d --wait` en `modulo-6`), ejecuta la app con cada perfil:
 
 ```bash
-cd examples/microservicios/modulo-6/f031-postgresql-mysql
 ../gradlew -q bootJar
 java -jar build/libs/f031-postgresql-mysql-1.0.0.jar --spring.profiles.active=postgres | grep -E "^Motor|^Stock|^¿"
 java -jar build/libs/f031-postgresql-mysql-1.0.0.jar --spring.profiles.active=mysql | grep -E "^Motor|^Stock|^¿"
@@ -3684,7 +3670,7 @@ LINE 1: ...bre, stock) VALUES ('CAF-1', 'Café de Huila', 10) AS nuevo O...
 
 Desde la app, Spring envuelve estos errores en `BadSqlGrammarException` con el SQL y el mensaje del motor dentro.
 
-**Diagnóstico:** `ON CONFLICT` es de PostgreSQL; `AS alias ... ON DUPLICATE KEY` es de MySQL. El texto `near '...'`
+**Diagnóstico:** `ON CONFLICT` es de PostgreSQL; `AS alias... ON DUPLICATE KEY` es de MySQL. El texto `near '...'`
 (MySQL) o el `^` (PostgreSQL) señalan la primera palabra que el motor no entendió. Un error primo, silencioso: textos
 con tildes guardados como `CafÃ©` porque el cliente de MySQL usó `latin1`; se evita con `utf8mb4` en la base y en la
 conexión.

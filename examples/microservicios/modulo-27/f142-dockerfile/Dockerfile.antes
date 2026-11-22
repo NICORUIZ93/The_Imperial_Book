@@ -1,9 +1,0 @@
-# Módulo 23 · F142 · ANTES: Dockerfile de una sola etapa. Funciona, pero NO lo copies:
-# imagen completa de Debian, devDependencies y código fuente dentro, root y «npm start» como PID 1.
-FROM node:26.13.1
-WORKDIR /app
-COPY . .
-RUN npm install
-RUN npm run build
-EXPOSE 8080
-CMD ["npm", "start"]

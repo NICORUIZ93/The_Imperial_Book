@@ -3,9 +3,9 @@
 **Fase 2 · Node.js de cero a experto** (media semana de 12). **Duración:** 8 h (5 temas de unos 80 min y 1 h 20 min de
 laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 18 (REST con Axios/Fetch, sync vs async) y
 Módulo 13 (Promises, `async/await`, Event Loop, graceful shutdown); ayuda haber hecho el Módulo 14 (Express).
-**Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **opossum 10.0.0**, **cockatiel 4.0.0**,
+**Herramientas:**Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **opossum 10.0.0**, **cockatiel 4.0.0**,
 **redis (node-redis) 6.3.1**, **rate-limiter-flexible 11.5.0**, **express 5.3.0**, **Redis 8.10.2** y **Toxiproxy
-2.13.0**. **Laboratorio:** `examples/microservicios/modulo-23/` (`./verificar.sh --compose` levanta la infraestructura,
+2.13.0**. **Laboratorio:** `modulo-23` (`./verificar.sh --compose` levanta la infraestructura,
 ejecuta 25 tests y las simulaciones de fallo de las cinco fichas).
 
 En un sistema distribuido **fallar es lo normal**: una red pierde paquetes, un servicio se queda sin memoria, un
@@ -36,14 +36,12 @@ comportamiento observado, con la salida real.
 **Cómo usar el laboratorio.** Con Node 26 y Docker en marcha:
 
 ```bash
-cd examples/microservicios/modulo-23
 npm ci
 docker compose up -d --wait      # inventario (:9000), Redis (:6379) y Toxiproxy (:8474 → :21212 y :26379)
 ./verificar.sh --compose         # 25 tests + simulaciones de las 5 fichas → «RESULTADO: OK»
 docker compose down
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-23`**, con la infraestructura
 arriba. Tus servicios Node corren en tu máquina y llaman al inventario **a través de Toxiproxy** (`127.0.0.1:21212`) y
 a Redis también (`127.0.0.1:26379`): así el script de simulación puede estropear la red sin tocar tu código. Si no
 tienes Docker, `./infra.sh up` usa los binarios `toxiproxy-server` y `redis-server` de tu máquina (en macOS:
@@ -181,7 +179,7 @@ servidor.listen(puerto, () => console.log(`inventario escuchando en :${puerto}`)
 process.on('SIGTERM', () => servidor.close(() => process.exit(0)));
 ```
 
-`comun/toxiproxy.js`, las funciones con las que los scripts de simulación le hablan a Toxiproxy:
+`comun/toxiproxy.js`: funciones con las que los scripts de simulación le hablan a Toxiproxy.
 
 ```javascript
 // Módulo 19 · Cliente mínimo de la API HTTP de Toxiproxy 2.13.0 (puerto 8474) para los scripts de simulación.
@@ -266,7 +264,7 @@ echo
 
 #### 1. UBICACIÓN
 
-Módulo 19, Lección 1 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-23/f119-circuit-breaker/`.
+Módulo 19, Lección 1 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -472,6 +470,8 @@ if (import.meta.main) {
 `f119-circuit-breaker/cockatiel.ts` (la alternativa: el mismo comportamiento con cockatiel, en TypeScript; Node 26
 ejecuta el `.ts` quitando los tipos y `npm run tipos` los comprueba con `tsc --noEmit`):
 
+`comun/toxiproxy.js`: utilidades de Toxiproxy usadas en esta ficha.
+
 ```typescript
 // Módulo 19 · F119 · El mismo circuito con cockatiel 4.0.0, en TypeScript (políticas componibles y tipadas).
 // Requisitos: Node.js 26.13.1 LTS (ejecuta .ts quitando los tipos) y TypeScript 6.0.3 para comprobarlos (npm run tipos).
@@ -610,7 +610,6 @@ circuito.shutdown();
 1. Levanta la infraestructura y ejecuta la simulación:
 
 ```bash
-cd examples/microservicios/modulo-23
 npm ci
 docker compose up -d --wait
 node f119-circuit-breaker/simulacion.js
@@ -860,7 +859,7 @@ de recomendaciones te deja sin pagos.
 
 #### 1. UBICACIÓN
 
-Módulo 19, Lección 2 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-23/f120-retry/`.
+Módulo 19, Lección 2 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1022,6 +1021,8 @@ export function getConReintentos(url, opciones = {}) {
 ```
 
 `f120-retry/con-cockatiel.js` (la misma política con la librería):
+
+`comun/toxiproxy.js`: utilidades de Toxiproxy usadas en esta ficha.
 
 ```javascript
 // Módulo 19 · F120 · La misma política con cockatiel 4.0.0: retry + backoff exponencial con jitter.
@@ -1347,7 +1348,7 @@ bajar; y al arreglarla vuelve a caer sola por la avalancha acumulada.
 
 #### 1. UBICACIÓN
 
-Módulo 19, Lección 3 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-23/f121-rate-limiting/`.
+Módulo 19, Lección 3 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1580,6 +1581,8 @@ if (import.meta.main) {
 ráfaga contra dos de ellas con Redis sano; después le pide a Toxiproxy que **apague el proxy de Redis** y repite la
 ráfaga contra cada estrategia; al final lo enciende de nuevo:
 
+`comun/toxiproxy.js`: utilidades de Toxiproxy usadas en esta ficha.
+
 ```javascript
 // Módulo 19 · F121 · Simulación del fallo: (A) una ráfaga contra DOS instancias que comparten el límite en Redis y
 // (B) Toxiproxy tumba Redis: qué hace el limitador con cada estrategia (memoria, abrir, cerrar).
@@ -1679,7 +1682,7 @@ docker compose exec redis redis-cli --scan --pattern 'rl:*'
    **Output esperado:**
 
 ```text
-200 200 200 200 200 429 
+200 200 200 200 200 429
 HTTP/1.1 429 Too Many Requests
 RateLimit-Limit: 5
 RateLimit-Remaining: 0
@@ -1892,7 +1895,7 @@ base de datos, o cuando el número de 429 baja justo al escalar.
 
 #### 1. UBICACIÓN
 
-Módulo 19, Lección 4 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-23/f122-timeouts/`.
+Módulo 19, Lección 4 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2106,6 +2109,8 @@ if (import.meta.main) {
 **Simulación del fallo.** `f122-timeouts/simulacion.js` usa dos toxics de Toxiproxy: `latency` (cada respuesta tarda
 2000 ms más) y `timeout` con valor 0 (acepta la conexión y **nunca** entrega datos, como un proceso bloqueado). Después
 monta la cadena con el inventario a 1500 ms:
+
+`comun/toxiproxy.js`: utilidades de Toxiproxy usadas en esta ficha.
 
 ```javascript
 // Módulo 19 · F122 · Simulación del fallo: Toxiproxy vuelve LENTO al inventario (latencia) y luego lo deja COLGADO
@@ -2404,7 +2409,7 @@ que usa un solo endpoint.
 
 #### 1. UBICACIÓN
 
-Módulo 19, Lección 5 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-23/f123-fallbacks/`.
+Módulo 19, Lección 5 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2590,6 +2595,8 @@ if (import.meta.main) {
 **Simulación del fallo.** `f123-fallbacks/simulacion.js` consulta el catálogo con el inventario sano (eso llena el
 «último valor bueno» del producto 7), le pide a Toxiproxy que **apague el proxy** y prueba una lectura con valor
 guardado, una sin él y una compra; después lo enciende:
+
+`comun/toxiproxy.js`: utilidades de Toxiproxy usadas en esta ficha.
 
 ```javascript
 // Módulo 19 · F123 · Simulación del fallo: Toxiproxy tumba el inventario y el catálogo responde con cada estrategia.

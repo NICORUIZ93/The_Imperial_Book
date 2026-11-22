@@ -1,0 +1,3 @@
+BFF móvil (77 bytes, 158 ms): {"id":7,"nombre":"Audífonos BT","precio":189000,"stock":12,"imagen":"a.jpg"}
+BFF web   (446 bytes, 205 ms)
+OK: cada cliente recibe solo lo que su pantalla necesita, en paralelo

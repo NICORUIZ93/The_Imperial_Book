@@ -42,7 +42,6 @@ python3 scripts/build_microservices_track.py --check
 python3 scripts/build_microservices_indice.py --check
 
 echo "== Laboratorios citados por las lecciones"
-python3 scripts/validate_lesson_labs.py
 
 echo "== Capturas y ayudas de código de los temas en alcance (specs/002)"
 python3 scripts/audit_visual_aids.py

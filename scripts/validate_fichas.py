@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 CONTENT = ROOT / "web/public/content/microservices"
 INVENTARIO = ROOT / "docs/temarios/microservicios-inventario.json"
 ENTREGABLES = ROOT / "docs/microservicios"
-LABS = ROOT / "examples/microservicios"
+# LABS retirado en specs/027 (libro virtual sin laboratorios ejecutables)
 
 SECCIONES = [
     "UBICACIÓN", "PRERREQUISITOS", "OBJETIVO DE APRENDIZAJE", "ANALOGÍA VISUAL",
@@ -144,17 +144,6 @@ def main() -> int:
     no_usar = contenido.lower().count("respuesta correcta: no usar microservicios")
     if no_usar < 3:
         globales.append(f"hay {no_usar} ejercicios cuya respuesta correcta es no usar microservicios; deben ser 3 o más")
-    for item in {i["archivo"]: i for i in inventario}.values():
-        lab = LABS / Path(item["archivo"]).stem
-        if not (lab / "README.md").exists():
-            globales.append(f"falta el laboratorio examples/microservicios/{lab.name}/README.md ({item['etiqueta']})")
-        # bash 3.2 de macOS: «$var» seguido de un carácter no ASCII («, …, ñ) da «unbound variable». Usar ${var}.
-        for sh in lab.rglob("*.sh"):
-            if "node_modules" in sh.parts:
-                continue
-            for n, linea in enumerate(sh.read_text(errors="replace").splitlines(), 1):
-                if re.search(r"\$[A-Za-z_][A-Za-z0-9_]*[^\x00-\x7F]", linea):
-                    globales.append(f"{sh.relative_to(ROOT)}:{n}: variable junto a carácter no ASCII; usa ${{var}} (bash 3.2)")
 
     total = len(inventario)
     completas = total - len(problemas)

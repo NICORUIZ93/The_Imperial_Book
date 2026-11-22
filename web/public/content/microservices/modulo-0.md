@@ -4,7 +4,7 @@
 para quien nunca ha programado. **Dependencias:** ninguna; solo necesitas un computador con terminal y
 **Node.js 26.13.1 LTS** instalado (el Módulo 0.4 profundiza en la terminal y el 0.5 instala todo paso a paso; si aún
 no tienes Node, ejecuta los comandos de este módulo cuando lo instales). **Laboratorio:**
-`examples/microservicios/modulo-0/` (se verifica con `./verificar.sh`).
+`modulo-0` (se verifica con `./verificar.sh`).
 
 Al terminar este módulo podrás explicar con tus palabras, y demostrar en tu terminal, la diferencia entre un
 programa que termina, un servidor que se queda esperando y una API que define qué se le puede pedir a ese
@@ -27,7 +27,7 @@ flowchart LR
 #### 1. UBICACIÓN
 
 Módulo 0.1, Lección 1 de 3 · Fase 0 · `web/public/content/microservices/modulo-0.md` · Laboratorio
-`examples/microservicios/modulo-0/programa/`.
+`programa`.
 
 #### 2. PRERREQUISITOS
 
@@ -143,7 +143,7 @@ laboratorio solo declara `"type": "module"` para poder usar `import`/`export`:
 }
 ```
 
-Archivo `examples/microservicios/modulo-0/programa/receta.js`:
+Archivo `receta.js`:
 
 ```javascript
 // Módulo 0.1 · Qué es un programa
@@ -195,7 +195,6 @@ Total a pagar: 20000
 
 1. Entra a la carpeta del laboratorio:
    ```bash
-   cd examples/microservicios/modulo-0
    ```
 2. Ejecuta el programa y mira cómo termina:
    ```bash
@@ -285,7 +284,7 @@ código. Haz lo contrario: datos con nombre, lógica en funciones que reciben es
 
 #### 1. UBICACIÓN
 
-Módulo 0.1, Lección 2 de 3 · Fase 0 · Laboratorio `examples/microservicios/modulo-0/servidor/`.
+Módulo 0.1, Lección 2 de 3 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -381,7 +380,7 @@ memoria las 24 horas.
 
 Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22); solo el módulo `node:http` incluido en Node.
 Usa el mismo `package.json` del tema anterior (`"type": "module"`). Archivo
-`examples/microservicios/modulo-0/servidor/servidor.js`:
+`servidor.js`:
 
 ```javascript
 // Módulo 0.1 · Qué es un servidor
@@ -416,7 +415,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. **Terminal 1** (desde `examples/microservicios/modulo-0`): enciende el servidor.
+1. **Terminal 1** (desde `modulo-0`): enciende el servidor.
    ```bash
    node servidor/servidor.js
    ```
@@ -528,7 +527,7 @@ datos (Módulos 2 y 15).
 
 #### 1. UBICACIÓN
 
-Módulo 0.1, Lección 3 de 3 · Fase 0 · Laboratorio `examples/microservicios/modulo-0/api/`.
+Módulo 0.1, Lección 3 de 3 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -631,7 +630,7 @@ sentido cuando hay otro programa (u otro equipo) al otro lado.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **Node.js 26.13.1 LTS** (también corre en Node 22); solo `node:http`. Mismo `package.json`
-(`"type": "module"`). Archivo `examples/microservicios/modulo-0/api/api.js`:
+(`"type": "module"`). Archivo `api.js`:
 
 ```javascript
 // Módulo 0.1 · Qué es una API
@@ -710,7 +709,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. **Terminal 1** (desde `examples/microservicios/modulo-0`):
+1. **Terminal 1** (desde `modulo-0`):
    ```bash
    node api/api.js
    ```

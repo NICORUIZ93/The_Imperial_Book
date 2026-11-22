@@ -1,9 +1,0 @@
-# DESPUÉS (seguro): STRICT solo acepta conexiones mTLS con un certificado emitido por istiod.
-apiVersion: security.istio.io/v1
-kind: PeerAuthentication
-metadata:
-  name: default
-  namespace: tienda
-spec:
-  mtls:
-    mode: STRICT

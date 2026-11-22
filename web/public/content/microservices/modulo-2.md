@@ -4,7 +4,7 @@
 **Dependencias:** Módulos 0.1 y 0.2 (programa, servidor, variables, decisiones, bucles, funciones, tests).
 **Herramientas:** **JDK 25 LTS (25.0.5)** y **Node.js 26.13.1 LTS**, sin dependencias externas (la instalación
 paso a paso está en el Módulo 0.5; si aún no tienes Java, instálalo primero con esa guía). **Laboratorio:**
-`examples/microservicios/modulo-2/` (se verifica con `./verificar.sh`).
+`modulo-2` (se verifica con `./verificar.sh`).
 
 El curso tiene dos caminos completos y separados: la **Fase 1** con Java y Spring Boot y la **Fase 2** con
 JavaScript/TypeScript y Node.js. Este módulo te presenta los dos lenguajes **escribiendo el mismo programa dos
@@ -33,7 +33,7 @@ directamente con node en el motor V8 con su event loop. Ambos carriles llegan a 
 #### 1. UBICACIÓN
 
 Módulo 0.3, Lección 1 de 2 · Fase 0 · `web/public/content/microservices/modulo-2.md` · Laboratorio
-`examples/microservicios/modulo-2/java/Tienda.java` y `examples/microservicios/modulo-2/node/tienda.js`.
+`Tienda.java` y `tienda.js`.
 
 #### 2. PRERREQUISITOS
 
@@ -156,7 +156,7 @@ un archivo suelto (Maven llega en el Módulo 0.5 y la Fase 1); Node usa este `pa
 }
 ```
 
-`examples/microservicios/modulo-2/java/Tienda.java`:
+`Tienda.java`:
 
 ```java
 // Módulo 0.3 · Java y Node.js lado a lado: sintaxis y ejecución
@@ -208,7 +208,7 @@ public class Tienda { // En Java todo vive dentro de una clase.
 }
 ```
 
-`examples/microservicios/modulo-2/node/tienda.js`:
+`tienda.js`:
 
 ```javascript
 // Módulo 0.3 · Java y Node.js lado a lado: sintaxis y ejecución
@@ -258,7 +258,6 @@ if (import.meta.main) {
 
 1. Ejecuta la versión Java (compila en memoria y ejecuta):
    ```bash
-   cd examples/microservicios/modulo-2/java
    java Tienda.java
    ```
 2. Ahora en dos pasos, para ver el *bytecode* que genera el compilador:
@@ -305,7 +304,7 @@ antes de ejecutar.
 
 #### 11. VERIFICACIÓN
 
-Los dos lenguajes tienen el mismo test con los mismos 5 casos. Desde `examples/microservicios/modulo-2`:
+Los dos lenguajes tienen el mismo test con los mismos 5 casos. Desde `modulo-2`:
 
 ```bash
 (cd java && java TiendaTest.java)
@@ -391,8 +390,8 @@ tipos; en JavaScript usa objetos simples (y TypeScript cuando quieras tipos), no
 
 #### 1. UBICACIÓN
 
-Módulo 0.3, Lección 2 de 2 · Fase 0 · Laboratorio `examples/microservicios/modulo-2/java/Diferencias.java` y
-`examples/microservicios/modulo-2/node/diferencias.js`.
+Módulo 0.3, Lección 2 de 2 · Fase 0
+`diferencias.js`.
 
 #### 2. PRERREQUISITOS
 
@@ -501,7 +500,7 @@ peticiones.
 Versiones: **JDK 25 LTS (25.0.5)** (los hilos virtuales existen desde JDK 21) y **Node.js 26.13.1 LTS**. Sin
 dependencias; Node usa el `package.json` de `node/` del tema anterior.
 
-`examples/microservicios/modulo-2/java/Diferencias.java`:
+`Diferencias.java`:
 
 ```java
 // Módulo 0.3 · Java y Node.js lado a lado: tipos, errores y concurrencia
@@ -562,7 +561,7 @@ public class Diferencias {
 }
 ```
 
-`examples/microservicios/modulo-2/node/diferencias.js`:
+`diferencias.js`:
 
 ```javascript
 // Módulo 0.3 · Java y Node.js lado a lado: tipos, errores y concurrencia
@@ -610,7 +609,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Ejecuta los dos programas (desde `examples/microservicios/modulo-2`):
+1. Ejecuta los dos programas (desde `modulo-2`):
    ```bash
    (cd java && java Diferencias.java)
    (cd node && node diferencias.js)

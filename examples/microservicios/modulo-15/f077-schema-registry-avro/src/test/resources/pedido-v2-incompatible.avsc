@@ -1,1 +1,0 @@
-{"type":"record","name":"Pedido","namespace":"academia.avro","fields":[{"name":"id","type":"string"},{"name":"cliente","type":"string"},{"name":"totalCentavos","type":"long"},{"name":"canal","type":"string"}]}

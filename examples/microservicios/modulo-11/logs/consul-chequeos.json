@@ -1,0 +1,20 @@
+[
+    {
+        "Node": "992d309ed23f",
+        "CheckID": "service:catalogo-8081",
+        "Name": "Service 'catalogo' check",
+        "Status": "passing",
+        "Notes": "",
+        "Output": "HTTP GET http://host.docker.internal:8081/actuator/health: 200  Output: {\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}",
+        "ServiceID": "catalogo-8081",
+        "ServiceName": "catalogo",
+        "ServiceTags": [],
+        "Type": "http",
+        "Interval": "10s",
+        "Timeout": "",
+        "ExposedPort": 0,
+        "Definition": {},
+        "CreateIndex": 20,
+        "ModifyIndex": 21
+    }
+]

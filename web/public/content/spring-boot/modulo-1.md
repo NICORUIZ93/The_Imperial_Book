@@ -2,8 +2,7 @@
 
 Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria. La fusión de configuración base + perfil se verifica con la aplicación Spring Boot real, arrancando con y sin el perfil activo y comparando los valores efectivos.
 
-
-**Referencia al cerrar M0–M1:** `examples/spring-fundamentos-rutaflow/README.md` reúne las clases finales y cinco pruebas. Úsala para comparar después de escribir tus archivos; no equivale a haber ejecutado cada cambio y fallo del recorrido.
+**Referencia al cerrar M0–M1:** `README.md` reúne las clases finales y cinco pruebas. Úsala para comparar después de escribir tus archivos; no equivale a haber ejecutado cada cambio y fallo del recorrido.
 
 ## Alternativa comprobable con Gradle
 
@@ -15,7 +14,6 @@ que siguen, `pom.xml` y `mvnw` son la ruta original Maven. Si eliges Gradle, abr
 Desde la raíz del repositorio:
 
 ```bash
-cd examples/spring-fundamentos-rutaflow
 ./gradlew --version
 ./gradlew clean classes test
 ./gradlew bootRun --args='--spring.profiles.active=dev'
@@ -89,7 +87,7 @@ Abre el `pom.xml` que se creó y localiza el parent de Spring Boot, la dependenc
 
 **Comparación, solo después de tu build:** el repo guarda un proyecto Maven ya resuelto para la primera
 semana del curso de Microservicios con Spring Boot, en
-`examples/microservicios-spring/fase-1/proyecto-maven-tienda/pom.xml`. Ábrelo junto al `pom.xml` que
+`pom.xml`. Ábrelo junto al `pom.xml` que
 generaste arriba y busca `spring-boot-starter-webmvc`, `spring-boot-starter-data-jpa`,
 `spring-boot-starter-validation`, Flyway y una prueba por capa (dominio y servicio), con Boot 4.1.3 y
 `<java.version>25</java.version>`: así se ve el descriptor cuando el servicio deja de ser una sola ruta web.

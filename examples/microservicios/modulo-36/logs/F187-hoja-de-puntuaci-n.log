@@ -1,0 +1,12 @@
+Estudiante: Estudiante de ejemplo · 2026-11-20 · evaluadores: arquitecta principal, SRE, producto
+1 Descomposición y límites        0.15   3   0.45
+2 Consistencia y saga             0.15   4   0.60
+3 Resiliencia                     0.10   3   0.30
+4 Seguridad                       0.10   2   0.20
+5 Observabilidad                  0.10   3   0.30
+6 Rendimiento y carga             0.10   4   0.40
+7 Restricción sobrevenida y ADR   0.15   4   0.60
+8 Costo (FinOps)                  0.05   3   0.15
+9 Comunicación y defensa          0.10   3   0.30
+Total: 3.30 (aprueba con >= 2.80 y ningún 1)
+Recomendación: APROBADO

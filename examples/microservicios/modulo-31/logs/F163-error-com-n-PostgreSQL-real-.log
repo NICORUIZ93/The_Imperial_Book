@@ -1,3 +1,0 @@
-arranque: v-pedidos-10de3dd9 con lease_duration=2 s
-conexión nueva al arrancar     -> {"ok":true}
-conexión nueva pasados 3 s     -> {"ok":false,"error":"password authentication failed for user \"v-pedidos-10de3dd9\""}

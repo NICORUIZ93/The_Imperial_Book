@@ -1,6 +1,0 @@
-2026-11-19 08:00:01 INFO  servidor iniciado en el puerto 3000
-2026-11-19 08:00:05 INFO  GET /api/menu 200
-2026-11-19 08:01:12 ERROR no hay conexión con la base de datos
-2026-11-19 08:01:13 WARN  reintentando conexión
-2026-11-19 08:01:14 INFO  GET /api/menu 200
-2026-11-19 08:02:40 ERROR tiempo de espera agotado en /api/pedidos

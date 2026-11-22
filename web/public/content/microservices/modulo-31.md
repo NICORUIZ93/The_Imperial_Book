@@ -3,10 +3,10 @@
 **Fase 3 · Nivel maestro: arquitectura avanzada** (una semana de 8). **Duración:** 8 h (4 temas de unos 90 min y 2 h
 de laboratorio integrador). **Dificultad:** 5 de 5. **Dependencias:** Módulo 9 (JWT, OAuth2, Keycloak, el primer
 Token Exchange, mTLS con Istio y Vault KV) o Módulo 20 (JWT, secretos y OWASP en Node), y Módulo 12 o 23 (Kubernetes).
-**Herramientas:** **Node.js 26.13.1 LTS** (módulos `node:tls`, `node:https` y `node:crypto`, sin librerías de
+**Herramientas:**Node.js 26.13.1 LTS** (módulos `node:tls`, `node:https` y `node:crypto`, sin librerías de
 seguridad para que veas cada comprobación), **pg 8.23.1**, **OpenSSL 3** o el LibreSSL de macOS, **HashiCorp Vault
 2.2.0** y **PostgreSQL 18.7** (solo con `--compose`), y para la malla real **Istio 1.32** o **Linkerd edge-26.11.2**
-sobre **Kubernetes 1.37** en kind. **Laboratorio:** `examples/microservicios/modulo-31/` (`./verificar.sh` ejecuta 18
+sobre **Kubernetes 1.37** en kind. **Laboratorio:** `modulo-31` (`./verificar.sh` ejecuta 18
 tests y los cuatro ataques sin infraestructura; `./verificar.sh --compose` añade Vault y PostgreSQL reales).
 
 En el Módulo 9 pusiste candados: un token firmado, un canje de token, mTLS con Istio, un secreto en Vault. En este
@@ -42,15 +42,13 @@ en kind. Sus salidas se describen, no se pegan.
 **Cómo usar el laboratorio.** Con Node 26:
 
 ```bash
-cd examples/microservicios/modulo-31
 npm ci
 ./verificar.sh              # PKI + 18 tests + 4 ataques ANTES/DESPUÉS (sin Docker) → «RESULTADO: OK»
 ./verificar.sh --compose    # además Vault 2.2.0 y PostgreSQL 18.7 reales
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-31`** después de `npm ci` y
 `./pki/generar.sh`. Los archivos `antes.js` son vulnerables **a propósito**: no copies nada de ellos. El
-`examples/microservicios/modulo-31/README.md` tiene el mapa de carpetas.
+`README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio (con `package-lock.json`; `npm audit --omit=dev` respondió `found 0 vulnerabilities` el
 2026-11-20):
@@ -120,7 +118,11 @@ openssl verify -CAfile ca.crt pagos.crt pedidos.crt catalogo.crt
 openssl verify -CAfile ca.crt intruso.crt > /dev/null 2>&1 && echo "intruso.crt: OK (¡no debería!)" || echo "intruso.crt: rechazado por la CA (correcto)"
 ```
 
-Las dos utilidades comunes: identidad SPIFFE y huella de certificado (`comun/pki.js`) y un JWT ES256 escrito con
+Las dos utilidades comunes y un JWT ES256 escrito con
+
+`comun/pki.js`: identidad SPIFFE y huella de certificado.
+
+`comun/jwt.js`: JWT ES256 con
 `node:crypto` para que veas cada comprobación (`comun/jwt.js`). En producción, una librería mantenida (`jose` o
 `jsonwebtoken`, Módulo 20).
 
@@ -293,7 +295,7 @@ export function resumen(r) {
 
 #### 1. UBICACIÓN
 
-Módulo 27, Lección 1 de 4 · Fase 3 · 90 min · Laboratorio `examples/microservicios/modulo-31/f161-mtls/` y
+Módulo 27, Lección 1 de 4 · Fase 3 · 90 min
 `pki/generar.sh`.
 
 #### 2. PRERREQUISITOS
@@ -430,6 +432,8 @@ if (import.meta.url === pathToFileURL(process.argv[1]).href) {
 ```
 
 **Después (seguro)** — `f161-mtls/despues.js`: mTLS estricto, identidad del certificado y denegar por defecto.
+
+`comun/pki.js`: utilidades de PKI compartidas.
 
 ```javascript
 // Módulo 27 · F161 · DESPUÉS (seguro). Lo que hace el sidecar de Istio/Linkerd, escrito a mano en Node:
@@ -673,7 +677,7 @@ Ataque F161: cobrar en pagos sin ser pedidos
 3. (En tu Mac, con Docker, kind, kubectl e `istioctl` 1.32) la misma prueba en una malla real:
 
 ```bash
-./f161-mtls/k8s/probar-istio.sh
+`f161-mtls/k8s/probar-istio.sh`: script de prueba.
 ```
 
    **Output esperado** (no ejecutado en este entorno, está en `pendiente.md`): con `antes.yaml`, `pedidos` y `catalogo`
@@ -839,7 +843,7 @@ torniquete con el sello de la CA.
 
 #### 1. UBICACIÓN
 
-Módulo 27, Lección 2 de 4 · Fase 3 · 90 min · Laboratorio `examples/microservicios/modulo-31/f162-token-exchange/`.
+Módulo 27, Lección 2 de 4 · Fase 3 · 90 min.
 
 #### 2. PRERREQUISITOS
 
@@ -943,6 +947,8 @@ Versiones: **Node.js 26.13.1 LTS** (`node:https`, `node:crypto`), JWT ES256 de `
 `pki/generar.sh`. Sin dependencias externas.
 
 El STS — `f162-token-exchange/sts.js`:
+
+`comun/pki.js`: utilidades de PKI compartidas.
 
 ```javascript
 // Módulo 27 · F162 · STS (Security Token Service) mínimo con Token Exchange RFC 8693 + tokens ligados a certificado (RFC 8705).
@@ -1387,7 +1393,7 @@ En un diagrama se ve como **una sola llave maestra** pasando de mano en mano por
 
 #### 1. UBICACIÓN
 
-Módulo 27, Lección 3 de 4 · Fase 3 · 90 min · Laboratorio `examples/microservicios/modulo-31/f163-vault/` y
+Módulo 27, Lección 3 de 4 · Fase 3 · 90 min
 `docker-compose.yml` (Vault 2.2.0 + PostgreSQL 18.7).
 
 #### 2. PRERREQUISITOS
@@ -1581,7 +1587,6 @@ export const ROL_PEDIDOS = {
 #!/usr/bin/env bash
 # Módulo 27 · F163 · configura el motor database del Vault REAL del docker-compose.yml (hashicorp/vault:2.2.0, modo dev)
 # contra postgres:18.7. Comandos de https://developer.hashicorp.com/vault/docs/secrets/databases/postgresql
-# Uso (desde examples/microservicios/modulo-31): docker compose up -d --wait && ./f163-vault/vault/configurar.sh
 set -eu
 v() { docker compose exec -T -e VAULT_ADDR=http://127.0.0.1:8200 -e VAULT_TOKEN=root vault vault "$@"; }
 v secrets enable database || true   # si ya estaba habilitado, sigue
@@ -2045,7 +2050,7 @@ En un diagrama se ve como una caja fuerte (Vault) con la llave pegada con cinta 
 
 #### 1. UBICACIÓN
 
-Módulo 27, Lección 4 de 4 · Fase 3 · 90 min · Laboratorio `examples/microservicios/modulo-31/f164-service-mesh/`.
+Módulo 27, Lección 4 de 4 · Fase 3 · 90 min.
 
 #### 2. PRERREQUISITOS
 
@@ -2210,6 +2215,8 @@ política en el destino, denegar por defecto y la app solo en un socket local.
   ]
 }
 ```
+
+`comun/pki.js`: utilidades de PKI compartidas.
 
 ```javascript
 // Módulo 27 · F164 · DESPUÉS (seguro): un «sidecar» por servicio, como el Envoy de Istio (o el proxy de Linkerd):

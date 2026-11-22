@@ -1,6 +1,5 @@
 # Módulo 12: Buenas prácticas y patrones de diseño
 
-
 ## Aprende construyendo
 
 ### Tema 1: Builder — configuración paso a paso y validación · Básico · 35 min
@@ -594,7 +593,6 @@ java -cp out Integracion
 
 ---
 
-
 ## Construcción guiada del capítulo
 
 **Objetivo del laboratorio:** refactorizar un módulo propio aplicando al menos dos patrones de diseño justificados por una necesidad real.
@@ -881,8 +879,8 @@ Referencia de lectura: Alexander Shvets, *Sumérgete en los patrones de diseño*
 
 **Objetivo:** decidir qué patrón resuelve cada variación real y conservar el flujo de envío legible.
 
-1. Ejecuta `java examples/java/patrones-rutaflow/PrototypeDemo.java` y `java examples/java/patrones-rutaflow/StructuralPatternsDemo.java` desde la raíz. Conserva ambas salidas.
-2. En `examples/java/patrones-rutaflow/StructuralPatternsDemo.java`, identifica las clases Adapter, Decorator y Facade; añade una variante de canal y confirma que el adaptador entrega el formato que espera el servicio.
+1. Ejecuta `java PrototypeDemo.java` y `java StructuralPatternsDemo.java` desde la raíz. Conserva ambas salidas.
+2. En el código de este tema, identifica las clases Adapter, Decorator y Facade; añade una variante de canal y confirma que el adaptador entrega el formato que espera el servicio.
 3. Revisa el ejemplo de prototipo: agrega una etiqueta a la copia y demuestra que la original no cambió. Si se comparten objetos mutables dentro de una colección, describe si la copia debe profundizar.
 4. Escribe `docs/decision-patrones-java.md` con una tabla: variación, patrón candidato, alternativa más simple, coste de mantenimiento y evidencia observada.
 

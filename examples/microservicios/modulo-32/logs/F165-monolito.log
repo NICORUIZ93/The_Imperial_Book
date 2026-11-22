@@ -1,8 +1,0 @@
-Monolito modular (2 tareas) · 3,000,000 pedidos/mes
-  cómputo (Fargate)           72.08 USD   66.2 %
-  NAT gateway (horas)         32.85 USD   30.2 %
-  NAT gateway (GB)             2.25 USD    2.1 %
-  tráfico entre zonas          0.00 USD    0.0 %
-  logs (ingesta)               1.68 USD    1.5 %
-  TOTAL                      108.86 USD
-  costo unitario: 0.0363 USD por cada 1000 pedidos

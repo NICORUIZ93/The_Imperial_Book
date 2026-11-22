@@ -3,10 +3,10 @@
 **Fase 2 · Node.js de cero a experto** (una semana y media de 12). **Duración:** 14 h (7 temas de unos 100 min y 2 h
 20 min de laboratorio integrador). **Dificultad:** 5 de 5. **Dependencias:** Módulo 18 (Kafka y RabbitMQ, sync vs
 async), Módulo 19 (retry, timeouts), Módulo 21 (traceparent en colas) y Módulo 15 (MongoDB); para las fichas 3 y 7,
-Módulo 14 (NestJS). **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **amqplib 2.4.0** con
+Módulo 14 (NestJS). **Herramientas:**Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **amqplib 2.4.0** con
 **RabbitMQ 4.4.1**, **redis (node-redis) 6.3.1** con **Redis 8.10.2**, **@nestjs/core 12.5.1** y **@nestjs/cqrs
 12.1.3** con **rxjs 7.8.2**, **mongodb 7.9.1** (driver) con **MongoDB 9.0.8** y **`node:sqlite`** (integrado en Node
-26). **Laboratorio:** `examples/microservicios/modulo-26/` (`./verificar.sh` compila y ejecuta los tests, demos y
+26). **Laboratorio:** `modulo-26` (`./verificar.sh` compila y ejecuta los tests, demos y
 errores comunes; F135, F136 y F139-MongoDB se ejecutan si su servicio responde; `./verificar.sh --compose` levanta
 RabbitMQ, Redis y MongoDB y lo exige todo).
 
@@ -34,14 +34,12 @@ el tema 3.
 **Cómo usar el laboratorio.** Con Node 26 y Docker:
 
 ```bash
-cd examples/microservicios/modulo-26
 npm ci && npm run build             # tsc compila las fichas NestJS (F137 y F141) a dist/
 docker compose up -d --wait         # RabbitMQ :5672 (consola :15672), Redis :6379, MongoDB :27017
 ./verificar.sh --compose            # tests + demos + errores comunes de las 7 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-26`**. Las fichas 3, 4, 6 y 7 no
 necesitan infraestructura; la 5 y la 6 funcionan con MongoDB o, con `ALMACEN=memoria`, con un almacén en memoria que
 sigue las mismas reglas.
 
@@ -154,7 +152,7 @@ export async function omitirSinInfra(nombre, url, puerto) {
 
 #### 1. UBICACIÓN
 
-Módulo 22, Lección 1 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-26/f135-rabbitmq-confirms/`.
+Módulo 22, Lección 1 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -615,7 +613,7 @@ await canal.consume(COLA, async (msg) => {
 
 #### 1. UBICACIÓN
 
-Módulo 22, Lección 2 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-26/f136-dedup-redis/`.
+Módulo 22, Lección 2 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -945,7 +943,7 @@ const r = await procesarUnaVez(redis, { consumidor: 'facturacion', messageId }, 
 
 #### 1. UBICACIÓN
 
-Módulo 22, Lección 3 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-26/f137-sagas-nestjs/`.
+Módulo 22, Lección 3 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1572,7 +1570,7 @@ registrar, y cualquier excepción la apaga.
 
 #### 1. UBICACIÓN
 
-Módulo 22, Lección 4 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-26/f138-compensaciones/`.
+Módulo 22, Lección 4 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1939,7 +1937,7 @@ await db.query("UPDATE cobros SET estado = 'REEMBOLSADO' WHERE saga_id = $1 AND 
 
 #### 1. UBICACIÓN
 
-Módulo 22, Lección 5 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-26/f139-event-sourcing/`.
+Módulo 22, Lección 5 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2420,7 +2418,7 @@ simple.
 
 #### 14. ANTI-PATRÓN RELACIONADO
 
-**Eventos que son filas de una tabla con otro nombre.** Evita eventos tipo `PedidoActualizado { ...todoElEstado }`:
+**Eventos que son filas de una tabla con otro nombre.** Evita eventos tipo `PedidoActualizado {...todoElEstado }`:
 no dicen **qué pasó** ni por qué, cada uno repite el estado completo y la historia no se puede leer ni proyectar por
 intención.
 
@@ -2438,7 +2436,7 @@ intención.
 
 #### 1. UBICACIÓN
 
-Módulo 22, Lección 6 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-26/f140-proyecciones/`.
+Módulo 22, Lección 6 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -2834,7 +2832,7 @@ if (tipo === 'LineaAgregada') this.sql.linea.run(datos.cantidad * datos.precio, 
 
 #### 1. UBICACIÓN
 
-Módulo 22, Lección 7 de 7 · Fase 2 · Laboratorio `examples/microservicios/modulo-26/f141-cqrs/`.
+Módulo 22, Lección 7 de 7 · Fase 2.
 
 #### 2. PRERREQUISITOS
 

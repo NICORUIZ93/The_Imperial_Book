@@ -1,0 +1,6 @@
+DESPUÉS · cola de cobros a 18/s:
+  reservas recibidas (HTTP 202):   300 de 300
+  CONFIRMADAS / CANCELADAS:        300 / 0 (0.0 % de ventas perdidas)
+  peticiones al proveedor:         300 · respondidas con 429: 0
+  máximo de cobros en un segundo:  18
+  p99 desde la reserva al cobro:   11.5 s

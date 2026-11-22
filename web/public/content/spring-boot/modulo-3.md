@@ -25,10 +25,9 @@ Usa JDBC cuando el SQL explícito simplifique el caso (por ejemplo, reportes y a
 
 **Contexto:** una aplicación necesita obtener conexiones sin abrirlas manualmente en cada método. Spring Boot configura el `DataSource`; `JdbcTemplate` usa esa conexión y libera recursos al terminar.
 
-**Hazlo tú:** abre `examples/java-jpa-lab/pom.xml`. El proyecto declara `spring-boot-starter-jdbc`, H2 para ejecución y `spring-boot-starter-jdbc-test` para la prueba slice. Abre luego `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioJdbcRepositoryTest.java` y ejecuta:
+**Hazlo tú:** abre `pom.xml`. El proyecto declara `spring-boot-starter-jdbc`, H2 para ejecución y `spring-boot-starter-jdbc-test` para la prueba slice. Abre luego `EnvioJdbcRepositoryTest.java` y ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -Dtest=EnvioJdbcRepositoryTest#insertaYBuscaConParametroYMapeaUnaFila test
 ```
 
@@ -44,7 +43,7 @@ cd examples/java-jpa-lab
 
 **Contexto:** la referencia del envío llega desde una petición y debe tratarse como valor, aunque contenga comillas.
 
-**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioJdbcRepository.java`. Observa el `?` y el argumento separado:
+**Hazlo tú:** abre `EnvioJdbcRepository.java`. Observa el `?` y el argumento separado:
 
 ```java
 return jdbc.query(
@@ -72,7 +71,7 @@ Ejecuta la prueba de entrada:
 
 **Contexto:** entregar `ResultSet` al servicio o al controlador filtra detalles de JDBC a capas que no los necesitan.
 
-**Hazlo tú:** encuentra el `RowMapper` en `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioJdbcRepository.java`. Crea `EnvioRegistro` con `referencia` y `estado`; busca un envío existente y uno ausente con la prueba:
+**Hazlo tú:** encuentra el `RowMapper` en el código de este tema. Crea `EnvioRegistro` con `referencia` y `estado`; busca un envío existente y uno ausente con la prueba:
 
 ```bash
 ./mvnw -Dtest=EnvioJdbcRepositoryTest#insertaYBuscaConParametroYMapeaUnaFila test
@@ -112,13 +111,13 @@ Al terminar, podrás reescribir el DAO del Tema 1 con `JdbcClient`, usar paráme
 
 **¿Por qué es importante?** `JdbcClient` (Spring Framework 6.1 en adelante) es la forma recomendada de escribir SQL nuevo en Spring: una sola cadena de llamadas `sql → param → query/update`, parámetros con nombre en lugar de `?` posicionales y mapeo automático a records. Spring Boot lo autoconfigura junto a `JdbcTemplate`, así que no añade dependencias.
 
-**Prerrequisitos:** Tema 1 de este módulo (`EnvioJdbcRepository`, `EnvioRegistro` y la prueba `@JdbcTest`). Trabaja en `examples/java-jpa-lab` con JDK 25 y Spring Boot 4.1.2.
+**Prerrequisitos:** Tema 1 de este módulo (`EnvioJdbcRepository`, `EnvioRegistro` y la prueba `@JdbcTest`). Trabaja en el código de este tema con JDK 25 y Spring Boot 4.1.2.
 
 #### Subtema 2.1 · Reescribe la búsqueda con parámetros con nombre · 10 min
 
 **Contexto:** en `EnvioJdbcRepository` cada consulta repite el `RowMapper` y depende del orden de los `?`. Con dos o tres parámetros, cambiar el orden en el SQL sin cambiarlo en Java produce un error silencioso.
 
-**Hazlo tú:** crea `examples/java-jpa-lab/src/main/java/academia/pedidos/EnvioJdbcClientRepository.java`:
+**Hazlo tú:** crea `EnvioJdbcClientRepository.java`:
 
 ```java
 package academia.pedidos;
@@ -159,7 +158,7 @@ public class EnvioJdbcClientRepository {
 }
 ```
 
-Crea `examples/java-jpa-lab/src/test/java/academia/pedidos/EnvioJdbcClientRepositoryTest.java`:
+Crea `EnvioJdbcClientRepositoryTest.java`:
 
 ```java
 package academia.pedidos;
@@ -203,8 +202,6 @@ class EnvioJdbcClientRepositoryTest {
 }
 ```
 
-Desde `examples/java-jpa-lab`, ejecuta:
-
 ```bash
 ./mvnw -q -Dtest=EnvioJdbcClientRepositoryTest test
 ```
@@ -221,7 +218,7 @@ Desde `examples/java-jpa-lab`, ejecuta:
 
 **Contexto:** el reporte diario solo necesita cuántos envíos hay por estado. Ese resultado no es una entidad: es una proyección que nace en el SQL.
 
-**Hazlo tú:** crea `examples/java-jpa-lab/src/main/java/academia/pedidos/ConteoPorEstado.java`:
+**Hazlo tú:** crea `ConteoPorEstado.java`:
 
 ```java
 package academia.pedidos;
@@ -273,7 +270,7 @@ void agrupaPorEstado() {
 
 **Resultado esperado:** una decisión por fila, con el motivo.
 
-**Fallo deliberado:** intenta parametrizar el orden: `order by :columna` con `.param("columna", "estado")`. **Resultado esperado:** no obtienes el orden por `estado`: según el motor, la base rechaza el parámetro dentro de `ORDER BY` o lo trata como un valor constante y no reordena. **Diagnóstico:** igual que `?`, un parámetro con nombre es un **valor**, nunca un nombre de columna; para ordenar dinámicamente mantén la *allowlist* del Tema 1.
+**Fallo deliberado:** intenta parametrizar el orden: `order by:columna` con `.param("columna", "estado")`. **Resultado esperado:** no obtienes el orden por `estado`: según el motor, la base rechaza el parámetro dentro de `ORDER BY` o lo trata como un valor constante y no reordena. **Diagnóstico:** igual que `?`, un parámetro con nombre es un **valor**, nunca un nombre de columna; para ordenar dinámicamente mantén la *allowlist* del Tema 1.
 
 **Entiende:** `JdbcClient` está construido sobre `NamedParameterJdbcTemplate`; no es más rápido, es más legible. Ambos participan en la misma transacción de `@Transactional` (Tema 3), así que puedes mezclar uno y otro en un caso de uso.
 
@@ -307,7 +304,7 @@ void soloActualizaDesdeElEstadoEsperado() {
 }
 ```
 
-La condición `estado = :desde` convierte la actualización en una comparación-e-intercambio: si dos peticiones compiten, solo una cambia la fila. Es la base de la concurrencia optimista sin columna de versión.
+La condición `estado =:desde` convierte la actualización en una comparación-e-intercambio: si dos peticiones compiten, solo una cambia la fila. Es la base de la concurrencia optimista sin columna de versión.
 
 </details>
 
@@ -334,10 +331,9 @@ La condición `estado = :desde` convierte la actualización en una comparación-
 
 **Contexto:** una liquidación correcta guarda el importe y cambia el envío a `LIQUIDADO`. El usuario no debe ver solo uno de esos cambios.
 
-**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`. El método público llama a dos sentencias JDBC y está anotado con `@Transactional`. Ejecuta:
+**Hazlo tú:** abre `LiquidacionService.java`. El método público llama a dos sentencias JDBC y está anotado con `@Transactional`. Ejecuta:
 
 ```bash
-cd examples/java-jpa-lab
 ./mvnw -Dtest=LiquidacionServiceTest#confirmaCobroYEstadoDentroDeLaMismaTransaccion test
 ```
 
@@ -353,7 +349,7 @@ cd examples/java-jpa-lab
 
 **Contexto:** el `INSERT` de cobro puede funcionar aunque la referencia del envío no exista. La segunda sentencia debe comprobar cuántas filas cambió.
 
-**Hazlo tú:** abre `examples/java-jpa-lab/src/test/java/academia/pedidos/LiquidacionServiceTest.java`. Ejecuta el test que liquida `RT-404` y consulta el estado de la tabla `cobro`:
+**Hazlo tú:** abre `LiquidacionServiceTest.java`. Ejecuta el test que liquida `RT-404` y consulta el estado de la tabla `cobro`:
 
 ```bash
 ./mvnw -Dtest=LiquidacionServiceTest#revierteElCobroSiLaActualizacionDelEnvioNoEncuentraFila test
@@ -371,7 +367,7 @@ cd examples/java-jpa-lab
 
 **Contexto:** algunas reglas del negocio usan excepciones comprobadas. La configuración predeterminada no siempre revierte ante ellas.
 
-**Hazlo tú:** abre `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`. Mira `liquidarConRevisionPendiente` y su `@Transactional(rollbackFor = LiquidacionPendienteException.class)`. Ejecuta:
+**Hazlo tú:** abre `LiquidacionService.java`. Mira `liquidarConRevisionPendiente` y su `@Transactional(rollbackFor = LiquidacionPendienteException.class)`. Ejecuta:
 
 ```bash
 ./mvnw -Dtest=LiquidacionServiceTest#rollbackForTambienRevierteUnaExcepcionChecked test
@@ -389,13 +385,13 @@ cd examples/java-jpa-lab
 
 **Contexto:** `@Transactional` usa un proxy de Spring. Solo las llamadas que pasan por ese proxy reciben el comportamiento declarado; una llamada interna del mismo objeto puede saltárselo.
 
-**Hazlo tú:** abre `examples/java-jpa-lab/src/test/java/academia/pedidos/LiquidacionServiceTest.java` y ejecuta la prueba que verifica el rollback al faltar el envío:
+**Hazlo tú:** abre `LiquidacionServiceTest.java` y ejecuta la prueba que verifica el rollback al faltar el envío:
 
 ```bash
 ./mvnw -Dtest=LiquidacionServiceTest#revierteElCobroSiLaActualizacionDelEnvioNoEncuentraFila test
 ```
 
-Compara ese caso con el método público de `examples/java-jpa-lab/src/main/java/academia/pedidos/LiquidacionService.java`, que recibe la llamada y deja escapar el error.
+Compara ese caso con el método público de `LiquidacionService.java`, que recibe la llamada y deja escapar el error.
 
 **Resultado esperado:** la prueba verifica cobro y estado desde otra llamada, cuando la transacción del servicio ya terminó.
 

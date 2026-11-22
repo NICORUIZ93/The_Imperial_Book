@@ -1,9 +1,8 @@
 # Módulo 20: Proyecto integrador: backend de entregas productivo
 
-
 ## Aprende construyendo
 
-Los Temas 1–3 amplían incrementalmente el proyecto real `examples/spring-boot-integrador-rutaflow/`, combinando piezas ya estudiadas en el track: entidades y migraciones Flyway (Módulo 4), JWT y `@PreAuthorize` (Módulo 5), pruebas de integración con Testcontainers (Módulo 6) y una métrica de negocio de Actuator (Módulo 7). Cada tema comprueba cambios con código ejecutable y evidencia observable. Los Temas 4–9 construyen el backend de entregas `gestion-entregas`: datos espaciales en MySQL, JWT con propiedad del recurso, tiempo real con STOMP y archivos con notificaciones.
+Los Temas 1–3 amplían incrementalmente el proyecto real `spring-boot-integrador-rutaflow`, combinando piezas ya estudiadas en el track: entidades y migraciones Flyway (Módulo 4), JWT y `@PreAuthorize` (Módulo 5), pruebas de integración con Testcontainers (Módulo 6) y una métrica de negocio de Actuator (Módulo 7). Cada tema comprueba cambios con código ejecutable y evidencia observable. Los Temas 4–9 construyen el backend de entregas `gestion-entregas`: datos espaciales en MySQL, JWT con propiedad del recurso, tiempo real con STOMP y archivos con notificaciones.
 
 ### Tema 1: Arquitectura del microservicio integrador · Avanzado · 40 min
 
@@ -11,7 +10,7 @@ Los Temas 1–3 amplían incrementalmente el proyecto real `examples/spring-boot
 
 **¿Por qué es importante?** Separar HTTP, reglas del servicio y persistencia hace que cada cambio tenga un lugar claro. La prueba de extremo a extremo comprueba que esas piezas sí trabajan juntas.
 
-**Necesitas:** Java 25, Maven Wrapper y Podman o Docker compatible con Testcontainers. Abre [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow). La práctica ya contiene el proyecto ejecutable; los subtemas indican qué archivo seguir, qué cambiar y cómo comprobarlo.
+**Necesitas:** Java 25, Maven Wrapper y Podman o Docker compatible con Testcontainers. La práctica ya contiene el proyecto ejecutable; los subtemas indican qué archivo seguir, qué cambiar y cómo comprobarlo.
 
 #### Subtema 1.1: Sigue una petición por las capas · 8 min
 
@@ -21,7 +20,7 @@ Una petición no debería decidir cómo se guarda en la base de datos. El contro
 
 **2. Hazlo tú**
 
-Abre `src/main/java/academia/rutaflow/integrador/entrega/` y sigue `EntregaController.java` → `EntregaService.java` → `EntregaRepository.java`. Desde `examples/spring-boot-integrador-rutaflow/` ejecuta:
+Abre `src/main/java/academia/rutaflow/integrador/entrega/` y sigue `EntregaController.java` → `EntregaService.java` → `EntregaRepository.java`. Desde el código de este tema ejecuta:
 
 ```bash
 ./scripts/verify-integration.sh
@@ -139,10 +138,7 @@ Guarda como evidencia el resultado de las siete pruebas y dibuja el recorrido de
 
 **Fuentes:** [migraciones SQL de Flyway en Spring Boot](https://docs.spring.io/spring-boot/how-to/data-initialization.html), [Testcontainers con PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/), [JUnit 5 con Testcontainers](https://java.testcontainers.org/test_framework_integration/junit_5/) y [runtime Podman](https://java.testcontainers.org/supported_docker_environment/).
 
-
 **Aplicación y decisión:** En el proyecto integrador, recorre la petición desde EntregaController hasta Flyway y EntregaRepository. El límite del test local incluye PostgreSQL efímero y JWT de laboratorio; no prueba una plataforma desplegada ni credenciales de producción.
-
-Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
 
 ```bash
 bash ./scripts/verify-integration.sh
@@ -154,7 +150,7 @@ bash ./scripts/verify-integration.sh
 
 **¿Por qué es importante?** La base de datos no sabe quién hizo una solicitud y un contador no prueba que el trabajo terminó. El servicio valida identidad y permiso antes de escribir, y registra la métrica después de guardar.
 
-**Necesitas:** el Tema 1 y sus pruebas verdes. Continúa en [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow). La clave HS256 del archivo de propiedades es solo de demostración local; no la uses como secreto de producción.
+**Necesitas:** el Tema 1 y sus pruebas verdes. Continúa en `spring-boot-integrador-rutaflow`. La clave HS256 del archivo de propiedades es solo de demostración local; no la uses como secreto de producción.
 
 #### Subtema 2.1: Verifica un JWT firmado · 10 min
 
@@ -170,7 +166,7 @@ Abre `src/main/java/academia/rutaflow/integrador/security/JwtSecurityConfig.java
 ./scripts/verify-integration.sh
 ```
 
-**Resultado esperado:** la app inicia y las siete pruebas pasan; los requests de creación llevan `Authorization: Bearer ...`.
+**Resultado esperado:** la app inicia y las siete pruebas pasan; los requests de creación llevan `Authorization: Bearer...`.
 
 **Fallo deliberado:** cambia en el convertidor el claim `roles` por `perfiles` y ejecuta el script. **Diagnóstico:** el token todavía tiene una firma válida, pero el convertidor ya no encuentra la autoridad y el request con `ROLE_USER` recibe 403. Restaura `roles`.
 
@@ -273,10 +269,7 @@ Resume el recorrido: JWT validado → rol autorizado → fila persistida → con
 
 **Fuentes:** [Spring Security: JWT Resource Server](https://docs.spring.io/spring-security/reference/servlet/oauth2/resource-server/jwt.html), [autorización por método](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html), [métricas de Spring Boot 4.1.2](https://docs.spring.io/spring-boot/reference/actuator/metrics.html), [exposición y seguridad de Actuator](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing) y [Micrometer Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html).
 
-
 **Aplicación y decisión:** En el proyecto integrador, añade un caso de rol válido sin permiso sobre un recurso y demuestra el rechazo antes de guardar. Conserva métricas protegidas y evita inferir entrega final de un evento a partir de una creación HTTP.
-
-Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
 
 ```bash
 bash ./scripts/verify-integration.sh
@@ -288,9 +281,7 @@ bash ./scripts/verify-integration.sh
 
 **¿Por qué es importante?** Un test verde no demuestra que la API esté lista para producción. La decisión mejora cuando sabes qué comprobó el test, qué no comprobó y cuál es el siguiente paso.
 
-**Necesitas:** los Temas 1 y 2. Abre [`examples/spring-boot-integrador-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-integrador-rutaflow).
-
-#### Subtema 3.1: Protege la migración con una prueba de configuración · 8 min
+**Necesitas:** los Temas 1 y 2. #### Subtema 3.1: Protege la migración con una prueba de configuración · 8 min
 
 **1. Contexto**
 
@@ -398,10 +389,7 @@ Entrega el informe de 7 pruebas verdes y la lista de pendientes con evidencias r
 
 ---
 
-
 **Aplicación y decisión:** En el proyecto integrador, entrega el README de reproducción y el registro de salida a producción con lo ejecutado y lo pendiente. Una suite verde local no reemplaza restauración, carga o recuperación de un despliegue destino.
-
-Desde `examples/spring-boot-integrador-rutaflow`, ejecuta la comprobación del laboratorio:
 
 ```bash
 bash ./scripts/verify-integration.sh
@@ -415,7 +403,7 @@ bash ./scripts/verify-integration.sh
 
 **Contexto:** Una cadena libre como `"cancelado"` puede terminar con errores de escritura y estados inventados.
 
-**Hazlo tú:** Abre `examples/spring-boot-cancel-rutaflow/src/main/java/academia/rutaflow/cancel/entrega/EstadoEnvio.java` y `Envio.java`. Sigue el valor inicial y el método `cancelar()`.
+**Hazlo tú:** Observa EstadoEnvio.java y `Envio.java`. Sigue el valor inicial y el método `cancelar()`.
 
 ```java
 public enum EstadoEnvio { CREADO, CANCELADO }
@@ -425,7 +413,7 @@ public void cancelar() {
 }
 ```
 
-Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-rutaflow/`:
+Ejecuta el test que crea y lee un envío desde el código de este tema:
 
 ```bash
 ./mvnw -q test -Dtest=CancelacionContratoTest#crearPublicaLocationYGetRecuperaElDto
@@ -497,7 +485,6 @@ Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-ruta
 
 ---
 
-
 **Aplicación y decisión:** En el proyecto integrador, conserva la cancelación como transición y prueba la segunda petición sobre el mismo ID. Límite: idempotencia de DELETE no define por sí sola cómo resolver dos operaciones concurrentes ni la autorización del solicitante.
 
 ### Tema 5: MySQL y datos espaciales · Experto · 35 min
@@ -508,7 +495,7 @@ Ejecuta el test que crea y lee un envío desde `examples/spring-boot-cancel-ruta
 
 **Contexto:** El SRID indica a la base cómo interpretar las coordenadas. El índice espacial requiere que la columna sea `NOT NULL` y tenga SRID explícito.
 
-**Hazlo tú:** Abre `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Lee `crearTabla()` y localiza `POINT NOT NULL SRID 4326` e `idx_ubicacion`.
+**Hazlo tú:** Observa ConsultaEspacialMySqlTest.java y. Lee `crearTabla()` y localiza `POINT NOT NULL SRID 4326` e `idx_ubicacion`.
 
 ```sql
 CREATE TABLE punto (
@@ -517,8 +504,6 @@ CREATE TABLE punto (
   SPATIAL INDEX idx_ubicacion (ubicacion)
 );
 ```
-
-Desde `examples/spring-boot-mysql-spatial-rutaflow/`, ejecuta:
 
 ```bash
 DOCKER_HOST="unix://$(podman machine inspect --format '{{.ConnectionInfo.PodmanSocket.Path}}')" \
@@ -554,8 +539,7 @@ TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock \
 TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#distanciaEntreBogotaYMedellinSeMideEnMetros
 ```
 
-
-Para comprobar «Especifica cómo leer latitud y longitud», consulta: `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
+Para comprobar «Especifica cómo leer latitud y longitud», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -581,8 +565,7 @@ TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock \
 TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#explainUsaIndiceEspacialParaReducirElAreaDeBusqueda
 ```
 
-
-Para comprobar «Comprueba el índice con EXPLAIN», consulta: `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
+Para comprobar «Comprueba el índice con EXPLAIN», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -608,8 +591,7 @@ TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock \
 TESTCONTAINERS_RYUK_DISABLED=true ./mvnw -q test -Dtest=ConsultaEspacialMySqlTest#srid4326PorDefectoInterpretaElPrimerEjeComoLatitud
 ```
 
-
-Para comprobar «Separa candidatos cercanos de una ruta», consulta: `examples/spring-boot-mysql-spatial-rutaflow/src/test/java/academia/rutaflow/spatial/ConsultaEspacialMySqlTest.java`. Desde `examples/spring-boot-mysql-spatial-rutaflow` repite la comprobación:
+Para comprobar «Separa candidatos cercanos de una ruta», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -627,7 +609,6 @@ Para comprobar «Separa candidatos cercanos de una ruta», consulta: `examples/s
 
 ---
 
-
 **Aplicación y decisión:** En el proyecto integrador, fija orden de ejes y unidades antes de calcular distancias y conserva el EXPLAIN del caso real. Una distancia esférica no equivale a una ruta por carretera ni a tiempo de llegada.
 
 ### Tema 6: JPA e Hibernate Spatial · Experto · 35 min
@@ -638,14 +619,12 @@ Para comprobar «Separa candidatos cercanos de una ruta», consulta: `examples/s
 
 **Contexto:** JTS representa geometría con objetos Java. El SRID del objeto debe coincidir con el de la columna MySQL.
 
-**Hazlo tú:** Abre `examples/spring-boot-hibernate-spatial-rutaflow/src/test/java/academia/rutaflow/hibernate/posicion/PosicionConductorTest.java` y encuentra `GeometryFactory` con SRID `4326` y la creación de `Coordinate(-74.08, 4.61)`.
+**Hazlo tú:** Observa PosicionConductorTest.java y encuentra `GeometryFactory` con SRID `4326` y la creación de `Coordinate(-74.08, 4.61)`.
 
 ```java
 var geometria = new GeometryFactory(new PrecisionModel(), 4326);
 var punto = geometria.createPoint(new Coordinate(-74.08, 4.61));
 ```
-
-Desde `examples/spring-boot-hibernate-spatial-rutaflow/`, ejecuta la suite. Con Docker usa `./mvnw -q test`; con Podman Machine en macOS consulta los comandos de `README.md`.
 
 **Resultado esperado:** El proyecto levanta MySQL 8.0.36 y la prueba recupera coordenadas `X=-74.08`, `Y=4.61` y `SRID=4326`.
 
@@ -683,8 +662,7 @@ Desde `examples/spring-boot-hibernate-spatial-rutaflow/`, ejecuta la suite. Con 
 ./mvnw -q test -Dtest=PosicionConductorTest#versionDetectaLaSegundaEscrituraBasadaEnUnaLecturaVieja
 ```
 
-
-Para comprobar «Detecta dos escrituras sobre versiones distintas», consulta: `examples/spring-boot-hibernate-spatial-rutaflow/src/test/java/academia/rutaflow/hibernate/posicion/PosicionConductorTest.java`. Desde `examples/spring-boot-hibernate-spatial-rutaflow` repite la comprobación:
+Para comprobar «Detecta dos escrituras sobre versiones distintas», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -720,7 +698,6 @@ Para comprobar «Detecta dos escrituras sobre versiones distintas», consulta: `
 
 ---
 
-
 **Aplicación y decisión:** En el proyecto integrador, mantén SRID y orden de coordenadas en el adaptador Spatial. Límite: persistir un Point con Hibernate no acredita que el índice elegido reduzca coste bajo la distribución real de datos.
 
 ### Tema 7: JWT Bearer y autorización por roles · Experto · 35 min
@@ -731,10 +708,9 @@ Para comprobar «Detecta dos escrituras sobre versiones distintas», consulta: `
 
 **Contexto:** Leer un nombre de un token no demuestra que el token sea auténtico. El servidor comprueba su firma y vencimiento antes de aceptar la identidad.
 
-**Hazlo tú:** Abre `examples/spring-boot-jwt-ownership-rutaflow/src/main/java/academia/rutaflow/ownership/security/JwtSecurityConfig.java`. Sigue el `JwtEncoder`, el `JwtDecoder` HS256 y la conversión de la claim `roles`.
+**Hazlo tú:** Observa JwtSecurityConfig.java y. Sigue el `JwtEncoder`, el `JwtDecoder` HS256 y la conversión de la claim `roles`.
 
 ```bash
-cd examples/spring-boot-jwt-ownership-rutaflow
 ./mvnw -q test -Dtest=OwnershipJwtTest#conductorPropietarioConTokenFirmadoPuedeActualizar
 ```
 
@@ -756,8 +732,7 @@ cd examples/spring-boot-jwt-ownership-rutaflow
 ./mvnw -q test -Dtest=OwnershipJwtTest#sinBearerTokenRecibe401+propietarioSinRolDriverRecibe403
 ```
 
-
-Para comprobar «Distingue autenticación de rol», consulta: `examples/spring-boot-jwt-ownership-rutaflow/src/test/java/academia/rutaflow/ownership/jornada/OwnershipJwtTest.java`. Desde `examples/spring-boot-jwt-ownership-rutaflow` repite la comprobación:
+Para comprobar «Distingue autenticación de rol», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -823,10 +798,9 @@ Para comprobar «Distingue autenticación de rol», consulta: `examples/spring-b
 
 **Recorrido del mensaje:** la app se conecta a `/ws-entregas`; el servidor publica en `/topic/entregas/SHP-1`; el cliente suscrito a ese destino recibe el JSON. Piensa en el topic como un canal de radio: escuchar el canal de otro envío no recibe esta posición.
 
-El laboratorio autocontenido está en `examples/spring-boot-stomp-rutaflow/`. Abre terminal en esa carpeta y ejecuta `./mvnw -q test`. Usa servidor embebido, puerto aleatorio, un cliente `WebSocketStompClient` real y un broker simple local.
+El laboratorio autocontenido está en el código de este tema. Abre terminal en esa carpeta y ejecuta `./mvnw -q test`. Usa servidor embebido, puerto aleatorio, un cliente `WebSocketStompClient` real y un broker simple local.
 
 ```bash
-cd examples/spring-boot-stomp-rutaflow
 ./mvnw -q test
 ```
 
@@ -834,7 +808,7 @@ cd examples/spring-boot-stomp-rutaflow
 
 **Contexto:** El endpoint es la puerta de entrada WebSocket. `/app` señala mensajes que el servidor procesa y `/topic` señala canales de publicación.
 
-**Hazlo tú:** Abre `examples/spring-boot-stomp-rutaflow/src/main/java/academia/rutaflow/stomp/StompConfig.java`. Lee las tres líneas que definen los destinos:
+**Hazlo tú:** Observa StompConfig.java y. Lee las tres líneas que definen los destinos:
 
 ```java
 registry.enableSimpleBroker("/topic");
@@ -865,7 +839,7 @@ assertThat(publisher.publish(first)).isTrue();
 assertThat(events.poll(3, TimeUnit.SECONDS)).isEqualTo(first);
 ```
 
-Ejecuta `./mvnw -q test` desde `examples/spring-boot-stomp-rutaflow/`.
+Ejecuta `./mvnw -q test` desde el código de este tema.
 
 **Resultado esperado:** La prueba recibe `SHP-1` con secuencia `1`; no es una llamada directa al método del cliente, sino servidor, broker y cliente STOMP conectados.
 
@@ -902,7 +876,7 @@ Ejecuta `./mvnw -q test` y registra por qué la segunda llamada devuelve `false`
 
 **Contexto:** El broker simple ayuda a aprender y probar el flujo, pero guarda sus suscripciones en memoria. La aplicación no valida aquí quién puede seguir un envío.
 
-**Hazlo tú:** Ejecuta la prueba con el topic incorrecto y luego restáuralo. Abre `examples/spring-boot-stomp-rutaflow/README.md`; marca los límites sobre varias instancias, reinicios, autenticación y autorización por envío.
+**Hazlo tú:** Ejecuta la prueba con el topic incorrecto y luego restáuralo. Observa README.md y; marca los límites sobre varias instancias, reinicios, autenticación y autorización por envío.
 
 **Resultado esperado:** Puedes explicar por qué el suscriptor incorrecto no ve el mensaje, por qué el mapa de secuencias no basta en varias réplicas y qué permiso falta antes de exponer un envío real.
 
@@ -924,7 +898,7 @@ Ejecuta `./mvnw -q test` y registra por qué la segunda llamada devuelve `false`
 
 **¿Por qué es importante?** El nombre `foto.jpg` y el encabezado `Content-Type` los elige el cliente; por sí solos no demuestran qué bytes se recibieron. Y si se envía un push antes de confirmar la transacción, el teléfono podría anunciar una foto que luego no se guardó.
 
-**Antes de empezar:** manejar un POST y reconocer una transacción del Módulo 17. Sigue el laboratorio `examples/spring-boot-upload-push-rutaflow/`; H2, el almacén de objetos y el gateway de push son de demostración, no servicios externos.
+**Antes de empezar:** manejar un POST y reconocer una transacción del Módulo 17. Sigue el laboratorio `spring-boot-upload-push-rutaflow`; H2, el almacén de objetos y el gateway de push son de demostración, no servicios externos.
 
 ```mermaid
 sequenceDiagram
@@ -940,7 +914,6 @@ sequenceDiagram
 ```
 
 ```bash
-cd examples/spring-boot-upload-push-rutaflow
 ./mvnw -q test
 ```
 
@@ -975,8 +948,7 @@ if (!detectedType.equalsIgnoreCase(declaredMediaType)) {
 if (reader.read(0) == null) throw new InvalidImageException("No se pudo decodificar la imagen");
 ```
 
-
-Para comprobar «Comprueba el contenido de la imagen», consulta: `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
+Para comprobar «Comprueba el contenido de la imagen», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -1003,8 +975,7 @@ public void afterCommit(UploadAccepted event) {
 }
 ```
 
-
-Para comprobar «Notifica solo tras guardar», consulta: `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
+Para comprobar «Notifica solo tras guardar», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -1018,18 +989,17 @@ Para comprobar «Notifica solo tras guardar», consulta: `examples/spring-boot-u
 
 **Cierra:** Anota qué cambia entre el test de commit y el test de rollback.
 
-
 ```bash
 ./mvnw -q test
 ```
+
 #### Subtema 9.4: Traza el archivo y define qué falta · 8 min
 
 **Contexto:** El laboratorio usa una clave UUID en un almacén en memoria, registra metadatos en H2 y prueba un gateway que solo conserva avisos en una lista.
 
 **Hazlo tú:** Abre `InMemoryImageObjectStore`, `schema.sql` y `README.md`. Traza desde el POST los pasos validar → guardar objeto → insertar metadatos → commit → gateway. Comprueba que el nombre `malware.jpg` no se reutiliza como clave.
 
-
-Para comprobar «Traza el archivo y define qué falta», consulta: `examples/spring-boot-upload-push-rutaflow/src/test/java/academia/rutaflow/upload/UploadPushIntegrationTest.java`. Desde `examples/spring-boot-upload-push-rutaflow` repite la comprobación:
+Para comprobar «Traza el archivo y define qué falta», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -1061,7 +1031,7 @@ Para comprobar «Traza el archivo y define qué falta», consulta: `examples/spr
 | 4 | Exponer Actuator con una métrica de negocio | Módulo 7 | Verifica en `/actuator/metrics` |
 | 5 | Escribir tests de integración con Testcontainers | Módulo 6 | Cubriendo el flujo crítico completo |
 
-**Verificación local:** desde `examples/spring-boot-integrador-rutaflow/`, ejecuta `./scripts/verify-integration.sh`. Las siete pruebas recorren PostgreSQL real, migración, HTTP, JWT, roles, métrica y guardia de configuración. Este resultado no certifica despliegue productivo; consulta `docs/salida-a-produccion.md` para los pendientes.
+**Verificación local:** desde el código de este tema, ejecuta `./scripts/verify-integration.sh`. Las siete pruebas recorren PostgreSQL real, migración, HTTP, JWT, roles, métrica y guardia de configuración. Este resultado no certifica despliegue productivo; consulta `docs/salida-a-produccion.md` para los pendientes.
 
 **Errores comunes y soluciones**
 

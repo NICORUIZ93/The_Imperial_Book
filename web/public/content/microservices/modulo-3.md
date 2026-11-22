@@ -3,7 +3,7 @@
 **Fase 0 · Fundamentos absolutos** (semanas 2 y 3 de 4). **Duración:** 12 h (6 temas de 2 h). **Dificultad:** 2 de
 5. **Dependencias:** Módulos 0.1 a 0.3 (servidor, API, ejecutar Java y Node, leer tests). **Herramientas:** Git
 2.4x o posterior (la que traiga tu sistema), bash o zsh, `curl`, **Node.js 26.13.1 LTS**, **JDK 25 LTS** y la
-librería npm `yaml` 2.9.1. **Laboratorio:** `examples/microservicios/modulo-3/` (se verifica con `./verificar.sh`).
+librería npm `yaml` 2.9.1. **Laboratorio:** `modulo-3` (se verifica con `./verificar.sh`).
 
 Estas seis herramientas aparecen en **cada** microservicio que construyas: Git guarda la historia del código, la
 terminal es tu panel de control, HTTP es el idioma con el que hablan los servicios, JSON es el formato de los
@@ -29,7 +29,7 @@ lleva a JSON, y YAML, que lleva a variables de entorno.
 #### 1. UBICACIÓN
 
 Módulo 0.4, Lección 1 de 6 · Fase 0 · `web/public/content/microservices/modulo-3.md` · Laboratorio
-`examples/microservicios/modulo-3/git/`.
+`git`.
 
 #### 2. PRERREQUISITOS
 
@@ -114,7 +114,7 @@ GitHub y GitLab son sitios web que guardan copias de repositorios Git para compa
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **Git 2.4x o posterior** (probado con 2.43.0; mínimo 2.28 por `git init -b`) y bash 3.2+ (el de
-macOS sirve). Sin otras dependencias. `examples/microservicios/modulo-3/git/practica.sh`:
+macOS sirve). Sin otras dependencias. `practica.sh`:
 
 ```bash
 #!/usr/bin/env bash
@@ -153,7 +153,6 @@ echo "Repositorio en: $DIR"
 
 1. Ejecuta el guion completo en una carpeta de práctica:
    ```bash
-   cd examples/microservicios/modulo-3
    ./git/practica.sh /tmp/mi-primer-repo
    ```
 2. Explora el resultado a mano:
@@ -267,7 +266,7 @@ propósito, con mensajes en imperativo que expliquen el **porqué** («Valida ca
 
 #### 1. UBICACIÓN
 
-Módulo 0.4, Lección 2 de 6 · Fase 0 · Laboratorio `examples/microservicios/modulo-3/terminal/`.
+Módulo 0.4, Lección 2 de 6 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -358,7 +357,7 @@ que había) y `>>` (la añade al final).
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **bash 3.2 o posterior** (el de macOS sirve; probado con bash 5.2.21) y `grep`/`cut` del sistema. Sin
-dependencias. `examples/microservicios/modulo-3/terminal/contar-errores.sh`:
+dependencias. `contar-errores.sh`:
 
 ```bash
 #!/usr/bin/env bash
@@ -382,7 +381,6 @@ El log de práctica `terminal/datos/app.log` tiene 6 líneas: 3 `INFO`, 1 `WARN`
 
 1. Navega e inspecciona:
    ```bash
-   cd examples/microservicios/modulo-3/terminal
    pwd
    ls datos
    cat datos/app.log
@@ -422,7 +420,7 @@ y el mensaje sale por stderr: si ejecutas `./contar-errores.sh no-existe.log 2> 
 ./terminal/test-terminal.sh
 ```
 
-(desde `examples/microservicios/modulo-3`). Salida real:
+(desde `modulo-3`). Salida real:
 
 ```text
 ✔ cuenta 2 errores
@@ -480,7 +478,7 @@ winget).
 
 #### 1. UBICACIÓN
 
-Módulo 0.4, Lección 3 de 6 · Fase 0 · Laboratorio `examples/microservicios/modulo-3/http/`.
+Módulo 0.4, Lección 3 de 6 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -590,7 +588,7 @@ Versiones: **Node.js 26.13.1 LTS** (también Node 22); solo `node:http`. `packag
 }
 ```
 
-`examples/microservicios/modulo-3/http/servidor-http.js`:
+`servidor-http.js`:
 
 ```javascript
 // Módulo 0.4 · HTTP: un servidor que muestra las piezas de HTTP (método, ruta, cabeceras, estado, cuerpo).
@@ -645,7 +643,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. **Terminal 1** (desde `examples/microservicios/modulo-3`): `node http/servidor-http.js`
+1. **Terminal 1** (desde `modulo-3`): `node http/servidor-http.js`
 2. **Terminal 2**, mira la respuesta completa con `-i`:
    ```bash
    curl -i http://localhost:3002/saludo
@@ -765,7 +763,7 @@ código que describe el resultado.
 
 #### 1. UBICACIÓN
 
-Módulo 0.4, Lección 4 de 6 · Fase 0 · Laboratorio `examples/microservicios/modulo-3/json/`.
+Módulo 0.4, Lección 4 de 6 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -854,7 +852,7 @@ comentarios.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **Node.js 26.13.1 LTS** (también Node 22); `JSON` viene incluido en JavaScript. Usa el `package.json`
-de `modulo-3/`. `examples/microservicios/modulo-3/json/json.js`:
+de `modulo-3/`. `json.js`:
 
 ```javascript
 // Módulo 0.4 · JSON: convertir texto JSON en datos (parse) y datos en texto JSON (stringify).
@@ -891,7 +889,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Desde `examples/microservicios/modulo-3`:
+1. Desde `modulo-3`:
    ```bash
    node json/json.js
    ```
@@ -995,7 +993,7 @@ Jackson en Java), que escapa los caracteres especiales.
 
 #### 1. UBICACIÓN
 
-Módulo 0.4, Lección 5 de 6 · Fase 0 · Laboratorio `examples/microservicios/modulo-3/yaml/`.
+Módulo 0.4, Lección 5 de 6 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -1078,7 +1076,7 @@ habitual).
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **Node.js 26.13.1 LTS** y la librería **`yaml` 2.9.1** (versión exacta en `package.json` de
-`modulo-3/`, mostrado en el tema HTTP; se instala con `npm install`). `examples/microservicios/modulo-3/yaml/config.yaml`:
+`modulo-3/`, mostrado en el tema HTTP; se instala con `npm install`). `config.yaml`:
 
 ```yaml
 # Módulo 0.4 · YAML: configuración de un servicio. Los espacios de la izquierda SON la estructura.
@@ -1096,7 +1094,7 @@ paises_habilitados:
   - "NO"   # entre comillas: así siempre es el texto "NO" (Noruega), en cualquier versión de YAML
 ```
 
-`examples/microservicios/modulo-3/yaml/leer-config.js`:
+`leer-config.js`:
 
 ```javascript
 // Módulo 0.4 · YAML: leer un archivo de configuración YAML y usarlo como datos.
@@ -1121,7 +1119,7 @@ if (import.meta.main) {
 
 #### 10. MINI-LABORATORIO
 
-1. Instala la dependencia y lee la configuración (desde `examples/microservicios/modulo-3`):
+1. Instala la dependencia y lee la configuración (desde `modulo-3`):
    ```bash
    npm install
    cd yaml
@@ -1228,7 +1226,7 @@ por entorno (anclas YAML, perfiles de Spring, Helm o Kustomize).
 
 #### 1. UBICACIÓN
 
-Módulo 0.4, Lección 6 de 6 · Fase 0 · Laboratorio `examples/microservicios/modulo-3/env/`.
+Módulo 0.4, Lección 6 de 6 · Fase 0.
 
 #### 2. PRERREQUISITOS
 
@@ -1318,7 +1316,7 @@ en el código ni se suben a Git.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **Node.js 26.13.1 LTS** (`--env-file` desde Node 20.6) y **JDK 25 LTS**. Sin dependencias.
-`examples/microservicios/modulo-3/env/config.js`:
+`config.js`:
 
 ```javascript
 // Módulo 0.4 · Variables de entorno: la configuración llega DESDE FUERA del código.
@@ -1356,7 +1354,7 @@ if (import.meta.main) {
 }
 ```
 
-`examples/microservicios/modulo-3/env/.env.example` (valores falsos, para practicar):
+`.env.example` (valores falsos, para practicar):
 
 ```bash
 # Archivo de ejemplo: valores FALSOS para practicar. El .env real nunca se sube a Git.
@@ -1365,7 +1363,7 @@ MODO=produccion
 CLAVE_API=abc123-falsa
 ```
 
-`examples/microservicios/modulo-3/env/Config.java`:
+`Config.java`:
 
 ```java
 // Módulo 0.4 · Variables de entorno en Java: System.getenv lee el entorno del proceso.
@@ -1394,7 +1392,7 @@ public class Config {
 
 #### 10. MINI-LABORATORIO
 
-1. Desde `examples/microservicios/modulo-3/env`, ejecuta con distintos entornos:
+1. Desde `env`, ejecuta con distintos entornos:
    ```bash
    node config.js
    PUERTO=9000 MODO=produccion node config.js; echo "código: $?"

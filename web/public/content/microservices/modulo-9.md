@@ -4,7 +4,7 @@
 **Dificultad:** 3 de 5 (4 de 5 en DDD y Strangler Fig). **Dependencias:** Módulos 1 a 4 (Java moderno, Spring IoC,
 perfiles, Spring MVC, JDBC/JPA, PostgreSQL, testing con JUnit y MockMvc). **Herramientas:** **JDK 25 LTS (25.0.5)**,
 **Spring Boot 4.1.3** (Spring Framework 7.0.11, JUnit Jupiter 6.0.3), **Spring Modulith 2.1.3**, PostgreSQL 18.7 en
-Docker Compose y Gradle 9.9.2 mediante el wrapper `./gradlew`. **Laboratorio:** `examples/microservicios/modulo-9/` (un
+Docker Compose y Gradle 9.9.2 mediante el wrapper `./gradlew`. **Laboratorio:** `modulo-9` (un
 subproyecto Gradle por tema; `./verificar.sh` ejecuta todos los tests).
 
 Hasta aquí construiste **una** aplicación Spring Boot. Este módulo responde la pregunta que viene después: ¿cuándo
@@ -37,11 +37,6 @@ Microservicios vs SOA), que lleva al bloque «¿Por dónde cortar?»: tema 2 (DD
 el tema 4 (12-Factor App, bloque «¿Cómo se construye cada pieza?») llevan al bloque «¿Cómo se migra?»: tema 5 (Strangler
 Fig), que lleva al tema 6 (Database-per-service).
 
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-9` y ejecuta `./verificar.sh`: arranca
-PostgreSQL con Docker Compose, corre los tests de las seis carpetas y apaga el contenedor. Para un solo tema:
-`cd f042-ddd && ../gradlew test`. Las fichas F041 y F042 (y la parte de Java puro de F044 y F045) corren también solo con
-el JDK, sin Gradle: el comando exacto está en cada ficha.
-
 ---
 
 ### Monolito vs Microservicios vs SOA
@@ -49,7 +44,7 @@ el JDK, sin Gradle: el comando exacto está en cada ficha.
 #### 1. UBICACIÓN
 
 Módulo 5, Lección 1 de 6 · Fase 1 · `web/public/content/microservices/modulo-9.md` · Laboratorio
-`examples/microservicios/modulo-9/f041-estilos/`.
+`f041-estilos`.
 
 #### 2. PRERREQUISITOS
 
@@ -421,7 +416,6 @@ public final class CompararEstilos {
 
 1. Compila y ejecuta el comparador solo con el JDK:
    ```bash
-   cd examples/microservicios/modulo-9/f041-estilos
    javac -d /tmp/f041 src/main/java/academia/estilos/*.java
    java -cp /tmp/f041 academia.estilos.CompararEstilos
    ```
@@ -455,7 +449,6 @@ billetera muestra una sola línea: `· no hay plataforma operativa (CI/CD, conte
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-9/f041-estilos
 ../gradlew test
 ```
 
@@ -563,7 +556,7 @@ desplegarse por separado, y quién la operará de noche, quédate en el monolito
 
 #### 1. UBICACIÓN
 
-Módulo 5, Lección 2 de 6 · Fase 1 · Laboratorio `examples/microservicios/modulo-9/f042-ddd/`.
+Módulo 5, Lección 2 de 6 · Fase 1.
 
 #### 2. PRERREQUISITOS
 
@@ -1029,7 +1022,6 @@ class OyenteDeEnvios {
 
 1. Ejecuta el recorrido del dominio solo con el JDK (los paquetes `ventas` y `envios` no necesitan Spring):
    ```bash
-   cd examples/microservicios/modulo-9/f042-ddd
    javac -d /tmp/f042 src/main/java/academia/ddd/ventas/*.java src/main/java/academia/ddd/envios/*.java \
          src/main/java/academia/ddd/app/DemoDdd.java
    java -cp /tmp/f042 academia.ddd.app.DemoDdd
@@ -1055,7 +1047,6 @@ bultos. La última muestra la invariante en acción: un pedido confirmado ya no 
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-9/f042-ddd
 ../gradlew test
 ```
 
@@ -1231,7 +1222,7 @@ necesita y comunicarse por eventos o contratos pequeños.
 
 #### 1. UBICACIÓN
 
-Módulo 5, Lección 3 de 6 · Fase 1 · Laboratorio `examples/microservicios/modulo-9/f043-modulith/`.
+Módulo 5, Lección 3 de 6 · Fase 1.
 
 #### 2. PRERREQUISITOS
 
@@ -1503,7 +1494,6 @@ public class Inventario {
 
 1. Ejecuta la verificación de la estructura e inspecciona lo que Spring Modulith detectó:
    ```bash
-   cd examples/microservicios/modulo-9/f043-modulith
    ../gradlew test --tests ModularidadTest
    ```
 2. **Rómpelo a propósito:** en `Inventario.java` agrega el import
@@ -1538,7 +1528,6 @@ módulo inventario.
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-9/f043-modulith
 ../gradlew test
 ```
 
@@ -1644,7 +1633,7 @@ nada); lo que es de un contexto vive en su módulo y se comparte por su API o po
 
 #### 1. UBICACIÓN
 
-Módulo 5, Lección 4 de 6 · Fase 1 · Laboratorio `examples/microservicios/modulo-9/f044-doce-factores/`.
+Módulo 5, Lección 4 de 6 · Fase 1.
 
 #### 2. PRERREQUISITOS
 
@@ -1944,7 +1933,6 @@ tienda.moneda=COP
 
 1. Revisa dos archivos de configuración con el revisor (solo JDK):
    ```bash
-   cd examples/microservicios/modulo-9/f044-doce-factores
    java src/main/java/academia/factores/RevisorDeConfiguracion.java ejemplos/mal.properties; echo "código: $?"
    java src/main/java/academia/factores/RevisorDeConfiguracion.java src/main/resources/application.properties
    ```
@@ -1984,7 +1972,6 @@ variables de entorno.
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-9/f044-doce-factores
 ../gradlew test
 ```
 
@@ -2132,7 +2119,7 @@ solo la configuración.
 
 #### 1. UBICACIÓN
 
-Módulo 5, Lección 5 de 6 · Fase 1 · Laboratorio `examples/microservicios/modulo-9/f045-strangler-fig/`. Lo retomas a
+Módulo 5, Lección 5 de 6 · Fase 1. Lo retomas a
 escala real en el Módulo 31 (migración desde un monolito).
 
 #### 2. PRERREQUISITOS
@@ -2523,7 +2510,6 @@ public class ServidorFalso {
 
 1. Prueba la capa anticorrupción (solo JDK):
    ```bash
-   cd examples/microservicios/modulo-9/f045-strangler-fig
    java src/main/java/academia/strangler/CapaAnticorrupcion.java
    ```
 2. Levanta el «monolito» y el «servicio nuevo» en dos terminales, y la fachada en una tercera:
@@ -2571,7 +2557,6 @@ de barato.
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-9/f045-strangler-fig
 ../gradlew test
 ```
 
@@ -2779,7 +2764,7 @@ métrica que lo pruebe (tráfico 0 hacia esa ruta del monolito).
 
 #### 1. UBICACIÓN
 
-Módulo 5, Lección 6 de 6 · Fase 1 · Laboratorio `examples/microservicios/modulo-9/f046-bd-por-servicio/` (con
+Módulo 5, Lección 6 de 6 · Fase 1
 `docker-compose.yml` e `initdb/` en la carpeta del módulo).
 
 #### 2. PRERREQUISITOS
@@ -3066,7 +3051,6 @@ ORDER BY c.envio_id;
 
 1. Levanta PostgreSQL (el script de `initdb/` crea las dos bases, los usuarios y los datos):
    ```bash
-   cd examples/microservicios/modulo-9
    docker compose up -d --wait
    ```
 2. Intenta que Facturación entre a la base de Envíos, luego un JOIN entre bases y por último la consulta correcta
@@ -3103,7 +3087,6 @@ sale solo de tablas que Facturación posee.
 #### 11. VERIFICACIÓN
 
 ```bash
-cd examples/microservicios/modulo-9
 docker compose up -d --wait
 cd f046-bd-por-servicio && ../gradlew test
 ```

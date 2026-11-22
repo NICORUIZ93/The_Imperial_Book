@@ -6,9 +6,6 @@ laboratorio integrador). **Dificultad:** 2 de 5 en Express, 3 de 5 en NestJS, va
 códigos de estado, JSON, `curl`). **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **express 5.3.0**,
 **NestJS 12.5.1** (`@nestjs/common`, `core`, `platform-express`, `testing`), **zod 4.6.7**, **class-validator
 0.15.1** + **class-transformer 0.5.1**, **@nestjs/mapped-types 12.0.1** y **@nestjs/swagger 12.1.2**.
-**Laboratorio:** `examples/microservicios/modulo-18/` (`./verificar.sh` instala con `npm ci`, compila con `tsc`,
-ejecuta los 26 tests y prueba cada API con `curl`).
-
 Una API REST es la **puerta de entrada** de un microservicio. En este módulo construyes la misma idea de dos formas:
 con **Express**, mínimo y explícito (tú conectas cada pieza), y con **NestJS**, un framework con estructura (módulos,
 inyección de dependencias, guards, interceptores) que escala a equipos grandes. Después aprendes a **no confiar** en
@@ -30,11 +27,10 @@ o class-validator); el tema 2 también lleva al 3. El tema 3 lleva al tema 4 (DT
 **Cómo usar el laboratorio.** Con Node 26 activo:
 
 ```bash
-cd examples/microservicios/modulo-18
 ./verificar.sh        # npm ci + tsc + 26 tests + cada API con curl → «RESULTADO: OK»
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-18`** después de `npm ci`. Los
+Todas las órdenes de las fichas se ejecutan **desde `modulo-18`** después de `npm ci`. Los
 ejemplos de Express son JavaScript (módulos ES) que Node ejecuta tal cual; los de NestJS son TypeScript que se compila
 a `dist/` con `npm run build`, porque NestJS usa decoradores con metadatos de tipos (`emitDecoratorMetadata`), que el
 type stripping de Node no sabe generar. `package.json` del laboratorio (con `package-lock.json` que fija el árbol
@@ -108,7 +104,7 @@ completo):
 
 #### 1. UBICACIÓN
 
-Módulo 14, Lección 1 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-18/f096-express/`.
+Módulo 14, Lección 1 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -204,7 +200,7 @@ express.json y el 404) van al manejador de errores de cuatro parámetros, que re
 
 Versiones: **Node.js 26.13.1 LTS** y **express 5.3.0** (dependencia del `package.json` del laboratorio).
 
-`examples/microservicios/modulo-18/f096-express/app.js`:
+`app.js`:
 
 ```javascript
 // Módulo 14 · F096 · Express: routing, middleware, error handling.
@@ -311,7 +307,6 @@ if (import.meta.main) {
 
 1. Instala las dependencias fijadas (una sola vez para todo el módulo) y arranca la API:
    ```bash
-   cd examples/microservicios/modulo-18
    npm ci
    node f096-express/app.js
    ```
@@ -530,7 +525,7 @@ errores 5xx aunque el servicio esté fallando.
 
 #### 1. UBICACIÓN
 
-Módulo 14, Lección 2 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-18/f097-nestjs/`.
+Módulo 14, Lección 2 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -635,7 +630,7 @@ provider están dentro del recuadro PedidosModule.
 Versiones: **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **@nestjs/common, core, platform-express y testing 12.5.1**,
 **reflect-metadata 0.2.2**, **rxjs 7.8.2** (ver `package.json` y `tsconfig.json` al inicio del módulo).
 
-`examples/microservicios/modulo-18/f097-nestjs/src/pedidos.service.ts` (provider):
+`pedidos.service.ts` (provider):
 
 ```typescript
 // Módulo 14 · F097 · PROVIDER: una clase @Injectable que Nest crea una vez (singleton) y entrega a quien la pida.
@@ -990,7 +985,7 @@ para probar una regla de negocio. Controller fino → provider con la lógica �
 
 #### 1. UBICACIÓN
 
-Módulo 14, Lección 3 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-18/f098-validacion/` (Zod con
+Módulo 14, Lección 3 de 5 · Fase 2
 Express en `zod-express.js`; class-validator con NestJS en `src/`).
 
 #### 2. PRERREQUISITOS
@@ -1092,7 +1087,7 @@ responde 400 con una lista de mensajes; si no, el handler recibe una instancia d
 Versiones: **Node.js 26.13.1 LTS**, **express 5.3.0**, **zod 4.6.7**; **NestJS 12.5.1**, **class-validator 0.15.1**,
 **class-transformer 0.5.1**, **TypeScript 6.0.3** (ver `package.json` del módulo).
 
-`examples/microservicios/modulo-18/f098-validacion/zod-express.js`:
+`zod-express.js`:
 
 ```javascript
 // Módulo 14 · F098 · Validación con Zod (en Express).
@@ -1139,7 +1134,7 @@ if (import.meta.main) {
 }
 ```
 
-`examples/microservicios/modulo-18/f098-validacion/src/clientes.ts`:
+`clientes.ts`:
 
 ```typescript
 // Módulo 14 · F098 · Validación con class-validator (en NestJS 12.5.1).
@@ -1464,7 +1459,7 @@ Se ve como `if` de validación copiados entre rutas con reglas distintas para el
 
 #### 1. UBICACIÓN
 
-Módulo 14, Lección 4 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-18/f099-dtos/`.
+Módulo 14, Lección 4 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1554,7 +1549,7 @@ solo id, nombre, email y miembroDesde.
 Versiones: **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **NestJS 12.5.1**, **@nestjs/mapped-types 12.0.1**,
 **class-validator 0.15.1**, **class-transformer 0.5.1** (ver `package.json` del módulo).
 
-`examples/microservicios/modulo-18/f099-dtos/src/usuarios.ts`:
+`usuarios.ts`:
 
 ```typescript
 // Módulo 14 · F099 · DTOs (Data Transfer Objects): la forma de los datos que ENTRAN y SALEN por la API,
@@ -1852,7 +1847,7 @@ Authorization*).
 
 #### 1. UBICACIÓN
 
-Módulo 14, Lección 5 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-18/f100-openapi/`.
+Módulo 14, Lección 5 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1942,7 +1937,7 @@ documento generado con el archivo versionado. El archivo versionado alimenta cli
 Versiones: **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**, **NestJS 12.5.1**, **@nestjs/swagger 12.1.2** (trae
 `swagger-ui-dist` 5.34.1), **class-validator 0.15.1** (ver `package.json` del módulo).
 
-`examples/microservicios/modulo-18/f100-openapi/src/catalogo.ts`:
+`catalogo.ts`:
 
 ```typescript
 // Módulo 14 · F100 · OpenAPI/Swagger con @nestjs/swagger 12.1.2 (enfoque code-first: el contrato sale del código).

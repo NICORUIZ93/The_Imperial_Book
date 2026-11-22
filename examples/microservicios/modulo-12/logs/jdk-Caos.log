@@ -1,0 +1,15 @@
+== Experimento contra BFF v1 sin protección
+   1. estado estable:  p95=2 ms, errores=0, degradadas=0 de 10
+   2. hipótesis: con +600 ms en inventario, p95 < 300 ms y 0 errores
+   3. inyectado: latencia de 600 ms en inventario (radio: solo ese proxy)
+   4. con el fallo:    p95=610 ms, errores=0, degradadas=0 de 10
+   5. tras revertir:   p95=3 ms, errores=0, degradadas=0 de 10
+   6. hipótesis REFUTADA: hay una debilidad que corregir
+== Experimento contra BFF v2 timeout 200 ms + último valor bueno
+   1. estado estable:  p95=1 ms, errores=0, degradadas=0 de 10
+   2. hipótesis: con +600 ms en inventario, p95 < 300 ms y 0 errores
+   3. inyectado: latencia de 600 ms en inventario (radio: solo ese proxy)
+   4. con el fallo:    p95=213 ms, errores=0, degradadas=10 de 10
+   5. tras revertir:   p95=2 ms, errores=0, degradadas=0 de 10
+   6. hipótesis CONFIRMADA
+OK: el experimento encontró la debilidad de v1 y confirmó que v2 la corrige

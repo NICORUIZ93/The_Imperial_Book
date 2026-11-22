@@ -2,10 +2,10 @@
 
 **Fase 1 · Spring Boot de cero a experto** (semana 5 de 12). **Duración:** 15 h (5 temas de 2,5–3,5 h).
 **Dificultad:** 3 de 5. **Dependencias:** Módulo 2 (APIs REST y persistencia: controllers, DTOs, JDBC/JPA y
-PostgreSQL) y, de la Fase 0, Docker básico (Módulo 0.5). **Herramientas:** **JDK 25 LTS**, **Spring Boot 4.1.3**
+PostgreSQL) y, de la Fase 0, Docker básico (Módulo 0.5). **Herramientas:**JDK 25 LTS**, **Spring Boot 4.1.3**
 (que gestiona JUnit Jupiter 6.0.3, Mockito 5.23.0, AssertJ 3.27.7 y Testcontainers 2.0.5), Pact JVM 4.7.7,
 Pact Broker 2.124.0, ArchUnit 1.5.1, JaCoCo 0.8.15, SonarQube Community Build 26.11 y Docker con Compose v2.
-**Laboratorio:** `examples/microservicios/modulo-7/` (un subproyecto Gradle por tema; `./verificar.sh`
+**Laboratorio:** `modulo-7` (un subproyecto Gradle por tema; `./verificar.sh`
 ejecuta los tests, el ciclo completo del Pact Broker y el análisis de SonarQube).
 
 Un microservicio que no tiene tests no se puede cambiar sin miedo, y un sistema de microservicios cambia todos los
@@ -38,15 +38,6 @@ ejemplo `MethodOrderer.Alphanumeric` y el módulo `junit-platform-runner`) y el 
 obsoleto. Todo lo que aprendas aquí con «Jupiter» vale para proyectos con JUnit 5.10+ y con JUnit 6. Fuente:
 https://docs.junit.org/6.0.0/release-notes/
 
-**Cómo usar el laboratorio.** Entra en `examples/microservicios/modulo-7` y comprueba `java -version` (debe decir
-`25`) y `docker version`. Cada tema tiene su carpeta (`f032-…` a `f036-…`); dentro usa `../gradlew` (el wrapper del
-módulo descarga Gradle 9.9.2 la primera vez). La primera compilación descarga dependencias de Maven Central y tarda unos
-minutos. Este módulo **se ejecutó completo en el Mac del dueño el 2026-11-21** con Docker arriba:
-`bash ./verificar.sh` terminó en `RESULTADO: OK · Módulo 3 (Testing y calidad) verificado` en 62 s, con 28 tests
-y 0 fallos (f032 11 · f033 3 · f034 2+2 · f035 4 · f036 6), incluido el ciclo completo de Pact Broker y el análisis de
-SonarQube con su Quality Gate. Lo que sigue tomado del código fuente de cada herramienta (con su URL) son los
-**mensajes de error** que se reproducen a propósito, no las salidas de éxito.
-
 | Herramienta | Versión | Quién la fija |
 |---|---|---|
 | JUnit Jupiter / Platform | 6.0.3 | BOM de Spring Boot 4.1.3 |
@@ -65,7 +56,7 @@ SonarQube con su Quality Gate. Lo que sigue tomado del código fuente de cada he
 
 #### 1. UBICACIÓN
 
-Módulo 3, Lección 1 de 5 · Fase 1 · 3,5 h · Laboratorio `examples/microservicios/modulo-7/f032-junit-mockito-mockmvc/`.
+Módulo 3, Lección 1 de 5 · Fase 1 · 3,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -177,8 +168,7 @@ Las tres cosas juntas responden a una pregunta: «¿mi regla de negocio y mi API
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **JUnit Jupiter 6.0.3**, **Mockito 5.23.0**, **AssertJ 3.27.7**
 (las tres últimas gestionadas por el BOM; no escribas su versión). Proyecto completo en
-`examples/microservicios/modulo-7/f032-junit-mockito-mockmvc/`.
-
+`f032-junit-mockito-mockmvc`.
 
 > **Build con Gradle (y su equivalencia en Maven).** Este laboratorio se construye con **Gradle 9.9.2** y Kotlin DSL
 > mediante el wrapper `./gradlew` (no instalas Gradle). `settings.gradle.kts` lista los subproyectos (en Maven,
@@ -207,7 +197,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -621,7 +610,6 @@ class ProductoControllerTest {
 1. Ejecuta los tests:
 
 ```bash
-cd examples/microservicios/modulo-7/f032-junit-mockito-mockmvc
 ../gradlew test
 ```
 
@@ -780,7 +768,7 @@ es el efecto que prometes (como `guardar` en `reservar`).
 
 #### 1. UBICACIÓN
 
-Módulo 3, Lección 2 de 5 · Fase 1 · 3 h · Laboratorio `examples/microservicios/modulo-7/f033-testcontainers/`.
+Módulo 3, Lección 2 de 5 · Fase 1 · 3 h.
 
 #### 2. PRERREQUISITOS
 
@@ -885,8 +873,7 @@ limpia, en cualquier máquina que tenga Docker.
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Testcontainers 2.0.5** (gestionado por el BOM de Boot),
 **driver PostgreSQL 42.7.14**, imagen **`postgres:18.7`**. Necesitas Docker en marcha. Proyecto completo en
-`examples/microservicios/modulo-7/f033-testcontainers/`.
-
+`f033-testcontainers`.
 
 `f033-testcontainers/build.gradle.kts`:
 
@@ -1127,7 +1114,6 @@ docker pull postgres:18.7
 2. Ejecuta los tests y, mientras corren, mira los contenedores en otra terminal:
 
 ```bash
-cd examples/microservicios/modulo-7/f033-testcontainers
 ../gradlew test
 # en otra terminal, durante la ejecución:
 docker ps --format '{{.Image}}  {{.Ports}}'
@@ -1241,8 +1227,8 @@ su propia base efímera: Testcontainers lo resuelve.
 
 #### 1. UBICACIÓN
 
-Módulo 3, Lección 3 de 5 · Fase 1 · 3,5 h · Laboratorio `examples/microservicios/modulo-7/f034-pact-consumidor/`,
-`f034-pact-proveedor/` y el servicio `pact-broker` de `examples/microservicios/modulo-7/docker-compose.yml`.
+Módulo 3, Lección 3 de 5 · Fase 1 · 3,5 h
+`f034-pact-proveedor/` y el servicio `pact-broker` de `docker-compose.yml`.
 
 #### 2. PRERREQUISITOS
 
@@ -1359,7 +1345,7 @@ Broker** es el lugar donde se guardan y donde se pregunta «¿puedo desplegar es
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **Pact JVM 4.7.7** (`au.com.dius.pact.consumer:junit5`,
 `au.com.dius.pact.provider:junit5` y el plugin de Gradle `au.com.dius.pact`), **Pact Broker 2.124.0** en
 Docker. El artefacto de Pact se llama `junit5` pero corre sobre la plataforma JUnit 6 de Boot 4.1 (misma API
-Jupiter de extensiones). Código completo en `examples/microservicios/modulo-7/f034-pact-*`.
+Jupiter de extensiones). Código completo en `f034-pact-*`.
 
 **Consumidor:**
 
@@ -1783,7 +1769,7 @@ class ContratoDesdeBrokerManual {
 }
 ```
 
-**Pact Broker** (fragmento de `examples/microservicios/modulo-7/docker-compose.yml`):
+**Pact Broker** (fragmento de `docker-compose.yml`):
 
 ```yaml
 services:
@@ -1821,7 +1807,6 @@ services:
 1. Genera el contrato en el consumidor y míralo:
 
 ```bash
-cd examples/microservicios/modulo-7
 ./gradlew :f034-pact-consumidor:test
 python3 -m json.tool f034-pact-consumidor/build/pacts/tienda-web-catalogo.json | head -20
 ```
@@ -1838,7 +1823,7 @@ python3 -m json.tool f034-pact-consumidor/build/pacts/tienda-web-catalogo.json |
 ```
 
    **Output esperado** (reportero de consola de Pact y final de Gradle). El ciclo con broker **sí se ejecutó** en el Mac
-   del dueño el 2026-11-21 y dejó estas líneas literales: `Publishing 'tienda-web-catalogo.json' ... OK`,
+   del dueño el 2026-11-21 y dejó estas líneas literales: `Publishing 'tienda-web-catalogo.json'... OK`,
    `All required verification results are published and successful` y, en `canIDeploy`, `Computer says yes \o/`.
    El bloque por interacción que sigue no se capturó (el `verificar.sh` corre Gradle en modo silencioso), así que trátalo
    como formato esperado, no como copia de una terminal:
@@ -1880,7 +1865,7 @@ docker compose up -d --wait pact-broker
 
 #### 11. VERIFICACIÓN
 
-Test que debe pasar (desde `examples/microservicios/modulo-7`): 2 líneas `PASSED` en cada módulo y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*;
+Test que debe pasar (desde el código de este tema): 2 líneas `PASSED` en cada módulo y `BUILD SUCCESSFUL` *(salida de Gradle verificada en el Mac del dueño el 2026-11-21 con Gradle 9.9.2, Java 25.0.5.1 autoaprovisto y Docker Compose v5.7.1)*;
 con el broker encendido, `canIDeploy` también debe terminar en `BUILD SUCCESSFUL`.
 
 ```bash
@@ -1906,7 +1891,7 @@ extra en los objetos de respuesta. Quitar `nombre` sí: la verificación falla c
 
 #### 12. ERROR COMÚN
 
-**Síntoma:** ejecutas el proveedor solo (`./gradlew :f034-pact-proveedor:test`) en un clon recién descargado y falla
+**Síntoma:** ejecutas el proveedor solo (`./gradlew:f034-pact-proveedor:test`) en un clon recién descargado y falla
 sin probar nada.
 
 **Cómo se ve:**
@@ -1922,7 +1907,7 @@ au.com.dius.pact.provider.junitsupport.loader.NoPactsFoundException: No Pact fil
 ejecutado; `./gradlew clean` también la borra. Con el broker, el mismo error significa que no hay contratos publicados
 para `catalogo` (mira `http://localhost:9292`).
 
-**Arreglo:** ejecuta antes el consumidor (`./gradlew :f034-pact-consumidor:test :f034-pact-proveedor:test`, en ese orden)
+**Arreglo:** ejecuta antes el consumidor (`./gradlew:f034-pact-consumidor:test:f034-pact-proveedor:test`, en ese orden)
 o publica en el broker. Si un proveedor nuevo aún no tiene consumidores, añade `@IgnoreNoPactsToVerify` para que no
 falle.
 
@@ -1960,7 +1945,7 @@ usa matchers de tipo (`integerType`, `stringType`) en vez de valores exactos.
 
 #### 1. UBICACIÓN
 
-Módulo 3, Lección 4 de 5 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-7/f035-archunit/`.
+Módulo 3, Lección 4 de 5 · Fase 1 · 2,5 h.
 
 #### 2. PRERREQUISITOS
 
@@ -2051,10 +2036,7 @@ que nadie lee y pasan a ser algo que el build comprueba siempre.
 #### 9. CÓDIGO EJECUTABLE
 
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **ArchUnit 1.5.1** (`com.tngtech.archunit:archunit-junit6`, no lo
-gestiona Boot), **JUnit Platform 6.0.3**. Proyecto completo en `examples/microservicios/modulo-7/f035-archunit/`.
-
-
-`f035-archunit/build.gradle.kts`:
+gestiona Boot), **JUnit Platform 6.0.3**. `f035-archunit/build.gradle.kts`:
 
 ```kotlin
 // F035 · ArchUnit 1.5.1 (motor para JUnit 6: archunit-junit6), Spring Boot 4.1.3, JDK 25
@@ -2262,7 +2244,6 @@ class ArquitecturaTest {
 1. Ejecuta las reglas:
 
 ```bash
-cd examples/microservicios/modulo-7/f035-archunit
 ../gradlew test
 ```
 
@@ -2379,8 +2360,8 @@ son la cerca que impide el primer atajo.
 
 #### 1. UBICACIÓN
 
-Módulo 3, Lección 5 de 5 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-7/f036-sonarqube/` y el
-servicio `sonarqube` de `examples/microservicios/modulo-7/docker-compose.yml`.
+Módulo 3, Lección 5 de 5 · Fase 1 · 2,5 h el
+servicio `sonarqube` de `docker-compose.yml`.
 
 #### 2. PRERREQUISITOS
 
@@ -2482,8 +2463,7 @@ mínimos que, si no se cumplen, hace fallar el build. Así la calidad no depende
 Versiones: **JDK 25**, **Spring Boot 4.1.3**, **JaCoCo 0.8.15** (soporta oficialmente Java 26 y, de forma
 experimental, clases de Java 27), **SonarScanner for Gradle 7.5.0.8588**, **SonarQube Community Build
 26.11.0.134175** (imagen `sonarqube:26.11.0.134175-community`). Proyecto en
-`examples/microservicios/modulo-7/f036-sonarqube/`.
-
+`f036-sonarqube`.
 
 `f036-sonarqube/build.gradle.kts`:
 
@@ -2616,7 +2596,7 @@ class CalculadoraEnvioTest {
 }
 ```
 
-SonarQube en Docker Compose (fragmento de `examples/microservicios/modulo-7/docker-compose.yml`):
+SonarQube en Docker Compose (fragmento de `docker-compose.yml`):
 
 ```yaml
 services:
@@ -2635,7 +2615,6 @@ Script que prepara el servidor, analiza y comprueba el resultado (`f036-sonarqub
 ```bash
 #!/usr/bin/env bash
 # F036 · Analiza f036-sonarqube con el SonarQube de ../docker-compose.yml y comprueba el resultado.
-# Uso (desde examples/microservicios/modulo-7):  docker compose up -d sonarqube && f036-sonarqube/sonar/analizar.sh
 # Requisitos: curl, python3, JDK 25. Idempotente: si la clave de admin ya cambió, la reutiliza.
 set -euo pipefail
 cd "$(dirname "$0")/.."
@@ -2680,7 +2659,6 @@ echo "RESULTADO SONAR: OK"
 1. Tests y cobertura sin servidor:
 
 ```bash
-cd examples/microservicios/modulo-7/f036-sonarqube
 ../gradlew check
 ls build/reports/jacoco/test/ build/reports/jacoco/test/html/
 ```
@@ -2743,7 +2721,6 @@ distinto de 0 si el Quality Gate no es `OK` o si la cobertura no se importó), y
 6 líneas `PASSED`.
 
 ```bash
-cd examples/microservicios/modulo-7
 (cd f036-sonarqube && ../gradlew test)
 docker compose up -d sonarqube && f036-sonarqube/sonar/analizar.sh; echo "código de salida: $?"
 ```

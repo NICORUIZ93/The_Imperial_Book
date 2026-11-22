@@ -70,8 +70,10 @@ examples/**/build/
 examples/**/.sonar/
 !examples/**/gradle/wrapper/gradle-wrapper.jar
 
-# Resultados intermedios de MCP: salida de herramientas, no contenido del proyecto.
+# Resultados intermedios de herramientas de agente: salida de MCP, presentaciones y worktrees.
 .manus/
+.qoder/
+manus-slides/
 
 # Artefactos pesados generados / huérfanos — se conservan en disco local pero no se versionan.
 # PDF de imágenes RutaFlow: no lo consume validate.sh, la app ni el contenido (huérfano).

@@ -2,7 +2,7 @@
 
 ## Aprende construyendo
 
-El laboratorio [`examples/spring-stream-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-stream-rutaflow) convierte un envío en una solicitud de ruta. La función se mantiene; el perfil selecciona el broker.
+El laboratorio `spring-stream-rutaflow` convierte un envío en una solicitud de ruta. La función se mantiene; el perfil selecciona el broker.
 
 **Prerrequisitos del módulo:** Spring Boot M10 T1 (tópicos, keys y grupos de Kafka). Los Temas 1–3 comparan Kafka con RabbitMQ y enseñan Spring AMQP y JMS; los Temas 4–7 escriben una sola función y la conectan a los dos brokers con Spring Cloud Stream. Usa JDK 25.
 
@@ -16,7 +16,7 @@ Cada tema toma 20–45 min. Completa sus subtemas y el hito antes de avanzar.
 
 **¿Por qué es importante?** Kafka y RabbitMQ pueden transportar eventos, pero sus grupos, colas, retención y confirmaciones no significan lo mismo.
 
-**Prerrequisitos:** M10 T1 y el laboratorio `examples/spring-stream-rutaflow/`.
+**Prerrequisitos:** M10 T1 y el laboratorio `spring-stream-rutaflow`.
 
 #### Subtema 1.1 · Repartir mensajes o dar una copia a cada grupo · 10 min
 
@@ -26,14 +26,13 @@ En Kafka, cada consumer group lleva su propio avance; dos grupos independientes 
 
 **2. Hazlo tú**
 
-En `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/event/`, compara los `groupId` `rutaflow-ruteo` y `rutaflow-notificaciones`. Ejecuta la prueba que envía un evento y espera a ambos listeners:
+En el código de este tema, compara los `groupId` `rutaflow-ruteo` y `rutaflow-notificaciones`. Ejecuta la prueba que envía un evento y espera a ambos listeners:
 
 ```bash
-cd examples/spring-kafka-rutaflow
 ./mvnw -Dtest=EnvioEventPublisherTest#publicaConKeyDelEnvioYElListenerLaRecibe test
 ```
 
-Después abre `examples/node-messaging/rabbit/topology.mjs`: hoy declara una cola `envios` y la vincula a un exchange. Un segundo worker que consuma `envios` competiría por las entregas. Para fan-out, necesitarías otra cola durable enlazada al exchange.
+Después abre `topology.mjs`: hoy declara una cola `envios` y la vincula a un exchange. Un segundo worker que consuma `envios` competiría por las entregas. Para fan-out, necesitarías otra cola durable enlazada al exchange.
 
 **Resultado esperado:** La prueba de Kafka recibe el evento en ambos grupos. Puedes dibujar las dos topologías y señalar que dos consumers de una sola cola Rabbit se reparten mensajes, mientras dos colas enlazadas pueden recibir copias.
 
@@ -55,14 +54,13 @@ Kafka conserva registros según las políticas de retención del tópico, aunque
 
 **2. Hazlo tú**
 
-Compara el log de Kafka en [Módulo 10, Tema 1](/curso/spring-boot/10) y la cola `envios` de `examples/node-messaging/rabbit/topology.mjs`. En RabbitMQ abre `examples/node-messaging/rabbit/worker.mjs` y localiza `channel.ack(message)`. Para ver la persistencia por broker, inicia cada ejemplo desde sus carpetas según sus README:
+Compara el log de Kafka en [Módulo 10, Tema 1](/curso/spring-boot/10) y la cola `envios` de `topology.mjs`. En RabbitMQ abre `worker.mjs` y localiza `channel.ack(message)`. Para ver la persistencia por broker, inicia cada ejemplo desde sus carpetas según sus README:
 
 ```bash
-cd examples/spring-stream-rutaflow
 ./mvnw test
 ```
 
-El test binder comprueba la función, no retención ni broker. La práctica de broker real se describe en `examples/spring-stream-rutaflow/README.md` y requiere Docker Compose.
+El test binder comprueba la función, no retención ni broker. La práctica de broker real se describe en el código de este tema y requiere Docker Compose.
 
 **Resultado esperado:** Explicas la diferencia entre “ya consumido” y “ya no retenido”: Kafka puede expirar registros por política; RabbitMQ elimina una entrega confirmada de su cola, pero puede retener mensajes aún no confirmados y reenviarlos tras un fallo.
 
@@ -84,10 +82,9 @@ Que el broker acepte una publicación no significa que la aplicación destino ha
 
 **2. Hazlo tú**
 
-Lee `examples/node-messaging/rabbit/producer.mjs`: crea un confirm channel, publica y espera `waitForConfirms()`. Luego lee `examples/node-messaging/rabbit/worker.mjs`: usa `prefetch(5)` y confirma cada entrega con `channel.ack(message)` tras procesarla. Compara con `EnvioEventPublisherTest` de M10 T1, que espera el ACK del productor y verifica la recepción de listeners por separado.
+Lee `producer.mjs`: crea un confirm channel, publica y espera `waitForConfirms()`. Luego lee `worker.mjs`: usa `prefetch(5)` y confirma cada entrega con `channel.ack(message)` tras procesarla. Compara con `EnvioEventPublisherTest` de M10 T1, que espera el ACK del productor y verifica la recepción de listeners por separado.
 
 ```bash
-cd examples/node-messaging
 npm ci
 npm test
 ```
@@ -114,10 +111,9 @@ Kafka suele encajar cuando varias aplicaciones necesitan leer el mismo log a su 
 
 **2. Hazlo tú**
 
-Abre `examples/spring-stream-rutaflow/README.md`. Ejecuta primero el test binder:
+Observa README.md y. Ejecuta primero el test binder:
 
 ```bash
-cd examples/spring-stream-rutaflow
 ./mvnw test
 ```
 
@@ -158,7 +154,7 @@ Una guía de envío entra al exchange `rutaflow.dispatch`. La routing key elige 
 
 **2. Hazlo tú**
 
-Desde `examples/spring-amqp-rutaflow`, abre `src/main/java/academia/rutaflow/amqp/RabbitTopology.java`. Lee `dispatchExchange`, `dispatchQueue`, `dispatchBinding` y sus equivalentes de DLX. La cola principal es durable y declara la dead-letter exchange y su routing key.
+Desde el código de este tema, abre `src/main/java/academia/rutaflow/amqp/RabbitTopology.java`. Lee `dispatchExchange`, `dispatchQueue`, `dispatchBinding` y sus equivalentes de DLX. La cola principal es durable y declara la dead-letter exchange y su routing key.
 
 Ejecuta las pruebas de topología sin iniciar RabbitMQ:
 
@@ -186,7 +182,7 @@ El productor necesita saber si el broker aceptó la publicación y si el mensaje
 
 **2. Hazlo tú**
 
-Desde `examples/spring-amqp-rutaflow`, levanta RabbitMQ y ejecuta la aplicación:
+Desde el código de este tema, levanta RabbitMQ y ejecuta la aplicación:
 
 ```bash
 docker compose up -d --wait
@@ -251,7 +247,7 @@ Un consumidor puede recibir más mensajes de los que procesa a la vez. `prefetch
 
 **2. Hazlo tú**
 
-Desde `examples/spring-amqp-rutaflow`, revisa `spring.rabbitmq.listener.simple.prefetch: 5` en `src/main/resources/application.yml`. Inicia el broker y la aplicación. En RabbitMQ Management abre la cola `dispatch.requested` y su consumidor; identifica el prefetch anunciado.
+Desde el código de este tema, revisa `spring.rabbitmq.listener.simple.prefetch: 5` en `src/main/resources/application.yml`. Inicia el broker y la aplicación. En RabbitMQ Management abre la cola `dispatch.requested` y su consumidor; identifica el prefetch anunciado.
 
 Para observar entregas pendientes, coloca un breakpoint en `DispatchListener.java` justo antes de `channel.basicAck`, publica varios códigos válidos y observa `Unacknowledged` en la cola. Repite después de cambiar `prefetch` a `1`; no conserves el breakpoint ni el cambio al cerrar.
 
@@ -424,10 +420,9 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** confirmar mensajes 
 El servicio recibe `ShipmentCreated` y deriva una región para el planificador.
 
 **2. Hazlo tú**
-Desde la raíz del repositorio, abre `examples/spring-stream-rutaflow/src/main/java/academia/rutaflow/stream/RouteFunctions.java` y corre el test:
+Desde la raíz del repositorio, abre `RouteFunctions.java` y corre el test:
 
 ```bash
-cd examples/spring-stream-rutaflow
 ./mvnw -Dtest=RouteFunctionsTest#transformaEnvioEnSolicitudDeRuta test
 ```
 
@@ -447,7 +442,7 @@ Conserva la salida del test y escribe qué campo de entrada produce `region`.
 El binding es el nombre lógico de entrada/salida. `destination` nombra el tópico o exchange que usa el broker.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/main/resources/application.yml`; compara `planRoute-in-0` y `planRoute-out-0`. Ejecuta desde `examples/spring-stream-rutaflow/`:
+Observa application.yml y; compara `planRoute-in-0` y `planRoute-out-0`. Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -Dtest=RouteFunctionsTest#transformaEnvioEnSolicitudDeRuta test
@@ -494,7 +489,6 @@ Guarda la salida y el mensaje exacto que indica por qué se rechaza el dato.
 
 **Fuente:** [abstracción de binders](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html).
 
-
 **Aplicación y decisión:** En el proyecto integrador, conserva nombres lógicos de binding en código y destinos de broker en configuración. Límite: cambiar destination puede desconectar un consumidor sin cambiar una sola línea de la función.
 
 ### Tema 5: binder Kafka y binder RabbitMQ · Avanzado · 30 min
@@ -508,7 +502,7 @@ Guarda la salida y el mensaje exacto que indica por qué se rechaza el dato.
 Kafka guarda el flujo en un tópico; el grupo conserva su avance mediante offsets.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/compose.yaml` y `examples/spring-stream-rutaflow/src/main/resources/application-kafka.yml`. Desde `examples/spring-stream-rutaflow/`, levanta los brokers y la app con perfil Kafka:
+Observa compose.yaml y `application-kafka.yml`. Desde el código de este tema, levanta los brokers y la app con perfil Kafka:
 
 ```bash
 docker compose up -d
@@ -540,7 +534,7 @@ Guarda la salida del consumer y escribe qué tópico publicó el resultado.
 RabbitMQ enruta mensajes de un exchange a colas. Cada grupo tiene su cola.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/main/resources/application-rabbit.yml`. Desde `examples/spring-stream-rutaflow/`, arranca el perfil Rabbit:
+Observa application-rabbit.yml y. Desde el código de este tema, arranca el perfil Rabbit:
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=rabbit
@@ -564,7 +558,7 @@ Guarda una captura de la cola y registra exchange, cola y routing key que usaste
 La transformación puede ser idéntica y las garantías de entrega no.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/main/resources/application-kafka.yml` y `examples/spring-stream-rutaflow/src/main/resources/application-rabbit.yml`; consulta luego cada broker desde `examples/spring-stream-rutaflow/`:
+Observa application-kafka.yml y `application-rabbit.yml`; consulta luego cada broker desde el código de este tema:
 
 ```bash
 docker compose ps
@@ -590,7 +584,6 @@ Entrega una comparación con una evidencia observada en cada broker.
 
 **Fuentes:** [binder Kafka](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/), [binder RabbitMQ](https://docs.spring.io/spring-cloud-stream/reference/rabbit/rabbit_overview.html).
 
-
 **Aplicación y decisión:** Práctica del proyecto integrador: ejecuta la misma entrada en perfiles separados y registra el tópico Kafka o exchange/cola Rabbit que recibió la salida. La diferencia de transporte no desaparece por compartir Function; el test binder no acredita esa ejecución de broker.
 
 ### Tema 6: reintentos, error handler y dead-letter · Avanzado · 30 min
@@ -604,7 +597,7 @@ Entrega una comparación con una evidencia observada en cada broker.
 El grupo `route-planner` debe evitar ciclos infinitos si el mensaje siempre es inválido.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/main/resources/application-kafka.yml`; revisa `max-attempts: 3` y `enable-dlq: true`. Desde `examples/spring-stream-rutaflow/`, reinicia con perfil Kafka y publica `{"shipmentId":"sh-50","postalCode":"XX123"}`.
+Observa application-kafka.yml y; revisa `max-attempts: 3` y `enable-dlq: true`. Desde el código de este tema, reinicia con perfil Kafka y publica `{"shipmentId":"sh-50","postalCode":"XX123"}`.
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=kafka
@@ -626,7 +619,7 @@ Guarda el mensaje observado en el tópico principal y la evidencia del destino d
 Una cola con mensajes que fallan requiere un destino para inspección y corrección.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/main/resources/application-rabbit.yml`; comprueba `max-attempts: 3` y `auto-bind-dlq: true`. Desde `examples/spring-stream-rutaflow/`, arranca el perfil Rabbit y publica el mismo JSON con región `XX`.
+Observa application-rabbit.yml y; comprueba `max-attempts: 3` y `auto-bind-dlq: true`. Desde el código de este tema, arranca el perfil Rabbit y publica el mismo JSON con región `XX`.
 
 ```bash
 ./mvnw spring-boot:run -Dspring-boot.run.profiles=rabbit
@@ -648,7 +641,7 @@ Anota el nombre de la DLQ y el número de intentos de cada broker.
 Una caída del servicio puede recuperarse; una región inválida necesita corrección, no más reintentos.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/main/java/academia/rutaflow/stream/RouteFunctions.java` y `examples/spring-stream-rutaflow/src/main/resources/application-kafka.yml`. Envía primero el evento válido `10ABC` y luego `XX123` por el broker activo. Compara el destino normal y el de error en la consola.
+Observa RouteFunctions.java y `application-kafka.yml`. Envía primero el evento válido `10ABC` y luego `XX123` por el broker activo. Compara el destino normal y el de error en la consola.
 
 ```bash
 ./mvnw -Dtest=RouteFunctionsTest test
@@ -673,7 +666,6 @@ Escribe qué persona o proceso revisaría el mensaje antes de reenviarlo.
 
 **Fuentes:** [DLQ para Kafka](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/dlq.html), [dead-letter en RabbitMQ](https://docs.spring.io/spring-cloud-stream/reference/rabbit/rabbit_overview.html).
 
-
 **Aplicación y decisión:** Práctica del proyecto integrador: clasifica un fallo transitorio y otro permanente, fija intentos y demuestra el destino final del evento. Límite: replay desde DLQ puede repetir efectos; conserva idempotencia y no reintentes errores de contrato indefinidamente.
 
 ### Tema 7: test binder y límites de la prueba · Avanzado · 25 min
@@ -687,10 +679,9 @@ Escribe qué persona o proceso revisaría el mensaje antes de reenviarlo.
 La lógica de transformación debe probarse sin tener Kafka o Rabbit instalados.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java` y ejecuta el test binder desde `examples/spring-stream-rutaflow/`:
+Observa RouteFunctionsTest.java y ejecuta el test binder desde el código de este tema:
 
 ```bash
-cd examples/spring-stream-rutaflow
 ./mvnw -Dtest=RouteFunctionsTest#transformaEnvioEnSolicitudDeRuta test
 ```
 
@@ -710,7 +701,7 @@ Guarda la salida y la predicción que escribiste antes de ejecutar.
 Una prueba local también debe mostrar qué ocurre antes de enviar datos externos.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/src/test/java/academia/rutaflow/stream/RouteFunctionsTest.java` y ejecuta el test de código postal corto desde `examples/spring-stream-rutaflow/`:
+Observa RouteFunctionsTest.java y ejecuta el test de código postal corto desde el código de este tema:
 
 ```bash
 ./mvnw -Dtest=RouteFunctionsTest#codigoPostalCortoFallaEnLaFuncion test
@@ -732,7 +723,7 @@ Guarda el nombre del test y la condición que protege.
 Ningún test en memoria confirma que un servicio externo esté disponible o cree la topología correcta.
 
 **2. Hazlo tú**
-Abre `examples/spring-stream-rutaflow/pom.xml` y `examples/spring-stream-rutaflow/compose.yaml`. Ejecuta toda la suite y luego consulta los brokers por separado desde `examples/spring-stream-rutaflow/`:
+Observa pom.xml y `compose.yaml`. Ejecuta toda la suite y luego consulta los brokers por separado desde el código de este tema:
 
 ```bash
 ./mvnw test
@@ -758,11 +749,10 @@ Marca cada capa como ejecutada o pendiente y enlaza su evidencia.
 
 **Fuente:** [test binder de Spring Cloud Stream](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/spring_integration_test_binder.html).
 
-
 **Aplicación y decisión:** Práctica del proyecto integrador: agrega otra zona válida y un código inválido al test binder. Registra qué comprueba la función en memoria y qué queda para el broker; no informes una cola desplegada a partir de InputDestination.
 
 ## Capstone del módulo
 
-Desde una copia limpia de `examples/spring-stream-rutaflow/`, ejecuta `./mvnw test`, levanta Kafka y RabbitMQ, procesa un envío con ambos perfiles y conserva evidencias de salida normal y DLQ. No guardes credenciales reales; los valores `guest` son solo para el contenedor local.
+Desde una copia limpia de `spring-stream-rutaflow`, ejecuta `./mvnw test`, levanta Kafka y RabbitMQ, procesa un envío con ambos perfiles y conserva evidencias de salida normal y DLQ. No guardes credenciales reales; los valores `guest` son solo para el contenedor local.
 
 **Fuentes oficiales:** [compatibilidad Spring Cloud y Spring Boot](https://docs.spring.io/spring-cloud-release/reference/index.html), [abstracción binder y pruebas](https://docs.spring.io/spring-cloud-stream/reference/spring-cloud-stream/overview-binder-abstraction.html), [DLQ Kafka](https://docs.spring.io/spring-cloud-stream/reference/kafka/kafka-binder/dlq.html), [binder RabbitMQ](https://docs.spring.io/spring-cloud-stream/reference/rabbit/rabbit_overview.html).

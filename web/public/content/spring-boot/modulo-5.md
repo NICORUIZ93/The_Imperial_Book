@@ -2,8 +2,7 @@
 
 Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `MockMvc` real contra un contexto de Spring real, para que cada código de estado HTTP (200/401/403) sea comprobable, no solo descrito. El JWT se valida con el **resource server** de Spring Security (`oauth2ResourceServer().jwt()`), no con un filtro escrito a mano: así el mismo código sirve cuando, en el Módulo 18, los tokens los emita un proveedor de identidad.
 
-
-**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
@@ -767,7 +766,7 @@ Ejecuta `./mvnw -q -Dtest=CorsConfigTest#preflightDeMetodoNoListadoRecibe403 tes
 **Hazlo tú:** Desde la raíz, copia el laboratorio autocontenido y entra en él:
 
 ```bash
-cp -R examples/spring-ssrf /tmp/ssrf-lab
+cp -R spring-ssrf /tmp/ssrf-lab
 cd /tmp/ssrf-lab
 ./mvnw -q -DskipTests package
 ```
@@ -786,7 +785,7 @@ Abre `src/main/java/com/academia/SafeClient.java`. Allí `SafeClient.externalOnl
 
 **Contexto:** una prueba que solo comprueba una excepción podría pasar porque el servidor estaba apagado. El control positivo debe demostrar que el mismo servidor sí responde cuando se permite la dirección local.
 
-**Hazlo tú:** Ejecuta desde `examples/spring-ssrf`:
+**Hazlo tú:** Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -q -Dtest=SafeClientTest#blocksBeforeRequestAndControlReallyReachesServer,SafeClientTest#excludesInternalAndMetadataRangesWithoutConnecting test
@@ -1019,7 +1018,7 @@ Ejecuta desde la raíz de `academia-spring`:
 
 **Fallo deliberado y diagnóstico:** quita `/api/auth/**` de los matchers públicos y vuelve a ejecutar el test. El propio login recibe `401`; restablece el matcher público.
 
-**Entiende:** el cliente extrae el token de la respuesta y lo envía como `Authorization: Bearer ...`. El resource server valida la firma y establece la identidad; el controller no vuelve a leer la contraseña.
+**Entiende:** el cliente extrae el token de la respuesta y lo envía como `Authorization: Bearer...`. El resource server valida la firma y establece la identidad; el controller no vuelve a leer la contraseña.
 
 **Cierra:** conserva el token generado en la variable de la prueba; no lo pegues en el código como una credencial fija.
 
@@ -1085,7 +1084,7 @@ Como **siguiente** paso, lleva lo aprendido al próximo tema y conéctalo con el
 | 5 | Documentar cuándo CSRF es relevante | Ver Tema 3 | Y por qué se deshabilita en esta API |
 | 6 | Configurar `InetAddressFilter` en el cliente HTTP | Ver Tema 4 | Rechaza direcciones internas en ese cliente saliente; combina con reglas de egreso |
 
-**Verificación:** comprueba con MockMvc los contratos HTTP de roles y tokens. Para SSRF ejecuta el laboratorio separado `examples/spring-ssrf`: su servidor local confirma bloqueo de loopback antes de conectar; la dirección de metadatos se clasifica sin intentar acceder a ella. Este ensayo no valida todos los clientes ni las reglas de salida del despliegue.
+**Verificación:** comprueba con MockMvc los contratos HTTP de roles y tokens. Para SSRF ejecuta el laboratorio separado `spring-ssrf`: su servidor local confirma bloqueo de loopback antes de conectar; la dirección de metadatos se clasifica sin intentar acceder a ella. Este ensayo no valida todos los clientes ni las reglas de salida del despliegue.
 
 **Errores comunes y soluciones**
 

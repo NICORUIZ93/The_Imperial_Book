@@ -3,9 +3,9 @@
 **Fase 3 · Nivel maestro: arquitectura avanzada** (media semana de 8). **Duración:** 6 h (4 temas de unos 75 min y 1 h
 de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 12 o 23 (Kubernetes: requests, limits,
 HPA), Módulo 10 o 21 (observabilidad: logs, métricas y trazas) y Módulo 27 (la malla, que también cuesta). Viene bien
-haber leído `docs/microservicios/09-costos.md`. **Herramientas:** **Node.js 26.13.1 LTS** sin dependencias y los
+haber leído `docs/microservicios/09-costos.md`. **Herramientas:**Node.js 26.13.1 LTS** sin dependencias y los
 precios oficiales de **AWS** (Fargate, Lambda, NAT gateway, CloudWatch, X-Ray, EKS) y **GKE Autopilot**, consultados el
-2026-11-19 y el 2026-11-20. **Laboratorio:** `examples/microservicios/modulo-32/` (`./verificar.sh` ejecuta 18 tests
+2026-11-19 y el 2026-11-20. **Laboratorio:** `modulo-32` (`./verificar.sh` ejecuta 18 tests
 y los scripts de las cuatro fichas; no necesita Docker ni cuenta en ninguna nube).
 
 Una arquitectura no está terminada cuando funciona: está terminada cuando sabes **cuánto cuesta** y **por qué**. En
@@ -40,13 +40,11 @@ NAT gateway: la página lo da en un ejemplo de US East (Ohio), no en la tabla de
 **Cómo usar el laboratorio.** Con Node 26:
 
 ```bash
-cd examples/microservicios/modulo-32
 npm ci
 ./verificar.sh              # 18 tests + scripts de las 4 fichas → «RESULTADO: OK»
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-32`**. El
-`examples/microservicios/modulo-32/README.md` tiene el mapa de carpetas.
+`README.md` tiene el mapa de carpetas.
 
 `package.json` del laboratorio (sin dependencias; el `package-lock.json` existe para que `npm ci` funcione igual que en
 los demás módulos):
@@ -104,7 +102,7 @@ export const p = (clave) => PRECIOS[clave].usd;
 
 #### 1. UBICACIÓN
 
-Módulo 28, Lección 1 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-32/f165-modelo-costo/`.
+Módulo 28, Lección 1 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 
@@ -436,7 +434,7 @@ junto a cada caja y cada flecha.
 
 #### 1. UBICACIÓN
 
-Módulo 28, Lección 2 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-32/f166-right-sizing/`.
+Módulo 28, Lección 2 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 
@@ -756,7 +754,7 @@ cada uno.
 
 #### 1. UBICACIÓN
 
-Módulo 28, Lección 3 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-32/f167-break-even/`.
+Módulo 28, Lección 3 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 
@@ -1045,7 +1043,7 @@ cada servicio marcada a un lado u otro del cruce.
 
 #### 1. UBICACIÓN
 
-Módulo 28, Lección 4 de 4 · Fase 3 · 75 min · Laboratorio `examples/microservicios/modulo-32/f168-observability-tax/`.
+Módulo 28, Lección 4 de 4 · Fase 3 · 75 min.
 
 #### 2. PRERREQUISITOS
 

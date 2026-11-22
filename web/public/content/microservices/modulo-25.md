@@ -3,12 +3,12 @@
 **Fase 2 · Node.js de cero a experto** (una semana de 12). **Duración:** 10 h (5 temas de unos 100 min y 1 h 40 min
 de laboratorio integrador). **Dificultad:** 4 de 5. **Dependencias:** Módulo 13 (Event Loop, `async/await`, graceful
 shutdown), Módulo 14 (servidores HTTP y middleware), Módulo 18 (REST y mensajería con RabbitMQ y Kafka) y Módulo 19
-(timeouts). **Herramientas:** **Node.js 26.13.1 LTS**, **@opentelemetry/api 1.10.0**, **@opentelemetry/sdk-node
+(timeouts). **Herramientas:**Node.js 26.13.1 LTS**, **@opentelemetry/api 1.10.0**, **@opentelemetry/sdk-node
 0.301.2**, **@opentelemetry/sdk-trace 3.1.1**, **@opentelemetry/auto-instrumentations-node 0.83.1**,
 **@opentelemetry/exporter-trace-otlp-http 0.301.2**, **import-in-the-middle 3.6.0**, **amqplib 2.4.0**, **kafkajs
 2.2.4**, **pino 10.4.0**, **winston 3.19.0**, **@prometheus-io/client 0.16.1** (el sucesor oficial de `prom-client`),
 **Jaeger 2.22.0**, **RabbitMQ 4.4.1**, **Kafka 4.4.0**, **Grafana Loki 3.7.9**, **Prometheus 3.15.1** y **Grafana
-13.2.4**. **Laboratorio:** `examples/microservicios/modulo-25/` (`./verificar.sh` ejecuta 19 tests, las demos y los
+13.2.4**. **Laboratorio:** `modulo-25` (`./verificar.sh` ejecuta 19 tests, las demos y los
 errores comunes sin infraestructura; `./verificar.sh --compose` levanta Jaeger, RabbitMQ, Kafka, Loki, Prometheus y
 Grafana y comprueba que cada señal llega a su destino).
 
@@ -39,7 +39,6 @@ terminan en Grafana.
 **Cómo usar el laboratorio.** Con Node 26 (y Docker para la parte de infraestructura):
 
 ```bash
-cd examples/microservicios/modulo-25
 npm ci
 ./verificar.sh                   # 19 tests + demos + errores comunes, sin Docker → «RESULTADO: OK»
 docker compose up -d --wait      # Jaeger :16686, RabbitMQ :5672, Kafka :9092, Loki :3100, Prometheus :9090, Grafana :3000
@@ -47,7 +46,6 @@ docker compose up -d --wait      # Jaeger :16686, RabbitMQ :5672, Kafka :9092, L
 docker compose down -v
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-25`**. Los servicios Node corren
 en tu máquina; Jaeger, los brokers, Loki, Prometheus y Grafana, en Docker.
 
 `package.json` del laboratorio (con `package-lock.json` que fija el árbol completo):
@@ -145,7 +143,7 @@ services:
 
 #### 1. UBICACIÓN
 
-Módulo 21, Lección 1 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-25/f130-opentelemetry/`.
+Módulo 21, Lección 1 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -217,7 +215,7 @@ Después, cada servicio envía sus spans en lotes a Jaeger por OTLP en el puerto
   spans e **inyectar/extraer `traceparent`** sin que escribas nada. Se desactivan una a una: aquí apagamos `fs`, que
   genera un span por cada lectura de disco.
 - **Cargar antes que la app:** el SDK tiene que parchear los módulos **antes** de que tu código los importe. Por eso se
-  arranca con `node --import ./telemetria.js app.js`. Con módulos ES hace falta además el hook de
+  arranca con `node --import./telemetria.js app.js`. Con módulos ES hace falta además el hook de
   **import-in-the-middle** (`register()`); sin él solo verías los spans de `fetch`, que se instrumenta por
   `diagnostics_channel`.
 - **Procesadores:** `SimpleSpanProcessor` exporta cada span al terminar (útil para aprender); `BatchSpanProcessor`
@@ -603,7 +601,7 @@ const r = await fetch(`${INVENTARIO}/stock/${sku}`); // la instrumentación de u
 
 #### 1. UBICACIÓN
 
-Módulo 21, Lección 2 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-25/f131-traceparent/`.
+Módulo 21, Lección 2 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1002,7 +1000,7 @@ await trace.getTracer('demo').startActiveSpan('publicar', async (span) => {
 await apagarTrazas();
 ```
 
-Salida real de `OTEL_SERVICE_NAME=demo node --import ./f131-traceparent/trazas.js f131-traceparent/error-comun.js`:
+Salida real de `OTEL_SERVICE_NAME=demo node --import./f131-traceparent/trazas.js f131-traceparent/error-comun.js`:
 
 ```text
 cabecera tal como llega del broker: <Buffer 30 30 2d 35 35 31 34 36 33 36 36 65 37 38 31 35 32 63 39 37 34 33 38 66 33 62 63 34 66 39 64 35 38 38 39 2d 61 32 34 34 33 61 37 35 65 34 37 64 36 61 ... 5 more bytes>
@@ -1048,7 +1046,7 @@ canal.sendToQueue(COLA, Buffer.from(JSON.stringify({ id: 'P-1' })), { headers: i
 
 #### 1. UBICACIÓN
 
-Módulo 21, Lección 3 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-25/f132-pino-winston/`.
+Módulo 21, Lección 3 de 5 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1251,7 +1249,7 @@ OTEL_SERVICE_NAME=pedidos node --import ./f131-traceparent/trazas.js f132-pino-w
    **Captura comentada:** la primera línea no tiene `trace_id` (se escribió fuera del span). La línea `debug` no sale.
    Las tres líneas dentro del span llevan el mismo `trace_id` que el span de la última línea: desde un log saltas a su
    traza. La cuarta es de Winston: `message` en vez de `msg`, `timestamp` en vez de `time` y campos en otro orden.
-2. Cambia el nivel sin tocar código: `LOG_LEVEL=warn OTEL_SERVICE_NAME=pedidos node --import ./f131-traceparent/trazas.js
+2. Cambia el nivel sin tocar código: `LOG_LEVEL=warn OTEL_SERVICE_NAME=pedidos node --import./f131-traceparent/trazas.js
    f132-pino-winston/demo.js`. **Output esperado:** solo la línea `"level":"warn"` de Pino (y la del span).
 3. Haz legible la salida en desarrollo sin cambiar el formato de producción: `… | npx pino-pretty` (herramienta
    aparte; no está en el `package.json` del laboratorio).
@@ -1394,7 +1392,7 @@ log.info({ pedidoId: pedido.id, tarjeta: pedido.tarjeta }, 'pedido creado');
 
 #### 1. UBICACIÓN
 
-Módulo 21, Lección 4 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-25/f133-loki/` (con Loki y Grafana
+Módulo 21, Lección 4 de 5 · Fase 2(con Loki y Grafana
 del `docker-compose.yml`).
 
 #### 2. PRERREQUISITOS
@@ -1762,7 +1760,7 @@ BIEN: alerta = sum(rate(http_peticiones_total{servicio="pedidos",estado=~"5.."}[
 
 #### 1. UBICACIÓN
 
-Módulo 21, Lección 5 de 5 · Fase 2 · Laboratorio `examples/microservicios/modulo-25/f134-prometheus/` (con
+Módulo 21, Lección 5 de 5 · Fase 2(con
 Prometheus del `docker-compose.yml`).
 
 #### 2. PRERREQUISITOS

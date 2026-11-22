@@ -1,3 +1,0 @@
-MAL  media × 1,2   límite  503 MiB ->  343 minutos de 10080 por encima (OOMKilled)
-MAL  p50 × 1,2     límite  468 MiB -> 2380 minutos de 10080 por encima (OOMKilled)
-BIEN máximo × 1,2  límite  704 MiB ->    0 minutos de 10080 por encima (sin reinicios)

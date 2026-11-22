@@ -1,0 +1,2 @@
+Your Workflow code (or a library used by your Workflow code) is importing the following disallowed modules:
+  - '@temporalio/activity'

@@ -5,9 +5,6 @@ integrador). **Dificultad:** 2 de 5 en estructura y dotenv, 3 de 5 en Service Di
 **Dependencias:** Módulo 14 (una API HTTP en Node), Módulo 13 (módulos ES, TypeScript estricto, graceful shutdown) y
 Módulo 0.4 (variables de entorno, JSON, `curl`). **Herramientas:** **Node.js 26.13.1 LTS**, **TypeScript 6.0.3**,
 **dotenv 18.0.10**, **consul 2.0.1** (cliente npm) y **HashiCorp Consul 2.1.0** (Docker Compose).
-**Laboratorio:** `examples/microservicios/modulo-21/` (`./verificar.sh` instala con `npm ci`, comprueba tipos, ejecuta
-21 tests y las demos; `./verificar.sh --compose` repite los temas 3 y 4 contra el Consul real).
-
 Hasta aquí construiste **un** servicio. Un sistema de microservicios son **muchos**, escritos por varios equipos y
 desplegados muchas veces al día. Este módulo responde las cuatro primeras preguntas que aparecen cuando un servicio
 deja de estar solo: ¿cómo ordeno el código para que crezca sin enredarse? (estructura de carpetas), ¿cómo cambio su
@@ -29,12 +26,11 @@ tema 3 (Service Discovery con Consul). Los temas 2 y 3 llevan al tema 4 (configu
 **Cómo usar el laboratorio.** Con Node 26 activo:
 
 ```bash
-cd examples/microservicios/modulo-21
 ./verificar.sh            # npm ci + tsc + 21 tests + demos → «RESULTADO: OK»
 ./verificar.sh --compose  # además levanta Consul 2.1.0 con Docker y repite los temas 3 y 4 contra él
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-21`** después de `npm ci`.
+Todas las órdenes de las fichas se ejecutan **desde `modulo-21`** después de `npm ci`.
 `package.json` del laboratorio (con `package-lock.json` que fija el árbol completo):
 
 ```json
@@ -138,7 +134,7 @@ laboratorios (no es Consul: no tiene UI, DNS ni clúster).
 
 #### 1. UBICACIÓN
 
-Módulo 17, Lección 1 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-21/f109-estructura/`.
+Módulo 17, Lección 1 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -625,7 +621,6 @@ if (import.meta.main) {
 
 1. Instala las dependencias fijadas (una sola vez para todo el módulo), comprueba los tipos y arranca el servicio:
    ```bash
-   cd examples/microservicios/modulo-21
    npm ci
    npm run typecheck
    node f109-estructura/src/main.ts
@@ -890,7 +885,7 @@ y «pagos» chocan siempre en los mismos tres archivos.
 
 #### 1. UBICACIÓN
 
-Módulo 17, Lección 2 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-21/f110-dotenv/`.
+Módulo 17, Lección 2 de 4 · Fase 2.
 
 #### 2. PRERREQUISITOS
 
@@ -1102,7 +1097,6 @@ console.log(JSON.stringify(sinSecretos(cargada.config), null, 2));
 
 1. Arranca **sin** `.env`: el servicio debe negarse a arrancar.
    ```bash
-   cd examples/microservicios/modulo-21
    node f110-dotenv/main.js ; echo "código de salida: $?"
    ```
 2. Crea tu `.env` desde la plantilla y arranca de nuevo:
@@ -1341,7 +1335,7 @@ nadie sabe qué variables necesita el servicio sin buscar `process.env` en todo 
 
 #### 1. UBICACIÓN
 
-Módulo 17, Lección 3 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-21/f111-consul/` (Consul en
+Módulo 17, Lección 3 de 4 · Fase 2
 `docker-compose.yml`).
 
 #### 2. PRERREQUISITOS
@@ -1628,7 +1622,6 @@ for (let i = 1; i <= 4; i++) {
 
 1. Levanta Consul con Docker Compose y abre su interfaz en `http://localhost:8500`:
    ```bash
-   cd examples/microservicios/modulo-21
    docker compose up -d --wait
    ```
 2. Arranca **dos** instancias de catálogo, cada una en su terminal:
@@ -1896,7 +1889,7 @@ y se elige instancia en cada llamada.
 
 #### 1. UBICACIÓN
 
-Módulo 17, Lección 4 de 4 · Fase 2 · Laboratorio `examples/microservicios/modulo-21/f112-config-central/` (Consul
+Módulo 17, Lección 4 de 4 · Fase 2
 en `docker-compose.yml`).
 
 #### 2. PRERREQUISITOS
@@ -2155,7 +2148,6 @@ for (const senal of ['SIGINT', 'SIGTERM']) {
 
 1. Levanta Consul, siembra la configuración y arranca el servicio:
    ```bash
-   cd examples/microservicios/modulo-21
    docker compose up -d --wait
    node f112-config-central/sembrar.js
    node f112-config-central/servicio.js

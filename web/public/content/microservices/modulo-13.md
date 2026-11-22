@@ -3,9 +3,9 @@
 **Fase 1 · Spring Boot de cero a experto** (semana 9 y mitad de la 10, de 12). **Duración:** 18 h (9 temas de 1,5–2,5 h).
 **Dificultad:** 4 de 5. **Dependencias:** Módulo 2 (Spring MVC, filtros HTTP, `ProblemDetail`) y Módulo 7 (Spring Cloud
 Gateway, configuración centralizada); para el tema de mTLS conviene haber visto contenedores (Módulo 0.5).
-**Herramientas:** **JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Security 7.1.3, Spring Framework 7.0.11),
+**Herramientas:**JDK 25 LTS (25.0.5)**, **Spring Boot 4.1.3** (Spring Security 7.1.3, Spring Framework 7.0.11),
 **Spring Cloud 2025.1.4** (Spring Cloud Vault 5.0), **Keycloak 26.8.2**, **HashiCorp Vault 2.2.0**, **Trivy 0.76.1**,
-**Snyk CLI 1.1309.0**, **Istio 1.32** sobre **kind**, OpenSSL 3 y `curl`. **Laboratorio:** `examples/microservicios/modulo-13/`
+**Snyk CLI 1.1309.0**, **Istio 1.32** sobre **kind**, OpenSSL 3 y `curl`. **Laboratorio:** `modulo-13`
 (`./verificar.sh --solo-jdk` corre las demostraciones con solo el JDK; `./verificar.sh` añade Keycloak, Vault, Trivy y
 los tests de Spring; `./verificar.sh --mtls` monta la malla de servicios).
 
@@ -46,8 +46,8 @@ mismo con las piezas de producción. Para los temas 3 a 6 y 8 levanta la infraes
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 1 de 9 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-13/jdk/CadenaDeFiltros.java` y
-`examples/microservicios/modulo-13/f061-filter-chain/`.
+Módulo 9, Lección 1 de 9 · Fase 1 · 2 h
+`f061-filter-chain`.
 
 #### 2. PRERREQUISITOS
 
@@ -183,7 +183,6 @@ La demostración de `jdk/` no necesita dependencias.
 cadena del perfil `antes` lo deja todo abierto:
 
 ```java
-// examples/microservicios/modulo-13/f061-filter-chain/src/main/java/academia/seguridad/cadena/SeguridadConfig.java (extracto)
 @Bean
 @Profile("antes")
 SecurityFilterChain cadenaVulnerable(HttpSecurity http) throws Exception {
@@ -262,7 +261,6 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
 }
-
 
 dependencyResolutionManagement {
     repositories {
@@ -467,7 +465,6 @@ las excepciones `NoAutenticado` → 401 y `AccesoDenegado` → 403 que imitan a 
 1. Ejecuta la demostración sin dependencias (ejecutada con JDK 25.0.5):
 
 ```bash
-cd examples/microservicios/modulo-13/jdk
 java CadenaDeFiltros.java
 ```
 
@@ -492,7 +489,7 @@ cd ../f061-filter-chain
 ../gradlew -q bootRun
 ```
 
-   **Output esperado:** una línea `DEBUG ... o.s.s.web.DefaultSecurityFilterChain : Will secure any request with [...]`
+   **Output esperado:** una línea `DEBUG... o.s.s.web.DefaultSecurityFilterChain: Will secure any request with [...]`
    cuya lista empieza por `DisableEncodeUrlFilter, WebAsyncManagerIntegrationFilter, SecurityContextHolderFilter` y
    termina en `ExceptionTranslationFilter, AuditoriaFilter, AuthorizationFilter`, y después
    `Tomcat started on port 8080 (http)`.
@@ -515,8 +512,8 @@ curl -s -w " %header{x-auditado-por}\n" -u root:clave-root localhost:8080/admin/
 {"panel":"ventas del día: 42"} root
 ```
 
-   **Captura comentada:** en la terminal de la app aparece una línea `INFO ... AuditoriaFilter : auditoría: GET /admin/panel
-   por ...` en las peticiones a `/admin/panel` (con `anonymousUser`, `ana` y `root`); la de `/publico/hola` también pasa
+   **Captura comentada:** en la terminal de la app aparece una línea `INFO... AuditoriaFilter: auditoría: GET /admin/panel
+   por...` en las peticiones a `/admin/panel` (con `anonymousUser`, `ana` y `root`); la de `/publico/hola` también pasa
    por el filtro, porque la cadena se aplica a todas las rutas: `permitAll()` decide en `AuthorizationFilter`, no evita la
    cadena.
 
@@ -618,7 +615,7 @@ autenticación funciona, `AuthorizationFilter` niega `hasRole("ADMIN")` lanzando
 usuario tenga el rol correcto, y el controlador nunca se ejecuta.
 
 **Cómo se ve:** con `logging.level.org.springframework.security=TRACE` el log muestra que la petición no pasó del
-`CsrfFilter` (se ve `Invoking CsrfFilter (n/m)` y a continuación la línea de `Invalid CSRF token found for ...`), y
+`CsrfFilter` (se ve `Invoking CsrfFilter (n/m)` y a continuación la línea de `Invalid CSRF token found for...`), y
 `curl -i` muestra `HTTP/1.1 403` sin cuerpo.
 
 **Diagnóstico:** la protección CSRF viene activada y exige un token en cada petición que cambia estado. Es correcta para
@@ -666,8 +663,8 @@ filtros y en reglas declarativas; el controlador solo hace negocio.
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 2 de 9 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-13/jdk/JwtFirmas.java` y
-`examples/microservicios/modulo-13/f062-jwt/`.
+Módulo 9, Lección 2 de 9 · Fase 1 · 2 h
+`f062-jwt`.
 
 #### 2. PRERREQUISITOS
 
@@ -741,8 +738,8 @@ firma y verifica) o con **un par de claves** (RS256: la privada firma, la públi
   la firma; (3) comprobar `exp`/`nbf` (con un pequeño margen de reloj), `iss` y **`aud`**.
 - **En Spring.** `NimbusJwtDecoder.withPublicKey(clave).signatureAlgorithm(RS256)` o `withSecretKey(k).macAlgorithm(HS256)`;
   `JwtValidators.createDefaultWithIssuer(iss)` añade `exp`/`nbf` + `iss`, y un `JwtClaimValidator` comprueba `aud`. El
-  filtro `BearerTokenAuthenticationFilter` lee `Authorization: Bearer ...` y, si falla, responde `401` con
-  `WWW-Authenticate: Bearer error="invalid_token", ...`. Por defecto `NimbusJwtDecoder` solo confía en RS256.
+  filtro `BearerTokenAuthenticationFilter` lee `Authorization: Bearer...` y, si falla, responde `401` con
+  `WWW-Authenticate: Bearer error="invalid_token",...`. Por defecto `NimbusJwtDecoder` solo confía en RS256.
 
 #### 8. EXPLICACIÓN MAESTRA
 
@@ -960,7 +957,6 @@ tiene la clave privada del servidor de autorización.
 1. Ejecuta la demostración (ejecutada con JDK 25.0.5; el par RSA se genera en cada ejecución, el token HS256 es fijo):
 
 ```bash
-cd examples/microservicios/modulo-13/jdk
 java JwtFirmas.java
 ```
 
@@ -1006,7 +1002,7 @@ java VerToken.java "$(cat target/hs256.jwt)"
 ```
 
    **Output esperado:** `cabecera: {"alg":"HS256","typ":"JWT"}`, `sub: "ana"`, `aud: "pedidos"` y
-   `exp: 2100-01-01T00:00:00Z (vence en ... s)`.
+   `exp: 2100-01-01T00:00:00Z (vence en... s)`.
 
 4. **Fallo deliberado:** en `JwtFirmas.java` cambia en `verificadorSeguro` la condición del `alg` por
    `!List.of("RS256", "none").contains(campo(texto(p[0]), "alg"))`. Ejecuta: el programa termina con `FALLA: 1`
@@ -1110,14 +1106,14 @@ JWKS): pagos puede verificar, pero no emitir.
 un rato, o el servicio no arranca con un secreto HS256 «de prueba».
 
 **Cómo se ve:** en el primer caso, `curl -i` muestra `WWW-Authenticate: Bearer error="invalid_token",
-error_description="An error occurred while attempting to decode the Jwt: ..."` y el texto menciona que no hay una clave
+error_description="An error occurred while attempting to decode the Jwt:..."` y el texto menciona que no hay una clave
 que coincida con el `kid`. En el segundo, el arranque de `f062-jwt` con `TIENDA_JWT_SECRETO=secreto` y el perfil `hs256`
 falla con `IllegalStateException: tienda.jwt.secreto debe tener al menos 32 bytes para HS256 (tiene 7)`; PyJWT avisa lo
 mismo (ejecutado aquí): `InsecureKeyLengthWarning: The HMAC key is 7 bytes long, which is below the minimum recommended
 length of 32 bytes for SHA256. See RFC 7518 Section 3.2.`
 
 **Diagnóstico:** decodifica la cabecera del token (`java VerToken.java "$TOKEN"`) y compara su `kid` con los de la JWKS
-(`curl -s .../certs | jq '.keys[].kid'`). Si el servicio tiene la clave pública **fija** (`public-key-location`), no se
+(`curl -s.../certs | jq '.keys[].kid'`). Si el servicio tiene la clave pública **fija** (`public-key-location`), no se
 entera de la rotación.
 
 **Arreglo:** en producción usa `issuer-uri` o `jwk-set-uri` (Spring descarga y cachea la JWKS y la vuelve a pedir ante
@@ -1158,8 +1154,8 @@ un JSON con `"sub":"otro-cliente"`. Cada servicio valida su token completo (defe
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 3 de 9 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-13/jdk/OAuthPkce.java` y
-`examples/microservicios/modulo-13/f063-oauth2-oidc/`.
+Módulo 9, Lección 3 de 9 · Fase 1 · 2,5 h
+`f063-oauth2-oidc`.
 
 #### 2. PRERREQUISITOS
 
@@ -1416,7 +1412,6 @@ server:
    cada ejecución):
 
 ```bash
-cd examples/microservicios/modulo-13/jdk
 java OAuthPkce.java
 ```
 
@@ -1441,7 +1436,6 @@ OK: sin PKCE el code robado sirve; con PKCE no, y el id_token se valida
 2. Levanta Keycloak y mira el documento de descubrimiento del realm:
 
 ```bash
-cd examples/microservicios/modulo-13
 docker compose up -d --wait keycloak
 curl -s localhost:8180/realms/tienda/.well-known/openid-configuration \
   | jq '{issuer, authorization_endpoint, token_endpoint, jwks_uri, code_challenge_methods_supported}'
@@ -1600,8 +1594,8 @@ y el navegador solo recibe una cookie `HttpOnly; Secure; SameSite`.
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 4 de 9 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-13/keycloak/`,
-`examples/microservicios/modulo-13/jdk/VerToken.java` y `examples/microservicios/modulo-13/f064-keycloak/`.
+Módulo 9, Lección 4 de 9 · Fase 1 · 2 h
+`VerToken.java` y `f064-keycloak`.
 
 #### 2. PRERREQUISITOS
 
@@ -1864,13 +1858,12 @@ spring.security.oauth2.resourceserver.jwt.audiences=pedidos
 1. Levanta Keycloak con el realm importado:
 
 ```bash
-cd examples/microservicios/modulo-13
 docker compose up -d --wait keycloak
 docker compose logs keycloak | grep -iE "import|started in"
 ```
 
    **Output esperado:** `docker compose up` termina con `Container modulo-13-keycloak-1  Healthy` y el log contiene una
-   línea de importación del realm `tienda` y otra `Keycloak 26.8.2 on JVM (powered by Quarkus ...) started in ...s`.
+   línea de importación del realm `tienda` y otra `Keycloak 26.8.2 on JVM (powered by Quarkus...) started in...s`.
    **Captura comentada:** en `http://localhost:8180` (usuario `admin`, clave `admin-solo-dev`) el selector de realms
    muestra `tienda`, y en *Clients* aparecen `tienda-web`, `tienda-cli`, `pedidos` y `pagos`.
 
@@ -2061,8 +2054,8 @@ introspección con caché solo donde haga falta.
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 5 de 9 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-13/jdk/RbacScopes.java` y
-`examples/microservicios/modulo-13/f065-rbac-scopes/`.
+Módulo 9, Lección 5 de 9 · Fase 1 · 2 h
+`f065-rbac-scopes`.
 
 #### 2. PRERREQUISITOS
 
@@ -2319,7 +2312,6 @@ class PedidosController {
 1. Ejecuta la matriz sin dependencias (ejecutado con JDK 25.0.5):
 
 ```bash
-cd examples/microservicios/modulo-13/jdk
 java RbacScopes.java
 ```
 
@@ -2340,7 +2332,7 @@ OK: 20 decisiones coinciden con la tabla esperada
 ```
 
 2. Repite la matriz con tokens reales de Keycloak (`docker compose up -d --wait keycloak` y la app con
-   `cd ../f065-rbac-scopes && ../gradlew -q bootRun`):
+   `cd../f065-rbac-scopes &&../gradlew -q bootRun`):
 
 ```bash
 tok() { curl -s localhost:8180/realms/tienda/protocol/openid-connect/token -d grant_type=password \
@@ -2363,7 +2355,7 @@ WIDGET  POST /pedidos -> 403 · DELETE /pedidos/7 -> 403
 SOFIA   POST /pedidos -> 403 · DELETE /pedidos/7 -> 403
 ```
 
-   **Captura comentada:** el token de sofía sí trae `pedidos:borrar` en `scope` (compruébalo con `java ../jdk/VerToken.java
+   **Captura comentada:** el token de sofía sí trae `pedidos:borrar` en `scope` (compruébalo con `java../jdk/VerToken.java
    "$SOFIA"`), porque `tienda-cli` puede pedirlo; el rol `soporte` no lo concede y por eso el `DELETE` es 403.
 
 3. **Fallo deliberado:** en `Permisos.puede` cambia `return porRol && porScope;` por `return porRol || porScope;`.
@@ -2479,8 +2471,8 @@ o en un motor de políticas.
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 6 de 9 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-13/jdk/IntercambioDeTokens.java` y
-`examples/microservicios/modulo-13/f066-token-exchange/`.
+Módulo 9, Lección 6 de 9 · Fase 1 · 2 h
+`f066-token-exchange`.
 
 #### 2. PRERREQUISITOS
 
@@ -2724,7 +2716,6 @@ El cliente `pedidos` en `keycloak/tienda-realm.json`:
 1. Mira el canje y sus rechazos en un STS mínimo (ejecutado con JDK 25.0.5):
 
 ```bash
-cd examples/microservicios/modulo-13/jdk
 java IntercambioDeTokens.java
 ```
 
@@ -2883,8 +2874,8 @@ debe recibir un token con su propia audiencia y lo justo de scope, con vida de m
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 7 de 9 · Fase 1 · 2,5 h · Laboratorio `examples/microservicios/modulo-13/jdk/MtlsDemo.java`,
-`examples/microservicios/modulo-13/jdk/generar-certs.sh` y `examples/microservicios/modulo-13/mtls-kind/` (kind + Istio).
+Módulo 9, Lección 7 de 9 · Fase 1 · 2,5 h
+`generar-certs.sh` y `mtls-kind` (kind + Istio).
 
 #### 2. PRERREQUISITOS
 
@@ -3107,7 +3098,6 @@ más, como paso siguiente, `mtls-kind/k8s/solo-pedidos.yaml`, una `Authorization
 1. Genera la PKI y ejecuta la demostración (ejecutado con OpenSSL 3.0.13 y JDK 25.0.5):
 
 ```bash
-cd examples/microservicios/modulo-13/jdk
 ./generar-certs.sh
 java MtlsDemo.java
 ```
@@ -3147,9 +3137,9 @@ openssl x509 -in target/certs/pedidos.crt -noout -ext subjectAltName,extendedKey
    **Output esperado:**
 
 ```text
-X509v3 Subject Alternative Name: 
+X509v3 Subject Alternative Name:
     URI:spiffe://cluster.local/ns/tienda/sa/pedidos
-X509v3 Extended Key Usage: 
+X509v3 Extended Key Usage:
     TLS Web Client Authentication
 ```
 
@@ -3188,7 +3178,6 @@ El test es el propio `MtlsDemo.java` (termina con código 0 solo si se cumplen l
 `mtls-kind/verificar-mtls.sh`, que termina en `RESULTADO: OK` o con código 1:
 
 ```bash
-cd examples/microservicios/modulo-13
 ./verificar.sh --solo-jdk        # incluye generar-certs.sh y MtlsDemo.java
 ./verificar.sh --mtls            # además, kind + Istio
 ```
@@ -3219,7 +3208,7 @@ en el servicio).
 «connection reset by peer» o `upstream connect error or disconnect/reset before headers`.
 
 **Cómo se ve:** `kubectl get pods` muestra reinicios, o el cliente externo recibe `curl: (56) Recv failure: Connection
-reset by peer`; el mismo patrón que la línea `000 ... exit code 56` del laboratorio.
+reset by peer`; el mismo patrón que la línea `000... exit code 56` del laboratorio.
 
 **Diagnóstico:** el cliente no tiene sidecar (otro namespace sin inyección, un *job* creado antes de etiquetar el
 namespace, un servicio en una VM). `istioctl x describe pod <pod>` y `kubectl get pod <pod> -o jsonpath='{.spec.containers[*].name}'`
@@ -3262,8 +3251,8 @@ principio *Zero-Trust* (Módulo 27) exige cifrar y autenticar cada salto.
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 8 de 9 · Fase 1 · 2 h · Laboratorio `examples/microservicios/modulo-13/vault/`,
-`examples/microservicios/modulo-13/jdk/VaultKv.java` y `examples/microservicios/modulo-13/f068-vault/`.
+Módulo 9, Lección 8 de 9 · Fase 1 · 2 h
+`VaultKv.java` y `f068-vault`.
 
 #### 2. PRERREQUISITOS
 
@@ -3322,7 +3311,7 @@ necesita en lugar de leerlo de un archivo.
 
 #### 7. EXPLICACIÓN INTERMEDIA
 
-- **Motores (*secrets engines*):** **KV v2** guarda pares clave-valor con versiones (en modo dev viene montado en
+- **Motores (*secrets engines*):**KV v2** guarda pares clave-valor con versiones (en modo dev viene montado en
   `secret/`; la API añade `data/`: se lee en `GET /v1/secret/data/<ruta>`); **database** genera usuarios de base de
   datos temporales (secretos dinámicos con *lease*); **transit** cifra datos sin entregar la clave; **pki** emite
   certificados.
@@ -3521,7 +3510,6 @@ ocultos y la versión del secreto.
 1. Levanta Vault, siembra el secreto y obtén un token restringido:
 
 ```bash
-cd examples/microservicios/modulo-13
 docker compose up -d --wait vault
 export VAULT_TOKEN=$(./vault/sembrar.sh)
 echo "${VAULT_TOKEN:0:4}…"
@@ -3617,7 +3605,6 @@ class SecretoDesdeVaultTest {
 ```
 
 ```bash
-cd examples/microservicios/modulo-13
 export VAULT_TOKEN=$(./vault/sembrar.sh)
 cd f068-vault && ../gradlew test
 ```
@@ -3688,8 +3675,8 @@ tiempo de ejecución, nunca se registran y, si una aplicación necesita demostra
 
 #### 1. UBICACIÓN
 
-Módulo 9, Lección 9 de 9 · Fase 1 · 1,5 h · Laboratorio `examples/microservicios/modulo-13/f069-escaneo/` y
-`examples/microservicios/modulo-13/jdk/MiniEscaner.java`.
+Módulo 9, Lección 9 de 9 · Fase 1 · 1,5 h
+`MiniEscaner.java`.
 
 #### 2. PRERREQUISITOS
 
@@ -3919,7 +3906,6 @@ public class MiniEscaner {
 1. Ejecuta el mini escáner sobre el «antes» y el «después» (ejecutado con JDK 25.0.5):
 
 ```bash
-cd examples/microservicios/modulo-13/jdk
 java MiniEscaner.java ../f069-escaneo/antes/pom.xml; echo "código de salida: $?"
 java MiniEscaner.java ../f069-escaneo/despues/pom.xml; echo "código de salida: $?"
 ```
@@ -3950,7 +3936,7 @@ docker run --rm -v academia-trivy-cache:/root/.cache/ -v "$PWD":/src:ro aquasec/
    **Output esperado:** una tabla para `pom.xml (pom)` con un total de hallazgos HIGH/CRITICAL mayor que cero (más que
    los dos del mini escáner: Trivy conoce también CVE-2021-45046 y otros avisos de esas versiones), filas con
    `org.apache.logging.log4j:log4j-core │ CVE-2021-44228 │ CRITICAL │ fixed │ 2.14.1 │ 2.15.0, 2.3.1, 2.12.2` y
-   `org.yaml:snakeyaml │ CVE-2022-1471 │ HIGH │ ... │ 1.33 │ 2.0`, y `código de salida: 1`. El mismo comando con
+   `org.yaml:snakeyaml │ CVE-2022-1471 │ HIGH │... │ 1.33 │ 2.0`, y `código de salida: 1`. El mismo comando con
    `/src/despues` termina con `código de salida: 0`.
 
 3. Revisa los `Dockerfile`:
@@ -3970,7 +3956,7 @@ npx snyk@1.1309.0 auth                      # abre el navegador una vez
 cd antes && npx snyk@1.1309.0 test --severity-threshold=high; echo "código de salida: $?"
 ```
 
-   **Output esperado:** `Tested 2 dependencies for known issues` (o más, si cuenta transitivas), entradas `✗ ... [Critical
+   **Output esperado:** `Tested 2 dependencies for known issues` (o más, si cuenta transitivas), entradas `✗... [Critical
    Severity]` para log4j-core con la ruta «introduced by» y `código de salida: 1`. Snyk necesita Maven en el `PATH`
    para resolver el árbol: si no lo tienes instalado, usa `brew install maven`.
 
@@ -4055,4 +4041,3 @@ CVE-2022-1471
 
 `--exit-code 0`, `|| true` y una lista de ignorados sin motivo ni fecha convierten el escáner en decoración. Cada
 excepción lleva comentario, responsable y fecha de revisión, y el job falla por defecto.
-

@@ -247,19 +247,19 @@ Escribe \(G(s) = \dfrac{K(s+z_1)\cdots}{s^N(s+p_1)\cdots}\). El **tipo** es \(N\
 - Contar como integrador un polo que no está exactamente en cero.
 
 - **1.**\(G = \dfrac{50}{(s+5)(s+10)}\): error ante escalón.
-  
+
   <details><summary>Respuesta</summary>
-  
+
   \(K_p = 1\): \(e = 0{,}5\).
-  
+
   </details>
 
 - **2.**\(G = \dfrac{20}{s(s+5)(s+1)}\): error ante rampa.
-  
+
   <details><summary>Respuesta</summary>
-  
+
   \(K_v = 20/5 = 4\): \(e = 0{,}25\).
-  
+
   </details>
 
 #### Más ejemplos resueltos
@@ -352,5 +352,4 @@ cambia `G` a `10/(s*(s+2))` y calcula \(K_v=\lim_{s\to0}sG\) (Ejemplo 2) para co
 
 **Límite:** estas constantes (\(K_p\), \(K_v\), \(K_a\)) se calculan sobre \(G\) de **lazo abierto**, no sobre la función de lazo cerrado; mezclarlas es uno de los errores comunes señalados al final de esta sección.
 
-**Conexión con el proyecto integrador:** ejecuta `python3 examples/control-1-tanque/simular.py --salida /tmp/control-1-tanque` y compara el `error_final` que imprime para P frente a PI. Con P puro queda un error permanente (el tanque se estabiliza en 1,3077 m en vez de 1,5 m); con PI el integrador lo elimina. Anota en tu bitácora por qué, usando lo aprendido aquí: P dado que el tanque es tipo 0 en lazo abierto, y PI porque agrega el polo en el origen que sube el tipo a 1.
-
+**Conexión con el proyecto integrador:** ejecuta `python3 simular.py --salida /tmp/control-1-tanque` y compara el `error_final` que imprime para P frente a PI. Con P puro queda un error permanente (el tanque se estabiliza en 1,3077 m en vez de 1,5 m); con PI el integrador lo elimina. Anota en tu bitácora por qué, usando lo aprendido aquí: P dado que el tanque es tipo 0 en lazo abierto, y PI porque agrega el polo en el origen que sube el tipo a 1.

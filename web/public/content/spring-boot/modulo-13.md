@@ -1,6 +1,5 @@
 # Módulo 13: Programación reactiva con WebFlux
 
-
 ## Comienza desde cero: crea una API WebFlux ejecutable
 
 Este capítulo no presupone que ya tienes una aplicación reactiva. Crearás `demo-reactive`, una API mínima que guarda entregas en H2 mediante R2DBC y expone un flujo HTTP. Primero harás funcionar una vertical pequeña; después introducirás `WebClient` y compararás el resultado con MVC.
@@ -222,7 +221,7 @@ Buscar una guía devuelve cero o una entrega. Listar guías puede devolver mucha
 
 **2. Hazlo tú**
 
-Desde `examples/spring-reactor-rutaflow`, abre `src/main/java/academia/rutaflow/reactor/EntregaFlows.java` y `src/test/java/academia/rutaflow/reactor/MonoFluxTest.java`. Ejecuta:
+Desde el código de este tema, abre `src/main/java/academia/rutaflow/reactor/EntregaFlows.java` y `src/test/java/academia/rutaflow/reactor/MonoFluxTest.java`. Ejecuta:
 
 ```bash
 ./mvnw -Dtest=MonoFluxTest#monoEntregaCeroOUnaGuia test
@@ -322,7 +321,6 @@ Entrega la salida de los cuatro tests y explica con tus palabras la diferencia e
 
 **¿Por qué es importante?** Elegir y probar el tipo de publisher ayuda a conservar la diferencia entre ausencia de datos, secuencias y errores sin bloquear la respuesta.
 
-
 **Aplicación y decisión:** En el proyecto integrador, usa Mono para una respuesta y Flux para una secuencia solo cuando la cadena pueda conservar su contrato de demanda. El límite es explícito: un repositorio bloqueante sigue bloqueando aunque se envuelva en Mono; la prueba Reactor no demuestra rendimiento de producción.
 
 ### Tema 2: WebClient y composición no bloqueante · Avanzado · 40 min
@@ -337,7 +335,7 @@ Una aplicación reactiva necesita la dirección del servicio externo desde confi
 
 **2. Hazlo tú**
 
-Desde `examples/spring-webclient-rutaflow`, abre `src/main/java/academia/rutaflow/webclient/TarifaClient.java`. Observa el constructor: recibe el builder y el valor `tarifa.base-url`, que se convierte en la URL base.
+Desde el código de este tema, abre `src/main/java/academia/rutaflow/webclient/TarifaClient.java`. Observa el constructor: recibe el builder y el valor `tarifa.base-url`, que se convierte en la URL base.
 
 Ejecuta la prueba que crea el cliente contra un servidor local:
 
@@ -439,7 +437,6 @@ Registra cuánto tarda la respuesta simulada y qué error produjo el timeout. Lu
 
 **¿Por qué es importante?** La composición evita bloquear durante la espera de red, y manejar error y timeout impide que una dependencia lenta o caída deje la operación sin límite.
 
-
 **Aplicación y decisión:** En el proyecto integrador, fija un timeout de la dependencia y comprueba el cuerpo de error del cliente HTTP. No mezcles block con el event loop; conservar composición no elimina la necesidad de límites de conexión y tratamiento de error.
 
 ### Tema 3: Cuándo WebFlux vale la complejidad, y R2DBC · Avanzado · 40 min
@@ -454,7 +451,7 @@ MVC y WebFlux sirven para construir APIs; la elección depende del tipo de I/O, 
 
 **2. Hazlo tú**
 
-Abre `examples/spring-webflux-decision-rutaflow/README.md` y compara estas combinaciones:
+Observa README.md y compara estas combinaciones:
 
 | Caso | Opción inicial | Qué confirmar |
 |---|---|---|
@@ -482,7 +479,7 @@ Reactor rechaza operaciones `block()` en threads marcados como no bloqueables, c
 
 **2. Hazlo tú**
 
-Abre `src/main/java/academia/rutaflow/decision/DeliveryController.java` en `examples/spring-webflux-decision-rutaflow`. Ejecuta la prueba HTTP:
+Abre `src/main/java/academia/rutaflow/decision/DeliveryController.java` en el código de este tema. Ejecuta la prueba HTTP:
 
 ```bash
 ./mvnw -Dtest=DecisionApplicationTest#blockInsideNettyEventLoopIsRejected test
@@ -508,7 +505,7 @@ Devolver `Mono` desde un método no vuelve reactiva una consulta JDBC. Para SQL 
 
 **2. Hazlo tú**
 
-Abre `src/main/java/academia/rutaflow/decision/DeliveryRepository.java` y `src/main/resources/application.yml`. Desde la carpeta del laboratorio ejecuta:
+Abre `src/main/java/academia/rutaflow/decision/DeliveryRepository.java` y `src/main/resources/application.yml`. Ejecuta:
 
 ```bash
 ./mvnw -Dtest=DecisionApplicationTest#r2dbcReadsAnExistingDelivery test
@@ -565,7 +562,6 @@ Entrega las pruebas de HTTP y R2DBC en verde. Para una elección real, compara M
 
 ---
 
-
 **Aplicación y decisión:** En el proyecto integrador, compara una vertical MVC/JDBC y otra WebFlux/R2DBC con carga equivalente antes de elegir. La diferencia de modelo de programación no acredita más throughput; el laboratorio demuestra persistencia reactiva local y debe medirse aparte.
 
 ### Tema 4: Backpressure real en WebFlux con reactor-test · Avanzado · 35 min
@@ -574,10 +570,9 @@ Entrega las pruebas de HTTP y R2DBC en verde. Para una elección real, compara M
 
 **¿Por qué es importante?** Si el consumidor va más lento que el productor, Reactive Streams deja que solicite la cantidad que puede procesar. Los operadores pueden guardar elementos o cambiar las tandas de demanda; por eso la posición donde medimos importa.
 
-**Antes de empezar:** conocer `Flux` y una prueba básica de `StepVerifier` (Módulo 13). Continúa en el ejemplo existente `examples/spring-reactor-rutaflow/`, que ya incluye `reactor-test`.
+**Antes de empezar:** conocer `Flux` y una prueba básica de `StepVerifier` (Módulo 13). Continúa en el ejemplo existente `spring-reactor-rutaflow`, que ya incluye `reactor-test`.
 
 ```bash
-cd examples/spring-reactor-rutaflow
 ./mvnw -q -Dtest=BackpressureDemandTest test
 ```
 
@@ -598,10 +593,7 @@ sequenceDiagram
 
 **Hazlo tú:** Abre `src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Encuentra `StepVerifier.create(source, 0)` y la lista `received`. Corre el comando del laboratorio.
 
-Archivo concreto para esta comprobación: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`.
-
-
-Para comprobar «Empieza con cero solicitudes», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+Para comprobar «Empieza con cero solicitudes», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -632,8 +624,7 @@ assertThat(upstreamRequests).containsExactly(3L, 7L);
 
 Ejecuta la prueba y compara tu predicción con `upstreamRequests`.
 
-
-Para comprobar «Solicita tres y luego siete», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+Para comprobar «Solicita tres y luego siete», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -653,8 +644,7 @@ Para comprobar «Solicita tres y luego siete», consulta: `examples/spring-react
 
 **Hazlo tú:** Ejecuta `stepVerifierSinParametroInicialSolicitaDemandaIlimitada` y lee la lista capturada por `doOnRequest`.
 
-
-Para comprobar «Mira la demanda sin límite», consulta: `examples/spring-reactor-rutaflow/src/test/java/academia/rutaflow/reactor/BackpressureDemandTest.java`. Desde `examples/spring-reactor-rutaflow` repite la comprobación:
+Para comprobar «Mira la demanda sin límite», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -664,7 +654,7 @@ Para comprobar «Mira la demanda sin límite», consulta: `examples/spring-react
 
 **Fallo deliberado:** Cambia `StepVerifier.create(source)` en ese test por `StepVerifier.create(source, 0).thenRequest(3)`. **Diagnóstico:** La aserción de demanda ilimitada falla porque el origen vio `3`, no `Long.MAX_VALUE`. Restaura el valor por defecto y corre la suite.
 
-**Entiende:** **Límite:** esta prueba mide `Flux.range`, no demuestra por sí sola cuánto almacena cada operador ni que un endpoint WebFlux vaya a soportar cualquier carga. `flatMap`, `buffer` y otros operadores pueden cambiar la demanda hacia arriba.
+**Entiende:**Límite:** esta prueba mide `Flux.range`, no demuestra por sí sola cuánto almacena cada operador ni que un endpoint WebFlux vaya a soportar cualquier carga. `flatMap`, `buffer` y otros operadores pueden cambiar la demanda hacia arriba.
 
 **Cierra:** Explica por qué “usa WebFlux” no equivale a “memoria ilimitada protegida”.
 

@@ -1,8 +1,0 @@
-Catálogo {{ .Values.image.tag | default .Chart.AppVersion }} instalado como «{{ .Release.Name }}» en {{ .Release.Namespace }}.
-
-Pruébalo:
-  kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "catalogo.fullname" . }} 8085:{{ .Values.service.port }}
-  curl -s localhost:8085/api/info
-
-Test del chart:
-  helm test {{ .Release.Name }} -n {{ .Release.Namespace }}

@@ -1,13 +1,12 @@
 # Módulo 19: Empaquetado y despliegue
 
-
 ## Aprende construyendo
 
 Cada tema se verifica con mecanismos reales y ejecutables sin depender de un daemon de Docker disponible en este entorno: el modo `layertools` embebido en el propio JAR de Spring Boot, la meta de Maven `spring-boot:process-aot` (que ejecuta de verdad el motor de AOT de Spring, sin necesitar un compilador nativo de GraalVM instalado), y los endpoints reales de Actuator agrupados por probes de Kubernetes. Continúa sobre `demo-cloud` (Módulo 16) o un proyecto nuevo.
 
 ### Tema 1: Fat JAR vs capas de Docker · Intermedio · 40 min
 
-Duración: 35–45 min. **Meta:** empaquetar RutaFlow en un JAR ejecutable, separar sus partes y construir una imagen con capas que puedan reutilizarse entre versiones. Sigue `examples/spring-boot-layered-jar-rutaflow/`; necesita Java 25 y Maven Wrapper. Para construir la imagen, usa Docker o Podman.
+Duración: 35–45 min. **Meta:** empaquetar RutaFlow en un JAR ejecutable, separar sus partes y construir una imagen con capas que puedan reutilizarse entre versiones. Sigue `spring-boot-layered-jar-rutaflow`; necesita Java 25 y Maven Wrapper. Para construir la imagen, usa Docker o Podman.
 
 **¿Por qué es importante?** Cuando publicas una versión, las capas que no cambiaron se pueden reutilizar; esto puede reducir lo que reconstruyes y transfieres entre despliegues.
 
@@ -28,7 +27,7 @@ El JAR se parece a un ZIP que reúne tu código y las bibliotecas que necesita. 
 
 **2. Hazlo tú**
 
-En la terminal, entra a `examples/spring-boot-layered-jar-rutaflow/` y ejecuta:
+En la terminal, entra a `spring-boot-layered-jar-rutaflow` y ejecuta:
 
 ```bash
 ./mvnw clean package
@@ -109,7 +108,7 @@ En otra terminal, pide el estado: `curl -s http://localhost:8080/ruta`.
 
 **Resultado esperado:** `{"codigo":"RF-314","estado":"en camino"}`.
 
-**Fallo deliberado:** ejecuta `podman build --build-arg JAR_FILE=target/no-existe.jar -t rutaflow-capas:error .`. **Diagnóstico:** la etapa `COPY` no encuentra el JAR; recompila y revisa la ruta `JAR_FILE`.
+**Fallo deliberado:** ejecuta `podman build --build-arg JAR_FILE=target/no-existe.jar -t rutaflow-capas:error.`. **Diagnóstico:** la etapa `COPY` no encuentra el JAR; recompila y revisa la ruta `JAR_FILE`.
 
 **3. Entiende**
 
@@ -138,7 +137,7 @@ Observa la salida: Podman debe marcar como reutilizadas las instrucciones `COPY`
 
 **Resultado esperado:** la respuesta cambia a `{"codigo":"RF-314","estado":"entregado"}`; las capas de dependencias aparecen como `Using cache`.
 
-**Fallo deliberado:** comenta `COPY --from=builder /builder/extracted/application/ ./` y reconstruye. **Diagnóstico:** si la imagen se construye, el error aparece al arrancar porque falta la clase principal; restaura la copia de `application/`.
+**Fallo deliberado:** comenta `COPY --from=builder /builder/extracted/application/./` y reconstruye. **Diagnóstico:** si la imagen se construye, el error aparece al arrancar porque falta la clase principal; restaura la copia de `application/`.
 
 **3. Entiende**
 
@@ -154,7 +153,7 @@ Fuentes oficiales: [capas y empaquetado Maven de Spring Boot](https://docs.sprin
 
 ### Tema 2: GraalVM native image · Avanzado · 45 min
 
-Duración: 45–60 min. **Meta:** ejecutar una app con el AOT de Spring y aprender qué hace falta para convertirla en un binario nativo. Usa `examples/spring-boot-native-rutaflow/`, Java 25 y Maven Wrapper.
+Duración: 45–60 min. **Meta:** ejecutar una app con el AOT de Spring y aprender qué hace falta para convertirla en un binario nativo. Usa `spring-boot-native-rutaflow`, Java 25 y Maven Wrapper.
 
 **¿Por qué es importante?** Un binario nativo puede iniciar rápido y usar menos memoria en algunos servicios; hay que medirlo porque su compilación tarda más y limita funciones dinámicas.
 
@@ -176,7 +175,7 @@ Spring puede preparar parte de la aplicación durante el build. Eso no convierte
 
 **2. Hazlo tú**
 
-En `examples/spring-boot-native-rutaflow/`, ejecuta:
+En el código de este tema, ejecuta:
 
 ```bash
 ./scripts/verify-aot.sh
@@ -271,7 +270,7 @@ El inicio rápido importa si una instancia debe atender tráfico pronto; el tiem
 
 **2. Hazlo tú**
 
-Ejecuta `target/spring-boot-native-rutaflow` en el mismo sistema donde lo compilaste y comprueba `/estado` y `/mensaje`. Si lo compilaste dentro del contenedor ARM64/Linux, sigue el comando de ejecución de `examples/spring-boot-native-rutaflow/README.md`; consulta `http://localhost:18081`. Después ejecuta el JAR normal y compara las dos salidas y los tamaños:
+Ejecuta `target/spring-boot-native-rutaflow` en el mismo sistema donde lo compilaste y comprueba `/estado` y `/mensaje`. Si lo compilaste dentro del contenedor ARM64/Linux, sigue el comando de ejecución de `README.md`; consulta `http://localhost:18081`. Después ejecuta el JAR normal y compara las dos salidas y los tamaños:
 
 ```bash
 du -h target/spring-boot-native-rutaflow target/spring-boot-native-rutaflow-0.1.0-SNAPSHOT.jar
@@ -297,7 +296,7 @@ Fuentes oficiales: [AOT y perfil Maven `native`](https://docs.spring.io/spring-b
 
 ### Tema 3: Health checks para Kubernetes · Avanzado · 40 min
 
-Duración: 40–50 min. **Meta:** configurar Spring Actuator para que Kubernetes pueda distinguir un contenedor que debe reiniciar de uno que solo debe dejar de recibir tráfico. Usa `examples/spring-boot-probes-rutaflow/`, Java 25 y Maven Wrapper. El laboratorio local prueba la app; para observar acciones del kubelet necesitas un clúster.
+Duración: 40–50 min. **Meta:** configurar Spring Actuator para que Kubernetes pueda distinguir un contenedor que debe reiniciar de uno que solo debe dejar de recibir tráfico. Usa `spring-boot-probes-rutaflow`, Java 25 y Maven Wrapper. El laboratorio local prueba la app; para observar acciones del kubelet necesitas un clúster.
 
 **¿Por qué es importante?** Una ruta de salud mal escrita puede hacer que Kubernetes marque el pod como fallido, aunque la aplicación esté funcionando.
 
@@ -325,8 +324,6 @@ Abre `src/main/resources/application.properties` y revisa:
 management.endpoint.health.probes.enabled=true
 management.endpoints.web.exposure.include=health
 ```
-
-Desde `examples/spring-boot-probes-rutaflow/` ejecuta:
 
 ```bash
 ./mvnw -q test
@@ -569,7 +566,7 @@ Si fallas dos o más, vuelve al Paso 3. **Errores comunes:** construir sin fijar
 
 ## Laboratorio práctico
 
-**Objetivo:** empaquetar RutaFlow, ejecutar el modo AOT disponible y dejar probes configurados para un despliegue. Los tres ejemplos están en `examples/spring-boot-layered-jar-rutaflow/`, `examples/spring-boot-native-rutaflow/` y `examples/spring-boot-probes-rutaflow/`.
+**Objetivo:** empaquetar RutaFlow, ejecutar el modo AOT disponible y dejar probes configurados para un despliegue. Los tres ejemplos están en el código de este tema, `spring-boot-native-rutaflow` y `spring-boot-probes-rutaflow`.
 
 | Evidencia | Comando | Debe observarse |
 |---|---|---|

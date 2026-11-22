@@ -1,9 +1,0 @@
-{
-  "nombre": "Monolito modular (2 tareas)",
-  "pedidosMes": 3000000,
-  "servicios": [
-    { "nombre": "tienda", "tareas": 2, "vcpu": 1, "gb": 2 }
-  ],
-  "red": { "natGateways": 1, "gbSalientesMes": 50, "llamadasInternasPorPedido": 0, "kbPorLlamada": 0, "fraccionEntreZonas": 0 },
-  "logs": { "lineasPorPedido": 4, "bytesPorLinea": 300 }
-}

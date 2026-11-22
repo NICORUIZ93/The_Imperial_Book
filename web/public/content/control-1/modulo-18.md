@@ -21,8 +21,6 @@ El controlador decide cuánta acción aplicar según el error. Aquí verás qué
 
 \[u(t) = K_p\,e(t) + K_i\int_0^t e(\tau)\,d\tau + K_d\frac{de(t)}{dt}\]
 
-    
-
 \[C(s) = K_p + \frac{K_i}{s} + K_d s = K_p\left(1 + \frac{1}{T_i s} + T_d s\right)\]
 
 *\(T_i = K_p/K_i\) es el tiempo integral y \(T_d = K_d/K_p\) el tiempo derivativo.*
@@ -516,7 +514,7 @@ cambia `CG` por la del PD del Ejemplo 7 de Tema 3 (\(CG=\dfrac{4s+20}{s(s+4)}\),
 
 **Límite:** esta tabla de ventajas/desventajas es una guía general; la elección real de controlador (Ejemplos 2-5) siempre depende del caso concreto — ruido del sensor, velocidad del proceso y tolerancia al sobrepico — no de aplicar la tabla mecánicamente.
 
-**Conexión con el proyecto integrador:** la bitácora de `examples/control-1-tanque/` pide justamente esta decisión con datos, no solo con la tabla. Con los dos CSV que genera `simular.py` (P y PI), argumenta por escrito por qué el PI es la elección correcta para un tanque que no puede quedarse con error permanente, y qué desventaja del PI (windup, si el caudal se satura en 1,5 m³/s) habría que vigilar en la planta real.
+**Conexión con el proyecto integrador:** la bitácora de `control-1-tanque` pide justamente esta decisión con datos, no solo con la tabla. Con los dos CSV que genera `simular.py` (P y PI), argumenta por escrito por qué el PI es la elección correcta para un tanque que no puede quedarse con error permanente, y qué desventaja del PI (windup, si el caudal se satura en 1,5 m³/s) habría que vigilar en la planta real.
 
 ### Tema 5: Sintonía de Ziegler-Nichols · Avanzado · 45 min
 
@@ -676,26 +674,25 @@ cambia `Ku, Pu` a `4.8, 1.2` y confirma los valores del Ejemplo 4 (\(K_p=2{,}4\)
 #### Práctica para resolver sola o solo
 
 - **1.**Planta \(\dfrac{2}{s+4}\) con P de \(K_p = 6\). Error ante escalón.
-  
+
   <details><summary>Respuesta</summary>
-  
+
   \(K_{pos} = 6\cdot\tfrac24 = 3\): error \(1/4 = 25\,\%\).
-  
+
   </details>
 
 - **2.**¿Qué acción usarías si el sensor es muy ruidoso y necesitas error cero?
-  
+
   <details><summary>Respuesta</summary>
-  
+
   PI: el I quita el error y se evita la D, que amplifica el ruido.
-  
+
   </details>
 
 - **3.**Escribe \(C(s)\) de un PID con \(K_p = 2\), \(T_i = 4\), \(T_d = 0{,}5\).
-  
-  <details><summary>Respuesta</summary>
-  
-  \(2\left(1 + \dfrac{1}{4s} + 0{,}5s\right) = 2 + \dfrac{0{,}5}{s} + s\).
-  
-  </details>
 
+  <details><summary>Respuesta</summary>
+
+  \(2\left(1 + \dfrac{1}{4s} + 0{,}5s\right) = 2 + \dfrac{0{,}5}{s} + s\).
+
+  </details>

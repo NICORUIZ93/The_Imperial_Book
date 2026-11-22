@@ -2,8 +2,7 @@
 
 Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `ApplicationContextRunner` y `MockMvc` reales, para que "la aplicación falla al arranque" o "el formato de error es consistente" sean afirmaciones comprobables, no solo descritas. Los Temas 1–4 tratan la configuración y los errores; los Temas 5–8 llevan esas mismas señales a Actuator: salud, métricas, sondas y logs.
 
-
-**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
@@ -693,7 +692,6 @@ public class ServicioExternoHealthIndicator implements HealthIndicator {
 
 **Resultado esperado:** Spring registra un `ServicioExterno` y un indicador llamado `pasarelaPagos`. En Boot 4, `Health` y `HealthIndicator` se importan desde `org.springframework.boot.health.contributor`. La ruta `/actuator/health` ya está expuesta por defecto; no añadas `metrics`, `info` ni `*` para esta práctica.
 
-
 **Fallo deliberado:** Cambia HealthIndicator por HealthIndicador en el import y compila el proyecto. **Diagnóstico:** el tipo no existe; corrige el import de Boot 4 antes de analizar la ruta HTTP.
 
 **Entiende:** El indicador devuelve una señal y Actuator la agrega. El componente no realiza una llamada de red a una pasarela real.
@@ -779,7 +777,6 @@ Ejecuta:
 
 **Resultado esperado:** Pasan tres métodos: la dependencia disponible produce `200/UP`, la caída produce `503/DOWN`, y esta cadena de seguridad responde `401` sin JWT. El token se firma con el `JwtService` real.
 
-
 **Fallo deliberado:** Invierte marcarComoNoDisponible por marcarComoDisponible en el caso DOWN y ejecuta ActuatorHealthTest. **Diagnóstico:** la dependencia sigue disponible y devuelve UP/200, no DOWN/503; restaura la preparación del fallo.
 
 **Entiende:** El test controla el estado de la dependencia para comprobar la respuesta operativa y mantiene la seguridad del proyecto.
@@ -804,7 +801,6 @@ Ejecuta solo el caso de caída:
 
 **Fallo deliberado:** La prueba esperaba `503` y recibió `200`: el indicador ocultó la dependencia caída. Restaura `Health.down()` y ejecuta los tres métodos.
 
-
 **Resultado esperado:** la mutación produce el fallo descrito; restaurado el código, la clase de pruebas vuelve a pasar. Conserva ambas salidas.
 
 **Entiende:** Un detalle textual de error no fuerza DOWN: el estado elegido por Health es lo que cambia la agregación y el status HTTP.
@@ -820,7 +816,6 @@ Archivo de trabajo: `src/main/java/com/example/demo/ServicioExternoHealthIndicat
 En producción conserva `management.endpoint.health.show-details=never` o configura `when-authorized` con roles. `always` solo está en recursos de test porque puede revelar nombres y diagnósticos. Un fallo de una dependencia externa suele afectar **readiness**, no **liveness**: reiniciar todas las instancias no arregla una pasarela caída y puede agravar el incidente; el siguiente tema detalla esa diferencia.
 
 **Evidencia para avanzar:** tres tests pasan, puedes explicar `200/UP`, `503/DOWN` y `401` sin token, y el fallo deliberado se detecta y revierte. El resultado cubre MockMvc con el contexto Spring; no prueba una red externa, TLS, el orquestador ni el navegador. Documentación primaria: [Spring Boot 4.1.2 — Health Information y `HealthIndicator`](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.health), [API `HealthIndicator`](https://docs.spring.io/spring-boot/api/java/org/springframework/boot/health/contributor/HealthIndicator.html) y [Starter Actuator 4.1.2](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html).
-
 
 Archivo concreto: `src/main/java/com/example/demo/ServicioExternoHealthIndicator.java`.
 
@@ -871,7 +866,6 @@ public TareaDTO crear(CrearTareaRequest request) {
 ```
 
 **Resultado esperado:** Spring inyecta el `MeterRegistry` y `rutaflow.tareas.creadas` arranca en `0`. El tag es fijo y acotado. La métrica describe actividad del proceso; la base de datos conserva los registros de negocio.
-
 
 **Fallo deliberado:** Elimina tareasCreadas.increment() de crear y ejecuta MetricasTareasTest después de incorporar el test del siguiente subtema. **Diagnóstico:** el contador queda registrado pero no sube al crear; restaura el incremento.
 
@@ -955,7 +949,6 @@ Ejecuta:
 
 **Resultado esperado:** El primer test crea una tarea real, observa `antes + 1` en `MeterRegistry` y recibe del endpoint el nombre, tag `origen=api` y valor. El segundo confirma `401` sin token. En esta configuración, el endpoint no se expone a usuarios anónimos.
 
-
 **Fallo deliberado:** Quita metrics de management.endpoints.web.exposure.include en la configuración de test. **Diagnóstico:** el endpoint deja de estar expuesto aunque el registry tenga el contador; restaura la exposición solo para el alcance indicado.
 
 **Entiende:** La exposición HTTP y el registro de métrica son fronteras distintas. El test también exige JWT y no prueba un exporter.
@@ -980,7 +973,6 @@ Ejecuta solo el test funcional:
 
 **Fallo deliberado:** El test esperaba que el contador subiera de `0.0` a `1.0`, pero siguió en `0.0`. **Diagnóstico:** Restaura el incremento y vuelve a ejecutar ambos métodos.
 
-
 **Resultado esperado:** la mutación produce el fallo descrito; restaurado el código, la clase de pruebas vuelve a pasar. Conserva ambas salidas.
 
 **Entiende:** El incremento está después del guardado del servicio. Eso no garantiza atomicidad entre transacción y métrica: un rollback posterior puede dejar una unidad contada.
@@ -996,7 +988,6 @@ Archivo de trabajo: `src/main/java/com/example/demo/ServicioTareas.java`.
 Usa tags pequeños y previsibles, como `origen=api`. No pongas IDs únicos en tags ni trates el contador como libro contable: la métrica en memoria no es transaccional ni durable, y el registro persistido sigue siendo la fuente de verdad. Mantén `metrics` fuera de la exposición pública por defecto o protégelo con autenticación/red de gestión.
 
 **Evidencia para avanzar:** un POST real eleva el contador en uno, Actuator devuelve nombre/tag/valor, el endpoint anónimo responde `401` y al retirar `increment()` la prueba falla. Este test comprueba una instancia local; no verifica un exporter ni la recepción por Prometheus. Documentación primaria: [Micrometer — Counters](https://docs.micrometer.io/micrometer/reference/concepts/counters.html), [Spring Boot 4.1.2 — Métricas](https://docs.spring.io/spring-boot/reference/actuator/metrics.html) y [Actuator — Exposición y seguridad de endpoints](https://docs.spring.io/spring-boot/reference/actuator/endpoints.html#actuator.endpoints.exposing).
-
 
 Archivo concreto: `src/main/java/com/example/demo/ServicioExternoHealthIndicator.java`.
 
@@ -1169,7 +1160,6 @@ Ejecuta solo esta prueba:
 **Cierra:** explica con tus palabras qué estado retira una instancia del tráfico y cuál le pide al orquestador reiniciarla; usa como evidencia los códigos `503` y `200` de las pruebas.
 
 ---
-
 
 **Aplicación y decisión:** En el proyecto integrador, conserva liveness independiente de la pasarela externa y prueba readiness con esa dependencia caída. Este límite evita reinicios en cadena, pero el test no acredita comportamiento del kubelet ni balanceo del clúster.
 

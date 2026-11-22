@@ -2,7 +2,6 @@
 
 Anotar un método con `@Transactional`, publicar en Kafka y exponer Actuator no demuestra que un microservicio preserve datos bajo fallos. Spring automatiza infraestructura mediante proxies y convenciones; para usarla con rigor debes conocer la frontera exacta de cada garantía. Este módulo convierte supuestos en pruebas de integración e incidentes controlados.
 
-
 ## Aprende construyendo
 
 Cada tema demuestra su garantía (o su ausencia) con un test real que la ejercita bajo condiciones adversas: self-invocation real detectada con `TransactionSynchronizationManager`, una carrera real de dos threads contra una restricción única de base de datos, un contrato verificado con `MockMvc` contra el JSON real de la API, y `TestObservationRegistry` (la utilidad oficial de test de Micrometer Observation) confirmando tags de baja cardinalidad reales.
@@ -13,7 +12,7 @@ Cada tema demuestra su garantía (o su ausencia) con un test real que la ejercit
 
 **¿Por qué es importante?** Una anotación no protege el trabajo si la llamada evita el proxy. En una operación de pedidos, esa diferencia puede decidir si un error revierte o deja datos a medias.
 
-**Necesitas:** Java 25 y Maven. Abre [`examples/spring-boot-transaction-boundary-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-transaction-boundary-rutaflow). La prueba usa `TransactionSynchronizationManager`, no mocks.
+**Necesitas:** Java 25 y Maven. La prueba usa `TransactionSynchronizationManager`, no mocks.
 
 #### Subtema 1.1: Detecta la transacción al entrar por el proxy · 8 min
 
@@ -133,10 +132,7 @@ Entrega el resultado de las tres pruebas y explica por qué `@Transactional` no 
 
 ---
 
-
 **Aplicación y decisión:** Práctica del proyecto integrador: mueve la anotación transaccional a un método privado y demuestra qué escritura parcial aparece; restaura la frontera pública del servicio. Una transacción SQL no incluye una llamada HTTP ni un evento Kafka.
-
-Desde `examples/spring-boot-transaction-boundary-rutaflow`, ejecuta la comprobación del laboratorio:
 
 ```bash
 ./mvnw -q test
@@ -148,7 +144,7 @@ Desde `examples/spring-boot-transaction-boundary-rutaflow`, ejecuta la comprobac
 
 **¿Por qué es importante?** Un timeout puede ocurrir después de guardar. El cliente reintenta sin saber si su pedido se creó; una clave persistida evita ejecutar el mismo efecto otra vez.
 
-**Necesitas:** Módulo 4 (SQL) y Módulo 10 de Spring Boot (Kafka). Abre [`examples/spring-boot-idempotency-rutaflow/`](https://github.com/NICORUIZ93/The_Imperial_Book/tree/main/examples/spring-boot-idempotency-rutaflow). La prueba de la carrera usa PostgreSQL real en Testcontainers.
+**Necesitas:** Módulo 4 (SQL) y Módulo 10 de Spring Boot (Kafka). La prueba de la carrera usa PostgreSQL real en Testcontainers.
 
 #### Subtema 2.1: Deja que la base imponga la clave única · 8 min
 
@@ -158,7 +154,7 @@ Un `find` seguido de `save` tiene una ventana de carrera: dos solicitudes pueden
 
 **2. Hazlo tú**
 
-Abre `src/main/resources/db/migration/V1__create_idempotency_record.sql` y revisa `operation_key ... UNIQUE`. Corre:
+Abre `src/main/resources/db/migration/V1__create_idempotency_record.sql` y revisa `operation_key... UNIQUE`. Corre:
 
 ```bash
 ./scripts/verify-idempotency.sh
@@ -240,7 +236,7 @@ La clave de una solicitud entrante y el identificador de un evento cumplen funci
 
 **2. Hazlo tú**
 
-Abre `examples/spring-kafka-rutaflow/src/main/java/academia/rutaflow/inbox/InboxProcessor.java` y las pruebas `inboxHaceIdempotenteElEfectoDeNegocio` y `replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion` en `EnvioEventPublisherTest.java`. Desde el laboratorio Kafka ejecuta:
+Observa InboxProcessor.java y las pruebas `inboxHaceIdempotenteElEfectoDeNegocio` y `replayTrasFallarLaMarcaDespuesDelAckConservaUnaSolaProyeccion` en `EnvioEventPublisherTest.java`. Ejecuta:
 
 ```bash
 ./mvnw test
@@ -260,16 +256,15 @@ Dibuja ambas claves: HTTP `operation_key` para repetir una solicitud; Kafka `eve
 
 **Límite del laboratorio:** la tabla demuestra unicidad, no implementa una API idempotente completa. En producción, asocia la clave al principal y a la operación, compara un hash del request y conserva la respuesta original con una política de retención.
 
-**Fuentes:** [Spring JDBC con PostgreSQL](https://docs.spring.io/spring-framework/reference/data-access/jdbc.html), [PostgreSQL: INSERT y ON CONFLICT](https://www.postgresql.org/docs/current/sql-insert.html), [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [`./examples/spring-kafka-rutaflow/README.md`](https://github.com/NICORUIZ93/The_Imperial_Book/blob/main/examples/spring-kafka-rutaflow/README.md).
+**Fuentes:** [Spring JDBC con PostgreSQL](https://docs.spring.io/spring-framework/reference/data-access/jdbc.html), [PostgreSQL: INSERT y ON CONFLICT](https://www.postgresql.org/docs/current/sql-insert.html), [Testcontainers PostgreSQL](https://java.testcontainers.org/modules/databases/postgres/) y [`./README.md`](https://github.com/NICORUIZ93/The_Imperial_Book/blob/main/README.md).
 
 ---
-
 
 **Aplicación y decisión:** En el proyecto integrador, conserva operation_key para repetir HTTP y eventId para deduplicar consumo; son contratos de fronteras distintas. No declares exactamente una vez a partir de una tabla con clave única sin revisar el efecto externo.
 
 ### Tema 3: Contratos ejecutables protegen despliegues independientes · Avanzado · 35 min
 
-**¿Por qué es importante?** El contrato es lo que el consumidor recibe por HTTP: status, headers y JSON; una discrepancia puede romper apps móviles que se actualizan después del backend. El laboratorio real vive en `examples/spring-boot-integrador-rutaflow/`; sus pruebas usan Spring, seguridad y PostgreSQL con Testcontainers. **Requisito:** Docker debe estar iniciado para ejecutar esa suite.
+**¿Por qué es importante?** El contrato es lo que el consumidor recibe por HTTP: status, headers y JSON; una discrepancia puede romper apps móviles que se actualizan después del backend. El laboratorio real vive en `spring-boot-integrador-rutaflow`; sus pruebas usan Spring, seguridad y PostgreSQL con Testcontainers. **Requisito:** Docker debe estar iniciado para ejecutar esa suite.
 
 #### Subtema 3.1: Lee la respuesta que recibe la app · 8 min
 
@@ -278,7 +273,6 @@ Dibuja ambas claves: HTTP `operation_key` para repetir una solicitud; Kafka `eve
 **Hazlo tú:** Abre `src/main/java/academia/rutaflow/integrador/entrega/EntregaController.java` y `EntregaResponse.java`. Anota método y ruta, status exitoso, encabezado de ubicación y campos JSON. Mira `postRecorreHttpCapasFlywayYPostgres` en `src/test/java/academia/rutaflow/integrador/entrega/ArquitecturaIntegradaTest.java`.
 
 ```bash
-cd examples/spring-boot-integrador-rutaflow
 ./mvnw -q test -Dtest=ArquitecturaIntegradaTest#postRecorreHttpCapasFlywayYPostgres
 ```
 
@@ -348,12 +342,11 @@ cd examples/spring-boot-integrador-rutaflow
 
 ---
 
-
 **Aplicación y decisión:** En el proyecto integrador, guarda status, Location y campos públicos como contrato del cliente. Límite: el test no certifica compatibilidad de todas las versiones móviles; cualquier cambio de significado exige revisión del consumidor.
 
 ### Tema 4: Observabilidad sirve a un objetivo y a una decisión · Avanzado · 40 min
 
-**¿Por qué es importante?** Si una solicitud pasa por varios servicios, un error aislado no dice dónde se perdió ni cuánto afecta al usuario. El laboratorio `examples/spring-tracing-rutaflow/` enlaza una petición HTTP con dos servicios y Jaeger.
+**¿Por qué es importante?** Si una solicitud pasa por varios servicios, un error aislado no dice dónde se perdió ni cuánto afecta al usuario. El laboratorio `spring-tracing-rutaflow` enlaza una petición HTTP con dos servicios y Jaeger.
 
 #### Subtema 4.1: Instrumenta el trabajo de negocio · 8 min
 
@@ -372,7 +365,6 @@ Observation.createNotStarted("rutaflow.delivery.prepare", observations)
 Empaqueta el proyecto para revisar que el ejemplo compila:
 
 ```bash
-cd examples/spring-tracing-rutaflow
 ./mvnw -q package -DskipTests
 ```
 
@@ -388,7 +380,7 @@ cd examples/spring-tracing-rutaflow
 
 **Contexto:** La app de Entregas llama a Inventario por HTTP. El trace ID permite encontrar ambos spans como parte del mismo recorrido.
 
-**Hazlo tú:** Con Docker Compose o Podman Compose disponible, desde `examples/spring-tracing-rutaflow/` ejecuta:
+**Hazlo tú:** Con Docker Compose o Podman Compose disponible, desde el código de este tema ejecuta:
 
 ```bash
 ./scripts/verify-trace.sh
@@ -427,8 +419,7 @@ cd examples/spring-tracing-rutaflow
 
 **Hazlo tú:** Completa este objetivo para el flujo de entregas: “Al menos ___ % de las confirmaciones terminan en menos de ___ ms durante ___ días”. Señala qué dato permitiría calcularlo y qué acción tomarías al incumplirlo.
 
-
-Para comprobar «Convierte la señal en una decisión», consulta: `examples/spring-tracing-rutaflow/src/main/java/academia/rutaflow/tracing/DeliveryController.java`. Desde `examples/spring-tracing-rutaflow` repite la comprobación:
+Para comprobar «Convierte la señal en una decisión», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 bash ./scripts/verify-trace.sh
@@ -446,7 +437,6 @@ bash ./scripts/verify-trace.sh
 
 ---
 
-
 **Aplicación y decisión:** En el proyecto integrador, usa el trace ID para localizar la llamada lenta y relaciona esa señal con un objetivo de servicio. Límite: ver dos spans no acredita observabilidad completa ni protección de todos los datos registrados.
 
 ### Tema 5: Saga con compensación real · Avanzado · 35 min
@@ -457,7 +447,7 @@ bash ./scripts/verify-trace.sh
 
 **¿Por qué es importante?** Si un paso posterior falla, dejar activos los cambios anteriores puede producir cobros sin envío o inventario bloqueado. La compensación da una acción explícita para esos efectos parciales.
 
-**Hazlo tú:** Abre `examples/spring-saga-rutaflow/README.md` y revisa el recorrido antes de abrir el código:
+**Hazlo tú:** Observa README.md y revisa el recorrido antes de abrir el código:
 
 ```text
 ┌────────────────────┐  ┌──────────────┐  ┌────────────────┐
@@ -467,8 +457,7 @@ bash ./scripts/verify-trace.sh
    Liberar reserva       Devolver pago
 ```
 
-
-Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
+Para comprobar «Dibuja los pasos del pedido», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -486,7 +475,7 @@ Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-
 
 **Contexto:** El orquestador registra una compensación solo después de que termina cada paso. Cuando falla un paso, recorre esas acciones completadas desde la última hacia la primera.
 
-**Hazlo tú:** Abre `examples/spring-saga-rutaflow/src/main/java/academia/rutaflow/saga/OrderSaga.java` y `src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Ejecuta desde `examples/spring-saga-rutaflow/`:
+**Hazlo tú:** Observa OrderSaga.java y `src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -q -Dtest=OrderSagaTest#ifShippingFailsItRefundsAndReleasesInReverseOrder test
@@ -504,7 +493,7 @@ Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-
 
 **Contexto:** Una compensación solo se ejecuta si un paso posterior falla. Si todos terminan bien, los cambios permanecen.
 
-**Hazlo tú:** En `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`, lee `ifAllParticipantsSucceedItKeepsTheOrderEffects` y ejecuta:
+**Hazlo tú:** En el código de este tema, lee `ifAllParticipantsSucceedItKeepsTheOrderEffects` y ejecuta:
 
 ```bash
 ./mvnw -q test
@@ -522,10 +511,9 @@ Para comprobar «Dibuja los pasos del pedido», consulta: `examples/spring-saga-
 
 **Contexto:** La saga de este laboratorio corre en una sola JVM con participantes locales. Una caída del proceso borraría el estado y la lista de acciones.
 
-**Hazlo tú:** Revisa el límite al final de `examples/spring-saga-rutaflow/README.md` y compara este orquestador síncrono con el Módulo 17 y el próximo M17 T7.
+**Hazlo tú:** Revisa el límite al final de `README.md` y compara este orquestador síncrono con el Módulo 17 y el próximo M17 T7.
 
-
-Para comprobar «Delimita la demo y planea la recuperación», consulta: `examples/spring-saga-rutaflow/src/test/java/academia/rutaflow/saga/OrderSagaTest.java`. Desde `examples/spring-saga-rutaflow` repite la comprobación:
+Para comprobar «Delimita la demo y planea la recuperación», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -537,7 +525,7 @@ Para comprobar «Delimita la demo y planea la recuperación», consulta: `exampl
 
 **Entiende:** Esta implementación demuestra el orden de orquestación y compensación; no es una transacción distribuida ni un sistema durable. Una saga no ofrece aislamiento ACID y puede requerir mecanismos adicionales para evitar estados intermedios visibles.
 
-**Cierra:** **Proyecto integrador:** para el pedido del Módulo 20, enumera los servicios participantes, el estado que cambia cada uno y la acción compensatoria concreta. No copies este almacenamiento en memoria como solución de producción.
+**Cierra:**Proyecto integrador:** para el pedido del Módulo 20, enumera los servicios participantes, el estado que cambia cada uno y la acción compensatoria concreta. No copies este almacenamiento en memoria como solución de producción.
 
 **Fuentes:** [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La referencia describe tanto coordinación por orquestación como coreografía y destaca que las compensaciones se diseñan explícitamente; este laboratorio solo ejercita la variante orquestada local.
 
@@ -549,17 +537,14 @@ Para comprobar «Delimita la demo y planea la recuperación», consulta: `exampl
 
 **¿Por qué es importante?** El historial permite reconstruir cómo llegó el pedido a su estado actual y explicar decisiones pasadas. Ese beneficio solo compensa el trabajo adicional si el negocio necesita historial o reconstrucción.
 
-**Hazlo tú:** Abre `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEvent.java` y `OrderEventStore.java`. Sigue cómo se guarda cada evento en el stream del pedido.
+**Hazlo tú:** Observa OrderEvent.java y `OrderEventStore.java`. Sigue cómo se guarda cada evento en el stream del pedido.
 
 ```text
 PedidoCreado → PedidoConfirmado → PedidoCancelado
        └──────────── replay ──────────────> CANCELADO
 ```
 
-Archivo concreto para esta comprobación: `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderEvent.java`.
-
-
-Para comprobar «Guarda hechos, no solo el estado final», consulta: `examples/spring-eventsourcing-rutaflow/src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java`. Desde `examples/spring-eventsourcing-rutaflow` repite la comprobación:
+Para comprobar «Guarda hechos, no solo el estado final», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -577,13 +562,13 @@ Para comprobar «Guarda hechos, no solo el estado final», consulta: `examples/s
 
 **Contexto:** El replay empieza sin pedido y aplica cada evento en el orden guardado; cada paso produce un nuevo estado inmutable.
 
-**Hazlo tú:** Abre `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderState.java`. Lee `replay` y `apply`, luego ejecuta:
+**Hazlo tú:** Observa OrderState.java y. Lee `replay` y `apply`, luego ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=OrderReplayTest#eventStreamCanRebuildTheCurrentOrderWithoutSavingASnapshot test
 ```
 
-Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
+Ejecuta el comando desde el código de este tema.
 
 **Resultado esperado:** Al volver a leer los tres eventos, el estado coincide con `CANCELLED` y conserva el motivo de cancelación, sin cargar una copia del estado final.
 
@@ -597,7 +582,7 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
 **Contexto:** Un replay que acepta cualquier secuencia puede construir estados que nunca debieron existir en el negocio.
 
-**Hazlo tú:** En `examples/spring-eventsourcing-rutaflow/src/main/java/academia/rutaflow/eventsourcing/OrderState.java`, inspecciona las reglas: un pedido debe crearse antes de confirmarse y confirmarse antes de cancelarse. Luego lee `anInvalidEventIsNotAddedToTheStream` en `src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java`.
+**Hazlo tú:** En el código de este tema, inspecciona las reglas: un pedido debe crearse antes de confirmarse y confirmarse antes de cancelarse. Luego lee `anInvalidEventIsNotAddedToTheStream` en `src/test/java/academia/rutaflow/eventsourcing/OrderReplayTest.java`.
 
 **Resultado esperado:** El intento de cancelar el pedido recién creado lanza `IllegalStateException` y el evento no se añade al stream.
 
@@ -611,7 +596,7 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
 **Contexto:** El store del ejemplo vive en memoria; reiniciar el proceso borra el historial. Sirve para estudiar el modelo y no para guardar pedidos reales.
 
-**Hazlo tú:** Revisa `examples/spring-eventsourcing-rutaflow/README.md` y ejecuta toda la suite desde la carpeta del laboratorio:
+**Hazlo tú:** Revisa `README.md` y ejecuta toda la suite desde la carpeta del laboratorio:
 
 ```bash
 ./mvnw -q test
@@ -623,7 +608,7 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
 **Entiende:** Event Sourcing no es lo mismo que publicar eventos en Kafka ni que guardar un outbox. En producción requiere almacenamiento durable, control de escrituras concurrentes, evolución de versiones y cuidado para no repetir efectos externos durante un replay.
 
-**Cierra:** **Proyecto integrador:** para el envío del Módulo 20, propone eventos inmutables de creación, recogida y entrega; indica qué estado se reconstruye y cómo se guardaría el historial de forma durable. El laboratorio no integra Kafka, base de datos ni proyecciones externas.
+**Cierra:**Proyecto integrador:** para el envío del Módulo 20, propone eventos inmutables de creación, recogida y entrega; indica qué estado se reconstruye y cómo se guardaría el historial de forma durable. El laboratorio no integra Kafka, base de datos ni proyecciones externas.
 
 **Fuente:** [Martin Fowler — Event Sourcing](https://martinfowler.com/eaaDev/EventSourcing.html). La fuente describe almacenar los cambios como secuencia y reconstruir el estado desde el log; este laboratorio usa un stream local en memoria, sin persistencia.
 
@@ -635,7 +620,7 @@ Ejecuta el comando desde `examples/spring-eventsourcing-rutaflow/`.
 
 **¿Por qué es importante?** Un pedido puede quedar con el inventario reservado aunque ya se rechazó el pago. Un estado `PENDING` permite saber qué reparación falta después de un reinicio.
 
-**Hazlo tú:** Abre `examples/spring-saga-recovery-rutaflow/src/main/resources/schema.sql` y revisa `compensation_job`. Localiza `PENDING` y `DONE` en `CompensationService.java`.
+**Hazlo tú:** Observa schema.sql y revisa `compensation_job`. Localiza `PENDING` y `DONE` en `CompensationService.java`.
 
 ```text
 PENDING ── compensación exitosa ──> DONE
@@ -643,10 +628,7 @@ PENDING ── compensación exitosa ──> DONE
    └── falla la transacción ───────> PENDING
 ```
 
-Archivo concreto para esta comprobación: `examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/CompensationService.java`.
-
-
-Para comprobar «Conserva el trabajo pendiente», consulta: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
+Para comprobar «Conserva el trabajo pendiente», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -664,7 +646,7 @@ Para comprobar «Conserva el trabajo pendiente», consulta: `examples/spring-sag
 
 **Contexto:** Liberar inventario y marcar la compensación deben confirmarse juntos. Si solo ocurre el primero, un reintento podría repetirlo; si solo el segundo, el trabajo se pierde.
 
-**Hazlo tú:** Abre `examples/spring-saga-recovery-rutaflow/src/main/java/academia/rutaflow/sagarecovery/CompensationService.java`. Sigue el `TransactionTemplate`, la lectura `FOR UPDATE` y las escrituras de inventario y estado. Ejecuta desde `examples/spring-saga-recovery-rutaflow/`:
+**Hazlo tú:** Observa CompensationService.java y. Sigue el `TransactionTemplate`, la lectura `FOR UPDATE` y las escrituras de inventario y estado. Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -q -Dtest=CompensationRecoveryTest test
@@ -691,12 +673,9 @@ jdbc.update("UPDATE compensation_job SET status = 'DONE' WHERE id = ? AND status
 
 **Contexto:** La memoria del proceso desaparece; una tarea guardada en una base de archivo puede sobrevivir a que la aplicación cierre su conexión.
 
-**Hazlo tú:** En `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`, sigue el fallo, el cierre del pool, la reapertura del mismo archivo H2 y la nueva instancia del servicio.
+**Hazlo tú:** En el código de este tema, sigue el fallo, el cierre del pool, la reapertura del mismo archivo H2 y la nueva instancia del servicio.
 
-Archivo concreto para esta comprobación: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`.
-
-
-Para comprobar «Reabre y reintenta sin duplicar», consulta: `examples/spring-saga-recovery-rutaflow/src/test/java/academia/rutaflow/sagarecovery/CompensationRecoveryTest.java`. Desde `examples/spring-saga-recovery-rutaflow` repite la comprobación:
+Para comprobar «Reabre y reintenta sin duplicar», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -714,7 +693,7 @@ Para comprobar «Reabre y reintenta sin duplicar», consulta: `examples/spring-s
 
 **Contexto:** El ejemplo conserva el trabajo en H2 y una prueba lo vuelve a ejecutar; todavía no hay un trabajador que descubra pendientes ni un plan de reintentos.
 
-**Hazlo tú:** Revisa `examples/spring-saga-recovery-rutaflow/README.md` y corre la suite completa:
+**Hazlo tú:** Revisa `README.md` y corre la suite completa:
 
 ```bash
 ./mvnw -q test
@@ -726,7 +705,7 @@ Para comprobar «Reabre y reintenta sin duplicar», consulta: `examples/spring-s
 
 **Entiende:** El ejercicio no implementa un broker, outbox, espera entre reintentos, métricas ni alarmas. El ejemplo usa el ID de compensación como clave estable y una transacción local; no coordina bases distintas.
 
-**Cierra:** **Proyecto integrador:** para el pedido del Módulo 20, define el ID estable, el estado pendiente, la operación idempotente y una alarma para trabajos demasiado antiguos. Decide cómo guardar el outbox si el comando de reintento se publica en Kafka o RabbitMQ.
+**Cierra:**Proyecto integrador:** para el pedido del Módulo 20, define el ID estable, el estado pendiente, la operación idempotente y una alarma para trabajos demasiado antiguos. Decide cómo guardar el outbox si el comando de reintento se publica en Kafka o RabbitMQ.
 
 **Fuentes:** [Spring Framework — Transaction Management](https://docs.spring.io/spring-framework/reference/data-access/transaction.html), [H2 — Connection Modes and Database URLs](https://h2database.com/html/features.html#database_url), [Microservices.io — Saga](https://microservices.io/patterns/data/saga.html). La transacción aquí solo cubre cambios en la base del participante local.
 
@@ -734,21 +713,19 @@ Para comprobar «Reabre y reintenta sin duplicar», consulta: `examples/spring-s
 
 El tema se estudia por la ruta Java/Spring Boot anterior. Este anexo conserva el
 material Python original de RutaFlow para comparar una compensación local con
-SQLite. Puedes ejecutarlo desde `examples/rutaflow-material/sagas/` con
+SQLite. Puedes ejecutarlo desde el código de este tema con
 `python3 -m unittest test_compensacion.py`.
 
-Archivo: `examples/rutaflow-material/sagas/compensacion.py` (`compensacion.py`):
+Archivo: `compensacion.py` (`compensacion.py`):
 
 ```python
 import sqlite3
-
 
 def iniciar(db):
     db.executescript('''CREATE TABLE IF NOT EXISTS stock(id TEXT PRIMARY KEY, cantidad INTEGER);
     CREATE TABLE IF NOT EXISTS compensaciones(id TEXT PRIMARY KEY, estado TEXT);
     INSERT OR IGNORE INTO stock VALUES ('reserva-42', 9);
     INSERT OR IGNORE INTO compensaciones VALUES ('liberar-42', 'PENDIENTE');''')
-
 
 def compensar(db, falla=False):
     estado = db.execute("SELECT estado FROM compensaciones WHERE id='liberar-42'").fetchone()[0]
@@ -760,7 +737,6 @@ def compensar(db, falla=False):
     with db:
         db.execute("UPDATE stock SET cantidad=cantidad+1 WHERE id='reserva-42'")
         db.execute("UPDATE compensaciones SET estado='HECHA' WHERE id='liberar-42'")
-
 
 if __name__ == '__main__':
     with sqlite3.connect('saga.db') as db:
@@ -774,7 +750,7 @@ if __name__ == '__main__':
         print('Stock final:', db.execute('SELECT cantidad FROM stock').fetchone()[0])
 ```
 
-Archivo: `examples/rutaflow-material/sagas/test_compensacion.py` (`test_compensacion.py`):
+Archivo: `test_compensacion.py` (`test_compensacion.py`):
 
 ```python
 import sqlite3

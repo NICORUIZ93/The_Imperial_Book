@@ -14,10 +14,8 @@ Al finalizar vas a separar una regla de negocio de su infraestructura con un pue
 
 En el proyecto integrador, las reglas de asignación de envíos deben probarse sin infraestructura. Un puerto que habla el idioma del negocio es lo que hace posible esa prueba.
 
-**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 24 LTS o superior. Los comandos siguientes parten de esa carpeta.
-
 ```bash
-cp -R examples/spring-architecture-rutaflow practica-arquitectura
+cp -R spring-architecture-rutaflow practica-arquitectura
 cd practica-arquitectura
 ```
 
@@ -186,10 +184,9 @@ Siguiente paso: documentar el sistema completo con C4. **Evidencia de aprendizaj
 
 **¿Por qué es importante?** El dominio conserva las reglas del negocio; si importa una clase de base de datos o un framework, cambiar esa infraestructura puede arrastrar cambios al negocio. ArchUnit convierte la frontera en un test que muestra qué clase la cruzó.
 
-**Antes de empezar:** entender puertos y adaptadores (Módulo 15, Tema 1, «Hexagonal: puertos que hablan el idioma del dominio»; puedes leerlo antes de este tema). El ejemplo `examples/archunit-hexagonal-rutaflow/` usa Java 25, ArchUnit 1.5.1 y JUnit; no necesita Spring ni Docker.
+**Antes de empezar:** entender puertos y adaptadores (Módulo 15, Tema 1, «Hexagonal: puertos que hablan el idioma del dominio»; puedes leerlo antes de este tema). El ejemplo `archunit-hexagonal-rutaflow` usa Java 25, ArchUnit 1.5.1 y JUnit; no necesita Spring ni Docker.
 
 ```bash
-cd examples/archunit-hexagonal-rutaflow
 ./mvnw -q test
 ```
 
@@ -205,12 +202,9 @@ flowchart LR
 
 **Contexto:** El puerto expresa qué necesita el caso de uso; el adaptador decide cómo guardar.
 
-**Hazlo tú:** Desde `examples/archunit-hexagonal-rutaflow/`, abre `src/main/java/academia/rutaflow/hexagonal/domain/DeliveryRepository.java`, `application/RegisterDelivery.java` e `infrastructure/InMemoryDeliveryRepository.java`. Sigue el tipo que inyecta el caso de uso y la interfaz que implementa el adaptador.
+**Hazlo tú:** Desde el código de este tema, abre `src/main/java/academia/rutaflow/hexagonal/domain/DeliveryRepository.java`, `application/RegisterDelivery.java` e `infrastructure/InMemoryDeliveryRepository.java`. Sigue el tipo que inyecta el caso de uso y la interfaz que implementa el adaptador.
 
-Archivo concreto para esta comprobación: `examples/archunit-hexagonal-rutaflow/src/main/java/academia/rutaflow/hexagonal/application/RegisterDelivery.java`.
-
-
-Para comprobar «Ubica el puerto y el adaptador», consulta: `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`. Desde `examples/archunit-hexagonal-rutaflow` repite la comprobación:
+Para comprobar «Ubica el puerto y el adaptador», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -228,7 +222,7 @@ Para comprobar «Ubica el puerto y el adaptador», consulta: `examples/archunit-
 
 **Contexto:** ArchUnit importa las clases compiladas del paquete y comprueba las relaciones que quedaron en el bytecode.
 
-**Hazlo tú:** Desde `examples/archunit-hexagonal-rutaflow/`, abre `src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`. Lee la regla y ejecútala:
+**Hazlo tú:** Desde el código de este tema, abre `src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`. Lee la regla y ejecútala:
 
 ```java
 ArchRule rule = noClasses().that().resideInAPackage("..domain..")
@@ -249,14 +243,11 @@ rule.check(project);
 
 **Contexto:** Prohibir la fuga desde el dominio no basta si application importa la base concreta directamente.
 
-**Hazlo tú:** Abre `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`, sigue `aplicacionNoDependeDeDetallesDeInfraestructura` y compara el nombre de paquetes con la primera regla.
+**Hazlo tú:** Observa HexagonalArchitectureTest.java y, sigue `aplicacionNoDependeDeDetallesDeInfraestructura` y compara el nombre de paquetes con la primera regla.
 
 **Práctica guiada.** Cambia el puerto de `RegisterDelivery` por el adaptador concreto, ejecuta solo esta regla y vuelve a inyectar la interfaz cuando veas la infracción.
 
-Archivo concreto para esta comprobación: `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`.
-
-
-Para comprobar «Protege también el caso de uso», consulta: `examples/archunit-hexagonal-rutaflow/src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`. Desde `examples/archunit-hexagonal-rutaflow` repite la comprobación:
+Para comprobar «Protege también el caso de uso», observa el código de este tema. Desde el código de este tema repite la comprobación:
 
 ```bash
 ./mvnw -q test
@@ -274,7 +265,7 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 
 **Contexto:** Una regla demasiado general puede bloquear decisiones válidas; una regla ausente deja la frontera a la memoria del equipo.
 
-**Hazlo tú:** Desde `examples/archunit-hexagonal-rutaflow/`, lee `src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`, busca `adaptersDeInfraestructuraSeIdentificanComoRepository` y ejecuta `./mvnw -q test`. La regla de ejemplo comprueba el sufijo del adaptador; registra qué paquetes y clases quedan dentro de su alcance.
+**Hazlo tú:** Desde el código de este tema, lee `src/test/java/academia/rutaflow/hexagonal/HexagonalArchitectureTest.java`, busca `adaptersDeInfraestructuraSeIdentificanComoRepository` y ejecuta `./mvnw -q test`. La regla de ejemplo comprueba el sufijo del adaptador; registra qué paquetes y clases quedan dentro de su alcance.
 
 **Resultado esperado:** La regla nueva pasa con el adaptador actual y explica su alcance en el nombre o comentario.
 
@@ -296,7 +287,7 @@ Para comprobar «Protege también el caso de uso», consulta: `examples/archunit
 
 **¿Por qué es importante?** Si la regla vive solo en el controller, una tarea programada o un nuevo endpoint podría saltársela. El agregado protege el cambio desde cualquier entrada.
 
-**Hazlo tú:** Abre `examples/spring-clean-architecture-rutaflow/src/main/java/academia/rutaflow/clean/domain/Delivery.java` y sigue `assignTo`. El agregado usa los value objects `DeliveryId` y `Destination`.
+**Hazlo tú:** Observa Delivery.java y sigue `assignTo`. El agregado usa los value objects `DeliveryId` y `Destination`.
 
 ```java
 public Delivery assignTo(Destination nextDestination) {
@@ -307,7 +298,7 @@ public Delivery assignTo(Destination nextDestination) {
 }
 ```
 
-Ejecuta desde `examples/spring-clean-architecture-rutaflow/`:
+Ejecuta desde el código de este tema:
 
 ```bash
 ./mvnw -q -Dtest=AssignDeliveryTest#domainRuleRejectsAssigningADestinationTwice test
@@ -325,7 +316,7 @@ Ejecuta desde `examples/spring-clean-architecture-rutaflow/`:
 
 **Contexto:** El caso de uso coordina una acción y pide guardar el resultado mediante una interfaz; el adaptador decide dónde se guarda.
 
-**Hazlo tú:** Abre `application/AssignDelivery.java` y `application/DeliveryRepository.java` dentro de `examples/spring-clean-architecture-rutaflow/`:
+**Hazlo tú:** Abre `application/AssignDelivery.java` y `application/DeliveryRepository.java` dentro de `spring-clean-architecture-rutaflow`:
 
 ```text
 web ──> caso de uso ──> puerto de repositorio
@@ -352,7 +343,7 @@ Ejecuta:
 
 **Contexto:** El controller traduce una petición web y llama al caso de uso; no contiene la regla para asignar dos veces.
 
-**Hazlo tú:** Abre `web/DeliveryController.java` y `src/test/java/academia/rutaflow/clean/web/DeliveryHttpTest.java` dentro de `examples/spring-clean-architecture-rutaflow/`. Ejecuta:
+**Hazlo tú:** Abre `web/DeliveryController.java` y `src/test/java/academia/rutaflow/clean/web/DeliveryHttpTest.java` dentro de `spring-clean-architecture-rutaflow`. Ejecuta:
 
 ```bash
 ./mvnw -q -Dtest=DeliveryHttpTest test
@@ -370,7 +361,7 @@ Ejecuta:
 
 **Contexto:** El recorrido completo combina un agregado, un caso de uso, un puerto, un adaptador y un endpoint; una estructura de carpetas por sí sola no garantiza esa dirección.
 
-**Hazlo tú:** Lee `examples/spring-clean-architecture-rutaflow/README.md` y ejecuta:
+**Hazlo tú:** Lee `README.md` y ejecuta:
 
 ```bash
 ./mvnw -q test
@@ -384,7 +375,7 @@ Para iniciar la app y probar el endpoint manualmente, sigue los comandos del REA
 
 **Entiende:** Este laboratorio usa memoria y se vacía al reiniciar; no incluye JPA, seguridad ni persistencia. Para proyectos pequeños, conserva estos límites dentro de un monolito modular; añade servicios separados solo cuando propiedad de datos, escala o equipos lo justifiquen.
 
-**Cierra:** **Proyecto integrador:** en la API de envíos del Módulo 20, identifica agregado e invariantes, caso de uso, puerto, adaptadores HTTP/JPA y reglas de dependencia. Migra el repositorio sin cambiar la regla de asignación.
+**Cierra:**Proyecto integrador:** en la API de envíos del Módulo 20, identifica agregado e invariantes, caso de uso, puerto, adaptadores HTTP/JPA y reglas de dependencia. Migra el repositorio sin cambiar la regla de asignación.
 
 **Fuente:** [Martin Fowler — DDD Aggregate](https://martinfowler.com/bliki/DDD_Aggregate.html), [Spring Boot Reference](https://docs.spring.io/spring-boot/reference/). La demo prueba un recorrido local; no certifica el diseño completo ni su rendimiento.
 
@@ -394,7 +385,7 @@ Este ejercicio corto en Java puro conserva el diseño original sin iniciar
 Spring. La ruta principal anterior amplía el recorrido con Spring Boot, prueba
 HTTP y verifica las fronteras con ArchUnit.
 
-Archivo: `examples/rutaflow-material/clean-architecture/Main.java` (`Main.java`):
+Archivo: `Main.java` (`Main.java`):
 
 ```java
 import java.util.ArrayList;
@@ -447,7 +438,7 @@ public class Main {
 }
 ```
 
-Archivo: `examples/rutaflow-material/clean-architecture/test.sh` (`test.sh`):
+Archivo: `test.sh` (`test.sh`):
 
 ```bash
 #!/usr/bin/env bash
@@ -468,10 +459,8 @@ Al finalizar vas a dibujar los cuatro niveles C4 de una API de envíos, a enlaza
 
 C4 resuelve el problema de escala: no se dibuja todo en un solo nivel. Cada nivel responde una pregunta distinta y no repite la anterior.
 
-**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 24 LTS o superior. Los comandos siguientes parten de esa carpeta.
-
 ```bash
-cp -R examples/spring-architecture-rutaflow practica-arquitectura
+cp -R spring-architecture-rutaflow practica-arquitectura
 cd practica-arquitectura
 ```
 
@@ -629,10 +618,8 @@ Al finalizar vas a escribir tres Architecture Decision Records con contexto, alt
 
 Un ADR no es un documento de diseño: es la memoria de una decisión concreta, con las alternativas que se descartaron y el costo que se aceptó.
 
-**Preparación reproducible:** desde la raíz del repositorio copia `examples/spring-architecture-rutaflow` a una carpeta nueva y entra. JDK 25 y Node.js 24 LTS o superior. Los comandos siguientes parten de esa carpeta.
-
 ```bash
-cp -R examples/spring-architecture-rutaflow practica-arquitectura
+cp -R spring-architecture-rutaflow practica-arquitectura
 cd practica-arquitectura
 ```
 
@@ -790,10 +777,8 @@ Siguiente paso: aplicar el mismo criterio a cada nueva decisión del proyecto. *
 
 **Prerrequisitos:** M15 T1, paquetes Java, imports y JUnit. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-modulith-rutaflow practica-m23-t1
+cp -R spring-modulith-rutaflow practica-m23-t1
 cd practica-m23-t1
 ./mvnw -q test
 ```
@@ -874,10 +859,8 @@ cd practica-m23-t1
 
 **Prerrequisitos:** M8 T2 y M15 T6. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-modulith-rutaflow practica-m23-t2
+cp -R spring-modulith-rutaflow practica-m23-t2
 cd practica-m23-t2
 ./mvnw -q test
 ```
@@ -958,10 +941,8 @@ cd practica-m23-t2
 
 **Prerrequisitos:** M15 T4 y M15 T6. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-modulith-rutaflow practica-m23-t3
+cp -R spring-modulith-rutaflow practica-m23-t3
 cd practica-m23-t3
 ./mvnw -q test
 ```
@@ -978,7 +959,7 @@ cd practica-m23-t3
 ./mvnw -q -Dtest=DocumentacionModularTest test
 ```
 
-**Resultado esperado:** target/spring-modulith-docs contiene archivos .puml y .adoc; el test comprueba que existen ambos formatos.
+**Resultado esperado:** target/spring-modulith-docs contiene archivos.puml y.adoc; el test comprueba que existen ambos formatos.
 
 **Fallo deliberado:** Comenta writeDocumentation, elimina solo target/spring-modulith-docs y repite.
 
@@ -992,7 +973,7 @@ cd practica-m23-t3
 
 **Contexto:** Notificaciones depende del contrato de Pedidos para interpretar PedidoCreado.
 
-**Hazlo tú:** Abre un .puml bajo `target/spring-modulith-docs` y contrasta la dependencia con el import de `src/main/java/academia/rutaflow/modulith/notificaciones/NotificacionListener.java`.
+**Hazlo tú:** Abre un.puml bajo `target/spring-modulith-docs` y contrasta la dependencia con el import de `src/main/java/academia/rutaflow/modulith/notificaciones/NotificacionListener.java`.
 
 ```bash
 ./mvnw -q -Dtest=ArquitecturaModularTest,DocumentacionModularTest test
@@ -1042,10 +1023,8 @@ cd practica-m23-t3
 
 **Prerrequisitos:** M6 y M15 T6–T3. Duración: 30–40 min.
 
-**Preparación:** JDK 25 y el repositorio. Desde su raíz copia `examples/spring-modulith-rutaflow` a una carpeta nueva, entra y ejecuta el wrapper incluido:
-
 ```bash
-cp -R examples/spring-modulith-rutaflow practica-m23-t4
+cp -R spring-modulith-rutaflow practica-m23-t4
 cd practica-m23-t4
 ./mvnw -q test
 ```

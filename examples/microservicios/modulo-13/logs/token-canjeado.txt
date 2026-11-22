@@ -1,0 +1,10 @@
+cabecera: {"alg":"RS256","typ" : "JWT","kid" : "MJOg0xMx_YjkZZfZoVEqOlWSQl0IrIuWjjuuNxqVk2c"}
+iss:                "http://localhost:8180/realms/tienda"
+sub:                "4a8c5b55-0645-41fb-bebe-97dff7a24d6c"
+aud:                "pagos"
+azp:                "pedidos"
+scope:              "pagos:cobrar"
+preferred_username: (no está)
+realm_access:       {"roles":["cliente"]}
+act:                (no está)
+exp:                2026-11-21T18:16:16Z (vence en 300 s)

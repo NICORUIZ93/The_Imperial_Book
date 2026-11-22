@@ -3,8 +3,8 @@
 **Fase 3 · Nivel maestro: arquitectura avanzada** (media semana; semana 4 de 8). **Duración:** 6 h (4 temas de unos
 75 min y 1 h de laboratorio integrador). **Dificultad:** 3 de 5. **Dependencias:** Módulo 24 (ADRs y modelo C4: aquí
 decides quién es dueño de cada caja del diagrama) y Módulo 5 (bounded contexts: la frontera natural de un equipo).
-**Herramientas:** **Node.js 26.13.1 LTS** y **Git** (el de tu sistema, 2.x); sin dependencias de npm ni
-infraestructura. **Laboratorio:** `examples/microservicios/modulo-33/` (`./verificar.sh` ejecuta 17 tests y los
+**Herramientas:**Node.js 26.13.1 LTS** y **Git** (el de tu sistema, 2.x); sin dependencias de npm ni
+infraestructura. **Laboratorio:** `modulo-33` (`./verificar.sh` ejecuta 17 tests y los
 scripts de las cuatro fichas; `--compose` se acepta, pero este módulo no levanta contenedores).
 
 Hasta aquí todo el curso ha tratado de **software**. Este módulo trata de **personas**, porque en un sistema de
@@ -32,12 +32,9 @@ equipos para obtener la arquitectura deseada.
 **Cómo usar el laboratorio.** Con Node 26 y Git:
 
 ```bash
-cd examples/microservicios/modulo-33
 npm ci                    # no instala nada: el laboratorio no tiene dependencias, pero así se comprueba el lockfile
 ./verificar.sh            # tests + demos + errores comunes de las 4 fichas → «RESULTADO: OK»
 ```
-
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-33`**.
 
 `package.json` del laboratorio:
 
@@ -76,7 +73,7 @@ las reales. Queda por repetir en el Mac con bash 3.2 y el Git de Xcode (anotado 
 
 #### 1. UBICACIÓN
 
-Módulo 29, Lección 1 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-33/f169-conway/`.
+Módulo 29, Lección 1 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -475,7 +472,7 @@ funcionalidad atraviesa los tres servicios y los tres equipos.
 
 #### 1. UBICACIÓN
 
-Módulo 29, Lección 2 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-33/f170-topologias/`.
+Módulo 29, Lección 2 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -830,7 +827,7 @@ que puede crear entornos, bases de datos y pipelines; todos esperan en su cola.
 
 #### 1. UBICACIÓN
 
-Módulo 29, Lección 3 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-33/f171-carga-cognitiva/`.
+Módulo 29, Lección 3 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1146,7 +1143,7 @@ mismo equipo comodín, que a su vez apunta a una caja de incidentes y entregas l
 
 #### 1. UBICACIÓN
 
-Módulo 29, Lección 4 de 4 · Fase 3 · Laboratorio `examples/microservicios/modulo-33/f172-dimensionamiento/`.
+Módulo 29, Lección 4 de 4 · Fase 3.
 
 #### 2. PRERREQUISITOS
 

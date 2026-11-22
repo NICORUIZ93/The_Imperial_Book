@@ -2,8 +2,7 @@
 
 Cada tema separa el contrato HTTP (DTOs) de la persistencia interna (entidades), automatiza la validación de entrada y centraliza el manejo de errores — las tres piezas que hacen que una API REST sea predecible para quien la consume.
 
-
-**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `examples/spring-tareas-rutaflow/README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
 
 ## Aprende construyendo
 
@@ -668,7 +667,7 @@ Dentro de `<build><plugins>` añade la configuración al plugin Maven Compiler. 
 
 En `src/main/java/com/example/demo/Tarea.java` importa `lombok.Getter`, pon `@Getter` sobre la clase y borra solo los cuatro métodos `get...`. Conserva los campos, `@Entity` y los constructores.
 
-$ ./mvnw clean test
+$./mvnw clean test
 
 **Resultado esperado:** termina en `BUILD SUCCESS`. El servicio y JPA todavía pueden llamar a `getId()`, `getTitulo()` y los demás métodos: Lombok los genera al compilar.
 
@@ -1147,7 +1146,7 @@ public ResponseEntity<PaginaTareasDTO> listar(
 }
 ```
 
-Desde la carpeta del proyecto ejecuta:
+Ejecuta:
 
 ```bash
 ./mvnw test
@@ -1205,7 +1204,7 @@ public ResponseEntity<ApiError> manejarParametroInvalido(
 }
 ```
 
-Ejecuta ./mvnw test y prueba:
+Ejecuta./mvnw test y prueba:
 
 ```bash
 curl -i 'http://localhost:8080/api/tareas?page=0&size=2'
@@ -1222,7 +1221,7 @@ En ContratoOpenApiTest.java, añade dos comprobaciones para que el contrato incl
 .contains("Parámetros inválidos");
 ```
 
-Ejecuta ./mvnw test y confirma que la prueba OpenAPI sigue pasando.
+Ejecuta./mvnw test y confirma que la prueba OpenAPI sigue pasando.
 
 **Fallo deliberado:** cambia @Min(0) de page a @Min(1) y pide page=0. **Diagnóstico:** la página inicial deja de estar permitida y responde 400; restaura @Min(0).
 
@@ -1318,7 +1317,7 @@ Ejecuta `./mvnw -q -Dtest=JacksonTresTest test`.
 
 **Resultado esperado:** los dos tests pasan. Observa que ningún método declara `throws`: en Jackson 3, `JacksonException` extiende `RuntimeException`.
 
-**Fallo deliberado:** cambia `assertThrows(MismatchedInputException.class, ...)` por una llamada directa `mapper.readValue(json, CrearTareaRequest.class);`. **Error esperado:** el test falla con `MismatchedInputException: Cannot map \`null\` into type \`int\``. **Diagnóstico:** Jackson 3 activa `FAIL_ON_NULL_FOR_PRIMITIVES` por defecto; con Jackson 2 ese `null` se convertía en silencio en `0`. Restaura el `assertThrows`.
+**Fallo deliberado:** cambia `assertThrows(MismatchedInputException.class,...)` por una llamada directa `mapper.readValue(json, CrearTareaRequest.class);`. **Error esperado:** el test falla con `MismatchedInputException: Cannot map \`null\` into type \`int\``. **Diagnóstico:** Jackson 3 activa `FAIL_ON_NULL_FOR_PRIMITIVES` por defecto; con Jackson 2 ese `null` se convertía en silencio en `0`. Restaura el `assertThrows`.
 
 **Entiende:** `JsonMapper` es el `ObjectMapper` específico de JSON y se construye con un *builder*: una vez creado es inmutable, así que no lo reconfigures en caliente. Las anotaciones (`@JsonProperty`, `@JsonInclude`) siguen en `com.fasterxml.jackson.annotation`, porque `jackson-annotations` se comparte entre Jackson 2 y 3; el resto vive en `tools.jackson`.
 
@@ -1651,7 +1650,7 @@ void laVersionDosNoLlevaCabeceras() throws Exception {
 }
 ```
 
-**Resultado esperado:** `./mvnw -q -Dtest=VersionadoApiTest test` termina con cinco pruebas verdes. Con `curl -i -H 'API-Version: 1.0' ...` verás las cabeceras `Deprecation`, `Sunset` y `Link` con `rel="sunset"`.
+**Resultado esperado:** `./mvnw -q -Dtest=VersionadoApiTest test` termina con cinco pruebas verdes. Con `curl -i -H 'API-Version: 1.0'...` verás las cabeceras `Deprecation`, `Sunset` y `Link` con `rel="sunset"`.
 
 **Fallo deliberado:** borra la línea `.setSunsetDate(...)` y repite. **Error esperado:** `laVersionUnoAnunciaSuRetirada` falla con `Response does not contain header 'Sunset'`. **Diagnóstico:** el manejador solo escribe las cabeceras que configuraste; `Deprecation` sin `Sunset` anuncia la obsolescencia pero no la fecha de retirada. Restaura la línea.
 
@@ -1709,7 +1708,7 @@ Los segmentos se cuentan desde 0: en `/api/v2/tareas/1/resumen`, `api` es el 0 y
 
 **Hito del tema:**
 
-- [ ] Serví dos versiones del mismo recurso con `@GetMapping(version = ...)`.
+- [ ] Serví dos versiones del mismo recurso con `@GetMapping(version =...)`.
 - [ ] Probé versión por defecto, explícita y desconocida (`400`).
 - [ ] Vi `Deprecation`, `Sunset` y `Link` en la versión 1.0.
 - [ ] Elegí una estrategia de versionado y escribí su desventaja.

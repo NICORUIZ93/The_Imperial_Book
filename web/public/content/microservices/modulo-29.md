@@ -2,11 +2,11 @@
 
 **Fase 3 · Nivel maestro: arquitectura avanzada** (semana 2 de 8). **Duración:** 12 h (5 temas de unos 110 min y
 2 h 50 min de laboratorio integrador). **Dificultad:** 5 de 5. **Dependencias:** Módulo 22 (confirms, deduplicación,
-sagas coreografiadas y compensaciones), Módulo 18 (KafkaJS) y Módulo 15 (PostgreSQL). **Herramientas:** **Node.js
+sagas coreografiadas y compensaciones), Módulo 18 (KafkaJS) y Módulo 15 (PostgreSQL). **Herramientas:**Node.js
 26.13.1 LTS**, **pg 8.23.1** con **PostgreSQL 18.7**, **kafkajs 2.2.4** con **Apache Kafka 4.4.0**, **Debezium 3.7**
 (Kafka Connect, imagen `quay.io/debezium/connect:3.7`; la estable es 3.7.1.Final) y **@temporalio/client, worker,
 workflow, activity y testing 1.26.0** (Temporal Server 1.32.1 o el servidor de desarrollo del CLI). **Laboratorio:**
-`examples/microservicios/modulo-29/` (`./verificar.sh` ejecuta lo que no necesita infraestructura y lo de PostgreSQL si
+`modulo-29` (`./verificar.sh` ejecuta lo que no necesita infraestructura y lo de PostgreSQL si
 responde; `./verificar.sh --compose` levanta PostgreSQL, Kafka y Debezium, arranca Temporal y lo exige todo).
 
 En el Módulo 22 aprendiste a no perder mensajes y a deshacer pasos con compensaciones. Este módulo responde la
@@ -31,14 +31,12 @@ Temporal) lleva al tema 5 (Two-Phase Commit: por qué no usar), al que también 
 **Cómo usar el laboratorio.** Con Node 26 y Docker:
 
 ```bash
-cd examples/microservicios/modulo-29
 npm ci
 docker compose up -d --wait         # PostgreSQL :5432 · Kafka :9092 · Kafka Connect + Debezium :8083
 ./verificar.sh --compose            # tests + demos + errores comunes de las 5 fichas → «RESULTADO: OK»
 docker compose down -v
 ```
 
-Todas las órdenes de las fichas se ejecutan **desde `examples/microservicios/modulo-29`**. Las fichas 1, 3, 4 y 5 usan
 PostgreSQL para todo lo esencial; Kafka y Debezium solo para el tramo final de cada una. La ficha 2 necesita un
 servidor Temporal solo para sus tests de integración: `temporal.infra.js` lo descarga y lo arranca (necesita internet
 la primera vez).
@@ -153,6 +151,8 @@ services:
 
 Conexión compartida (`comun/config.js` y `comun/pg.js`):
 
+`comun/pg.js`:
+
 ```javascript
 // Módulo 25 · Direcciones de la infraestructura del laboratorio (las de docker-compose.yml).
 // Cambia el destino sin tocar código:  PG_URL=... KAFKA_BROKERS=... TEMPORAL_ADDRESS=... node ...
@@ -200,7 +200,7 @@ servidor Temporal. Sus salidas se describen como **esperadas** y están anotadas
 
 #### 1. UBICACIÓN
 
-Módulo 25, Lección 1 de 5 · Fase 3 · Laboratorio `examples/microservicios/modulo-29/f152-outbox/`.
+Módulo 25, Lección 1 de 5 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -329,6 +329,8 @@ CREATE TABLE IF NOT EXISTS f152_outbox (
 ```
 
 `f152-outbox/outbox.js`:
+
+`comun/pg.js`: conexión PostgreSQL compartida.
 
 ```javascript
 // Módulo 25 · F152 · Outbox Pattern: el pedido y su evento se guardan en la MISMA transacción local.
@@ -644,7 +646,7 @@ await tx.query('INSERT INTO f152_outbox (aggregatetype, aggregateid, type, paylo
 
 #### 1. UBICACIÓN
 
-Módulo 25, Lección 2 de 5 · Fase 3 · Laboratorio `examples/microservicios/modulo-29/f153-temporal/`.
+Módulo 25, Lección 2 de 5 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1133,7 +1135,7 @@ BIEN → workflows.js empaquetado (1.7 MiB): la E/S vive en actividades.js
 ```
 
 **Diagnóstico visual:** el mensaje completo de webpack termina con la cadena de imports
-(`@ ./f153-temporal/workflow-mal.js`) que te dice qué archivo trajo el módulo prohibido. **Arreglo:** mueve la E/S a una
+(`@./f153-temporal/workflow-mal.js`) que te dice qué archivo trajo el módulo prohibido. **Arreglo:** mueve la E/S a una
 actividad (`leerTarifas()`) y llámala con `proxyActivities`. Si el import es indirecto (una librería tuya que importa
 `pg`), separa los tipos y funciones puras en otro archivo.
 
@@ -1179,7 +1181,7 @@ propia lógica.
 
 #### 1. UBICACIÓN
 
-Módulo 25, Lección 3 de 5 · Fase 3 · Laboratorio `examples/microservicios/modulo-29/f154-idempotencia/`.
+Módulo 25, Lección 3 de 5 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1272,6 +1274,8 @@ Kafka.
 Versiones: **Node.js 26.13.1 LTS**, **pg 8.23.1**, **kafkajs 2.2.4**, **PostgreSQL 18.7** y **Kafka 4.4.0**.
 
 `f154-idempotencia/idempotencia.js`:
+
+`comun/pg.js`: conexión PostgreSQL compartida.
 
 ```javascript
 // Módulo 25 · F154 · Consumidor idempotente: la marca «ya procesado» y el efecto van en la MISMA transacción.
@@ -1550,7 +1554,7 @@ await procesarUnaVez(pool, 'fidelidad', evento, sumarPuntos);
 
 #### 1. UBICACIÓN
 
-Módulo 25, Lección 4 de 5 · Fase 3 · Laboratorio `examples/microservicios/modulo-29/f155-exactly-once/`.
+Módulo 25, Lección 4 de 5 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -1725,6 +1729,8 @@ for (const readUncommitted of [false, true]) {
 ```
 
 `f155-exactly-once/offsets-en-bd.js`:
+
+`comun/pg.js`: conexión PostgreSQL compartida.
 
 ```javascript
 // Módulo 25 · F155 · «Exactly-once» efectivo fuera de Kafka: el resultado y el offset se guardan en la MISMA transacción.
@@ -1954,7 +1960,7 @@ const productor = kafka.producer({ transactionalId: `conversor-${process.env.HOS
 
 #### 1. UBICACIÓN
 
-Módulo 25, Lección 5 de 5 · Fase 3 · Laboratorio `examples/microservicios/modulo-29/f156-2pc/`.
+Módulo 25, Lección 5 de 5 · Fase 3.
 
 #### 2. PRERREQUISITOS
 
@@ -2104,6 +2110,8 @@ export async function saldos(pool) {
 ```
 
 `f156-2pc/demo.js`:
+
+`comun/pg.js`: conexión PostgreSQL compartida.
 
 ```javascript
 // Módulo 25 · F156 · Ejecuta (PostgreSQL arriba): node f156-2pc/demo.js
