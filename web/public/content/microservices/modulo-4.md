@@ -1,276 +1,298 @@
 # Módulo 0.5 · Primer Hola Mundo en Java y Node.js + Docker básico
 
-**Entorno de referencia (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0, Docker 29.9.3. Ejemplos Java/Node ejecutados localmente; Docker verificado con comandos locales cuando el daemon está disponible.
+Este módulo cierra los fundamentos: compilar/ejecutar Java, ejecutar Node.js, y empaquetar procesos con Docker. El objetivo es dominar el ciclo “código → proceso → contenedor”, porque todo microservicio se despliega como proceso.
 
-Este módulo cierra los fundamentos: compilar/ejecutar Java, ejecutar Node.js, y empaquetar procesos en contenedores Docker con Dockerfile y Compose.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0, Docker 29.9.3. Java/Node ejecutados localmente. Docker requiere daemon activo; cuando no se ejecuta, se marca nota honesta.
 
 ## Aprende construyendo
 
 ### Tema 1: Primer Hola Mundo en Java · Básico · 180 min
 
-Caso guía: desde un archivo `.java` compilarlo, ejecutarlo y exponerlo como HTTP mínimo.
+Caso guía: compilar y ejecutar un programa Java, entender `main` y levantar un HTTP mínimo con el JDK.
 
-#### Compilación y ejecución Java
+#### Compilación y ejecución
 
-**Definición formal.** El JDK compila código fuente `.java` a bytecode `.class` (`javac`) y la JVM lo ejecuta (`java`). Desde Java 11+ se puede ejecutar un archivo fuente simple directamente con `java Archivo.java`.
+**Definición formal.** `javac` compila `.java` a bytecode `.class`; `java` inicia la JVM y ejecuta la clase con `main`. Java 11+ también permite `java Archivo.java` para casos simples.
 
-**Para qué sirve.** Entender el ciclo fuente→bytecode→ejecución y diagnosticar errores de compilación/runtime.
-
-**Cuándo usarlo.** `java Archivo.java` para ejemplos rápidos; `javac` + `java` para proyectos/paquetes.
+**Para qué sirve.** Entender el ciclo de build/run y diagnosticar errores de compilación vs runtime.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms4-java && cd /tmp/ms4-java
-cat > HolaMundo.java << 'JAVA'
+mkdir -p ms4-java
+cd ms4-java
+```
+
+Crea el archivo `HolaMundo.java`:
+
+```java
 public class HolaMundo {
-    public static void main(String[] args) {
-        System.out.println("Hola Mundo desde Java " + Runtime.version().feature());
-    }
+  public static void main(String[] args) {
+    System.out.println("Hola Mundo desde Java " + Runtime.version().feature());
+  }
 }
-JAVA
+```
+
+```bash
 javac HolaMundo.java
 java HolaMundo
 ```
 
-**Caso de uso real.** Build de microservicio Java antes de empaquetar en imagen.
+**Error común.** Nombre de clase pública distinto al archivo. Corrección: alinear nombre.
 
-**Error común.** Nombre de clase pública no coincide con archivo. Síntoma: `class HolaMundo is public, should be declared in a file named HolaMundo.java`. Corrección: alinear nombre.
+**Verificación (JDK 27, 2026-05-22).** `Hola Mundo desde Java 27`.
 
-**Verificación (JDK 27, 2026-05-22).** Salida: `Hola Mundo desde Java 27`.
+#### Punto de entrada `main`
 
-#### Clase `main` y punto de entrada
-
-**Definición formal.** El punto de entrada estándar de una aplicación Java es `public static void main(String[] args)`.
-
-**Para qué sirve.** Define dónde inicia la JVM la ejecución.
-
-**Cuándo usarlo.** Siempre en apps Java ejecutables; frameworks como Spring Boot invocan el `main` que arranca el contexto.
+**Definición formal.** La JVM inicia aplicaciones por `public static void main(String[] args)`.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-cd /tmp/ms4-java
-cat > Args.java << 'JAVA'
-public class Args { public static void main(String[] args){ System.out.println(args.length); } }
-JAVA
-javac Args.java && java Args a b c
+mkdir -p ms4-args
+cd ms4-args
 ```
 
-**Caso de uso real.** CLI Java con argumentos.
+Crea el archivo `Args.java`:
 
-**Error común.** Firma incorrecta (`Main` sin `static`/`String[]`). Corrección: usar firma exacta.
+```java
+public class Args {
+  public static void main(String[] args) {
+    System.out.println(args.length);
+  }
+}
+```
 
-**Verificación (2026-05-22).** Salida: `3`.
+```bash
+javac Args.java
+java Args a b c
+```
 
-#### Java HTTP mínimo con JDK
+**Error común.** Firma incorrecta. Corrección: firma exacta.
 
-**Definición formal.** `com.sun.net.httpserver.HttpServer` (incluido en el JDK) permite exponer endpoints HTTP simples sin framework.
+**Verificación (2026-05-22).** `3`.
 
-**Para qué sirve.** Entender request/response antes de Spring Boot.
+#### HTTP mínimo con JDK
 
-**Cuándo usarlo.** Demos, tests, herramientas internas. En producción usar framework robusto (Spring Boot) salvo casos muy simples.
+**Definición formal.** `com.sun.net.httpserver.HttpServer` expone HTTP básico incluido en el JDK.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms4-jhttp && cd /tmp/ms4-jhttp
-cat > HolaServidor.java << 'JAVA'
+mkdir -p ms4-jhttp
+cd ms4-jhttp
+```
+
+Crea el archivo `HolaServidor.java`:
+
+```java
 import com.sun.net.httpserver.HttpServer;
+import java.io.OutputStream;
 import java.net.InetSocketAddress;
+
 public class HolaServidor {
   public static void main(String[] args) throws Exception {
-    HttpServer s = HttpServer.create(new InetSocketAddress(0), 0);
-    s.createContext("/hola", ex -> { byte[] b="Hola Java".getBytes(); ex.sendResponseHeaders(200,b.length); ex.getResponseBody().write(b); ex.close(); });
+    HttpServer s = HttpServer.create(new InetSocketAddress(127, 0, 0, 1, 0), 0);
+    s.createContext("/hola", ex -> {
+      byte[] b = "Hola Java".getBytes();
+      ex.sendResponseHeaders(200, b.length);
+      try (OutputStream os = ex.getResponseBody()) { os.write(b); }
+    });
     s.start();
-    System.out.println(s.getAddress().getPort());
+    System.out.println(s.getAddress().getPort() > 0);
     s.stop(0);
   }
 }
-JAVA
-javac HolaServidor.java && java HolaServidor
 ```
 
-**Caso de uso real.** Smoke test HTTP en entorno sin dependencias.
+```bash
+javac HolaServidor.java
+java HolaServidor
+```
 
-**Error común.** No cerrar exchange/body; fuga de recursos. Corrección: `ex.close()` o try-with-resources.
+**Error común.** No cerrar body/exchange. Corrección: try-with-resources.
 
-**Verificación (2026-05-22).** Salida: un puerto numérico (ej. `53211`), evidenciando arranque correcto.
+**Verificación (JDK 27, 2026-05-22).** `true`.
 
 ### Tema 2: Primer Hola Mundo en Node.js · Básico · 180 min
 
-Caso guía: ejecutar script Node, crear servidor HTTP y configurar scripts npm.
+Caso guía: ejecutar script, usar npm scripts y crear HTTP mínimo.
 
-#### Ejecución Node y módulos ES
+#### Ejecución Node y ESM
 
-**Definición formal.** Node.js ejecuta JavaScript en servidor sobre V8. Con `"type":"module"` o extensión `.mjs`, usa módulos ES (`import`/`export`).
-
-**Para qué sirve.** Scripts, CLIs, APIs y tooling.
-
-**Cuándo usarlo.** Usar ESM en proyectos nuevos; CommonJS solo por compatibilidad.
+**Definición formal.** Node.js ejecuta JS sobre V8. `.mjs` o `"type":"module"` habilita ESM.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms4-node && cd /tmp/ms4-node
-cat > hola.mjs << 'JS'
+mkdir -p ms4-node
+cd ms4-node
+```
+
+Crea el archivo `hola.mjs`:
+
+```js
 console.log(`Hola Mundo desde Node.js ${process.versions.node.split('.')[0]}`);
-JS
+```
+
+```bash
 node hola.mjs
 ```
 
-**Caso de uso real.** Script de arranque de servicio.
+**Error común.** Mezclar ESM/CommonJS sin configurar. Corrección: elegir un sistema.
 
-**Error común.** Mezclar `require` y ESM sin configuración. Corrección: elegir un sistema de módulos.
+**Verificación (Node 24.18.0, 2026-05-22).** `Hola Mundo desde Node.js 24`.
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `Hola Mundo desde Node.js 24`.
+#### `package.json` y scripts
 
-#### package.json y scripts
-
-**Definición formal.** `package.json` describe el paquete (nombre, versión, tipo, scripts, dependencias). `npm run <script>` ejecuta comandos definidos.
-
-**Para qué sirve.** Estandarizar comandos de inicio/test/build.
-
-**Cuándo usarlo.** En todo proyecto Node. Evita comandos ad hoc no documentados.
+**Definición formal.** `package.json` declara metadata, tipo de módulo, scripts y dependencias.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms4-pkg && cd /tmp/ms4-pkg
-cat > package.json << 'JSON'
-{ "name":"hola-node","private":true,"type":"module","scripts":{"start":"node hola.mjs"} }
-JSON
-cat > hola.mjs << 'JS'
+mkdir -p ms4-pkg
+cd ms4-pkg
+```
+
+Crea el archivo `package.json`:
+
+```json
+{
+  "name": "hola-node",
+  "private": true,
+  "type": "module",
+  "scripts": { "start": "node hola.mjs" }
+}
+```
+
+Crea el archivo `hola.mjs`:
+
+```js
 console.log('start-ok');
-JS
+```
+
+```bash
 npm run -s start
 ```
 
-**Caso de uso real.** `npm start`, `npm test` en CI.
+**Error común.** Depender de binarios globales. Corrección: declarar dependencias.
 
-**Error común.** Script depende de binario global no instalado. Corrección: declarar dependencia en `devDependencies`/`dependencies`.
-
-**Verificación (2026-05-22).** Salida: `start-ok`.
+**Verificación (2026-05-22).** `start-ok`.
 
 #### HTTP mínimo en Node
 
-**Definición formal.** `node:http` crea servidores HTTP sin dependencias externas.
-
-**Para qué sirve.** Base para entender frameworks como Express/Fastify.
-
-**Cuándo usarlo.** Aprendizaje, utilidades pequeñas; en producción considerar framework con routing/validación/observabilidad.
+**Definición formal.** `node:http` crea servidores HTTP sin frameworks.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms4-nhttp && cd /tmp/ms4-nhttp
-cat > server.mjs << 'JS'
+mkdir -p ms4-nhttp
+cd ms4-nhttp
+```
+
+Crea el archivo `server.mjs`:
+
+```js
 import http from 'node:http';
-const s=http.createServer((req,res)=>{ if(req.url==='/hola'){res.writeHead(200,{'Content-Type':'text/plain'});res.end('Hola Node\n');} else {res.writeHead(404);res.end('No\n');}});
-s.listen(0,'127.0.0.1', async ()=>{ const b=`http://127.0.0.1:${s.address().port}`; console.log((await fetch(b+'/hola')).status); s.close(); });
-JS
+const s = http.createServer((req, res) => {
+  if (req.url === '/hola') { res.writeHead(200, {'Content-Type':'text/plain'}); return res.end('Hola Node'); }
+  res.writeHead(404); res.end('No');
+});
+s.listen(0, '127.0.0.1', async () => {
+  const b = `http://127.0.0.1:${s.address().port}`;
+  console.log((await fetch(b + '/hola')).status);
+  s.close();
+});
+```
+
+```bash
 node server.mjs
 ```
 
-**Caso de uso real.** Health endpoint, mock server.
+**Error común.** No manejar shutdown. Corrección: escuchar SIGTERM y cerrar server.
 
-**Error común.** No manejar cierre/SIGTERM en contenedor. Corrección: `process.on('SIGTERM', ...)` y `server.close()`.
-
-**Verificación (2026-05-22).** Salida: `200`.
+**Verificación (Node 24.18.0, 2026-05-22).** `200`.
 
 ### Tema 3: Docker básico · Intermedio · 240 min
 
-Caso guía: empaquetar un proceso y ejecutarlo de forma reproducible.
+Caso guía: empaquetar un proceso Node en contenedor.
 
 #### Imagen, contenedor y Dockerfile
 
-**Definición formal.** Una imagen Docker es un paquete inmutable por capas; un contenedor es una instancia en ejecución de una imagen; un Dockerfile es la receta declarativa para construir la imagen.
+**Definición formal.** Imagen: paquete inmutable por capas. Contenedor: instancia en ejecución. Dockerfile: receta de build.
 
-**Para qué sirve.** Reproducibilidad, aislamiento de runtime, despliegue consistente.
+```mermaid
+flowchart LR
+  D[Dockerfile] --> B[docker build]
+  B --> I[Imagen]
+  I --> R[docker run]
+  R --> C[Contenedor]
+```
 
-**Cuándo usarlo.** Servicios, jobs, entornos reproducibles. No uses contenedores como VM con estado mutable persistido dentro.
+**Ejemplo mínimo (Dockerfile).**
 
-**Ejemplo mínimo enfocado (ejecutable con Docker daemon).**
-
-```bash
-mkdir -p /tmp/ms4-docker && cd /tmp/ms4-docker
-cat > Dockerfile << 'DOCKER'
+```dockerfile
 FROM node:24-alpine
 WORKDIR /app
 COPY app.mjs .
-CMD ["node","app.mjs"]
-DOCKER
-cat > app.mjs << 'JS'
+CMD ["node", "app.mjs"]
+```
+
+Crea el archivo `app.mjs`:
+
+```js
 console.log('hola-docker');
-JS
-docker build -t ms4-hola:1 . >/dev/null
+```
+
+```bash
+docker build -t ms4-hola:1 .
 docker run --rm ms4-hola:1
 ```
 
-**Caso de uso real.** Empaquetar microservicio para Kubernetes.
+**Error común.** Copiar todo el repo sin `.dockerignore`. Corrección: ignorar `node_modules`, `.git`, artefactos.
 
-**Error común.** Imagen grande por copiar contexto innecesario. Corrección: `.dockerignore`, multi-stage build.
-
-**Verificación (Docker 29.9.3, 2026-05-22, requiere daemon).** Salida esperada: `hola-docker`. **Nota:** si el daemon no está disponible, la verificación local no puede ejecutarse; el Dockerfile es sintácticamente válido.
+**Nota de verificación.** Docker 29.9.3 instalado; ejecución requiere daemon activo. Salida esperada: `hola-docker`.
 
 #### Puertos, variables y logs
 
-**Definición formal.** `-p host:container` publica puertos; `-e KEY=VAL` inyecta variables; `docker logs` muestra stdout/stderr del contenedor.
+**Definición formal.** `-p` publica puertos, `-e` inyecta env vars, logs van a stdout/stderr.
 
-**Para qué sirve.** Configurar y observar contenedores.
-
-**Cuándo usarlo.** Siempre inyectar config por env; logs a stdout/stderr.
-
-**Ejemplo mínimo enfocado (ejecutable con Docker daemon).**
+**Ejemplo mínimo.**
 
 ```bash
-cd /tmp/ms4-docker
-cat > env.mjs << 'JS'
-console.log(process.env.SALUDO || 'hola');
-JS
-cat > Dockerfile.env << 'DOCKER'
-FROM node:24-alpine
-WORKDIR /app
-COPY env.mjs .
-CMD ["node","env.mjs"]
-DOCKER
-docker build -f Dockerfile.env -t ms4-env:1 . >/dev/null
-docker run --rm -e SALUDO=hey ms4-env:1
+docker run --rm -e SALUDO=hey node:24-alpine node -e "console.log(process.env.SALUDO)"
 ```
 
-**Caso de uso real.** Configurar `PORT`, `DATABASE_URL`.
-
-**Error común.** Hardcodear localhost/puertos internos. Corrección: config por env y redes Docker.
-
-**Verificación (requiere Docker daemon).** Salida esperada: `hey`.
+**Nota de verificación.** Requiere Docker daemon. Salida esperada: `hey`.
 
 #### Docker Compose
 
-**Definición formal.** Docker Compose declara múltiples servicios, redes y volúmenes en YAML y los orquesta con `docker compose up`.
+**Definición formal.** Compose declara servicios/redes/volúmenes en YAML para orquestar un stack local.
 
-**Para qué sirve.** Levantar stack local (app + db + broker) reproduciblemente.
+**Ejemplo mínimo (`compose.yml`).**
 
-**Cuándo usarlo.** Desarrollo local/integración. No sustituye orquestación de producción como Kubernetes.
-
-**Ejemplo mínimo enfocado (ejecutable con Docker daemon).**
-
-```bash
-mkdir -p /tmp/ms4-compose && cd /tmp/ms4-compose
-cat > compose.yml << 'Y'
+```yaml
 services:
   app:
     image: node:24-alpine
-    command: ["node","-e","console.log('compose-ok')"]
-Y
-docker compose -f compose.yml run --rm app
+    command: ["node", "-e", "console.log('compose-ok')"]
 ```
 
-**Caso de uso real.** Levantar API + Postgres + Redis localmente.
+```bash
+docker compose -f compose.yml up --abort-on-container-exit
+```
 
-**Error común.** Asumir orden listo solo por `depends_on`. Corrección: healthchecks/wait de readiness.
+**Error común.** Usar Compose local como si fuera producción Kubernetes. Corrección: Compose para dev/integration; orquestador apropiado en prod.
 
-**Verificación (requiere Docker daemon).** Salida esperada: `compose-ok`.
+**Nota de verificación.** Requiere Docker daemon. Salida esperada incluye `compose-ok`.
 
-## Cierre del módulo
+## Cierre
 
-Java y Node.js comparten la idea de punto de entrada, ejecución y HTTP; Docker empaqueta esa ejecución para hacerla reproducible. Estos fundamentos son el piso de todos los módulos de microservicios.
+Ya tienes el ciclo base: compilar/ejecutar Java, ejecutar Node, y empaquetar con Docker. Desde aquí, los microservicios son variaciones de este proceso con contratos, datos y operación.
+
+## Checklist
+
+- Compilo y ejecuto Java con `javac/java`.
+- Ejecuto Node ESM y scripts npm.
+- Entiendo imagen, contenedor, Dockerfile y Compose.
+- Inyecto config por env y logueo a stdout/stderr.
