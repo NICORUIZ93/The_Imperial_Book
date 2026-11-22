@@ -4364,10 +4364,6 @@
     ],
     "18": [
       {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
-      },
-      {
         "title": "HttpClient, REST, timeouts y fallos",
         "fragment": "tema-1-httpclient-rest-timeouts-y-fallos"
       },
@@ -4416,10 +4412,6 @@
       {
         "title": "MethodHandles y VarHandles: invocar métodos y cambiar campos con acceso tipado",
         "fragment": "tema-9-methodhandles-y-varhandles-invocar-metodos-y-cambiar-campos-con-acceso-tipado"
-      },
-      {
-        "title": "Proyecto 19: utilidades de producción para el motor de asignación",
-        "fragment": "proyecto-19-utilidades-de-produccion-para-el-motor-de-asignacion"
       }
     ],
     "2": [
