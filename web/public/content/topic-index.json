@@ -7165,6 +7165,82 @@
         "title": "Cache stampede y mitigación",
         "fragment": "tema-4-cache-stampede-y-mitigacion"
       }
+    ],
+    "4": [
+      {
+        "title": "Monolito modular vs microservicios",
+        "fragment": "tema-1-monolito-modular-vs-microservicios"
+      },
+      {
+        "title": "DDD: bounded contexts, aggregates y domain events",
+        "fragment": "tema-2-ddd-bounded-contexts-aggregates-y-domain-events"
+      },
+      {
+        "title": "Spring Modulith",
+        "fragment": "tema-3-spring-modulith"
+      },
+      {
+        "title": "Strangler Fig",
+        "fragment": "tema-4-strangler-fig"
+      },
+      {
+        "title": "Database-per-service",
+        "fragment": "tema-5-database-per-service"
+      }
+    ],
+    "5": [
+      {
+        "title": "REST con Spring MVC y WebClient",
+        "fragment": "tema-1-rest-con-spring-mvc-y-webclient"
+      },
+      {
+        "title": "gRPC con Spring",
+        "fragment": "tema-2-grpc-con-spring"
+      },
+      {
+        "title": "Mensajería con Spring Cloud Stream",
+        "fragment": "tema-3-mensajeria-con-spring-cloud-stream"
+      },
+      {
+        "title": "Sync vs async, timeouts e idempotencia",
+        "fragment": "tema-4-sync-vs-async-timeouts-e-idempotencia"
+      }
+    ],
+    "6": [
+      {
+        "title": "Service discovery con Eureka/Consul",
+        "fragment": "tema-1-service-discovery-con-eureka-consul"
+      },
+      {
+        "title": "Spring Cloud Gateway",
+        "fragment": "tema-2-spring-cloud-gateway"
+      },
+      {
+        "title": "Spring Cloud Config",
+        "fragment": "tema-3-spring-cloud-config"
+      },
+      {
+        "title": "Load balancing y BFF",
+        "fragment": "tema-4-load-balancing-y-bff"
+      }
+    ],
+    "7": [
+      {
+        "title": "Circuit breaker, retry, rate limiter, bulkhead, time limiter",
+        "fragment": "tema-1-circuit-breaker-retry-rate-limiter-bulkhead-time-limiter"
+      },
+      {
+        "title": "Timeouts en cascada",
+        "fragment": "tema-2-timeouts-en-cascada"
+      },
+      {
+        "title": "Fallback strategies",
+        "fragment": "tema-3-fallback-strategies"
+      },
+      {
+        "title": "Chaos engineering",
+        "fragment": "tema-4-chaos-engineering"
+      }
     ]
   }
 }
