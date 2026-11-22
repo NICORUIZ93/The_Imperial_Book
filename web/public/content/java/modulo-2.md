@@ -391,23 +391,139 @@ Un `HashMap` puede parecer defectuoso cuando se inserta un valor, luego se consu
 
 #### Claves mutables
 
-Una **clave mutable** es un objeto cuyo estado puede cambiar después de su creación. La mutabilidad no es mala por sí misma; muchos objetos de dominio necesitan cambiar. El problema aparece cuando un objeto mutable se usa como clave en una estructura hash y los campos mutados participan en `equals` o `hashCode`.
+**Definición formal.** Una clave mutable es un objeto cuyo estado puede cambiar después de su creación. Es peligrosa como clave hash cuando los campos mutados participan en `equals`/`hashCode`.
 
-`HashMap` calcula el hash de la clave al insertar para decidir en qué bucket colocar la entrada. Al consultar, vuelve a calcular el hash de la clave buscada. Si el hash cambió, la búsqueda va a otro bucket. El objeto puede seguir dentro del mapa, pero se volvió difícil de encontrar por la vía normal. El error común es agregar un setter a un campo que forma parte de la identidad hash. La verificación es mutar la clave después de insertar y observar el resultado de `get`.
+**Para qué sirve entenderlo.** Permite evitar bugs donde `HashMap` o `HashSet` parecen “perder” elementos. La estructura hash calcula el bucket con el hash vigente al operar; si la identidad cambia, la búsqueda va al bucket equivocado.
+
+**Cuándo usar/no usar.** No uses como clave hash un objeto cuyos campos de identidad puedan mutar mientras esté en la estructura. Usa claves inmutables (`String`, `Integer`, `record`, UUID) o campos `final`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t3-mutable && cd /tmp/java-m2-t3-mutable
+```
+
+```java
+import java.util.*;
+class K { String c; K(String c){this.c=c;} void setC(String c){this.c=c;}
+  @Override public boolean equals(Object o){ return o instanceof K k && Objects.equals(c,k.c); }
+  @Override public int hashCode(){ return Objects.hash(c); }
+}
+public class DemoMutable {
+    public static void main(String[] args) {
+        Map<K,String> m = new HashMap<>();
+        K k = new K("A1"); m.put(k, "V");
+        k.setC("B2");
+        System.out.println(m.get(k));
+    }
+}
+```
+
+**Caso de uso real.** Una entidad de dominio mutable se usa accidentalmente como clave de caché; tras actualizar su ID/campo, la caché deja de encontrarla.
+
+**Error común.** Agregar setter a campos usados en `equals/hashCode`. Síntoma: `get` devuelve `null` aunque “la clave está ahí”. Corrección: hacer la identidad inmutable.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoMutable.java
+java DemoMutable
+```
+
+```text
+null
+```
 
 #### El mapa que pierde entradas
 
-La expresión “el mapa pierde entradas” describe el síntoma: la entrada parece desaparecer. En realidad, la entrada sigue presente en la estructura interna, pero la clave ya no es localizable por su nuevo hash. Esto afecta `get`, `containsKey` y `remove`. Iterar el mapa puede mostrar la entrada, lo que vuelve el bug todavía más confuso.
+**Definición formal.** Es el síntoma de una clave hash mutada: la entrada permanece en la estructura interna, pero no es localizable por el hash actual. Afecta `get`, `containsKey`, `remove`.
 
-La regla es clara: mientras un objeto actúe como clave en `HashMap` o elemento en `HashSet`, los campos usados por `equals` y `hashCode` no deben cambiar. La solución práctica es usar claves inmutables: `String`, `Integer`, records inmutables u objetos cuyo identificador no cambie. Si se necesita mutar, hay que eliminar la entrada, modificar el objeto fuera de la estructura y volver a insertarlo.
+**Para qué sirve entenderlo.** Permite diagnosticar por qué una entrada aparece al iterar el mapa pero no se encuentra por clave.
+
+**Cuándo ocurre / cómo evitarlo.** Ocurre tras mutar campos de identidad de una clave ya insertada. Evítalo eliminando antes de mutar y reinsertando después, o usando claves inmutables.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t3-perdido && cd /tmp/java-m2-t3-perdido
+```
+
+```java
+import java.util.*;
+class K2 { String c; K2(String c){this.c=c;} void setC(String c){this.c=c;}
+  @Override public boolean equals(Object o){ return o instanceof K2 k && Objects.equals(c,k.c); }
+  @Override public int hashCode(){ return Objects.hash(c); }
+  @Override public String toString(){ return "K2{" + c + "}"; }
+}
+public class DemoPerdido {
+    public static void main(String[] args) {
+        Map<K2,String> m = new HashMap<>();
+        K2 k = new K2("A1"); m.put(k, "V");
+        k.setC("B2");
+        System.out.println(m.get(new K2("A1")));
+        System.out.println(m);
+    }
+}
+```
+
+**Caso de uso real.** Un bug de sesión donde el usuario sigue “logueado” en memoria pero no se encuentra por su clave actual.
+
+**Error común.** Confiar en que `HashMap` se reorganiza solo. Síntoma: `containsKey` falso pero la entrada aparece en un dump/log. Corrección: no mutar la clave; si hay que cambiarla, remove+put.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoPerdido.java
+java DemoPerdido
+```
+
+```text
+null
+{K2{B2}=V}
+```
 
 #### Identidad estable
 
-La **identidad estable** significa que los campos que definen igualdad y hash no cambian mientras el objeto participa en una estructura hash. No es necesario que todo el objeto sea inmutable, pero sí que la parte usada como identidad sea estable. En el caso de claves compuestas, conviene ser especialmente cuidadoso.
+**Definición formal.** La identidad estable significa que los campos usados por `equals` y `hashCode` no cambian mientras el objeto está en una estructura hash. Puede lograrse con inmutabilidad total o con campos de identidad `final`.
 
-El riesgo de ignorar esta regla es un bug difícil de reproducir: depende del momento en que se muta la clave y de la operación realizada. La verificación consiste en hacer `final` el campo de identidad o eliminar el setter, de modo que el compilador impida la mutación peligrosa.
+**Para qué sirve.** Mantiene el contrato de las estructuras hash y evita búsquedas imposibles.
 
-#### Ejemplo desde cero
+**Cuándo usarla y cuándo no.** Úsala siempre para claves de `HashMap`/elementos de `HashSet`. Si el objeto de dominio debe mutar, usa como clave un identificador inmutable separado.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t3-estable && cd /tmp/java-m2-t3-estable
+```
+
+```java
+import java.util.*;
+record K3(String c) {}
+public class DemoEstable {
+    public static void main(String[] args) {
+        Map<K3,String> m = new HashMap<>();
+        m.put(new K3("A1"), "V");
+        System.out.println(m.get(new K3("A1")));
+    }
+}
+```
+
+**Caso de uso real.** Usar un `record` o un `String` ID como clave de caché en vez de la entidad mutable completa.
+
+**Error común.** Usar entidad JPA mutable como clave hash. Síntoma: comportamiento inconsistente tras cambios de estado. Corrección: usar ID inmutable.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoEstable.java
+java DemoEstable
+```
+
+```text
+V
+```
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m2-t3 && cd /tmp/java-m2-t3
@@ -463,9 +579,7 @@ public class DemoMapaPerdido {
 
 #### Recorrido del código
 
-`ClaveMutable` usa `codigo` tanto en `equals` como en `hashCode`. Al principio, la clave `A1` se inserta correctamente y `get` devuelve `Pedido-Ada`. Después, `setCodigo("B2")` cambia el estado que define el hash. El mapa no se reorganiza automáticamente: la entrada quedó en el bucket correspondiente a `A1`.
-
-Cuando se consulta con la misma instancia, el mapa calcula el hash actual, que ahora corresponde a `B2`, y busca en el bucket equivocado. Cuando se consulta con `new ClaveMutable("A1")`, también falla porque la entrada ya no está en el bucket de `A1`. Sin embargo, al iterar el contenido del mapa, la entrada aparece con la clave ya mutada a `B2`.
+`ClaveMutable` usa `codigo` en `equals/hashCode`, pero también lo expone con setter. Tras insertar, la entrada queda en el bucket de `A1`. Al mutar a `B2`, las consultas van al bucket de `B2`, por eso `get` devuelve `null`. La iteración muestra que la entrada sigue en la estructura, con la clave ya mutada.
 
 #### Ejecución y salida real
 
@@ -485,40 +599,151 @@ Contenido real: {ClaveMutable{B2}=Pedido-Ada}
 
 #### Errores frecuentes
 
-El error más común es exponer setters sobre campos que participan en la identidad hash. La corrección es hacer esos campos `final` o evitar usarlos como claves.
+Mutar campos de identidad hash mientras el objeto está en `HashMap/HashSet`. Corrección: identidad inmutable.
 
-Otro error es intentar “arreglar” el mapa después de la mutación. La forma segura es eliminar la entrada antes de mutar la clave y volver a insertarla después, o mejor, no mutar la clave.
-
-Usar objetos de negocio ricos como claves sin revisar su `equals/hashCode` también es riesgoso. Muchas veces una clave simple e inmutable, como un ID `String` o `Long`, es más segura.
+Intentar “arreglar” consultando de otra forma sin reinsertar. Corrección: remove, mutar, put; o evitar la mutación.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo y observar la contradicción: `get` devuelve `null`, pero el contenido real muestra la entrada. La corrección se verifica haciendo `codigo` final y eliminando el setter; el compilador impide la mutación.
-
+Ejecutar el integrado y confirmar la contradicción: `get` da `null` pero el contenido real contiene la entrada. Hacer `codigo` `final` elimina el riesgo en compilación.
 
 ### Tema 4: Genéricos, wildcards y type erasure · Intermedio · 45 min
 
-Antes de los genéricos, las colecciones guardaban `Object`. Eso permitía mezclar tipos y solo descubríamos el error en tiempo de ejecución, al hacer un cast inválido. Los genéricos mueven ese error a la compilación. Al mismo tiempo, introducen reglas propias: invariancia, wildcards y borrado de tipos. Entenderlas evita tanto los avisos de raw types como las firmas de métodos imposibles de usar.
+Antes de los genéricos, las colecciones guardaban `Object`. Eso permitía mezclar tipos y solo descubríamos el error en tiempo de ejecución, al hacer un cast inválido. Los genéricos mueven ese error a la compilación. Al mismo tiempo, introducen reglas propias: invariancia, wildcards y borrado de tipos.
 
 #### Genéricos
 
-Los **genéricos** permiten parametrizar clases, interfaces y métodos con tipos. Una clase `Caja<T>` no guarda “cualquier cosa”, sino un valor de un tipo `T` que se concreta al usarla: `Caja<String>`, `Caja<Integer>`. Su propósito es dar seguridad de tipos y reutilización sin casts manuales.
+**Definición formal.** Los genéricos parametrizan clases, interfaces y métodos con tipos (`class Caja<T>`, `<T> T id(T x)`). El tipo concreto se especifica al usar la API.
 
-Se usan en colecciones, repositorios, contenedores y utilidades. No conviene usar raw types, como `List` sin parámetro, porque desactivan la verificación de tipos y vuelven a los problemas de Java pre-genéricos. El error común es mezclar tipos en una colección raw y recibir `ClassCastException` lejos del origen. La verificación es intentar agregar un tipo incompatible a `List<String>` y comprobar que el compilador lo rechaza.
+**Para qué sirve.** Dan seguridad de tipos en compilación y reutilización sin casts manuales.
+
+**Cuándo usarlo y cuándo no.** Úsalo en colecciones, contenedores, repositorios y utilidades. No uses raw types (`List` sin `<T>`), porque desactivan verificación de tipos.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t4-genericos && cd /tmp/java-m2-t4-genericos
+```
+
+```java
+class Caja<T> {
+    private T valor;
+    Caja(T valor) { this.valor = valor; }
+    T getValor() { return valor; }
+}
+public class DemoGenericos {
+    public static void main(String[] args) {
+        System.out.println(new Caja<String>("Hola").getValor());
+        System.out.println(new Caja<Integer>(42).getValor());
+    }
+}
+```
+
+**Caso de uso real.** `Repositorio<Usuario, Long>` o respuestas `ApiResponse<T>` evitan casts y errores de tipo.
+
+**Error común.** Usar `List` raw. Síntoma: `ClassCastException` en runtime. Corrección: parametrizar siempre (`List<String>`).
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoGenericos.java
+java DemoGenericos
+```
+
+```text
+Hola
+42
+```
 
 #### Wildcards
 
-Un **wildcard** (`?`) representa un tipo desconocido. Se usa en firmas donde se quiere flexibilidad. `? extends Number` significa “algún tipo que es Number o subclase de Number”: permite leer elementos como `Number`, pero no permite agregar elementos nuevos, porque el tipo concreto es desconocido. `? super Integer` significa “algún tipo que es Integer o superclase de Integer”: permite agregar `Integer`, pero al leer solo se puede asumir `Object`.
+**Definición formal.** Un wildcard `?` representa un tipo desconocido. `? extends T` acepta `T` o subtipos (lectura como `T`). `? super T` acepta `T` o supertipos (escritura de `T`).
 
-La regla práctica es PECS: *Producer Extends, Consumer Super*. Si el método lee datos de la estructura, usa `extends`; si escribe datos en la estructura, usa `super`. No usar esta regla lleva a firmas que compilan mal o a APIs incómodas. El error común es intentar `numeros.add(1)` en una `List<? extends Number>`. La verificación es comprobar que el compilador rechaza esa operación.
+**Para qué sirve.** Permite APIs flexibles sobre jerarquías de tipos. La regla PECS guía: Producer Extends, Consumer Super.
+
+**Cuándo usarlo y cuándo no.** Usa `extends` cuando el método lee; `super` cuando escribe. No intentes agregar a `List<? extends Number>`: el tipo concreto es desconocido.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t4-wildcards && cd /tmp/java-m2-t4-wildcards
+```
+
+```java
+import java.util.*;
+public class DemoWildcards {
+    static double suma(List<? extends Number> nums) {
+        double t = 0;
+        for (Number n : nums) t += n.doubleValue();
+        return t;
+    }
+    static void agregar(List<? super Integer> dst) { dst.add(1); }
+    public static void main(String[] args) {
+        System.out.println(suma(List.of(1, 2, 3)));
+        List<Number> dst = new ArrayList<>();
+        agregar(dst);
+        System.out.println(dst);
+    }
+}
+```
+
+**Caso de uso real.** Un método de agregación acepta `List<Integer>` o `List<Double>` sin duplicar código.
+
+**Error común.** Confundir `extends`/`super`. Síntoma: el compilador rechaza `add` o obliga a leer como `Object`. Corrección: aplicar PECS.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoWildcards.java
+java DemoWildcards
+```
+
+```text
+6.0
+[1]
+```
 
 #### Type erasure
 
-El **type erasure** o borrado de tipos es el mecanismo por el cual el compilador elimina la información genérica en tiempo de ejecución e inserta comprobaciones/casts necesarios. Esto permitió compatibilidad con código anterior a los genéricos. La consecuencia es que en runtime no existe `List<String>` como tipo distinto de `List<Integer>`; ambos son `List`.
+**Definición formal.** Type erasure es el borrado de información genérica en tiempo de ejecución. El compilador inserta checks/casts; en runtime, `List<String>` y `List<Integer>` comparten la misma clase `List`.
 
-Por eso hay limitaciones: no se puede hacer `new T()`, no se puede crear `new T[]`, y no se puede usar `instanceof List<String>`. Los genéricos son principalmente una herramienta de compilación. El error común es esperar que el tipo genérico esté disponible como si fuera una clase normal en runtime. La verificación es intentar escribir `if (obj instanceof List<String>)` y ver el error de compilación.
+**Para qué sirve.** Mantiene compatibilidad binaria con Java anterior a genéricos.
 
-#### Ejemplo desde cero
+**Cuándo tenerlo en cuenta.** Al diseñar APIs: no puedes hacer `new T()`, `new T[]`, ni `instanceof List<String>`. Los genéricos son principalmente una garantía de compilación.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t4-erasure && cd /tmp/java-m2-t4-erasure
+```
+
+```java
+import java.util.*;
+public class DemoErasure {
+    public static void main(String[] args) {
+        List<String> a = new ArrayList<>();
+        List<Integer> b = new ArrayList<>();
+        System.out.println(a.getClass() == b.getClass());
+    }
+}
+```
+
+**Caso de uso real.** Al depurar o usar reflexión, recordar que el tipo parametrizado no está disponible como tal en runtime.
+
+**Error común.** Esperar `instanceof List<String>`. Síntoma: error de compilación. Corrección: diseñar sin depender del parámetro genérico en runtime, o pasar `Class<T>`.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoErasure.java
+java DemoErasure
+```
+
+```text
+true
+```
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m2-t4 && cd /tmp/java-m2-t4
@@ -529,7 +754,6 @@ Creamos `Caja.java`:
 ```java
 public class Caja<T> {
     private T valor;
-
     public Caja(T valor) { this.valor = valor; }
     public T getValor() { return valor; }
     public void setValor(T valor) { this.valor = valor; }
@@ -544,9 +768,7 @@ import java.util.*;
 public class DemoGenericos {
     static double suma(List<? extends Number> numeros) {
         double total = 0;
-        for (Number n : numeros) {
-            total += n.doubleValue();
-        }
+        for (Number n : numeros) total += n.doubleValue();
         return total;
     }
 
@@ -560,10 +782,8 @@ public class DemoGenericos {
         Caja<Integer> numero = new Caja<>(42);
         System.out.println(texto.getValor());
         System.out.println(numero.getValor());
-
         System.out.println(suma(List.of(1, 2, 3)));
         System.out.println(suma(List.of(1.5, 2.5)));
-
         List<Number> destino = new ArrayList<>();
         agregarUnoADos(destino);
         System.out.println(destino);
@@ -573,11 +793,7 @@ public class DemoGenericos {
 
 #### Recorrido del código
 
-`Caja<T>` es una clase genérica. El campo `valor`, el parámetro del constructor y el retorno de `getValor` usan el mismo tipo `T`. Al crear `Caja<String>`, el compilador garantiza que solo se guarden cadenas. No hay cast en el código cliente.
-
-El método `suma` recibe `List<? extends Number>`. Puede aceptar `List<Integer>`, `List<Double>` u otras listas de subtipos de `Number`. Dentro del método, los elementos se leen como `Number`, lo que permite llamar `doubleValue()`. No se pueden agregar elementos, porque la lista concreta podría ser una `List<Double>` y agregar un `Integer` rompería su tipo.
-
-El método `agregarUnoADos` recibe `List<? super Integer>`. Puede aceptar `List<Integer>`, `List<Number>` o `List<Object>`. Como la lista garantiza que acepta `Integer`, se pueden agregar 1 y 2. En cambio, al leer solo se puede asumir `Object`.
+`Caja<T>` demuestra genéricos: el mismo tipo `T` fluye por constructor, campo y getter. `suma` usa `? extends Number` porque solo lee. `agregarUnoADos` usa `? super Integer` porque escribe enteros. En runtime, el borrado elimina los parámetros de tipo.
 
 #### Ejecución y salida real
 
@@ -598,46 +814,152 @@ Hola
 
 #### Errores frecuentes
 
-Usar raw types elimina la seguridad de compilación. La corrección es parametrizar siempre las colecciones y tipos genéricos.
-
-Confundir `extends` y `super` produce errores de compilación o APIs rígidas. La regla PECS ayuda: si produce/lee, `extends`; si consume/escribe, `super`.
-
-Intentar crear arreglos genéricos o usar `instanceof` con parámetros concretos choca con type erasure. En esos casos, suele ser mejor usar `List<T>` o diseñar la API para no depender del tipo genérico en runtime.
+Usar raw types pierde seguridad de compilación. Confundir PECS causa errores de compilación o APIs rígidas. Asumir que el genérico existe en runtime lleva a diseños imposibles.
 
 #### Verificación
 
-La verificación consiste en compilar y ejecutar el ejemplo. Como prueba adicional, se puede intentar agregar `numeros.add(1)` dentro de `suma` y confirmar que el compilador lo rechaza.
-
+Compilar y ejecutar el integrado; confirmar las salidas. Probar que `numeros.add(1)` dentro de `suma` no compila.
 
 ### Tema 5: Comparable vs Comparator, e iteración · Intermedio · 40 min
 
-Ordenar objetos parece simple hasta que aparece una segunda necesidad: a veces una persona debe ordenarse por edad, otras por nombre, otras por apellido y edad. Además, recorrer una colección mientras se modifica puede producir errores difíciles de ver. Este tema cubre los dos contratos de ordenación más comunes y las reglas básicas de iteración segura.
+Ordenar objetos parece simple hasta que aparece una segunda necesidad: a veces una persona debe ordenarse por edad, otras por nombre. Además, recorrer una colección mientras se modifica puede producir errores. Este tema cubre los contratos de ordenación e iteración segura.
 
 #### Comparable
 
-**Comparable** es una interfaz que define el orden natural de un tipo mediante `compareTo(T)`. Se implementa cuando existe un orden obvio y estable para el objeto. Por ejemplo, si `Persona` se ordena por edad por defecto, la clase puede implementar `Comparable<Persona>`.
+**Definición formal.** `Comparable<T>` define el orden natural de un tipo mediante `compareTo(T)`. Devuelve negativo, cero o positivo según si el objeto actual es menor, igual o mayor en ese criterio.
 
-El método `compareTo` devuelve un valor negativo si el objeto actual es menor, cero si son iguales en ese criterio, y positivo si es mayor. No es necesario devolver -1 o 1 exactamente; basta con respetar el signo. Se debe evitar la resta directa de enteros cuando puede haber overflow; `Integer.compare` es más segura. El error común es definir un orden inconsistente con `equals` sin documentarlo. La verificación es ordenar una lista y comprobar el resultado.
+**Para qué sirve.** Da un orden por defecto al tipo, útil para `Collections.sort`, `TreeSet` o `TreeMap`.
+
+**Cuándo usarlo y cuándo no.** Úsalo cuando exista un orden natural obvio y estable. No fuerces múltiples órdenes en `compareTo`; para eso usa `Comparator`. Evita restar enteros por riesgo de overflow; usa `Integer.compare`.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t5-comparable && cd /tmp/java-m2-t5-comparable
+```
+
+```java
+import java.util.*;
+class Persona implements Comparable<Persona> {
+    final String nombre; final int edad;
+    Persona(String nombre, int edad) { this.nombre = nombre; this.edad = edad; }
+    @Override public int compareTo(Persona o) { return Integer.compare(this.edad, o.edad); }
+    @Override public String toString() { return nombre + "(" + edad + ")"; }
+}
+public class DemoComparable {
+    public static void main(String[] args) {
+        List<Persona> p = new ArrayList<>(List.of(new Persona("Linus",55), new Persona("Ada",36)));
+        Collections.sort(p);
+        System.out.println(p);
+    }
+}
+```
+
+**Caso de uso real.** `LocalDate`, `Integer` y `String` tienen orden natural; entidades de dominio pueden definir uno si es claro.
+
+**Error común.** Usar resta `a - b` en `compareTo`. Síntoma: overflow en enteros extremos. Corrección: `Integer.compare(a,b)`.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoComparable.java
+java DemoComparable
+```
+
+```text
+[Ada(36), Linus(55)]
+```
 
 #### Comparator
 
-**Comparator** define un orden externo mediante `compare(a, b)`. Sirve cuando el orden no pertenece naturalmente al objeto o cuando hay varios criterios posibles. A diferencia de `Comparable`, no obliga a modificar la clase. Se puede crear un comparador con `Comparator.comparing(Persona::getNombre)` y componer criterios con `thenComparing`.
+**Definición formal.** `Comparator<T>` define un orden externo mediante `compare(a,b)`. Se puede crear con lambdas o `Comparator.comparing(...)`, y componer con `thenComparing`.
 
-Se usa en reportes, vistas, tablas y casos donde el mismo tipo se ordena de formas distintas. No conviene forzar todos los ordenes posibles dentro de `compareTo`; eso vuelve rígida la clase. El error común es escribir comparadores complejos y frágiles cuando la API de composición ya expresa la intención. La verificación es ordenar la misma lista con dos comparadores y observar resultados distintos.
+**Para qué sirve.** Permite ordenar el mismo tipo por distintos criterios sin modificar la clase.
 
-#### Iteración
+**Cuándo usarlo y cuándo no.** Úsalo cuando el orden depende del contexto (UI, reporte, API). No dupliques lógica de comparación compleja si la API de composición la expresa claramente.
 
-La **iteración** es el recorrido de los elementos de una colección. `for-each` es claro para leer. `Iterator` permite recorrer y, además, eliminar el elemento actual de forma segura. En mapas, iterar sobre `entrySet()` es útil cuando se necesitan clave y valor.
+**Ejemplo mínimo enfocado (ejecutable).**
 
-Se usa `for-each` para lectura simple. Se usa `Iterator` cuando hay que eliminar durante el recorrido. El error común es modificar estructuralmente la colección con `remove` dentro de un `for-each`, lo que puede lanzar `ConcurrentModificationException`. La verificación es eliminar pares con `Iterator.remove()` y confirmar la colección final.
+```bash
+mkdir -p /tmp/java-m2-t5-comparator && cd /tmp/java-m2-t5-comparator
+```
 
-#### Fail-fast y `ConcurrentModificationException`
+```java
+import java.util.*;
+class P {
+    final String nombre; final int edad;
+    P(String nombre, int edad) { this.nombre = nombre; this.edad = edad; }
+    String getNombre() { return nombre; }
+    @Override public String toString() { return nombre; }
+}
+public class DemoComparator {
+    public static void main(String[] args) {
+        List<P> p = new ArrayList<>(List.of(new P("Linus",55), new P("Ada",36)));
+        p.sort(Comparator.comparing(P::getNombre));
+        System.out.println(p);
+    }
+}
+```
 
-Muchas colecciones de Java son **fail-fast**: detectan modificaciones estructurales durante una iteración y lanzan `ConcurrentModificationException`. Este comportamiento no es una garantía absoluta en concurrencia, sino un mecanismo de detección temprana de errores. Su propósito es hacer visible un uso incorrecto.
+**Caso de uso real.** Ordenar productos por precio en una vista y por nombre en otra, usando el mismo modelo.
 
-No se debe capturar esta excepción para “seguir igual”. La corrección es cambiar la forma de iterar: usar `Iterator.remove()`, usar una colección concurrente adecuada o recopilar cambios para aplicarlos después. La verificación es provocar la excepción en una prueba controlada y luego corregirla con `Iterator`.
+**Error común.** Escribir un `Comparator` que contradice la igualdad lógica esperada por `TreeSet/TreeMap`. Síntoma: elementos “desaparecen” por considerarse iguales. Corrección: revisar consistencia del criterio.
 
-#### Ejemplo desde cero
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoComparator.java
+java DemoComparator
+```
+
+```text
+[Ada, Linus]
+```
+
+#### Iteración e Iterator
+
+**Definición formal.** La iteración recorre una colección. `Iterator` permite recorrer y eliminar el elemento actual con `remove()`. `for-each` es azúcar para lectura simple.
+
+**Para qué sirve.** `Iterator.remove()` permite modificar la colección durante el recorrido de forma segura.
+
+**Cuándo usarlo y cuándo no.** Usa `for-each` para lectura. Usa `Iterator` cuando necesites eliminar durante la iteración. No uses `collection.remove(...)` dentro de `for-each` sobre la misma colección.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t5-iterator && cd /tmp/java-m2-t5-iterator
+```
+
+```java
+import java.util.*;
+public class DemoIteracion {
+    public static void main(String[] args) {
+        List<Integer> nums = new ArrayList<>(List.of(1,2,3,4));
+        Iterator<Integer> it = nums.iterator();
+        while (it.hasNext()) {
+            if (it.next() % 2 == 0) it.remove();
+        }
+        System.out.println(nums);
+    }
+}
+```
+
+**Caso de uso real.** Limpiar elementos inválidos de una lista en memoria antes de persistirlos.
+
+**Error común.** Modificar la colección en `for-each`. Síntoma: `ConcurrentModificationException`. Corrección: `Iterator.remove()` o recopilar cambios.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoIteracion.java
+java DemoIteracion
+```
+
+```text
+[1, 3]
+```
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m2-t5 && cd /tmp/java-m2-t5
@@ -649,24 +971,11 @@ Creamos `Persona.java`:
 public class Persona implements Comparable<Persona> {
     private final String nombre;
     private final int edad;
-
-    public Persona(String nombre, int edad) {
-        this.nombre = nombre;
-        this.edad = edad;
-    }
-
+    public Persona(String nombre, int edad) { this.nombre = nombre; this.edad = edad; }
     public String getNombre() { return nombre; }
     public int getEdad() { return edad; }
-
-    @Override
-    public int compareTo(Persona o) {
-        return Integer.compare(this.edad, o.edad);
-    }
-
-    @Override
-    public String toString() {
-        return nombre + "(" + edad + ")";
-    }
+    @Override public int compareTo(Persona o) { return Integer.compare(this.edad, o.edad); }
+    @Override public String toString() { return nombre + "(" + edad + ")"; }
 }
 ```
 
@@ -674,35 +983,17 @@ Y `DemoOrden.java`:
 
 ```java
 import java.util.*;
-
 public class DemoOrden {
     public static void main(String[] args) {
         List<Persona> personas = new ArrayList<>(List.of(
-            new Persona("Linus", 55),
-            new Persona("Ada", 36),
-            new Persona("Grace", 85)
-        ));
-
+            new Persona("Linus", 55), new Persona("Ada", 36), new Persona("Grace", 85)));
         Collections.sort(personas);
         System.out.println("Edad: " + personas);
-
         personas.sort(Comparator.comparing(Persona::getNombre));
         System.out.println("Nombre: " + personas);
-
-        Map<String, Integer> stock = new HashMap<>();
-        stock.put("A", 2);
-        stock.put("B", 3);
-        for (Map.Entry<String, Integer> e : new TreeMap<>(stock).entrySet()) {
-            System.out.println(e.getKey() + "=" + e.getValue());
-        }
-
-        List<Integer> nums = new ArrayList<>(List.of(1, 2, 3, 4));
+        List<Integer> nums = new ArrayList<>(List.of(1,2,3,4));
         Iterator<Integer> it = nums.iterator();
-        while (it.hasNext()) {
-            if (it.next() % 2 == 0) {
-                it.remove();
-            }
-        }
+        while (it.hasNext()) { if (it.next() % 2 == 0) it.remove(); }
         System.out.println(nums);
     }
 }
@@ -710,9 +1001,7 @@ public class DemoOrden {
 
 #### Recorrido del código
 
-`Persona` implementa `Comparable<Persona>` y define su orden natural por edad. `Collections.sort(personas)` usa ese orden. Después, `personas.sort(Comparator.comparing(Persona::getNombre))` aplica un orden externo por nombre sin modificar la clase.
-
-El `TreeMap` se usa solo para imprimir el mapa en orden determinista por clave. El punto de iteración importante está en la lista `nums`: se recorre con `Iterator` y se eliminan los pares con `it.remove()`. Esta es la forma segura de eliminar durante la iteración.
+`Comparable` define el orden natural por edad. `Comparator.comparing` aplica un orden externo por nombre. `Iterator.remove()` elimina pares sin `ConcurrentModificationException`.
 
 #### Ejecución y salida real
 
@@ -726,47 +1015,150 @@ Salida real observada (JDK 27, 2026-05-22):
 ```text
 Edad: [Ada(36), Linus(55), Grace(85)]
 Nombre: [Ada(36), Grace(85), Linus(55)]
-A=2
-B=3
 [1, 3]
 ```
 
 #### Errores frecuentes
 
-Usar `list.remove(...)` dentro de un `for-each` suele provocar `ConcurrentModificationException`. La corrección es usar `Iterator.remove()`.
-
-Implementar `compareTo` con resta de enteros puede fallar por overflow. `Integer.compare` evita ese problema.
-
-Definir un orden natural que contradice la igualdad lógica puede causar comportamientos inesperados en colecciones ordenadas. Si se hace, debe ser una decisión consciente y documentada.
+Confundir orden natural con orden contextual. Usar `for-each` para eliminar. Escribir `compareTo` con resta de enteros.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo y confirmar los dos órdenes y la lista final `[1, 3]`. Como prueba adicional, se puede agregar `.reversed()` al comparador de nombres.
-
+Ejecutar el integrado y confirmar los dos órdenes y la lista `[1, 3]`.
 
 ### Tema 6: Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue · Intermedio · 40 min
 
-No todas las colecciones se usan de la misma manera. A veces el primer elemento que entra debe ser el primero en salir; otras veces, el último en entrar debe salir primero. En otros casos, lo importante no es el orden de llegada sino la prioridad. Java modela estos comportamientos con `Queue`, `Deque` y `PriorityQueue`.
+No todas las colecciones se usan igual. A veces el primer elemento en entrar debe salir primero; otras, el último en entrar sale primero; en otros casos importa la prioridad. Java modela estos comportamientos con `Queue`, `Deque` y `PriorityQueue`.
 
 #### Queue
 
-Una **Queue** es una cola: normalmente sigue la política FIFO, *first in, first out*. Sirve para procesar elementos en orden de llegada, como tareas pendientes, mensajes o eventos. La interfaz `Queue` define operaciones como `offer`, `poll` y `peek`. `offer` intenta agregar un elemento; `poll` extrae y elimina la cabeza, devolviendo `null` si la cola está vacía; `peek` consulta la cabeza sin eliminarla.
+**Definición formal.** `Queue` representa una cola, normalmente FIFO. Operaciones típicas: `offer` (agrega), `poll` (extrae cabeza o `null`), `peek` (consulta cabeza o `null`).
 
-Se usa cuando el orden de procesamiento es el de llegada. No conviene usarla si el problema requiere prioridad o acceso por ambos extremos. El error común es usar `remove` o `element` sin considerar que lanzan excepción cuando la cola está vacía, mientras que `poll` y `peek` ofrecen un comportamiento más seguro.
+**Para qué sirve.** Procesar elementos en orden de llegada: tareas, mensajes, eventos.
+
+**Cuándo usarla y cuándo no.** Úsala cuando el orden de procesamiento sea de llegada. No la uses si necesitas prioridad o acceso por ambos extremos. Prefiere `offer/poll/peek` sobre `add/remove/element` cuando la cola vacía es un caso normal.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t6-queue && cd /tmp/java-m2-t6-queue
+```
+
+```java
+import java.util.*;
+public class DemoQueue {
+    public static void main(String[] args) {
+        Queue<String> q = new ArrayDeque<>();
+        q.offer("A"); q.offer("B");
+        System.out.println(q.poll());
+        System.out.println(q.peek());
+    }
+}
+```
+
+**Caso de uso real.** Cola de trabajos en memoria para procesar pedidos en orden de llegada.
+
+**Error común.** Usar `remove()` en cola vacía. Síntoma: `NoSuchElementException`. Corrección: `poll()` y manejo de `null`.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoQueue.java
+java DemoQueue
+```
+
+```text
+A
+B
+```
 
 #### Deque y ArrayDeque
 
-Un **Deque** es una cola doble: permite insertar y extraer por ambos extremos. Puede comportarse como cola FIFO o como pila LIFO. **ArrayDeque** es una implementación eficiente de `Deque`, basada en arreglo redimensionable. Es la opción recomendada en Java moderno para pilas y colas de uso general en memoria.
+**Definición formal.** `Deque` es una cola doble: permite insertar y extraer por ambos extremos. `ArrayDeque` es una implementación de arreglo redimensionable, eficiente y normalmente preferida para pilas/colas en memoria.
 
-Como pila, `ArrayDeque` usa `push`, `pop` y `peek`. Como cola, puede usar `offerLast`/`pollFirst` o las operaciones de `Queue`. No permite elementos `null`, porque `null` se usa en algunas operaciones para indicar ausencia. El error común es usar `Stack`, una clase antigua sincronizada, cuando `ArrayDeque` es más adecuada para la mayoría de casos de un solo hilo.
+**Para qué sirve.** Como cola FIFO o como pila LIFO (`push/pop/peek`). Es la alternativa moderna a `Stack`.
+
+**Cuándo usarlo y cuándo no.** Úsalo para pilas y colas de un solo hilo. No inserta `null`. No lo uses si necesitas concurrencia bloqueante (ahí aplica `BlockingQueue`/`BlockingDeque`).
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t6-deque && cd /tmp/java-m2-t6-deque
+```
+
+```java
+import java.util.*;
+public class DemoDeque {
+    public static void main(String[] args) {
+        Deque<String> pila = new ArrayDeque<>();
+        pila.push("uno"); pila.push("dos");
+        System.out.println(pila.pop());
+        System.out.println(pila.peek());
+    }
+}
+```
+
+**Caso de uso real.** Pila de deshacer/rehacer o evaluación de expresiones.
+
+**Error común.** Usar `Stack` por hábito. Síntoma: sincronización innecesaria y API antigua. Corrección: `ArrayDeque`.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoDeque.java
+java DemoDeque
+```
+
+```text
+dos
+uno
+```
 
 #### PriorityQueue
 
-Una **PriorityQueue** es una cola donde el elemento extraído primero es el de mayor prioridad según el orden natural o un `Comparator`. No es FIFO. Internamente se implementa como heap, por lo que obtener la cabeza tiene costo bajo, pero la iteración no devuelve los elementos ordenados.
+**Definición formal.** `PriorityQueue` es una cola cuya cabeza es el elemento con mayor prioridad según orden natural o `Comparator`. No es FIFO. La iteración no garantiza orden ordenado.
 
-Se usa cuando lo importante es procesar primero el elemento más urgente, menor, mayor o con mayor prioridad. No conviene usarla cuando se espera recorrerla y obtener orden total; para eso se debe extraer con `poll` o usar una lista ordenada. El error común es iterar la `PriorityQueue` y asumir que el orden de iteración es el orden de prioridad. La verificación es extraer elementos con `poll` y observar el orden real.
+**Para qué sirve.** Procesar primero lo más urgente/importante, no lo más antiguo.
 
-#### Ejemplo desde cero
+**Cuándo usarla y cuándo no.** Úsala cuando la extracción por prioridad sea el requisito. No la iteres esperando orden total; usa `poll()` para consumir en orden de prioridad.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t6-priority && cd /tmp/java-m2-t6-priority
+```
+
+```java
+import java.util.*;
+public class DemoPriority {
+    public static void main(String[] args) {
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        pq.offer(30); pq.offer(10); pq.offer(20);
+        System.out.println(pq.poll());
+        System.out.println(pq.poll());
+        System.out.println(pq.poll());
+    }
+}
+```
+
+**Caso de uso real.** Planificador donde tareas con menor deadline o mayor prioridad se atienden primero.
+
+**Error común.** Iterar `PriorityQueue` y asumir orden. Síntoma: resultados aparentemente desordenados. Corrección: extraer con `poll()`.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoPriority.java
+java DemoPriority
+```
+
+```text
+10
+20
+30
+```
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m2-t6 && cd /tmp/java-m2-t6
@@ -780,23 +1172,17 @@ import java.util.*;
 public class DemoColas {
     public static void main(String[] args) {
         Queue<String> cola = new ArrayDeque<>();
-        cola.offer("A");
-        cola.offer("B");
-        cola.offer("C");
+        cola.offer("A"); cola.offer("B"); cola.offer("C");
         System.out.println(cola.poll());
         System.out.println(cola.peek());
 
         Deque<String> pila = new ArrayDeque<>();
-        pila.push("uno");
-        pila.push("dos");
-        pila.push("tres");
+        pila.push("uno"); pila.push("dos"); pila.push("tres");
         System.out.println(pila.pop());
         System.out.println(pila.peek());
 
         PriorityQueue<Integer> pq = new PriorityQueue<>();
-        pq.offer(30);
-        pq.offer(10);
-        pq.offer(20);
+        pq.offer(30); pq.offer(10); pq.offer(20);
         System.out.println(pq.poll());
         System.out.println(pq.poll());
         System.out.println(pq.poll());
@@ -806,11 +1192,7 @@ public class DemoColas {
 
 #### Recorrido del código
 
-La primera estructura se usa como `Queue`. Se agregan `A`, `B` y `C`; `poll()` extrae `A`, que fue el primero en entrar. `peek()` muestra `B`, que ahora es la cabeza, sin eliminarla.
-
-La segunda estructura es la misma clase `ArrayDeque`, pero usada como pila. `push` coloca elementos en la cima. Al hacer `pop()`, sale `tres`, el último que entró. `peek()` muestra `dos`.
-
-La `PriorityQueue` recibe 30, 10 y 20. Al extraer con `poll()`, devuelve 10, luego 20 y luego 30, porque el orden natural de los enteros define la prioridad más baja primero. Si se necesitara la prioridad inversa, se pasaría `Comparator.reverseOrder()`.
+La cola usa FIFO con `offer/poll/peek`. La pila usa LIFO con `push/pop/peek` sobre `ArrayDeque`. La `PriorityQueue` extrae por orden natural, no por llegada.
 
 #### Ejecución y salida real
 
@@ -833,33 +1215,148 @@ dos
 
 #### Errores frecuentes
 
-Usar `Stack` por hábito en código nuevo suele ser innecesario. `ArrayDeque` es más adecuada para pilas y colas en un solo hilo.
-
-Asumir que `PriorityQueue` está ordenada al iterarla es un error. El orden garantizado es el de extracción por `poll()`.
-
-Usar `remove()` sobre una cola vacía puede lanzar excepción. Si el caso vacío es normal, `poll()` es más seguro.
+Usar la estructura equivocada cambia la semántica del sistema. `Stack` es legado; `ArrayDeque` es la opción moderna. `PriorityQueue` no garantiza orden al iterar.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo y confirmar el orden FIFO de la cola, LIFO de la pila y por prioridad de la `PriorityQueue`.
+Ejecutar el integrado y confirmar FIFO, LIFO y orden por prioridad.
 
 ### Tema 7: Incremento del proyecto: preparar guías asignables · Intermedio · 25 min
 
-Los conceptos de colecciones se consolidan cuando se usan juntos para resolver un problema pequeño pero real. Supongamos que necesitamos un repositorio en memoria de guías de envío. Debe conservar el historial de inserción, evitar códigos duplicados y permitir búsqueda rápida por código. Este problema obliga a combinar `List`, `Set` y `Map`.
+Los conceptos de colecciones se consolidan cuando se usan juntos. Necesitamos un repositorio en memoria de guías de envío: conservar historial de alta, evitar códigos duplicados y buscar rápido por código. El problema obliga a combinar `List`, `Set` y `Map`.
 
-#### Diseño con varias colecciones
+#### Repositorio en memoria con varias colecciones
 
-El **repositorio en memoria** es una estructura que guarda datos durante la ejecución del programa, sin persistencia externa. Sirve para prototipos, pruebas, ejercicios y capas simples antes de introducir una base de datos. Su límite es claro: al terminar el proceso, los datos se pierden.
+**Definición formal.** Un repositorio en memoria guarda datos durante la ejecución del proceso, sin persistencia externa. Puede combinar estructuras según el contrato requerido.
 
-Usar una sola colección obliga a compromisos. Una `List` conserva historial, pero detectar duplicados o buscar por código requiere recorrido. Un `Set` evita duplicados, pero no asocia estado completo ni conserva el modelo que queremos. Un `Map` busca rápido por código, pero por sí solo no expresa el historial de inserción como lista. La solución es usar cada estructura por su fortaleza, manteniendo la coherencia entre ellas.
+**Para qué sirve.** Permite prototipos, tests y capas simples antes de introducir base de datos. Cada colección aporta una garantía: `List` historial, `Set` unicidad, `Map` búsqueda por clave.
 
-#### Invariantes del repositorio
+**Cuándo usarlo y cuándo no.** Úsalo cuando los datos son temporales o el alcance es didáctico/local. No lo uses como persistencia durable o compartida entre procesos.
 
-El repositorio tiene tres invariantes: el historial conserva el orden de alta; no se aceptan dos guías con el mismo código; y la búsqueda por código devuelve la guía registrada. Cualquier operación de alta debe actualizar todas las estructuras involucradas. Si solo se actualiza una, el repositorio queda inconsistente.
+**Ejemplo mínimo enfocado (ejecutable).**
 
-También conviene exponer el historial como copia inmodificable con `List.copyOf(...)`. Así, quien consulta no puede alterar la estructura interna por accidente. El error común es devolver la lista interna directamente y permitir modificaciones externas.
+```bash
+mkdir -p /tmp/java-m2-t7-repo && cd /tmp/java-m2-t7-repo
+```
 
-#### Ejemplo desde cero
+```java
+import java.util.*;
+public class DemoRepo {
+    public static void main(String[] args) {
+        List<String> historial = new ArrayList<>();
+        Set<String> codigos = new HashSet<>();
+        Map<String, String> porCodigo = new HashMap<>();
+        String id = "G1";
+        if (codigos.add(id)) { historial.add(id); porCodigo.put(id, "CREADA"); }
+        System.out.println(historial);
+        System.out.println(porCodigo.get("G1"));
+    }
+}
+```
+
+**Caso de uso real.** Caché local de entidades durante una importación por lotes, con índice por ID.
+
+**Error común.** Usar solo `List` y recorrer para todo. Síntoma: código lento y confuso. Corrección: elegir colecciones por contrato.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoRepo.java
+java DemoRepo
+```
+
+```text
+[G1]
+CREADA
+```
+
+#### Invariantes y consistencia
+
+**Definición formal.** Un invariante es una condición que debe mantenerse siempre verdadera. Aquí: historial en orden de alta, sin códigos duplicados, búsqueda por código coherente.
+
+**Para qué sirve.** Evita estados parciales: si una operación de alta modifica solo una estructura, el repositorio queda inconsistente.
+
+**Cuándo aplicarlo.** En toda operación que muta estado. La operación debe ser atómica a nivel lógico: agregar a todas o a ninguna.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t7-invariante && cd /tmp/java-m2-t7-invariante
+```
+
+```java
+import java.util.*;
+public class DemoInvariante {
+    public static void main(String[] args) {
+        Set<String> codigos = new HashSet<>();
+        List<String> historial = new ArrayList<>();
+        System.out.println(codigos.add("G1"));
+        if (codigos.add("G1") == false) System.out.println("duplicado");
+        else historial.add("G1");
+        System.out.println(historial.size());
+    }
+}
+```
+
+**Caso de uso real.** Evitar doble alta de guía por reintento de red.
+
+**Error común.** Actualizar `Map` pero olvidar `Set` o `List`. Síntoma: duplicados o búsquedas inconsistentes. Corrección: centralizar la mutación en un solo método.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoInvariante.java
+java DemoInvariante
+```
+
+```text
+true
+duplicado
+1
+```
+
+#### Encapsulación de la colección
+
+**Definición formal.** Encapsular la colección interna significa no exponerla directamente para modificación externa. `List.copyOf` o `Collections.unmodifiableList` protegen la representación interna.
+
+**Para qué sirve.** Preserva invariantes y evita que clientes alteren el estado sin pasar por reglas.
+
+**Cuándo usarlo.** Siempre que expongas colecciones internas de un objeto de dominio/repositorio.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/java-m2-t7-encapsula && cd /tmp/java-m2-t7-encapsula
+```
+
+```java
+import java.util.*;
+public class DemoEncapsula {
+    public static void main(String[] args) {
+        List<String> interna = new ArrayList<>(List.of("G1"));
+        List<String> vista = List.copyOf(interna);
+        try { vista.add("G2"); }
+        catch (UnsupportedOperationException e) { System.out.println("inmodificable"); }
+    }
+}
+```
+
+**Caso de uso real.** Un repositorio devuelve historial solo lectura a la capa de UI/servicio.
+
+**Error común.** Retornar la lista interna mutable. Síntoma: clientes pueden `clear()` o `add()` sin validación. Corrección: copia inmodificable o vista no modificable.
+
+**Verificación (JDK 27, 2026-05-22).**
+
+```bash
+javac DemoEncapsula.java
+java DemoEncapsula
+```
+
+```text
+inmodificable
+```
+
+#### Ejemplo integrado desde cero
 
 ```bash
 mkdir -p /tmp/java-m2-t7 && cd /tmp/java-m2-t7
@@ -878,25 +1375,15 @@ class GuiaRepository {
     private final Map<String, Guia> porCodigo = new HashMap<>();
 
     boolean agregar(Guia guia) {
-        if (!codigos.add(guia.codigo())) {
-            return false;
-        }
+        if (!codigos.add(guia.codigo())) return false;
         historial.add(guia);
         porCodigo.put(guia.codigo(), guia);
         return true;
     }
 
-    List<Guia> historial() {
-        return List.copyOf(historial);
-    }
-
-    Optional<Guia> buscar(String codigo) {
-        return Optional.ofNullable(porCodigo.get(codigo));
-    }
-
-    int totalUnicos() {
-        return codigos.size();
-    }
+    List<Guia> historial() { return List.copyOf(historial); }
+    Optional<Guia> buscar(String codigo) { return Optional.ofNullable(porCodigo.get(codigo)); }
+    int totalUnicos() { return codigos.size(); }
 }
 
 public class RepoGuias {
@@ -914,11 +1401,7 @@ public class RepoGuias {
 
 #### Recorrido del código
 
-`Guia` es un record porque representa un dato simple. El repositorio mantiene tres estructuras: `historial` en una `ArrayList` para conservar el orden, `codigos` en un `HashSet` para detectar duplicados con eficiencia, y `porCodigo` en un `HashMap` para buscar por código.
-
-El método `agregar` usa `codigos.add(...)` como guardia. `Set.add` devuelve `false` si el elemento ya existía. En ese caso, el método termina sin modificar las otras estructuras. Si el código es nuevo, se agrega al historial y al mapa. Así se preservan los invariantes.
-
-`historial()` devuelve `List.copyOf(historial)`, evitando que el exterior modifique la lista interna. `buscar` devuelve `Optional<Guia>` para hacer explícita la posibilidad de ausencia.
+`Guia` es un record de valor. `agregar` usa `codigos.add` como guardia de unicidad; solo si es nuevo actualiza `historial` y `porCodigo`. `historial()` devuelve copia inmodificable. `buscar` expone ausencia con `Optional`.
 
 #### Ejecución y salida real
 
@@ -940,15 +1423,11 @@ Guia[codigo=G2, estado=EN_RUTA]
 
 #### Errores frecuentes
 
-Actualizar solo una de las estructuras deja el repositorio inconsistente. Toda alta exitosa debe tocar historial, set y mapa.
-
-Devolver la lista interna permite que código externo haga `repo.historial().clear()` o agregue elementos sin pasar por las reglas. `List.copyOf` evita ese problema.
-
-Usar solo `List` y recorrer para detectar duplicados funciona en ejemplos pequeños, pero expresa mal la intención y escala peor. El `Set` hace explícita la regla de unicidad.
+Actualizar solo parte de las estructuras rompe invariantes. Exponer la lista interna permite mutaciones externas. Usar `List` para todo oculta la intención de unicidad y búsqueda.
 
 #### Verificación
 
-La verificación consiste en ejecutar el ejemplo y confirmar que el tercer alta devuelve `false`, que el total de únicos es 2 y que la búsqueda por `G2` devuelve la guía correcta.
+Ejecutar el integrado y confirmar el rechazo del duplicado, total 2, búsqueda por `G2` y tamaño de historial 2.
 
 ## Cierre del módulo
 
