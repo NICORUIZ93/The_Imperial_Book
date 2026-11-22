@@ -139,9 +139,9 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     ['¿Qué errores no deben reintentarse?', '¿Qué cubre el núcleo de Spring 7 y qué sigue necesitando Resilience4j?', '¿Por qué con virtual threads el límite de concurrencia debe ser explícito?'],
     ['Spring Framework 7', 'Java 25'],
     'Cotizador asíncrono con reintentos acotados, límite de concurrencia y deadlock reproducido y corregido.'),
-  m(10, 'Mensajería con Kafka: eventos, errores, outbox y contratos', 'Kafka', 'Experto', '6 h 10 min', '#6db33f',
-    'Publica y consume eventos con Spring Kafka, recupera fallos con DLT, conserva consistencia con outbox y gobierna contratos con Avro.',
-    ['Producers y consumers con Spring Kafka', 'Dead-letter queue', 'Transacciones Kafka y SQL: idempotencia y límites de exactly-once', 'Outbox transaccional y flujo de negocio', 'Rebalanceo de consumer groups y asignación de particiones', 'Kafka Streams con Spring para transformar eventos', 'Avro y Schema Registry para contratos de eventos'],
+  m(10, 'Mensajería con Kafka: eventos, errores, outbox y contratos', 'Kafka', 'Experto', '3 h 10 min', '#6db33f',
+    'Publica y consume eventos con Spring Kafka, recupera fallos con DLT, conserva consistencia con outbox y gobierna contratos con Schema Registry.',
+    ['Productor, consumidor y claves de partición', 'Idempotencia, retries y DLT', 'Outbox, inbox y duplicados reales', 'Evolución de esquemas y Schema Registry'],
     [
       'Publica con la key del envío y consume en dos grupos',
       'Limita reintentos y envía a dead-letter los mensajes inválidos',
@@ -168,7 +168,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'La misma función de ruteo funcionando sobre Kafka y RabbitMQ, con errores enviados a dead-letter.'),
   m(12, 'Spring Batch: jobs, chunks y procesamiento masivo', 'Spring Batch', 'Experto', '1 h 30 min', '#6db33f',
     'Procesa grandes volúmenes en chunks reanudables, con reglas de retry y skip que dejan evidencia.',
-    ['Job, Step, Tasklet y chunk processing', 'Reinicio, JobParameters, retry, skip y listeners'],
+    ['Jobs, steps y chunk processing', 'Reintentos, skip y idempotencia en batch', 'Scheduling, parámetros y operación'],
     [
       'Importa un CSV con un step chunk-oriented',
       'Reinicia la misma instancia del job tras un fallo sin duplicar',
@@ -246,7 +246,7 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     'Servicio con límites transaccionales probados, idempotencia, saga con compensación y recuperación ensayada.'),
   m(18, 'Autenticación y backend seguro con Spring Security', 'Spring Security II', 'Experto', '2 h 30 min', '#6db33f',
     'Valida tokens de un proveedor OIDC, autoriza por recurso además de por rol y federa el inicio de sesión con SAML 2.0.',
-    ['SecurityFilterChain y autorización', 'DTO validation, CORS, JWT/OIDC y clientes HTTP', 'SAML 2.0 con Spring Security: iniciar sesión con el proveedor de identidad de una empresa'],
+    ['OIDC/OAuth2 con Spring Security', 'Autorización por recurso/método', 'SAML y escenarios enterprise', 'Hardening y secretos'],
     [
       'Acepta tokens de un issuer de confianza y prueba 200, 401 y 403',
       'Comprueba la propiedad del recurso además del rol',
@@ -268,9 +268,9 @@ export const SPRING_BOOT_MODULES: CourseModule[] = [
     ['¿Por qué empaquetar por capas acelera los despliegues?', '¿Qué pierdes al compilar a imagen nativa?', '¿Cuándo preferir CRaC/AOT cache frente a native image?'],
     ['Docker', 'GraalVM', 'CRaC', 'Buildpacks', 'Kubernetes'],
     'Imagen del servicio por capas, nativa o con arranque rápido, con sondas de salud configuradas.'),
-  m(20, 'Proyecto integrador: backend de entregas productivo', 'Proyecto integrador', 'Experto', '6 h 40 min', '#6db33f',
-    'Une persistencia, seguridad, observabilidad y pruebas en un servicio real y construye el backend de entregas con datos espaciales, tiempo real y archivos.',
-    ['Arquitectura del microservicio integrador', 'Integra seguridad JWT y observabilidad', 'Cierra el servicio con evidencia y próximos pasos', 'CRUD API y contratos', 'MySQL y datos espaciales', 'JPA e Hibernate Spatial', 'JWT Bearer y autorización por roles', 'Tiempo real con STOMP', 'Archivos y notificaciones push'],
+  m(20, 'Proyecto integrador: backend de entregas productivo', 'Proyecto integrador', 'Experto', '4 h', '#6db33f',
+    'Une persistencia, seguridad, observabilidad y pruebas en un servicio real con evidencia verificable y decisiones de diseño explícitas.',
+    ['Diseño del dominio y contratos', 'Persistencia, transacciones y migraciones', 'Seguridad, observabilidad y resiliencia', 'Smoke end-to-end y entrega'],
     [
       'Diseña las capas del servicio integrador',
       'Integra JWT, una métrica de negocio y pruebas con Testcontainers',
