@@ -18,20 +18,13 @@ Cuando un proyecto crece, el classpath plano permite que cualquier clase acceda 
 
 Tienes dos componentes: `core` con lógica de dominio y `app` que la consume. Quieres que `app` solo use la API pública de `core`, no sus clases internas.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-Un módulo JPMS es un conjunto de paquetes con un descriptor `module-info.java`.
+**Definición formal.** JPMS (Java Platform Module System) es el sistema de módulos introducido en Java 9 que añade una unidad de descripción a nivel superior al paquete: el *módulo*. Un módulo es un conjunto nombrado de paquetes, recursos y un descriptor `module-info.java` que declara sus dependencias (`requires`), su API exportada (`exports`), sus paquetes abiertos a reflexión (`opens`) y sus usos/provisiones de servicios.
 
-| Directiva | Significado |
-|---|---|
-| `module mi.modulo { }` | Declara el módulo |
-| `requires otro.modulo;` | Depende de otro módulo |
-| `exports paquete;` | Hace público un paquete para otros módulos |
-| `opens paquete;` | Permite reflexión en tiempo de ejecución |
-| `provides ... with ...` | Implementa un servicio |
-| `uses ...` | Consume un servicio |
+**Contrato / invariantes / reglas.** La accesibilidad en JPMS combina la visibilidad del lenguaje Java (`public/protected/private`) con la legibilidad del módulo: un tipo público solo es accesible desde otro módulo si su paquete está `exports` (o `opens` para reflexión profunda). `requires` establece legibilidad en tiempo de compilación y ejecución. `requires transitive` reexporta legibilidad. Los módulos no pueden tener *split packages* (el mismo paquete en múltiples módulos). La resolución de módulos ocurre al arrancar con module path; `--module-path` reemplaza el rol del classpath plano para módulos nombrados.
 
-La encapsulación fuerte significa que, aunque una clase sea `public`, si su paquete no está exportado, otros módulos no pueden accederla normalmente.
+**Modelo mental.** El classpath es una plaza abierta; JPMS es un edificio con puertas declaradas: solo lo que expones en el descriptor puede cruzar la frontera.
 
 **Implementación desde cero**
 
@@ -124,27 +117,13 @@ Intenta importar una clase de un paquete no exportado desde `app`: el compilador
 
 No todos los proyectos necesitan JPMS. Migrar un monolito grande con muchas librerías no modularizadas puede costar más que el beneficio. Necesitas criterio.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-JPMS aporta más cuando:
+**Definición formal.** La *migración incremental* a JPMS es la adopción gradual de descriptores de módulo, manteniendo compatibilidad con el classpath o usando módulos automáticos durante la transición. Un *módulo automático* es un JAR no modular colocado en module path; un *módulo sin nombre* (unnamed module) es el contenido del classpath.
 
-- tienes límites de arquitectura claros;
-- quieres encapsulación fuerte entre componentes;
-- construyes runtime reducido o plataforma modular;
-- el proyecto es grande y longevo.
+**Contrato / invariantes / reglas.** Los módulos automáticos exportan todos sus paquetes y leen todos los demás módulos, lo que debilita la encapsulación y los hace frágiles ante nombres derivados del JAR. El unnamed module puede leer módulos nombrados, pero los módulos nombrados no pueden declarar `requires` al unnamed module. `split packages` están prohibidos en module path. La viabilidad de la migración depende del grafo de dependencias, el soporte de librerías y los límites arquitectónicos reales.
 
-Puede no valer la pena cuando:
-
-- es una app pequeña;
-- depende mucho de librerías automáticas/no modularizadas;
-- el equipo no tiene necesidad real de límites de módulo.
-
-Estrategia incremental:
-
-1. Mantén el classpath y organiza por paquetes/JARs.
-2. Introduce módulos en los bordes o componentes nuevos.
-3. Usa módulos automáticos con cuidado durante la transición.
-4. Convierte a módulos nombrados cuando el grafo sea estable.
+**Modelo mental.** Migrar a JPMS es cambiar de barrio: puedes mudarte por etapas (módulos automáticos) pero mientras no declares dirección oficial, las garantías de frontera son débiles.
 
 **Implementación desde cero**
 
@@ -191,17 +170,13 @@ Toma un proyecto existente y clasifica sus componentes: candidato a módulo, lib
 
 Un framework usa reflexión para acceder a campos privados de una entidad. Con encapsulación fuerte, eso puede fallar si el paquete no está abierto.
 
-**Concepto clave / modelo mental**
+**Fundamento técnico y modelo mental**
 
-`exports` permite acceso en compilación/runtime a API pública. `opens` permite acceso reflexivo en runtime, incluso a miembros no públicos, para paquetes específicos.
+**Definición formal.** La *reflexión profunda* (deep reflection) permite a código externo inspeccionar/acceder a miembros no públicos mediante la API de reflexión. En JPMS, `opens` declara que un paquete es accesible por reflexión en runtime; `exports` controla acceso normal en compilación/runtime.
 
-| Directiva | Acceso |
-|---|---|
-| `exports p` | API pública accesible |
-| `opens p` | Reflexión permitida en runtime |
-| `opens p to m` | Reflexión permitida solo al módulo `m` |
+**Contrato / invariantes / reglas.** `exports p` no habilita reflexión profunda sobre miembros no públicos; `opens p` sí. `opens p to m` restringe esa reflexión al módulo `m`. `open module` abre todos los paquetes del módulo a reflexión, debilitando encapsulación. Errores típicos: `InaccessibleObjectException` cuando el framework intenta `setAccessible` o acceso reflexivo no permitido. La decisión de abrir debe seguir el principio de mínimo privilegio.
 
-Usa `opens` solo cuando lo necesite un framework (serialización, ORM, DI). No abras todo por defecto.
+**Modelo mental.** `exports` es la vitrina pública; `opens` es dar una llave especial al técnico de mantenimiento para que pueda abrir el panel interno, pero solo a ese técnico.
 
 **Implementación desde cero**
 
