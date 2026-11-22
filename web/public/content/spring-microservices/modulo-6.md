@@ -8,30 +8,46 @@ Una vez que hay múltiples servicios, aparecen problemas transversales: descubri
 
 ### Tema 1: Service discovery con Eureka/Consul/Nacos · Intermedio · 150 min
 
-Caso guía: `orders` necesita encontrar `inventory` sin IP hardcodeada.
+Caso guía: `orders` necesita llamar a `inventory`, pero las instancias cambian por autoscaling, despliegues y fallos. No puede depender de IPs fijas.
 
-#### Discovery
+#### Definición formal
 
-**Definición formal.** Service discovery permite a servicios registrar su ubicación y descubrir instancias disponibles. Eureka es discovery de Spring Cloud; Consul ofrece discovery y KV.
+Service discovery es el mecanismo por el cual un servicio registra su dirección de red y otros servicios consultan instancias disponibles. Puede ser client-side (el cliente consulta registry y balancea) o server-side (un load balancer/gateway resuelve). Eureka, Consul y Nacos son implementaciones comunes; Kubernetes ofrece discovery nativo vía DNS/Services.
 
-**Cuándo usarlo / cuándo no.** Úsalo cuando hay instancias dinámicas. En Kubernetes, DNS/service discovery nativo puede bastar.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **Registro:** instancia publica `name`, `host`, `port`, `health`, metadata.
+- **Consulta:** consumidor obtiene instancias saludables.
+- **Heartbeat/health:** el registry elimina o marca instancias no saludables.
+- **Consistencia operativa:** cachés de discovery pueden quedar stale; el cliente debe tolerar errores y reintentar con otra instancia.
+- **Eureka:** registry AP-oriented típico en Spring Cloud Netflix.
+- **Consul:** discovery + health checks + KV; usado en entornos heterogéneos.
+- **Nacos:** discovery y configuración dinámica, común en Spring Cloud Alibaba; útil cuando se quiere un plano integrado de naming/config.
 
-```bash
-mkdir -p sm6-disc
-cd sm6-disc
-```
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** cuando hay instancias dinámicas, múltiples réplicas o despliegues frecuentes. **No lo agregues** si la plataforma ya lo resuelve (Kubernetes DNS/Service) y no necesitas features adicionales. No uses discovery como sustituto de timeouts/retries/circuit breakers.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Disc.java`:
 
 ```java
 import java.util.*;
 public class Disc {
-  static Map<String,List<String>> registry = new HashMap<>();
-  static void register(String name,String addr){ registry.computeIfAbsent(name,k->new ArrayList<>()).add(addr); }
-  static List<String> discover(String name){ return registry.getOrDefault(name,List.of()); }
-  public static void main(String[] args){ register("inventory","10.0.0.2:8080"); System.out.println(discover("inventory").size()); }
+  static Map<String, List<String>> registry = new HashMap<>();
+  static void register(String name, String addr) {
+    registry.computeIfAbsent(name, k -> new ArrayList<>()).add(addr);
+  }
+  static List<String> discover(String name) {
+    return registry.getOrDefault(name, List.of());
+  }
+  public static void main(String[] args) {
+    register("inventory", "10.0.0.2:8080");
+    register("inventory", "10.0.0.3:8080");
+    System.out.println(discover("inventory").size());
+    System.out.println(discover("missing").size());
+  }
 }
 ```
 
@@ -40,13 +56,35 @@ javac Disc.java
 java Disc
 ```
 
-**Caso de uso real.** `@EnableDiscoveryClient` y load-balanced WebClient.
+Salida esperada:
 
-**Error común.** Hardcodear URLs.
+```text
+2
+0
+```
 
-**Síntoma.** fallos al escalar/reubicar instancias. **Causa.** acoplamiento a topología. **Corrección.** discovery/DNS. **Señal observable.** cambios de IP rompen config.
+#### Caso real
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `1`. **Nota de verificación:** Eureka/Consul reales no ejecutados.
+En Spring Cloud, `orders` usa `WebClient` con `@LoadBalanced` y resuelve `http://inventory/...` contra Eureka/Consul/Nacos. En Kubernetes, el mismo contrato puede resolverse por `inventory.default.svc.cluster.local`.
+
+#### Error común
+
+**Síntoma.** fallos tras escalar o redeploy. **Causa.** URL/IP hardcodeada en configuración. **Corrección.** usar nombre lógico + discovery/DNS y health checks. **Señal observable.** errores `Connection refused` a IP vieja después de rollout.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `2`, `0`.
+
+**Nota de verificación:** no se ejecutaron servidores Eureka/Consul/Nacos en esta sesión. Verificación propuesta:
+
+```bash
+# Nacos (ejemplo con Docker)
+docker run --rm -p 8848:8848 -e MODE=standalone nacos/nacos-server:latest
+# App Spring: spring.cloud.nacos.discovery.server-addr=localhost:8848
+./mvnw spring-boot:run
+```
+
+Resultado esperado: la instancia aparece registrada en Nacos y el cliente resuelve instancias saludables por nombre lógico.
 
 ### Tema 2: Spring Cloud Gateway · Intermedio · 150 min
 

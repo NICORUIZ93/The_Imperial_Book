@@ -176,27 +176,121 @@ node check.mjs
 
 ### Tema 5: GraalVM Native Image, CRaC y JVM tuning para contenedores · Avanzado · 120 min
 
-Caso guía: servicio Spring Boot con cold start alto en autoscaling Kubernetes; necesitas evaluar native image, CRaC o tuning JVM.
+Caso guía: un servicio Spring Boot en Kubernetes escala de 1 a 30 réplicas ante picos. El cold start de 8s causa timeouts de readiness. Debes elegir entre JVM optimizada, Native Image o CRaC, con evidencia.
 
 #### Definición formal
 
-- **Native Image (GraalVM):** compila AOT a binario nativo; arranque y memoria suelen mejorar, con restricciones de reflexión/dynamic features.
-- **CRaC:** checkpoint/restore del proceso JVM para arranque rápido; requiere compatibilidad de recursos abiertos/sockets/estado.
-- **JVM tuning:** G1GC/ZGC, `MaxRAMPercentage`, heap/Metaspace, thread pools, según carga.
+- **GraalVM Native Image:** compilación ahead-of-time a binario nativo para una plataforma. Reduce arranque y, a menudo, RSS inicial; impone restricciones de reflexión, recursos, proxies, JNI y carga dinámica.
+- **CRaC (Coordinated Restore at Checkpoint):** checkpoint del estado de un proceso JVM y restore posterior. Reduce arranque al restaurar estado ya calentado; requiere coordinación de recursos (sockets, archivos, DB connections, threads).
+- **JVM tuning en contenedores:** configuración de memoria y GC acorde a límites cgroup: `-XX:MaxRAMPercentage`, selección G1GC/ZGC según objetivo, sizing de metaspace, threads y pools.
+
+#### Contrato / internals
+
+- **Native:** build cierra el universo de clases alcanzables; Spring AOT genera hints. El binario resultante no es “JVM igual más rápido”; es otro artefacto con perfil operativo distinto.
+- **CRaC:** checkpoint solo es seguro si la app libera/reabre recursos externos correctamente. Restore antes de aceptar tráfico debe validar conexiones/estado.
+- **JVM tuning:** el contenedor puede tener límite de 512MiB; la JVM debe respetarlo. `MaxRAMPercentage` evita defaults inadecuados. GC tuning impacta latencia y throughput.
+- **Métrica mínima:** medir arranque, RSS, p95/p99, throughput, tasa de error y costo de build/operación.
 
 #### Cuándo usarlo / cuándo no
 
-Usa native/CRaC cuando el cold start sea problema medible. Usa JVM tuning siempre en contenedores; no asumas defaults óptimos. No uses native si dependencias críticas no son compatibles.
+**Native Image:** úsalo cuando cold start/RSS dominan y el stack es compatible. **No** si hay reflexión dinámica crítica no controlada o el costo de mantenimiento de hints supera el beneficio.
+
+**CRaC:** úsalo cuando controlas el entorno de checkpoint/restore y puedes gestionar ciclo de vida de recursos. **No** en entornos donde no puedes garantizar restore seguro.
+
+**JVM tuning:** úsalo siempre en contenedores. **No** copies flags sin medir; un tuning para throughput puede empeorar p99.
+
+#### Ejemplo mínimo ejecutable
+
+Smoke de decisión de estrategia por objetivo medible:
+
+Crea el archivo `RuntimeChoice.java`:
+
+```java
+public class RuntimeChoice {
+  static String choose(int coldStartMs, boolean dynamicReflection, boolean canCheckpoint) {
+    if (coldStartMs <= 500) return "JVM_TUNED";
+    if (!dynamicReflection) return "NATIVE_IMAGE";
+    if (canCheckpoint) return "CRAC";
+    return "JVM_TUNED_AOT";
+  }
+
+  public static void main(String[] args) {
+    System.out.println(choose(200, true, false));
+    System.out.println(choose(8000, false, false));
+    System.out.println(choose(8000, true, true));
+  }
+}
+```
+
+```bash
+javac RuntimeChoice.java
+java RuntimeChoice
+```
+
+Salida esperada:
+
+```text
+JVM_TUNED
+NATIVE_IMAGE
+CRAC
+```
+
+Smoke de configuración de memoria para contenedor (cálculo simple):
+
+Crea el archivo `HeapBudget.java`:
+
+```java
+public class HeapBudget {
+  static int heapMb(int containerMb, int percent) {
+    return containerMb * percent / 100;
+  }
+  public static void main(String[] args) {
+    System.out.println(heapMb(512, 75));
+  }
+}
+```
+
+```bash
+javac HeapBudget.java
+java HeapBudget
+```
+
+Salida esperada:
+
+```text
+384
+```
+
+#### Caso real
+
+Antes de pasar a native, el equipo ajusta `MaxRAMPercentage=75`, G1GC y warmup, reduciendo cold start a 3s. Para un servicio con autoscaling extremo y dependencias compatibles, native baja a sub-segundo. CRaC se evalúa en entorno controlado con hooks para cerrar/reabrir conexiones.
 
 #### Error común
 
-**Síntoma.** arranca rápido pero falla funcionalidad. **Causa.** reflection/resources no configurados o estado no restaurable. **Corrección.** smoke tests equivalentes, observabilidad, benchmarks. **Señal observable.** errores en runtime ausentes en JVM.
+**Síntoma.** binario native arranca rápido pero falla en endpoint específico. **Causa.** reflexión/recurso no incluido en metadata. **Corrección.** ejecutar tests sobre native, usar tracing agent/hints y CI que compile native. **Señal observable.** `MissingReflectionRegistrationError` o 500 solo en native.
 
-**Nota de verificación (2026-05-22).** No ejecutado build native/CRaC en esta sesión. Verificación propuesta: `./mvnw -Pnative native:compile` o proceso CRaC en Linux compatible; medir arranque RSS/p95.
+**Síntoma.** pod OOMKilled en Kubernetes. **Causa.** JVM sin límite relativo al contenedor o percent alto. **Corrección.** `MaxRAMPercentage`, límites de memoria y profiling. **Señal observable.** `OOMKilled`, restart count creciente.
+
+#### Verificación
+
+Smokes Java ejecutados localmente (2026-05-22, JDK 27.0.1.0.2): `JVM_TUNED`, `NATIVE_IMAGE`, `CRAC`, `384`.
+
+**Nota de verificación:** no se ejecutó build native, CRaC checkpoint/restore ni despliegue Kubernetes en esta sesión. Verificación real propuesta:
+
+```bash
+# Native
+./mvnw -Pnative -DskipTests native:compile
+./target/app
+
+# JVM en contenedor
+java -XX:MaxRAMPercentage=75.0 -jar app.jar
+```
+
+Resultado esperado: comparar arranque, RSS, p95/p99 y tasa de error entre JVM y native; validar que CRaC restaura conexiones correctamente antes de recibir tráfico.
 
 ## Cierre
 
-Entrega segura es parte del diseño: imagen reproducible, probes, escalado, rollout progresivo y GitOps.
+Entrega segura es parte del diseño: imagen reproducible, probes, escalado, rollout progresivo y GitOps. La estrategia de runtime se elige por medición, no por moda.
 
 ## Checklist
 
@@ -204,3 +298,4 @@ Entrega segura es parte del diseño: imagen reproducible, probes, escalado, roll
 - Readiness/liveness correctas.
 - HPA/rollout con métricas.
 - Git sin drift.
+- Runtime elegido con métricas de arranque, RSS, p95 y compatibilidad.

@@ -7396,8 +7396,8 @@
         "fragment": "tema-3-rbac-scopes-y-mtls-zero-trust"
       },
       {
-        "title": "Vault, gestión de secretos y SBOM y CVE scanning",
-        "fragment": "tema-4-vault-gestion-de-secretos-y-sbom-y-cve-scanning"
+        "title": "Vault, gestión de secretos, SBOM y CVE scanning",
+        "fragment": "tema-4-vault-gestion-de-secretos-sbom-y-cve-scanning"
       }
     ],
     "9": [

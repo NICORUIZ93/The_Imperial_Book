@@ -230,25 +230,78 @@ java Quality
 
 ### Tema 6: Floci para emular dependencias cloud en tests/CI · Avanzado · 120 min
 
-Caso guía: un microservicio publica a S3/SQS; necesitas pruebas de integración deterministas en CI sin cuenta cloud real.
+Caso guía: un microservicio procesa archivos en S3 y publica mensajes en SQS. En CI no hay cuenta cloud real, pero necesitas validar integración con AWS SDK, serialización y manejo de errores.
 
 #### Definición formal
 
-Floci es un emulador local cloud; en Java se integra con Testcontainers y, en Spring Boot, puede usarse para configurar clientes AWS vía endpoint local. Permite validar integraciones de control/data plane emulado en local.
+Floci es un emulador local de servicios cloud compatible con APIs AWS. En Java se integra con Testcontainers mediante el módulo `io.floci:testcontainers-floci` (línea 1.x para Testcontainers 1.x/Spring Boot 3.x; línea 2.x para Testcontainers 2.x/Spring Boot 4.x). Permite ejecutar dependencias cloud-like en local/CI con endpoint HTTP controlado.
 
-#### Contrato mínimo
+#### Contrato / internals
 
-Endpoint local, credenciales de prueba, región, clientes SDK con endpoint override, y suite que diferencie lo que valida el emulador vs lo que requiere cloud real.
+- **Endpoint:** el contenedor expone un endpoint local; el SDK debe apuntar a `endpointOverride`.
+- **Credenciales:** credenciales de prueba (`test/test` o las configuradas); no son credenciales cloud reales.
+- **Región:** el cliente debe configurarla explícitamente.
+- **Paridad parcial:** emula comportamiento de API, no garantías completas de IAM real, cuotas, latencia, consistencia eventual específica ni todas las features.
+- **Aislamiento:** cada test debe crear/limpiar recursos o usar nombres únicos.
 
 #### Cuándo usarlo / cuándo no
 
-**Úsalo** para tests de integración rápidos, CI y reproducibilidad. **No lo uses** como garantía completa de comportamiento cloud real (IAM avanzado, cuotas, latencia, fallas regionales).
+**Úsalo** para integración local/CI rápida, determinista y sin costo cloud: crear bucket, publicar/leer cola, validar wiring de SDK. **No lo uses** como única evidencia para producción en AWS real: IAM fino, políticas, KMS, cuotas, throttling real, latencia de red y comportamiento regional pueden diferir.
+
+#### Ejemplo mínimo ejecutable
+
+El siguiente smoke modela el contrato de decisión que debe aplicar un test: si el endpoint es local/emulado se usa configuración de prueba; si es cloud real, no se deben usar credenciales dummy.
+
+Crea el archivo `FlociConfig.java`:
+
+```java
+public class FlociConfig {
+  record ClientCfg(String endpoint, String creds, String region) {}
+
+  static ClientCfg cfg(boolean emulator) {
+    if (emulator) return new ClientCfg("http://localhost:4566", "test/test", "us-east-1");
+    return new ClientCfg("https://s3.amazonaws.com", "iam-role", "us-east-1");
+  }
+
+  public static void main(String[] args) {
+    System.out.println(cfg(true));
+    System.out.println(cfg(false).creds());
+  }
+}
+```
+
+```bash
+javac FlociConfig.java
+java FlociConfig
+```
+
+Salida esperada:
+
+```text
+ClientCfg[endpoint=http://localhost:4566, creds=test/test, region=us-east-1]
+iam-role
+```
+
+#### Caso real
+
+Un test JUnit 5 levanta `FlociContainer`, configura `S3Client` con `endpointOverride(floci.getEndpoint())`, crea un bucket, sube un objeto y verifica que el servicio lo lee. En CI corre sin cuenta AWS; nightly se ejecuta un smoke contra AWS real para validar IAM/políticas.
 
 #### Error común
 
-**Síntoma.** verde en CI, falla en AWS real. **Causa.** paridad parcial. **Corrección.** pruebas contractuales locales + smoke en entorno cloud controlado. **Señal observable.** errores de permisos/cuotas solo en real.
+**Síntoma.** test pasa con Floci pero falla en AWS real. **Causa.** asumir paridad total del emulador con IAM/cuotas/latencia/features. **Corrección.** pirámide de verificación: emulador para feedback rápido + smoke selectivo en cloud real para riesgos críticos. **Señal observable.** `AccessDenied`, throttling o diferencias de semántica solo en entorno real.
 
-**Nota de verificación (2026-05-22).** No ejecutado aquí; requiere Docker/imagen Floci y dependencias test. Comando esperado: `./mvnw test` con `FlociContainer` y aserciones sobre recurso creado.
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): salida esperada `ClientCfg[endpoint=http://localhost:4566, creds=test/test, region=us-east-1]` y `iam-role`.
+
+**Nota de verificación:** no se ejecutó Floci/Testcontainers en esta sesión porque requiere Docker y dependencia `io.floci:testcontainers-floci`. Verificación real propuesta:
+
+```bash
+# agregar dependencia test io.floci:testcontainers-floci (1.x o 2.x según stack)
+./mvnw -Dtest=*FlociIT test
+```
+
+Resultado esperado: contenedor Floci inicia, el SDK opera contra `localhost:4566`, las aserciones pasan y no se usan credenciales cloud reales.
 
 ## Cierre
 

@@ -83,28 +83,42 @@ java Jwt
 
 ### Tema 3: RBAC, scopes y mTLS/Zero-Trust · Avanzado · 150 min
 
-Caso guía: solo `admin` puede borrar; servicios internos usan mTLS.
+Caso guía: `DELETE /orders/{id}` solo lo puede ejecutar un admin; además, `orders-service` solo debe aceptar llamadas internas de `billing-service` autenticadas por certificado.
 
-#### Autorización y transporte
+#### Definición formal
 
-**Definición formal.** RBAC autoriza por roles; scopes por permisos delegados. mTLS autentica ambos extremos por certificados.
+- **RBAC (Role-Based Access Control):** autorización basada en roles asignados a identidades.
+- **Scopes/permisos:** autorización granular, común en OAuth2, sobre acciones delegadas.
+- **mTLS:** TLS mutuo; cliente y servidor presentan certificados y se autentican ambos.
+- **Zero-Trust:** modelo donde ninguna red/llamada se considera confiable por defecto; cada request se autentica, autoriza y observa.
 
-**Cuándo usarlo / cuándo no.** RBAC para permisos gruesos; ABAC/policies para fino. mTLS en service-to-service sensible.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **Autenticación != autorización:** token válido no implica permiso para toda operación.
+- **RBAC:** roles como `ADMIN`, `USER`; útil para permisos gruesos.
+- **ABAC/policies:** cuando la decisión depende de atributos (owner, tenant, horario, sensibilidad).
+- **mTLS:** identidad de workload por certificado; rotación y CA interna son parte del contrato operativo.
+- **Zero-Trust:** combina identidad fuerte, least privilege, segmentación, cifrado en tránsito y auditoría.
 
-```bash
-mkdir -p sm8-rbac
-cd sm8-rbac
-```
+#### Cuándo usarlo / cuándo no
+
+**RBAC/scopes:** úsalos siempre para control de acceso. **No** uses solo autenticación. **mTLS/Zero-Trust:** úsalos en comunicación service-to-service sensible o entornos regulados. **No** asumas que la red privada es suficiente protección.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Rbac.java`:
 
 ```java
 import java.util.*;
 public class Rbac {
-  static boolean canDelete(Set<String> roles){ return roles.contains("ADMIN"); }
-  public static void main(String[] args){ System.out.println(canDelete(Set.of("USER"))); System.out.println(canDelete(Set.of("ADMIN"))); }
+  static boolean canDelete(Set<String> roles) { return roles.contains("ADMIN"); }
+  static boolean canRead(String owner, String userId) { return owner.equals(userId); }
+  public static void main(String[] args) {
+    System.out.println(canDelete(Set.of("USER")));
+    System.out.println(canDelete(Set.of("ADMIN")));
+    System.out.println(canRead("u1", "u1"));
+    System.out.println(canRead("u1", "u2"));
+  }
 }
 ```
 
@@ -113,35 +127,69 @@ javac Rbac.java
 java Rbac
 ```
 
-**Error común.** Autorizar solo por estar autenticado.
+Salida esperada:
 
-**Síntoma.** escalamiento de privilegios. **Causa.** falta control por rol/scope/recurso. **Corrección.** least privilege, checks por recurso. **Señal observable.** usuario normal accede a admin.
-
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `false`, `true`.
-
-### Tema 4: Vault, gestión de secretos y SBOM y CVE scanning · Intermedio · 120 min
-
-Caso guía: rotar DB password sin redeploy.
-
-#### Secretos y dependencias
-
-**Definición formal.** Secret managers almacenan y rotan secretos. CVE scanning detecta vulnerabilidades conocidas en dependencias/imágenes.
-
-**Cuándo usarlo / cuándo no.** Siempre. No secretos en git; no ignorar CVEs críticas.
-
-**Ejemplo mínimo enfocado (ejecutable).**
-
-```bash
-mkdir -p sm8-vault
-cd sm8-vault
+```text
+false
+true
+true
+false
 ```
+
+#### Caso real
+
+En Spring Security, un endpoint admin exige `ROLE_ADMIN`; otro endpoint valida ownership por `order.userId`. Entre servicios, mTLS garantiza identidad de workload y la policy solo permite `billing` a `POST /payments/capture`.
+
+#### Error común
+
+**Síntoma.** usuario autenticado borra recursos ajenos. **Causa.** solo se validó login, no rol/recurso. **Corrección.** checks por rol/scope y por ownership/atributo. **Señal observable.** auditoría muestra acciones admin realizadas por rol `USER`.
+
+**Síntoma.** servicio interno falso llama a endpoint interno. **Causa.** confiar en red plana. **Corrección.** mTLS/identidad de workload + autorización. **Señal observable.** requests internos sin identidad de certificado/policy válida.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `false`, `true`, `true`, `false`.
+
+**Nota de verificación:** no se ejecutó mTLS/Keycloak/mesh en esta sesión. Verificación propuesta: configurar Spring Security Resource Server + policy por recurso y mTLS entre dos servicios; pruebas deben dar 200/401/403 según identidad y rol.
+
+### Tema 4: Vault, gestión de secretos, SBOM y CVE scanning · Intermedio · 120 min
+
+Caso guía: la password de DB debe rotarse sin redeploy. Además, una dependencia tiene CVE crítica y el pipeline debe bloquear el release.
+
+#### Definición formal
+
+- **Secret manager (Vault/SM):** sistema para almacenar, entregar, rotar y auditar secretos.
+- **SBOM (Software Bill of Materials):** inventario de componentes/dependencias de un artefacto.
+- **CVE scanning:** análisis de dependencias/imágenes contra vulnerabilidades conocidas.
+
+#### Contrato / internals
+
+- **Secretos:** no en git, no en logs, no hardcodeados. Se entregan en runtime por mecanismo seguro.
+- **Rotación:** el servicio debe tolerar cambio de credencial sin caída prolongada.
+- **SBOM:** identifica qué contiene exactamente la imagen/JAR.
+- **CVE scan:** compara SBOM/deps con bases de vulnerabilidad; la política define severidades que bloquean.
+- **Límite:** “sin CVEs conocidas” no significa seguro; es control necesario, no suficiente.
+
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** siempre en CI/CD y runtime. **No** ignores CVEs críticas por ruido; clasifica con alcance y remediación. **No** uses secretos de prueba en producción.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Vault.java`:
 
 ```java
 public class Vault {
-  static String getSecret(String name){ if(name==null||name.isBlank()) throw new IllegalArgumentException("missing"); return "***"; }
-  public static void main(String[] args){ System.out.println(getSecret("db")); try{ getSecret(""); }catch(Exception e){ System.out.println(e.getMessage()); } }
+  static String getSecret(String name) {
+    if (name == null || name.isBlank()) throw new IllegalArgumentException("missing");
+    return "***";
+  }
+  static boolean releaseBlocked(int criticalCves) { return criticalCves > 0; }
+  public static void main(String[] args) {
+    System.out.println(getSecret("db"));
+    try { getSecret(""); } catch (Exception e) { System.out.println(e.getMessage()); }
+    System.out.println(releaseBlocked(1));
+  }
 }
 ```
 
@@ -150,11 +198,36 @@ javac Vault.java
 java Vault
 ```
 
-**Error común.** Secretos en repo.
+Salida esperada:
 
-**Síntoma.** filtración. **Causa.** mal manejo. **Corrección.** Vault/SM, scanning, rotación. **Señal observable.** alertas secret scanning.
+```text
+***
+missing
+true
+```
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `***`, `missing`. **Nota de verificación:** Vault/Keycloak/Trivy reales no ejecutados.
+#### Caso real
+
+Vault entrega credenciales DB con TTL; la app renueva antes de expirar. En CI, Syft genera SBOM y Trivy/Grype escanean; una CVE crítica bloquea el release.
+
+#### Error común
+
+**Síntoma.** secreto filtrado en repositorio. **Causa.** `.env` o YAML commiteado. **Corrección.** secret manager, pre-commit scanning, rotación inmediata. **Señal observable.** alerta de secret scanning o credencial usada desde IP desconocida.
+
+**Síntoma.** vulnerabilidad crítica en producción. **Causa.** no hay gate de CVE/SBOM. **Corrección.** SBOM + scan en CI + política de severidad. **Señal observable.** reporte de dependencia vulnerable sin remediación.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `***`, `missing`, `true`.
+
+**Nota de verificación:** no se ejecutó Vault, Syft, Trivy o Grype en esta sesión. Verificación propuesta:
+
+```bash
+syft dir:. -o cyclonedx-json > sbom.json
+grype sbom:sbom.json
+```
+
+Resultado esperado: SBOM generado y gate falla ante CVE crítica según política.
 
 ## Cierre
 

@@ -173,33 +173,115 @@ java Decide
 
 ### Tema 5: HTTP Service Clients declarativos y RSocket · Avanzado · 120 min
 
-Caso guía: un servicio Spring Boot llama a otro servicio interno; quieres un cliente declarativo con contrato claro y evaluar RSocket solo si necesitas streaming/bidireccionalidad.
+Caso guía: `orders-service` debe consultar `users-service`. Quieres un contrato tipado sin boilerplate, con timeout y observabilidad. Además, un canal interno de telemetría necesita streaming; evalúas RSocket.
 
-#### HTTP Service Clients declarativos
+#### Definición formal
 
-**Definición formal.** Spring Framework 6/Boot 3+ introdujo interfaces HTTP declarativas; Spring Framework 7 / Spring Boot 4 consolidan el modelo con `@HttpExchange`, `@ImportHttpServices` y configuración por grupos, permitiendo proxies sin boilerplate manual.
+**HTTP Service Clients declarativos.** En Spring, una interfaz Java anotada con `@HttpExchange`/`@GetExchange`/`@PostExchange` define el contrato HTTP; Spring genera un proxy que ejecuta requests. Spring Framework 6/Boot 3 introdujeron el modelo; Spring Framework 7/Boot 4 consolidan registro/configuración (por ejemplo `@ImportHttpServices` y grupos/properties).
+
+**RSocket.** Protocolo de mensajería binaria reactiva con modelos request-response, fire-and-forget, request-stream y channel. Soporta backpressure y transporte TCP/WebSocket.
+
+#### Contrato / internals
+
+- **HTTP declarativo:** la interfaz es el contrato; la implementación es proxy. Configuración: base URL, timeouts, headers, codecs, autenticación, métricas/trazas.
+- **Errores:** 4xx/5xx deben manejarse explícitamente; no tratar respuestas no exitosas como éxito silencioso.
+- **RSocket:** requiere acuerdo de routing/metadata y semántica de interacción. Request-stream/channel implican manejo de flujo y cancelación.
+- **Límite:** HTTP declarativo simplifica llamadas; no elimina decisiones de resiliencia (timeout, retry, circuit breaker, idempotencia).
+
+#### Cuándo usarlo / cuándo no
+
+**HTTP Service Clients:** úsalos para APIs HTTP tipadas y estables. **No** cuando necesitas control bajo nivel por request o streaming no HTTP.
+
+**RSocket:** úsalo para streaming bidireccional, baja latencia o backpressure entre servicios compatibles. **No** por defecto si REST/mensajería cubren el caso con menor complejidad operativa.
+
+#### Ejemplo mínimo ejecutable
+
+Smoke de contrato declarativo (la interfaz define el método; una implementación fake simula el proxy):
+
+Crea el archivo `HttpClientSmoke.java`:
 
 ```java
-@HttpExchange(url = "http://orders:8080")
-public interface OrdersClient {
-  @GetExchange("/orders/{id}")
-  OrderDto byId(@PathVariable String id);
+interface OrdersClient {
+  String byId(String id);
+}
+
+class FakeOrdersClient implements OrdersClient {
+  public String byId(String id) { return "order:" + id; }
+}
+
+public class HttpClientSmoke {
+  public static void main(String[] args) {
+    OrdersClient client = new FakeOrdersClient();
+    System.out.println(client.byId("A1"));
+  }
 }
 ```
 
-**Contrato.** Define métodos, tipos, headers/parámetros, base URL, timeouts y observabilidad en la configuración del cliente. Con Spring Boot 4, la auto-configuración simplifica el registro de clientes HTTP.
+```bash
+javac HttpClientSmoke.java
+java HttpClientSmoke
+```
 
-**Cuándo usarlo / cuándo no.** Úsalo para llamadas REST internas/externas con contratos claros. No lo uses si necesitas control muy bajo nivel por request; usa `WebClient`/`RestClient` directamente.
+Salida esperada:
 
-**Error común.** generar clientes sin timeout. **Síntoma.** hilos/requests colgados. **Causa.** defaults inadecuados. **Corrección.** timeout de conexión/lectura, presupuesto total. **Señal observable.** spans remotos sin fin.
+```text
+order:A1
+```
 
-#### RSocket
+Smoke de decisión de protocolo:
 
-**Definición formal.** RSocket es un protocolo reactivo sobre TCP/WebSocket con request-response, fire-and-forget, request-stream y channel.
+Crea el archivo `ProtocolChoice.java`:
 
-**Cuándo usarlo / cuándo no.** Úsalo cuando necesitas streaming/bidireccional con backpressure. No lo uses por defecto si REST/async messaging resuelve el caso con más simplicidad operativa.
+```java
+public class ProtocolChoice {
+  static String choose(boolean streaming, boolean bidi) {
+    if (streaming || bidi) return "RSOCKET";
+    return "HTTP";
+  }
+  public static void main(String[] args) {
+    System.out.println(choose(false, false));
+    System.out.println(choose(true, false));
+  }
+}
+```
 
-**Nota de verificación.** No se ejecutó un ejemplo RSocket end-to-end en esta sesión. Verificar con Spring Boot + `spring-boot-starter-rsocket`, dos apps, y prueba de request-stream.
+```bash
+javac ProtocolChoice.java
+java ProtocolChoice
+```
+
+Salida esperada:
+
+```text
+HTTP
+RSOCKET
+```
+
+#### Caso real
+
+`orders-service` define `UsersClient` con `@GetExchange("/users/{id}")`; en Boot 4 se registra por grupo con timeout de 2s y observabilidad. Para telemetría continua, un canal interno usa RSocket request-stream; para CRUD normal se mantiene HTTP.
+
+#### Error común
+
+**Síntoma.** threads/requests colgados esperando respuesta remota. **Causa.** cliente HTTP sin timeout o con timeout excesivo. **Corrección.** configurar connect/read/response timeout, presupuesto total y circuit breaker donde aplique. **Señal observable.** métricas de cliente con latencia creciente y pool saturado.
+
+**Síntoma.** arquitectura más compleja sin beneficio. **Causa.** adoptar RSocket para CRUD simple. **Corrección.** usar RSocket solo cuando el modelo de interacción lo justifique. **Señal observable.** más incidentes operativos sin mejora de latencia/flujo.
+
+#### Verificación
+
+Smokes Java ejecutados localmente (2026-05-22, JDK 27.0.1.0.2): `order:A1`, `HTTP`, `RSOCKET`.
+
+**Nota de verificación:** no se ejecutó Spring HTTP Service Client real ni RSocket end-to-end en esta sesión. Verificación propuesta:
+
+```bash
+# HTTP Service Client
+./mvnw -Dtest=*UsersClientIT test
+
+# RSocket
+./mvnw -Dtest=*RSocket* test
+```
+
+Resultado esperado: el proxy HTTP invoca el endpoint stub con timeout configurado; el test RSocket recibe stream/bidireccional según el modelo elegido.
 
 ## Cierre
 

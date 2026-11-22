@@ -47,28 +47,41 @@ java Metrics
 
 ### Tema 2: OpenTelemetry por defecto: métricas, trazas y logs correlacionados · Avanzado · 150 min
 
-Caso guía: seguir una request entre orders e inventory.
+Caso guía: una request de compra atraviesa gateway, orders, inventory y payments. El usuario recibe 500, pero cada servicio solo ve su parte. Necesitas una traza completa.
 
-#### Tracing
+#### Definición formal
 
-**Definición formal.** OTel estandariza traces, métricas y logs. Una traza contiene spans con contexto padre-hijo.
+OpenTelemetry (OTel) es un estándar/open-source para instrumentar, generar, recolectar y exportar telemetría: traces, metrics y logs. Un **trace** es un conjunto de spans relacionados por `traceId`; cada span representa una operación con duración, estado y atributos.
 
-**Cuándo usarlo / cuándo no.** Úsalo en flujos multi-servicio. No instrumentes todo con atributos de alta cardinalidad.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **Context propagation:** `traceparent`/W3C Trace Context viaja por headers HTTP o metadata de mensajería.
+- **Span:** nombre, inicio/fin, status, atributos, eventos, parent.
+- **Métricas:** contadores/histogramas/gauges; deben evitar alta cardinalidad.
+- **Logs correlacionados:** incluyen `traceId`/`spanId` para unir evidencia.
+- **Exportación:** OTLP a collector; el collector enruta a backends (Tempo/Jaeger, Prometheus/Mimir, Loki, etc.).
+- **Límite:** instrumentar no arregla la causa; solo hace observable el fallo.
 
-```bash
-mkdir -p sm9-otel
-cd sm9-otel
-```
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** en cualquier sistema multi-servicio o con latencia/errores difíciles de diagnosticar. **No** pongas IDs únicos por request como labels de métricas; usa traces/logs para alta cardinalidad.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Trace.java`:
 
 ```java
 import java.util.*;
 public class Trace {
-  static Map<String,String> span(String traceId, String name){ return Map.of("traceId",traceId,"name",name); }
-  public static void main(String[] args){ var root=span("t1","http"); var child=span(root.get("traceId"),"db"); System.out.println(root.get("traceId").equals(child.get("traceId"))); }
+  static Map<String, String> span(String traceId, String name) {
+    return Map.of("traceId", traceId, "name", name);
+  }
+  public static void main(String[] args) {
+    var root = span("t1", "http");
+    var child = span(root.get("traceId"), "db");
+    System.out.println(root.get("traceId").equals(child.get("traceId")));
+    System.out.println(child.get("name"));
+  }
 }
 ```
 
@@ -77,35 +90,61 @@ javac Trace.java
 java Trace
 ```
 
-**Error común.** Romper propagación de contexto.
+Salida esperada:
 
-**Síntoma.** trazas cortadas. **Causa.** no propagar headers. **Corrección.** W3C traceparent, instrumentación OTel. **Señal observable.** spans huérfanos.
+```text
+true
+db
+```
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`.
+#### Caso real
+
+Gateway crea el span raíz, propaga `traceparent` a `orders`, `orders` crea un span hijo para la llamada a `inventory` y otro para DB. En Grafana/Tempo se ve la latencia por servicio y el span con error.
+
+#### Error común
+
+**Síntoma.** trazas cortadas en el borde de un servicio. **Causa.** no propagar contexto en headers o en consumidor de mensajería. **Corrección.** instrumentación OTel + propagación W3C; validar en integración. **Señal observable.** spans huérfanos con distintos `traceId`.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `db`.
+
+**Nota de verificación:** no se ejecutó collector OTel/Tempo/Prometheus en esta sesión. Verificación propuesta: levantar OTel Collector + backend, instrumentar app Spring Boot con OTel agent/SDK y confirmar que una request genera spans conectados.
 
 ### Tema 3: Logs estructurados y correlación · Intermedio · 120 min
 
-Caso guía: buscar todos los logs de una request fallida.
+Caso guía: ante un incidente, necesitas encontrar todos los logs de la request `t1` en cinco servicios.
 
-#### Logging estructurado
+#### Definición formal
 
-**Definición formal.** Logs JSON con campos consistentes (`timestamp`, `level`, `service`, `traceId`). MDC en SLF4J/Logback permite inyectar contexto.
+Logging estructurado emite logs como registros con campos consistentes (JSON o key-value), en lugar de texto libre. La correlación agrega identificadores como `traceId`, `spanId`, `requestId`, `service`, `tenant` para conectar eventos.
 
-**Cuándo usarlo / cuándo no.** Siempre en prod. No loguees secretos/PII.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **Campos mínimos:** timestamp, level, service, env, message/event, traceId/spanId.
+- **MDC (Mapped Diagnostic Context):** en SLF4J/Logback permite inyectar contexto por hilo/request.
+- **PII/secretos:** no deben loguearse; aplicar redacción.
+- **Nivel:** INFO para eventos de negocio, WARN/ERROR para fallos accionables, DEBUG solo controlado.
+- **Límite:** loguear todo no es observabilidad; es costo y ruido.
 
-```bash
-mkdir -p sm9-log
-cd sm9-log
-```
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** siempre en producción. **No** loguees tokens, passwords, payloads sensibles ni datos de alta cardinalidad sin control.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Log.java`:
 
 ```java
 public class Log {
-  static String json(String level,String msg,String trace){ return "{\"level\":\""+level+"\",\"traceId\":\""+trace+"\",\"msg\":\""+msg+"\"}"; }
-  public static void main(String[] args){ System.out.println(json("INFO","created","t1").contains("traceId")); }
+  static String json(String level, String msg, String trace) {
+    return "{\"level\":\"" + level + "\",\"traceId\":\"" + trace + "\",\"msg\":\"" + msg + "\"}";
+  }
+  public static void main(String[] args) {
+    String line = json("INFO", "created", "t1");
+    System.out.println(line.contains("traceId"));
+    System.out.println(line.contains("t1"));
+  }
 }
 ```
 
@@ -114,11 +153,26 @@ javac Log.java
 java Log
 ```
 
-**Error común.** Logs de texto libre.
+Salida esperada:
 
-**Síntoma.** imposible correlacionar. **Causa.** sin campos estructurados. **Corrección.** JSON + MDC. **Señal observable.** grep manual ineficiente.
+```text
+true
+true
+```
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`.
+#### Caso real
+
+Un filtro HTTP pone `traceId` en MDC; Logback JSON encoder emite el campo en cada línea. En Loki/ELK se filtra por `traceId=t1`.
+
+#### Error común
+
+**Síntoma.** no se puede reconstruir un incidente. **Causa.** logs de texto libre sin IDs. **Corrección.** JSON estructurado + MDC + propagación de traceId. **Señal observable.** búsqueda por request requiere `grep` manual en múltiples archivos.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `true`.
+
+**Nota de verificación:** no se ejecutó stack Logback/Loki/ELK en esta sesión. Verificación propuesta: configurar logback encoder JSON, inyectar MDC y consultar por `traceId` en el backend de logs.
 
 ### Tema 4: SLO, p99 y alerting · Intermedio · 120 min
 
