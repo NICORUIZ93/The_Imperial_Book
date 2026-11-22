@@ -30,6 +30,13 @@ Publicas una librería `envios-core`. Otro equipo la usa desde su propio paquete
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-21 && cd ~/academia-java/modulo-21
+```
+
+Crea `DemoApi.java`:
 ```java
 final class Guia {
     private final String codigo;
@@ -108,6 +115,13 @@ Actualizas una librería. El cliente recompila bien, pero un JAR antiguo despleg
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-21 && cd ~/academia-java/modulo-21
+```
+
+Crea `DemoCompat.java`:
 ```java
 // v1
 class CalculadoraV1 {
@@ -178,6 +192,13 @@ Tu interfaz `Notificador` ya fue implementada por clientes. Necesitas agregar `e
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-21 && cd ~/academia-java/modulo-21
+```
+
+Crea `Notificador.java`:
 ```java
 interface Notificador {
     void enviar(String mensaje);
@@ -251,6 +272,13 @@ Publicas una interfaz genérica `Repositorio<T>`. Un cliente implementa `Reposit
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-21 && cd ~/academia-java/modulo-21
+```
+
+Crea `Repositorio.java`:
 ```java
 interface Repositorio<T> {
     void guardar(T valor);

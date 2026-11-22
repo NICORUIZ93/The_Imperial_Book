@@ -38,6 +38,13 @@ Necesitas filtrar envíos pesados, convertirlos en etiqueta, registrarlos y gene
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Formas.java`:
 ```java
 import java.util.List;
 import java.util.function.*;
@@ -108,6 +115,13 @@ Normalizas un texto con una `Function`, pero calcular un total requiere precio y
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Transformaciones.java`:
 ```java
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -169,6 +183,13 @@ Validas correo: primero limpias, luego validas. También quieres combinar reglas
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Composicion.java`:
 ```java
 import java.util.function.*;
 
@@ -237,6 +258,13 @@ Creas un stream con `filter` y `map`, pero no ves salida. Agregas un `count()` y
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `DemoStream.java`:
 ```java
 import java.util.List;
 
@@ -299,6 +327,13 @@ Quieres normalizar un texto y obtener texto, o sumar dos totales y obtener total
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Operadores.java`:
 ```java
 import java.util.function.*;
 
@@ -359,6 +394,13 @@ Tienes lambdas que solo llaman un método existente: `s -> s.trim()`, `System.ou
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Referencias.java`:
 ```java
 import java.util.*;
 import java.util.function.*;
@@ -425,6 +467,13 @@ Buscas una guía por número. Puede existir o no. Devolver `null` obliga a check
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `DemoOptional.java`:
 ```java
 import java.util.*;
 
@@ -488,6 +537,13 @@ Tienes envíos con etiquetas; necesitas filtrar por peso, extraer destinos, apla
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Intermedias.java`:
 ```java
 import java.util.*;
 import java.util.stream.*;
@@ -552,6 +608,13 @@ Tras filtrar envíos, quieres saber cuántos hay, si alguno es urgente, obtener 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Terminales.java`:
 ```java
 import java.util.*;
 
@@ -615,6 +678,13 @@ Necesitas agrupar envíos por ciudad, contar por estado o construir un string se
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `DemoCollectors.java`:
 ```java
 import java.util.*;
 import java.util.stream.*;
@@ -683,6 +753,13 @@ Tienes una operación costosa por elemento y piensas “lo pongo en parallelStre
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `DemoParalelo.java`:
 ```java
 import java.util.stream.*;
 
@@ -757,6 +834,13 @@ Un `map` que escribe en BD o imprime logs hace el pipeline difícil de razonar y
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `Pureza.java`:
 ```java
 import java.util.*;
 import java.util.stream.*;
@@ -827,6 +911,13 @@ Quieres procesar eventos a medida que llegan, sin que el productor inunde al con
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-20 && cd ~/academia-java/modulo-20
+```
+
+Crea `DemoFlow.java`:
 ```java
 import java.util.concurrent.*;
 import java.util.concurrent.Flow.*;

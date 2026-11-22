@@ -29,6 +29,13 @@ Tienes una lista de empleados y necesitas obtener los nombres de los que ganan m
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
+```
+
+Crea `DemoStreams.java`:
 ```java
 import java.util.*;
 import java.util.stream.*;
@@ -109,6 +116,13 @@ Buscas un usuario por email. A veces existe, a veces no. Devolver `null` obliga 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
+```
+
+Crea `DemoOptional.java`:
 ```java
 import java.util.*;
 
@@ -191,6 +205,13 @@ Necesitas ventanas deslizantes de 3 elementos para detectar picos, o agrupar por
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
+```
+
+Crea `DemoGatherers.java`:
 ```java
 import java.util.List;
 import java.util.stream.Gatherers;
@@ -256,6 +277,13 @@ Si no tienes JDK 24+, valida la lógica equivalente con bucles y deja el gathere
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-4 && cd ~/academia-java/modulo-4
+```
+
+Crea `DemoParallel.java`:
 ```java
 import java.util.*;
 import java.util.stream.*;

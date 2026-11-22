@@ -34,6 +34,13 @@ Quieres validar que campos marcados como obligatorios no estén vacíos, sin esc
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `DemoReflexion.java`:
 ```java
 import java.lang.annotation.*;
 import java.lang.reflect.*;
@@ -121,6 +128,13 @@ Necesitas validar códigos de guía como `G-2026-001` y extraer partes. Una cade
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `DemoRegex.java`:
 ```java
 import java.util.regex.*;
 
@@ -189,6 +203,13 @@ Sumas precios con `double` y obtienes `0.30000000000000004`. En dinero, ese erro
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `DemoDinero.java`:
 ```java
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -258,6 +279,13 @@ Tienes invariantes internos: “este método nunca recibe null aquí” o “la 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `DemoAssert.java`:
 ```java
 public class DemoAssert {
     static int promedioPositivo(int[] valores) {
@@ -326,6 +354,13 @@ Quieres soportar varios motores de cotización sin que el código principal haga
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `Cotizador.java`:
 ```java
 import java.util.ServiceLoader;
 
@@ -359,6 +394,12 @@ Registro (en classpath): `META-INF/services/Cotizador` con contenido `CotizadorM
 - En proyectos reales, el archivo va en `META-INF/services/com.ejemplo.Cotizador` con FQN completo.
 
 **Ejecución y salida real**
+
+
+```bash
+javac Cotizador.java
+java Cotizador
+```
 
 > **Nota:** requiere la estructura de `META-INF/services` en classpath. El ejemplo muestra el mecanismo; en un repo real se compila con esa estructura.
 
@@ -396,6 +437,13 @@ Muestras precios y fechas a usuarios de distintos países. “1,234.50” y “1
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `DemoI18n.java`:
 ```java
 import java.math.BigDecimal;
 import java.text.NumberFormat;
@@ -468,6 +516,13 @@ Quieres agregar logging o control transaccional alrededor de llamadas a una inte
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `Servicio.java`:
 ```java
 import java.lang.reflect.*;
 
@@ -544,6 +599,13 @@ Quieres cargar un plugin JAR en runtime. Para entender por qué a veces falla co
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `DemoClassLoader.java`:
 ```java
 public class DemoClassLoader {
     public static void main(String[] args) throws Exception {
@@ -621,6 +683,13 @@ Necesitas acceso dinámico a un campo o método con mejor control que reflexión
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-19 && cd ~/academia-java/modulo-19
+```
+
+Crea `Persona.java`:
 ```java
 import java.lang.invoke.*;
 

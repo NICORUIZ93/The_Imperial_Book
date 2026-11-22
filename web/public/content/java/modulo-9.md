@@ -241,7 +241,16 @@ class NotifierTest {
 
 **Ejecución y salida real**
 
-El test pasa si la interacción ocurre como se espera.
+```bash
+mvn -q -Dtest=NotifierTest test
+```
+
+Salida esperada:
+
+```text
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
 
 **Errores comunes y cómo resolverlos**
 

@@ -28,6 +28,13 @@ Vas a construir un mini procesador de guías. Si pones lectura de consola, regla
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-13 && cd ~/academia-java/modulo-13
+```
+
+Crea `Guia.java`:
 ```java
 public record Guia(String numero) {
     public Guia {
@@ -192,6 +199,13 @@ El procesador de guías debe procesar varias entradas en paralelo, modelar resul
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-13 && cd ~/academia-java/modulo-13
+```
+
+Crea `ProcesarGuias.java`:
 ```java
 import java.util.concurrent.*;
 import java.util.*;

@@ -289,6 +289,13 @@ El importador de guías lee un archivo y debe rechazar guías con datos inválid
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
+```
+
+Crea `ImportadorGuias.java`:
 ```java
 import java.io.IOException;
 import java.nio.file.*;

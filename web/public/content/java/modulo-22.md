@@ -28,6 +28,13 @@ Devuelves una lista interna desde un objeto de dominio. El llamador la modifica 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-22 && cd ~/academia-java/modulo-22
+```
+
+Crea `DemoCopia.java`:
 ```java
 import java.util.*;
 
@@ -121,6 +128,13 @@ Modelas estados de pedido como strings o enteros. Aparece “ENVIADOX”, alguie
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-22 && cd ~/academia-java/modulo-22
+```
+
+Crea `DemoEnum.java`:
 ```java
 public class DemoEnum {
     enum EstadoPedido {
@@ -199,6 +213,13 @@ Creas una clase interna para un iterador/handler. Años después descubres que i
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-22 && cd ~/academia-java/modulo-22
+```
+
+Crea `Externa.java`:
 ```java
 public class Externa {
     private final String id = "EXT-1";

@@ -29,7 +29,15 @@ Recibes dos proyectos Java: uno usa Maven, otro Gradle. Necesitas saber dónde e
 
 **Implementación desde cero**
 
-Maven mínimo (`pom.xml`):
+Desde una carpeta vacía (Maven):
+
+```bash
+mkdir -p ~/academia-java/modulo-8-maven/src/main/java/com/academia src/test/java/com/academia
+cd ~/academia-java/modulo-8-maven
+```
+
+Crea `pom.xml`:
+
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0">
@@ -106,6 +114,8 @@ Un colega dice “corre `mvn package`” y otro “corre `./gradlew build`”. Q
 
 **Implementación desde cero**
 
+En el proyecto Maven del Tema 1 (`~/academia-java/modulo-8-maven`):
+
 ```bash
 # Maven
 mvn clean test
@@ -172,6 +182,13 @@ Tu aplicación crece: dominio, API y persistencia empiezan a mezclarse. Quieres 
 **Modelo mental.** Multi-módulo es dividir una casa en departamentos con contratos claros, no levantar muros al azar.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-8-multi/domain/src/main/java ~/academia-java/modulo-8-multi/app/src/main/java
+cd ~/academia-java/modulo-8-multi
+```
 
 Maven (`pom.xml` padre):
 
@@ -241,9 +258,13 @@ En equipos reales te encontrarás ambos. Saber traducir mentalmente de uno a otr
 
 **Implementación desde cero**
 
+Usa cualquier proyecto Maven o Gradle existente (por ejemplo `~/academia-java/modulo-8-maven` del Tema 1). Desde la raíz del proyecto:
+
 ```bash
-# Ver árbol de dependencias
+# Maven: árbol de dependencias
 mvn dependency:tree
+
+# Gradle (en un proyecto Gradle equivalente)
 ./gradlew dependencies --configuration runtimeClasspath
 ```
 

@@ -32,6 +32,13 @@ Necesitas procesar varias guías en paralelo sin crear un hilo nuevo por tarea m
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-5 && cd ~/academia-java/modulo-5
+```
+
+Crea `DemoExecutor.java`:
 ```java
 import java.util.concurrent.*;
 import java.util.*;
@@ -105,6 +112,13 @@ Necesitas consultar el precio de un producto y el tipo de cambio, combinar ambos
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-5 && cd ~/academia-java/modulo-5
+```
+
+Crea `DemoCompletable.java`:
 ```java
 import java.util.concurrent.*;
 
@@ -173,6 +187,13 @@ Un servicio debe atender miles de solicitudes que pasan mucho tiempo esperando I
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-5 && cd ~/academia-java/modulo-5
+```
+
+Crea `DemoVirtualThreads.java`:
 ```java
 import java.time.Duration;
 import java.util.concurrent.*;
@@ -242,6 +263,13 @@ Dos hilos incrementan el mismo contador. A veces el resultado es correcto, a vec
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-5 && cd ~/academia-java/modulo-5
+```
+
+Crea `DemoRace.java`:
 ```java
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -312,6 +340,13 @@ Para responder una solicitud necesitas consultar usuario y pedidos. Son tareas r
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-5 && cd ~/academia-java/modulo-5
+```
+
+Crea `DemoStructured.java`:
 ```java
 import java.util.concurrent.StructuredTaskScope;
 
@@ -387,6 +422,13 @@ Quieres propagar un `requestId` a código llamado dentro de la misma tarea, incl
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-5 && cd ~/academia-java/modulo-5
+```
+
+Crea `DemoScopedValue.java`:
 ```java
 public class DemoScopedValue {
     static final ScopedValue<String> REQUEST_ID = ScopedValue.newInstance();
@@ -452,6 +494,13 @@ Una llamada externa puede tardar demasiado. Quieres limitar el tiempo, cancelar 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-5 && cd ~/academia-java/modulo-5
+```
+
+Crea `DemoTimeout.java`:
 ```java
 import java.util.concurrent.*;
 

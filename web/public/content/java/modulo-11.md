@@ -29,6 +29,13 @@ Tu servicio Java aumenta el uso de memoria con el tiempo y aparecen pausas de GC
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-11 && cd ~/academia-java/modulo-11
+```
+
+Crea `MemoriaGC.java`:
 ```java
 public class MemoriaGC {
     public static void main(String[] args) throws Exception {
@@ -103,6 +110,13 @@ Una API responde lento de forma intermitente. No sabes si el problema es GC, CPU
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-11 && cd ~/academia-java/modulo-11
+```
+
+Crea `TrabajoJFR.java`:
 ```java
 public class TrabajoJFR {
     static long trabajo(int n) {
@@ -179,6 +193,13 @@ Implementas un caché en memoria y el proceso termina en `OutOfMemoryError`. Sos
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-11 && cd ~/academia-java/modulo-11
+```
+
+Crea `ReferenciaDebil.java`:
 ```java
 import java.lang.ref.WeakReference;
 
@@ -249,6 +270,13 @@ Necesitas interoperar con memoria nativa o preparar el terreno para llamar funci
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-11 && cd ~/academia-java/modulo-11
+```
+
+Crea `MemoriaNativa.java`:
 ```java
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;

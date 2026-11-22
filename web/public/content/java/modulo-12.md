@@ -31,6 +31,13 @@ Necesitas crear un objeto `Envio` con campos obligatorios (`guia`) y opcionales 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-12 && cd ~/academia-java/modulo-12
+```
+
+Crea `Envio.java`:
 ```java
 public class Envio {
     private final String guia;
@@ -124,6 +131,13 @@ Debes calcular tarifas según el tipo de envío. Mañana puede aparecer un nuevo
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-12 && cd ~/academia-java/modulo-12
+```
+
+Crea `Tarifa.java`:
 ```java
 interface Tarifa {
     int calcular(int gramos);
@@ -204,6 +218,13 @@ Tu sistema debe generar avisos por canal. Cada canal tiene familia de productos 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-12 && cd ~/academia-java/modulo-12
+```
+
+Crea `Mensaje.java`:
 ```java
 interface Mensaje { String render(String guia); }
 interface Plantilla { String nombre(); }
@@ -277,6 +298,13 @@ Un servicio de envíos guarda datos, valida y notifica todo en una sola clase. F
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-12 && cd ~/academia-java/modulo-12
+```
+
+Crea `RepositorioEnvios.java`:
 ```java
 interface RepositorioEnvios { void guardar(String guia); }
 
@@ -347,6 +375,13 @@ Tienes una plantilla de paquete con etiquetas. Quieres crear una copia para modi
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-12 && cd ~/academia-java/modulo-12
+```
+
+Crea `Paquete.java`:
 ```java
 import java.util.ArrayList;
 import java.util.List;
@@ -429,6 +464,13 @@ Tienes un proveedor viejo con una API incompatible, quieres agregar logging sin 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-12 && cd ~/academia-java/modulo-12
+```
+
+Crea `Notificador.java`:
 ```java
 interface Notificador { void enviar(String guia); }
 
