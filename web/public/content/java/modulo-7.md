@@ -72,192 +72,174 @@ mvn -q -DskipTests compile exec:java -Dexec.mainClass=DemoLogging
 
 **Caso guía**
 
-Tu aplicación procesa guías. En desarrollo usabas `println`, pero en producción necesitas saber si un mensaje es información, advertencia o error, y poder activarlo por nivel sin recompilar.
+En producción no hay consola interactiva. Necesitas logs con niveles, timestamp, clase e información útil para diagnosticar fallos.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** SLF4J (Simple Logging Facade for Java) es una fachada (abstracción) de logging; Logback es una implementación de backend. Un *logger* emite eventos con nivel, mensaje, metadatos y opcionalmente una excepción.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** El código debe depender de la API de la fachada (`org.slf4j.Logger`) y no del backend concreto. Los niveles (`TRACE < DEBUG < INFO < WARN < ERROR`) filtran eventos según configuración. El placeholder `{}` delega el formateo al backend, evitando concatenación innecesaria cuando el nivel está deshabilitado. Registrar excepciones debe incluir el `Throwable` como último argumento para preservar stack trace. No se deben registrar secretos/PII sin política de redacción.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **SLF4J** | Fachada de logging (`LoggerFactory.getLogger`) que desacopla API de implementación. | Escribir código independiente del backend. | Casi siempre en librerías/apps Java. | Acoplarse a implementación concreta. |
+| **Logback** | Implementación de logging compatible con SLF4J. | Emitir/rotar/formatear logs. | Apps que usan SLF4J+Logback. | Config por defecto en prod sin revisar. |
+| **Logging estructurado** | Logs con campos consistentes (timestamp, nivel, logger, thread, mensaje, contexto). | Buscar/parsear/agregar en observabilidad. | Producción y debugging. | Concatenar strings sin contexto. |
+| **Niveles (ERROR/WARN/INFO/DEBUG/TRACE)** | Severidad/verbosidad del evento. | Filtrar señal vs ruido. | ERROR fallo, WARN anómalo, INFO negocio, DEBUG diagnóstico. | Todo en INFO o loggear secretos. |
 
-**Modelo mental.** SLF4J es el tomacorriente estándar; Logback es el aparato conectado. Cambias el aparato sin cambiar la instalación.
+**Contrato / invariantes / reglas.** Usa placeholders `{}` para evitar concatenación innecesaria. No loggees secretos/PII. Loggear excepción con stack: `logger.error("msg", e)`. Configuración (logback.xml) controla formato, appenders y niveles.
 
-**Implementación desde cero**
+**Implementación desde cero (con dependencias)**
 
-Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-07`). Si no lo creaste, vuelve a **Setup ejecutable del módulo**.
+```bash
+mkdir -p ~/academia-java/modulo-07 && cd ~/academia-java/modulo-07
+curl -L -o slf4j-api.jar https://repo1.maven.org/maven2/org/slf4j/slf4j-api/2.0.16/slf4j-api-2.0.16.jar
+curl -L -o logback-classic.jar https://repo1.maven.org/maven2/ch/qos/logback/logback-classic/1.5.16/logback-classic-1.5.16.jar
+curl -L -o logback-core.jar https://repo1.maven.org/maven2/ch/qos/logback/logback-core/1.5.16/logback-core-1.5.16.jar
+```
 
-Crea `src/main/java/DemoLogging.java` (en el proyecto del setup):
+`DemoLog.java`:
 
 ```java
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-public class DemoLogging {
-    private static final Logger log = LoggerFactory.getLogger(DemoLogging.class);
-
+public class DemoLog {
+    private static final Logger log = LoggerFactory.getLogger(DemoLog.class);
     public static void main(String[] args) {
         String guia = "G-1";
         log.info("Procesando guia {}", guia);
-        log.debug("Detalle interno guia={}", guia);
-        try {
-            int x = Integer.parseInt("NO");
-        } catch (NumberFormatException e) {
-            log.error("Error procesando guia {}", guia, e);
-        }
+        log.warn("Reintento para guia {}", guia);
+        try { Integer.parseInt("x"); }
+        catch (Exception e) { log.error("Fallo procesando guia {}", guia, e); }
     }
 }
 ```
 
-**Desglose del código**
-
-- `LoggerFactory.getLogger(...)` crea un logger por clase.
-- `log.info("... {}", guia)` pasa el valor como argumento; SLF4J lo interpola si el nivel aplica.
-- `log.error(..., e)` incluye la excepción y su stack trace en el log.
-- No loguees secretos, tokens o datos sensibles.
-
-**Ejecución y salida real**
+**Ejecución y salida real (varía por patrón)**
 
 ```bash
-mvn -q -DskipTests compile exec:java -Dexec.mainClass=DemoLogging
+javac -cp ".:slf4j-api.jar:logback-classic.jar:logback-core.jar" DemoLog.java
+java -cp ".:slf4j-api.jar:logback-classic.jar:logback-core.jar" DemoLog
 ```
-
-Salida esperada (formato depende de `logback.xml`; DEBUG no aparece porque root está en INFO):
 
 ```text
-12:00:00 INFO  [] DemoLogging - Procesando guia G-1
-12:00:00 ERROR [] DemoLogging - Error procesando guia G-1
-java.lang.NumberFormatException: For input string: "NO"
-	at java.base/java.lang.Integer.parseInt(Integer.java:...)
-	...
+... INFO  DemoLog - Procesando guia G-1
+... WARN  DemoLog - Reintento para guia G-1
+... ERROR DemoLog - Fallo procesando guia G-1
+java.lang.NumberFormatException: For input string: "x"
+  ...
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| `No SLF4J providers were found` | Falta backend en classpath | Agrega `logback-classic` o `slf4j-simple` |
-| Logs duplicados | Configuración de appenders/loggers mal armada | Revisa additivity y appenders |
-| Concatenas strings costosas | `"a"+obj` en debug | Usa placeholders `{}` |
+| No aparecen logs | Falta binding/config | Agrega logback-classic/core o configura nivel |
+| Log ilegible | Mensajes sin contexto | Incluye IDs/estado con `{}` |
+| Secreto en logs | Loggeaste datos sensibles | Redacta/omite |
 
-**Verificación rápida**
+**Verificación rápida:** cambia nivel a DEBUG en `logback.xml` y observa diferencia.
 
-Ejecuta con un backend SLF4J en classpath y verifica que el nivel INFO aparece y DEBUG puede activarse por configuración.
 
 ### Tema 2: MDC — contexto por request/hilo · Intermedio · 35 min
 
 **Caso guía**
 
-Dos solicitudes se procesan al mismo tiempo. En los logs ves “procesando guía”, pero no sabes a qué request pertenece cada línea. Necesitas un identificador de correlación.
+Con muchas requests concurrentes, logs se mezclan. Necesitas `requestId` en cada línea para reconstruir la historia de una solicitud.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** MDC (Mapped Diagnostic Context) es un mapa clave-valor asociado al contexto de ejecución (típicamente por hilo) que los appenders pueden incluir en cada evento de log.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Los valores en MDC son visibles para el hilo actual. En pools de hilos o ejecución asíncrona, el contexto debe limpiarse (`remove/clear`) en `finally` y propagarse explícitamente al cruzar límites de hilo. No almacenar objetos grandes o sensibles sin control. El patrón de layout debe incluir `%X{clave}` para emitirlo.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **MDC (Mapped Diagnostic Context)** | Mapa de contexto por hilo asociado al logging. | Adjuntar IDs de correlación a logs. | Requests, jobs, mensajes. | No limpiar MDC (`remove/clear`). |
+| **Contexto por request/hilo** | Valores contextuales (requestId, userId) vigentes durante una ejecución. | Trazabilidad. | Entrada/salida de request o tarea. | Fuga de contexto en pool de hilos. |
+| **Propagación/limpieza** | Establecer al iniciar y limpiar en `finally`. | Evitar contaminación entre requests. | Siempre. | Asumir que el hilo “se limpia solo”. |
+| **Patrón de log** | Formato que incluye `%X{clave}`. | Hacer visible el MDC. | Config Logback. | Poner MDC pero no incluirlo en pattern. |
 
-**Modelo mental.** MDC es una etiqueta adhesiva que el hilo lleva puesta mientras procesa una solicitud; todos los logs que emite salen con esa etiqueta.
+**Contrato / invariantes / reglas.** MDC es por hilo; en pools, el hilo se reutiliza: limpia en `finally`. En async, propaga contexto explícitamente. No metas PII sensible.
 
-**Implementación desde cero**
+**Implementación desde cero (con SLF4J/Logback)**
 
-Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-07`).
-
-Crea `src/main/java/DemoMDC.java` en el mismo proyecto del módulo:
+`DemoMdc.java`:
 
 ```java
 import org.slf4j.*;
-
-public class DemoMDC {
-    private static final Logger log = LoggerFactory.getLogger(DemoMDC.class);
-
-    static void procesar(String requestId) {
-        MDC.put("requestId", requestId);
-        try {
-            log.info("inicio");
-            log.info("fin");
-        } finally {
-            MDC.remove("requestId"); // evita fuga en thread pools
-        }
-    }
-
+public class DemoMdc {
+    private static final Logger log = LoggerFactory.getLogger(DemoMdc.class);
     public static void main(String[] args) {
-        procesar("req-1");
-        procesar("req-2");
+        String requestId = "req-123";
+        org.slf4j.MDC.put("requestId", requestId);
+        try {
+            log.info("Inicio request");
+            log.info("Consultando datos");
+        } finally {
+            org.slf4j.MDC.remove("requestId"); // evitar fuga
+        }
     }
 }
 ```
 
-**Desglose del código**
+`logback.xml` (fragmento de patrón):
 
-- `MDC.put("requestId", requestId)` agrega contexto al hilo actual.
-- El layout de logging debe incluir `%X{requestId}` o equivalente.
-- `MDC.remove` en `finally` evita fugas de contexto en pools de hilos.
-- El contexto facilita correlacionar logs en sistemas concurrentes.
-
-**Ejecución y salida real**
-
-Usa el `logback.xml` del setup (ya incluye `%X{requestId}`):
-
-```bash
-mvn -q -DskipTests compile exec:java -Dexec.mainClass=DemoMDC
+```xml
+<pattern>%d %level [%thread] [%X{requestId}] %logger - %msg%n</pattern>
 ```
 
-Salida esperada:
+**Ejecución y salida real (con patrón adecuado)**
 
 ```text
-12:00:00 INFO  [req-1] DemoMDC - inicio
-12:00:00 INFO  [req-1] DemoMDC - fin
-12:00:00 INFO  [req-2] DemoMDC - inicio
-12:00:00 INFO  [req-2] DemoMDC - fin
+... INFO [main] [req-123] DemoMdc - Inicio request
+... INFO [main] [req-123] DemoMdc - Consultando datos
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| requestId aparece en logs de otra request | No limpiaste MDC en pool | Usa `finally { MDC.remove(...) }` |
-| MDC vacío | Patrón de log no lo imprime | Configura `%X{requestId}` |
-| Contexto perdido en async | El hilo cambió | Propaga MDC al ejecutar tareas |
+| requestId aparece en otra request | No limpiaste MDC en pool | `finally { MDC.remove(...) }` |
+| No se ve requestId | Patrón no incluye `%X{requestId}` | Ajusta logback.xml |
+| Contexto perdido en async | Cambio de hilo | Propaga MDC al ejecutar tarea |
 
-**Verificación rápida**
+**Verificación rápida:** ejecuta dos requests simuladas y confirma que cada una loggea su propio ID.
 
-Configura el patrón de logging para mostrar `requestId` y verifica que cada bloque de logs queda asociado al ID correcto.
 
 ### Tema 3: Depuración y stack traces · Básico · 30 min
 
 **Caso guía**
 
-Un programa lanza `NullPointerException` solo con ciertos datos. Necesitas encontrar la causa raíz, no solo el síntoma.
+Un job falla con `NullPointerException`. Necesitas leer el stack trace, identificar la línea/causa raíz y corregir el contrato.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *stack trace* es la traza de marcos de llamada activos al momento de lanzar una excepción. La *depuración* es el proceso sistemático de reproducir, aislar, diagnosticar y corregir una falla, verificando la corrección con evidencia.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** La excepción reporta tipo, mensaje, stack trace y causa encadenada (`getCause`). El primer marco relevante del código propio suele indicar el punto de fallo; la causa raíz puede estar más abajo o en `Caused by`. Una corrección debe validarse con un caso que reproduzca el fallo y con regresiones. En producción, se prefiere logging estructurado sobre `printStackTrace`.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Depuración** | Proceso sistemático de reproducir, aislar, diagnosticar y corregir un defecto. | Resolver causa raíz, no síntoma. | Ante fallos o comportamiento inesperado. | Cambiar código al azar. |
+| **Stack trace** | Traza de llamadas que muestra dónde se lanzó la excepción y su cadena de causas. | Localizar origen del fallo. | Al analizar excepciones. | Leer solo el mensaje final. |
+| **Causa raíz vs síntoma** | Causa raíz es el origen real; síntoma es la manifestación. | Evitar parches frágiles. | Análisis de bugs. | Capturar excepción y seguir con estado corrupto. |
+| **Reproducción mínima** | Caso pequeño que dispara el fallo consistentemente. | Acelerar diagnóstico. | Antes de corregir. | Depurar sin input/estado conocido. |
 
-**Modelo mental.** El stack trace es la migaja de pan hacia atrás: te dice por qué camino llegó el programa hasta caerse.
+**Contrato / invariantes / reglas.** Lee de arriba hacia abajo hasta la primera línea de tu código: ahí suele estar el punto de fallo; revisa "Caused by" para la causa raíz. En producción usa logger con excepción, no solo `printStackTrace`. Corrige definiendo contrato (null permitido o no).
+
+**Modelo mental.** Stack trace = migas de pan hacia atrás; causa raíz = dónde empezó a romperse, no donde explotó al final.
 
 **Implementación desde cero**
-
-Este tema no requiere dependencias externas, solo JDK. Desde cualquier carpeta:
 
 ```bash
 mkdir -p ~/academia-java/modulo-07-debug && cd ~/academia-java/modulo-07-debug
 ```
 
-Crea `DemoDebug.java`:
+`DemoDebug.java`:
 
 ```java
 public class DemoDebug {
-    static String normalizar(String texto) {
-        return texto.trim().toLowerCase();
-    }
-
+    static String normalizar(String texto) { return texto.trim().toLowerCase(); }
     public static void main(String[] args) {
         String[] valores = {" Ada ", null};
         for (String v : valores) {
-            try {
-                System.out.println(normalizar(v));
-            } catch (Exception e) {
+            try { System.out.println(normalizar(v)); }
+            catch (Exception e) {
                 System.out.println("Fallo con valor=" + v);
                 e.printStackTrace(System.out);
             }
@@ -266,37 +248,31 @@ public class DemoDebug {
 }
 ```
 
-**Desglose del código**
-
-- `null.trim()` produce `NullPointerException`.
-- El `catch` imprime el valor que causó el fallo; eso hace reproducible el problema.
-- `printStackTrace` es útil en ejercicios; en aplicaciones reales usa logger con excepción.
-- La corrección puede ser validar `null`, rechazarlo o usar `Optional`, según el contrato.
-
 **Ejecución y salida real**
+
+```bash
+javac DemoDebug.java
+java DemoDebug
+```
 
 ```text
 ada
 Fallo con valor=null
 java.lang.NullPointerException: Cannot invoke "String.trim()" because "texto" is null
-    at DemoDebug.normalizar(...)
+    at DemoDebug.normalizar(DemoDebug.java:2)
+    at DemoDebug.main(DemoDebug.java:7)
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Lees solo el final del stack trace | Te perdiste la causa | Ubica la primera línea de tu código |
-| Corriges el síntoma, no la causa | Parche local | Reproduce, identifica contrato y corrige en origen |
-| No puedes reproducir | Falta contexto | Registra inputs, estado y entorno |
+| Lees solo el final | Te perdiste la causa | Busca primera línea de tu código y `Caused by` |
+| Parche sin contrato | No definiste si null es válido | Decide contrato y valida |
+| No puedes reproducir | Falta contexto | Loggea inputs/estado |
 
-**Verificación rápida**
+**Verificación rápida:** maneja `null` en `normalizar` (rechazar con `IllegalArgumentException` o devolver default) y define el comportamiento esperado.
 
-```bash
-javac DemoDebug.java && java DemoDebug
-```
-
-Corrige `normalizar` para manejar `null` explícitamente y define el comportamiento esperado.
 
 ## Cierre del módulo
 
