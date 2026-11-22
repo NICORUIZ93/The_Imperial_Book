@@ -5916,6 +5916,50 @@
         "fragment": "tema-6-gitops-con-argocd"
       }
     ],
+    "11": [
+      {
+        "title": "DDD y bounded contexts en Node",
+        "fragment": "tema-1-ddd-y-bounded-contexts-en-node"
+      },
+      {
+        "title": "Outbox y consistencia eventual",
+        "fragment": "tema-2-outbox-y-consistencia-eventual"
+      },
+      {
+        "title": "Sagas y compensaciones",
+        "fragment": "tema-3-sagas-y-compensaciones"
+      },
+      {
+        "title": "Anti-patrones y monolito distribuido",
+        "fragment": "tema-4-anti-patrones-y-monolito-distribuido"
+      },
+      {
+        "title": "Strangler Fig y métricas DORA",
+        "fragment": "tema-5-strangler-fig-y-metricas-dora"
+      },
+      {
+        "title": "ADRs y fitness functions",
+        "fragment": "tema-6-adrs-y-fitness-functions"
+      }
+    ],
+    "12": [
+      {
+        "title": "Alcance y arquitectura del sistema",
+        "fragment": "tema-1-alcance-y-arquitectura-del-sistema"
+      },
+      {
+        "title": "Contratos, idempotencia y mensajería",
+        "fragment": "tema-2-contratos-idempotencia-y-mensajeria"
+      },
+      {
+        "title": "Observabilidad, resiliencia y seguridad",
+        "fragment": "tema-3-observabilidad-resiliencia-y-seguridad"
+      },
+      {
+        "title": "Prueba de carga, restricción sobrevenida y defensa ARB",
+        "fragment": "tema-4-prueba-de-carga-restriccion-sobrevenida-y-defensa-arb"
+      }
+    ],
     "2": [
       {
         "title": "MongoDB + Mongoose",
