@@ -9,710 +9,168 @@ Cada tema se practica por separado con su propia repetición progresiva y su pro
 
 ### Tema 1: SecurityFilterChain moderno · Intermedio · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: `/public/health` abierto, `/api/**` autenticado.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por securityfilterchain moderno con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| `SecurityFilterChain` | Cadena de filtros de seguridad configurada como bean. | Autenticación/autorización HTTP. | Configuración declarativa moderna (no `WebSecurityConfigurerAdapter`). | Config antigua/deprecada. |
+| `authorizeHttpRequests` | Reglas de autorización por matcher. | Control de acceso por ruta. | Reglas específicas antes de `anyRequest()`. | `anyRequest().permitAll()` accidental. |
+| 401 vs 403 | 401 no autenticado; 403 autenticado sin permiso. | Semántica de seguridad. | Probar ambos casos. | Confundirlos en tests. |
+| `httpBasic`/mecanismos auth | Cómo el cliente presenta credenciales. | Autenticación. | Elegir según cliente (browser, API, JWT). | Basic para SPA pública sin contexto. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender securityfilterchain moderno te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en securityfilterchain moderno como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  A["GET /public/health"] --> B["permitAll: 200"]
-  C["GET /api/entregas sin usuario"] --> D["401"]
-  E["GET /api/entregas con identidad"] --> F["200"]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| SecurityFilterChain moderno se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar SecurityFilterChain moderno | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses securityfilterchain moderno por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: securityfilterchain moderno funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- SecurityFilterChain moderno existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve securityfilterchain moderno en tu contexto?
-2. ¿Cómo sabrías que securityfilterchain moderno no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar securityfilterchain moderno?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-  A["GET /public/health"] --> B["permitAll: 200"]
-  C["GET /api/entregas sin usuario"] --> D["401"]
-  E["GET /api/entregas con identidad"] --> F["200"]
-```
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security</artifactId>
-</dependency>
-```
-
+**Implementación desde cero** (`spring-boot-starter-security` + webmvc-test)
 ```java
-package com.example.demo;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-
 @Configuration
 public class SecurityConfig {
-    @Bean
-    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        return http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/public/**").permitAll()
-                .anyRequest().authenticated())
-            .httpBasic(Customizer.withDefaults())
-            .build();
-    }
+  @Bean
+  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+      .authorizeHttpRequests(auth -> auth.requestMatchers("/public/**").permitAll().anyRequest().authenticated())
+      .httpBasic(Customizer.withDefaults())
+      .build();
+  }
 }
 ```
-
 ```java
-package com.example.demo;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 @RestController
-public class RutasController {
-    @GetMapping("/public/health")
-    public String salud() { return "OK"; }
-
-    @GetMapping("/api/entregas")
-    public String entregas() { return "entregas confidenciales"; }
+class RutasController {
+  @GetMapping("/public/health") String salud(){ return "OK"; }
+  @GetMapping("/api/entregas") String entregas(){ return "entregas confidenciales"; }
 }
 ```
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security-test</artifactId>
-    <scope>test</scope>
-</dependency>
+**Ejecución real**
+```bash
+./mvnw -Dtest=RutasControllerSecurityTest test
 ```
-
-```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-webmvc-test</artifactId>
-    <scope>test</scope>
-</dependency>
-```
-
-</details>
+Test con `@SpringBootTest @AutoConfigureMockMvc`: `/public/health` 200, `/api/entregas` sin auth 401, con auth 200. **Verificación**: cambia regla y observa cambio de status.
 
 ### Tema 2: JWT con el resource server de Spring Security y autorización por rol · Intermedio · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: API stateless con Bearer token; ADMIN puede DELETE, USER no.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por jwt con el resource server de spring security y autorización por rol con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| JWT | Token firmado con claims (`sub`, `exp`, roles). | Auth stateless. | Firmar, validar exp, validar issuer/aud según caso. | Confiar en token sin validar firma. |
+| Resource Server (`oauth2ResourceServer().jwt()`) | Spring Security valida Bearer JWT. | Integración estándar. | Usar soporte nativo, no filtro artesanal. | Filtro manual que olvida validaciones. |
+| `JwtDecoder`/`JwtEncoder` | Decodifica/valida y emite JWT. | Emisión/validación. | Clave secreta fuerte en env/secret manager. | Clave hardcodeada en repo. |
+| Autorización por rol | `ROLE_*` authorities + `@PreAuthorize`/matchers. | Control de permisos. | Mapear claim a authorities explícitamente. | Confundir rol de negocio con authority Spring. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender jwt con el resource server de spring security y autorización por rol te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en jwt con el resource server de spring security y autorización por rol como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  C["Cliente<br/>Authorization: Bearer ..."] --> F["BearerTokenAuthenticationFilter<br/>(Spring Security)"]
-  F --> D["JwtDecoder<br/>firma + exp"]
-  D --> K["JwtAuthenticationConverter<br/>claim rol → ROLE_*"]
-  K --> A["@PreAuthorize<br/>hasRole('ADMIN')"]
-  A --> R["Controller"]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| JWT con el resource server de Spring Security y autorización por rol se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar JWT con el resource server de Spring Security y autorización por rol | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses jwt con el resource server de spring security y autorización por rol por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: jwt con el resource server de spring security y autorización por rol funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- JWT con el resource server de Spring Security y autorización por rol existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve jwt con el resource server de spring security y autorización por rol en tu contexto?
-2. ¿Cómo sabrías que jwt con el resource server de spring security y autorización por rol no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar jwt con el resource server de spring security y autorización por rol?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-  C["Cliente<br/>Authorization: Bearer ..."] --> F["BearerTokenAuthenticationFilter<br/>(Spring Security)"]
-  F --> D["JwtDecoder<br/>firma + exp"]
-  D --> K["JwtAuthenticationConverter<br/>claim rol → ROLE_*"]
-  K --> A["@PreAuthorize<br/>hasRole('ADMIN')"]
-  A --> R["Controller"]
-```
-
+**Implementación desde cero**
 ```xml
-<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
-</dependency>
+<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId></dependency>
 ```
-
 ```properties
 security.jwt.secret-base64=${JWT_SECRET_BASE64}
 ```
-
-```bash
-export JWT_SECRET_BASE64="$(openssl rand -base64 32)"
-./mvnw -q compile
-```
-
 ```java
-package com.example.demo;
-
-import java.time.Instant;
-import java.util.Base64;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwsHeader;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.security.oauth2.jwt.JwtClaimsSet;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.JwtEncoder;
-import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
-import org.springframework.stereotype.Service;
-
 @Service
 public class JwtService {
-    private final JwtEncoder encoder;
-    private final JwtDecoder decoder;
-
-    public JwtService(@Value("${security.jwt.secret-base64}") String secretBase64) {
-        SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(secretBase64), "HmacSHA256");
-        this.encoder = NimbusJwtEncoder.withSecretKey(key).algorithm(MacAlgorithm.HS256).build();
-        this.decoder = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();
-    }
-
-    public String generar(String usuario, String rol) {
-        Instant ahora = Instant.now();
-        JwtClaimsSet claims = JwtClaimsSet.builder()
-            .subject(usuario)
-            .claim("rol", rol)
-            .issuedAt(ahora)
-            .expiresAt(ahora.plusSeconds(900))
-            .build();
-        JwsHeader cabecera = JwsHeader.with(MacAlgorithm.HS256).build();
-        return encoder.encode(JwtEncoderParameters.from(cabecera, claims)).getTokenValue();
-    }
-
-    public Jwt validar(String token) {
-        return decoder.decode(token);
-    }
-
-    JwtDecoder decoder() {
-        return decoder;
-    }
+  private final JwtEncoder encoder; private final JwtDecoder decoder;
+  public JwtService(@Value("${security.jwt.secret-base64}") String secretBase64){
+    SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(secretBase64), "HmacSHA256");
+    this.encoder = NimbusJwtEncoder.withSecretKey(key).algorithm(MacAlgorithm.HS256).build();
+    this.decoder = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();
+  }
+  public String generar(String usuario, String rol){
+    Instant ahora = Instant.now();
+    var claims = JwtClaimsSet.builder().subject(usuario).claim("rol", rol).issuedAt(ahora).expiresAt(ahora.plusSeconds(900)).build();
+    return encoder.encode(JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims)).getTokenValue();
+  }
+  public JwtDecoder decoder(){ return decoder; }
 }
 ```
-
 ```java
-package com.example.demo;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.security.oauth2.jwt.Jwt;
-
-class JwtServiceTest {
-    private static final String CLAVE_DE_PRUEBA = "VVFRc3BzQVFzZXJ0T0xhbkt0ZUd4cHlsU21pSnhhOFM=";
-
-    @Test
-    void tokenFirmadoConservaUsuarioYRol() {
-        var service = new JwtService(CLAVE_DE_PRUEBA);
-        Jwt jwt = service.validar(service.generar("ana-1", "ADMIN"));
-        assertEquals("ana-1", jwt.getSubject());
-        assertEquals("ADMIN", jwt.getClaimAsString("rol"));
-    }
+@Bean
+SecurityFilterChain filterChain(HttpSecurity http, JwtService jwt) throws Exception {
+  return http.csrf(csrf -> csrf.disable())
+    .authorizeHttpRequests(auth -> auth.requestMatchers("/public/**","/api/auth/**").permitAll().requestMatchers(HttpMethod.DELETE,"/api/**").hasRole("ADMIN").anyRequest().authenticated())
+    .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtServiceDecoder())))
+    .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+    .build();
 }
 ```
+> Nota: configura `JwtAuthenticationConverter` para mapear claim `rol` a `ROLE_*`.
 
-</details>
+**Ejecución real**: `JWT_SECRET_BASE64=$(openssl rand -base64 32) ./mvnw -Dtest=JwtServiceTest test`. **Verificación**: token sin firma/expirado => 401; USER en DELETE => 403; ADMIN => 200.
 
 ### Tema 3: CORS y CSRF · Intermedio · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: SPA en otro origen llama API con Bearer; preflight OPTIONS debe pasar.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por cors y csrf con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| CORS | Política de navegador para requests cross-origin. | Permitir frontends legítimos. | Allowlist de orígenes/métodos/headers. | `*` con credenciales. |
+| Preflight `OPTIONS` | Request previo del navegador. | Verificar permisos CORS. | Responder correctamente antes de auth compleja. | Bloquear OPTIONS con auth. |
+| CSRF | Ataque que abusa cookies automáticas del navegador. | Proteger sesiones cookie. | Para APIs stateless Bearer, usualmente `csrf.disable()`; para cookie/session, habilitar token CSRF. | Deshabilitar CSRF en app con cookies de sesión. |
+| Credenciales/cookies | `allowCredentials` y cookies. | Sesiones cross-site. | Usar con origen específico. | Combinar credenciales y origen wildcard. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender cors y csrf te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en cors y csrf como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-  B["Navegador: Origin"] --> O["OPTIONS sin JWT"]
-  O -->|origen, método y cabeceras permitidos| R["Petición real con Authorization: Bearer"]
-  O -->|regla CORS no coincide| X["403: el navegador no continúa"]
-  R --> J["Resource server JWT autentica"] --> A["Regla de rol autoriza"]
-  C["Cookie de sesión automática"] --> S["CSRF necesario"]
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| CORS y CSRF se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar CORS y CSRF | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses cors y csrf por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: cors y csrf funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- CORS y CSRF existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve cors y csrf en tu contexto?
-2. ¿Cómo sabrías que cors y csrf no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar cors y csrf?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-  B["Navegador: Origin"] --> O["OPTIONS sin JWT"]
-  O -->|origen, método y cabeceras permitidos| R["Petición real con Authorization: Bearer"]
-  O -->|regla CORS no coincide| X["403: el navegador no continúa"]
-  R --> J["Resource server JWT autentica"] --> A["Regla de rol autoriza"]
-  C["Cookie de sesión automática"] --> S["CSRF necesario"]
-```
-
+**Implementación desde cero**
 ```java
-package com.example.demo;
-
-import java.util.List;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-@Configuration
-public class CorsConfig {
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        var config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("https://web.academia.dev"));
-        config.setAllowedMethods(List.of("GET", "POST", "DELETE"));
-        config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
-        config.setAllowCredentials(false);
-        config.setMaxAge(3600L);
-
-        var source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
-        return source;
-    }
+@Bean
+CorsConfigurationSource corsConfigurationSource() {
+  var config = new CorsConfiguration();
+  config.setAllowedOrigins(List.of("https://web.academia.dev"));
+  config.setAllowedMethods(List.of("GET","POST","DELETE"));
+  config.setAllowedHeaders(List.of("Authorization","Content-Type"));
+  config.setAllowCredentials(false);
+  var source = new UrlBasedCorsConfigurationSource();
+  source.registerCorsConfiguration("/api/**", config);
+  return source;
 }
 ```
+En `SecurityFilterChain`: `.cors(Customizer.withDefaults())`.
 
-```java
-package com.example.demo;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
-import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-@SpringBootTest
-@AutoConfigureMockMvc
-class CorsConfigTest {
-    @Autowired MockMvc mockMvc;
-
-    @Test
-    void preflightPermitidoDevuelveOrigenYMetodo() throws Exception {
-        mockMvc.perform(options("/api/entregas/42")
-                .header("Origin", "https://web.academia.dev")
-                .header("Access-Control-Request-Method", "DELETE")
-                .header("Access-Control-Request-Headers", "Authorization"))
-            .andExpect(status().isOk())
-            .andExpect(header().string("Access-Control-Allow-Origin", "https://web.academia.dev"))
-            .andExpect(header().string("Access-Control-Allow-Methods",
-                org.hamcrest.Matchers.containsString("DELETE")))
-            .andExpect(header().string("Access-Control-Allow-Headers",
-                org.hamcrest.Matchers.containsString("Authorization")));
-    }
-
-    @Test
-    void preflightDeOrigenAjenoRecibe403() throws Exception {
-        mockMvc.perform(options("/api/entregas/42")
-                .header("Origin", "https://sitio-no-autorizado.dev")
-                .header("Access-Control-Request-Method", "DELETE"))
-            .andExpect(status().isForbidden())
-            .andExpect(header().doesNotExist("Access-Control-Allow-Origin"));
-    }
-}
-```
-
-```bash
-./mvnw -q -Dtest=CorsConfigTest test
-```
-
-```java
-@Autowired JwtService jwtService;
-
-@Test
-void deleteConJwtDevuelveElHeaderCors() throws Exception {
-    String token = jwtService.generar("admin-1", "ADMIN");
-    mockMvc.perform(delete("/api/entregas/42")
-            .header("Origin", "https://web.academia.dev")
-            .header("Authorization", "Bearer " + token))
-        .andExpect(status().isOk())
-        .andExpect(header().string("Access-Control-Allow-Origin", "https://web.academia.dev"));
-}
-```
-
-```java
-@Test
-void preflightDeMetodoNoListadoRecibe403() throws Exception {
-    mockMvc.perform(options("/api/entregas/42")
-            .header("Origin", "https://web.academia.dev")
-            .header("Access-Control-Request-Method", "PATCH"))
-        .andExpect(status().isForbidden());
-}
-```
-
-</details>
+**Ejecución real**: `./mvnw -Dtest=CorsConfigTest test` con MockMvc OPTIONS. **Verificación**: origen permitido 200 con headers CORS; origen ajeno 403/sin allow-origin.
 
 ### Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter · Avanzado · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: endpoint recibe URL de usuario; atacante apunta a `http://169.254.169.254/` o localhost.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por reducir ssrf en clientes http con inetaddressfilter con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| SSRF | Server-Side Request Forgery: servidor hace request a destino elegido por atacante. | Vector de ataque interno. | Validar/filtrar destino antes de conectar. | Hacer GET a cualquier URL del usuario. |
+| `InetAddressFilter` / validación IP | Filtro que bloquea rangos internos/metadata. | Reducir SSRF. | Bloquear loopback, private, link-local, metadata. | Validar solo string hostname. |
+| DNS rebinding/redirects | Resolución o redirect puede llevar a IP interna. | Bypass comunes. | Revalidar tras resolución y controlar redirects. | Seguir redirects ciegamente. |
+| Defensa en profundidad | Allowlist de hosts, egress firewall, timeouts. | Reducir riesgo residual. | No confiar en un solo check. | “Ya validé el host, listo”. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender reducir ssrf en clientes http con inetaddressfilter te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en reducir ssrf en clientes http con inetaddressfilter como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que reducir ssrf en clientes http con inetaddressfilter resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Reducir SSRF en clientes HTTP con InetAddressFilter se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Reducir SSRF en clientes HTTP con InetAddressFilter | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses reducir ssrf en clientes http con inetaddressfilter por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: reducir ssrf en clientes http con inetaddressfilter funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Reducir SSRF en clientes HTTP con InetAddressFilter existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve reducir ssrf en clientes http con inetaddressfilter en tu contexto?
-2. ¿Cómo sabrías que reducir ssrf en clientes http con inetaddressfilter no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar reducir ssrf en clientes http con inetaddressfilter?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```bash
-cp -R spring-ssrf /tmp/ssrf-lab
-cd /tmp/ssrf-lab
-./mvnw -q -DskipTests package
+**Implementación desde cero** (concepto; requiere soporte HTTP client/filter)
+```java
+// Pseudocódigo: antes de conectar, resolver host y rechazar IPs internas/metadata
+InetAddress addr = InetAddress.getByName(uri.getHost());
+if (addr.isLoopbackAddress() || addr.isSiteLocalAddress() || addr.isLinkLocalAddress()) throw new IllegalArgumentException("destino no permitido");
 ```
-
-```bash
-./mvnw -q -Dtest=SafeClientTest#blocksBeforeRequestAndControlReallyReachesServer,SafeClientTest#excludesInternalAndMetadataRangesWithoutConnecting test
-```
-
-```bash
-./mvnw -q -Dtest=SafeClientTest#doesNotFollowRedirectToAnotherAddress test
-```
-
-```bash
-./mvnw -q clean test
-```
-
-</details>
+**Ejecución real**: test bloquea `localhost`, `127.0.0.1`, `169.254.169.254`; permite host público permitido. **Verificación**: no se realiza conexión a IP interna.
 
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 30 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**: usuario envía credenciales, recibe JWT, accede a `/api/usuarios`.
 
-#### ► DE QUÉ TRATA
-Este tema te guía por flujo de login completo — de `/api/auth/login` a una ruta protegida con foco en comprensión antes de implementación.
+| Concepto | Definición | Para qué | Regla | Error |
+|---|---|---|---|---|
+| Login endpoint | Endpoint que autentica credenciales y emite token. | Inicio de sesión. | `permitAll` pero con rate limit/validación. | Exponer sin protección ante brute force. |
+| `PasswordEncoder` (BCrypt) | Hash seguro de contraseña. | No guardar passwords en claro. | `BCryptPasswordEncoder`, matches. | SHA-256 plano o texto claro. |
+| Flujo Bearer | Cliente envía `Authorization: Bearer <jwt>`. | Acceso stateless. | HTTPS, expiración corta. | Token largo sin expiración. |
+| Principal/Authentication | Identidad autenticada en SecurityContext. | Saber quién llama. | Obtener de `Authentication`, no confiar en body. | Tomar userId del request body. |
 
-#### ► LA IDEA EN UNA FRASE
-**Entender flujo de login completo — de `/api/auth/login` a una ruta protegida te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en flujo de login completo — de `/api/auth/login` a una ruta protegida como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-  Cliente->>API: POST /api/auth/login (email + contraseña)
-  API->>API: PasswordEncoder.matches
-  API->>JwtService: generar(email, rol)
-  API-->>Cliente: 200 { token }
-  Cliente->>API: GET /api/usuarios sin token
-  API-->>Cliente: 401
-  Cliente->>API: GET /api/usuarios con Bearer
-  API-->>Cliente: 200 { email, rol }
-```
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Flujo de login completo — de `/api/auth/login` a una ruta protegida se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Flujo de login completo — de `/api/auth/login` a una ruta protegida | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses flujo de login completo — de `/api/auth/login` a una ruta protegida por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: flujo de login completo — de `/api/auth/login` a una ruta protegida funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Flujo de login completo — de `/api/auth/login` a una ruta protegida existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve flujo de login completo — de `/api/auth/login` a una ruta protegida en tu contexto?
-2. ¿Cómo sabrías que flujo de login completo — de `/api/auth/login` a una ruta protegida no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar flujo de login completo — de `/api/auth/login` a una ruta protegida?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-sequenceDiagram
-  Cliente->>API: POST /api/auth/login (email + contraseña)
-  API->>API: PasswordEncoder.matches
-  API->>JwtService: generar(email, rol)
-  API-->>Cliente: 200 { token }
-  Cliente->>API: GET /api/usuarios sin token
-  API-->>Cliente: 401
-  Cliente->>API: GET /api/usuarios con Bearer
-  API-->>Cliente: 200 { email, rol }
-```
-
+**Implementación desde cero**
 ```java
-@Bean
-PasswordEncoder passwordEncoder() {
-    return new BCryptPasswordEncoder();
+@Bean PasswordEncoder passwordEncoder(){ return new BCryptPasswordEncoder(); }
+
+@PostMapping("/api/auth/login")
+public ResponseEntity<?> login(@RequestBody LoginRequest req) {
+  if (!emailDemo.equals(req.email()) || !passwordEncoder.matches(req.password(), hashDemo))
+    return ResponseEntity.status(401).body(Map.of("error","Credenciales inválidas"));
+  return ResponseEntity.ok(Map.of("token", jwtService.generar(req.email(), "ADMIN")));
+}
+@GetMapping("/api/usuarios")
+public Map<String,String> yo(Authentication auth){
+  return Map.of("email", auth.getName(), "rol", auth.getAuthorities().iterator().next().getAuthority());
 }
 ```
-
-```java
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+**Ejecución real**
+```bash
+curl -X POST localhost:8080/api/auth/login -H 'Content-Type: application/json' -d '{"email":"ana@rutaflow.dev","password":"clave-larga-segura"}'
+curl localhost:8080/api/usuarios -H 'Authorization: Bearer <token>'
 ```
+**Salida esperada**: login 200 con token; sin token 401; con token 200 con email/rol. **Verificación**: contraseña mala 401.
 
-```java
-package com.example.demo;
-
-public record LoginRequest(String email, String password) {}
-```
-
-```java
-package com.example.demo;
-
-import java.util.Map;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-@RequestMapping("/api/auth")
-public class AuthController {
-    private final JwtService jwtService;
-    private final PasswordEncoder passwordEncoder;
-    private final String emailDemo = "ana@rutaflow.dev";
-    private final String hashDemo;
-
-    public AuthController(JwtService jwtService, PasswordEncoder passwordEncoder) {
-        this.jwtService = jwtService;
-        this.passwordEncoder = passwordEncoder;
-        this.hashDemo = passwordEncoder.encode("clave-larga-segura");
-    }
-
-    @PostMapping("/login")
-    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
-        String email = request.email() == null ? "" : request.email();
-        String password = request.password() == null ? "" : request.password();
-        if (!emailDemo.equals(email) || !passwordEncoder.matches(password, hashDemo)) {
-            return ResponseEntity.status(401).body(Map.of("error", "Credenciales inválidas"));
-        }
-        return ResponseEntity.ok(Map.of("token", jwtService.generar(email, "ADMIN")));
-    }
-}
-```
-
-```java
-package com.example.demo;
-
-import java.util.Map;
-import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-@RestController
-public class UsuariosController {
-    @GetMapping("/api/usuarios")
-    public Map<String, String> usuarioActual(Authentication authentication) {
-        String rol = authentication.getAuthorities().iterator().next().getAuthority();
-        return Map.of("email", authentication.getName(), "rol", rol);
-    }
-}
-```
-
-</details>
