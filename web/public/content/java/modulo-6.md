@@ -105,6 +105,17 @@ Recibes y envías datos en JSON. Quieres convertir un objeto Java a JSON y volve
 
 **Implementación desde cero**
 
+Desde carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-06-jackson && cd ~/academia-java/modulo-06-jackson
+curl -L -o jackson-databind.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.18.2/jackson-databind-2.18.2.jar
+curl -L -o jackson-core.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.18.2/jackson-core-2.18.2.jar
+curl -L -o jackson-annotations.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.jar
+```
+
+Crea `DemoJackson.java`:
+
 ```java
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -135,12 +146,21 @@ public class DemoJackson {
 
 **Ejecución y salida real**
 
+```bash
+javac -cp ".:jackson-databind.jar:jackson-core.jar:jackson-annotations.jar" DemoJackson.java
+java -cp ".:jackson-databind.jar:jackson-core.jar:jackson-annotations.jar" DemoJackson
+```
+
+Salida esperada:
+
 ```text
 {"id":"G-1","destino":"Madrid","pesoKg":3}
 G-1
 Madrid
 3
 ```
+
+> En Windows usa `;` como separador de classpath.
 
 **Errores comunes y cómo resolverlos**
 
@@ -170,49 +190,67 @@ Debes procesar un archivo grande línea por línea sin cargarlo entero en memori
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-06 && cd ~/academia-java/modulo-06
+```
+
+Crea `DemoArchivoGrande.java`:
+
 ```java
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.stream.*;
 
 public class DemoArchivoGrande {
     public static void main(String[] args) throws Exception {
-        Path ruta = Path.of("grande.txt");
-        Files.write(ruta, IntStream.rangeClosed(1, 5).mapToObj(i -> "linea-" + i).toList());
+        Path path = Path.of("grande.txt");
+        Files.writeString(path, "linea-1\nlinea-2\nlinea-3\n", StandardCharsets.UTF_8);
 
-        try (BufferedReader br = Files.newBufferedReader(ruta)) {
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                if (linea.endsWith("3")) {
-                    System.out.println(linea);
-                }
+        try (BufferedReader reader = Files.newBufferedReader(path, StandardCharsets.UTF_8)) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("3")) System.out.println(line);
             }
         }
 
         try (InputStream in = DemoArchivoGrande.class.getResourceAsStream("/config.txt")) {
-            System.out.println(in != null ? new String(in.readAllBytes()).trim() : "recurso no encontrado");
+            if (in != null) {
+                String text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
+                System.out.println(text.trim());
+            } else {
+                System.out.println("recurso no encontrado");
+            }
         }
-
-        Files.deleteIfExists(ruta);
     }
 }
+```
+
+Para probar el recurso del classpath, crea `config.txt` y ejecútalo con el directorio actual en classpath:
+
+```bash
+echo "modo=demo" > config.txt
+javac DemoArchivoGrande.java
+java -cp . DemoArchivoGrande
 ```
 
 **Desglose del código**
 
 - `Files.newBufferedReader` lee eficientemente línea por línea.
 - El `while` procesa sin guardar todo el archivo en una lista.
-- `getResourceAsStream("/config.txt")` busca en el classpath; la ruta empieza en la raíz del classpath.
+- `getResourceAsStream("/config.txt")` busca en la raíz del classpath; por eso se usa `-cp .`.
 - `readAllBytes()` es aceptable para recursos pequeños; no lo uses con archivos enormes.
 
 **Ejecución y salida real**
 
 ```text
 linea-3
-recurso no encontrado
+modo=demo
 ```
 
-Si agregas `config.txt` al classpath, imprimirá su contenido.
+Si eliminas `config.txt` del classpath, la segunda línea será `recurso no encontrado`.
 
 **Errores comunes y cómo resolverlos**
 

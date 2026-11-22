@@ -111,29 +111,13 @@ Mides dos algoritmos con `System.nanoTime()` en un bucle simple y concluyes que 
 
 **Implementación desde cero**
 
-Ejemplo conceptual con JMH (requiere dependencias `org.openjdk.jmh:jmh-core` y `jmh-generator-annprocess`):
+**Parte A: cronómetro ingenuo (sin dependencias, solo JDK)**
 
-```java
-import org.openjdk.jmh.annotations.*;
-import org.openjdk.jmh.infra.Blackhole;
-import java.util.concurrent.TimeUnit;
-
-@BenchmarkMode(Mode.AverageTime)
-@OutputTimeUnit(TimeUnit.NANOSECONDS)
-@State(Scope.Thread)
-class SumaBenchmark {
-    private int n = 1000;
-
-    @Benchmark
-    public void loop(Blackhole bh) {
-        long s = 0;
-        for (int i = 0; i < n; i++) s += i;
-        bh.consume(s);
-    }
-}
+```bash
+mkdir -p ~/academia-java/modulo-14-bench && cd ~/academia-java/modulo-14-bench
 ```
 
-Ejemplo ilustrativo de cronómetro ingenuo (no usar para conclusiones):
+`CronometroIngenuo.java`:
 
 ```java
 public class CronometroIngenuo {
@@ -148,6 +132,37 @@ public class CronometroIngenuo {
 }
 ```
 
+**Parte B: JMH (setup real con Maven)**
+
+```bash
+mvn -q archetype:generate -DinteractiveMode=false   -DarchetypeGroupId=org.openjdk.jmh -DarchetypeArtifactId=jmh-java-benchmark-archetype   -DarchetypeVersion=1.37 -DgroupId=com.academia -DartifactId=jmh-demo -Dversion=1.0
+cd jmh-demo
+```
+
+Crea `src/main/java/com/academia/SumaBenchmark.java`:
+
+```java
+package com.academia;
+
+import org.openjdk.jmh.annotations.*;
+import org.openjdk.jmh.infra.Blackhole;
+import java.util.concurrent.TimeUnit;
+
+@BenchmarkMode(Mode.AverageTime)
+@OutputTimeUnit(TimeUnit.NANOSECONDS)
+@State(Scope.Thread)
+public class SumaBenchmark {
+    private int n = 1000;
+
+    @Benchmark
+    public void loop(Blackhole bh) {
+        long s = 0;
+        for (int i = 0; i < n; i++) s += i;
+        bh.consume(s);
+    }
+}
+```
+
 **Desglose del código**
 
 - `@BenchmarkMode` y `@OutputTimeUnit` declaran qué se mide.
@@ -157,7 +172,7 @@ public class CronometroIngenuo {
 
 **Ejecución y salida real**
 
-Cronómetro ingenuo (compilable sin dependencias externas):
+Cronómetro ingenuo:
 
 ```bash
 javac CronometroIngenuo.java
@@ -191,70 +206,107 @@ Ejecuta varias veces: verás variación. Para decisiones reales, migra la medici
 
 **Caso guía**
 
-Tu servicio recibe JSON. Si aceptas cualquier estructura o usas deserialización Java nativa sobre datos no confiables, puedes terminar instanciando tipos inesperados o aceptando estado inválido.
+Un servicio recibe bytes serializados Java de una fuente externa. Tratarlo como “solo datos” es peligroso: la deserialización puede construir objetos y ejecutar lógica inesperada si el classpath contiene gadgets.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** La *deserialización* es reconstruir objetos desde una representación externa. En contextos no confiables, es una frontera de seguridad: el input puede forzar construcción, asignación de estado o, en mecanismos vulnerables, ejecución de gadget chains.
+**Definición formal.** La *serialización Java nativa* (`Serializable`) convierte grafos de objetos en bytes; la *deserialización* los reconstruye. Una *frontera de confianza* es el punto donde entran datos no controlados. Un *filtro de deserialización* (`ObjectInputFilter`) restringe clases/tamaños/profundidad durante la deserialización.
 
-**Contrato / invariantes / reglas.** Nunca deserializar datos no confiables con Java serialization nativa sin controles estrictos; la recomendación moderna es evitarla. Con Jackson/JSON, restringir esquema, validar tipos, deshabilitar características peligrosas, y no habilitar polimorfismo por defecto (`default typing`) en entradas no confiables. Los DTO/records deben validar invariantes tras deserializar. Un objeto deserializado no es confiable por “haber sido parseado”.
+**Contrato / invariantes / reglas.** No deserializar datos no confiables con `ObjectInputStream` sin controles estrictos. `readObject` puede ser punto de validación/invariante. Validar invariantes tras reconstrucción (`readObject`/`readResolve`). Preferir formatos de datos (JSON/Protobuf) con esquemas y sin ejecución de gadgets. Si se usa serialización nativa, aplicar filtros, allowlists, límites y versiones (`serialVersionUID`).
 
-**Modelo mental.** Deserializar es dejar entrar a alguien con un formulario: aceptar el formulario no significa que el contenido sea verdadero ni seguro.
+**Modelo mental.** Deserializar bytes arbitrarios es dejar entrar paquetes sin escaneo a un edificio con robots programables adentro.
 
 **Implementación desde cero**
 
-Ejemplo con Jackson (requiere `jackson-databind`):
+Desde carpeta vacía (solo JDK):
+
+```bash
+mkdir -p ~/academia-java/modulo-14-ser && cd ~/academia-java/modulo-14-ser
+```
+
+Crea `DemoDeserializacion.java`:
 
 ```java
-import com.fasterxml.jackson.databind.*;
+import java.io.*;
+import java.util.*;
 
-class EntradaJson {
-    record Registro(String guia, String estado) {
-        Registro {
-            if (guia == null || guia.isBlank()) throw new IllegalArgumentException("guia requerida");
-            if (estado == null || estado.isBlank()) throw new IllegalArgumentException("estado requerido");
+final class PedidoImportado implements Serializable {
+    @Serial private static final long serialVersionUID = 1L;
+    private final String sku;
+    private final int cantidad;
+
+    PedidoImportado(String sku, int cantidad) {
+        this.sku = Objects.requireNonNull(sku);
+        this.cantidad = cantidad;
+    }
+
+    @Serial
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        if (sku.isBlank() || cantidad <= 0) {
+            throw new InvalidObjectException("pedido inválido");
+        }
+    }
+
+    @Override public String toString() { return "PedidoImportado{" + sku + "," + cantidad + "}"; }
+}
+
+public class DemoDeserializacion {
+    static byte[] serializar(PedidoImportado p) throws Exception {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream();
+             ObjectOutputStream out = new ObjectOutputStream(bos)) {
+            out.writeObject(p);
+            return bos.toByteArray();
+        }
+    }
+
+    static PedidoImportado cargar(byte[] data) throws Exception {
+        try (ObjectInputStream in = new ObjectInputStream(new ByteArrayInputStream(data))) {
+            in.setObjectInputFilter(ObjectInputFilter.Config.createFilter(
+                "PedidoImportado;java.base/*;!*")); // allowlist simple
+            return (PedidoImportado) in.readObject();
         }
     }
 
     public static void main(String[] args) throws Exception {
-        ObjectMapper mapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, true);
-        Registro r = mapper.readValue("{\"guia\":\"G-1\",\"estado\":\"OK\"}", Registro.class);
-        System.out.println(r.guia());
-        System.out.println(r.estado());
+        byte[] data = serializar(new PedidoImportado("A-1", 2));
+        PedidoImportado p = cargar(data);
+        System.out.println(p);
     }
 }
 ```
 
 **Desglose del código**
 
-- El record valida invariantes en el constructor compacto: el parseo no es suficiente.
-- `FAIL_ON_UNKNOWN_PROPERTIES` endurece el esquema para entradas inesperadas.
-- El tipo destino es explícito (`Registro.class`); evita mapeos polimórficos abiertos.
-- La validación de negocio debe ocurrir después o durante la construcción.
+- `readObject` valida invariantes al reconstruir el objeto.
+- `ObjectInputFilter` limita clases permitidas; es una defensa en profundidad, no un permiso para deserializar datos no confiables.
+- `serialVersionUID` controla compatibilidad de versión.
+- Para integración externa, prefiere JSON/Protobuf + validación.
 
 **Ejecución y salida real**
 
-Con Jackson en classpath:
-
-```text
-G-1
-OK
+```bash
+javac DemoDeserializacion.java
+java DemoDeserializacion
 ```
 
-Si llega `{"guia":"G-1","estado":"OK","extra":1}`, falla por propiedad desconocida.
+Salida esperada:
+
+```text
+PedidoImportado{A-1,2}
+```
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Aceptas datos basura | Sin validación post-deserialización | Valida invariantes en el DTO/record |
-| Vulnerabilidad por deserialización Java | `ObjectInputStream` con datos no confiables | Evita Java serialization en fronteras no confiables |
-| Polimorfismo inseguro en JSON | Default typing habilitado | Usa tipos explícitos y allowlists |
+| RCE/gadget chain por deserialización | Datos no confiables + classpath vulnerable | No deserializar input no confiable; usar formatos seguros |
+| Objeto inválido tras cargar | No validaste invariantes | Valida en `readObject` |
+| `InvalidClassException` tras cambio | `serialVersionUID`/estructura incompatible | Versiona y migra con cuidado |
 
 **Verificación rápida**
 
-Prueba un JSON con campo faltante o extra y verifica que se rechaza.
+Modifica el filtro para rechazar `PedidoImportado` y confirma que la deserialización falla.
 
 ### Tema 4: El runtime es parte del artefacto y necesita ciclo de vida · Avanzado · 45 min
 

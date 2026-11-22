@@ -187,6 +187,14 @@ Necesitas verificar integridad de un mensaje, autenticar que viene de un socio c
 
 **Implementación desde cero**
 
+Solo JDK (sin dependencias externas). Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-18-cripto && cd ~/academia-java/modulo-18-cripto
+```
+
+Crea `DemoCripto.java`:
+
 ```java
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;

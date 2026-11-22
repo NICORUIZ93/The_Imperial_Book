@@ -4374,6 +4374,14 @@
     ],
     "17": [
       {
+        "title": "Opción A — H2 en memoria (rápida, sin Docker)",
+        "fragment": "opcion-a-h2-en-memoria-rapida-sin-docker"
+      },
+      {
+        "title": "Opción B — PostgreSQL con Docker (entorno real)",
+        "fragment": "opcion-b-postgresql-con-docker-entorno-real"
+      },
+      {
         "title": "JDBC, PreparedStatement y DAO",
         "fragment": "tema-1-jdbc-preparedstatement-y-dao"
       },

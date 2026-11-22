@@ -342,9 +342,34 @@ Tu test unitario pasa, pero en producción falla porque la consulta SQL real o l
 
 **Implementación desde cero**
 
-Ejemplo conceptual con Testcontainers (dependencia externa):
+Prerrequisitos: Docker en ejecución. Agrega dependencias al `pom.xml` del proyecto (o crea uno nuevo como en Módulo 9):
+
+```xml
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <version>5.11.4</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.testcontainers</groupId>
+  <artifactId>postgresql</artifactId>
+  <version>1.20.4</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.postgresql</groupId>
+  <artifactId>postgresql</artifactId>
+  <version>42.7.4</version>
+  <scope>test</scope>
+</dependency>
+```
+
+Crea `src/test/java/com/academia/RepoIntegracionTest.java`:
 
 ```java
+package com.academia;
+
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -356,7 +381,8 @@ class RepoIntegracionTest {
             postgres.start();
             String jdbc = postgres.getJdbcUrl();
             assertTrue(jdbc.startsWith("jdbc:postgresql://"));
-            // aquí abrirías conexión, crearías esquema y probarías el repo real
+            // aquí abrirías DriverManager.getConnection(jdbc, postgres.getUsername(), postgres.getPassword())
+            // crearías esquema y probarías el repo real
         }
     }
 }
@@ -405,9 +431,39 @@ En producción hay un error intermitente. Los logs dicen “error al procesar”
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias `org.slf4j:slf4j-api` y un backend como `ch.qos.logback:logback-classic`.
+Usa el proyecto Maven del Módulo 7 o crea uno rápido:
 
-Ejemplo con SLF4J/Logback (dependencias externas):
+```bash
+mkdir -p ~/academia-java/modulo-15-log/src/main/java src/main/resources
+cd ~/academia-java/modulo-15-log
+```
+
+`pom.xml`:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.academia</groupId><artifactId>modulo-15-log</artifactId><version>1.0.0-SNAPSHOT</version>
+  <properties><maven.compiler.release>21</maven.compiler.release></properties>
+  <dependencies>
+    <dependency><groupId>ch.qos.logback</groupId><artifactId>logback-classic</artifactId><version>1.5.18</version></dependency>
+  </dependencies>
+</project>
+```
+
+`src/main/resources/logback.xml`:
+
+```xml
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder><pattern>%d{HH:mm:ss} %-5level [%X{requestId}] %logger{36} - %msg%n%ex</pattern></encoder>
+  </appender>
+  <root level="INFO"><appender-ref ref="STDOUT"/></root>
+</configuration>
+```
+
+`src/main/java/DemoLog.java`:
 
 ```java
 import org.slf4j.Logger;
@@ -421,10 +477,9 @@ public class DemoLog {
         MDC.put("requestId", requestId);
         try {
             log.info("procesando guia={}", guia);
-            if (guia.isBlank()) throw new IllegalArgumentException("guia vacia");
-            log.info("ok guia={}", guia);
+            if (guia == null) throw new IllegalArgumentException("guia nula");
         } catch (Exception e) {
-            log.error("fallo guia={}", guia, e);
+            log.error("fallo procesando guia={}", guia, e);
         } finally {
             MDC.remove("requestId");
         }
@@ -432,43 +487,44 @@ public class DemoLog {
 
     public static void main(String[] args) {
         procesar("req-1", "G-1");
-        procesar("req-2", "");
+        procesar("req-2", null);
     }
 }
 ```
 
 **Desglose del código**
 
-- `LoggerFactory.getLogger` crea logger por clase.
-- `{}` evita concatenación innecesaria.
-- `MDC` agrega `requestId` a todos los logs del hilo.
-- `finally` limpia MDC para evitar fuga de contexto.
+- `MDC.put` agrega contexto por hilo; el patrón `%X{requestId}` lo imprime.
+- `log.error(..., e)` preserva stack trace.
+- `finally { MDC.remove(...) }` evita fugas en thread pools.
+- No loguees secretos; usa niveles con intención.
 
 **Ejecución y salida real**
 
-Con Logback configurado:
-
-```text
-INFO ... [req-1] procesando guia=G-1
-INFO ... [req-1] ok guia=G-1
-INFO ... [req-2] procesando guia=
-ERROR ... [req-2] fallo guia=
-java.lang.IllegalArgumentException: guia vacia
+```bash
+mvn -q -DskipTests compile exec:java -Dexec.mainClass=DemoLog
 ```
 
-El formato depende del patrón/appender.
+Salida esperada:
+
+```text
+12:00:00 INFO  [req-1] DemoLog - procesando guia=G-1
+12:00:00 ERROR [req-2] DemoLog - fallo procesando guia=null
+java.lang.IllegalArgumentException: guia nula
+...
+```
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Logs inútiles | Mensajes vagos sin contexto | Agrega campos de negocio y MDC |
-| Fuga de contexto | No limpias MDC | Usa `finally { MDC.remove(...) }` |
-| Logs ruidosos/caros | Nivel o volumen mal calibrado | Ajusta niveles y muestreo |
+| Logs sin contexto | No usas MDC/patrón | Agrega MDC y `%X{...}` |
+| Stack trace perdido | Logueaste solo `e.getMessage()` | Pasa la excepción como último argumento |
+| Fuga de contexto | No limpias MDC | `MDC.remove`/`clear` en `finally` |
 
 **Verificación rápida**
 
-Configura el patrón para incluir `%X{requestId}` y verifica que aparezca en cada evento del request.
+Cambia el nivel root a `DEBUG` en `logback.xml` y confirma el cambio de verbosidad sin tocar el código.
 
 ## Cierre del módulo
 

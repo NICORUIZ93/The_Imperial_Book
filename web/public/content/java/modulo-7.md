@@ -2,6 +2,62 @@
 
 Cuando un programa falla en producción, `System.out.println` no alcanza: no tiene niveles, no tiene contexto, no se puede filtrar ni enrutar. El logging estructurado y una depuración metódica permiten entender qué pasó, cuándo y por qué. Este módulo cubre SLF4J/Logback, MDC y técnicas prácticas de depuración.
 
+## Setup ejecutable del módulo
+
+Desde carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-07/src/main/java
+mkdir -p ~/academia-java/modulo-07/src/main/resources
+cd ~/academia-java/modulo-07
+```
+
+`pom.xml` mínimo:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.academia</groupId>
+  <artifactId>modulo-07</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.5.18</version>
+    </dependency>
+  </dependencies>
+</project>
+```
+
+`logback-classic` trae `slf4j-api`. Crea `src/main/resources/logback.xml`:
+
+```xml
+<configuration>
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <encoder>
+      <pattern>%d{HH:mm:ss} %-5level [%X{requestId}] %logger{36} - %msg%n%ex</pattern>
+    </encoder>
+  </appender>
+  <root level="INFO">
+    <appender-ref ref="STDOUT"/>
+  </root>
+</configuration>
+```
+
+Ejecuta ejemplos con:
+
+```bash
+mvn -q -DskipTests compile exec:java -Dexec.mainClass=DemoLogging
+```
+
+> **Alternativa sin Maven:** descarga `slf4j-api`, `logback-classic`, `logback-core` jars y compila/ejecuta con `javac -cp "...jars..."` y `java -cp ".:...jars..."`. Maven es la opción reproducible recomendada.
+
 ## Mapa del módulo
 
 | Tema | Qué vas a poder hacer al terminar |
@@ -27,6 +83,8 @@ Tu aplicación procesa guías. En desarrollo usabas `println`, pero en producci�
 **Modelo mental.** SLF4J es el tomacorriente estándar; Logback es el aparato conectado. Cambias el aparato sin cambiar la instalación.
 
 **Implementación desde cero**
+
+Crea `src/main/java/DemoLogging.java` (en el proyecto del setup):
 
 ```java
 import org.slf4j.Logger;
@@ -57,16 +115,19 @@ public class DemoLogging {
 
 **Ejecución y salida real**
 
-Con SLF4J + backend simple configurado:
-
-```text
-INFO  DemoLogging - Procesando guia G-1
-ERROR DemoLogging - Error procesando guia G-1
-java.lang.NumberFormatException: For input string: "NO"
-...
+```bash
+mvn -q -DskipTests compile exec:java -Dexec.mainClass=DemoLogging
 ```
 
-El formato exacto depende de la configuración de Logback/simple logger.
+Salida esperada (formato depende de `logback.xml`; DEBUG no aparece porque root está en INFO):
+
+```text
+12:00:00 INFO  [] DemoLogging - Procesando guia G-1
+12:00:00 ERROR [] DemoLogging - Error procesando guia G-1
+java.lang.NumberFormatException: For input string: "NO"
+	at java.base/java.lang.Integer.parseInt(Integer.java:...)
+	...
+```
 
 **Errores comunes y cómo resolverlos**
 
@@ -96,6 +157,8 @@ Dos solicitudes se procesan al mismo tiempo. En los logs ves “procesando guía
 
 **Implementación desde cero**
 
+Crea `src/main/java/DemoMDC.java` en el mismo proyecto del módulo:
+
 ```java
 import org.slf4j.*;
 
@@ -108,7 +171,7 @@ public class DemoMDC {
             log.info("inicio");
             log.info("fin");
         } finally {
-            MDC.remove("requestId");
+            MDC.remove("requestId"); // evita fuga en thread pools
         }
     }
 
@@ -128,13 +191,19 @@ public class DemoMDC {
 
 **Ejecución y salida real**
 
-Con patrón que incluya MDC:
+Usa el `logback.xml` del setup (ya incluye `%X{requestId}`):
+
+```bash
+mvn -q -DskipTests compile exec:java -Dexec.mainClass=DemoMDC
+```
+
+Salida esperada:
 
 ```text
-INFO DemoMDC [req-1] - inicio
-INFO DemoMDC [req-1] - fin
-INFO DemoMDC [req-2] - inicio
-INFO DemoMDC [req-2] - fin
+12:00:00 INFO  [req-1] DemoMDC - inicio
+12:00:00 INFO  [req-1] DemoMDC - fin
+12:00:00 INFO  [req-2] DemoMDC - inicio
+12:00:00 INFO  [req-2] DemoMDC - fin
 ```
 
 **Errores comunes y cómo resolverlos**
@@ -164,6 +233,14 @@ Un programa lanza `NullPointerException` solo con ciertos datos. Necesitas encon
 **Modelo mental.** El stack trace es la migaja de pan hacia atrás: te dice por qué camino llegó el programa hasta caerse.
 
 **Implementación desde cero**
+
+Este tema no requiere dependencias externas, solo JDK. Desde cualquier carpeta:
+
+```bash
+mkdir -p ~/academia-java/modulo-07-debug && cd ~/academia-java/modulo-07-debug
+```
+
+Crea `DemoDebug.java`:
 
 ```java
 public class DemoDebug {

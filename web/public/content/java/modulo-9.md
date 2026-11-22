@@ -2,6 +2,72 @@
 
 El código que no se prueba se rompe en silencio. Las pruebas automatizadas no garantizan ausencia de bugs, pero sí crean una red de seguridad para cambiar con confianza. Este módulo cubre JUnit Jupiter, Mockito, tests parametrizados y pruebas basadas en propiedades.
 
+## Setup ejecutable del módulo
+
+Crea un proyecto Maven desde cero:
+
+```bash
+mkdir -p ~/academia-java/modulo-09
+cd ~/academia-java/modulo-09
+mkdir -p src/main/java/com/academia src/test/java/com/academia
+```
+
+`pom.xml`:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.academia</groupId>
+  <artifactId>modulo-09</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <junit.version>5.11.4</junit.version>
+    <mockito.version>5.14.2</mockito.version>
+    <jqwik.version>1.9.2</jqwik.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <version>${junit.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-junit-jupiter</artifactId>
+      <version>${mockito.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>net.jqwik</groupId>
+      <artifactId>jqwik</artifactId>
+      <version>${jqwik.version}</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+```
+
+Ejecuta tests con:
+
+```bash
+mvn -q test
+```
+
+> Nota de nomenclatura: el título menciona "JUnit 5 y Mockito"; el contenido usa JUnit Jupiter (API de JUnit 5/6). La dependencia anterior usa la línea estable JUnit 5.11.x; si tu entorno ya usa JUnit 6, ajusta la versión manteniendo las mismas APIs de Jupiter.
+
 ## Mapa del módulo
 
 | Tema | Qué vas a poder hacer al terminar |
@@ -29,18 +95,28 @@ Tienes una calculadora de descuentos. Quieres probar casos normales, bordes y er
 
 **Implementación desde cero**
 
-```java
-import org.junit.jupiter.api.*;
-import static org.junit.jupiter.api.Assertions.*;
+Crea `src/main/java/com/academia/DescuentoService.java`:
 
-class DescuentoService {
-    int aplicar(int precio, int porcentaje) {
+```java
+package com.academia;
+
+public class DescuentoService {
+    public int aplicar(int precio, int porcentaje) {
         if (precio < 0 || porcentaje < 0 || porcentaje > 100) {
             throw new IllegalArgumentException("datos inválidos");
         }
         return precio - (precio * porcentaje / 100);
     }
 }
+```
+
+Crea `src/test/java/com/academia/DescuentoServiceTest.java`:
+
+```java
+package com.academia;
+
+import org.junit.jupiter.api.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DescuentoServiceTest {
     DescuentoService service;
@@ -105,21 +181,37 @@ Tu servicio envía notificaciones usando un cliente externo. En tests no quieres
 
 **Implementación desde cero**
 
+Crea `src/main/java/com/academia/EmailClient.java`:
+
 ```java
-import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+package com.academia;
 
 interface EmailClient { void send(String to, String body); }
+```
 
-class Notifier {
+Crea `src/main/java/com/academia/Notifier.java`:
+
+```java
+package com.academia;
+
+public class Notifier {
     private final EmailClient email;
     Notifier(EmailClient email) { this.email = email; }
-    void avisar(String to) {
+    public void avisar(String to) {
         if (to == null || to.isBlank()) throw new IllegalArgumentException("to requerido");
         email.send(to, "Hola");
     }
 }
+```
+
+Crea `src/test/java/com/academia/NotifierTest.java`:
+
+```java
+package com.academia;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 class NotifierTest {
     @Test
@@ -179,7 +271,11 @@ Quieres probar la misma regla con muchos valores. Copiar/pegar tests genera ruid
 
 **Implementación desde cero**
 
+Crea `src/test/java/com/academia/CalcTest.java` en el proyecto del setup:
+
 ```java
+package com.academia;
+
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
@@ -206,7 +302,16 @@ class CalcTest {
 
 **Ejecución y salida real**
 
-Se ejecuta un caso por fila del `CsvSource`; todos deben pasar.
+```bash
+mvn -q -Dtest=CalculadoraParamTest test
+```
+
+Salida esperada:
+
+```text
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
 
 **Errores comunes y cómo resolverlos**
 
@@ -236,9 +341,11 @@ En vez de probar solo ejemplos, quieres verificar una regla: “revertir una lis
 
 **Implementación desde cero**
 
-Ejemplo conceptual con jqwik:
+Crea `src/test/java/com/academia/ReversePropertyTest.java` (jqwik ya está en el `pom.xml` del setup):
 
 ```java
+package com.academia;
+
 import net.jqwik.api.*;
 import java.util.*;
 
@@ -262,7 +369,18 @@ class ReversePropertyTest {
 
 **Ejecución y salida real**
 
-El runner de jqwik reporta cantidad de intentos y, si falla, el contraejemplo reducido.
+```bash
+mvn -q -Dtest=ReversePropertyTest test
+```
+
+Salida esperada (valores pueden variar):
+
+```text
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+[INFO] BUILD SUCCESS
+```
+
+jqwik reporta en detalle los tries/shrinking en logs verbosos; con Surefire normal verás el test verde.
 
 **Errores comunes y cómo resolverlos**
 

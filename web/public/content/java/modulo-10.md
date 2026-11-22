@@ -168,59 +168,99 @@ Toma un proyecto existente y clasifica sus componentes: candidato a módulo, lib
 
 **Caso guía**
 
-Un framework usa reflexión para acceder a campos privados de una entidad. Con encapsulación fuerte, eso puede fallar si el paquete no está abierto.
+Un framework usa reflexión para serializar tus DTOs. Con JPMS, la reflexión profunda sobre paquetes no abiertos falla. Necesitas abrir solo lo necesario.
 
 **Fundamento técnico y modelo mental**
 
 **Definición formal.** La *reflexión profunda* (deep reflection) permite a código externo inspeccionar/acceder a miembros no públicos mediante la API de reflexión. En JPMS, `opens` declara que un paquete es accesible por reflexión en runtime; `exports` controla acceso normal en compilación/runtime.
 
-**Contrato / invariantes / reglas.** `exports p` no habilita reflexión profunda sobre miembros no públicos; `opens p` sí. `opens p to m` restringe esa reflexión al módulo `m`. `open module` abre todos los paquetes del módulo a reflexión, debilitando encapsulación. Errores típicos: `InaccessibleObjectException` cuando el framework intenta `setAccessible` o acceso reflexivo no permitido. La decisión de abrir debe seguir el principio de mínimo privilegio.
+**Contrato / invariantes / reglas.** `exports` no equivale a `opens`. `opens package to module` abre reflexión solo a un módulo específico (más seguro que `open module`). Abrir paquetes indiscriminadamente debilita encapsulación. Los frameworks modernos documentan qué paquetes deben abrirse. Para JPMS estricto, `--add-opens` es parche de runtime, no diseño deseable.
 
-**Modelo mental.** `exports` es la vitrina pública; `opens` es dar una llave especial al técnico de mantenimiento para que pueda abrir el panel interno, pero solo a ese técnico.
+**Modelo mental.** `exports` es abrir la puerta de atención al público; `opens` es permitir que un técnico autorizado revise el interior de una sala específica.
 
 **Implementación desde cero**
 
+En una carpeta nueva (o sobre el proyecto JPMS):
+
+```bash
+mkdir -p ~/academia-java/modulo-10-opens/src/com/academia/infra/dto
+mkdir -p ~/academia-java/modulo-10-opens/src/com/academia/infra/api
+mkdir -p ~/academia-java/modulo-10-opens/libs
+cd ~/academia-java/modulo-10-opens
+```
+
+Descarga Jackson (para `requires com.fasterxml.jackson.databind`):
+
+```bash
+curl -L -o libs/jackson-databind.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.18.2/jackson-databind-2.18.2.jar
+curl -L -o libs/jackson-core.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.18.2/jackson-core-2.18.2.jar
+curl -L -o libs/jackson-annotations.jar https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.18.2/jackson-annotations-2.18.2.jar
+```
+
+`src/module-info.java`:
+
 ```java
-module com.academia.modelo {
-    exports com.academia.modelo.api;
-    opens com.academia.modelo.entity to com.fasterxml.jackson.databind;
+module com.academia.infra {
+    requires com.fasterxml.jackson.databind;
+    opens com.academia.infra.dto to com.fasterxml.jackson.databind;
+    exports com.academia.infra.api;
 }
 ```
 
-Ejemplo conceptual de entidad:
+`src/com/academia/infra/dto/GuiaDto.java`:
 
 ```java
-package com.academia.modelo.entity;
-
-public class Guia {
-    private String id;
-    public Guia() {}
-    public Guia(String id) { this.id = id; }
-    public String getId() { return id; }
+package com.academia.infra.dto;
+public class GuiaDto {
+    public String id;
+    public GuiaDto() {}
+    public GuiaDto(String id) { this.id = id; }
 }
+```
+
+`src/com/academia/infra/api/ApiMarker.java`:
+
+```java
+package com.academia.infra.api;
+public class ApiMarker {}
+```
+
+Compila:
+
+```bash
+javac --module-path libs -d out $(find src -name "*.java")
 ```
 
 **Desglose del código**
 
-- `exports ...api` publica la API.
-- `opens ...entity to ...jackson.databind` permite reflexión solo al módulo indicado.
-- Abrir a un módulo específico es más seguro que `open module`.
+- `opens ... to ...` habilita reflexión profunda solo para `com.fasterxml.jackson.databind`.
+- `exports` expone el paquete API para acceso normal.
+- Si quitas `opens`, Jackson puede fallar con `InaccessibleObjectException` en modos que requieren reflexión profunda.
+- Restringir destino (`to ...`) reduce superficie de ataque.
 
 **Ejecución y salida real**
 
-Si el framework necesita reflexión y el paquete está abierto correctamente, la serialización/deserialización funciona. Si no, verás errores como `InaccessibleObjectException`.
+```bash
+ls out/com/academia/infra/dto
+```
+
+Salida esperada:
+
+```text
+GuiaDto.class
+```
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| `InaccessibleObjectException` | Paquete no abierto | Usa `opens` específico al módulo/framework |
-| Abriste todo el módulo | `open module` por comodidad | Reduce a `opens paquete to modulo` |
-| Confundes `exports` con `opens` | Son permisos distintos | `exports` para API, `opens` para reflexión |
+| `InaccessibleObjectException` | Paquete no abierto | Agrega `opens paquete to modulo` |
+| Abriste todo el módulo | `open module` por conveniencia | Restringe a paquetes/módulos necesarios |
+| Confusión exports vs opens | Conceptos mezclados | Exports=acceso normal; opens=reflexión profunda |
 
 **Verificación rápida**
 
-Reproduce un caso con reflexión sobre un paquete no abierto y corrígelo con `opens ... to ...`.
+Compila el módulo con y sin la línea `opens`; el descriptor sin `opens` puede compilar, pero el fallo aparecerá en runtime al usar reflexión profunda.
 
 ## Cierre del módulo
 
