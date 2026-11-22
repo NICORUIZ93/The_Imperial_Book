@@ -7128,16 +7128,16 @@
     ],
     "2": [
       {
-        "title": "JUnit 5, Mockito, MockMvc",
-        "fragment": "tema-1-junit-5-mockito-mockmvc"
+        "title": "JUnit 5, Mockito y MockMvc",
+        "fragment": "tema-1-junit-5-mockito-y-mockmvc"
       },
       {
         "title": "Testcontainers",
         "fragment": "tema-2-testcontainers"
       },
       {
-        "title": "Contract Testing con Pact y Pact Broker",
-        "fragment": "tema-3-contract-testing-con-pact-y-pact-broker"
+        "title": "Contract Testing con Pact",
+        "fragment": "tema-3-contract-testing-con-pact"
       },
       {
         "title": "ArchUnit",
@@ -7158,12 +7158,12 @@
         "fragment": "tema-2-patrones-read-through-write-behind-write-through"
       },
       {
-        "title": "Distributed Locking con Redlock y Fencing Tokens",
+        "title": "Distributed Locking con Redlock y fencing tokens",
         "fragment": "tema-3-distributed-locking-con-redlock-y-fencing-tokens"
       },
       {
-        "title": "Cache stampede y solución con locks",
-        "fragment": "tema-4-cache-stampede-y-solucion-con-locks"
+        "title": "Cache stampede y mitigación",
+        "fragment": "tema-4-cache-stampede-y-mitigacion"
       }
     ]
   }
