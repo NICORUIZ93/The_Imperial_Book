@@ -5665,19 +5665,19 @@
     "19": [
       {
         "title": "MongoDB + Mongoose",
-        "fragment": "mongodb-mongoose"
+        "fragment": "tema-1-mongodb-mongoose"
       },
       {
         "title": "PostgreSQL + Prisma/Sequelize",
-        "fragment": "postgresql-prisma-sequelize"
+        "fragment": "tema-2-postgresql-prisma-sequelize"
       },
       {
         "title": "Database-per-service",
-        "fragment": "database-per-service"
+        "fragment": "tema-3-database-per-service"
       },
       {
         "title": "Connection pooling y transacciones",
-        "fragment": "connection-pooling-y-transacciones"
+        "fragment": "tema-4-connection-pooling-y-transacciones"
       }
     ],
     "2": [
