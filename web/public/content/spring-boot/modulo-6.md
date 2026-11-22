@@ -1,126 +1,141 @@
 # Módulo 6: Testing en Spring Boot
 
-Este módulo compara pruebas de MVC, persistencia e integración. Cada tema debe indicar qué capas ejecuta y qué deja fuera; la evidencia funcional está en las respuestas y fallos observados.
+Este módulo cubre pruebas por capa en Spring Boot: web slice, data slice, integración completa, clientes HTTP de test y Testcontainers. El objetivo es confianza rápida con el costo adecuado.
 
-**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Entorno de referencia (2026-05-22):** JDK 27, Maven 3.10.0, Docker 29.9.3. Testcontainers requiere Docker; los slices requieren dependencias Spring Boot Test.
 
 ## Aprende construyendo
 
-
 ### Tema 1: Probar un controller con `@WebMvcTest` · Intermedio · 30 min
 
-**Caso guía**: validar contrato HTTP del controller sin levantar toda la app.
+Caso guía: validar status/body/validación HTTP sin cargar toda la app.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `@WebMvcTest` | Slice test de capa web MVC. | Probar controllers, validación, JSON, status. | Mockear dependencias del controller. | Esperar que cargue repos JPA reales. |
-| `MockMvc` | Cliente de pruebas HTTP simulado. | Ejecutar requests sin servidor real. | Assert status, body, headers. | Solo verificar 200. |
-| Mock de dependencias | `@MockitoBean`/mock para servicios. | Aislar controller. | Stub comportamiento relevante. | Sobre-mockear detalles internos. |
-| Contrato HTTP | Status, body, content-type, errores. | Regresión de API. | Probar casos felices y de error. | No testear 400/404. |
+#### `@WebMvcTest`
 
-**Implementación desde cero**
+**Definición formal.** Slice test de Spring Boot que carga componentes MVC relevantes (controllers, advice, converters) y mockea colaboradores.
+
+**Para qué sirve.** Tests rápidos de capa web.
+
+**Cuándo usarlo.** Para contratos HTTP. No para lógica de negocio profunda ni persistencia real.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
-@WebMvcTest(TareaController.class)
-class TareaControllerTest {
+@WebMvcTest(EnvioController.class)
+class EnvioControllerTest {
   @Autowired MockMvc mvc;
-  @MockitoBean ServicioTareas servicio;
-  @Test void crea() throws Exception {
-    when(servicio.crear(any())).thenReturn(new TareaDTO(1L,"A",1));
-    mvc.perform(post("/api/tareas").contentType(MediaType.APPLICATION_JSON).content("{\"titulo\":\"A\",\"prioridad\":1}"))
-      .andExpect(status().isCreated()).andExpect(jsonPath("$.id").value(1));
-  }
+  @MockitoBean EnvioService service;
+  @Test void ok() throws Exception { when(service.consultar("A1")).thenReturn("ok"); mvc.perform(get("/envios/A1")).andExpect(status().isOk()).andExpect(content().string("ok")); }
 }
 ```
-**Ejecución real**: `./mvnw -Dtest=TareaControllerTest test`. **Verificación**: falla si cambias status o shape JSON.
+
+**Caso de uso real.** Verificar 400 ante request inválido.
+
+**Error común.** Cargar `@SpringBootTest` para algo que es web slice. Corrección: usar slice adecuado.
+
+**Verificación.** **Nota:** requiere dependencias Spring Boot test; evidencia test verde.
 
 ### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest` · Avanzado · 30 min
 
-**Caso guía**: query JPA funciona en H2 pero falla en Postgres.
+Caso guía: validar queries JPA contra BD real.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `@DataJpaTest` | Slice test JPA con rollback por defecto. | Probar repositorios/mappings. | Usar BD real cuando hay diferencias dialecto. | Confiar solo en H2 para prod Postgres. |
-| Testcontainers PostgreSQL | Contenedor efímero real para tests. | Fidelidad de entorno. | Docker activo; imagen fija. | Test flaky por Docker no disponible no documentado. |
-| `@Testcontainers`/`@Container` | Integración JUnit con contenedores. | Lifecycle automático. | Reutilizar contenedor con cuidado. | Contenedores caros por test. |
-| Rollback/aislamiento | Cada test deja BD limpia. | Determinismo. | No depender de orden. | Datos compartidos entre tests. |
+#### `@DataJpaTest`
 
-**Implementación desde cero**
+**Definición formal.** Slice test para componentes JPA; configura repositorios, EntityManager y normalmente transacciones rollback.
+
+**Para qué sirve.** Probar mapeo y queries con infraestructura JPA real.
+
+**Cuándo usarlo.** Repositorios/queries personalizadas. Usa BD real (Testcontainers) para paridad.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
 @DataJpaTest
-@Testcontainers
-class TareaRepositoryTest {
-  @Container static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine");
-  @DynamicPropertySource static void props(DynamicPropertyRegistry r){ r.add("spring.datasource.url",pg::getJdbcUrl); r.add("spring.datasource.username",pg::getUsername); r.add("spring.datasource.password",pg::getPassword); }
-  @Autowired TareaRepository repo;
-  @Test void guardaYBusca(){ var t = repo.save(new Tarea("A",1)); assertThat(repo.findById(t.getId())).isPresent(); }
-}
+@AutoConfigureTestDatabase(replace = Replace.NONE)
+class EnvioRepoTest { @Autowired EnvioRepository repo; @Test void guarda(){ repo.save(new Envio("A1")); assertTrue(repo.findByCodigo("A1").isPresent()); } }
 ```
-**Ejecución real**: `./mvnw -Dtest=TareaRepositoryTest test` (Docker requerido). **Verificación**: corre dos veces con mismo resultado.
+
+**Caso de uso real.** Verificar JPQL/fetch join.
+
+**Error común.** Usar H2 para todo y asumir paridad con PostgreSQL. Corrección: Testcontainers con misma BD.
+
+**Verificación.** **Nota:** requiere Docker/Testcontainers.
 
 ### Tema 3: Integrar el flujo con `@SpringBootTest` · Avanzado · 30 min
 
-**Caso guía**: controller+service+repo funcionan aislados pero el flujo real falla por configuración.
+Caso guía: probar flujo completo con contexto.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `@SpringBootTest` | Carga contexto completo (o web environment). | Prueba de integración end-to-end interna. | Usar pocas, estratégicas. | Reemplazar todos los unit tests por esto. |
-| `RANDOM_PORT` | Levanta servidor en puerto aleatorio. | Tests HTTP reales. | Inyectar `@LocalServerPort` o `TestRestTemplate`. | Puerto fijo en CI. |
-| Test de flujo | Cubre múltiples capas juntas. | Confianza en integración. | Escenarios críticos. | Flujos gigantes y frágiles. |
-| Coste/velocidad | Contexto completo es lento. | Balance pirámide de tests. | Más unit/slice, menos full. | Suite lenta. |
+#### `@SpringBootTest`
 
-**Implementación desde cero**
+**Definición formal.** Test que levanta el contexto Spring Boot completo (o porciones configuradas) para pruebas de integración.
+
+**Para qué sirve.** Validar wiring, configuración y flujos end-to-end internos.
+
+**Cuándo usarlo.** Pocos tests de integración críticos. No para todo: es más lento.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class FlujoTareasTest {
-  @LocalServerPort int port;
-  @Test void creaYConsulta(){
-    var client = HttpClient.newHttpClient();
-    // POST /api/tareas luego GET /api/tareas/{id}
-  }
-}
+@SpringBootTest(webEnvironment = RANDOM_PORT)
+class AppIT { @Autowired TestRestTemplate rest; @Test void health(){ assertEquals(200, rest.getForEntity("/actuator/health", String.class).getStatusCode().value()); } }
 ```
-**Ejecución real**: `./mvnw -Dtest=FlujoTareasTest test`. **Verificación**: valida 201 + 200 y cuerpo.
+
+**Caso de uso real.** Smoke test de arranque y endpoint.
+
+**Error común.** Usar solo E2E lento. Corrección: pirámide de tests.
+
+**Verificación.** **Nota:** requiere app y dependencias; evidencia test verde.
 
 ### Tema 4: `RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4 · Avanzado · 35 min
 
-**Caso guía**: tests HTTP legibles y fluentes contra app arrancada.
+Caso guía: probar endpoints HTTP con cliente fluido.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `RestTestClient` | Cliente de pruebas HTTP fluido de Spring Boot 4. | Tests end-to-end legibles. | Usar para contratos HTTP reales. | Confundir con `WebTestClient` reactivo sin contexto. |
-| Assert fluido | Encadena expectativas status/body/header. | Legibilidad. | Verificar contrato completo. | Solo `expectStatus().isOk()`. |
-| `@SpringBootTest` + web server | Necesario para HTTP real. | Integración. | Puerto random. | Dependencia en entorno externo. |
-| Serialización JSON en test | Request/response body. | Contrato. | Usar DTOs/records. | Strings JSON frágiles enormes. |
+#### Cliente HTTP de test
 
-**Implementación desde cero**
+**Definición formal.** Cliente orientado a pruebas para ejecutar requests HTTP contra MockMvc o servidor arrancado y hacer aserciones fluidas.
+
+**Para qué sirve.** Tests legibles de API.
+
+**Cuándo usarlo.** Cuando el proyecto usa la API de test moderna disponible en su versión de Spring/Boot.
+
+**Ejemplo mínimo enfocado (conceptual).**
+
 ```java
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureRestTestClient
-class TareasApiTest {
-  @Autowired RestTestClient client;
-  @Test void crear(){ client.post().uri("/api/tareas").contentType(MediaType.APPLICATION_JSON).bodyValue(new CrearTareaRequest("A",1)).exchange().expectStatus().isCreated().expectBody().jsonPath("$.titulo").isEqualTo("A"); }
-}
+// RestTestClient/WebTestClient según stack
+client.get().uri("/envios/A1").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("ok");
 ```
-**Ejecución real**: `./mvnw -Dtest=TareasApiTest test`. **Verificación**: cambia contrato y el test falla.
+
+**Caso de uso real.** Contrato REST.
+
+**Error común.** Acoplar tests a detalles internos. Corrección: asertar contrato HTTP observable.
+
+**Verificación.** **Nota:** depende de versión de Spring Boot/Framework; validar clase disponible.
 
 ### Tema 5: Contenedores Testcontainers reutilizados entre clases · Avanzado · 35 min
 
-**Caso guía**: suite lenta porque cada clase levanta un Postgres nuevo.
+Caso guía: acelerar integración reutilizando contenedor.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Reutilización de contenedor | Un contenedor compartido por múltiples tests. | Velocidad. | Aislar datos; cuidado con estado. | Tests acoplados por datos residuales. |
-| `static @Container` / singleton pattern | Patrón para compartir lifecycle. | Menos startup. | Limpiar datos por test. | Reutilizar sin limpiar. |
-| `withReuse` (local) | Reutiliza contenedor entre ejecuciones JVM (opt-in). | Dev local rápido. | No asumir en CI. | Flakiness por estado previo. |
-| Aislamiento de datos | Truncar tablas/transacciones. | Determinismo. | `@Sql`, rollback, cleanup. | Orden-dependencia. |
+#### Testcontainers reusable
 
-**Implementación desde cero**
+**Definición formal.** Uso de contenedores Docker efímeros controlados por tests; la reutilización permite compartir contenedor entre ejecuciones/configuraciones.
+
+**Para qué sirve.** Paridad con infraestructura real y velocidad razonable.
+
+**Cuándo usarlo.** Integración con BD/brokers reales. Requiere Docker.
+
+**Ejemplo mínimo enfocado (Spring/Testcontainers).**
+
 ```java
-abstract class AbstractPgTest {
-  static final PostgreSQLContainer<?> PG = new PostgreSQLContainer<>("postgres:16-alpine");
-  static { PG.start(); }
-  @DynamicPropertySource static void props(DynamicPropertyRegistry r){ r.add("spring.datasource.url",PG::getJdbcUrl); r.add("spring.datasource.username",PG::getUsername); r.add("spring.datasource.password",PG::getPassword); }
-}
+@Testcontainers
+class RepoIT { @Container @ServiceConnection static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine"); }
 ```
-**Ejecución real**: `./mvnw test` con Docker. **Verificación**: tiempo menor vs contenedor por clase; datos aislados.
 
+**Caso de uso real.** PostgreSQL real en CI.
+
+**Error común.** Asumir que Docker siempre disponible. Corrección: marcar/skip y documentar prerequisito.
+
+**Verificación.** **Nota:** Docker disponible en entorno actual (29.9.3), pero ejecutar contenedor requiere imagen/red; evidencia al correr test.
+
+## Cierre del módulo
+
+Elige el slice más barato que dé confianza: unit, `@WebMvcTest`, `@DataJpaTest`, integración con Testcontainers, y pocos `@SpringBootTest` end-to-end.

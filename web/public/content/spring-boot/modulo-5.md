@@ -1,176 +1,208 @@
 # Módulo 5: Spring Security I: cadena, JWT con resource server, CORS y SSRF
 
-Cada tema se practica por separado con su propia repetición progresiva y su propio reto de memoria, verificado con `MockMvc` real contra un contexto de Spring real, para que cada código de estado HTTP (200/401/403) sea comprobable, no solo descrito. El JWT se valida con el **resource server** de Spring Security (`oauth2ResourceServer().jwt()`), no con un filtro escrito a mano: así el mismo código sirve cuando, en el Módulo 18, los tokens los emita un proveedor de identidad.
+Este módulo cubre seguridad web base en Spring Security: cadena de filtros, autorización, JWT como resource server, CORS/CSRF y SSRF. La seguridad se verifica por comportamiento observable (401/403/200, CORS headers), no por “parece seguro”.
 
-**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Entorno de referencia (2026-05-22):** JDK 27, Maven 3.10.0. Ejemplos Security requieren contexto Spring Boot; conceptos de authz/CORS/SSRF se ilustran con mínimos ejecutables o notas verificables.
 
 ## Aprende construyendo
 
-
 ### Tema 1: SecurityFilterChain moderno · Intermedio · 30 min
 
-**Caso guía**: `/public/health` abierto, `/api/**` autenticado.
+Caso guía: proteger `/pedidos/**` y dejar `/publico/**` abierto.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| `SecurityFilterChain` | Cadena de filtros de seguridad configurada como bean. | Autenticación/autorización HTTP. | Configuración declarativa moderna (no `WebSecurityConfigurerAdapter`). | Config antigua/deprecada. |
-| `authorizeHttpRequests` | Reglas de autorización por matcher. | Control de acceso por ruta. | Reglas específicas antes de `anyRequest()`. | `anyRequest().permitAll()` accidental. |
-| 401 vs 403 | 401 no autenticado; 403 autenticado sin permiso. | Semántica de seguridad. | Probar ambos casos. | Confundirlos en tests. |
-| `httpBasic`/mecanismos auth | Cómo el cliente presenta credenciales. | Autenticación. | Elegir según cliente (browser, API, JWT). | Basic para SPA pública sin contexto. |
+#### `SecurityFilterChain`
 
-**Implementación desde cero** (`spring-boot-starter-security` + webmvc-test)
+**Definición formal.** Bean que configura la cadena de filtros de seguridad para requests HTTP, definiendo reglas de autorización, autenticación, CSRF, CORS, etc.
+
+**Para qué sirve.** Define política de seguridad explícita.
+
+**Cuándo usarlo.** Siempre en Spring Security moderno (estilo lambda DSL). Evita extender clases obsoletas del modelo antiguo.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
-@Configuration
-public class SecurityConfig {
-  @Bean
-  SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-    return http
-      .authorizeHttpRequests(auth -> auth.requestMatchers("/public/**").permitAll().anyRequest().authenticated())
-      .httpBasic(Customizer.withDefaults())
-      .build();
-  }
+@Bean
+SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  return http.authorizeHttpRequests(a -> a.requestMatchers("/publico/**").permitAll().anyRequest().authenticated())
+             .httpBasic(Customizer.withDefaults()).build();
 }
 ```
-```java
-@RestController
-class RutasController {
-  @GetMapping("/public/health") String salud(){ return "OK"; }
-  @GetMapping("/api/entregas") String entregas(){ return "entregas confidenciales"; }
-}
-```
-**Ejecución real**
+
+**Caso de uso real.** API con rutas públicas y privadas.
+
+**Error común.** Orden incorrecto de matchers. Corrección: reglas más específicas primero.
+
+**Verificación.** **Nota:** requiere app Boot; `curl` debe dar 200 en público y 401 en protegido.
+
+#### Autenticación vs autorización
+
+**Definición formal.** Autenticación verifica identidad; autorización verifica permisos sobre un recurso/acción.
+
+**Para qué sirve.** Separar “quién eres” de “qué puedes hacer”.
+
+**Cuándo usarlo.** Siempre al diseñar seguridad.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
 ```bash
-./mvnw -Dtest=RutasControllerSecurityTest test
+mkdir -p /tmp/sb5-authz && cd /tmp/sb5-authz
+cat > DemoAuthz.java << 'JAVA'
+public class DemoAuthz { static String check(boolean auth, boolean admin){ if(!auth) return "401"; return admin?"200":"403"; }
+  public static void main(String[] args){ System.out.println(check(false,false)); System.out.println(check(true,false)); System.out.println(check(true,true)); } }
+JAVA
+javac DemoAuthz.java && java DemoAuthz
 ```
-Test con `@SpringBootTest @AutoConfigureMockMvc`: `/public/health` 200, `/api/entregas` sin auth 401, con auth 200. **Verificación**: cambia regla y observa cambio de status.
+
+**Caso de uso real.** Usuario autenticado sin rol admin recibe 403.
+
+**Error común.** Confundir 401 y 403. Corrección: 401 no autenticado, 403 autenticado sin permiso.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `401`, `403`, `200`.
 
 ### Tema 2: JWT con el resource server de Spring Security y autorización por rol · Intermedio · 45 min
 
-**Caso guía**: API stateless con Bearer token; ADMIN puede DELETE, USER no.
+Caso guía: API stateless que valida JWT Bearer.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| JWT | Token firmado con claims (`sub`, `exp`, roles). | Auth stateless. | Firmar, validar exp, validar issuer/aud según caso. | Confiar en token sin validar firma. |
-| Resource Server (`oauth2ResourceServer().jwt()`) | Spring Security valida Bearer JWT. | Integración estándar. | Usar soporte nativo, no filtro artesanal. | Filtro manual que olvida validaciones. |
-| `JwtDecoder`/`JwtEncoder` | Decodifica/valida y emite JWT. | Emisión/validación. | Clave secreta fuerte en env/secret manager. | Clave hardcodeada en repo. |
-| Autorización por rol | `ROLE_*` authorities + `@PreAuthorize`/matchers. | Control de permisos. | Mapear claim a authorities explícitamente. | Confundir rol de negocio con authority Spring. |
+#### JWT Resource Server
 
-**Implementación desde cero**
-```xml
-<dependency><groupId>org.springframework.boot</groupId><artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId></dependency>
-```
-```properties
-security.jwt.secret-base64=${JWT_SECRET_BASE64}
-```
+**Definición formal.** Configuración donde la app valida tokens JWT entrantes (firma, claims, expiración) y construye autenticación.
+
+**Para qué sirve.** APIs stateless entre servicios/frontends.
+
+**Cuándo usarlo.** Cuando el token lo emite un IdP o servicio de auth. No inventes tu propia criptografía.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
-@Service
-public class JwtService {
-  private final JwtEncoder encoder; private final JwtDecoder decoder;
-  public JwtService(@Value("${security.jwt.secret-base64}") String secretBase64){
-    SecretKey key = new SecretKeySpec(Base64.getDecoder().decode(secretBase64), "HmacSHA256");
-    this.encoder = NimbusJwtEncoder.withSecretKey(key).algorithm(MacAlgorithm.HS256).build();
-    this.decoder = NimbusJwtDecoder.withSecretKey(key).macAlgorithm(MacAlgorithm.HS256).build();
-  }
-  public String generar(String usuario, String rol){
-    Instant ahora = Instant.now();
-    var claims = JwtClaimsSet.builder().subject(usuario).claim("rol", rol).issuedAt(ahora).expiresAt(ahora.plusSeconds(900)).build();
-    return encoder.encode(JwtEncoderParameters.from(JwsHeader.with(MacAlgorithm.HS256).build(), claims)).getTokenValue();
-  }
-  public JwtDecoder decoder(){ return decoder; }
-}
+http.oauth2ResourceServer(oauth -> oauth.jwt(Customizer.withDefaults()));
 ```
-```java
-@Bean
-SecurityFilterChain filterChain(HttpSecurity http, JwtService jwt) throws Exception {
-  return http.csrf(csrf -> csrf.disable())
-    .authorizeHttpRequests(auth -> auth.requestMatchers("/public/**","/api/auth/**").permitAll().requestMatchers(HttpMethod.DELETE,"/api/**").hasRole("ADMIN").anyRequest().authenticated())
-    .oauth2ResourceServer(oauth -> oauth.jwt(jwt -> jwt.decoder(jwtServiceDecoder())))
-    .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-    .build();
-}
-```
-> Nota: configura `JwtAuthenticationConverter` para mapear claim `rol` a `ROLE_*`.
 
-**Ejecución real**: `JWT_SECRET_BASE64=$(openssl rand -base64 32) ./mvnw -Dtest=JwtServiceTest test`. **Verificación**: token sin firma/expirado => 401; USER en DELETE => 403; ADMIN => 200.
+**Caso de uso real.** SPA envía `Authorization: Bearer <jwt>`.
+
+**Error común.** No validar `iss`, `aud`, `exp` o aceptar alg inseguro. Corrección: configurar issuer/aud y validadores.
+
+**Verificación.** **Nota:** requiere claves/issuer y app Boot; evidencia: token válido 200, inválido/expirado 401.
+
+#### Autorización por rol/claim
+
+**Definición formal.** Regla que concede acceso según roles/authorities/claims extraídos del token.
+
+**Para qué sirve.** Control de acceso por función.
+
+**Cuándo usarlo.** Cuando hay permisos diferenciados.
+
+**Ejemplo mínimo enfocado (Spring).**
+
+```java
+http.authorizeHttpRequests(a -> a.requestMatchers("/admin/**").hasRole("ADMIN").anyRequest().authenticated());
+```
+
+**Caso de uso real.** Solo admin puede borrar.
+
+**Error común.** Confiar en rol enviado por cliente sin validar token. Corrección: derivar roles de claims validados.
+
+**Verificación.** **Nota:** requiere JWT con claims; 403 observable.
 
 ### Tema 3: CORS y CSRF · Intermedio · 30 min
 
-**Caso guía**: SPA en otro origen llama API con Bearer; preflight OPTIONS debe pasar.
+Caso guía: frontend en otro origen llama API; formularios con cookies necesitan CSRF.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| CORS | Política de navegador para requests cross-origin. | Permitir frontends legítimos. | Allowlist de orígenes/métodos/headers. | `*` con credenciales. |
-| Preflight `OPTIONS` | Request previo del navegador. | Verificar permisos CORS. | Responder correctamente antes de auth compleja. | Bloquear OPTIONS con auth. |
-| CSRF | Ataque que abusa cookies automáticas del navegador. | Proteger sesiones cookie. | Para APIs stateless Bearer, usualmente `csrf.disable()`; para cookie/session, habilitar token CSRF. | Deshabilitar CSRF en app con cookies de sesión. |
-| Credenciales/cookies | `allowCredentials` y cookies. | Sesiones cross-site. | Usar con origen específico. | Combinar credenciales y origen wildcard. |
+#### CORS
 
-**Implementación desde cero**
+**Definición formal.** Cross-Origin Resource Sharing: mecanismo del navegador que controla si un origen puede leer respuestas de otro origen.
+
+**Para qué sirve.** Permitir frontends legítimos en otros orígenes.
+
+**Cuándo usarlo.** APIs llamadas desde navegador con distinto origen. No es control de autenticación.
+
+**Ejemplo mínimo enfocado (Spring).**
+
 ```java
-@Bean
-CorsConfigurationSource corsConfigurationSource() {
-  var config = new CorsConfiguration();
-  config.setAllowedOrigins(List.of("https://web.academia.dev"));
-  config.setAllowedMethods(List.of("GET","POST","DELETE"));
-  config.setAllowedHeaders(List.of("Authorization","Content-Type"));
-  config.setAllowCredentials(false);
-  var source = new UrlBasedCorsConfigurationSource();
-  source.registerCorsConfiguration("/api/**", config);
-  return source;
-}
+@Bean CorsConfigurationSource cors() { var c=new CorsConfiguration(); c.setAllowedOrigins(List.of("https://app.ejemplo")); c.setAllowedMethods(List.of("GET","POST")); var s=new UrlBasedCorsConfigurationSource(); s.registerCorsConfiguration("/**", c); return s; }
 ```
-En `SecurityFilterChain`: `.cors(Customizer.withDefaults())`.
 
-**Ejecución real**: `./mvnw -Dtest=CorsConfigTest test` con MockMvc OPTIONS. **Verificación**: origen permitido 200 con headers CORS; origen ajeno 403/sin allow-origin.
+**Caso de uso real.** SPA en `app.ejemplo` consumiendo `api.ejemplo`.
+
+**Error común.** `allowedOrigins("*")` con credenciales. Corrección: allowlist explícita.
+
+**Verificación.** **Nota:** evidencia con preflight OPTIONS y headers `Access-Control-Allow-Origin`.
+
+#### CSRF
+
+**Definición formal.** Cross-Site Request Forgery: ataque donde navegador víctima envía request autenticada por cookies a otro sitio; la protección CSRF exige token/prueba no reproducible por el sitio atacante.
+
+**Para qué sirve.** Proteger flujos basados en cookies/sesión.
+
+**Cuándo usarlo.** Apps con sesión/cookies. En APIs stateless Bearer, usualmente se deshabilita con cuidado.
+
+**Ejemplo mínimo enfocado (conceptual).**
+
+```java
+http.csrf(csrf -> csrf.disable()); // solo en API stateless sin cookies; justificar
+```
+
+**Caso de uso real.** Form HTML con cookie de sesión necesita token CSRF.
+
+**Error común.** Deshabilitar CSRF por defecto en app con cookies. Corrección: mantener CSRF o usar Bearer stateless correctamente.
+
+**Verificación.** **Nota:** requiere escenario con cookies/sesión; evidencia por 403 ante falta de token.
 
 ### Tema 4: Reducir SSRF en clientes HTTP con InetAddressFilter · Avanzado · 30 min
 
-**Caso guía**: endpoint recibe URL de usuario; atacante apunta a `http://169.254.169.254/` o localhost.
+Caso guía: endpoint recibe URL y backend la descarga.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| SSRF | Server-Side Request Forgery: servidor hace request a destino elegido por atacante. | Vector de ataque interno. | Validar/filtrar destino antes de conectar. | Hacer GET a cualquier URL del usuario. |
-| `InetAddressFilter` / validación IP | Filtro que bloquea rangos internos/metadata. | Reducir SSRF. | Bloquear loopback, private, link-local, metadata. | Validar solo string hostname. |
-| DNS rebinding/redirects | Resolución o redirect puede llevar a IP interna. | Bypass comunes. | Revalidar tras resolución y controlar redirects. | Seguir redirects ciegamente. |
-| Defensa en profundidad | Allowlist de hosts, egress firewall, timeouts. | Reducir riesgo residual. | No confiar en un solo check. | “Ya validé el host, listo”. |
+#### SSRF
 
-**Implementación desde cero** (concepto; requiere soporte HTTP client/filter)
-```java
-// Pseudocódigo: antes de conectar, resolver host y rechazar IPs internas/metadata
-InetAddress addr = InetAddress.getByName(uri.getHost());
-if (addr.isLoopbackAddress() || addr.isSiteLocalAddress() || addr.isLinkLocalAddress()) throw new IllegalArgumentException("destino no permitido");
+**Definición formal.** Server-Side Request Forgery: atacante induce al servidor a hacer requests a destinos internos/no deseados.
+
+**Para qué sirve.** Entenderlo permite diseñar controles.
+
+**Cuándo mitigarlo.** Siempre que el servidor haga HTTP basado en input.
+
+**Ejemplo mínimo enfocado (ejecutable, validación simple).**
+
+```bash
+mkdir -p /tmp/sb5-ssrf && cd /tmp/sb5-ssrf
+cat > DemoSsrf.java << 'JAVA'
+import java.net.*;
+public class DemoSsrf { static boolean permitido(String url) throws Exception { URI u=new URI(url); if(!u.getScheme().equals("https")) return false; return u.getHost().equals("api.ejemplo.com"); }
+  public static void main(String[] args) throws Exception { System.out.println(permitido("https://api.ejemplo.com/x")); System.out.println(permitido("http://127.0.0.1:8080")); } }
+JAVA
+javac DemoSsrf.java && java DemoSsrf
 ```
-**Ejecución real**: test bloquea `localhost`, `127.0.0.1`, `169.254.169.254`; permite host público permitido. **Verificación**: no se realiza conexión a IP interna.
+
+**Caso de uso real.** Webhook fetcher.
+
+**Error común.** Validar solo el string, no el IP resuelto/DNS rebinding. Corrección: allowlist, resolver IP, bloquear rangos privados, no seguir redirects ciegos.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `true`, `false`.
 
 ### Tema 5: Flujo de login completo — de `/api/auth/login` a una ruta protegida · Avanzado · 30 min
 
-**Caso guía**: usuario envía credenciales, recibe JWT, accede a `/api/usuarios`.
+Caso guía: autenticarse y acceder recurso protegido.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Login endpoint | Endpoint que autentica credenciales y emite token. | Inicio de sesión. | `permitAll` pero con rate limit/validación. | Exponer sin protección ante brute force. |
-| `PasswordEncoder` (BCrypt) | Hash seguro de contraseña. | No guardar passwords en claro. | `BCryptPasswordEncoder`, matches. | SHA-256 plano o texto claro. |
-| Flujo Bearer | Cliente envía `Authorization: Bearer <jwt>`. | Acceso stateless. | HTTPS, expiración corta. | Token largo sin expiración. |
-| Principal/Authentication | Identidad autenticada en SecurityContext. | Saber quién llama. | Obtener de `Authentication`, no confiar en body. | Tomar userId del request body. |
+#### Flujo login-token-acceso
 
-**Implementación desde cero**
-```java
-@Bean PasswordEncoder passwordEncoder(){ return new BCryptPasswordEncoder(); }
+**Definición formal.** Secuencia: credenciales -> autenticación -> emisión de token/sesión -> cliente envía credencial en requests posteriores -> resource server/filters autorizan.
 
-@PostMapping("/api/auth/login")
-public ResponseEntity<?> login(@RequestBody LoginRequest req) {
-  if (!emailDemo.equals(req.email()) || !passwordEncoder.matches(req.password(), hashDemo))
-    return ResponseEntity.status(401).body(Map.of("error","Credenciales inválidas"));
-  return ResponseEntity.ok(Map.of("token", jwtService.generar(req.email(), "ADMIN")));
-}
-@GetMapping("/api/usuarios")
-public Map<String,String> yo(Authentication auth){
-  return Map.of("email", auth.getName(), "rol", auth.getAuthorities().iterator().next().getAuthority());
-}
-```
-**Ejecución real**
+**Para qué sirve.** Comprender el ciclo real de autenticación.
+
+**Cuándo usarlo.** Al implementar auth en APIs.
+
+**Ejemplo mínimo enfocado (conceptual).**
+
 ```bash
-curl -X POST localhost:8080/api/auth/login -H 'Content-Type: application/json' -d '{"email":"ana@rutaflow.dev","password":"clave-larga-segura"}'
-curl localhost:8080/api/usuarios -H 'Authorization: Bearer <token>'
+curl -X POST /api/auth/login -d '{"u":"a","p":"b"}'
+# -> {"token":"..."}
+curl -H "Authorization: Bearer ..." /api/pedidos
 ```
-**Salida esperada**: login 200 con token; sin token 401; con token 200 con email/rol. **Verificación**: contraseña mala 401.
 
+**Caso de uso real.** Login de SPA.
+
+**Error común.** Loguear contraseñas/tokens. Corrección: no registrar secretos; usar HTTPS; tokens con expiración.
+
+**Verificación.** **Nota:** requiere app completa; evidencia por 401 sin token y 200 con token válido.
+
+## Cierre del módulo
+
+Security en Spring se diseña por capas: cadena de filtros, identidad, autorización, CORS/CSRF según tipo de cliente y protección SSRF en salidas. Cada control debe verificarse con requests reales.
