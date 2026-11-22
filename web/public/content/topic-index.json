@@ -4408,24 +4408,12 @@
         "fragment": "tema-2-el-contrato-de-equals-y-hashcode"
       },
       {
-        "title": "Claves mutables y el mapa que pierde entradas",
-        "fragment": "tema-3-claves-mutables-y-el-mapa-que-pierde-entradas"
-      },
-      {
         "title": "Genéricos, wildcards y type erasure",
-        "fragment": "tema-4-genericos-wildcards-y-type-erasure"
+        "fragment": "tema-3-genericos-wildcards-y-type-erasure"
       },
       {
         "title": "Comparable vs Comparator, e iteración",
-        "fragment": "tema-5-comparable-vs-comparator-e-iteracion"
-      },
-      {
-        "title": "Colas y pilas: Queue, Deque, ArrayDeque y PriorityQueue",
-        "fragment": "tema-6-colas-y-pilas-queue-deque-arraydeque-y-priorityqueue"
-      },
-      {
-        "title": "Incremento del proyecto: preparar guías asignables",
-        "fragment": "tema-7-incremento-del-proyecto-preparar-guias-asignables"
+        "fragment": "tema-4-comparable-vs-comparator-e-iteracion"
       }
     ],
     "20": [
