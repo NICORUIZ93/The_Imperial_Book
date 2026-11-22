@@ -1,589 +1,272 @@
 # Módulo 18: HTTP, seguridad y backend con Java
 
+Java incluye un cliente HTTP moderno en la librería estándar (`java.net.http`). Pero llamar una API no es solo “hacer un GET”: hay timeouts, códigos de estado, validación, secretos, tokens y criptografía. Este módulo construye ese criterio desde el lado cliente y desde las fronteras de seguridad.
+
+## Mapa del módulo
+
+| Tema | Qué vas a poder hacer al terminar |
+|---|---|
+| 1 | Usar `HttpClient` con timeouts, validación de estado y parseo separado |
+| 2 | Transportar credenciales con cuidado y validar entrada no confiable |
+| 3 | Aplicar JCA para hash, HMAC y cifrado autenticado sin inventar criptografía |
+
 ## Aprende construyendo
-
-Java estándar incluye un cliente HTTP moderno, pero un cliente seguro no equivale a un servidor seguro. En este módulo construirás una llamada saliente robusta y reconocerás cómo transportar credenciales sin confundir JWT con autorización.
-
-
-### Dos ejemplos: primero visible, luego real
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Este tema te guía por dos ejemplos: primero visible, luego real con foco en comprensión antes de implementación.
-
-#### ► LA IDEA EN UNA FRASE
-**Entender dos ejemplos: primero visible, luego real te permite tomar mejores decisiones técnicas.**
-
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
-
-#### ► LA ANALOGÍA
-Piensa en dos ejemplos: primero visible, luego real como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que dos ejemplos: primero visible, luego real resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Dos ejemplos: primero visible, luego real se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Dos ejemplos: primero visible, luego real | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses dos ejemplos: primero visible, luego real por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: dos ejemplos: primero visible, luego real funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Dos ejemplos: primero visible, luego real existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve dos ejemplos: primero visible, luego real en tu contexto?
-2. ¿Cómo sabrías que dos ejemplos: primero visible, luego real no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar dos ejemplos: primero visible, luego real?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Nota de construcción
-Este tema es principalmente conceptual en esta versión. La verificación se realiza con las preguntas de comprensión y el criterio de cuándo NO usar dos ejemplos: primero visible, luego real.
-
-</details>
 
 ### Tema 1: HttpClient, REST, timeouts y fallos · Intermedio · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Al finalizar podrás enviar un GET HTTP con HttpClient, timeout acotado, validación del estado y parseo separado de la respuesta. Requiere JDK 25+ y una API de prueba local o simulada. Comprueba java -version y crea la carpeta mkdir -p java-http-t01/src. Conocimiento previo: Java…
+Tu servicio debe consultar una API externa para obtener el estado de una guía. Si la API tarda demasiado, responde 500 o devuelve JSON inesperado, tu servicio no puede quedarse colgado ni asumir éxito.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás enviar un GET HTTP con HttpClient, timeout acotado, validación del estado y parseo separado de la respuesta.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** `HttpClient` (Java 11+) es el cliente HTTP estándar de la plataforma. Un request HTTP tiene método, URI, headers y opcionalmente body; una response tiene status code, headers y body. REST es un estilo arquitectónico basado en recursos y semántica HTTP, no un requisito impuesto por `HttpClient`.
 
-#### ► LA ANALOGÍA
-Piensa en httpclient, rest, timeouts y fallos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** Toda llamada remota puede fallar por red, timeout, DNS, TLS o respuesta inválida. El cliente debe configurar timeout de conexión/solicitud, validar el status code antes de parsear como éxito y separar transporte de parseo de dominio. `send` lanza `IOException`/`InterruptedException` (o variantes en async). Reintentos deben ser idempotentes y con backoff; nunca reintentar ciegamente operaciones no idempotentes. No loguear cuerpos o headers con secretos.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que httpclient, rest, timeouts y fallos resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** Una llamada HTTP es una llamada telefónica a otro edificio: puede no contestar, contestar tarde o contestar algo que no esperabas. Tu código debe manejar los tres casos.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| HttpClient, REST, timeouts y fallos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
+**Implementación desde cero**
 
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar HttpClient, REST, timeouts y fallos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses httpclient, rest, timeouts y fallos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: httpclient, rest, timeouts y fallos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- HttpClient, REST, timeouts y fallos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve httpclient, rest, timeouts y fallos en tu contexto?
-2. ¿Cómo sabrías que httpclient, rest, timeouts y fallos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar httpclient, rest, timeouts y fallos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
 ```java
-package academia.http;
-
 import java.net.URI;
 import java.net.http.*;
 import java.time.Duration;
 
-public final class ConsultaDireccion {
+public class ClienteGuias {
     private final HttpClient client = HttpClient.newBuilder()
         .connectTimeout(Duration.ofSeconds(2))
-        .followRedirects(HttpClient.Redirect.NEVER)
         .build();
 
-    public String consultar(URI uri) throws Exception {
-        HttpRequest request = HttpRequest.newBuilder(uri)
+    public String consultar(String url) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder(URI.create(url))
             .timeout(Duration.ofSeconds(3))
             .header("Accept", "application/json")
             .GET()
             .build();
-        HttpResponse<String> response =
-            client.send(request, HttpResponse.BodyHandlers.ofString());
-        if (response.statusCode() != 200) {
-            throw new IllegalStateException("API respondió HTTP " + response.statusCode());
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            throw new IllegalStateException("HTTP inesperado: " + response.statusCode());
         }
         return response.body();
     }
+
+    public static void main(String[] args) throws Exception {
+        ClienteGuias cliente = new ClienteGuias();
+        System.out.println("Cliente listo: " + (cliente.client != null));
+    }
 }
 ```
+
+**Desglose del código**
+
+- `connectTimeout` limita el tiempo para establecer conexión.
+- `request.timeout(...)` limita el tiempo total de la solicitud.
+- `Accept: application/json` declara el formato esperado.
+- Validar rango 2xx evita tratar errores HTTP como éxito.
+- El parseo JSON se haría en otra capa; aquí se separa transporte.
+
+**Ejecución y salida real**
 
 ```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
+javac ClienteGuias.java
+java ClienteGuias
 ```
 
-```java
-import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.*;
-import java.time.Duration;
-
-public class Salud {
-    public static void main(String[] args) throws Exception {
-        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/health", exchange -> {
-            byte[] body = "ok".getBytes();
-            exchange.sendResponseHeaders(200, body.length);
-            exchange.getResponseBody().write(body);
-            exchange.close();
-        });
-        server.start();
-        try {
-            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/health");
-            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(2)).GET().build();
-            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP " + response.statusCode() + ": " + response.body());
-        } finally { server.stop(0); }
-    }
-}
+```text
+Cliente listo: true
 ```
 
-```java
-import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.*;
-import java.time.Duration;
+Para una prueba real, apunta `url` a un endpoint local o de test y verifica status/timeout.
 
-public class NoExiste {
-    public static void main(String[] args) throws Exception {
-        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/envios/RT-404", e -> {
-            byte[] body = "Guía no existe".getBytes();
-            e.sendResponseHeaders(404, body.length);
-            e.getResponseBody().write(body);
-            e.close();
-        });
-        server.start();
-        try {
-            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/envios/RT-404");
-            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofSeconds(2)).GET().build();
-            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            if (response.statusCode() != 200)
-                throw new IllegalStateException("API respondió HTTP " + response.statusCode() + ": " + response.body());
-        } finally { server.stop(0); }
-    }
-}
-```
+**Errores comunes y cómo resolverlos**
 
-```java
-import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.*;
-import java.net.http.HttpTimeoutException;
-import java.time.Duration;
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| La app se queda colgada | Sin timeout | Configura connect/request timeout |
+| `200` asumido pero body es error | No validaste status | Verifica rango 2xx |
+| `InterruptedException` ignorada | Manejo incompleto | Restablece interrupción o propaga con contexto |
 
-public class Espera {
-    public static void main(String[] args) throws Exception {
-        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/lento", e -> {
-            try { Thread.sleep(800); } catch (InterruptedException x) { Thread.currentThread().interrupt(); }
-            try { e.sendResponseHeaders(200, -1); } catch (Exception ignored) { }
-            e.close();
-        });
-        server.start();
-        try {
-            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/lento");
-            var request = HttpRequest.newBuilder(uri).timeout(Duration.ofMillis(100)).GET().build();
-            try { HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString()); }
-            catch (HttpTimeoutException e) { System.out.println("timeout: 100 ms"); }
-        } finally { server.stop(0); }
-    }
-}
-```
+**Verificación rápida**
 
-```java
-import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
-import java.net.URI;
-import java.net.http.*;
-import java.util.concurrent.atomic.AtomicInteger;
-
-public class Reintento {
-    public static void main(String[] args) throws Exception {
-        var llamadas = new AtomicInteger();
-        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/cotizacion", e -> {
-            int status = llamadas.incrementAndGet() == 1 ? 503 : 200;
-            byte[] body = (status == 200 ? "ok" : "temporal").getBytes();
-            e.sendResponseHeaders(status, body.length);
-            e.getResponseBody().write(body);
-            e.close();
-        });
-        server.start();
-        try {
-            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/cotizacion");
-            for (int intento = 1; intento <= 2; intento++) {
-                var request = HttpRequest.newBuilder(uri).GET().build();
-                var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-                System.out.println("intento=" + intento + " HTTP " + response.statusCode());
-                if (response.statusCode() != 503) break;
-                Thread.sleep(50);
-            }
-            System.out.println("llamadas=" + llamadas.get());
-        } finally { server.stop(0); }
-    }
-}
-```
-
-</details>
+Compila y ejecuta. Luego prueba con una URL inválida o un servidor lento para observar el manejo de fallo.
 
 ### Tema 2: Tokens, validación y límites de seguridad · Avanzado · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización. El ejercicio usa una API local de laboratorio; no implementes criptografía propia. Crea la carpeta mkdir -p java-http-t02/s…
+Debes llamar una API con un token Bearer. Además, recibes datos de usuarios y debes validarlos antes de usarlos. Un token mal manejado o una validación débil se convierte en incidente de seguridad.
 
-#### ► LA IDEA EN UNA FRASE
-**Al finalizar podrás explicar y probar el transporte seguro de una credencial bearer, validar datos no confiables y distinguir autenticación de autorización.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** *Autenticación* verifica identidad; *autorización* verifica permisos. Un *token Bearer* es una credencial que, si se presenta, otorga acceso según el servidor. La *validación de entrada* es la verificación de que datos no confiables cumplen forma, rango y semántica esperada antes de procesarlos.
 
-#### ► LA ANALOGÍA
-Piensa en tokens, validación y límites de seguridad como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** Los secretos/tokens no deben hardcodearse, loguearse ni commitearse; se obtienen de entorno, vault o gestor de secretos. El transporte debe ser HTTPS en redes no confiables. Un token es credencial: quien lo posee puede usarlo mientras sea válido. Validar entrada no sustituye autorización en servidor. `Authorization: Bearer <token>` es un mecanismo de transporte; no decide por sí mismo qué puede hacer el usuario.
 
-#### ► CÓMO FUNCIONA
-1. Identifica el problema que tokens, validación y límites de seguridad resuelve.
-2. Observa sus componentes y relaciones.
-3. Aplica la opción más simple que funcione.
-4. Verifica el resultado y los límites.
+**Modelo mental.** El token es una llave temporal: no la dejas pegada en la puerta (código/logs), no la envías por una postal abierta (HTTP sin TLS) y no asumes que tener llave permite entrar a cualquier cuarto (autorización).
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Tokens, validación y límites de seguridad se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Tokens, validación y límites de seguridad | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses tokens, validación y límites de seguridad por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: tokens, validación y límites de seguridad funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Tokens, validación y límites de seguridad existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve tokens, validación y límites de seguridad en tu contexto?
-2. ¿Cómo sabrías que tokens, validación y límites de seguridad no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar tokens, validación y límites de seguridad?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```java
-String token = System.getenv("ACADEMIA_API_TOKEN");
-if (token == null || token.isBlank()) {
-    throw new IllegalStateException("Falta ACADEMIA_API_TOKEN");
-}
-
-HttpRequest request = HttpRequest.newBuilder(uri)
-    .timeout(Duration.ofSeconds(3))
-    .header("Authorization", "Bearer " + token)
-    .GET()
-    .build();
-```
-
-```bash
-# Maven
-mvn -q archetype:generate -DgroupId=academia -DartifactId=app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
-cd app && mvn test
-# Gradle (equivalente): gradle init --type java-application --dsl kotlin && ./gradlew test
-```
+**Implementación desde cero**
 
 ```java
-import com.sun.net.httpserver.HttpServer;
-import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.http.*;
+import java.time.Duration;
 
-public class BearerLocal {
-    public static void main(String[] args) throws Exception {
+public class ClienteSeguro {
+    static String tokenDesdeEntorno() {
         String token = System.getenv("ACADEMIA_API_TOKEN");
-        if (token == null || token.isBlank()) throw new IllegalStateException("Falta ACADEMIA_API_TOKEN");
-        var server = HttpServer.create(new InetSocketAddress("127.0.0.1", 0), 0);
-        server.createContext("/privado", e -> {
-            boolean presente = ("Bearer " + token).equals(e.getRequestHeaders().getFirst("Authorization"));
-            byte[] body = (presente ? "credencial presente" : "credencial ausente").getBytes();
-            e.sendResponseHeaders(presente ? 200 : 401, body.length);
-            e.getResponseBody().write(body);
-            e.close();
-        });
-        server.start();
-        try {
-            var uri = URI.create("http://127.0.0.1:" + server.getAddress().getPort() + "/privado");
-            var request = HttpRequest.newBuilder(uri).header("Authorization", "Bearer " + token).GET().build();
-            var response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println("HTTP " + response.statusCode() + ": " + response.body());
-        } finally { server.stop(0); }
+        if (token == null || token.isBlank()) {
+            throw new IllegalStateException("Falta ACADEMIA_API_TOKEN");
+        }
+        return token;
+    }
+
+    static void validarGuia(String guia) {
+        if (guia == null || !guia.matches("[A-Z0-9\\-]{3,20}")) {
+            throw new IllegalArgumentException("guia invalida");
+        }
+    }
+
+    public static void main(String[] args) throws Exception {
+        validarGuia("G-123");
+        String token = "demo"; // en real: tokenDesdeEntorno()
+        HttpRequest request = HttpRequest.newBuilder(URI.create("https://example.invalid/guias/G-123"))
+            .timeout(Duration.ofSeconds(3))
+            .header("Authorization", "Bearer " + token)
+            .GET()
+            .build();
+        System.out.println(request.headers().firstValue("Authorization").orElse("").startsWith("Bearer "));
     }
 }
 ```
 
-```java
-import java.net.URI;
-import java.util.Set;
+**Desglose del código**
 
-public class DestinoSeguro {
-    static URI validar(String valor) {
-        URI uri = URI.create(valor);
-        if (!"https".equalsIgnoreCase(uri.getScheme())) throw new IllegalArgumentException("Se requiere HTTPS");
-        if (!Set.of("api.rutaflow.example").contains(uri.getHost()))
-            throw new IllegalArgumentException("Host fuera de allowlist");
-        if (uri.getUserInfo() != null) throw new IllegalArgumentException("No se permite userinfo");
-        return uri;
-    }
-    public static void main(String[] args) {
-        try { validar("http://127.0.0.1/admin"); }
-        catch (IllegalArgumentException e) { System.out.println("rechazada: " + e.getMessage()); }
-    }
-}
+- `tokenDesdeEntorno` evita hardcodear secretos.
+- `validarGuia` aplica una whitelist de formato antes de usar el dato.
+- `Authorization: Bearer ...` transporta la credencial.
+- En producción, usa `tokenDesdeEntorno()` y HTTPS; aquí se imprime solo una comprobación booleana.
+
+**Ejecución y salida real**
+
+```bash
+javac ClienteSeguro.java
+java ClienteSeguro
 ```
 
-```java
-public class Propiedad {
-    record Envio(String guia, String propietario) {}
-    static boolean puedeLeer(String usuario, Envio envio) {
-        return usuario.equals(envio.propietario());
-    }
-    public static void main(String[] args) {
-        var envio = new Envio("RT-8", "ana");
-        System.out.println("ana=" + puedeLeer("ana", envio));
-        System.out.println("leo=" + puedeLeer("leo", envio));
-    }
-}
+```text
+true
 ```
 
-```java
-public class ValidarGuia {
-    static String validar(String guia) {
-        if (guia == null || !guia.matches("RT-[0-9]{1,6}"))
-            throw new IllegalArgumentException("Guía inválida");
-        return guia;
-    }
-    public static void main(String[] args) {
-        System.out.println(validar("RT-82"));
-        try { System.out.println(validar("RT-82 OR 1=1")); }
-        catch (IllegalArgumentException e) { System.out.println(e.getMessage()); }
-    }
-}
-```
+**Errores comunes y cómo resolverlos**
 
-</details>
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Token filtrado en repo/logs | Hardcode o logging | Usa variables de entorno/vault y redacta logs |
+| Confías en datos del cliente | Falta validación/autorización | Valida input y verifica permisos en servidor |
+| Usas HTTP en red no confiable | Transporte sin cifrar | Usa HTTPS/TLS |
+
+**Verificación rápida**
+
+Ejecuta con `ACADEMIA_API_TOKEN` ausente usando `tokenDesdeEntorno()` y verifica que falla con mensaje claro.
 
 ### Tema 3: Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos · Avanzado · 45 min
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Caso guía**
 
-#### ► DE QUÉ TRATA
-Usa JDK 17 o superior; todo viene en el JDK. Crea la carpeta academia-labs/java/cripto.
+Necesitas verificar integridad de un mensaje, autenticar que viene de un socio con clave compartida y cifrar datos sensibles. La tentación de “inventar” un algoritmo es peligrosa: debes usar primitivas estándar.
 
-#### ► LA IDEA EN UNA FRASE
-**Usa JDK 17 o superior; todo viene en el JDK.**
+**Fundamento técnico y modelo mental**
 
-#### ► POR QUÉ EXISTE ESTO
-Resuelve un problema real de diseño o implementación y evita decisiones a ciegas.
+**Definición formal.** JCA/JCE (Java Cryptography Architecture/Extension) es la API criptográfica de Java. Un *hash* (SHA-256) produce una huella de integridad, no confidencialidad. Un *MAC* (HMAC) autentica integridad con clave compartida. *AES-GCM* es cifrado autenticado (AEAD): provee confidencialidad e integridad/autenticidad del ciphertext y AAD.
 
-#### ► LA ANALOGÍA
-Piensa en criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
+**Contrato / invariantes / reglas.** No inventar algoritmos ni modos propios. Usar `SecureRandom` para IVs/claves cuando corresponda. En AES-GCM, el IV/nonce no debe reutilizarse con la misma clave. La clave debe tener tamaño adecuado y almacenarse de forma segura. `AEADBadTagException` indica autenticidad/integridad fallida: no aceptar el plaintext. Hash != cifrado != firma; cada primitiva resuelve un problema distinto.
 
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    D["datos"] -->|"SHA-256"| H["huella"]
-    D -->|"HMAC + clave compartida"| F["firma: ¿viene del socio?"]
-    D -->|"AES-GCM + clave + IV nuevo"| C["cifrado + etiqueta"]
-    C -->|"un bit cambiado"| X["AEADBadTagException"]
-```
+**Modelo mental.** Hash es huella digital; HMAC es huella con sello compartido; AES-GCM es un sobre cerrado con sello de seguridad que se rompe si lo alteran.
 
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-No uses criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos por defecto. Aplícalo cuando el problema lo justifique y puedas verificar el beneficio; si una alternativa más simple resuelve igual, prefiérela.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- Criptografía con la JCA: SHA-256, HMAC y AES-GCM sin inventar algoritmos existe para resolver un problema específico.
-- Mide antes de adoptar complejidad.
-- Conoce el caso donde NO usarlo.
-- Verifica con evidencia observable.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos en tu contexto?
-2. ¿Cómo sabrías que criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar criptografía con la jca: sha-256, hmac y aes-gcm sin inventar algoritmos?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    D["datos"] -->|"SHA-256"| H["huella"]
-    D -->|"HMAC + clave compartida"| F["firma: ¿viene del socio?"]
-    D -->|"AES-GCM + clave + IV nuevo"| C["cifrado + etiqueta"]
-    C -->|"un bit cambiado"| X["AEADBadTagException"]
-```
+**Implementación desde cero**
 
 ```java
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.SecureRandom;
-import java.util.HexFormat;
-import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
-import javax.crypto.spec.SecretKeySpec;
+import java.security.MessageDigest;
+import java.security.SecureRandom;
+import java.util.Base64;
 
-public class Cripto {
+public class DemoCripto {
     public static void main(String[] args) throws Exception {
-        byte[] datos = "ENV-42;Calle 26;5000".getBytes(StandardCharsets.UTF_8);
-        HexFormat hex = HexFormat.of();
+        byte[] datos = "guia=G-1;estado=OK".getBytes();
 
-        // 1) Hash SHA-256: huella del contenido. Mismo dato, misma huella.
-        byte[] huella = MessageDigest.getInstance("SHA-256").digest(datos);
-        System.out.println("SHA-256: " + hex.formatHex(huella).substring(0, 16) + "…");
+        MessageDigest sha = MessageDigest.getInstance("SHA-256");
+        byte[] hash = sha.digest(datos);
+        System.out.println("sha256=" + Base64.getEncoder().encodeToString(hash).substring(0, 12));
 
-        // 2) HMAC: huella con clave. Prueba que el mensaje viene de quien tiene la clave.
+        KeyGenerator kgH = KeyGenerator.getInstance("HmacSHA256");
+        SecretKey claveHmac = kgH.generateKey();
         Mac mac = Mac.getInstance("HmacSHA256");
-        mac.init(new SecretKeySpec("clave-compartida-de-prueba".getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-        byte[] firma = mac.doFinal(datos);
-        System.out.println("HMAC válido: " + MessageDigest.isEqual(firma, mac.doFinal(datos)));
+        mac.init(claveHmac);
+        System.out.println("hmac=" + Base64.getEncoder().encodeToString(mac.doFinal(datos)).substring(0, 12));
 
-        // 3) AES-GCM: cifra y además detecta alteraciones.
-        KeyGenerator generador = KeyGenerator.getInstance("AES");
-        generador.init(256);
-        SecretKey clave = generador.generateKey();
+        KeyGenerator kgA = KeyGenerator.getInstance("AES");
+        kgA.init(256);
+        SecretKey claveAes = kgA.generateKey();
         byte[] iv = new byte[12];
-        new SecureRandom().nextBytes(iv); // nunca repitas un IV con la misma clave
+        new SecureRandom().nextBytes(iv);
 
-        Cipher cifrador = Cipher.getInstance("AES/GCM/NoPadding");
-        cifrador.init(Cipher.ENCRYPT_MODE, clave, new GCMParameterSpec(128, iv));
-        byte[] cifrado = cifrador.doFinal(datos);
-        System.out.println("Cifrado: " + cifrado.length + " bytes (" + datos.length + " de datos + 16 de etiqueta)");
+        Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+        cipher.init(Cipher.ENCRYPT_MODE, claveAes, new GCMParameterSpec(128, iv));
+        byte[] cifrado = cipher.doFinal(datos);
 
-        Cipher descifrador = Cipher.getInstance("AES/GCM/NoPadding");
-        descifrador.init(Cipher.DECRYPT_MODE, clave, new GCMParameterSpec(128, iv));
-        System.out.println("Descifrado: " + new String(descifrador.doFinal(cifrado), StandardCharsets.UTF_8));
-
-        cifrado[0] ^= 1; // un atacante cambia un bit
-        try {
-            descifrador.init(Cipher.DECRYPT_MODE, clave, new GCMParameterSpec(128, iv));
-            descifrador.doFinal(cifrado);
-        } catch (AEADBadTagException e) {
-            System.out.println("Alteración detectada: " + e.getClass().getSimpleName());
-        }
+        Cipher dec = Cipher.getInstance("AES/GCM/NoPadding");
+        dec.init(Cipher.DECRYPT_MODE, claveAes, new GCMParameterSpec(128, iv));
+        byte[] claro = dec.doFinal(cifrado);
+        System.out.println(new String(claro));
     }
 }
 ```
 
+**Desglose del código**
+
+- `SHA-256` genera una huella; el mismo input produce la misma huella.
+- `HmacSHA256` requiere clave compartida; valida integridad y origen compartido.
+- `AES/GCM/NoPadding` cifra y autentica. El tag GCM detecta alteraciones.
+- El IV de 12 bytes se genera aleatorio por cifrado; nunca se reutiliza con la misma clave.
+
+**Ejecución y salida real**
+
 ```bash
-cd academia-labs/java/cripto
-java Cripto.java
+javac DemoCripto.java
+java DemoCripto
 ```
+
+Salida esperada (prefijos varían por aleatoriedad):
 
 ```text
-SHA-256: 4ae9d9fa731b5bbc…
-HMAC válido: true
-Cifrado: 36 bytes (20 de datos + 16 de etiqueta)
-Descifrado: ENV-42;Calle 26;5000
-Alteración detectada: AEADBadTagException
+sha256=...
+hmac=...
+guia=G-1;estado=OK
 ```
 
-</details>
+**Errores comunes y cómo resolverlos**
+
+| Síntoma | Causa probable | Qué hacer |
+|---|---|---|
+| Reutilizaste IV en AES-GCM | Rompe seguridad gravemente | Genera IV nuevo con `SecureRandom` por cifrado |
+| Usas hash para confidencialidad | Mal uso de primitiva | Usa cifrado autenticado (AES-GCM) |
+| Inventas tu algoritmo | Vulnerabilidad casi segura | Usa JCA y primitivas estándar |
+
+**Verificación rápida**
+
+```bash
+javac DemoCripto.java && java DemoCripto
+```
+
+Modifica un byte del `cifrado` antes de descifrar en un experimento: debe fallar con `AEADBadTagException`.
+
+## Cierre del módulo
+
+HTTP seguro y criptografía correcta dependen de disciplina: timeouts, validación, manejo de secretos, primitivas estándar y verificación de fallos. Con esto estás listo para construir backends en Spring Boot con una base de seguridad más sólida.
