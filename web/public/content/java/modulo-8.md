@@ -17,278 +17,304 @@ Compilar a mano con `javac` sirve para aprender, pero un proyecto real necesita 
 
 **Caso guía**
 
-Recibes dos proyectos Java: uno usa Maven, otro Gradle. Necesitas saber dónde están las dependencias, la versión de Java, el nombre del artefacto y cómo ejecutar tests.
+Quieres compilar, testear y empaquetar un proyecto Java de forma reproducible. Necesitas elegir y entender Maven (`pom.xml`) o Gradle (`build.gradle.kts`).
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *build tool* automatiza la transformación de código fuente y recursos en artefactos verificables. Maven usa un modelo declarativo basado en POM (Project Object Model) y ciclo de vida. Gradle usa un grafo de tareas dirigido acíclico (DAG) configurado por DSL.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Maven favorece convención sobre configuración; la estructura estándar (`src/main/java`, `src/test/java`) activa comportamientos por defecto. Gradle evalúa scripts y construye un grafo de tareas; las dependencias de tareas determinan el orden. Ambos resuelven dependencias desde repositorios, soportan wrappers (`mvnw`/`gradlew`) y producen artefactos reproducibles si la configuración está fijada.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Maven (`pom.xml`)** | Herramienta de build declarativa basada en POM XML, convención y ciclo de vida. | Builds reproducibles, gestión de dependencias. | Proyectos que valoran convención/estándar. | Editar POM sin entender ciclo de vida/plugins. |
+| **Gradle (`build.gradle.kts`)** | Herramienta de build programable con DSL (Kotlin/Groovy), tareas y caché incremental. | Builds flexibles y rápidos. | Proyectos que necesitan customización/rendimiento. | Scripts complejos difíciles de mantener. |
+| **Gestión de dependencias** | Resolución de librerías, versiones, transitivas y repositorios. | Evitar jars manuales. | Todo proyecto real. | Conflictos de versión no controlados. |
+| **Reproducibilidad** | Mismo input (código+config+versiones) produce mismo artefacto. | CI confiable. | Siempre. | Versiones flotantes/plugins no fijados. |
 
-**Modelo mental.** Maven es una línea de ensamblaje con estaciones predefinidas; Gradle es un plano de tareas donde declaras qué depende de qué.
+**Contrato / invariantes / reglas.** Maven: coordenadas `groupId:artifactId:version`. Gradle: `group:name:version`. Ambos usan repos (Maven Central). Fija versiones y wrapper (`mvnw`/`gradlew`) para reproducibilidad. Estructura estándar `src/main/java`, `src/test/java`.
 
-**Implementación desde cero**
+**Modelo mental.** Maven = receta estándar con pasos fijos; Gradle = cocina programable con tareas.
 
-Desde una carpeta vacía (Maven):
+**Implementación desde cero (Maven mínimo)**
 
 ```bash
-mkdir -p ~/academia-java/modulo-8-maven/src/main/java/com/academia src/test/java/com/academia
-cd ~/academia-java/modulo-8-maven
+mkdir -p ~/academia-java/modulo-8-maven && cd ~/academia-java/modulo-8-maven
+mkdir -p src/main/java/com/academia
 ```
 
-Crea `pom.xml`:
-
+`pom.xml`:
 
 ```xml
-<project xmlns="http://maven.apache.org/POM/4.0.0">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.academia</groupId>
-  <artifactId>demo</artifactId>
+  <artifactId>demo-maven</artifactId>
   <version>1.0.0</version>
-  <properties>
-    <maven.compiler.release>21</maven.compiler.release>
-  </properties>
-  <dependencies>
-    <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter</artifactId>
-      <version>5.11.0</version>
-      <scope>test</scope>
-    </dependency>
-  </dependencies>
+  <properties><maven.compiler.release>21</maven.compiler.release></properties>
 </project>
 ```
 
-Gradle mínimo (`build.gradle.kts`):
+`src/main/java/com/academia/App.java`:
 
-```kotlin
-plugins { java }
-group = "com.academia"
-version = "1.0.0"
-repositories { mavenCentral() }
-dependencies { testImplementation("org.junit.jupiter:junit-jupiter:5.11.0") }
-tasks.test { useJUnitPlatform() }
+```java
+package com.academia;
+public class App { public static void main(String[] args){ System.out.println("Maven OK"); } }
 ```
 
-**Desglose del código**
-
-- `groupId/artifactId/version` identifican el artefacto en Maven; en Gradle, `group` y `version`.
-- `maven.compiler.release` fija la versión de Java objetivo.
-- `scope test` en Maven equivale conceptualmente a `testImplementation` en Gradle.
-- El wrapper (`mvnw`/`gradlew`) permite construir sin instalar la herramienta globalmente.
-
-**Ejecución y salida real**
+**Ejecución y salida real (con Maven instalado)**
 
 ```bash
-mvn -q test
-./gradlew test
+mvn -q -DskipTests package
+java -cp target/demo-maven-1.0.0.jar com.academia.App
 ```
 
-La salida depende del proyecto, pero ambos ejecutan compilación y pruebas según su configuración.
+```text
+Maven OK
+```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Dependencia no encontrada | Repositorio o coordenada mal escrita | Verifica group/artifact/version |
-| Compila con Java incorrecto | Release/source no configurado | Fija `maven.compiler.release` o toolchain Gradle |
-| “Works on my machine” | No usan wrapper | Versiona y usa `mvnw`/`gradlew` |
+| `mvn: command not found` | Maven no instalado | Instala Maven o usa wrapper |
+| Versión Java incorrecta | `release`/JDK no alineados | Ajusta `maven.compiler.release` y JDK |
+| Dependencia no resuelve | Repo/coordenada mal | Verifica GAV y repos |
 
-**Verificación rápida**
+**Verificación rápida:** `mvn -v` y `mvn -q package`.
 
-Crea un proyecto mínimo, agrega JUnit y ejecuta `test` con wrapper. El build debe pasar en una máquina limpia con JDK instalado.
 
 ### Tema 2: Ciclo de vida de build y scopes · Intermedio · 40 min
 
 **Caso guía**
 
-Un colega dice “corre `mvn package`” y otro “corre `./gradlew build`”. Quieres saber qué etapas se ejecutan y por qué una dependencia está en `test` y no en producción.
+Agregas JUnit para tests. Debe estar disponible al testear, pero no necesariamente empaquetado igual que dependencias de runtime.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** El *ciclo de vida* en Maven es una secuencia de fases; cada fase puede tener goals vinculados. En Gradle, las *tareas* forman un DAG; ejecutar una tarea ejecuta sus dependencias. Los *scopes/configurations* definen en qué classpath participa una dependencia.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** En Maven, invocar una fase ejecuta las fases previas del mismo ciclo. En Gradle, la ejecución la determina el grafo de dependencias de tareas. Las dependencias de test no deben filtrarse a runtime de producción. La resolución transitiva puede traer conflictos de versión; se deben inspeccionar con `dependency:tree`/`dependencies`.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Ciclo de vida Maven** | Fases ordenadas (`validate, compile, test, package, verify, install, deploy`). | Build predecible. | Ejecutar builds estándar. | Creer que `package` corre todo lo que quieres sin entender fases. |
+| **Scopes Maven** | Alcance de dependencia (`compile, provided, runtime, test, system`). | Controlar classpath por fase. | JUnit en `test`, servlet en `provided`. | Poner todo en `compile`. |
+| **Tareas/fases Gradle** | Tareas con grafo de dependencias (`test`, `build`, `assemble`). | Ejecución incremental. | Builds Gradle. | Confundir fase Maven con tarea Gradle 1:1. |
+| **Classpath** | Conjunto de clases/jars visibles en compilación/ejecución/tests. | Resolver tipos. | Depurar `ClassNotFound`. | Scope incorrecto. |
 
-**Modelo mental.** Scope/configuration es la etiqueta de equipaje: indica si viaja en cabina, bodega o solo en pruebas.
+**Contrato / invariantes / reglas.** Ejecutar una fase Maven ejecuta fases previas del mismo lifecycle. `test` scope no va a runtime de producción. `provided` lo provee el contenedor. En Gradle, `testImplementation` ≈ test, `implementation` ≈ compile/runtime.
 
-**Implementación desde cero**
+**Implementación desde cero (añadir al proyecto del T1)**
 
-En el proyecto Maven del Tema 1 (`~/academia-java/modulo-8-maven`):
-
-```bash
-# Maven
-mvn clean test
-mvn package
-
-# Gradle
-./gradlew clean test
-./gradlew build
-```
-
-Ejemplo de dependencia por scope/configuration:
+En `pom.xml` agrega:
 
 ```xml
-<dependency>
-  <groupId>org.projectlombok</groupId>
-  <artifactId>lombok</artifactId>
-  <version>1.18.34</version>
-  <scope>provided</scope>
-</dependency>
+<dependencies>
+  <dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.11.4</version>
+    <scope>test</scope>
+  </dependency>
+</dependencies>
+<build><plugins><plugin><groupId>org.apache.maven.plugins</groupId><artifactId>maven-surefire-plugin</artifactId><version>3.5.2</version></plugin></plugins></build>
 ```
 
-```kotlin
-dependencies {
-    compileOnly("org.projectlombok:lombok:1.18.34")
-    annotationProcessor("org.projectlombok:lombok:1.18.34")
-}
+`src/test/java/com/academia/AppTest.java`:
+
+```java
+package com.academia;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+class AppTest { @Test void ok(){ assertEquals(4, 2+2); } }
 ```
-
-**Desglose del código**
-
-- `clean` elimina artefactos previos (`target/` o `build/`).
-- `test` compila y ejecuta pruebas.
-- `package/build` produce el artefacto entregable.
-- Usar `test` scope evita llevar JUnit al JAR de producción.
 
 **Ejecución y salida real**
 
-Deberías ver fases/tareas ejecutadas en orden y un resultado `BUILD SUCCESS` o `BUILD SUCCESSFUL`.
+```bash
+mvn -q test
+```
 
-**Errores comunes y cómo resolverlos**
+```text
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
+```
 
-| Síntoma | Causa probable | Qué hacer |
+**Errores comunes**
+
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Dependencia de test llega a runtime | Scope/configuración mal puesta | Revisa `test`/`testImplementation` |
-| Build lento por no entender tareas | Ejecutas más de lo necesario | Usa la tarea/fase mínima para tu objetivo |
-| Tests no corren en JUnit 5 | Falta plataforma/configuración | En Gradle agrega `useJUnitPlatform()` |
+| Test no corre | Surefire/JUnit5 mal configurado | Usa Surefire moderno y JUnit Jupiter |
+| Dependencia en JAR innecesaria | Scope incorrecto | `test` para librerías de test |
+| Clase no encontrada en test | Dependencia en scope equivocado | Revisa scope/classpath |
 
-**Verificación rápida**
+**Verificación rápida:** `mvn -q -DskipTests package` empaqueta sin ejecutar tests.
 
-Ejecuta `mvn test` o `./gradlew test` y confirma que solo se ejecutan pruebas, no empaquetado innecesario.
 
 ### Tema 3: Proyectos multi-módulo · Intermedio · 40 min
 
 **Caso guía**
 
-Tu aplicación crece: dominio, API y persistencia empiezan a mezclarse. Quieres separar módulos con límites claros y builds reutilizables.
+Tu proyecto crece: `domain`, `app`, `infra`. Necesitas separar módulos con dependencias explícitas y build único.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *proyecto multi-módulo* es un agregado de módulos con builds independientes pero coordinados. En Maven, un POM padre agrega módulos; en Gradle, `settings.gradle.kts` incluye subproyectos.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Los módulos deben tener dependencias acíclicas. Los contratos entre módulos deben ser explícitos. La versionado/configuración puede centralizarse (BOM, dependencyManagement, plataformas Gradle). Modularizar prematuramente aumenta complejidad sin beneficio.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Multi-módulo** | Proyecto con varios submódulos construidos bajo un agregador/root. | Separación de responsabilidades y builds coordinados. | Codebases medianas/grandes. | Dependencias cíclicas entre módulos. |
+| **Módulo** | Unidad de build con su propio `pom.xml`/`build.gradle`. | Encapsular código y dependencias. | Límites claros por capa/dominio. | Módulos “bolsa de todo”. |
+| **Agregador/root** | POM/gradle raíz que lista módulos y configuración común. | Un comando construye todo. | Repos monorepo multi-módulo. | Duplicar config en cada módulo. |
+| **Dependencia entre módulos** | Un módulo declara otro como dependencia. | Reutilizar código con límites. | `app` depende de `domain`. | Capa infra en domain (inversión rota). |
 
-**Modelo mental.** Multi-módulo es dividir una casa en departamentos con contratos claros, no levantar muros al azar.
+**Contrato / invariantes / reglas.** Maven: root `<packaging>pom</packaging>` y `<modules>`. Gradle: `settings.gradle.kts` con `include(...)`. Evita ciclos. Versiona módulos coherentemente (BOM/parent). Compila desde raíz.
 
-**Implementación desde cero**
-
-Desde una carpeta vacía:
+**Implementación desde cero (Maven)**
 
 ```bash
-mkdir -p ~/academia-java/modulo-8-multi/domain/src/main/java ~/academia-java/modulo-8-multi/app/src/main/java
-cd ~/academia-java/modulo-8-multi
+mkdir -p ~/academia-java/modulo-8-multi && cd ~/academia-java/modulo-8-multi
+mkdir -p domain/src/main/java/com/academia/domain app/src/main/java/com/academia/app
 ```
 
-Maven (`pom.xml` padre):
+`pom.xml` (root):
 
 ```xml
-<modules>
-  <module>domain</module>
-  <module>api</module>
-</modules>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.academia</groupId><artifactId>multi</artifactId><version>1.0.0</version><packaging>pom</packaging>
+  <modules><module>domain</module><module>app</module></modules>
+  <properties><maven.compiler.release>21</maven.compiler.release></properties>
+</project>
 ```
 
-Gradle (`settings.gradle.kts`):
+`domain/pom.xml`:
 
-```kotlin
-rootProject.name = "demo"
-include("domain", "api")
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>com.academia</groupId><artifactId>multi</artifactId><version>1.0.0</version></parent>
+  <artifactId>domain</artifactId>
+</project>
 ```
 
-Dependencia entre módulos (Gradle):
+`domain/src/main/java/com/academia/domain/Saludo.java`:
 
-```kotlin
-dependencies {
-    implementation(project(":domain"))
-}
+```java
+package com.academia.domain;
+public class Saludo { public static String hola(){ return "Hola dominio"; } }
 ```
 
-**Desglose del código**
+`app/pom.xml`:
 
-- El padre/agregador coordina módulos.
-- Cada módulo tiene su propio build y dependencias.
-- Las dependencias entre módulos hacen visible la arquitectura.
-- Evita dependencias cíclicas: son señal de mal límite.
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent><groupId>com.academia</groupId><artifactId>multi</artifactId><version>1.0.0</version></parent>
+  <artifactId>app</artifactId>
+  <dependencies><dependency><groupId>com.academia</groupId><artifactId>domain</artifactId><version>${project.version}</version></dependency></dependencies>
+</project>
+```
+
+`app/src/main/java/com/academia/app/Main.java`:
+
+```java
+package com.academia.app;
+import com.academia.domain.Saludo;
+public class Main { public static void main(String[] args){ System.out.println(Saludo.hola()); } }
+```
 
 **Ejecución y salida real**
 
 ```bash
 mvn -q -DskipTests package
-./gradlew build
+java -cp "domain/target/domain-1.0.0.jar:app/target/app-1.0.0.jar" com.academia.app.Main
 ```
 
-El build compila módulos en orden según dependencias.
+```text
+Hola dominio
+```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Ciclo entre módulos | Límites mal definidos | Extrae contrato común o invierte dependencia |
-| Build complejo demasiado pronto | Sobreingeniería | Empieza simple; modulariza cuando duela |
-| Versionado inconsistente | Cada módulo con versiones sueltas | Centraliza versiones/BOM/propiedades |
+| Módulo no compila | Falta en `<modules>` o settings | Agrega módulo al agregador |
+| Ciclo de dependencias | A depende de B y B de A | Rediseña límites |
+| Clase no encontrada entre módulos | Falta dependencia declarada | Declara dependencia de módulo |
 
-**Verificación rápida**
+**Verificación rápida:** `mvn -q -pl app -am package` construye app y dependencias.
 
-Crea dos módulos (`domain`, `api`) donde `api` depende de `domain` y verifica que el build falla si inviertes la dependencia sin declararla.
 
 ### Tema 4: Maven y Gradle lado a lado — el mismo proyecto en dos herramientas · Avanzado · 40 min
 
-**Contexto y para qué sirve**
+**Caso guía**
 
-En equipos reales te encontrarás ambos. Saber traducir mentalmente de uno a otro te evita quedarte bloqueado por la herramienta.
+Heredas un repo en Gradle pero tu equipo conoce Maven. Necesitas mapear conceptos equivalentes para operar con seguridad.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** La equivalencia entre build tools no es sintáctica, sino funcional: ambas resuelven dependencias, compilan, prueban, empaquetan y publican. El mapeo correcto es por intención/resultado.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Un mismo proyecto puede construirse con Maven o Gradle si las dependencias, versiones, layout y plugins/tareas equivalentes están bien definidos. El árbol de dependencias es la fuente para diagnosticar conflictos transitivos. Las opciones de depuración (`mvn -X`, `gradle --info/--scan`) deben usarse con criterio por volumen de salida.
+| Concepto | Maven | Gradle | Regla práctica |
+|---|---|---|---|
+| **Descriptor** | `pom.xml` | `build.gradle.kts` + `settings.gradle.kts` | Mismo GAV, distinta sintaxis |
+| **Ciclo/tareas** | Fases (`compile,test,package`) | Tareas (`classes,test,build`) | No asumir 1:1 exacto |
+| **Dependencias** | `<dependency><scope>test` | `testImplementation(...)` | Mapea scopes/configurations |
+| **Wrapper** | `mvnw` | `gradlew` | Siempre usar wrapper del repo |
 
-**Modelo mental.** Son dos idiomas distintos para describir el mismo proceso industrial.
+**Contrato / invariantes / reglas.** Ambos resuelven dependencias desde repos y producen artefactos; la convención de directorios es similar. Usa el wrapper commiteado. No mezcles dos builds sobre el mismo árbol sin aislar outputs.
 
-**Implementación desde cero**
-
-Usa cualquier proyecto Maven o Gradle existente (por ejemplo `~/academia-java/modulo-8-maven` del Tema 1). Desde la raíz del proyecto:
+**Implementación desde cero (Gradle mínimo equivalente)**
 
 ```bash
-# Maven: árbol de dependencias
-mvn dependency:tree
-
-# Gradle (en un proyecto Gradle equivalente)
-./gradlew dependencies --configuration runtimeClasspath
+mkdir -p ~/academia-java/modulo-8-gradle && cd ~/academia-java/modulo-8-gradle
+mkdir -p src/main/java/com/academia
 ```
 
-**Desglose del código**
+`build.gradle.kts`:
 
-- `dependency:tree`/`dependencies` ayudan a detectar conflictos y versiones transitivas.
-- La configuración de Gradle (`runtimeClasspath`, `testRuntimeClasspath`) es más granular.
-- Maven es más rígido; eso reduce sorpresas. Gradle es más flexible; eso exige disciplina.
+```kotlin
+plugins { application; java }
+repositories { mavenCentral() }
+java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }
+application { mainClass.set("com.academia.App") }
+```
 
-**Ejecución y salida real**
+`settings.gradle.kts`:
 
-Ambos comandos muestran dependencias directas y transitivas, con formatos distintos.
+```kotlin
+rootProject.name = "demo-gradle"
+```
 
-**Errores comunes y cómo resolverlos**
+`src/main/java/com/academia/App.java`:
 
-| Síntoma | Causa probable | Qué hacer |
+```java
+package com.academia;
+public class App { public static void main(String[] args){ System.out.println("Gradle OK"); } }
+```
+
+**Ejecución y salida real (con Gradle instalado)**
+
+```bash
+gradle -q run
+```
+
+```text
+Gradle OK
+```
+
+**Errores comunes**
+
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Conflicto de versiones transitivas | Dos libs traen versiones distintas | Inspecciona árbol y fuerza/alinea versión |
-| Plugin/tarea hace “magia” | No entiendes el build script | Ejecuta con `-X`/`--info` o revisa tareas |
-| Copias scripts sin entender | Deuda en el build | Documenta el propósito de cada tarea/fase |
+| `gradle: command not found` | No instalado | Instala Gradle o genera wrapper |
+| JDK no coincide | Toolchain mal | Ajusta toolchain/JDK |
+| Confusión scope/config | Mapeo mental Maven→Gradle | Usa tabla de equivalencias |
 
-**Verificación rápida**
+**Verificación rápida:** `gradle tasks --all` y compara con `mvn help:describe -Dcmd=package`.
 
-En un proyecto con dependencias, ejecuta el árbol de dependencias en Maven o Gradle y ubica una dependencia transitiva.
 
 ## Cierre del módulo
 

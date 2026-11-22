@@ -83,121 +83,94 @@ mvn -q test
 
 **Caso guía**
 
-Tienes una calculadora de descuentos. Quieres probar casos normales, bordes y errores sin ejecutar todo manualmente.
+Pruebas automáticas de una calculadora de descuentos: casos normales, bordes y errores, repetibles en CI.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Una *prueba automatizada* es un programa que verifica un comportamiento esperado bajo condiciones controladas. JUnit Jupiter es el modelo de programación y extensión para escribir tests en JUnit 5/6. El *ciclo de vida* del test define cuándo se crean y destruyen fixtures.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Un test debe ser determinista, aislado y repetible. `@BeforeEach` crea estado fresco por prueba; `@BeforeAll` se ejecuta una vez por clase (normalmente estático). Las aserciones verifican invariantes del comportamiento observable. `assertThrows` verifica contrato de error. Un test que depende del orden o de estado compartido es frágil.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **JUnit Jupiter** | Modelo de programación/extensión de JUnit 5/6 (`@Test`, assertions, extensions). | Escribir y ejecutar tests. | Tests unitarios/integración en Java. | Mezclar JUnit 4 sin necesidad. |
+| **Anotaciones** | Metadatos (`@Test`, `@BeforeEach`, `@AfterEach`, `@BeforeAll`). | Declarar comportamiento del test/ciclo. | Setup/teardown y casos. | Setup pesado en `@BeforeAll` con estado mutable. |
+| **Ciclo de vida** | Cuándo se crea instancia y ejecutan hooks. | Aislamiento entre tests. | Por defecto, instancia por test. | Dependencia entre tests por estado compartido. |
+| **Aserciones/contrato** | Verificaciones de resultado y errores (`assertEquals`, `assertThrows`). | Definir comportamiento esperado. | Todo test. | Aserciones débiles o inexistentes. |
 
-**Modelo mental.** Cada test es un experimento de laboratorio con montaje limpio, acción y medición.
+**Contrato / invariantes / reglas.** Test determinista, aislado, rápido. `@BeforeEach` prepara estado fresco. `assertThrows` valida contrato de error. Nombra tests por comportamiento. No dependas de orden.
 
-**Implementación desde cero**
+**Implementación desde cero (usa setup del módulo)**
 
-Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`). Si no lo creaste, vuelve a la sección **Setup ejecutable del módulo**.
-
-Crea `src/main/java/com/academia/DescuentoService.java`:
+`src/main/java/com/academia/DescuentoService.java`:
 
 ```java
 package com.academia;
-
 public class DescuentoService {
     public int aplicar(int precio, int porcentaje) {
-        if (precio < 0 || porcentaje < 0 || porcentaje > 100) {
-            throw new IllegalArgumentException("datos inválidos");
-        }
+        if (precio < 0 || porcentaje < 0 || porcentaje > 100) throw new IllegalArgumentException("datos inválidos");
         return precio - (precio * porcentaje / 100);
     }
 }
 ```
 
-Crea `src/test/java/com/academia/DescuentoServiceTest.java`:
+`src/test/java/com/academia/DescuentoServiceTest.java`:
 
 ```java
 package com.academia;
-
 import org.junit.jupiter.api.*;
 import static org.junit.jupiter.api.Assertions.*;
-
 class DescuentoServiceTest {
     DescuentoService service;
-
-    @BeforeEach
-    void setUp() { service = new DescuentoService(); }
-
-    @Test
-    void aplicaDescuento() {
-        assertEquals(80, service.aplicar(100, 20));
-    }
-
-    @Test
-    void rechazaPorcentajeInvalido() {
-        assertThrows(IllegalArgumentException.class, () -> service.aplicar(100, 120));
-    }
+    @BeforeEach void setUp() { service = new DescuentoService(); }
+    @Test void aplicaDescuento() { assertEquals(80, service.aplicar(100, 20)); }
+    @Test void rechazaPorcentajeInvalido() { assertThrows(IllegalArgumentException.class, () -> service.aplicar(100, 120)); }
 }
 ```
-
-**Desglose del código**
-
-- `@BeforeEach` crea un estado limpio para cada test.
-- `assertEquals` verifica el resultado esperado.
-- `assertThrows` verifica que el contrato de error se cumple.
-- Nombra tests por comportamiento esperado, no por detalles de implementación.
 
 **Ejecución y salida real**
 
 ```bash
-./gradlew test
-# o
-mvn test
+mvn -q -Dtest=DescuentoServiceTest test
 ```
 
-Salida típica: tests ejecutados, fallos 0, errores 0.
+```text
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
+```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**: estado compartido, tests dependientes de orden, aserciones débiles. **Verificación**: rompe la lógica y confirma rojo.
 
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Tests dependientes entre sí | Estado compartido mutable | Inicializa en `@BeforeEach` |
-| Test verde pero frágil | Aserciones débiles | Aserta comportamiento observable relevante |
-| Test lento | Dependencias externas | Aísla con dobles/mocks |
-
-**Verificación rápida**
-
-Rompe deliberadamente la lógica de `aplicar` y confirma que el test falla; luego corrígela.
 
 ### Tema 2: Mockito — aislar dependencias · Avanzado · 40 min
 
 **Caso guía**
 
-Tu servicio envía notificaciones usando un cliente externo. En tests no quieres enviar correos reales. Necesitas un doble de prueba que simule la dependencia.
+`Notifier` envía email por un cliente externo. En tests no debes enviar correos reales.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *test double* es un objeto que reemplaza una dependencia real en pruebas. Un *mock* es un doble que puede verificar interacciones; un *stub* devuelve respuestas predefinidas. Mockito es un framework para crear y configurar estos dobles.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** El objeto bajo prueba debe ser real; las dependencias externas/lentas/no deterministas son candidatas a mock. `when(...).thenReturn(...)` define comportamiento; `verify(...)` verifica interacciones observables relevantes. Sobre-verificar implementación vuelve el test frágil. La inyección por constructor facilita sustituir dependencias.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Mockito** | Framework para crear dobles y verificar interacciones. | Aislar dependencias externas. | I/O, red, tiempo, servicios externos. | Mockear todo, incluso lógica simple. |
+| **Mock** | Doble que registra interacciones y permite verificarlas. | Verificar llamadas relevantes. | Efectos secundarios externos. | Sobre-verificar detalles internos. |
+| **Stub** | Doble que devuelve respuestas predefinidas. | Controlar entradas al SUT. | Dependencia que provee datos. | Stubs innecesarios. |
+| **Aislar dependencias** | Probar unidad sin ejecutar sistemas externos. | Tests deterministas y rápidos. | Unit tests. | No probar integración donde importa. |
 
-**Modelo mental.** Un mock es un actor de reparto que sustituye a un sistema externo durante el ensayo.
+**Contrato / invariantes / reglas.** SUT real, dependencias dobles. `when(...).thenReturn(...)` stub; `verify(...)` interacción relevante. Inyección por constructor facilita testing. No mockees tipos que no posees sin adaptador cuando la API es compleja.
 
 **Implementación desde cero**
 
-Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`).
-
-Crea `src/main/java/com/academia/EmailClient.java`:
+`src/main/java/com/academia/EmailClient.java`:
 
 ```java
 package com.academia;
-
 interface EmailClient { void send(String to, String body); }
 ```
 
-Crea `src/main/java/com/academia/Notifier.java`:
+`src/main/java/com/academia/Notifier.java`:
 
 ```java
 package com.academia;
-
 public class Notifier {
     private final EmailClient email;
     Notifier(EmailClient email) { this.email = email; }
@@ -208,40 +181,26 @@ public class Notifier {
 }
 ```
 
-Crea `src/test/java/com/academia/NotifierTest.java`:
+`src/test/java/com/academia/NotifierTest.java`:
 
 ```java
 package com.academia;
-
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-
 class NotifierTest {
-    @Test
-    void enviaEmail() {
+    @Test void enviaEmail() {
         EmailClient email = mock(EmailClient.class);
-        Notifier notifier = new Notifier(email);
-        notifier.avisar("ada@example.com");
+        new Notifier(email).avisar("ada@example.com");
         verify(email).send("ada@example.com", "Hola");
     }
-
-    @Test
-    void noEnviaSiInvalido() {
+    @Test void noEnviaSiInvalido() {
         EmailClient email = mock(EmailClient.class);
-        Notifier notifier = new Notifier(email);
-        assertThrows(IllegalArgumentException.class, () -> notifier.avisar(""));
+        assertThrows(IllegalArgumentException.class, () -> new Notifier(email).avisar(""));
         verifyNoInteractions(email);
     }
 }
 ```
-
-**Desglose del código**
-
-- `mock(EmailClient.class)` crea un doble.
-- Inyectas la dependencia por constructor: diseño fácil de probar.
-- `verify` comprueba que se llamó con los argumentos esperados.
-- `verifyNoInteractions` asegura que no hubo efectos laterales indebidos.
 
 **Ejecución y salida real**
 
@@ -249,167 +208,142 @@ class NotifierTest {
 mvn -q -Dtest=NotifierTest test
 ```
 
-Salida esperada:
-
 ```text
 [INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**: sobre-verificación, mockear valores, olvidar stub. **Verificación**: cambia implementación para no enviar y observa fallo en `verify`.
 
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Test acoplado a implementación interna | Demasiados `verify` innecesarios | Verifica comportamiento relevante |
-| Mock de clases de valor simples | Sobreuso | Usa objetos reales cuando son baratos |
-| `NullPointerException` en mock | No stubbeaste método usado | Define `when(...).thenReturn(...)` |
-
-**Verificación rápida**
-
-Cambia `notifier.avisar` para no enviar email y observa que `verify` falla.
 
 ### Tema 3: Tests parametrizados y cobertura · Avanzado · 40 min
 
 **Caso guía**
 
-Quieres probar la misma regla con muchos valores. Copiar/pegar tests genera ruido y omite casos.
+La misma regla debe probarse con varios inputs/bordes. Copiar-pegar tests genera ruido y huecos.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *test parametrizado* ejecuta la misma lógica de verificación con múltiples conjuntos de datos. La *cobertura de código* es una métrica que indica qué líneas/ramas/condiciones fueron ejecutadas por las pruebas.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** La parametrización reduce duplicación y mejora cobertura de casos. La cobertura es necesaria pero no suficiente: se puede ejecutar una línea sin afirmar su comportamiento correcto. Se deben incluir casos borde, valores inválidos y equivalencias. Las métricas de cobertura deben usarse para encontrar huecos, no como meta aislada.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Tests parametrizados** | Ejecutan la misma aserción con múltiples datos (`@ParameterizedTest`, `@CsvSource`). | Cubrir muchos casos sin duplicar código. | Reglas con varios inputs. | Casos redundantes sin bordes. |
+| **Cobertura de código** | Métrica de líneas/ramas ejecutadas por tests. | Encontrar huecos. | Auditoría de suite. | Tratar 100% como calidad suficiente. |
+| **Casos borde** | Inputs límite (0, vacío, negativo, max, null). | Detectar bugs en límites. | Siempre. | Solo “happy path”. |
+| **Métrica vs calidad** | Cobertura mide ejecución, no corrección de aserciones. | Interpretar cobertura con criterio. | Revisión de tests. | Aserciones débiles para subir cobertura. |
 
-**Modelo mental.** El mismo examen, con distintos cuestionarios; la cobertura solo dice qué páginas se abrieron, no si las respuestas estaban bien.
+**Contrato / invariantes / reglas.** Parametriza inputs representativos y bordes. Usa cobertura (JaCoCo) para descubrir huecos, no como KPI aislado. Un test sin aserción útil no vale.
 
 **Implementación desde cero**
 
-Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`).
-
-Crea `src/test/java/com/academia/CalcTest.java` en el proyecto del setup:
+`src/test/java/com/academia/CalcParamTest.java`:
 
 ```java
 package com.academia;
-
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.*;
-
-class Calc {
-    static int doble(int n) { return n * 2; }
-}
-
-class CalcTest {
+class Calc { static int doble(int n) { return n * 2; } }
+class CalcParamTest {
     @ParameterizedTest
     @CsvSource({"1,2","2,4","-3,-6","0,0"})
-    void duplica(int input, int esperado) {
-        assertEquals(esperado, Calc.doble(input));
-    }
+    void duplica(int input, int esperado) { assertEquals(esperado, Calc.doble(input)); }
 }
 ```
-
-**Desglose del código**
-
-- `@ParameterizedTest` marca el test como parametrizado.
-- `@CsvSource` provee casos de entrada/salida.
-- Agrega casos borde: cero, negativos, máximos, valores inválidos.
-- Usa cobertura (JaCoCo) para detectar huecos, no como objetivo ciego.
 
 **Ejecución y salida real**
 
 ```bash
-mvn -q -Dtest=CalculadoraParamTest test
+mvn -q -Dtest=CalcParamTest test
 ```
-
-Salida esperada:
 
 ```text
-[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0
 ```
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**: 100% cobertura con aserciones pobres; olvidar bordes. **Verificación**: agrega caso borde y un caso inválido si aplica.
 
-| Síntoma | Causa probable | Qué hacer |
-|---|---|---|
-| Muchos tests repetidos | No usaste parametrización | Usa `@ParameterizedTest` |
-| 100% cobertura, bugs igual | Aserciones pobres | Prueba comportamientos y bordes |
-| Caso falla por parsing | Tipos de `CsvSource` incompatibles | Ajusta tipos/parámetros |
-
-**Verificación rápida**
-
-Agrega un caso borde más en `CsvSource`. Si el comportamiento cambia, el test debe detectarlo.
 
 ### Tema 4: Pruebas basadas en propiedades: reglas que se cumplen para cualquier entrada · Avanzado · 45 min
 
 **Caso guía**
 
-En vez de probar solo ejemplos, quieres verificar una regla: “revertir una lista dos veces devuelve la lista original” para muchas entradas generadas.
+`reverse(reverse(x)) == x` debe cumplirse para muchas cadenas, no solo para ejemplos elegidos a mano.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** El *property-based testing* (PBT) verifica propiedades/invariantes que deben cumplirse para un dominio de entradas, generando casos automáticamente. Cuando falla, el framework intenta *shrinking* para encontrar un contraejemplo mínimo.
+#### Cobertura por concepto (obligatoria)
 
-**Contrato / invariantes / reglas.** Una propiedad debe ser más general que un ejemplo, pero más precisa que “no falla”. El generador debe producir entradas válidas dentro del dominio. Las propiedades deben ser deterministas y sin efectos externos no controlados. PBT complementa, no reemplaza, tests basados en ejemplos.
+| Concepto | Definición formal | Para qué sirve | Cuándo usarlo | Error común |
+|---|---|---|---|---|
+| **Property-based testing (PBT)** | Pruebas que verifican propiedades/invariantes para muchos inputs generados. | Encontrar casos borde que no imaginaste. | Funciones puras, serialización, parseo, colecciones. | Propiedad mal definida (trivial o falsa). |
+| **Propiedad/invariante** | Regla que debe cumplirse para cualquier input válido. | Especificar comportamiento general. | Idempotencia, inversa, conservación, etc. | Reimplementar la función dentro del test. |
+| **Generadores/shrinking** | Generan datos aleatorios controlados; shrinking reduce el caso que falla al mínimo. | Cobertura amplia y diagnóstico. | PBT con jqwik. | Limitar generador tanto que pierde valor. |
+| **PBT vs example-based** | Ejemplos prueban casos concretos; PBT prueba reglas generales. | Complementarse. | Usa ambos. | Reemplazar todos los ejemplos por PBT. |
 
-**Modelo mental.** En vez de probar 3 llaves, pruebas la regla “toda llave de esta forma abre esta cerradura” con muchas llaves generadas.
+**Contrato / invariantes / reglas.** La propiedad debe ser más simple/estable que la implementación. Controla dominio de inputs (`@StringLength`, `@IntRange`). Shrinking ayuda a depurar; no lo desactives sin razón. PBT no sustituye tests de ejemplo para casos de negocio específicos.
 
-**Implementación desde cero**
+**Implementación desde cero (jqwik ya está en pom del setup)**
 
-Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`).
-
-Crea `src/test/java/com/academia/ReversePropertyTest.java` (jqwik ya está en el `pom.xml` del setup):
+`src/main/java/com/academia/Strings.java`:
 
 ```java
 package com.academia;
+public class Strings {
+    public static String reverse(String s) { return new StringBuilder(s).reverse().toString(); }
+}
+```
 
+`src/test/java/com/academia/StringsPropertyTest.java`:
+
+```java
+package com.academia;
 import net.jqwik.api.*;
-import java.util.*;
-
-class ReversePropertyTest {
+import net.jqwik.api.constraints.StringLength;
+import static org.assertj.core.api.Assertions.*; // si no usas assertj, usa JUnit assertions
+class StringsPropertyTest {
     @Property
-    boolean reverseTwiceIsOriginal(@ForAll List<Integer> list) {
-        List<Integer> copy = new ArrayList<>(list);
-        Collections.reverse(copy);
-        Collections.reverse(copy);
-        return copy.equals(list);
+    boolean reverseEsInvolutiva(@ForAll @StringLength(min=0,max=50) String s) {
+        return Strings.reverse(Strings.reverse(s)).equals(s);
     }
 }
 ```
 
-**Desglose del código**
+Si no tienes AssertJ, usa JUnit:
 
-- `@Property` indica una propiedad a verificar con muchos datos.
-- `@ForAll` genera entradas variadas.
-- La propiedad debe ser verdadera para cualquier entrada válida del dominio.
-- Cuando falla, el framework intenta reducir el caso a un contraejemplo mínimo.
+```java
+import net.jqwik.api.*;
+import net.jqwik.api.constraints.StringLength;
+import org.junit.jupiter.api.Assertions;
+class StringsPropertyTest {
+    @Property void reverseEsInvolutiva(@ForAll @StringLength(min=0,max=50) String s) {
+        Assertions.assertEquals(s, Strings.reverse(Strings.reverse(s)));
+    }
+}
+```
 
 **Ejecución y salida real**
 
 ```bash
-mvn -q -Dtest=ReversePropertyTest test
+mvn -q -Dtest=StringsPropertyTest test
 ```
-
-Salida esperada (valores pueden variar):
 
 ```text
 [INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0
-[INFO] BUILD SUCCESS
 ```
 
-jqwik reporta en detalle los tries/shrinking en logs verbosos; con Surefire normal verás el test verde.
+(jqwik ejecuta múltiples intentos por propiedad).
 
-**Errores comunes y cómo resolverlos**
+**Errores comunes**
 
-| Síntoma | Causa probable | Qué hacer |
+| Síntoma | Causa | Solución |
 |---|---|---|
-| Propiedad falsa por dominio mal definido | Generaste inputs inválidos | Restringe generadores |
-| Test lento o flaky | Propiedad costosa/no determinista | Limita tamaño, evita tiempo/aleatoriedad no controlada |
-| Confías solo en properties | Faltan casos de ejemplo legibles | Combina ejemplos + propiedades |
+| Propiedad pasa trivialmente | Propiedad débil | Elige invariante significativo |
+| Flaky | Input/dominio no controlado | Restringe generadores, evita tiempo/azar no sembrado |
+| Difícil depurar | Caso grande | Usa shrinking/report de jqwik |
 
-**Verificación rápida**
+**Verificación rápida:** cambia `reverse` para romperla (p.ej. devolver solo `s`) y confirma que jqwik encuentra un contraejemplo.
 
-Agrega una propiedad simple sobre una función pura y verifica que el runner ejecuta múltiples casos.
 
 ## Cierre del módulo
 
