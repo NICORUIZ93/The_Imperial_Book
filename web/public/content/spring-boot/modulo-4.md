@@ -1,113 +1,204 @@
 # Módulo 4: Persistencia con Spring Data JPA
 
-Este módulo continúa el backend `academia-spring` creado en los módulos 1 y 2. Ejecuta los ejemplos con la base H2 de pruebas; el test comprueba datos reales, no repositorios simulados.
+Este módulo cubre mapeo ORM, repositorios Spring Data, N+1, DTO projections, migraciones y elección relacional vs documental. JPA/Hibernate simplifica, pero hay que entender SQL, carga y transacciones.
 
-**Prerrequisito sin Spring:** el lado propietario de una relación, las cascadas y el conteo básico de N+1 se enseñan una sola vez, en [Java M16 T1–T2](/curso/java/16), con el mismo laboratorio `java-jpa-lab`. Aquí se usa ese modelo mental y se añade lo propio de Spring Data: repositorios derivados, `@EntityGraph`, páginas DTO y migraciones.
-
-**Referencia ejecutable al terminar los módulos 2 y 4–7:** en la raíz del repositorio, abre `README.md`. Incluye el estado final y pruebas; algunas clases incorporan cambios de módulos posteriores. Construye primero las prácticas de este módulo y usa la referencia para comparar y diagnosticar.
+**Entorno de referencia (2026-05-22):** JDK 27, Maven 3.10.0. Verificación de conceptos JPA con Hibernate 7.0.0.Final/H2 2.3.232 en `/tmp` ya realizada en módulos Java; ejemplos Spring Data requieren contexto Boot.
 
 ## Aprende construyendo
 
-
 ### Tema 1: Entidades y repositorios derivados · Intermedio · 30 min
 
-**Caso guía**: CRUD de tareas con Spring Data JPA sin escribir SQL para casos simples.
+Caso guía: persistir y consultar envíos sin escribir SQL repetitivo.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Entidad JPA | `@Entity` mapeada a tabla. | Modelo persistente. | `@Id`, constructor protegido. | Usar entidad como DTO. |
-| `JpaRepository` | Repositorio Spring Data con CRUD/paginación. | Productividad. | Usar para CRUD estándar. | Lógica de negocio en repositorio. |
-| Query derivada | Método cuyo nombre define consulta (`findByEstado`). | Consultas simples legibles. | Nombres claros, límites. | Nombres kilométricos/ambiguos. |
-| `ddl-auto`/esquema | Hibernate puede crear/validar esquema. | Dev rápido. | `create-drop` solo dev/test; prod con migraciones. | `create-drop` en producción. |
+#### Entidad JPA
 
-**Implementación desde cero**
+**Definición formal.** Clase anotada con `@Entity` mapeada a tabla relacional; instancia representa fila/objeto persistente administrado por EntityManager.
+
+**Para qué sirve.** Modelar persistencia orientada a objetos.
+
+**Cuándo usarlo.** Cuando el modelo relacional y el dominio se benefician de ORM. No para consultas analíticas complejas donde SQL directo sea más claro.
+
+**Ejemplo mínimo enfocado (JPA).**
+
 ```java
-@Entity @Table(name="tareas")
-public class Tarea { @Id @GeneratedValue(strategy=GenerationType.IDENTITY) Long id; String titulo; int prioridad; protected Tarea(){} public Tarea(String t,int p){titulo=t;prioridad=p;} /*getters*/ }
-public interface TareaRepository extends JpaRepository<Tarea,Long> { List<Tarea> findByPrioridadGreaterThanEqual(int prioridad); }
+@Entity
+class Envio {
+  @Id @GeneratedValue(strategy = GenerationType.IDENTITY) Long id;
+  @Column(nullable=false, unique=true) String codigo;
+}
 ```
-```yaml
-spring: { jpa: { hibernate: { ddl-auto: create-drop } }, h2: { console: { enabled: true } } }
+
+**Caso de uso real.** CRUD de envíos.
+
+**Error común.** Entidad sin constructor no-arg o con equals/hashCode mal definido. Corrección: seguir reglas JPA.
+
+**Verificación.** **Nota:** requiere JPA provider/BD; verificado con Hibernate+H2 en M16 Java.
+
+#### Repositorio derivado Spring Data
+
+**Definición formal.** Interfaz que extiende `JpaRepository`/`CrudRepository` donde Spring Data genera implementación a partir de firma/nombre del método.
+
+**Para qué sirve.** Eliminar boilerplate CRUD.
+
+**Cuándo usarlo.** Consultas simples y CRUD. Para SQL complejo, usar `@Query` o JDBC.
+
+**Ejemplo mínimo enfocado (Spring Data).**
+
+```java
+interface EnvioRepository extends JpaRepository<Envio, Long> {
+  Optional<Envio> findByCodigo(String codigo);
+}
 ```
-**Ejecución real**: `./mvnw spring-boot:run`, crear y listar tareas. **Verificación**: método derivado genera SQL esperado en logs.
+
+**Caso de uso real.** Buscar por código.
+
+**Error común.** Nombres de método ambiguos o consultas derivadas gigantes. Corrección: `@Query` explícita o Specification.
+
+**Verificación.** **Nota:** requiere contexto Spring Data JPA.
 
 ### Tema 2: El problema N+1 y su corrección · Intermedio · 35 min
 
-**Caso guía**: listar tareas con autor provoca 1 query por tareas + N por autores.
+Caso guía: listar envíos y sus ítems genera 1 query de envíos + N queries de ítems.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| N+1 | Patrón de consulta ineficiente por lazy loading en bucle. | Detectar performance bug. | Activar SQL log y medir. | No verlo hasta producción. |
-| `LAZY`/`EAGER` | Momento de carga de asociación. | Controlar fetch. | Default LAZY en colecciones; cuidado con EAGER. | EAGER everywhere. |
-| `JOIN FETCH` | JPQL que trae asociación en misma query. | Corregir N+1. | Usar en casos de uso de lectura específicos. | Join fetch múltiple de colecciones cartesianas. |
-| `@EntityGraph` | Plan de fetch declarativo. | Alternativa a join fetch. | Por query/caso de uso. | EntityGraph gigante. |
+#### N+1
 
-**Implementación desde cero**
+**Definición formal.** Patrón ineficiente donde se ejecuta una consulta para la lista principal y N consultas adicionales para cargar relaciones por elemento.
+
+**Para qué sirve.** Identificarlo evita degradación de rendimiento.
+
+**Cuándo aparece.** Relaciones LAZY accedidas en bucle.
+
+**Ejemplo mínimo enfocado (conceptual).**
+
 ```java
-@Query("select t from Tarea t join fetch t.autor")
-List<Tarea> findAllConAutor();
+List<Envio> envios = repo.findAll(); // 1
+envios.forEach(e -> e.getItems().size()); // N
 ```
-**Ejecución real**: con `spring.jpa.show-sql=true`, comparar endpoint antes/después. **Verificación**: número de selects baja de 1+N a 1 (o pocos controlados).
+
+**Caso de uso real.** Lista de pedidos con items en API.
+
+**Error común.** Dejar LAZY por defecto y tocar relación en serialización. Corrección: fetch join, EntityGraph o DTO projection.
+
+**Verificación.** **Nota:** se verifica con logs SQL/Hibernate statistics.
+
+#### `fetch join` / EntityGraph
+
+**Definición formal.** Mecanismos para cargar relación en la misma consulta (`join fetch` JPQL o `@EntityGraph`).
+
+**Para qué sirve.** Reducir N+1.
+
+**Cuándo usarlo.** Cuando necesitas relación en la misma carga. Cuidado con cartesian product en múltiples colecciones.
+
+**Ejemplo mínimo enfocado (JPQL).**
+
+```java
+@Query("select e from Envio e join fetch e.items where e.estado=:estado")
+List<Envio> porEstado(@Param("estado") Estado estado);
+```
+
+**Caso de uso real.** Detalle de pedido con líneas.
+
+**Error común.** Fetch join de múltiples bags. Corrección: dividir consultas o usar DTO.
+
+**Verificación.** **Nota:** requiere BD y logs SQL.
 
 ### Tema 3: Más allá del N+1: el límite de LAZY y páginas DTO · Intermedio · 40 min
 
-**Caso guía**: paginar entidades con colecciones fetch-join rompe paginación o explota memoria.
+Caso guía: necesitas listas paginadas sin cargar grafo de entidades completo.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Límite de LAZY | Lazy fuera de sesión lanza `LazyInitializationException`. | Entender boundary de transacción. | Cargar lo necesario en servicio/consulta. | `Open Session In View` ocultando diseño. |
-| Paginación DTO/proyección | Consulta devuelve solo campos necesarios. | Eficiencia en listados. | `interface` projection/DTO JPQL. | Paginar entidad pesada con grafo grande. |
-| `Page` + fetch join colección | Problemático en Hibernate (paginación en memoria). | Evitar trampas. | Dos consultas: ids paginados + fetch por ids. | Ignorar warning de Hibernate. |
-| Proyecciones | DTOs específicos por caso de uso. | Contratos eficientes. | Read models separados. | Reusar entidad para todo. |
+#### LAZY loading
 
-**Implementación desde cero**
+**Definición formal.** Estrategia donde la relación se carga al accederla, no al cargar la entidad raíz.
+
+**Para qué sirve.** Evitar cargar datos innecesarios.
+
+**Cuándo usarlo.** Por defecto en relaciones to-many; cuidado fuera de transacción (`LazyInitializationException`).
+
+**Ejemplo mínimo enfocado (conceptual).**
+
 ```java
-public record TareaResumen(Long id, String titulo) {}
-@Query("select new com.example.demo.TareaResumen(t.id,t.titulo) from Tarea t")
-Page<TareaResumen> resumir(Pageable pageable);
+@ManyToOne(fetch = FetchType.LAZY) Cliente cliente;
 ```
-**Ejecución real**: endpoint de listado retorna página DTO. **Verificación**: SQL selecciona solo columnas necesarias.
+
+**Caso de uso real.** No cargar cliente al listar códigos de envío.
+
+**Error común.** Acceder a LAZY fuera de sesión. Corrección: DTO projection, fetch apropiado o transacción.
+
+**Verificación.** **Nota:** observable por excepción o logs SQL.
+
+#### DTO projection
+
+**Definición formal.** Consulta que retorna solo campos necesarios en un DTO/interface projection, no la entidad completa.
+
+**Para qué sirve.** Rendimiento y contrato claro para lectura.
+
+**Cuándo usarlo.** Listados/reportes/API read models.
+
+**Ejemplo mínimo enfocado (Spring Data).**
+
+```java
+record EnvioResumen(Long id, String codigo) {}
+@Query("select new com.example.EnvioResumen(e.id,e.codigo) from Envio e")
+Page<EnvioResumen> resumir(Pageable p);
+```
+
+**Caso de uso real.** Tabla paginada en UI.
+
+**Error común.** Devolver entidad completa para listado. Corrección: projection DTO.
+
+**Verificación.** **Nota:** requiere Spring Data JPA.
 
 ### Tema 4: Migraciones con Flyway · Intermedio · 30 min
 
-**Caso guía**: evolucionar esquema sin `ddl-auto`.
+Caso guía: evolucionar esquema de BD sin cambios manuales ad hoc.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Flyway | Herramienta de migraciones versionadas SQL. | Evolución de esquema reproducible. | Scripts `V1__...sql` inmutables tras aplicar. | Editar migración ya aplicada. |
-| `ddl-auto=validate` | Hibernate valida esquema vs entidades. | Detectar drift. | Usar con Flyway en prod. | `update` en producción. |
-| Baseline/versionado | Historial de esquema. | Trazabilidad. | Una migración por cambio. | Cambios manuales no versionados. |
-| Migración reversible/forward | Estrategia de cambios. | Seguridad operacional. | Preferir forward compatible. | Drops destructivos sin plan. |
+#### Flyway
 
-**Implementación desde cero**
-```xml
-<dependency><groupId>org.flywaydb</groupId><artifactId>flyway-core</artifactId></dependency>
-```
-`src/main/resources/db/migration/V1__crear_tareas.sql`
+**Definición formal.** Herramienta de migración de BD que aplica scripts versionados en orden y registra historial.
+
+**Para qué sirve.** Evolución reproducible del esquema.
+
+**Cuándo usarlo.** Todo proyecto con BD relacional compartida/producción.
+
+**Ejemplo mínimo enfocado (archivo).**
+
 ```sql
-CREATE TABLE tareas (id BIGSERIAL PRIMARY KEY, titulo VARCHAR(200) NOT NULL, prioridad INT NOT NULL);
+-- V1__crear_envio.sql
+create table envio (id bigint primary key, codigo varchar(50) not null);
 ```
-```yaml
-spring.jpa.hibernate.ddl-auto: validate
-```
-**Ejecución real**: `./mvnw spring-boot:run`; Flyway aplica V1. **Verificación**: tabla `flyway_schema_history` contiene versión.
+
+**Caso de uso real.** Agregar columna en release.
+
+**Error común.** Editar migración ya aplicada. Corrección: crear nueva migración.
+
+**Verificación.** **Nota:** requiere app con Flyway y BD; evidencia en tabla `flyway_schema_history`.
 
 ### Tema 5: Spring Data MongoDB: documentos, consultas derivadas y cuándo elegir un modelo de documentos · Intermedio · 45 min
 
-**Caso guía**: guardar eventos de tracking con estructura flexible por tipo.
+Caso guía: almacenar eventos con estructura flexible.
 
-| Concepto | Definición | Para qué | Regla | Error |
-|---|---|---|---|---|
-| Documento (MongoDB) | Registro JSON/BSON en colección. | Modelos flexibles/anidados. | Modelar por consultas. | Usar Mongo como si fuera relacional con joins everywhere. |
-| Spring Data MongoDB | Repositorios y template para Mongo. | Productividad. | `MongoRepository`, `MongoTemplate`. | Ignorar índices. |
-| Consultas derivadas Mongo | `findByCampo` en repositorio. | Consultas simples. | Índices para campos consultados. | Scan completo en colección grande. |
-| Cuándo elegir documentos | Datos anidados, esquema variable, escala horizontal. | Buen fit. | No elegir por moda. | Perder transacciones/relaciones fuertes necesarias. |
+#### Documento MongoDB / Spring Data MongoDB
 
-**Implementación desde cero** (con Testcontainers o Mongo local)
+**Definición formal.** Documento es una estructura tipo JSON/BSON almacenada en colección; Spring Data MongoDB mapea objetos Java a documentos.
+
+**Para qué sirve.** Modelo flexible y consultas por documento.
+
+**Cuándo usarlo.** Datos con estructura variable, agregados autocontenidos, alta escala de lectura/escritura específica. No por defecto si necesitas joins complejos/ACID multi-documento fuerte como núcleo.
+
+**Ejemplo mínimo enfocado (Spring Data).**
+
 ```java
-@Document("eventos")
-public class Evento { @Id String id; String guiaId; String tipo; Instant ocurrido; Map<String,Object> payload; }
-public interface EventoRepository extends MongoRepository<Evento,String> { List<Evento> findByGuiaIdOrderByOcurridoDesc(String guiaId); }
+@Document("envios")
+class EnvioDoc { @Id String id; String codigo; List<String> eventos; }
+interface EnvioDocRepo extends MongoRepository<EnvioDoc,String> { Optional<EnvioDoc> findByCodigo(String c); }
 ```
-**Ejecución real**: con Mongo corriendo, `./mvnw -Dtest=EventoRepositoryTest test`. **Verificación**: consulta por `guiaId` devuelve ordenado; explicar cuándo NO usar documentos (transacciones relacionales fuertes, joins complejos).
 
+**Caso de uso real.** Historial de eventos embebido.
+
+**Error común.** Modelar como relacional con muchos documentos referenciados. Corrección: evaluar agregados y patrones de acceso.
+
+**Verificación.** **Nota:** requiere MongoDB/Testcontainers; evidencia con test de integración.
+
+## Cierre del módulo
+
+JPA acelera, pero no reemplaza el entendimiento de SQL, carga y transacciones. Usa repositorios derivados para lo simple, DTO projections para lecturas, migraciones para esquema y elige documento/relacional por patrón de acceso.

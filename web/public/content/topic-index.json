@@ -7550,10 +7550,6 @@
     ],
     "3": [
       {
-        "title": "Dos ejemplos: primero visible, luego real",
-        "fragment": "dos-ejemplos-primero-visible-luego-real"
-      },
-      {
         "title": "DataSource, JdbcTemplate y DAO",
         "fragment": "tema-1-datasource-jdbctemplate-y-dao"
       },
