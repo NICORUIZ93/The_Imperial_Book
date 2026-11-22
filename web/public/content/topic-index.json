@@ -390,22 +390,6 @@
   "angular": {
     "0": [
       {
-        "title": "Windows",
-        "fragment": "windows"
-      },
-      {
-        "title": "macOS",
-        "fragment": "macos"
-      },
-      {
-        "title": "Linux (Ubuntu/Debian)",
-        "fragment": "linux-ubuntu-debian"
-      },
-      {
-        "title": "Tu primer proyecto verificable",
-        "fragment": "tu-primer-proyecto-verificable"
-      },
-      {
         "title": "El CLI ya no genera NgModules",
         "fragment": "tema-1-el-cli-ya-no-genera-ngmodules"
       },
@@ -414,7 +398,7 @@
         "fragment": "tema-2-interpolacion-y-property-binding"
       },
       {
-        "title": "TypeScript a fondo — unknown, any, never y utility types",
+        "title": "TypeScript a fondo: unknown, any, never y utility types",
         "fragment": "tema-3-typescript-a-fondo-unknown-any-never-y-utility-types"
       },
       {
