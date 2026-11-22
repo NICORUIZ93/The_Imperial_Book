@@ -1,65 +1,60 @@
-# Módulo 12: Spring Batch: jobs, chunks y procesamiento masivo
+# Módulo 12: Spring Batch
 
-Cubre procesamiento batch: jobs, steps, chunk processing, idempotencia, reintentos y scheduling.
+Batch procesa grandes volúmenes de datos de forma confiable, reanudable y observable. No es un `for` grande: es un sistema de jobs, steps, chunks, checkpoints, retries y idempotencia.
 
-**Entorno (2026-05-22):** JDK 27, Maven 3.10.0. Spring Batch requiere contexto Boot/BD de metadatos.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Spring Boot 3.5.0, Spring Batch.
 
 ## Aprende construyendo
 
 ### Tema 1: Jobs, steps y chunk processing · Avanzado · 45 min
-#### Job/Step
-**Definición formal.** Job es una unidad de procesamiento batch compuesta por steps; cada step ejecuta una fase.
-**Para qué sirve.** Estructurar procesos masivos.
-**Cuándo usarlo.** ETL, conciliaciones, cargas masivas.
-**Ejemplo mínimo enfocado (conceptual).** `JobBuilderFactory`/`JobBuilder` + `StepBuilder`.
-**Caso de uso real.** Importar CSV nocturno.
-**Error común.** Cargar todo en memoria. Corrección: chunk processing.
-**Verificación.** **Nota:** requiere Spring Batch.
 
-#### Chunk
-**Definición formal.** Procesamiento por lotes: lee items, procesa, escribe en chunks transaccionales.
-**Para qué sirve.** Escalabilidad y control transaccional.
-**Cuándo usarlo.** Grandes volúmenes.
-**Ejemplo mínimo enfocado (ejecutable simulación).**
-```bash
-mkdir -p /tmp/sb12-chunk && cd /tmp/sb12-chunk
-cat > DemoChunk.java << 'JAVA'
-import java.util.*; public class DemoChunk { public static void main(String[] args){ var data=List.of(1,2,3,4,5); for(int i=0;i<data.size();i+=2){ System.out.println(data.subList(i,Math.min(i+2,data.size()))); } } }
-JAVA
-javac DemoChunk.java && java DemoChunk
+Caso guía: importar 1M de registros sin cargar todo en memoria.
+
+#### Job, Step, Chunk
+
+**Definición formal.** Job es la ejecución completa; Step es una fase; chunk processing lee/procesa/escribe en bloques con commit por chunk.
+
+```mermaid
+flowchart LR
+  R[ItemReader] --> P[ItemProcessor]
+  P --> W[ItemWriter]
+  W --> C[Commit por chunk]
+  C --> R
 ```
-**Caso de uso real.** Escribir 1000 registros por commit.
-**Error común.** Chunk demasiado grande. Corrección: medir y ajustar.
-**Verificación (JDK 27, 2026-05-22).** Salida: `[1, 2]`, `[3, 4]`, `[5]`.
+
+**Error común.** Chunk demasiado grande o demasiado pequeño sin medir. Corrección: ajustar por memoria/latencia/transacción.
+
+**Nota de verificación.** Requiere proyecto Spring Batch; lab ejecutable local.
 
 ### Tema 2: Reintentos, skip y idempotencia en batch · Avanzado · 45 min
-#### Retry/Skip
-**Definición formal.** Retry reintenta un item/chunk ante fallo transitorio; skip omite items fallidos según política.
-**Para qué sirve.** Robustez en procesos largos.
-**Cuándo usarlo.** Errores transitorios o registros corruptos controlados.
-**Ejemplo mínimo enfocado (conceptual).** `faultTolerant().retry(...).skip(...)`.
-**Caso de uso real.** Reintentar timeout, saltar fila inválida con log.
-**Error común.** Skip silencioso. Corrección: registrar y auditar.
-**Verificación.** **Nota:** requiere Spring Batch.
 
-#### Idempotencia batch
-**Definición formal.** Reejecutar job/step produce mismo efecto sin duplicar datos.
-**Para qué sirve.** Recuperación segura.
-**Cuándo usarlo.** Siempre en jobs reejecutables.
-**Ejemplo mínimo enfocado.** clave natural + upsert/tabla de control.
-**Caso de uso real.** Reprocesar archivo diario.
-**Error común.** Insert ciego en reejecución. Corrección: claves idempotentes.
-**Verificación.** **Nota:** depende de diseño de datos.
+Caso guía: 10 registros inválidos no deben tumbar todo el job; errores transitorios se reintentan.
+
+#### Retry/Skip
+
+**Definición formal.** Retry reintenta ítem/chunk ante error transitorio; skip omite ítems inválidos bajo política controlada.
+
+**Regla.** Skip requiere registro/auditoría. Nunca saltar silenciosamente datos de negocio.
+
+**Error común.** Job no idempotente: al reejecutar duplica datos. Corrección: claves naturales, checkpoints, tablas de estado.
 
 ### Tema 3: Scheduling, parámetros y operación · Avanzado · 40 min
-#### Job parameters
-**Definición formal.** Parámetros que identifican/configuran una ejecución de job.
-**Para qué sirve.** Reejecución controlada y trazabilidad.
-**Cuándo usarlo.** Jobs periódicos con fecha/id de lote.
-**Ejemplo mínimo enfocado (conceptual).** `run.id`, `fecha`.
-**Caso de uso real.** Proceso diario por fecha.
-**Error común.** Parámetros no deterministas que impiden re-run. Corrección: diseñar parámetros de negocio.
-**Verificación.** **Nota:** requiere Spring Batch.
+
+Caso guía: ejecutar job nocturno con fecha de corte.
+
+#### JobParameters
+
+**Definición formal.** Parámetros que identifican y configuran una ejecución de job. Pueden hacer única una instancia de job.
+
+**Error común.** Reejecutar job con mismos parámetros sin entender identidad de instancia. Corrección: parámetros de ejecución claros (`run.id`, fecha, ventana).
 
 ## Cierre
-Batch es sobre volumen, control transaccional y reejecución segura. Diseña idempotencia y observabilidad desde el día 1.
+
+Batch confiable es chunking + checkpoints + idempotencia + observabilidad. Un job que no se puede reanudar es una bomba de tiempo.
+
+## Checklist
+
+- Uso chunk processing.
+- Defino política de retry/skip con auditoría.
+- Diseño idempotencia y reanudación.
+- Parametrizo ejecuciones.
