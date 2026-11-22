@@ -83,7 +83,11 @@ flowchart TD
 ```bash
 mkdir -p academia-devops/src/modulo4/ci-matriz/.github/workflows
 cd academia-devops/src/modulo4/ci-matriz
-cat > .github/workflows/ci.yml <<'EOF'
+```
+
+Crea el archivo `.github/workflows/ci.yml`:
+
+```yaml
 name: CI
 on: [pull_request]
 jobs:
@@ -98,7 +102,9 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm test
-EOF
+```
+
+```bash
 echo '{"scripts":{"test":"node -e \"console.log(process.version)\""}}' > package.json
 ```
 

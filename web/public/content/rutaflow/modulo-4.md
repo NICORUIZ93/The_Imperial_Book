@@ -129,8 +129,9 @@ class ListaEnvios {
 }
 ```
 
-```bash
-cat > verificar.dart <<'EOF'
+Crea el archivo `verificar.dart`:
+
+```dart
 import 'lib/features/entrega/domain/envio_repository.dart';
 import 'lib/features/entrega/data/envio_repository_http.dart';
 import 'lib/features/entrega/presentation/lista_envios.dart';
@@ -144,7 +145,9 @@ Future<void> main() async {
   final total = await pantalla.contarPendientes();
   print('OK pendientes=$total');
 }
-EOF
+```
+
+```bash
 dart run verificar.dart
 ```
 

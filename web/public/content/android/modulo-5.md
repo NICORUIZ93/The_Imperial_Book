@@ -109,7 +109,11 @@ Volviendo a la analogía: retrofit con coroutines funciona como el modelo inicia
 # Script en python3 que levanta un servidor HTTP real de prueba en el puerto 8000
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > servidor_prueba.py <<'EOF'
+```
+
+Crea el archivo `servidor_prueba.py`:
+
+```python
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -131,10 +135,16 @@ class ManejadorTareas(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     HTTPServer(("localhost", 8000), ManejadorTareas).serve_forever()
-EOF
+```
+
+```bash
 python3 servidor_prueba.py &
 sleep 1
-cat > app/src/main/kotlin/com/academia/android/ApiService.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ApiService.kt`:
+
+```kotlin
 package com.academia.android
 
 import kotlinx.serialization.Serializable
@@ -147,7 +157,9 @@ interface ApiService {
     @GET("tareas")
     suspend fun obtenerTareas(): List<TareaDTO>
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -255,7 +267,11 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 mkdir -p app/src/main/kotlin/com/academia/android
 python3 servidor_prueba.py &
 sleep 1
-cat > app/src/main/kotlin/com/academia/android/TareasViewModelConErrores.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModelConErrores.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
@@ -280,7 +296,9 @@ class TareasViewModelConErrores(private val api: ApiService) : ViewModel() {
         }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -369,7 +387,11 @@ Volviendo a la analogía: interceptores de okhttp funciona como el modelo inicia
 # Script en python3 que confirma el comportamiento antes de escribir el Kotlin real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > servidor_prueba_headers.py <<'EOF'
+```
+
+Crea el archivo `servidor_prueba_headers.py`:
+
+```python
 import json
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
@@ -384,11 +406,17 @@ class ManejadorHeaders(BaseHTTPRequestHandler):
 
 if __name__ == "__main__":
     HTTPServer(("localhost", 8001), ManejadorHeaders).serve_forever()
-EOF
+```
+
+```bash
 python3 servidor_prueba_headers.py &
 sleep 1
 curl -s -H "Authorization: Bearer token-123" http://localhost:8001/ | python3 -m json.tool
-cat > app/src/main/kotlin/com/academia/android/ClienteHttpConInterceptores.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ClienteHttpConInterceptores.kt`:
+
+```kotlin
 package com.academia.android
 
 import okhttp3.OkHttpClient
@@ -404,7 +432,9 @@ fun crearClienteHttp(token: String): OkHttpClient {
         .addInterceptor(loggingInterceptor)  // segundo: loguea ya CON el header agregado
         .build()
 }
-EOF
+```
+
+```bash
 kill %1 2>/dev/null || true
 ./gradlew :app:compileDebugKotlin
 ```

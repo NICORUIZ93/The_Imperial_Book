@@ -112,7 +112,11 @@ Volviendo a la analogía: entities, daos y database funciona como el modelo inic
 # Este script python3 (vía sqlite3) es un modelo del esquema SQL equivalente; la prueba real es compilar con Room
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/AppDatabase.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/AppDatabase.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.room.Dao
@@ -141,7 +145,9 @@ interface TareaDao {
 abstract class AppDatabase : RoomDatabase() {
     abstract fun tareaDao(): TareaDao
 }
-EOF
+```
+
+```bash
 python3 -c "
 import sqlite3
 # el esquema equivalente que Room generaría a partir de la @Entity Tarea
@@ -253,7 +259,11 @@ Volviendo a la analogía: room + flow reactivo, y migraciones funciona como el m
 # Este script python3 (vía sqlite3) modela el SQL de la migración; la prueba real se hace en el emulador
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/Migraciones.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/Migraciones.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.room.migration.Migration
@@ -264,7 +274,9 @@ val MIGRATION_1_2 = object : Migration(1, 2) {
         db.execSQL("ALTER TABLE Tarea ADD COLUMN prioridad INTEGER NOT NULL DEFAULT 0")
     }
 }
-EOF
+```
+
+```bash
 python3 -c "
 import sqlite3
 con = sqlite3.connect(':memory:')
@@ -383,7 +395,11 @@ Volviendo a la analogía: estrategia offline-first funciona como el modelo inici
 # Este script python3 simula, con sqlite3 real, que la UI sigue funcionando sin red
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/TareaRepository.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareaRepository.kt`:
+
+```kotlin
 package com.academia.android
 
 import kotlinx.coroutines.flow.Flow
@@ -401,7 +417,9 @@ class TareaRepositoryImpl(private val dao: TareaDao, private val api: ApiService
         remotas.forEach { dao.insertar(Tarea(it.id, it.titulo, false)) } // sincroniza en background
     }
 }
-EOF
+```
+
+```bash
 python3 -c "
 import sqlite3
 

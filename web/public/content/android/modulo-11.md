@@ -300,14 +300,20 @@ Volviendo a la analogía: versionado, tracks y políticas funciona como el model
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app
-cat > app/build.gradle.kts.fragmento-version <<'EOF'
+```
+
+Crea el archivo `app/build.gradle.kts.fragmento-version`:
+
+```text
 android {
     defaultConfig {
         versionCode = 12
         versionName = "1.3.0"
     }
 }
-EOF
+```
+
+```bash
 version_code=$(grep -oE 'versionCode = [0-9]+' app/build.gradle.kts.fragmento-version | grep -oE '[0-9]+')
 version_name=$(grep -oE 'versionName = "[^"]+"' app/build.gradle.kts.fragmento-version | sed -E 's/versionName = "(.*)"/\1/')
 echo "versionCode actual: $version_code"

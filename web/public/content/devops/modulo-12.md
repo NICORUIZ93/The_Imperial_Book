@@ -76,7 +76,11 @@ Volviendo a la analogía: de cloud local a un proveedor cloud real funciona como
 ```bash
 mkdir -p academia-devops/src/modulo12/floci-a-real
 cd academia-devops/src/modulo12/floci-a-real
-cat > floci.tf <<'EOF'
+```
+
+Crea el archivo `floci.tf`:
+
+```hcl
 terraform {
   required_providers { local = { source = "hashicorp/local" } }
 }
@@ -86,8 +90,11 @@ resource "local_file" "config_bucket" {
   filename = "bucket-config-floci.txt"
   content  = "endpoint=${var.endpoint}\ncredenciales=${var.credenciales}\n"
 }
-EOF
-cat > produccion.tf.ejemplo <<'EOF'
+```
+
+Crea el archivo `produccion.tf.ejemplo`:
+
+```text
 terraform {
   required_providers { local = { source = "hashicorp/local" } }
 }
@@ -97,7 +104,9 @@ resource "local_file" "config_bucket" {
   filename = "bucket-config-produccion.txt"
   content  = "region=${var.region}\ncredenciales=${var.credenciales}\n(sin endpoint personalizado: apunta directo a AWS real)\n"
 }
-EOF
+```
+
+```bash
 docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 init >/dev/null
 docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 apply -auto-approve
 ```
@@ -279,7 +288,11 @@ Volviendo a la analogía: iac multi-nube funciona como el modelo inicial, pero r
 mkdir -p academia-devops/src/modulo12/iac-multi-nube/modulos/almacenamiento-proveedor-a
 mkdir -p academia-devops/src/modulo12/iac-multi-nube/modulos/almacenamiento-proveedor-b
 cd academia-devops/src/modulo12/iac-multi-nube
-cat > modulos/almacenamiento-proveedor-a/main.tf <<'EOF'
+```
+
+Crea el archivo `modulos/almacenamiento-proveedor-a/main.tf`:
+
+```hcl
 variable "nombre_archivo" {}
 variable "contenido" {}
 resource "local_file" "almacenamiento" {
@@ -287,8 +300,11 @@ resource "local_file" "almacenamiento" {
   content  = "proveedor=A\n${var.contenido}"
 }
 output "ruta" { value = local_file.almacenamiento.filename }
-EOF
-cat > modulos/almacenamiento-proveedor-b/main.tf <<'EOF'
+```
+
+Crea el archivo `modulos/almacenamiento-proveedor-b/main.tf`:
+
+```hcl
 variable "nombre_archivo" {}
 variable "contenido" {}
 resource "local_file" "almacenamiento" {
@@ -296,8 +312,11 @@ resource "local_file" "almacenamiento" {
   content  = "proveedor=B (nombres de recurso y de archivo distintos)\n${var.contenido}"
 }
 output "ruta" { value = local_file.almacenamiento.filename }
-EOF
-cat > main.tf <<'EOF'
+```
+
+Crea el archivo `main.tf`:
+
+```hcl
 terraform { required_providers { local = { source = "hashicorp/local" } } }
 module "almacen_a" {
   source         = "./modulos/almacenamiento-proveedor-a"
@@ -311,7 +330,9 @@ module "almacen_b" {
 }
 output "ruta_a" { value = module.almacen_a.ruta }
 output "ruta_b" { value = module.almacen_b.ruta }
-EOF
+```
+
+```bash
 docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 init >/dev/null
 docker run --rm -v "$(pwd)":/trabajo -w /trabajo hashicorp/terraform:1.9 apply -auto-approve
 ```
@@ -403,7 +424,11 @@ cd academia-devops/src/modulo12/checklist-produccion
 docker pull python:3.12-slim >/dev/null
 mkdir -p proyecto-simulado
 echo '{"level":"info","service":"api"}' > proyecto-simulado/ejemplo.log
-cat > verificar-checklist.py <<'EOF'
+```
+
+Crea el archivo `verificar-checklist.py`:
+
+```python
 import os, sys
 
 items = {
@@ -422,7 +447,9 @@ cumplidos = sum(items.values())
 print(f"\nResumen: {cumplidos}/{total} items cumplidos")
 if cumplidos < total:
     sys.exit(1)
-EOF
+```
+
+```bash
 docker run --rm -v "$(pwd)":/trabajo -w /trabajo python:3.12-slim python3 verificar-checklist.py
 echo "código de salida: $?"
 ```
@@ -510,7 +537,11 @@ docker run --rm -u "$(id -u):$(id -g)" -v "$(pwd)":/repo -w /repo --entrypoint s
   git add -A && git commit -q -m 'estado deseado inicial: 3 replicas'
 "
 cp deployment-mi-api.yaml estado-real-clúster.yaml
-cat > reconciliar.sh <<'EOF'
+```
+
+Crea el archivo `reconciliar.sh`:
+
+```bash
 #!/bin/sh
 if ! diff -q deployment-mi-api.yaml estado-real-clúster.yaml >/dev/null 2>&1; then
   echo "DERIVA DETECTADA: el estado real no coincide con Git. Reconciliando..."
@@ -519,7 +550,9 @@ if ! diff -q deployment-mi-api.yaml estado-real-clúster.yaml >/dev/null 2>&1; t
 else
   echo "Sin deriva: el estado real ya coincide con el declarado en Git."
 fi
-EOF
+```
+
+```bash
 chmod +x reconciliar.sh
 ./reconciliar.sh
 ```
@@ -607,7 +640,11 @@ Volviendo a la analogía: platform engineering — internal developer platforms 
 ```bash
 mkdir -p academia-devops/src/modulo12/idp-minima
 cd academia-devops/src/modulo12/idp-minima
-cat > crear-servicio.sh <<'EOF'
+```
+
+Crea el archivo `crear-servicio.sh`:
+
+```bash
 #!/bin/sh
 NOMBRE_SERVICIO=$1
 if [ -z "$NOMBRE_SERVICIO" ]; then
@@ -615,35 +652,13 @@ if [ -z "$NOMBRE_SERVICIO" ]; then
   exit 1
 fi
 mkdir -p "servicios/$NOMBRE_SERVICIO/.github/workflows"
-cat > "servicios/$NOMBRE_SERVICIO/Dockerfile" <<DOCKERFILE
-FROM node:22-alpine
-WORKDIR /app
-CMD ["node", "-e", "console.log('$NOMBRE_SERVICIO activo')"]
-DOCKERFILE
-cat > "servicios/$NOMBRE_SERVICIO/.github/workflows/ci.yml" <<CIYML
-name: CI de $NOMBRE_SERVICIO
-on: [pull_request]
-jobs:
-  escaneo-seguridad:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "escaneo estandar de la plataforma (Modulo 11)"
-CIYML
-cat > "servicios/$NOMBRE_SERVICIO/deployment.yaml" <<DEPLOY
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: $NOMBRE_SERVICIO
-spec:
-  replicas: 2
-  template:
-    spec:
-      containers:
-        - name: $NOMBRE_SERVICIO
-          livenessProbe: { httpGet: { path: /health, port: 3000 } }
-DEPLOY
+python3 -c "import pathlib; pathlib.Path("\"servicios/$NOMBRE_SERVICIO/Dockerfile\"").write_text("FROM node:22-alpine\nWORKDIR /app\nCMD [\"node\", \"-e\", \"console.log('$NOMBRE_SERVICIO activo')\"]\n")"
+python3 -c "import pathlib; pathlib.Path("\"servicios/$NOMBRE_SERVICIO/.github/workflows/ci.yml\"").write_text("name: CI de $NOMBRE_SERVICIO\non: [pull_request]\njobs:\n  escaneo-seguridad:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo \"escaneo estandar de la plataforma (Modulo 11)\"\n")"
+python3 -c "import pathlib; pathlib.Path("\"servicios/$NOMBRE_SERVICIO/deployment.yaml\"").write_text("apiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: $NOMBRE_SERVICIO\nspec:\n  replicas: 2\n  template:\n    spec:\n      containers:\n        - name: $NOMBRE_SERVICIO\n          livenessProbe: { httpGet: { path: /health, port: 3000 } }\n")"
 echo "Servicio '$NOMBRE_SERVICIO' creado con CI, seguridad y healthchecks preconfigurados."
-EOF
+```
+
+```bash
 chmod +x crear-servicio.sh
 ./crear-servicio.sh mi-nuevo-servicio
 find servicios -type f

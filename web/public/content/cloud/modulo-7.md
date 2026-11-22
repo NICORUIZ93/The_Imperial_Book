@@ -76,8 +76,9 @@ Si se compromete:                       Si se compromete:
   daño potencial = TODO                    daño potencial = LIMITADO
 ```
 
-```bash
-cat > politica-minima.json <<'EOF'
+Crea el archivo `politica-minima.json`:
+
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -85,7 +86,9 @@ cat > politica-minima.json <<'EOF'
     { "Effect": "Allow", "Action": ["sqs:ReceiveMessage","sqs:DeleteMessage"], "Resource": "arn:aws:sqs:us-east-1:000000000000:delivery-commands" }
   ]
 }
-EOF
+```
+
+```bash
 POLICY_ARN=$(aws iam create-policy --policy-name RutaFlowMinimoPrivilegio --policy-document file://politica-minima.json --query Policy.Arn --output text)
 aws iam simulate-custom-policy --policy-input-list file://politica-minima.json --action-names dynamodb:PutItem --resource-arns arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents
 ```
@@ -169,10 +172,13 @@ Volviendo a la analogía: modelo de responsabilidad compartida funciona como el 
 mkdir ejemplo && cd ejemplo && floci start
 ```
 
-```bash
-cat > politica-excesiva.json <<'EOF'
+Crea el archivo `politica-excesiva.json`:
+
+```json
 {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":"dynamodb:*","Resource":"*"}]}
-EOF
+```
+
+```bash
 aws iam simulate-custom-policy --policy-input-list file://politica-excesiva.json \
   --action-names dynamodb:DeleteTable --resource-arns "arn:aws:dynamodb:us-east-1:000000000000:table/ShipmentEvents"
 ```
@@ -251,10 +257,13 @@ Usuario IAM                    Grupo IAM                    Rol IAM
 └───────────────┘             └───────────────┘           └───────────────┘
 ```
 
-```bash
-cat > trust-lambda.json <<'EOF'
+Crea el archivo `trust-lambda.json`:
+
+```json
 {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Principal":{"Service":"lambda.amazonaws.com"},"Action":"sts:AssumeRole"}]}
-EOF
+```
+
+```bash
 ROLE_ARN=$(aws iam create-role --role-name RutaFlowConfirmarEntregaRole --assume-role-policy-document file://trust-lambda.json --query Role.Arn --output text)
 aws iam attach-role-policy --role-name RutaFlowConfirmarEntregaRole --policy-arn "$POLICY_ARN"
 aws lambda update-function-configuration --function-name confirmar-entrega --role "$ROLE_ARN"
@@ -346,7 +355,11 @@ Volviendo a la analogía: estructura de una política — acciones, recursos y c
 
 ```bash
 mkdir -p ejemplo-policy/src && cd ejemplo-policy
-cat > src/policy.json <<'EOF'
+```
+
+Crea el archivo `src/policy.json`:
+
+```json
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -354,7 +367,9 @@ cat > src/policy.json <<'EOF'
     {"Effect": "Deny", "Action": "s3:GetObject", "Resource": "arn:aws:s3:::mi-bucket/privado/*"}
   ]
 }
-EOF
+```
+
+```bash
 for objeto in publico/guia.pdf privado/nomina.pdf; do
   aws iam simulate-custom-policy --policy-input-list file://src/policy.json \
     --action-names s3:GetObject --resource-arns "arn:aws:s3:::mi-bucket/$objeto" \

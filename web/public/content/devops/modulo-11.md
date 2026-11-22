@@ -86,16 +86,25 @@ Volviendo a la analogía: escaneo de imágenes y dependencias (trivy, snyk) func
 ```bash
 mkdir -p academia-devops/src/modulo11/escaneo-imagen
 cd academia-devops/src/modulo11/escaneo-imagen
-cat > Dockerfile <<'EOF'
+```
+
+Crea el archivo `Dockerfile`:
+
+```dockerfile
 FROM node:18.19.0-alpine3.18
 WORKDIR /app
 COPY package.json .
 RUN npm install --omit=dev
 CMD ["node", "-e", "console.log('mi-api activa')"]
-EOF
-cat > package.json <<'EOF'
+```
+
+Crea el archivo `package.json`:
+
+```json
 { "name": "mi-api", "version": "1.0.0", "dependencies": { "lodash": "4.17.15" } }
-EOF
+```
+
+```bash
 docker build -t mi-api:1.0 .
 docker run --rm aquasec/trivy:0.55.0 --version
 ```
@@ -187,7 +196,11 @@ Volviendo a la analogía: integración en el pipeline funciona como el modelo in
 ```bash
 mkdir -p academia-devops/src/modulo11/gate-pipeline/.github/workflows
 cd academia-devops/src/modulo11/gate-pipeline
-cat > .github/workflows/seguridad.yml <<'EOF'
+```
+
+Crea el archivo `.github/workflows/seguridad.yml`:
+
+```yaml
 name: Seguridad
 on: [pull_request]
 jobs:
@@ -201,7 +214,9 @@ jobs:
         run: |
           docker run --rm -v /var/run/docker.sock:/var/run/docker.sock \
             aquasec/trivy:0.55.0 image --exit-code 1 --severity CRITICAL mi-api:${{ github.sha }}
-EOF
+```
+
+```bash
 python3 -c "import yaml; d = yaml.safe_load(open('.github/workflows/seguridad.yml')); print('jobs:', list(d['jobs'].keys()))"
 ```
 
@@ -374,7 +389,11 @@ Volviendo a la analogía: menor privilegio en ci/cd funciona como el modelo inic
 ```bash
 mkdir -p academia-devops/src/modulo11/minimo-privilegio
 cd academia-devops/src/modulo11/minimo-privilegio
-cat > pipeline-amplio.yaml <<'EOF'
+```
+
+Crea el archivo `pipeline-amplio.yaml`:
+
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
@@ -387,8 +406,11 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
   apiGroup: rbac.authorization.k8s.io
-EOF
-cat > pipeline-acotado.yaml <<'EOF'
+```
+
+Crea el archivo `pipeline-acotado.yaml`:
+
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -413,7 +435,9 @@ roleRef:
   kind: Role
   name: pipeline-desplegar-mi-api
   apiGroup: rbac.authorization.k8s.io
-EOF
+```
+
+```bash
 python3 -c "
 import yaml
 docs_amplio = list(yaml.safe_load_all(open('pipeline-amplio.yaml')))
@@ -604,14 +628,20 @@ Volviendo a la analogía: sast, dast y sca — diferencias y herramientas funcio
 ```bash
 mkdir -p academia-devops/src/modulo11/sast-dast-sca
 cd academia-devops/src/modulo11/sast-dast-sca
-cat > app.js <<'EOF'
+```
+
+Crea el archivo `app.js`:
+
+```js
 const http = require('node:http');
 http.createServer((req, res) => {
   const url = new URL(req.url, 'http://localhost');
   const nombre = url.searchParams.get('nombre') ?? 'invitado';
   res.end(`<h1>Hola, ${nombre}</h1>`); // vulnerable a XSS: sin escapar la entrada
 }).listen(3000);
-EOF
+```
+
+```bash
 grep -n 'res.end(\`.*\${' app.js
 ```
 

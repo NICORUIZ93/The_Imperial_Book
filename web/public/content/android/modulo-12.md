@@ -110,7 +110,11 @@ Volviendo a la analogía: arquitectura mvvm completa con udf funciona como el mo
 # Este script python3 verifica que la integración conecta las capas en el orden correcto
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModelIntegrado.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
@@ -131,7 +135,9 @@ class TareasViewModelIntegrado @Inject constructor(
 
     fun sincronizar() = viewModelScope.launch { repo.sincronizar() }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -231,7 +237,11 @@ Volviendo a la analogía: inyección de dependencias en toda la app funciona com
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/ViewModelBienInyectado.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ViewModelBienInyectado.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
@@ -242,8 +252,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 class ViewModelBienInyectado @Inject constructor(
     private val repo: TareaRepository // inyectado, nunca instanciado manualmente
 ) : ViewModel()
-EOF
-cat > app/src/main/kotlin/com/academia/android/ViewModelMalInyectado.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ViewModelMalInyectado.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
@@ -252,7 +265,9 @@ class ViewModelMalInyectado : ViewModel() {
     // ANTIPATRÓN deliberado para esta demostración: instanciación manual
     private val retrofitManual = Retrofit.Builder().baseUrl("https://api.miapp.com/").build()
 }
-EOF
+```
+
+```bash
 grep -rn "Retrofit.Builder()\|Room.databaseBuilder(" app/src/main/kotlin/com/academia/android/ | grep -v "NetworkModule.kt"
 ```
 
@@ -337,7 +352,11 @@ Volviendo a la analogía: cierre del track y próximos pasos funciona como el mo
 # Este script python3 ejecuta la checklist ejecutable definida a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app
-cat > app/checklist-cierre-track.py <<'EOF'
+```
+
+Crea el archivo `app/checklist-cierre-track.py`:
+
+```python
 import os
 
 archivos_del_proyecto = os.popen("find app/src/main/kotlin -name '*.kt' 2>/dev/null").read()
@@ -356,7 +375,9 @@ for nombre, cumplido in criterios.items():
 total = len(criterios)
 cumplidos = sum(criterios.values())
 print(f"Resumen: {cumplidos}/{total} dimensiones de una app Android completa presentes")
-EOF
+```
+
+```bash
 python3 app/checklist-cierre-track.py
 ```
 

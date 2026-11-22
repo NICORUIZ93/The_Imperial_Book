@@ -167,7 +167,11 @@ Volviendo a la analogía: buildspec.yml — fases y artefactos funciona como el 
 #### Código y verificación
 ```bash
 mkdir ejemplo-buildspec && cd ejemplo-buildspec
-cat > buildspec.yml <<'EOF'
+```
+
+Crea el archivo `buildspec.yml`:
+
+```yaml
 version: 0.2
 phases:
   install:
@@ -187,7 +191,9 @@ artifacts:
   files:
     - app.txt
     - app.sha256
-EOF
+```
+
+```bash
 ID=$(aws codebuild start-build --project-name demo-build --buildspec-override "$(cat buildspec.yml)" \
   --query 'build.id' --output text)
 until [ "$(aws codebuild batch-get-builds --ids "$ID" --query 'builds[0].buildComplete' --output text)" = "True" ]; do sleep 3; done

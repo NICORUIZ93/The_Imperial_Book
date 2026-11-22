@@ -86,7 +86,11 @@ Volviendo a la analogía: stateflow en el viewmodel funciona como el modelo inic
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/TareasViewModelConEstado.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModelConEstado.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
@@ -120,7 +124,9 @@ class TareasViewModelConEstado(private val repo: FuenteDeTareas) : ViewModel() {
         }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -228,7 +234,11 @@ Volviendo a la analogía: collectasstatewithlifecycle y udf funciona como el mod
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/PantallaTareasUDF.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/PantallaTareasUDF.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.runtime.Composable
@@ -243,7 +253,9 @@ fun PantallaTareasUDF(viewModel: TareasViewModelConEstado) {
         is EstadoUI.Error -> MensajeError()
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -343,7 +355,11 @@ Volviendo a la analogía: sharedflow para eventos de un solo uso funciona como e
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/EventosTareasViewModel.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/EventosTareasViewModel.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
@@ -373,7 +389,9 @@ class EventosTareasViewModel : ViewModel() {
         _estado.update { it.copy(mensajeUsuario = null) }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 

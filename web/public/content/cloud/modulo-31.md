@@ -251,7 +251,11 @@ flowchart LR
 
 ```bash
 mkdir ejemplo-ci && cd ejemplo-ci
-cat > ci-integracion.sh <<'EOF'
+```
+
+Crea el archivo `ci-integracion.sh`:
+
+```bash
 #!/usr/bin/env bash
 set -euo pipefail
 NOMBRE=floci-ci-$$
@@ -264,7 +268,9 @@ done
 export AWS_ENDPOINT_URL=http://localhost:4566 AWS_ACCESS_KEY_ID=test AWS_SECRET_ACCESS_KEY=test AWS_DEFAULT_REGION=us-east-1
 aws s3 mb "s3://ci-evidencias-$$"
 aws s3 ls | grep -q "ci-evidencias-$$" && echo "prueba de integración: ok"
-EOF
+```
+
+```bash
 bash ci-integracion.sh
 ```
 

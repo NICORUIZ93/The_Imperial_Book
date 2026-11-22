@@ -77,7 +77,11 @@ flowchart TD
 ```bash
 mkdir -p academia-devops/src/modulo8/providers-resources
 cd academia-devops/src/modulo8/providers-resources
-cat > main.tf <<'EOF'
+```
+
+Crea el archivo `main.tf`:
+
+```hcl
 terraform {
   required_providers {
     local = { source = "hashicorp/local", version = "~> 2.4" }
@@ -93,7 +97,9 @@ resource "local_file" "config" {
 data "local_file" "leido" {
   filename = local_file.config.filename
 }
-EOF
+```
+
+```bash
 terraform init
 ```
 
@@ -188,7 +194,11 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo8/state-local && cd academia-devops/src/modulo8/state-local
-cat > main.tf <<'EOF'
+```
+
+Crea el archivo `main.tf`:
+
+```hcl
 terraform {
   required_providers { local = { source = "hashicorp/local", version = "~> 2.4" } }
 }
@@ -196,7 +206,9 @@ resource "local_file" "compartido" {
   filename = "${path.module}/recurso-compartido.txt"
   content  = "version-1"
 }
-EOF
+```
+
+```bash
 terraform init && terraform apply -auto-approve
 cp terraform.tfstate estado-copia-persona-b.tfstate
 ```
@@ -286,20 +298,33 @@ flowchart TD
 ```bash
 mkdir -p academia-devops/src/modulo8/modulos-demo/modulos/archivo-config
 cd academia-devops/src/modulo8/modulos-demo
-cat > modulos/archivo-config/variables.tf <<'EOF'
+```
+
+Crea el archivo `modulos/archivo-config/variables.tf`:
+
+```hcl
 variable "nombre" { type = string }
 variable "contenido" { type = string }
-EOF
-cat > modulos/archivo-config/main.tf <<'EOF'
+```
+
+Crea el archivo `modulos/archivo-config/main.tf`:
+
+```hcl
 resource "local_file" "este" {
   filename = "${path.root}/${var.nombre}.txt"
   content  = var.contenido
 }
-EOF
-cat > modulos/archivo-config/outputs.tf <<'EOF'
+```
+
+Crea el archivo `modulos/archivo-config/outputs.tf`:
+
+```hcl
 output "ruta_generada" { value = local_file.este.filename }
-EOF
-cat > main.tf <<'EOF'
+```
+
+Crea el archivo `main.tf`:
+
+```hcl
 terraform {
   required_providers { local = { source = "hashicorp/local", version = "~> 2.4" } }
 }
@@ -313,7 +338,9 @@ module "config_produccion" {
   nombre    = "config-produccion"
   contenido = "entorno=produccion"
 }
-EOF
+```
+
+```bash
 terraform init && terraform apply -auto-approve
 ```
 
@@ -399,24 +426,33 @@ flowchart TD
 
 ```bash
 mkdir -p academia-devops/src/modulo8/plan-apply && cd academia-devops/src/modulo8/plan-apply
-cat > main.tf <<'EOF'
+```
+
+Crea el archivo `main.tf`:
+
+```hcl
 terraform {
   required_providers { local = { source = "hashicorp/local", version = "~> 2.4" } }
 }
 resource "local_file" "a" { filename = "${path.module}/a.txt"; content = "version-1" }
 resource "local_file" "b" { filename = "${path.module}/b.txt"; content = "se-eliminara" }
-EOF
-terraform init && terraform apply -auto-approve
 ```
 
 ```bash
-cat > main.tf <<'EOF'
+terraform init && terraform apply -auto-approve
+```
+
+Crea el archivo `main.tf`:
+
+```hcl
 terraform {
   required_providers { local = { source = "hashicorp/local", version = "~> 2.4" } }
 }
 resource "local_file" "a" { filename = "${path.module}/a.txt"; content = "version-2-modificado" }
 resource "local_file" "c" { filename = "${path.module}/c.txt"; content = "nuevo" }
-EOF
+```
+
+```bash
 terraform plan
 ```
 
@@ -494,7 +530,11 @@ flowchart TD
 
 ```bash
 mkdir -p academia-devops/src/modulo8/workspaces && cd academia-devops/src/modulo8/workspaces
-cat > main.tf <<'EOF'
+```
+
+Crea el archivo `main.tf`:
+
+```hcl
 terraform {
   required_providers { local = { source = "hashicorp/local", version = "~> 2.4" } }
 }
@@ -502,7 +542,9 @@ resource "local_file" "entorno" {
   filename = "${path.module}/entorno-${terraform.workspace}.txt"
   content  = "estoy corriendo en el workspace: ${terraform.workspace}"
 }
-EOF
+```
+
+```bash
 terraform init
 terraform workspace list
 terraform apply -auto-approve
@@ -593,11 +635,18 @@ Volviendo a la analogía: ansible — playbooks, roles, inventory y módulos fun
 ```bash
 mkdir -p academia-devops/src/modulo8/ansible-demo && cd academia-devops/src/modulo8/ansible-demo
 docker run -d --name maquina-objetivo alpine sleep 3600
-cat > inventory.ini <<'EOF'
+```
+
+Crea el archivo `inventory.ini`:
+
+```text
 [web]
 maquina-objetivo ansible_connection=docker
-EOF
-cat > playbook.yml <<'EOF'
+```
+
+Crea el archivo `playbook.yml`:
+
+```yaml
 - hosts: web
   tasks:
     - name: instalar curl
@@ -609,7 +658,9 @@ cat > playbook.yml <<'EOF'
       ansible.builtin.copy:
         content: "entorno=demo\n"
         dest: /etc/mi-app.conf
-EOF
+```
+
+```bash
 ansible-playbook -i inventory.ini playbook.yml
 ```
 
@@ -690,7 +741,12 @@ Volviendo a la analogía: pulumi como alternativa a hcl funciona como el modelo 
 
 ```bash
 mkdir -p academia-devops/src/modulo8/pulumi-vs-hcl && cd academia-devops/src/modulo8/pulumi-vs-hcl
-mkdir hcl && cat > hcl/main.tf <<'EOF'
+mkdir -p hcl
+```
+
+Crea el archivo `hcl/main.tf`:
+
+```hcl
 terraform {
   required_providers { local = { source = "hashicorp/local", version = "~> 2.4" } }
 }
@@ -700,8 +756,13 @@ resource "local_file" "config" {
   filename = "${path.module}/${each.key}.txt"
   content  = "entorno=${each.key}"
 }
-EOF
-mkdir pulumi-style && cat > pulumi-style/generar.js <<'EOF'
+```
+mkdir -p pulumi-style
+```
+
+Crea el archivo `pulumi-style/generar.js`:
+
+```js
 // Equivalente conceptual en un lenguaje real (simulando lo que Pulumi haría con TypeScript)
 const fs = require('node:fs');
 const entornos = ["dev", "staging", "prod"]; // bucle real del lenguaje, no una construcción HCL específica
@@ -709,7 +770,7 @@ for (const entorno of entornos) {
   fs.writeFileSync(`${__dirname}/${entorno}.txt`, `entorno=${entorno}`);
   console.log(`generado: ${entorno}.txt`); // explica cada iteración mientras ocurre
 }
-EOF
+```
 (cd hcl && terraform init && terraform apply -auto-approve)
 node pulumi-style/generar.js
 ```

@@ -183,8 +183,11 @@ Volviendo a la analogía: estructura de una función lambda funciona como el mod
 ```bash
 npm init -y
 npm install --save-dev jest
+```
 
-cat > index.test.js <<'EOF'
+Crea el archivo `index.test.js`:
+
+```js
 const { handler } = require('./index');
 
 describe('confirmar-entrega handler', () => {
@@ -220,8 +223,9 @@ describe('confirmar-entrega handler', () => {
     await expect(promise).rejects.toThrow('comando de entrega inválido');
   });
 });
-EOF
+```
 
+```bash
 # Ejecuta las pruebas
 npm test
 
@@ -264,15 +268,18 @@ Invocación de una Lambda
 └──────────────────────────────────────────────┘
 ```
 
-```bash
-cat > index.js <<'EOF'
+Crea el archivo `index.js`:
+
+```js
 exports.handler = async (event) => {
   if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin)) {
     throw new TypeError('comando de entrega inválido');
   }
   return { shipmentId: event.shipmentId, status: 'delivered' };
 };
-EOF
+```
+
+```bash
 zip funcion.zip index.js
 aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
 aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \
@@ -357,7 +364,11 @@ Tu código (handler + dependencias)
 
 ```bash
 # Primero, crea el handler que ESÍ ESCRIBE EN DYNAMODB (como RutaFlow real)
-cat > index.js <<'EOF'
+```
+
+Crea el archivo `index.js`:
+
+```js
 const { DynamoDBClient, PutItemCommand } = require("@aws-sdk/client-dynamodb");
 
 // El cliente usa variables de entorno que Floci configura automáticamente
@@ -392,8 +403,9 @@ exports.handler = async (event) => {
   
   return { shipmentId: event.shipmentId, status: 'delivered' };
 };
-EOF
+```
 
+```bash
 # Inicializa npm e instala la dependencia REAL
 npm init -y
 npm install @aws-sdk/client-dynamodb
@@ -545,15 +557,18 @@ return {"saludo": "Hola Ana"}              ▼
                                         }
 ```
 
-```bash
-cat > index.js <<'EOF'
+Crea el archivo `index.js`:
+
+```js
 exports.handler = async (event) => {
   if (!event.shipmentId || !/^\d{6}$/.test(event.recipientPin || '')) {
     return { statusCode: 400, body: JSON.stringify({ error: 'comando inválido' }) };
   }
   return { statusCode: 200, body: JSON.stringify({ shipmentId: event.shipmentId, status: 'delivered' }) };
 };
-EOF
+```
+
+```bash
 zip funcion.zip index.js
 aws lambda update-function-code --function-name confirmar-entrega --zip-file fileb://funcion.zip
 aws lambda invoke --function-name confirmar-entrega --payload '{"shipmentId":"env-4471","recipientPin":"837201"}' \

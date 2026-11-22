@@ -74,10 +74,17 @@ Volviendo a la analogía: modelo de métricas de prometheus — counter, gauge, 
 
 ```bash
 mkdir -p academia-devops/src/modulo9/metricas && cd academia-devops/src/modulo9/metricas
-cat > package.json <<'EOF'
+```
+
+Crea el archivo `package.json`:
+
+```json
 {"name":"metricas-demo","dependencies":{"prom-client":"15.1.0"}}
-EOF
-cat > app.js <<'EOF'
+```
+
+Crea el archivo `app.js`:
+
+```js
 const http = require('node:http');
 const client = require('prom-client');
 const peticionesTotal = new client.Counter({ name: 'http_requests_total', help: 'total de peticiones', labelNames: ['status'] });
@@ -91,7 +98,9 @@ http.createServer(async (req, res) => {
   peticionesTotal.inc({ status: '200' });
   setTimeout(() => { fin(); conexionesActivas.dec(); res.end('ok'); }, Math.random() * 300);
 }).listen(3000);
-EOF
+```
+
+```bash
 docker run -d --name metricas-app -p 3010:3000 -v "$(pwd)":/app -w /app node:22-alpine sh -c "npm install --silent && node app.js"
 ```
 
@@ -174,13 +183,19 @@ sum(rate(...{status="500"}[5m])) / sum(rate(...[5m]))  ──▶  tasa de error 
 
 ```bash
 mkdir -p academia-devops/src/modulo9/promql && cd academia-devops/src/modulo9/promql
-cat > prometheus.yml <<'EOF'
+```
+
+Crea el archivo `prometheus.yml`:
+
+```yaml
 global: { scrape_interval: 5s }
 scrape_configs:
   - job_name: 'metricas-app'
     static_configs:
       - targets: ['host.docker.internal:3010']
-EOF
+```
+
+```bash
 docker run -d --name prometheus-demo -p 9090:9090 -v "$(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml:ro" \
   --add-host=host.docker.internal:host-gateway prom/prometheus
 sleep 5
@@ -267,7 +282,11 @@ Volviendo a la analogía: dashboards en grafana funciona como el modelo inicial,
 ```bash
 mkdir -p academia-devops/src/modulo9/grafana/provisioning/datasources
 cd academia-devops/src/modulo9/grafana
-cat > provisioning/datasources/prometheus.yml <<'EOF'
+```
+
+Crea el archivo `provisioning/datasources/prometheus.yml`:
+
+```yaml
 apiVersion: 1
 datasources:
   - name: Prometheus
@@ -275,7 +294,9 @@ datasources:
     access: proxy
     url: http://host.docker.internal:9090
     isDefault: true
-EOF
+```
+
+```bash
 docker run -d --name grafana-demo -p 3300:3000 \
   --add-host=host.docker.internal:host-gateway \
   -v "$(pwd)/provisioning:/etc/grafana/provisioning" \
@@ -285,10 +306,13 @@ sleep 6
 curl -s -u admin:admin http://localhost:3300/api/datasources | python3 -m json.tool | grep -A2 '"name": "Prometheus"'
 ```
 
-```bash
-cat > dashboard.json <<'EOF'
+Crea el archivo `dashboard.json`:
+
+```json
 {"dashboard":{"title":"Estado del servicio","panels":[{"type":"timeseries","title":"Peticiones por segundo","targets":[{"expr":"rate(http_requests_total[1m])"}],"gridPos":{"h":8,"w":12,"x":0,"y":0}}]},"overwrite":true}
-EOF
+```
+
+```bash
 curl -s -u admin:admin -X POST -H "Content-Type: application/json" -d @dashboard.json http://localhost:3300/api/dashboards/db | python3 -m json.tool
 ```
 
@@ -365,7 +389,11 @@ Prometheus evalúa continuamente: expr > umbral, sostenido durante "for"
 ```bash
 mkdir -p academia-devops/src/modulo9/alertas && cd academia-devops/src/modulo9/alertas
 docker network inspect bridge >/dev/null 2>&1 || true
-cat > reglas.yml <<'EOF'
+```
+
+Crea el archivo `reglas.yml`:
+
+```yaml
 groups:
   - name: alertas-demo
     rules:
@@ -374,14 +402,19 @@ groups:
         for: 30s
         labels: { severity: critical }
         annotations: { summary: "tasa de error por encima del 5% sostenida" }
-EOF
-cat > prometheus.yml <<'EOF'
+```
+
+Crea el archivo `prometheus.yml`:
+
+```yaml
 global: { scrape_interval: 5s, evaluation_interval: 5s }
 rule_files: ["reglas.yml"]
 scrape_configs:
   - job_name: 'metricas-app'
     static_configs: [{ targets: ['host.docker.internal:3010'] }]
-EOF
+```
+
+```bash
 docker run -d --name prometheus-alertas -p 9091:9090 \
   -v "$(pwd)/prometheus.yml:/etc/prometheus/prometheus.yml:ro" \
   -v "$(pwd)/reglas.yml:/etc/prometheus/reglas.yml:ro" \
@@ -476,14 +509,17 @@ curl -sS -G 'http://localhost:9090/api/v1/query' \
   | python3 -m json.tool | grep -A1 '"value"'
 ```
 
-```bash
-cat > slo.md <<'EOF'
+Crea el archivo `slo.md`:
+
+```markdown
 # SLO de latencia — API demo
 SLI: proporción de peticiones que responden en menos de 500ms (medido con PromQL).
 SLO: 95% de peticiones bajo 500ms, medido sobre ventana móvil de 30 días.
 SLA (si aplicara externamente): 90% bajo 500ms, con crédito de servicio si se incumple.
 Presupuesto de error del SLO: 5% del tiempo puede exceder 500ms sin romper la meta interna.
-EOF
+```
+
+```bash
 cat slo.md
 ```
 
@@ -561,14 +597,21 @@ OpenTelemetry Collector
 
 ```bash
 mkdir -p academia-devops/src/modulo9/otel && cd academia-devops/src/modulo9/otel
-cat > package.json <<'EOF'
+```
+
+Crea el archivo `package.json`:
+
+```json
 {"name":"otel-demo","dependencies":{
   "@opentelemetry/api":"1.9.0",
   "@opentelemetry/sdk-metrics":"1.25.0",
   "@opentelemetry/exporter-prometheus":"0.52.0"
 }}
-EOF
-cat > app.js <<'EOF'
+```
+
+Crea el archivo `app.js`:
+
+```js
 const http = require('node:http');
 const { MeterProvider } = require('@opentelemetry/sdk-metrics');
 const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
@@ -584,7 +627,9 @@ http.createServer((req, res) => {
   contador.add(1, { status: '200' }); // instrumentado con la API neutral de OpenTelemetry, no directamente contra Prometheus
   res.end('ok desde app instrumentada con OpenTelemetry');
 }).listen(3001);
-EOF
+```
+
+```bash
 docker run -d --name otel-app -p 3011:3001 -p 9465:9464 -v "$(pwd)":/app -w /app node:22-alpine sh -c "npm install --silent && node app.js"
 sleep 8
 curl -s http://localhost:3011/ >/dev/null

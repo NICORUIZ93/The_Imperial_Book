@@ -77,7 +77,11 @@ Volviendo a la analogía: pod, replicaset, deployment funciona como el modelo in
 mkdir -p academia-devops/src/modulo6/deployment && cd academia-devops/src/modulo6/deployment
 kind create cluster --name academia-devops
 kubectl get nodes
-cat > deployment.yaml <<'EOF'
+```
+
+Crea el archivo `deployment.yaml`:
+
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -94,7 +98,9 @@ spec:
         - name: mi-api
           image: node:22-alpine
           command: ["node", "-e", "require('http').createServer((q,r)=>r.end('v1')).listen(3000)"]
-EOF
+```
+
+```bash
 kubectl apply -f deployment.yaml
 ```
 
@@ -178,7 +184,11 @@ Volviendo a la analogía: service (clusterip, nodeport, loadbalancer) funciona c
 
 ```bash
 mkdir -p academia-devops/src/modulo6/service && cd academia-devops/src/modulo6/service
-cat > service.yaml <<'EOF'
+```
+
+Crea el archivo `service.yaml`:
+
+```yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -189,7 +199,9 @@ spec:
   ports:
     - port: 80
       targetPort: 3000
-EOF
+```
+
+```bash
 kubectl apply -f service.yaml
 kubectl get service mi-api-svc
 kubectl describe service mi-api-svc | grep Endpoints
@@ -541,7 +553,11 @@ Volviendo a la analogía: statefulsets, daemonsets, jobs y cronjobs funciona com
 
 ```bash
 mkdir -p academia-devops/src/modulo6/workloads && cd academia-devops/src/modulo6/workloads
-cat > job.yaml <<'EOF'
+```
+
+Crea el archivo `job.yaml`:
+
+```yaml
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -554,8 +570,11 @@ spec:
           image: alpine
           command: ["sh", "-c", "echo 'migrando datos...'; sleep 2; echo 'migracion completa'"]
       restartPolicy: Never
-EOF
-cat > cronjob.yaml <<'EOF'
+```
+
+Crea el archivo `cronjob.yaml`:
+
+```yaml
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -571,7 +590,9 @@ spec:
               image: alpine
               command: ["sh", "-c", "echo 'respaldo ejecutado'"]
           restartPolicy: Never
-EOF
+```
+
+```bash
 kubectl apply -f job.yaml -f cronjob.yaml
 kubectl wait --for=condition=complete job/migracion-datos --timeout=30s
 kubectl get jobs cronjobs
@@ -655,7 +676,11 @@ Volviendo a la analogía: persistent volumes, pvcs y storageclasses funciona com
 
 ```bash
 mkdir -p academia-devops/src/modulo6/almacenamiento && cd academia-devops/src/modulo6/almacenamiento
-cat > pvc.yaml <<'EOF'
+```
+
+Crea el archivo `pvc.yaml`:
+
+```yaml
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -665,10 +690,16 @@ spec:
   resources:
     requests:
       storage: 1Gi
-EOF
+```
+
+```bash
 kubectl apply -f pvc.yaml
 kubectl get pvc datos-app
-cat > pod-con-volumen.yaml <<'EOF'
+```
+
+Crea el archivo `pod-con-volumen.yaml`:
+
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -685,7 +716,9 @@ spec:
     - name: almacenamiento
       persistentVolumeClaim:
         claimName: datos-app
-EOF
+```
+
+```bash
 kubectl apply -f pod-con-volumen.yaml
 kubectl wait --for=condition=Ready pod/escritor --timeout=30s
 kubectl exec escritor -- cat /datos/registro.txt
@@ -781,7 +814,11 @@ kubectl get pods -n ingress-nginx
 ```bash
 kubectl create deployment mi-api --image=nginx:1.30-alpine --replicas=2
 kubectl expose deployment mi-api --port=80
-cat > ingress.yaml <<'EOF'
+```
+
+Crea el archivo `ingress.yaml`:
+
+```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -796,7 +833,9 @@ spec:
             pathType: Prefix
             backend:
               service: { name: mi-api, port: { number: 80 } }
-EOF
+```
+
+```bash
 kubectl apply -f ingress.yaml
 kubectl get ingress mi-api
 ```

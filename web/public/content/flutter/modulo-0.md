@@ -39,7 +39,11 @@ Caso guía: modelar una entrega donde el conductor y la foto de confirmación pu
 ```bash
 mkdir -p /tmp/dart_t1_nullable
 cd /tmp/dart_t1_nullable
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 class Delivery {
   final String guia;
   final String? conductor;
@@ -52,7 +56,9 @@ void main() {
   print(entrega.guia);
   print(entrega.conductor);
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -80,7 +86,11 @@ null
 ```bash
 mkdir -p /tmp/dart_t1_ops
 cd /tmp/dart_t1_ops
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 void main() {
   String? apodo;
   print(apodo?.length);
@@ -90,7 +100,9 @@ void main() {
   print(apodo?.toUpperCase());
   print(apodo ?? 'Sin apodo');
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -120,7 +132,11 @@ Ana
 ```bash
 mkdir -p /tmp/dart_t1_promo
 cd /tmp/dart_t1_promo
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 void imprimirFoto(String? fotoConfirmacion) {
   if (fotoConfirmacion == null) {
     print('Sin foto de confirmación');
@@ -133,7 +149,9 @@ void main() {
   imprimirFoto(null);
   imprimirFoto('firma-4471.png');
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -165,7 +183,11 @@ Caso guía: compartir la capacidad de reportar posición entre `Conductor` y `Ve
 ```bash
 mkdir -p /tmp/dart_t2_clase
 cd /tmp/dart_t2_clase
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 class Conductor {
   final String nombre;
   final String licencia;
@@ -179,7 +201,9 @@ void main() {
   final conductor = Conductor('Ana', 'B123');
   print(conductor.descripcion());
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -206,7 +230,11 @@ Ana (licencia B123)
 ```bash
 mkdir -p /tmp/dart_t2_mixin
 cd /tmp/dart_t2_mixin
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 mixin Rastreable {
   String get idRastreable;
   String reportarPosicion(double lat, double lon) =>
@@ -231,7 +259,9 @@ void main() {
   print(Conductor('Ana').reportarPosicion(4.6, -74.1));
   print(Vehiculo('ABC123').reportarPosicion(4.7, -74.0));
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -259,7 +289,11 @@ vehiculo:ABC123 en (4.7, -74.0)
 ```bash
 mkdir -p /tmp/dart_t2_on
 cd /tmp/dart_t2_on
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 abstract class Identificable {
   String get id;
 }
@@ -278,7 +312,9 @@ void main() {
   final entrega = Entrega('RF-4471');
   print(entrega.auditar('ENTREGADA'));
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -309,7 +345,11 @@ Caso guía: consultar entregas de forma asíncrona, esperar el resultado sin blo
 ```bash
 mkdir -p /tmp/dart_t3_future
 cd /tmp/dart_t3_future
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 Future<String> obtenerConductor(String guia) async {
   await Future.delayed(Duration(milliseconds: 10));
   return 'Ana';
@@ -320,7 +360,9 @@ Future<void> main() async {
   final conductor = await obtenerConductor('RF-4471');
   print('Conductor: $conductor');
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -348,7 +390,11 @@ Conductor: Ana
 ```bash
 mkdir -p /tmp/dart_t3_col
 cd /tmp/dart_t3_col
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 class Entrega {
   final String guia;
   final double monto;
@@ -369,7 +415,9 @@ void main() {
   print(guiasCompletadas);
   print(total);
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -397,7 +445,11 @@ dart run main.dart
 ```bash
 mkdir -p /tmp/dart_t3_err
 cd /tmp/dart_t3_err
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 Future<String> cargarEntrega(bool falla) async {
   await Future.delayed(Duration(milliseconds: 10));
   if (falla) throw Exception('timeout de red');
@@ -412,7 +464,9 @@ Future<void> main() async {
     print('Error controlado: $e');
   }
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -444,28 +498,43 @@ Caso guía: configurar el analizador para detectar problemas de estilo y tipos a
 ```bash
 mkdir -p /tmp/dart_t4_lints
 cd /tmp/dart_t4_lints
-cat > pubspec.yaml << 'YAML'
+```
+
+Crea el archivo `pubspec.yaml`:
+
+```yaml
 name: dart_t4_lints
 environment:
   sdk: ^3.3.0
 dev_dependencies:
   lints: ^5.0.0
-YAML
-cat > analysis_options.yaml << 'YAML'
+```
+
+Crea el archivo `analysis_options.yaml`:
+
+```yaml
 include: package:lints/recommended.yaml
 
 linter:
   rules:
     prefer_final_locals: true
     avoid_print: false
-YAML
+```
+
+```bash
 mkdir -p lib
-cat > lib/main.dart << 'DART'
+```
+
+Crea el archivo `lib/main.dart`:
+
+```dart
 void main() {
   var ciudad = 'Bogotá';
   print(ciudad);
 }
-DART
+```
+
+```bash
 dart pub get >/tmp/dart_t4_pubget.log 2>&1
 dart analyze lib/main.dart
 ```
@@ -497,26 +566,41 @@ Analyzing main.dart...
 ```bash
 mkdir -p /tmp/dart_t4_fix
 cd /tmp/dart_t4_fix
-cat > pubspec.yaml << 'YAML'
+```
+
+Crea el archivo `pubspec.yaml`:
+
+```yaml
 name: dart_t4_fix
 environment:
   sdk: ^3.3.0
 dev_dependencies:
   lints: ^5.0.0
-YAML
-cat > analysis_options.yaml << 'YAML'
+```
+
+Crea el archivo `analysis_options.yaml`:
+
+```yaml
 include: package:lints/recommended.yaml
 linter:
   rules:
     prefer_final_locals: true
-YAML
+```
+
+```bash
 mkdir -p lib
-cat > lib/main.dart << 'DART'
+```
+
+Crea el archivo `lib/main.dart`:
+
+```dart
 void main() {
   var ciudad = 'Bogotá';
   print(ciudad);
 }
-DART
+```
+
+```bash
 dart pub get >/tmp/dart_t4_fix_pubget.log 2>&1
 dart fix --dry-run
 ```
@@ -549,14 +633,21 @@ lib/main.dart
 ```bash
 mkdir -p /tmp/dart_t4_error
 cd /tmp/dart_t4_error
-cat > pubspec.yaml << 'YAML'
+```
+
+Crea el archivo `pubspec.yaml`:
+
+```yaml
 name: dart_t4_error
 environment:
   sdk: ^3.3.0
 dev_dependencies:
   lints: ^5.0.0
-YAML
-cat > analysis_options.yaml << 'YAML'
+```
+
+Crea el archivo `analysis_options.yaml`:
+
+```yaml
 include: package:lints/recommended.yaml
 analyzer:
   errors:
@@ -564,13 +655,21 @@ analyzer:
 linter:
   rules:
     avoid_print: true
-YAML
+```
+
+```bash
 mkdir -p lib
-cat > lib/main.dart << 'DART'
+```
+
+Crea el archivo `lib/main.dart`:
+
+```dart
 void main() {
   print('debug');
 }
-DART
+```
+
+```bash
 dart pub get >/tmp/dart_t4_error_pubget.log 2>&1
 dart analyze lib/main.dart || true
 ```
@@ -606,7 +705,11 @@ Caso guía: consumir posiciones GPS emitidas a lo largo del tiempo, filtrar las 
 ```bash
 mkdir -p /tmp/dart_t5_stream
 cd /tmp/dart_t5_stream
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 Stream<double> posiciones() async* {
   var lat = 4.55;
   for (var i = 0; i < 4; i++) {
@@ -621,7 +724,9 @@ Future<void> main() async {
     print(lat.toStringAsFixed(2));
   }
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -651,7 +756,11 @@ dart run main.dart
 ```bash
 mkdir -p /tmp/dart_t5_map
 cd /tmp/dart_t5_map
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 Stream<double> posiciones() async* {
   var lat = 4.55;
   for (var i = 0; i < 4; i++) {
@@ -667,7 +776,9 @@ Future<void> main() async {
     print(texto);
   }
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -696,7 +807,11 @@ lat 4.61
 ```bash
 mkdir -p /tmp/dart_t5_ctrl
 cd /tmp/dart_t5_ctrl
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 import 'dart:async';
 
 Future<void> main() async {
@@ -712,7 +827,9 @@ Future<void> main() async {
 
   print(recibidos);
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -743,7 +860,11 @@ Caso guía: devolver cotización con múltiples valores sin crear una clase cere
 ```bash
 mkdir -p /tmp/dart_t6_record
 cd /tmp/dart_t6_record
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 ({int centavos, int minutos}) cotizar(int kilos) =>
     (centavos: 1000 + kilos * 120, minutos: 30 + kilos * 5);
 
@@ -752,7 +873,9 @@ void main() {
   print(resultado.centavos);
   print(resultado.minutos);
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -780,7 +903,11 @@ dart run main.dart
 ```bash
 mkdir -p /tmp/dart_t6_pattern
 cd /tmp/dart_t6_pattern
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 ({int centavos, int minutos}) cotizar(int kilos) =>
     (centavos: 1000 + kilos * 120, minutos: 30 + kilos * 5);
 
@@ -793,7 +920,9 @@ void main() {
     print('JSON válido: $codigo con $kilos kg');
   }
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -821,7 +950,11 @@ JSON válido: ENV-42 con 2 kg
 ```bash
 mkdir -p /tmp/dart_t6_sealed
 cd /tmp/dart_t6_sealed
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 sealed class EstadoEnvio {}
 class Creado extends EstadoEnvio {}
 class EnRuta extends EstadoEnvio { EnRuta(this.parada); final int parada; }
@@ -840,7 +973,9 @@ void main() {
     print(describir(e));
   }
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -875,7 +1010,11 @@ Caso guía: formatear montos y validar códigos de envío con tipos más expresi
 ```bash
 mkdir -p /tmp/dart_t7_ext
 cd /tmp/dart_t7_ext
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 extension Pesos on int {
   String get comoPesos =>
       '\$${toString().replaceAllMapped(RegExp(r'\B(?=(\d{3})+$)'), (_) => '.')}';
@@ -884,7 +1023,9 @@ extension Pesos on int {
 void main() {
   print(52000.comoPesos);
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -911,7 +1052,11 @@ $52.000
 ```bash
 mkdir -p /tmp/dart_t7_type
 cd /tmp/dart_t7_type
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 extension type CodigoEnvio._(String valor) {
   factory CodigoEnvio(String texto) {
     if (!RegExp(r'^ENV-\d+$').hasMatch(texto)) {
@@ -931,7 +1076,9 @@ void main() {
   print(etiqueta(codigo, 'Ana'));
   print(codigo.numero);
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 
@@ -959,7 +1106,11 @@ ENV-42 para Ana
 ```bash
 mkdir -p /tmp/dart_t7_valid
 cd /tmp/dart_t7_valid
-cat > main.dart << 'DART'
+```
+
+Crea el archivo `main.dart`:
+
+```dart
 extension type CodigoEnvio._(String valor) {
   factory CodigoEnvio(String texto) {
     if (!RegExp(r'^ENV-\d+$').hasMatch(texto)) {
@@ -977,7 +1128,9 @@ void main() {
     print(e.message);
   }
 }
-DART
+```
+
+```bash
 dart run main.dart
 ```
 

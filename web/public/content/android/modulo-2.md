@@ -85,7 +85,11 @@ Volviendo a la analogía: composables y recomposición funciona como el modelo i
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/TarjetaTarea.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TarjetaTarea.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.material3.Text
@@ -99,7 +103,9 @@ fun TarjetaTarea(titulo: String, completada: Boolean) {
         textDecoration = if (completada) TextDecoration.LineThrough else null
     )
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -199,7 +205,11 @@ Volviendo a la analogía: state hoisting funciona como el modelo inicial, pero r
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/CampoTitulo.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/CampoTitulo.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.material3.TextField
@@ -219,7 +229,9 @@ fun PantallaCrearTarea() {
     var titulo by remember { mutableStateOf("") } // el estado vive en el padre
     CampoTitulo(valor = titulo, onValorCambia = { titulo = it })
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -316,7 +328,11 @@ Volviendo a la analogía: remember, remembersaveable y layout básico funciona c
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/PantallaContador.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/PantallaContador.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.foundation.layout.Column
@@ -348,7 +364,9 @@ fun PantallaContador() {
         }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 

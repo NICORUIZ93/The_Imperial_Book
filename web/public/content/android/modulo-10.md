@@ -85,7 +85,11 @@ Volviendo a la analogía: detectar y corregir recomposición innecesaria funcion
 # confirma en ejecución real la diferencia de identidad entre lambdas
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/Theme.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/Theme.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -126,8 +130,11 @@ fun AcademiaAndroidTheme(contenido: @Composable () -> Unit) {
         content = contenido,
     )
 }
-EOF
-cat > app/src/main/kotlin/com/academia/android/BotonesComparados.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/BotonesComparados.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.material3.Button
@@ -147,7 +154,9 @@ fun BotonEstable(viewModel: TareasViewModelConEstado) {
         Button(onClick = viewModel::cargar) { Text("Cargar") } // referencia estable
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -329,7 +338,11 @@ Volviendo a la analogía: accesibilidad e interop con views funciona como el mod
 # Este script python3 audita programáticamente qué íconos carecen de contentDescription
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/IconoAccesible.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/IconoAccesible.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.material.icons.Icons
@@ -341,7 +354,9 @@ import androidx.compose.runtime.Composable
 fun IconoEliminarTarea() {
     Icon(Icons.Default.Delete, contentDescription = "Eliminar tarea") // sin esto, TalkBack no puede describir el ícono
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 

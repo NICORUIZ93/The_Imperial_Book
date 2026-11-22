@@ -402,8 +402,9 @@ flowchart LR
     D30 --> D90["Día 90\nArchivo profundo\n(muy barato, recuperación en horas, no ms)"]
 ```
 
-```bash
-cat > lifecycle.json << 'EOF'
+Crea el archivo `lifecycle.json`:
+
+```json
 {
   "Rules": [{
     "ID": "mover-pruebas-entrega-a-infrecuente",
@@ -412,7 +413,9 @@ cat > lifecycle.json << 'EOF'
     "Transitions": [{ "Days": 30, "StorageClass": "STANDARD_IA" }]
   }]
 }
-EOF
+```
+
+```bash
 aws s3api put-bucket-lifecycle-configuration --bucket pruebas-entrega --lifecycle-configuration file://lifecycle.json
 aws s3api get-bucket-lifecycle-configuration --bucket pruebas-entrega
 ```

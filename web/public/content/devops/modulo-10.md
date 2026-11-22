@@ -76,7 +76,11 @@ Volviendo a la analogía: logging estructurado (json) funciona como el modelo in
 ```bash
 mkdir -p academia-devops/src/modulo10/logging-estructurado
 cd academia-devops/src/modulo10/logging-estructurado
-cat > app.js <<'EOF'
+```
+
+Crea el archivo `app.js`:
+
+```js
 const http = require('node:http');
 function logTextoLibre(msg) { console.log(`[${new Date().toISOString()}] ${msg}`); }
 function logEstructurado(nivel, campos) {
@@ -91,7 +95,9 @@ http.createServer((req, res) => {
   }
   res.end('ok');
 }).listen(3000);
-EOF
+```
+
+```bash
 docker run -d --name logging-app -p 3020:3000 -v "$(pwd)":/app -w /app node:22-alpine node app.js
 ```
 
@@ -372,15 +378,22 @@ Buscar "abc-123" en el sistema centralizado
 
 ```bash
 mkdir -p academia-devops/src/modulo10/correlation-id && cd academia-devops/src/modulo10/correlation-id
-cat > servicio-b.js <<'EOF'
+```
+
+Crea el archivo `servicio-b.js`:
+
+```js
 const http = require('node:http');
 http.createServer((req, res) => {
   const correlationId = req.headers['x-correlation-id'] ?? 'sin-id';
   console.log(JSON.stringify({ level: 'info', service: 'B', correlationId, msg: 'procesando en B' }));
   res.end('respuesta de B');
 }).listen(3001);
-EOF
-cat > servicio-a.js <<'EOF'
+```
+
+Crea el archivo `servicio-a.js`:
+
+```js
 const http = require('node:http');
 http.createServer((req, res) => {
   const correlationId = req.headers['x-correlation-id'] ?? crypto.randomUUID();
@@ -392,7 +405,9 @@ http.createServer((req, res) => {
   });
 }).listen(3000);
 const crypto = require('node:crypto');
-EOF
+```
+
+```bash
 docker network create correlacion-red 2>/dev/null || true
 docker run -d --name servicio-b --network correlacion-red -v "$(pwd)":/app -w /app -p 3031:3001 node:22-alpine node servicio-b.js
 docker run -d --name servicio-a --network correlacion-red -v "$(pwd)":/app -w /app -p 3030:3000 node:22-alpine node servicio-a.js

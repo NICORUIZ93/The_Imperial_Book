@@ -90,7 +90,11 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo3/healthcheck && cd academia-devops/src/modulo3/healthcheck
-cat > compose.yaml <<'EOF'
+```
+
+Crea el archivo `compose.yaml`:
+
+```yaml
 services:
   db:
     image: postgres:16-alpine
@@ -106,7 +110,6 @@ services:
       db:
         condition: service_healthy
     command: ["sh", "-c", "pg_isready -h db -U postgres && echo 'app arrancó DESPUES de que db reportara healthy'"]
-EOF
 ```
 
 ```bash
@@ -190,13 +193,16 @@ mkdir -p academia-devops/src/modulo3/env-demo && cd academia-devops/src/modulo3/
 echo "POSTGRES_PASSWORD=" > .env.example
 echo "POSTGRES_PASSWORD=desarrollo123" > .env
 echo ".env" > .gitignore
-cat > compose.yaml <<'EOF'
+```
+
+Crea el archivo `compose.yaml`:
+
+```yaml
 services:
   db:
     image: postgres:16-alpine
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sin-configurar}
-EOF
 ```
 
 ```bash
@@ -292,7 +298,11 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo3/proyecto-a academia-devops/src/modulo3/proyecto-b
-cat > academia-devops/src/modulo3/proyecto-a/compose.yaml <<'EOF'
+```
+
+Crea el archivo `academia-devops/src/modulo3/proyecto-a/compose.yaml`:
+
+```yaml
 services:
   db:
     image: alpine
@@ -301,7 +311,9 @@ services:
     image: alpine
     depends_on: [db]
     command: sh -c "ping -c 2 db"
-EOF
+```
+
+```bash
 cp academia-devops/src/modulo3/proyecto-a/compose.yaml academia-devops/src/modulo3/proyecto-b/compose.yaml
 cd academia-devops/src/modulo3/proyecto-a && docker compose up -d db
 cd ../proyecto-b && docker compose up -d db
@@ -386,7 +398,11 @@ flowchart TD
 
 ```bash
 mkdir -p academia-devops/src/modulo3/perfiles && cd academia-devops/src/modulo3/perfiles
-cat > compose.yaml <<'EOF'
+```
+
+Crea el archivo `compose.yaml`:
+
+```yaml
 services:
   app:
     image: alpine
@@ -395,7 +411,9 @@ services:
     image: alpine
     command: sleep 300
     profiles: ["debug"]
-EOF
+```
+
+```bash
 docker compose up -d
 docker compose ps --services
 ```

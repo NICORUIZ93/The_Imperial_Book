@@ -74,11 +74,17 @@ aws appsync start-schema-creation --api-id "$API_ID" --definition fileb://schema
 
 ```bash
 mkdir -p ejemplo-graphql/src && cd ejemplo-graphql
-cat > src/schema.graphql <<'EOF'
+```
+
+Crea el archivo `src/schema.graphql`:
+
+```text
 type Query {
   estadoEntrega(guia: String!): String
 }
-EOF
+```
+
+```bash
 API_ID=$(aws appsync create-graphql-api --name demo-api-esquema --authentication-type API_KEY \
   --query 'graphqlApi.apiId' --output text)
 aws appsync start-schema-creation --api-id "$API_ID" --definition fileb://src/schema.graphql

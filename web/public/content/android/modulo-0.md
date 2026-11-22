@@ -292,12 +292,18 @@ if 'name="titulo_bienvenida"' not in xml:
     ruta.write_text(xml, encoding='utf-8')
 print('values/strings.xml contiene titulo_bienvenida')
 PY
-cat > app/src/main/res/values-en/strings.xml <<'EOF'
+```
+
+Crea el archivo `app/src/main/res/values-en/strings.xml`:
+
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="titulo_bienvenida">Welcome</string>
 </resources>
-EOF
+```
+
+```bash
 # python3 valida que el XML generado es válido antes de continuar
 python3 -c "
 import xml.etree.ElementTree as ET
@@ -426,13 +432,22 @@ flowchart TD
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p core/src/main/kotlin/com/academia/core
-cat > core/build.gradle.kts <<'EOF'
+```
+
+Crea el archivo `core/build.gradle.kts`:
+
+```kotlin
 plugins { alias(libs.plugins.kotlin.jvm) }
-EOF
-cat > core/src/main/kotlin/com/academia/core/Formateador.kt <<'EOF'
+```
+
+Crea el archivo `core/src/main/kotlin/com/academia/core/Formateador.kt`:
+
+```kotlin
 package com.academia.core
 fun formatearBienvenida(nombre: String): String = "Bienvenido, $nombre"
-EOF
+```
+
+```bash
 # registra el módulo en el settings.gradle.kts real (la plantilla ya trae include(":app"))
 grep -q 'include(":core")' settings.gradle.kts || echo 'include(":core")' >> settings.gradle.kts
 ```

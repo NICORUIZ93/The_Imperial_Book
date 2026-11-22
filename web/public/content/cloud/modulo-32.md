@@ -191,11 +191,14 @@ flowchart TD
 mkdir ejemplo && cd ejemplo && floci start
 ```
 
-```bash
-cat > guardrail-cloudtrail.json <<'EOF'
+Crea el archivo `guardrail-cloudtrail.json`:
+
+```json
 {"Version":"2012-10-17","Statement":[{"Effect":"Deny","Action":"cloudtrail:StopLogging","Resource":"*",
   "Condition":{"StringNotLike":{"aws:PrincipalArn":"*/SecurityAutomation"}}}]}
-EOF
+```
+
+```bash
 aws iam simulate-custom-policy --policy-input-list file://guardrail-cloudtrail.json \
   --action-names cloudtrail:StopLogging --resource-arns "*"
 ```

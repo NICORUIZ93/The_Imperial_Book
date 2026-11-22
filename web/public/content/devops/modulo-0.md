@@ -307,10 +307,13 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo0/permisos && cd academia-devops/src/modulo0/permisos
-cat > script.sh <<'EOF'
+```
+
+Crea el archivo `script.sh`:
+
+```bash
 #!/bin/bash
 echo "hola desde script.sh"
-EOF
 ```
 
 ```bash
@@ -399,12 +402,18 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo0/procesos && cd academia-devops/src/modulo0/procesos
-cat > tarea-larga.sh <<'EOF'
+```
+
+Crea el archivo `tarea-larga.sh`:
+
+```bash
 #!/bin/bash
 trap 'echo "recibi SIGTERM, cerrando ordenadamente"; exit 0' TERM
 echo "trabajando... PID: $$"
 sleep 300
-EOF
+```
+
+```bash
 chmod +x tarea-larga.sh
 ```
 
@@ -490,13 +499,16 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo0/filtros && cd academia-devops/src/modulo0/filtros
-cat > app.log <<'EOF'
+```
+
+Crea el archivo `app.log`:
+
+```text
 2026-01-01T10:00:00 INFO inicio
 2026-01-01T10:00:05 ERROR conexion
 2026-01-01T10:00:06 ERROR timeout
 2026-01-01T10:00:10 INFO reintento
 2026-01-01T10:00:11 ERROR timeout
-EOF
 ```
 
 ```bash
@@ -580,14 +592,20 @@ flowchart TD
 
 ```bash
 mkdir -p academia-devops/src/modulo0/robusto && cd academia-devops/src/modulo0/robusto
-cat > preparar.sh <<'EOF'
+```
+
+Crea el archivo `preparar.sh`:
+
+```bash
 #!/bin/bash
 set -euo pipefail
 ENTORNO="${ENTORNO:-desarrollo}"
 echo "Entorno: $ENTORNO"
 mkdir -p salida
 echo "preparando..." | tee -a salida/log.txt >/dev/null
-EOF
+```
+
+```bash
 chmod +x preparar.sh
 ```
 
@@ -675,11 +693,17 @@ flowchart TD
 
 ```bash
 mkdir -p academia-devops/src/modulo0/cron && cd academia-devops/src/modulo0/cron
-cat > tarea.sh <<'EOF'
+```
+
+Crea el archivo `tarea.sh`:
+
+```bash
 #!/bin/bash
 set -euo pipefail
 echo "$(date -u +%FT%TZ) tarea ejecutada" >> /work/tarea.log
-EOF
+```
+
+```bash
 chmod +x tarea.sh
 echo "*/1 * * * * /work/tarea.sh" > mi-crontab
 ```
@@ -920,11 +944,14 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo0/cultura && cd academia-devops/src/modulo0/cultura
-cat > ciclo.md <<'EOF'
+```
+
+Crea el archivo `ciclo.md`:
+
+```markdown
 # Ciclo DevOps del proyecto
 - Plan: priorizamos incidentes reportados en Monitor.
 - Code -> Build -> Test -> Release -> Deploy -> Operate -> Monitor.
-EOF
 ```
 
 ```bash

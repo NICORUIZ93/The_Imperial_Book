@@ -93,7 +93,11 @@ Volviendo a la analogía: testing de viewmodels con fakes y runtest funciona com
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/test/kotlin/com/academia/android
-cat > app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt <<'EOF'
+```
+
+Crea el archivo `app/src/test/kotlin/com/academia/android/TareasViewModelTest.kt`:
+
+```kotlin
 package com.academia.android
 
 import kotlinx.coroutines.Dispatchers
@@ -135,12 +139,15 @@ class TareasViewModelTest {
         assertEquals(EstadoUI.Exito(listOf("Comprar leche")), viewModel.estado.value)
     }
 }
-EOF
-./gradlew :app:testDebugUnitTest --tests "com.academia.android.TareasViewModelTest"
 ```
 
 ```bash
-cat > test_viewmodel_fake.py <<'EOF'
+./gradlew :app:testDebugUnitTest --tests "com.academia.android.TareasViewModelTest"
+```
+
+Crea el archivo `test_viewmodel_fake.py`:
+
+```python
 import time
 import unittest
 
@@ -173,7 +180,9 @@ class TestViewModelConFake(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-EOF
+```
+
+```bash
 python3 -m unittest test_viewmodel_fake.py -v
 ```
 
@@ -254,7 +263,11 @@ Volviendo a la analogía: compose ui testing funciona como el modelo inicial, pe
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/androidTest/kotlin/com/academia/android
-cat > app/src/androidTest/kotlin/com/academia/android/TarjetaTareaUiTest.kt <<'EOF'
+```
+
+Crea el archivo `app/src/androidTest/kotlin/com/academia/android/TarjetaTareaUiTest.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.ui.test.assertIsDisplayed
@@ -273,7 +286,9 @@ class TarjetaTareaUiTest {
         composeTestRule.onNodeWithText("Comprar leche").assertIsDisplayed()
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.TarjetaTareaUiTest"
 ```
 
@@ -395,7 +410,11 @@ Volviendo a la analogía: testing end-to-end con activity real, y fakes vs mocks
 # Este test instrumentado lanza la Activity real y navega la app completa con finders de Compose
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/androidTest/kotlin/com/academia/android
-cat > app/src/androidTest/kotlin/com/academia/android/FlujoCrearTareaTest.kt <<'EOF'
+```
+
+Crea el archivo `app/src/androidTest/kotlin/com/academia/android/FlujoCrearTareaTest.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
@@ -418,7 +437,9 @@ class FlujoCrearTareaTest {
         compose.onNodeWithText("Nueva tarea").assertExists()
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:connectedDebugAndroidTest -Pandroid.testInstrumentationRunnerArguments.class="com.academia.android.FlujoCrearTareaTest"
 ```
 

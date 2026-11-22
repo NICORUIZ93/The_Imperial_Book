@@ -81,8 +81,9 @@ aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:0
 }
 ```
 
-```bash
-cat > maquina-confirmar.json <<'EOF'
+Crea el archivo `maquina-confirmar.json`:
+
+```json
 {
   "StartAt": "GuardarEvento",
   "States": {
@@ -100,7 +101,9 @@ cat > maquina-confirmar.json <<'EOF'
     }
   }
 }
-EOF
+```
+
+```bash
 aws stepfunctions create-state-machine --name ConfirmarEntregaFlow --definition file://maquina-confirmar.json --role-arn arn:aws:iam::000000000000:role/sfn-role
 aws stepfunctions start-execution --state-machine-arn arn:aws:states:us-east-1:000000000000:stateMachine:ConfirmarEntregaFlow --input '{"shipmentId":"env-7001"}'
 ```

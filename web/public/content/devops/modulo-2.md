@@ -77,23 +77,36 @@ flowchart TD
 ```bash
 mkdir -p academia-devops/src/modulo2/multistage
 cd academia-devops/src/modulo2/multistage
-cat > package.json <<'EOF'
+```
+
+Crea el archivo `package.json`:
+
+```json
 {"name":"api-demo","version":"1.0.0","scripts":{"build":"echo 'compilado' > dist-marker.txt"},"main":"index.js"}
-EOF
+```
+
+```bash
 docker run --rm -v "$(pwd)":/app -w /app node:22-alpine npm install --package-lock-only
 mkdir dist && echo "console.log('API corriendo')" > index.js
-cat > Dockerfile.sinoptimizar <<'EOF'
+```
+
+Crea el archivo `Dockerfile.sinoptimizar`:
+
+```dockerfile
 FROM node:22
 WORKDIR /app
 COPY . .
 RUN npm ci --omit=dev
 CMD ["node", "index.js"]
-EOF
 ```
 
 ```bash
 docker build -f Dockerfile.sinoptimizar -t api-demo:sin-optimizar .
-cat > Dockerfile <<'EOF'
+```
+
+Crea el archivo `Dockerfile`:
+
+```dockerfile
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
@@ -106,7 +119,9 @@ WORKDIR /app
 COPY --from=build /app/dist-marker.txt ./
 COPY --from=build /app/index.js ./
 CMD ["node", "index.js"]
-EOF
+```
+
+```bash
 docker build -t api-demo:multistage .
 docker images | grep api-demo
 ```
@@ -195,12 +210,22 @@ flowchart TD
 
 ```bash
 mkdir -p academia-devops/src/modulo2/cache-test && cd academia-devops/src/modulo2/cache-test
-cat > package.json <<'EOF'
+```
+
+Crea el archivo `package.json`:
+
+```json
 {"name":"api-demo","version":"1.0.0","scripts":{"build":"echo compilado > dist-marker.txt"}}
-EOF
+```
+
+```bash
 docker run --rm -v "$(pwd)":/app -w /app node:22-alpine npm install --package-lock-only
 echo "console.log('v1')" > index.js
-cat > Dockerfile <<'EOF'
+```
+
+Crea el archivo `Dockerfile`:
+
+```dockerfile
 FROM node:22-alpine AS build
 WORKDIR /app
 COPY package*.json ./
@@ -211,7 +236,9 @@ FROM node:22-alpine
 WORKDIR /app
 COPY --from=build /app/dist-marker.txt ./
 CMD ["cat", "dist-marker.txt"]
-EOF
+```
+
+```bash
 docker build -t api-demo:cache-test .
 echo "console.log('cambio de código, sin tocar package.json')" >> index.js
 docker build -t api-demo:cache-test . 2>&1 | grep -E "CACHED|npm ci"

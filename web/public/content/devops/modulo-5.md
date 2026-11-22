@@ -76,7 +76,11 @@ Volviendo a la analogía: blue-green deployment funciona como el modelo inicial,
 ```bash
 mkdir -p academia-devops/src/modulo5/blue-green/nginx
 cd academia-devops/src/modulo5/blue-green
-cat > nginx/activo.conf <<'EOF'
+```
+
+Crea el archivo `nginx/activo.conf`:
+
+```text
 upstream activo {
     server blue:3000;
 }
@@ -84,8 +88,11 @@ server {
     listen 80;
     location / { proxy_pass http://activo; }
 }
-EOF
-cat > compose.yaml <<'EOF'
+```
+
+Crea el archivo `compose.yaml`:
+
+```yaml
 services:
   blue:
     image: node:22-alpine
@@ -98,7 +105,9 @@ services:
     ports: ["8080:80"]
     volumes: ["./nginx/activo.conf:/etc/nginx/conf.d/default.conf:ro"]
     depends_on: [blue, green]
-EOF
+```
+
+```bash
 docker compose up -d
 curl -s http://localhost:8080/
 ```
@@ -182,7 +191,11 @@ Volviendo a la analogía: canary releases funciona como el modelo inicial, pero 
 ```bash
 mkdir -p academia-devops/src/modulo5/canary/nginx
 cd academia-devops/src/modulo5/canary
-cat > nginx/canary.conf <<'EOF'
+```
+
+Crea el archivo `nginx/canary.conf`:
+
+```text
 split_clients "${remote_addr}${request_id}" $version {
     5%     canary;
     *      estable;
@@ -193,8 +206,11 @@ server {
     listen 80;
     location / { proxy_pass http://$version; }
 }
-EOF
-cat > compose.yaml <<'EOF'
+```
+
+Crea el archivo `compose.yaml`:
+
+```yaml
 services:
   v1:
     image: node:22-alpine
@@ -207,7 +223,9 @@ services:
     ports: ["8081:80"]
     volumes: ["./nginx/canary.conf:/etc/nginx/conf.d/default.conf:ro"]
     depends_on: [v1, v2]
-EOF
+```
+
+```bash
 docker compose up -d
 ```
 
@@ -287,14 +305,20 @@ Volviendo a la analogía: rolling updates funciona como el modelo inicial, pero 
 
 ```bash
 mkdir -p academia-devops/src/modulo5/rolling && cd academia-devops/src/modulo5/rolling
-cat > compose.yaml <<'EOF'
+```
+
+Crea el archivo `compose.yaml`:
+
+```yaml
 services:
   app:
     image: node:22-alpine
     command: ["node", "-e", "require('http').createServer((q,r)=>r.end('version: '+process.env.VERSION)).listen(3000)"]
     environment:
       VERSION: v1
-EOF
+```
+
+```bash
 docker compose up -d --scale app=3
 docker compose ps
 ```
@@ -381,7 +405,11 @@ Volviendo a la analogía: feature flags vs branches por entorno funciona como el
 
 ```bash
 mkdir -p academia-devops/src/modulo5/feature-flag && cd academia-devops/src/modulo5/feature-flag
-cat > app.js <<'EOF'
+```
+
+Crea el archivo `app.js`:
+
+```js
 const http = require('node:http');
 http.createServer((req, res) => {
   const flagNuevaFuncion = process.env.FLAG_NUEVA_FUNCION === 'true';
@@ -390,7 +418,9 @@ http.createServer((req, res) => {
     : 'funcion nueva desactivada (comportamiento anterior)';
   res.end(respuesta);
 }).listen(3000);
-EOF
+```
+
+```bash
 docker run -d --name app-flag -p 3002:3000 -v "$(pwd)":/app -w /app -e FLAG_NUEVA_FUNCION=false node:22-alpine node app.js
 curl -s http://localhost:3002/
 ```
@@ -474,7 +504,11 @@ Despliegue canario en curso (5% del tráfico en v2)
 
 ```bash
 mkdir -p academia-devops/src/modulo5/rollback-auto && cd academia-devops/src/modulo5/rollback-auto
-cat > app-fallido.js <<'EOF'
+```
+
+Crea el archivo `app-fallido.js`:
+
+```js
 const http = require('node:http');
 let total = 0, errores = 0;
 http.createServer((req, res) => {
@@ -483,9 +517,15 @@ http.createServer((req, res) => {
   res.end('ok');
   if (req.url === '/metricas') res.end(JSON.stringify({total, errores}));
 }).listen(3000);
-EOF
+```
+
+```bash
 docker run -d --name backend-canario -p 3003:3000 -v "$(pwd)":/app -w /app node:22-alpine node app-fallido.js
-cat > vigilar.sh <<'EOF'
+```
+
+Crea el archivo `vigilar.sh`:
+
+```bash
 #!/bin/bash
 set -euo pipefail
 UMBRAL=20
@@ -504,7 +544,9 @@ if [ "$PORCENTAJE" -gt "$UMBRAL" ]; then
   exit 1
 fi
 echo "metricas OK, continua el despliegue"
-EOF
+```
+
+```bash
 chmod +x vigilar.sh
 ```
 

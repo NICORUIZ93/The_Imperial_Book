@@ -82,7 +82,11 @@ test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del 
 mkdir -p app/src/main/kotlin/com/academia/android
 # la plantilla del Módulo 0 ya creó MainActivity en java/; la reemplazas en el mismo archivo
 # (si la crearas también en kotlin/, habría dos clases MainActivity y no compilaría)
-cat > app/src/main/java/com/academia/android/MainActivity.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/java/com/academia/android/MainActivity.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.os.Bundle
@@ -102,7 +106,9 @@ class MainActivity : ComponentActivity() {
     override fun onStop() { super.onStop(); Log.d(ETIQUETA, "onStop") }
     override fun onDestroy() { super.onDestroy(); Log.d(ETIQUETA, "onDestroy") }
 }
-EOF
+```
+
+```bash
 grep -c "override fun on" app/src/main/java/com/academia/android/MainActivity.kt
 ./gradlew :app:compileDebugKotlin
 ```
@@ -188,7 +194,11 @@ Volviendo a la analogía: viewmodel sobrevive a la rotación funciona como el mo
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/TareasViewModel.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareasViewModel.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.ViewModel
@@ -203,7 +213,9 @@ class TareasViewModel : ViewModel() {
         _contador.value++
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -315,7 +327,11 @@ Volviendo a la analogía: savedstatehandle funciona como el modelo inicial, pero
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/TareasConFiltroViewModel.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/TareasConFiltroViewModel.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.lifecycle.SavedStateHandle
@@ -330,7 +346,9 @@ class TareasConFiltroViewModel(
             savedStateHandle["filtro"] = value
         }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 

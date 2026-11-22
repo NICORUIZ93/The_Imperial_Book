@@ -119,8 +119,9 @@ services:
       - api-2
 ```
 
-```bash
-cat > api/server.mjs <<'EOF'
+Crea el archivo `api/server.mjs`:
+
+```js
 import http from 'node:http';
 
 const nombre = process.env.NOMBRE ?? 'api-local';
@@ -134,11 +135,11 @@ http.createServer((req, res) => {
   res.writeHead(404, { 'content-type': 'application/json' });
   res.end(JSON.stringify({ error: 'ruta no encontrada' }));
 }).listen(8081, () => console.log(`${nombre} escuchando en :8081`));
-EOF
 ```
 
-```bash
-cat > nginx.conf <<'EOF'
+Crea el archivo `nginx.conf`:
+
+```text
 worker_processes auto;
 
 events {
@@ -168,7 +169,9 @@ http {
         }
     }
 }
-EOF
+```
+
+```bash
 docker compose up -d
 docker compose exec nginx nginx -t
 for i in 1 2 3 4; do curl -s http://localhost:8080/api/salud; echo; done
@@ -577,8 +580,9 @@ services:
       - ./api:/app:ro
 ```
 
-```bash
-cat > api/server.mjs <<'EOF'
+Crea el archivo `api/server.mjs`:
+
+```js
 import http from 'node:http';
 import { setTimeout as dormir } from 'node:timers/promises';
 
@@ -596,11 +600,11 @@ http.createServer(async (req, res) => {
   }
   res.writeHead(404).end();
 }).listen(8081, () => console.log('api escuchando en :8081'));
-EOF
 ```
 
-```bash
-cat > carga.mjs <<'EOF'
+Crea el archivo `carga.mjs`:
+
+```js
 import http from 'node:http';
 
 const objetivo = new URL(process.argv[2] ?? 'http://127.0.0.1:8081/api/pedidos');
@@ -654,7 +658,9 @@ console.log(`peticiones: ${total}  errores: ${errores}`);
 for (const p of [50, 95, 99]) console.log(`p${p}: ${percentil(p / 100).toFixed(0)} ms`);
 console.log(`throughput: ${(total / segundos).toFixed(0)} req/s`);
 process.exitCode = errores > 0 ? 1 : 0;
-EOF
+```
+
+```bash
 docker compose up -d
 node --check carga.mjs
 node carga.mjs http://127.0.0.1:8081/api/pedidos 1000 20

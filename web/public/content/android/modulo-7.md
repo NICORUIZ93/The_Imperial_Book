@@ -108,7 +108,11 @@ Volviendo a la analogía: configuración básica de hilt funciona como el modelo
 # Este script python3 modela el mismo grafo de dependencias para verificar el principio
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/MiApp.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/MiApp.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.app.Application
@@ -124,7 +128,9 @@ class MiApp : Application()
 class TareasViewModelInyectado @Inject constructor(
     private val repo: TareaRepository
 ) : ViewModel()
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -231,7 +237,11 @@ Volviendo a la analogía: @provides y @binds funciona como el modelo inicial, pe
 # Este script python3 modela ambos patrones (provides y binds) para verificar la diferencia en ejecución real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/NetworkModule.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/NetworkModule.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.content.Context
@@ -271,7 +281,9 @@ abstract class RepositoryModule {
     @Binds
     abstract fun bindTareaRepository(impl: TareaRepositoryImpl): TareaRepository
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -387,7 +399,11 @@ Volviendo a la analogía: scopes y testing con hilt funciona como el modelo inic
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/androidTest/kotlin/com/academia/android
-cat > app/src/androidTest/kotlin/com/academia/android/HiltTestRunner.kt <<'EOF'
+```
+
+Crea el archivo `app/src/androidTest/kotlin/com/academia/android/HiltTestRunner.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.app.Application
@@ -399,8 +415,11 @@ class HiltTestRunner : AndroidJUnitRunner() {
     override fun newApplication(cl: ClassLoader?, name: String?, context: Context?): Application =
         super.newApplication(cl, HiltTestApplication::class.java.name, context)
 }
-EOF
-cat > app/src/androidTest/kotlin/com/academia/android/TareasFlowTest.kt <<'EOF'
+```
+
+Crea el archivo `app/src/androidTest/kotlin/com/academia/android/TareasFlowTest.kt`:
+
+```kotlin
 package com.academia.android
 
 import dagger.Module
@@ -442,7 +461,6 @@ class TareasFlowTest {
         assertEquals("Tarea de prueba", api.obtenerTareas().single().titulo)
     }
 }
-EOF
 ```
 
 ```bash

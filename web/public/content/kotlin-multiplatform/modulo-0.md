@@ -96,7 +96,11 @@ Volviendo a la analogía: paso 0 · crea el proyecto `academia-kmp` funciona com
 mkdir -p academia-kmp/shared/src/commonMain/kotlin/com/academia/kmp \
          academia-kmp/shared/src/commonTest/kotlin/com/academia/kmp
 cd academia-kmp
-cat > settings.gradle.kts <<'EOF'
+```
+
+Crea el archivo `settings.gradle.kts`:
+
+```kotlin
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -110,8 +114,11 @@ dependencyResolutionManagement {
 }
 rootProject.name = "academia-kmp"
 include(":shared")
-EOF
-cat > shared/build.gradle.kts <<'EOF'
+```
+
+Crea el archivo `shared/build.gradle.kts`:
+
+```kotlin
 plugins {
     kotlin("multiplatform") version "2.4.21"
 }
@@ -128,7 +135,9 @@ kotlin {
         }
     }
 }
-EOF
+```
+
+```bash
 gradle wrapper --gradle-version 9.7.0
 ./gradlew :shared:jvmTest
 ```

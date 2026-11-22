@@ -369,14 +369,17 @@ flowchart TD
 mkdir ejemplo && cd ejemplo && floci start
 ```
 
-```bash
-cat > policy-crud.json <<'EOF'
+Crea el archivo `policy-crud.json`:
+
+```json
 {"Version":"2012-10-17","Statement":[
   {"Effect":"Allow","Action":["dynamodb:PutItem","dynamodb:GetItem","dynamodb:UpdateItem","dynamodb:DeleteItem","dynamodb:Query"],"Resource":"arn:aws:dynamodb:us-east-1:000000000000:table/Tareas"},
   {"Effect":"Allow","Action":"s3:PutObject","Resource":"arn:aws:s3:::adjuntos-tareas/*"},
   {"Effect":"Allow","Action":"sqs:SendMessage","Resource":"arn:aws:sqs:us-east-1:000000000000:procesar-adjunto"}
 ]}
-EOF
+```
+
+```bash
 aws iam simulate-custom-policy --policy-input-list file://policy-crud.json \
   --action-names sqs:ReceiveMessage --resource-arns arn:aws:sqs:us-east-1:000000000000:procesar-adjunto
 ```
@@ -455,7 +458,11 @@ flowchart TD
 
 ```bash
 mkdir -p ejemplo-documentado/scripts && cd ejemplo-documentado
-cat > scripts/desplegar.sh <<'EOF'
+```
+
+Crea el archivo `scripts/desplegar.sh`:
+
+```bash
 #!/usr/bin/env bash
 set -euo pipefail
 : "${AWS_ENDPOINT_URL:?define el endpoint con eval \"\$(floci env)\" antes de desplegar}"
@@ -466,14 +473,19 @@ aws dynamodb create-table --table-name Tareas \
 aws dynamodb wait table-exists --table-name Tareas
 echo "2/3 creación: tabla Tareas"
 echo "3/3 comprobación: $(aws dynamodb describe-table --table-name Tareas --query 'Table.TableStatus' --output text)"
-EOF
-cat > README.md <<'EOF'
+```
+
+Crea el archivo `README.md`:
+
+```markdown
 # Tareas RutaFlow
 ## Despliegue local
 1. Preparación: `floci start` y `eval "$(floci env)"`.
 2. Creación y comprobación: `bash scripts/desplegar.sh`.
 3. Limpieza: `aws dynamodb delete-table --table-name Tareas`.
-EOF
+```
+
+```bash
 bash scripts/desplegar.sh
 ```
 

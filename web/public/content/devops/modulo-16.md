@@ -82,7 +82,11 @@ flowchart LR
 ```bash
 mkdir -p academia-devops/src/modulo16/postman-newman
 cd academia-devops/src/modulo16/postman-newman
-cat > server.js <<'EOF'
+```
+
+Crea el archivo `server.js`:
+
+```js
 const http = require('node:http');
 http.createServer((req, res) => {
   if (req.method === 'GET' && req.url === '/health') {
@@ -92,24 +96,27 @@ http.createServer((req, res) => {
   }
   res.writeHead(404); res.end();
 }).listen(4000, () => console.log('servidor de pruebas en :4000'));
-EOF
+```
+
+```bash
 node server.js &
 sleep 1
 ```
 
-```bash
-cat > environment.json <<'EOF'
+Crea el archivo `environment.json`:
+
+```json
 {
   "name": "local",
   "values": [
     { "key": "baseUrl", "value": "http://127.0.0.1:4000", "enabled": true }
   ]
 }
-EOF
 ```
 
-```bash
-cat > collection.json <<'EOF'
+Crea el archivo `collection.json`:
+
+```json
 {
   "info": { "name": "RutaFlow API", "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json" },
   "item": [
@@ -126,7 +133,9 @@ cat > collection.json <<'EOF'
     }
   ]
 }
-EOF
+```
+
+```bash
 npx newman run collection.json -e environment.json
 ```
 
@@ -193,8 +202,9 @@ Volviendo a la analogía: scripts y assertions — pruebas automatizadas sobre d
 <summary><strong>Capa 2 — Construcción</strong></summary>
 
 #### Código y verificación
-```bash
-cat > server.js <<'EOF'
+Crea el archivo `server.js`:
+
+```js
 const http = require('node:http');
 http.createServer((req, res) => {
   if (req.method === 'GET' && req.url === '/health') {
@@ -213,7 +223,9 @@ http.createServer((req, res) => {
   }
   res.writeHead(404); res.end();
 }).listen(4000, () => console.log('servidor de pruebas en :4000'));
-EOF
+```
+
+```bash
 node server.js &
 sleep 1
 ```
@@ -436,8 +448,9 @@ docker restart academia-jenkins
 sleep 25
 ```
 
-```bash
-cat > Jenkinsfile <<'EOF'
+Crea el archivo `Jenkinsfile`:
+
+```text
 pipeline {
     agent any
     stages {
@@ -449,7 +462,9 @@ pipeline {
         }
     }
 }
-EOF
+```
+
+```bash
 curl -s -c cookies2.txt "http://localhost:8080/crumbIssuer/api/json" -o crumb2.json
 CRUMB2=$(python3 -c "import json; print(json.load(open('crumb2.json'))['crumb'])")
 curl -s -b cookies2.txt -H "Jenkins-Crumb: $CRUMB2" -F "jenkinsfile=<Jenkinsfile" http://localhost:8080/pipeline-model-converter/validate
@@ -520,7 +535,11 @@ Volviendo a la analogía: integración completa — newman dentro de un pipeline
 #### Código y verificación
 ```bash
 cd academia-devops/src/modulo16/jenkins
-cat > job-config.xml <<'XMLEOF'
+```
+
+Crea el archivo `job-config.xml`:
+
+```xml
 <?xml version='1.1' encoding='UTF-8'?>
 <flow-definition>
   <description>Pipeline QA del proyecto</description>
@@ -539,7 +558,9 @@ cat > job-config.xml <<'XMLEOF'
   <triggers/>
   <disabled>false</disabled>
 </flow-definition>
-XMLEOF
+```
+
+```bash
 curl -s -c cookies3.txt "http://localhost:8080/crumbIssuer/api/json" -o crumb3.json
 CRUMB3=$(python3 -c "import json; print(json.load(open('crumb3.json'))['crumb'])")
 curl -s -b cookies3.txt -H "Jenkins-Crumb: $CRUMB3" -H "Content-Type: application/xml" \

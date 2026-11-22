@@ -209,12 +209,18 @@ flowchart TD
 ```bash
 mkdir -p ejemplo-imagen/src && cd ejemplo-imagen
 printf '#!/bin/sh\necho "Hola desde la imagen ejemplo-imagen:1.0"\n' > src/saludo.sh
-cat > Dockerfile <<'EOF'
+```
+
+Crea el archivo `Dockerfile`:
+
+```dockerfile
 FROM ubuntu:24.04
 WORKDIR /app
 COPY src/saludo.sh .
 CMD ["sh", "saludo.sh"]
-EOF
+```
+
+```bash
 docker build -t ejemplo-imagen:1.0 .
 docker run --rm ejemplo-imagen:1.0
 docker history ejemplo-imagen:1.0

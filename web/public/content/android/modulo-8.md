@@ -92,7 +92,11 @@ Volviendo a la analogía: coroutineworker y garantía de ejecución funciona com
 # Este script python3 modela la persistencia de la solicitud de trabajo en un archivo real
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/SincronizarWorker.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/SincronizarWorker.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.content.Context
@@ -115,7 +119,9 @@ class SincronizarWorker(
         }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -281,7 +287,11 @@ Volviendo a la analogía: constraints y trabajo periódico funciona como el mode
 # Este script python3 valida el intervalo mínimo permitido y modela las constraints
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/ConstraintsSincronizacion.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ConstraintsSincronizacion.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.work.Constraints
@@ -299,7 +309,9 @@ fun crearSolicitudPeriodica(): androidx.work.PeriodicWorkRequest {
         .setConstraints(constraints)
         .build()
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -417,7 +429,11 @@ Volviendo a la analogía: notificaciones desde background work funciona como el 
 # Este script python3 modela el envío de la notificación tras completar el trabajo
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/SincronizarWorkerConNotificacion.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/SincronizarWorkerConNotificacion.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.content.Context
@@ -446,7 +462,9 @@ class SincronizarWorkerConNotificacion(
         }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 

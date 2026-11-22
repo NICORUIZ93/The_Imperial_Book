@@ -87,7 +87,11 @@ Volviendo a la analogía: el sistema operativo conecta tu app con entradas exter
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/ValidacionDeepLink.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/ValidacionDeepLink.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.net.Uri
@@ -102,7 +106,9 @@ fun parseTaskLink(uri: Uri, sesionPuedeLeer: (String) -> Boolean): String {
     if (!sesionPuedeLeer(id)) throw SesionInvalidaException("sesión no autorizada para leer $id")
     return id
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -218,7 +224,11 @@ Volviendo a la analogía: proteger datos exige conocer copias y ciclo de vida fu
 # Este script python3 es un MODELO de AES-GCM; no usa AndroidKeyStore (la prueba real es instrumentada)
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/CifradoSensible.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/CifradoSensible.kt`:
+
+```kotlin
 package com.academia.android
 
 import android.security.keystore.KeyGenParameterSpec
@@ -238,7 +248,9 @@ fun generarClaveEnKeystore() {
     )
     generador.generateKey() // material de clave NO exportable, vive dentro del Keystore
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -347,7 +359,11 @@ Volviendo a la analogía: offline-first necesita un protocolo de cambios funcion
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/OutboxOffline.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/OutboxOffline.kt`:
+
+```kotlin
 package com.academia.android
 
 import java.util.UUID
@@ -373,7 +389,9 @@ class OutboxRepository {
         return mutacion
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -494,7 +512,11 @@ Volviendo a la analogía: la calidad se opera por dispositivo y versión funcion
 ```bash
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/RepositorioMainSafe.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/RepositorioMainSafe.kt`:
+
+```kotlin
 package com.academia.android
 
 import kotlinx.coroutines.CoroutineDispatcher
@@ -509,7 +531,9 @@ class FileRepository(
         archivo.readText() // I/O síncrono, pero movido explícitamente FUERA del hilo principal
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 

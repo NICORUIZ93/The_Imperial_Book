@@ -79,16 +79,26 @@ flowchart TD
 ```bash
 mkdir -p academia-devops/src/modulo7/helm-chart/templates
 cd academia-devops/src/modulo7/helm-chart
-cat > Chart.yaml <<'EOF'
+```
+
+Crea el archivo `Chart.yaml`:
+
+```yaml
 apiVersion: v2
 name: mi-api
 version: 0.1.0
-EOF
-cat > values.yaml <<'EOF'
+```
+
+Crea el archivo `values.yaml`:
+
+```yaml
 replicaCount: 1
 image: node:22-alpine
-EOF
-cat > templates/deployment.yaml <<'EOF'
+```
+
+Crea el archivo `templates/deployment.yaml`:
+
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -103,7 +113,9 @@ spec:
         - name: mi-api
           image: {{ .Values.image }}
           command: ["node", "-e", "require('http').createServer((q,r)=>r.end('ok')).listen(3000)"]
-EOF
+```
+
+```bash
 helm template mi-api . | grep -A1 "kind: Deployment"
 ```
 
@@ -196,7 +208,11 @@ kubectl create deployment api --image=node:22-alpine -- node -e "require('http')
 kubectl expose deployment api --port=80 --target-port=3000
 kubectl create deployment admin --image=node:22-alpine -- node -e "require('http').createServer((q,r)=>r.end('soy ADMIN')).listen(3000)"
 kubectl expose deployment admin --port=80 --target-port=3000
-cat > ingress.yaml <<'EOF'
+```
+
+Crea el archivo `ingress.yaml`:
+
+```yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -217,7 +233,9 @@ spec:
           - path: /
             pathType: Prefix
             backend: { service: { name: admin, port: { number: 80 } } }
-EOF
+```
+
+```bash
 kubectl apply -f ingress.yaml
 kubectl get ingress mi-ingress
 ```
@@ -385,7 +403,11 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo7/probes && cd academia-devops/src/modulo7/probes
-cat > app.js <<'EOF'
+```
+
+Crea el archivo `app.js`:
+
+```js
 const http = require('node:http');
 let listo = false;
 setTimeout(() => { listo = true; }, 5000);
@@ -397,9 +419,15 @@ http.createServer((req, res) => {
   }
   res.end('app');
 }).listen(3000);
-EOF
+```
+
+```bash
 kubectl create configmap app-probes-src --from-file=app.js
-cat > pod.yaml <<'EOF'
+```
+
+Crea el archivo `pod.yaml`:
+
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -420,7 +448,9 @@ spec:
   volumes:
     - name: src
       configMap: { name: app-probes-src }
-EOF
+```
+
+```bash
 kubectl apply -f pod.yaml
 ```
 
@@ -508,8 +538,9 @@ kubectl create serviceaccount lector-limitado
 kubectl auth can-i list pods --as=system:serviceaccount:default:lector-limitado
 ```
 
-```bash
-cat > rbac.yaml <<'EOF'
+Crea el archivo `rbac.yaml`:
+
+```yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
@@ -531,7 +562,9 @@ roleRef:
   kind: Role
   name: lector-pods
   apiGroup: rbac.authorization.k8s.io
-EOF
+```
+
+```bash
 kubectl apply -f rbac.yaml
 kubectl auth can-i list pods --as=system:serviceaccount:default:lector-limitado
 kubectl auth can-i delete pods --as=system:serviceaccount:default:lector-limitado
@@ -623,15 +656,22 @@ flowchart LR
 
 ```bash
 mkdir -p academia-devops/src/modulo7/service-mesh/nginx && cd academia-devops/src/modulo7/service-mesh
-cat > nginx/sidecar.conf <<'EOF'
+```
+
+Crea el archivo `nginx/sidecar.conf`:
+
+```text
 server {
     listen 8443 ssl;
     ssl_certificate /etc/ssl/certs/demo.crt;
     ssl_certificate_key /etc/ssl/private/demo.key;
     location / { proxy_pass http://localhost:3000; }
 }
-EOF
-cat > pod-sidecar.yaml <<'EOF'
+```
+
+Crea el archivo `pod-sidecar.yaml`:
+
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -645,7 +685,9 @@ spec:
     - name: sidecar-proxy
       image: nginx:1.30-alpine
       ports: [{ containerPort: 8443 }]
-EOF
+```
+
+```bash
 kubectl apply -f pod-sidecar.yaml
 kubectl get pod con-sidecar -o jsonpath='{.spec.containers[*].name}'
 echo
@@ -716,7 +758,11 @@ Volviendo a la analogía: estrategias de despliegue — recreate vs rollingupdat
 #### Código y verificación
 ```bash
 mkdir -p academia-devops/src/modulo7/estrategia && cd academia-devops/src/modulo7/estrategia
-cat > deployment-recreate.yaml <<'EOF'
+```
+
+Crea el archivo `deployment-recreate.yaml`:
+
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata: { name: mi-api }
@@ -732,7 +778,9 @@ spec:
         - name: mi-api
           image: node:22-alpine
           command: ["node", "-e", "require('http').createServer((q,r)=>r.end('v1')).listen(3000)"]
-EOF
+```
+
+```bash
 kubectl apply -f deployment-recreate.yaml
 kubectl set image deployment/mi-api mi-api=node:24-alpine
 kubectl get pods -w

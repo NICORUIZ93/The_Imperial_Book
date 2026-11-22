@@ -85,7 +85,11 @@ Volviendo a la analogía: navhost y navcontroller funciona como el modelo inicia
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/GrafoNavegacion.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/GrafoNavegacion.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.runtime.Composable
@@ -106,7 +110,9 @@ fun GrafoNavegacion(navController: NavHostController = rememberNavController()) 
         }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -211,7 +217,11 @@ Volviendo a la analogía: argumentos tipados y deep links funciona como el model
 # compila con Gradle el archivo Kotlin generado a continuación
 test -f settings.gradle.kts || cd academia-android   # sitúate en la raíz del proyecto del Módulo 0
 mkdir -p app/src/main/kotlin/com/academia/android
-cat > app/src/main/kotlin/com/academia/android/RutaDetalleTarea.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/RutaDetalleTarea.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.navigation.NavGraphBuilder
@@ -228,7 +238,9 @@ fun NavGraphBuilder.rutaDetalleConArgumentoYDeepLink() {
         deepLinks = listOf(navDeepLink { uriPattern = "miapp://tarea/{id}" })
     ) { /* renderiza DetalleTareaScreen con el id ya resuelto */ }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
@@ -384,7 +396,11 @@ nav.cambiar_seccion('Tareas')
 print('pantalla actual al volver a Tareas:', nav.pantalla_actual())
 print('stack de Tareas preservado:', nav.stacks['Tareas'])
 "
-cat > app/src/main/kotlin/com/academia/android/NavegacionInferior.kt <<'EOF'
+```
+
+Crea el archivo `app/src/main/kotlin/com/academia/android/NavegacionInferior.kt`:
+
+```kotlin
 package com.academia.android
 
 import androidx.compose.foundation.layout.padding
@@ -417,7 +433,9 @@ fun AppConNavegacionInferior(secciones: List<SeccionPrincipal>) {
         }
     }
 }
-EOF
+```
+
+```bash
 ./gradlew :app:compileDebugKotlin
 ```
 
