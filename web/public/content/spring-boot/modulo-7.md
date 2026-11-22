@@ -1,196 +1,149 @@
-# Módulo 7: Configuración, errores y observabilidad
+# Módulo 7: Configuración, observabilidad y operación
 
-Este módulo cubre configuración tipada, fallo rápido, manejo global de errores, diagnóstico de arranque, actuator, métricas y logs. La operación empieza en el diseño de la app.
+En producción, una app no solo debe funcionar: debe arrancar con config válida, exponer salud, emitir métricas/logs útiles y fallar con diagnósticos accionables. Este módulo cubre configuración tipada, fail-fast, error handling, Actuator, Micrometer, probes y logging.
 
-**Entorno de referencia (2026-05-22):** JDK 27, Maven 3.10.0. Verificaciones Java puras para contratos; Actuator/Micrometer/logging requieren app Spring Boot.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Spring Boot 3.5.0.
 
 ## Aprende construyendo
 
 ### Tema 1: @ConfigurationProperties tipado · Intermedio · 30 min
 
+Caso guía: configurar timeout y URL de un servicio externo sin usar `@Value` disperso.
+
 #### `@ConfigurationProperties`
 
-**Definición formal.** Mecanismo Spring Boot para enlazar un grupo de propiedades externas a un objeto Java tipado.
+**Definición formal.** Mecanismo de binding tipado que mapea propiedades con prefijo a una clase Java.
 
-**Para qué sirve.** Configuración validable, autocompletable y centralizada.
-
-**Cuándo usarlo.** Para grupos de config. Prefiere sobre muchos `@Value`.
-
-**Ejemplo mínimo enfocado (Spring).**
+**Ejemplo mínimo.**
 
 ```java
-@ConfigurationProperties(prefix="academia")
-@Validated
-record AcademiaProps(@NotBlank String banner, @Min(1) int maxItems) {}
+@ConfigurationProperties(prefix = "academia.client")
+public record ClientProps(String baseUrl, Duration timeout) {}
 ```
 
-**Caso de uso real.** Config de límites, URLs, flags.
+**Error común.** `@Value("${...}")` por todos lados. Corrección: propiedades agrupadas y tipadas, validables.
 
-**Error común.** Propiedades dispersas con `@Value`. Corrección: agrupar en properties tipadas.
-
-**Verificación.** **Nota:** requiere app Boot y binding; evidencia en arranque/test.
+**Nota de verificación.** Requiere app Boot con `@EnableConfigurationProperties` o scan; boot 3.5.x estándar.
 
 ### Tema 2: Fallar rápido al arranque · Intermedio · 30 min
 
+Caso guía: falta `ACADEMIA_DB_URL`; mejor fallar al iniciar que fallar en la primera request.
+
 #### Fail-fast
 
-**Definición formal.** Estrategia donde la app valida configuración/dependencias críticas al iniciar y aborta si no son válidas.
+**Definición formal.** Validar configuración crítica en arranque y abortar si es inválida.
 
-**Para qué sirve.** Evitar fallar en producción a mitad de request.
-
-**Cuándo usarlo.** Config obligatoria, credenciales, migraciones críticas.
-
-**Ejemplo mínimo enfocado (ejecutable).**
+**Ejemplo mínimo (Java puro ejecutable).**
 
 ```bash
-mkdir -p /tmp/sb7-ff && cd /tmp/sb7-ff
-cat > DemoFF.java << 'JAVA'
-public class DemoFF { public static void main(String[] args){ String url=System.getenv().getOrDefault("DB_URL",""); if(url.isBlank()){ System.out.println("FAIL_FAST"); System.exit(1);} System.out.println("OK"); } }
-JAVA
-javac DemoFF.java && java DemoFF || true
+mkdir -p java-sb7-fail
+cd java-sb7-fail
 ```
 
-**Caso de uso real.** Faltar `DB_URL` en prod.
-
-**Error común.** Default silencioso inseguro. Corrección: fallar con mensaje claro.
-
-**Verificación (JDK 27, 2026-05-22).** Salida: `FAIL_FAST` y exit 1.
-
-### Tema 3: Manejo global de excepciones consistente entre entornos · Intermedio · 30 min
-
-#### Manejo global de errores
-
-**Definición formal.** Política centralizada que traduce excepciones a respuestas HTTP/errores consistentes.
-
-**Para qué sirve.** Contrato estable y seguridad (no filtrar internos).
-
-**Cuándo usarlo.** Siempre en APIs.
-
-**Ejemplo mínimo enfocado (Spring).**
+Crea el archivo `DemoFail.java`:
 
 ```java
-@RestControllerAdvice
-class Err { @ExceptionHandler(Exception.class) ProblemDetail any(Exception e){ var pd=ProblemDetail.forStatus(500); pd.setDetail("error interno"); return pd; } }
-```
-
-**Caso de uso real.** 500 genérico sin stack trace al cliente.
-
-**Error común.** Devolver `e.getMessage()` interno. Corrección: log interno, mensaje seguro.
-
-**Verificación.** **Nota:** requiere app Boot.
-
-### Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min
-
-#### `FailureAnalyzer`
-
-**Definición formal.** Componente Spring Boot que interpreta una falla de arranque y produce descripción/acción recomendada legible.
-
-**Para qué sirve.** Acelerar diagnóstico de startup.
-
-**Cuándo usarlo.** Para errores comunes de infraestructura/config.
-
-**Ejemplo mínimo enfocado (Spring).**
-
-```java
-public class MiFailureAnalyzer extends AbstractFailureAnalyzer<MiException> {
-  protected FailureAnalysis analyze(Throwable root, MiException cause){ return new FailureAnalysis("causa", "accion", cause); }
+public class DemoFail {
+  static String required(String v){ if(v==null||v.isBlank()) throw new IllegalStateException("missing"); return v; }
+  public static void main(String[] args){ System.out.println(required("ok")); try{ required(""); } catch(Exception e){ System.out.println("fail-fast"); } }
 }
 ```
 
-**Caso de uso real.** Puerto ocupado, DB no disponible.
+```bash
+javac DemoFail.java
+java DemoFail
+```
 
-**Error común.** Leer solo la última línea del stack. Corrección: leer `Caused by` y FailureAnalyzer.
+**Verificación (JDK 27, 2026-05-22).** `ok`, `fail-fast`.
 
-**Verificación.** **Nota:** requiere app Boot con fallo inducido.
+### Tema 3: Manejo global de excepciones consistente entre entornos · Intermedio · 30 min
+
+Caso guía: mismo error shape en dev/stage/prod, sin stack trace al cliente.
+
+#### Consistencia de errores
+
+**Definición formal.** Política uniforme de mapeo de excepciones a HTTP status + body estructurado.
+
+**Error común.** Mensajes internos distintos por entorno o stack traces expuestos. Corrección: `ProblemDetail`/body propio, logs internos con correlation id.
+
+### Tema 4: FailureAnalyzer: errores de arranque que explican la causa y la solución · Avanzado · 35 min
+
+Caso guía: puerto ocupado; Boot muestra análisis legible en vez de stack trace críptico.
+
+#### `FailureAnalyzer`
+
+**Definición formal.** Componente de Spring Boot que traduce ciertos fallos de arranque en descripción, acción recomendada y causa.
+
+**Error común.** Ignorar el “ACTION:” de Boot. Corrección: leer el analyzer; suele indicar la causa real.
+
+**Nota de verificación.** Se observa al provocar fallo de arranque en app Boot.
 
 ### Tema 5: Actuator y health checks personalizados · Avanzado · 30 min
 
+Caso guía: Kubernetes necesita saber si la app está viva y lista.
+
 #### Actuator
 
-**Definición formal.** Módulo Spring Boot que expone endpoints operativos (health, info, metrics, env, etc.).
+**Definición formal.** Módulo de Spring Boot que expone endpoints operativos (`health`, `info`, `metrics`, etc.).
 
-**Para qué sirve.** Observabilidad y operación.
+**Ejemplo mínimo.** Dependencia `spring-boot-starter-actuator`, exponer `management.endpoints.web.exposure.include=health,info`.
 
-**Cuándo usarlo.** En servicios desplegados; proteger endpoints sensibles.
-
-**Ejemplo mínimo enfocado (Spring).**
-
-```properties
-management.endpoints.web.exposure.include=health,info
-```
-
-**Caso de uso real.** `/actuator/health` para orquestador.
-
-**Error común.** Exponer env/beans públicamente. Corrección: exponer mínimo y asegurar.
-
-**Verificación.** **Nota:** requiere app Boot con actuator.
+**Error común.** Exponer actuator sin seguridad en público. Corrección: exponer mínimo, asegurar, separar puerto/red en entornos sensibles.
 
 ### Tema 6: Contar operaciones de negocio con Micrometer · Avanzado · 30 min
 
+Caso guía: contar guías creadas y medir latencia.
+
 #### Micrometer
 
-**Definición formal.** Fachada de métricas para Java que integra con backends (Prometheus, OTLP, etc.).
+**Definición formal.** Fachada de métricas para Java; Spring Boot Actuator la integra para exponer contadores, timers, gauges.
 
-**Para qué sirve.** Medir comportamiento de negocio/técnico.
-
-**Cuándo usarlo.** Contadores, timers, gauges relevantes.
-
-**Ejemplo mínimo enfocado (Spring).**
+**Ejemplo mínimo.**
 
 ```java
-Counter.builder("envios.creados").register(meterRegistry).increment();
+Counter.builder("guias.creadas").register(meterRegistry).increment();
 ```
 
-**Caso de uso real.** Contar pedidos creados o fallos.
-
-**Error común.** Métricas de alta cardinalidad por ID de usuario. Corrección: labels controladas.
-
-**Verificación.** **Nota:** requiere Micrometer/registry.
+**Error común.** Métricas con cardinalidad alta en tags (userId, orderId). Corrección: tags de baja cardinalidad.
 
 ### Tema 7: Liveness y readiness sin reinicios en cadena · Avanzado · 25 min
 
-#### Liveness/Readiness
+Caso guía: app viva pero DB no disponible; debe salir de readiness, no reiniciarse infinitamente.
 
-**Definición formal.** Liveness indica si el proceso debe reiniciarse; readiness si puede recibir tráfico.
+#### Probes
 
-**Para qué sirve.** Orquestación segura.
+**Definición formal.** Liveness: el proceso debe reiniciarse si está irrecuperable. Readiness: puede recibir tráfico.
 
-**Cuándo usarlo.** En Kubernetes/entornos con probes.
-
-**Ejemplo mínimo enfocado (Spring).**
-
-```properties
-management.endpoint.health.probes.enabled=true
+```mermaid
+flowchart TD
+  L[Liveness falla] --> R[Restart container]
+  RD[Readiness falla] --> NR[No enviar tráfico]
 ```
 
-**Caso de uso real.** No enviar tráfico mientras calienta caché o migra.
-
-**Error común.** Marcar not-ready por dependencia opcional y causar cascada. Corrección: separar críticos de opcionales.
-
-**Verificación.** **Nota:** requiere actuator/k8s probes.
+**Error común.** Poner dependencia externa en liveness. Corrección: dependencias externas suelen afectar readiness.
 
 ### Tema 8: Logging en Spring Boot: niveles, grupos y logs estructurados en JSON · Avanzado · 40 min
 
+Caso guía: en prod necesitas JSON parseable; en dev, texto legible.
+
 #### Logging estructurado
 
-**Definición formal.** Emisión de logs con campos estructurados (JSON/key-value) además de mensaje, con niveles y contexto.
+**Definición formal.** Logs con campos consistentes (timestamp, level, logger, message, traceId, etc.), habitualmente JSON en producción.
 
-**Para qué sirve.** Búsqueda y correlación en observabilidad.
+**Ejemplo mínimo.** Configurar nivel: `logging.level.com.academia=DEBUG`. Estructurado: usar encoder/logback config o soporte Boot para structured logging según versión.
 
-**Cuándo usarlo.** Producción; incluir correlation/trace IDs.
+**Error común.** Loguear secretos/PII. Corrección: masking, campos seleccionados, revisión.
 
-**Ejemplo mínimo enfocado (ejecutable).**
+**Nota de verificación.** Boot 3.5.x soporta structured logging con configuración; verificar formato exacto por versión.
 
-```bash
-mkdir -p /tmp/sb7-log && cd /tmp/sb7-log
-cat > DemoLog.java << 'JAVA'
-public class DemoLog { public static void main(String[] args){ System.out.println("{\"level\":\"INFO\",\"msg\":\"inicio\",\"service\":\"envios\"}"); } }
-JAVA
-javac DemoLog.java && java DemoLog
-```
+## Cierre
 
-**Caso de uso real.** Ingerir logs en ELK/Loki.
+La operación es parte del diseño. Config tipada, fail-fast, métricas, probes y logs hacen el sistema observable y operable.
 
-**Error común.** Loguear secretos/PII. Corrección: redactar y usar niveles adecuados.
+## Checklist
 
-**Verificación (JDK 27, 2026-05-22).** Salida: JSON con `level` INFO.
+- Configuro con `@ConfigurationProperties`.
+- Falla rápido ante config inválida.
+- Expongo Actuator con seguridad.
+- Uso métricas de baja cardinalidad.
+- Distingo liveness/readiness.

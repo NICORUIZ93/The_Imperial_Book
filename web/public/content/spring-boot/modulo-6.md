@@ -1,141 +1,129 @@
 # Módulo 6: Testing en Spring Boot
 
-Este módulo cubre pruebas por capa en Spring Boot: web slice, data slice, integración completa, clientes HTTP de test y Testcontainers. El objetivo es confianza rápida con el costo adecuado.
+Probar en Spring Boot no es elegir entre unitario o integración; es elegir el slice correcto. Cada anotación de test levanta un contexto diferente, con costo y fidelidad distintos. Este módulo enseña a probar con velocidad y confianza.
 
-**Entorno de referencia (2026-05-22):** JDK 27, Maven 3.10.0, Docker 29.9.3. Testcontainers requiere Docker; los slices requieren dependencias Spring Boot Test.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2, Maven 3.10.0, Spring Boot 3.5.0, JUnit 5, Mockito, Testcontainers (Docker 29.9.3 disponible).
 
 ## Aprende construyendo
 
 ### Tema 1: Probar un controller con `@WebMvcTest` · Intermedio · 30 min
 
-Caso guía: validar status/body/validación HTTP sin cargar toda la app.
+Caso guía: validar contrato HTTP del controller sin levantar toda la app.
 
 #### `@WebMvcTest`
 
-**Definición formal.** Slice test de Spring Boot que carga componentes MVC relevantes (controllers, advice, converters) y mockea colaboradores.
+**Definición formal.** Slice test que carga capa web MVC (controllers, filters, converters) y mocks de dependencias colaboradoras.
 
-**Para qué sirve.** Tests rápidos de capa web.
+**Cómo funciona por dentro.** Arranca un contexto reducido de Spring MVC; no carga repositorios JPA completos salvo configuración específica. Usas `MockMvc` para simular requests.
 
-**Cuándo usarlo.** Para contratos HTTP. No para lógica de negocio profunda ni persistencia real.
+```mermaid
+flowchart LR
+  T[@WebMvcTest] --> MVC[Contexto MVC reducido]
+  MVC --> C[Controller real]
+  C --> S[Servicio @MockBean]
+```
 
-**Ejemplo mínimo enfocado (Spring).**
+**Ejemplo mínimo (patrón).**
 
 ```java
-@WebMvcTest(EnvioController.class)
-class EnvioControllerTest {
+@WebMvcTest(GuiaController.class)
+class GuiaControllerTest {
   @Autowired MockMvc mvc;
-  @MockitoBean EnvioService service;
-  @Test void ok() throws Exception { when(service.consultar("A1")).thenReturn("ok"); mvc.perform(get("/envios/A1")).andExpect(status().isOk()).andExpect(content().string("ok")); }
+  @MockBean GuiaService service;
+  @Test void devuelve200() throws Exception {
+    when(service.buscar("G1")).thenReturn(new GuiaDto("G1"));
+    mvc.perform(get("/guias/G1")).andExpect(status().isOk());
+  }
 }
 ```
 
-**Caso de uso real.** Verificar 400 ante request inválido.
+**Error común.** Usar `@SpringBootTest` para todo. Lento y ruidoso. Corrección: slice test primero.
 
-**Error común.** Cargar `@SpringBootTest` para algo que es web slice. Corrección: usar slice adecuado.
-
-**Verificación.** **Nota:** requiere dependencias Spring Boot test; evidencia test verde.
+**Nota de verificación.** Ejecutable en proyecto Boot 3.5.x con `spring-boot-starter-test`.
 
 ### Tema 2: Probar el repositorio contra PostgreSQL con `@DataJpaTest` · Avanzado · 30 min
 
-Caso guía: validar queries JPA contra BD real.
+Caso guía: la query derivada funciona en H2 pero falla en PostgreSQL por dialecto.
 
 #### `@DataJpaTest`
 
-**Definición formal.** Slice test para componentes JPA; configura repositorios, EntityManager y normalmente transacciones rollback.
+**Definición formal.** Slice para JPA: configura repositorios, entidades, EntityManager y transacción rollback por defecto.
 
-**Para qué sirve.** Probar mapeo y queries con infraestructura JPA real.
+**Regla.** Usa la misma base de datos real del entorno de producción para tests críticos de queries/migraciones.
 
-**Cuándo usarlo.** Repositorios/queries personalizadas. Usa BD real (Testcontainers) para paridad.
-
-**Ejemplo mínimo enfocado (Spring).**
-
-```java
-@DataJpaTest
-@AutoConfigureTestDatabase(replace = Replace.NONE)
-class EnvioRepoTest { @Autowired EnvioRepository repo; @Test void guarda(){ repo.save(new Envio("A1")); assertTrue(repo.findByCodigo("A1").isPresent()); } }
-```
-
-**Caso de uso real.** Verificar JPQL/fetch join.
-
-**Error común.** Usar H2 para todo y asumir paridad con PostgreSQL. Corrección: Testcontainers con misma BD.
-
-**Verificación.** **Nota:** requiere Docker/Testcontainers.
-
-### Tema 3: Integrar el flujo con `@SpringBootTest` · Avanzado · 30 min
-
-Caso guía: probar flujo completo con contexto.
-
-#### `@SpringBootTest`
-
-**Definición formal.** Test que levanta el contexto Spring Boot completo (o porciones configuradas) para pruebas de integración.
-
-**Para qué sirve.** Validar wiring, configuración y flujos end-to-end internos.
-
-**Cuándo usarlo.** Pocos tests de integración críticos. No para todo: es más lento.
-
-**Ejemplo mínimo enfocado (Spring).**
-
-```java
-@SpringBootTest(webEnvironment = RANDOM_PORT)
-class AppIT { @Autowired TestRestTemplate rest; @Test void health(){ assertEquals(200, rest.getForEntity("/actuator/health", String.class).getStatusCode().value()); } }
-```
-
-**Caso de uso real.** Smoke test de arranque y endpoint.
-
-**Error común.** Usar solo E2E lento. Corrección: pirámide de tests.
-
-**Verificación.** **Nota:** requiere app y dependencias; evidencia test verde.
-
-### Tema 4: `RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4 · Avanzado · 35 min
-
-Caso guía: probar endpoints HTTP con cliente fluido.
-
-#### Cliente HTTP de test
-
-**Definición formal.** Cliente orientado a pruebas para ejecutar requests HTTP contra MockMvc o servidor arrancado y hacer aserciones fluidas.
-
-**Para qué sirve.** Tests legibles de API.
-
-**Cuándo usarlo.** Cuando el proyecto usa la API de test moderna disponible en su versión de Spring/Boot.
-
-**Ejemplo mínimo enfocado (conceptual).**
-
-```java
-// RestTestClient/WebTestClient según stack
-client.get().uri("/envios/A1").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("ok");
-```
-
-**Caso de uso real.** Contrato REST.
-
-**Error común.** Acoplar tests a detalles internos. Corrección: asertar contrato HTTP observable.
-
-**Verificación.** **Nota:** depende de versión de Spring Boot/Framework; validar clase disponible.
-
-### Tema 5: Contenedores Testcontainers reutilizados entre clases · Avanzado · 35 min
-
-Caso guía: acelerar integración reutilizando contenedor.
-
-#### Testcontainers reusable
-
-**Definición formal.** Uso de contenedores Docker efímeros controlados por tests; la reutilización permite compartir contenedor entre ejecuciones/configuraciones.
-
-**Para qué sirve.** Paridad con infraestructura real y velocidad razonable.
-
-**Cuándo usarlo.** Integración con BD/brokers reales. Requiere Docker.
-
-**Ejemplo mínimo enfocado (Spring/Testcontainers).**
+**Ejemplo mínimo (Testcontainers).**
 
 ```java
 @Testcontainers
-class RepoIT { @Container @ServiceConnection static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine"); }
+@DataJpaTest
+class GuiaRepoTest {
+  @Container static PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16");
+}
 ```
 
-**Caso de uso real.** PostgreSQL real en CI.
+**Error común.** Confiar solo en H2 para queries SQL específicas de Postgres. Corrección: Testcontainers Postgres.
 
-**Error común.** Asumir que Docker siempre disponible. Corrección: marcar/skip y documentar prerequisito.
+**Nota de verificación.** Docker disponible; ejecución real es lab pesado. No inventar salida.
 
-**Verificación.** **Nota:** Docker disponible en entorno actual (29.9.3), pero ejecutar contenedor requiere imagen/red; evidencia al correr test.
+### Tema 3: Integrar el flujo con `@SpringBootTest` · Avanzado · 30 min
 
-## Cierre del módulo
+Caso guía: validar que controller + service + repo + config funcionan juntos.
 
-Elige el slice más barato que dé confianza: unit, `@WebMvcTest`, `@DataJpaTest`, integración con Testcontainers, y pocos `@SpringBootTest` end-to-end.
+#### `@SpringBootTest`
+
+**Definición formal.** Levanta el contexto completo de Spring Boot para pruebas de integración/end-to-end dentro del proceso.
+
+**Trade-off.** Máxima fidelidad, mayor costo. Úsalo para pocos flujos críticos.
+
+**Ejemplo mínimo.**
+
+```java
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class FlujoIT { @Test void smoke() { /* call endpoint */ } }
+```
+
+**Error común.** Tests lentos por contexto completo en cada clase sin reutilización/cuidado. Corrección: limitar @SpringBootTest, usar slices y Testcontainers reutilizables.
+
+### Tema 4: `RestTestClient`: el cliente de pruebas HTTP de Spring Boot 4 · Avanzado · 35 min
+
+Caso guía: probar endpoint HTTP con API fluida moderna.
+
+#### `RestTestClient`
+
+**Definición formal.** Cliente de pruebas HTTP introducido en el ecosistema Spring Boot 4 / Spring Framework moderno para tests web; API fluida para requests/assertions.
+
+**Nota de versión.** En Boot 3.5.x el estándar común es `MockMvc`, `WebTestClient` o `TestRestTemplate`. No asumir `RestTestClient` disponible sin confirmar versión.
+
+**Ejemplo mínimo (Boot 4 style, conceptual).**
+
+```java
+restTestClient.get().uri("/guias/G1").exchange().expectStatus().isOk();
+```
+
+**Error común.** Copiar ejemplos de Boot 4 en proyecto Boot 3. Corrección: verificar versión y dependencia.
+
+### Tema 5: Contenedores Testcontainers reutilizados entre clases · Avanzado · 35 min
+
+Caso guía: suite de integración con muchos tests; levantar Postgres por clase es lento.
+
+#### Reutilización de contenedores
+
+**Definición formal.** Patrón para compartir un contenedor entre tests/clases, reduciendo tiempo de arranque, manteniendo aislamiento de datos.
+
+**Regla.** Reutilizar contenedor no significa compartir estado sucio. Limpia datos por test/transacción.
+
+**Error común.** Tests dependientes del orden por datos residuales. Corrección: transacción rollback, truncado controlado o fixtures aisladas.
+
+**Nota de verificación.** Docker 29.9.3 disponible; lab reproducible con Testcontainers.
+
+## Cierre
+
+Elige el test por costo/fidelidad: unitario para lógica, slice para borde, integración completa para flujos críticos.
+
+## Checklist
+
+- Uso `@WebMvcTest` para controllers.
+- Uso `@DataJpaTest` con DB real cuando importa.
+- Limito `@SpringBootTest`.
+- Verifico versión antes de usar `RestTestClient`.
+- Aíslo datos en Testcontainers.
