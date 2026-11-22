@@ -749,27 +749,32 @@ Activa `show_sql`, ejecuta una versión sin `join fetch` y otra con `join fetch`
 
 **Caso guía**
 
-Algunas pantallas necesitan `Guia` con `remitente` y otras no. No quieres duplicar queries por todas partes ni activar EAGER global. Además, lees catálogos repetidamente.
+En una pantalla listamos guías y solo mostramos el número; en otra mostramos guía + remitente. No quieres `EAGER` global. Además, un catálogo de estados se lee miles de veces: necesitas saber cuándo cachear y qué cache estás usando.
 
 **Fundamento técnico y modelo mental**
 
-**Definición formal.** Un *EntityGraph* declara un grafo de atributos a cargar para una consulta específica. La caché de primer nivel (L1) es el contexto de persistencia; la caché de segundo nivel (L2) es opcional y compartida por EntityManagerFactory/SessionFactory, según configuración.
+**Definición formal.** Un *EntityGraph* es un descriptor JPA de atributos que deben cargarse para una operación/consulta concreta. La *caché L1* (first-level cache) es el contexto de persistencia del `EntityManager`: guarda entidades managed durante su vida. La *caché L2* (second-level cache) es una caché opcional, compartida entre contextos, configurada en el proveedor/JPA; puede cachear entidades, colecciones o resultados de query según configuración.
 
-**Contrato / invariantes / reglas.** L1 es obligatoria y no se desactiva: vive dentro del contexto. L2 cachea entidades/datos entre contextos; requiere proveedor/configuración y estrategia de invalidación. Cachear sin estrategia de invalidación produce datos stale. EntityGraph controla carga por caso de uso, evitando EAGER global. No toda entidad debe ir a L2; prioriza lectura frecuente, baja volatilidad.
+**Contrato / invariantes / reglas.** L1 siempre existe en un `EntityManager`; no se desactiva. Repetir `find` del mismo id en el mismo contexto normalmente no pega otra consulta. L2 es opt-in: requiere proveedor, configuración, y normalmente marcar entidades (`@Cacheable`/anotaciones del proveedor) y definir región/TTL/invalidación. L2 mal invalidada da datos stale. EntityGraph no es caché: controla el plan de carga. `fetchgraph` trata los atributos no listados como LAZY para ese fetch (salvo id/versión según spec); `loadgraph` carga los listados y deja otros según su mapeo. No cachees todo: prioriza datos de alta lectura y baja escritura.
 
-**Modelo mental.** EntityGraph es la lista de “qué traer en este viaje”; L2 es una despensa compartida que ahorra viajes, pero puede tener comida vencida si no la actualizas.
+**Modelo mental.** L1 es tu libreta de trabajo del día (solo tu sesión). L2 es la pizarra compartida del equipo (útil, pero alguien debe borrarla cuando cambia la información). EntityGraph es la lista de compras para un viaje específico.
 
 **Implementación desde cero**
 
-Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y `academiaPU`.
 
-Agrega en `Guia` (o una entidad equivalente):
+#### A) EntityGraph — carga por caso de uso
+
+Agrega en `Guia.java` (entidad del Tema 2):
 
 ```java
-@NamedEntityGraph(name = "Guia.conRemitente", attributeNodes = @NamedAttributeNode("remitente"))
+@NamedEntityGraph(
+    name = "Guia.conRemitente",
+    attributeNodes = @NamedAttributeNode("remitente")
+)
 ```
 
-Demo: `src/main/java/com/academia/jpa/DemoEntityGraph.java`
+`DemoEntityGraph.java`:
 
 ```java
 package com.academia.jpa;
@@ -790,9 +795,8 @@ public class DemoEntityGraph {
 
         String nombre = Jpa.tx(em -> {
             EntityGraph<?> graph = em.getEntityGraph("Guia.conRemitente");
-            Map<String, Object> hints = Map.of("jakarta.persistence.fetchgraph", graph);
-            Guia g = em.find(Guia.class, id, hints);
-            return g.remitente.nombre;
+            Guia g = em.find(Guia.class, id, Map.of("jakarta.persistence.fetchgraph", graph));
+            return g.remitente.nombre; // remitente ya cargado
         });
         System.out.println(nombre);
         Jpa.close();
@@ -800,12 +804,69 @@ public class DemoEntityGraph {
 }
 ```
 
-**Desglose del código**
+**Cuándo usar EntityGraph:** misma entidad, diferentes pantallas/casos de uso; quieres evitar EAGER global y duplicar JPQL.
 
-- `@NamedEntityGraph` declara qué asociación cargar.
-- `fetchgraph` carga lo indicado para ese caso de uso.
-- L1 evita relectura dentro del mismo `EntityManager`; L2 es configuración adicional (no habilitada por defecto aquí).
-- Para habilitar L2 se requiere proveedor de cache y `@Cacheable`/configuración.
+#### B) Caché L1 — contexto de persistencia
+
+`DemoL1.java`:
+
+```java
+package com.academia.jpa;
+
+public class DemoL1 {
+    public static void main(String[] args) {
+        Long id = Jpa.tx(em -> {
+            GuiaEntity g = new GuiaEntity("G-L1", "CREADA");
+            em.persist(g); em.flush(); return g.getId();
+        });
+
+        Jpa.tx(em -> {
+            GuiaEntity a = em.find(GuiaEntity.class, id); // SELECT
+            GuiaEntity b = em.find(GuiaEntity.class, id); // debe venir de L1
+            System.out.println(a == b); // misma instancia managed
+        });
+        Jpa.close();
+    }
+}
+```
+
+**Cuándo importa L1:** dentro de una transacción/request corto, evita lecturas repetidas y soporta dirty checking. **Límite:** no es compartida entre requests/`EntityManager`s.
+
+#### C) Caché L2 — compartida (opt-in)
+
+L2 no está habilitada por defecto en este lab. Configuración típica (Hibernate + Ehcache/JCache; dependencias y config adicionales):
+
+```xml
+<!-- pom.xml (adicional) -->
+<dependency>
+  <groupId>org.hibernate.orm</groupId>
+  <artifactId>hibernate-jcache</artifactId>
+  <version>${hibernate.version}</version>
+</dependency>
+<dependency>
+  <groupId>org.ehcache</groupId>
+  <artifactId>ehcache</artifactId>
+  <version>3.10.8</version>
+</dependency>
+```
+
+```xml
+<!-- persistence.xml -->
+<property name="hibernate.cache.use_second_level_cache" value="true"/>
+<property name="hibernate.cache.region.factory_class" value="jcache"/>
+<shared-cache-mode>ENABLE_SELECTIVE</shared-cache-mode>
+```
+
+```java
+import jakarta.persistence.Cacheable;
+
+@Entity
+@Cacheable
+@Table(name = "estado_catalogo")
+public class EstadoCatalogo { ... }
+```
+
+**Cuándo usar L2:** catálogos estables, alta lectura, baja escritura, tolerancia a eventual consistency o invalidación bien controlada. **Cuándo NO:** datos altamente volátiles, multi-escritor sin estrategia clara, o si no puedes medir hit ratio/invalidation.
 
 **Ejecución y salida real**
 
@@ -813,25 +874,31 @@ public class DemoEntityGraph {
 mvn -q -DskipTests compile
 mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
 java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoEntityGraph
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoL1
 ```
 
 Salida esperada:
 
 ```text
 Ada
+true
 ```
+
+Con `show_sql=true`, en `DemoL1` verás un solo SELECT para la segunda búsqueda del mismo id en el mismo contexto.
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Datos stale | Cache L2 sin invalidación adecuada | Configura TTL/invalidación o no cachees esa entidad |
-| EntityGraph ignora expectativas | Confusión fetchgraph/loadgraph | Revisa semántica y SQL generado |
-| Complejidad innecesaria | Cachear todo | Cachea solo hot data estable |
+| Datos stale | L2 sin invalidación/TTL | Configura invalidación; no cachees datos volátiles |
+| `LazyInitializationException` resuelto con EAGER global | Mal remedio | Usa EntityGraph/DTO por caso |
+| `true` no sale en L1 | Distinto `EntityManager` | L1 es por contexto; usa L2 solo si aplica |
+| Cache sin beneficio | Baja hit ratio | Mide antes de activar; cachea catálogos hot |
 
 **Verificación rápida**
 
-Compara SQL con y sin hint de EntityGraph en `find`/query.
+Ejecuta `DemoL1` con `show_sql=true` y confirma que hay un solo SELECT para las dos `find` del mismo id en la misma transacción.
+
 
 ### Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min
 
