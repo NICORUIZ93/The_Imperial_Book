@@ -28,6 +28,12 @@ Necesitas guardar un reporte, leerlo, crear directorios si no existen y listar a
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-6 && cd ~/academia-java/modulo-6
+```
+
 ```java
 import java.io.IOException;
 import java.nio.file.*;

@@ -29,6 +29,12 @@ Vas a leer la edad de una persona desde texto. Pueden ocurrir dos problemas dist
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
+```
+
 Crea `ParseoEdad.java`:
 
 ```java
@@ -110,6 +116,12 @@ Tu programa lee un archivo de texto. Si ocurre un error a mitad de lectura, el a
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
+```
+
 Crea `LeerArchivo.java`:
 
 ```java
@@ -184,6 +196,12 @@ En un proceso de retiro bancario, “saldo insuficiente” no es lo mismo que un
 **Modelo mental.** Una excepción personalizada es una etiqueta precisa en la caja de fallos: no dice solo “algo salió mal”, dice “qué salió mal” y conserva la evidencia.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-3 && cd ~/academia-java/modulo-3
+```
 
 Crea `SaldoInsuficienteException.java`:
 

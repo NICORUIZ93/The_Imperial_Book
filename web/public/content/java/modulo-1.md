@@ -31,6 +31,12 @@ Necesitas representar una cuenta bancaria. No basta con una variable `double sal
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-1 && cd ~/academia-java/modulo-1
+```
+
 Crea `CuentaBancaria.java`:
 
 ```java
@@ -144,6 +150,12 @@ Un sistema de notificaciones envía mensajes por distintos canales: email, SMS, 
 **Modelo mental.** La superclase es el contrato general “notificación”; las subclases son especializaciones que cumplen ese contrato con su propio mecanismo.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-1 && cd ~/academia-java/modulo-1
+```
 
 Crea `Notification.java`:
 
@@ -261,6 +273,12 @@ Un proceso de cobro puede usar tarjeta, transferencia o billetera. Quieres que e
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-1 && cd ~/academia-java/modulo-1
+```
+
 Crea `PaymentMethod.java`:
 
 ```java
@@ -377,6 +395,12 @@ Java usa varias palabras para controlar visibilidad y varias formas de definir m
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-1 && cd ~/academia-java/modulo-1
+```
+
 Crea `Calculator.java`:
 
 ```java
@@ -476,6 +500,12 @@ Necesitas representar un punto de coordenadas o un DTO simple: dos o tres campos
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-1 && cd ~/academia-java/modulo-1
+```
+
 Crea `Point.java`:
 
 ```java
@@ -567,6 +597,12 @@ En Java clásico, un constructor de subclase debía llamar `super(...)` o `this(
 **Modelo mental.** Antes, debías entregar el paquete al padre apenas entrabas por la puerta. Ahora puedes revisar y etiquetar el paquete en el vestíbulo, pero sin usar las habitaciones de la casa porque todavía no te las entregaron.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-1 && cd ~/academia-java/modulo-1
+```
 
 Crea `UserBase.java`:
 

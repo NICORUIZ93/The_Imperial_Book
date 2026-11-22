@@ -88,6 +88,12 @@ Tienes que calcular el precio final de un producto con IVA. La regla es simple: 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
+
 Crea `PrecioFinal.java`:
 
 ```java
@@ -152,6 +158,12 @@ Muchos errores de principiantes no son de lógica, sino de entorno: confunden JD
 **Modelo mental.** El `.java` es el guion, el `.class` es el guion traducido a un idioma intermedio, y la JVM es el actor/intérprete que lo representa en cada escenario (Windows, Linux, macOS).
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
 
 Crea `HolaJVM.java`:
 
@@ -227,6 +239,12 @@ Un entorno mal configurado hace perder tiempo: el código puede estar bien, pero
 **Modelo mental.** Es como un taller: `JAVA_HOME` es la dirección del taller, `PATH` es la lista de herramientas que tienes a mano, y `java -version`/`javac -version` son la etiqueta que confirma qué herramienta estás tomando.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
 
 Comandos de diagnóstico:
 
@@ -313,6 +331,12 @@ Quieres un programa pequeño que salude por nombre. Si el usuario no pasa un nom
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
+
 Crea `SaludoArgs.java`:
 
 ```java
@@ -385,6 +409,12 @@ Los tipos definen qué valores puede guardar una variable y qué operaciones tie
 **Modelo mental.** Los tipos son contenedores con forma: puedes vaciar un vaso pequeño en uno grande sin problema (widening), pero vaciar uno grande en uno pequeño puede derramar (narrowing).
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
 
 Crea `TiposYConversiones.java`:
 
@@ -493,6 +523,12 @@ Necesitas pedir el nombre de una persona, mostrar un saludo y comparar una respu
 **Modelo mental.** Un `String` es como un texto impreso: no lo “editas”, generas otra copia con el cambio. `==` pregunta “¿es el mismo papel?”; `equals()` pregunta “¿dice lo mismo?”.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
 
 Crea `TextoIO.java`:
 
@@ -604,6 +640,12 @@ Las expresiones combinan valores y operadores para producir un resultado. Si no 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
+
 Crea `Operadores.java`:
 
 ```java
@@ -683,6 +725,12 @@ Imagina un programa que valida la edad de una persona, traduce un número de dí
 **Modelo mental.** El control de flujo es el semáforo y las señales de una ruta: el `if` es un desvío, el `for` es una rotonda con contador, el `while` es “sigue mientras la luz esté verde”.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
 
 Crea `Flujo.java`:
 
@@ -774,6 +822,12 @@ Tienes varias notas de un alumno y quieres mostrar cada una y calcular el promed
 **Modelo mental.** Un arreglo es una fila de casilleros numerados desde 0; `length` dice cuántos casilleros hay. Un método es una máquina con etiqueta: le das entradas, ejecuta su proceso y devuelve (o no) un resultado.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-0 && cd ~/academia-java/modulo-0
+```
 
 Crea `ArreglosMetodos.java`:
 

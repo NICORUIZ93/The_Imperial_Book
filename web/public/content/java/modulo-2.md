@@ -32,6 +32,12 @@ Estás construyendo un pequeño registro de envíos. Necesitas mantener el orden
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-2 && cd ~/academia-java/modulo-2
+```
+
 Crea `ColeccionesBasicas.java`:
 
 ```java
@@ -113,6 +119,12 @@ Cambia `HashSet` por `TreeSet` y observa que los IDs quedan ordenados.
 **Modelo mental.** `hashCode` elige el cajón; `equals` confirma la identidad dentro del cajón.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-2 && cd ~/academia-java/modulo-2
+```
 
 Crea `Cliente.java`:
 
@@ -222,6 +234,12 @@ Guardas pedidos en un `HashMap` usando un objeto como clave. Luego modificas un 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-2 && cd ~/academia-java/modulo-2
+```
+
 Crea `ClaveMutable.java`:
 
 ```java
@@ -322,6 +340,12 @@ Quieres una caja que almacene un valor de cualquier tipo sin perder seguridad en
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-2 && cd ~/academia-java/modulo-2
+```
+
 Crea `Caja.java`:
 
 ```java
@@ -420,6 +444,12 @@ Tienes personas que normalmente se ordenan por edad, pero en una pantalla quiere
 **Modelo mental.** `Comparable` es cómo el objeto se ordena “por defecto”; `Comparator` es la regla de orden que eliges para una ocasión.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-2 && cd ~/academia-java/modulo-2
+```
 
 Crea `Persona.java`:
 
@@ -524,6 +554,12 @@ En un sistema de atención, algunos tickets entran por orden normal y otros por 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-2 && cd ~/academia-java/modulo-2
+```
+
 Crea `ColasYPilas.java`:
 
 ```java
@@ -613,6 +649,12 @@ En el proyecto integrador de la ruta Java, las guías llegan con datos sueltos y
 **Modelo mental.** El repositorio es el mostrador: tú pides por ID; no entras al depósito a mover cajas directamente.
 
 **Implementación desde cero**
+
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-2 && cd ~/academia-java/modulo-2
+```
 
 Crea `Guia.java`:
 

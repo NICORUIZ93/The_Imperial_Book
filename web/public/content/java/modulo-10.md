@@ -28,7 +28,15 @@ Tienes dos componentes: `core` con lógica de dominio y `app` que la consume. Qu
 
 **Implementación desde cero**
 
-Estructura:
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-10/core/src/com/academia/core/internal
+mkdir -p ~/academia-java/modulo-10/app/src/com/academia/app
+cd ~/academia-java/modulo-10
+```
+
+Estructura objetivo:
 
 ```text
 core/
@@ -126,6 +134,8 @@ No todos los proyectos necesitan JPMS. Migrar un monolito grande con muchas libr
 **Modelo mental.** Migrar a JPMS es cambiar de barrio: puedes mudarte por etapas (módulos automáticos) pero mientras no declares dirección oficial, las garantías de frontera son débiles.
 
 **Implementación desde cero**
+
+Desde la carpeta del Tema 1 (`~/academia-java/modulo-10`) o un proyecto Maven/Gradle existente con múltiples módulos.
 
 Checklist de decisión:
 

@@ -95,6 +95,8 @@ Tienes una calculadora de descuentos. Quieres probar casos normales, bordes y er
 
 **Implementación desde cero**
 
+Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`). Si no lo creaste, vuelve a la sección **Setup ejecutable del módulo**.
+
 Crea `src/main/java/com/academia/DescuentoService.java`:
 
 ```java
@@ -180,6 +182,8 @@ Tu servicio envía notificaciones usando un cliente externo. En tests no quieres
 **Modelo mental.** Un mock es un actor de reparto que sustituye a un sistema externo durante el ensayo.
 
 **Implementación desde cero**
+
+Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`).
 
 Crea `src/main/java/com/academia/EmailClient.java`:
 
@@ -280,6 +284,8 @@ Quieres probar la misma regla con muchos valores. Copiar/pegar tests genera ruid
 
 **Implementación desde cero**
 
+Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`).
+
 Crea `src/test/java/com/academia/CalcTest.java` en el proyecto del setup:
 
 ```java
@@ -349,6 +355,8 @@ En vez de probar solo ejemplos, quieres verificar una regla: “revertir una lis
 **Modelo mental.** En vez de probar 3 llaves, pruebas la regla “toda llave de esta forma abre esta cerradura” con muchas llaves generadas.
 
 **Implementación desde cero**
+
+Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-09`).
 
 Crea `src/test/java/com/academia/ReversePropertyTest.java` (jqwik ya está en el `pom.xml` del setup):
 

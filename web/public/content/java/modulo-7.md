@@ -84,6 +84,8 @@ Tu aplicación procesa guías. En desarrollo usabas `println`, pero en producci�
 
 **Implementación desde cero**
 
+Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-07`). Si no lo creaste, vuelve a **Setup ejecutable del módulo**.
+
 Crea `src/main/java/DemoLogging.java` (en el proyecto del setup):
 
 ```java
@@ -156,6 +158,8 @@ Dos solicitudes se procesan al mismo tiempo. En los logs ves “procesando guía
 **Modelo mental.** MDC es una etiqueta adhesiva que el hilo lleva puesta mientras procesa una solicitud; todos los logs que emite salen con esa etiqueta.
 
 **Implementación desde cero**
+
+Usa el proyecto Maven del setup del módulo (`~/academia-java/modulo-07`).
 
 Crea `src/main/java/DemoMDC.java` en el mismo proyecto del módulo:
 

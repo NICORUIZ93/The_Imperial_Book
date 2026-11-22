@@ -31,6 +31,15 @@ Tu proyecto compila localmente, pero en CI falla por versiones de plugin, depend
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-15-maven/src/main/java src/test/java
+cd ~/academia-java/modulo-15-maven
+```
+
+Crea `pom.xml`:
+
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0">
   <modelVersion>4.0.0</modelVersion>
@@ -187,23 +196,16 @@ Separas `domain`, `application` e `infrastructure`. Al poco tiempo `domain` impo
 
 **Implementación desde cero**
 
-Maven parent (resumen):
+Desde una carpeta vacía (modelo conceptual compilable; en producción usa Maven/Gradle multi-módulo):
 
-```xml
-<modules>
-  <module>domain</module>
-  <module>application</module>
-  <module>infrastructure</module>
-</modules>
+```bash
+mkdir -p ~/academia-java/modulo-15-multi/domain/src/main/java
+mkdir -p ~/academia-java/modulo-15-multi/infrastructure/src/main/java
+mkdir -p ~/academia-java/modulo-15-multi/app/src/main/java
+cd ~/academia-java/modulo-15-multi
 ```
 
-Regla de dependencia (conceptual):
-
-```text
-infrastructure -> application -> domain
-```
-
-Ejemplo de contrato en `domain`:
+`domain/src/main/java/GuiaRepository.java`:
 
 ```java
 public interface GuiaRepository {
@@ -211,12 +213,33 @@ public interface GuiaRepository {
 }
 ```
 
-Implementación en `infrastructure`:
+`infrastructure/src/main/java/GuiaRepositoryMemoria.java`:
 
 ```java
 public class GuiaRepositoryMemoria implements GuiaRepository {
     public void guardar(String guia) { System.out.println(guia); }
 }
+```
+
+`app/src/main/java/Main.java`:
+
+```java
+public class Main {
+    public static void main(String[] args) {
+        GuiaRepository repo = new GuiaRepositoryMemoria();
+        repo.guardar("G-1");
+    }
+}
+```
+
+Estructura Maven equivalente (cuando formalices el proyecto):
+
+```xml
+<modules>
+  <module>domain</module>
+  <module>application</module>
+  <module>infrastructure</module>
+</modules>
 ```
 
 **Desglose del código**
@@ -228,11 +251,20 @@ public class GuiaRepositoryMemoria implements GuiaRepository {
 
 **Ejecución y salida real**
 
+Compilación simple (modelo conceptual sin Maven, para ver el grafo):
+
 ```bash
-./mvnw -q -DskipTests package
+javac -d out domain/src/main/java/GuiaRepository.java infrastructure/src/main/java/GuiaRepositoryMemoria.java app/src/main/java/Main.java
+java -cp out Main
 ```
 
-Build exitoso indica que no hay ciclos de compilación en la estructura declarada.
+Salida esperada:
+
+```text
+G-1
+```
+
+En un proyecto real usa Maven/Gradle multi-módulo (`./mvnw -q -DskipTests package`) para hacer cumplir el grafo en build.
 
 **Errores comunes y cómo resolverlos**
 
@@ -262,7 +294,9 @@ Una regla de negocio falla en producción. El bug podría haberse detectado con 
 
 **Implementación desde cero**
 
-Ejemplo con JUnit 5/6 + Mockito (dependencias externas):
+Usa el proyecto Maven del Módulo 9 (`~/academia-java/modulo-09`, con JUnit/Mockito) o crea uno equivalente con el `pom.xml` de ese módulo.
+
+Ejemplo con JUnit 5/6 + Mockito (dependencias en `pom.xml`):
 
 ```java
 import org.junit.jupiter.api.Test;
@@ -342,6 +376,8 @@ Tu test unitario pasa, pero en producción falla porque la consulta SQL real o l
 
 **Implementación desde cero**
 
+Usa un proyecto Maven con las dependencias de Testcontainers/JUnit indicadas arriba; requiere Docker activo.
+
 Prerrequisitos: Docker en ejecución. Agrega dependencias al `pom.xml` del proyecto (o crea uno nuevo como en Módulo 9):
 
 ```xml
@@ -397,8 +433,10 @@ class RepoIntegracionTest {
 
 **Ejecución y salida real**
 
+Desde la raíz del proyecto Maven con las dependencias del tema (requiere Docker activo):
+
 ```bash
-./mvnw -Dtest=RepoIntegracionTest test
+mvn -q -Dtest=RepoIntegracionTest test
 ```
 
 Requiere Docker/Testcontainers. Si no están disponibles, el test debe marcarse/gestionarse según política del proyecto.
@@ -529,3 +567,4 @@ Cambia el nivel root a `DEBUG` en `logback.xml` y confirma el cambio de verbosid
 ## Cierre del módulo
 
 Build, tests y observabilidad son el sistema inmunológico del proyecto: detectan regresiones, garantizan reproducibilidad y dejan evidencia diagnóstica. En el siguiente módulo pasarás a Spring Boot para construir servicios web sobre estas bases.
+tas bases.

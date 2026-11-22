@@ -299,6 +299,8 @@ Una guía tiene remitente, pasa por varios eventos y puede clasificarse por tipo
 
 **Implementación desde cero**
 
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
+
 Archivos en `src/main/java/com/academia/jpa/`:
 
 ```java
@@ -428,6 +430,8 @@ Cargas una entidad, modificas un campo y, sin llamar explícitamente `update`, l
 
 **Implementación desde cero**
 
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
+
 Archivo: `src/main/java/com/academia/jpa/DemoCicloVida.java`
 
 ```java
@@ -515,6 +519,8 @@ La pantalla de búsqueda permite filtrar por estado, ciudad y fecha opcionalment
 
 **Implementación desde cero**
 
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
+
 Archivo: `src/main/java/com/academia/jpa/DemoCriteria.java`
 
 ```java
@@ -596,6 +602,8 @@ Listas 100 guías y, por cada una, accedes a su remitente. El log muestra 1 cons
 **Modelo mental.** N+1 es ir al almacén 101 veces cuando podías traer la caja grande una vez.
 
 **Implementación desde cero**
+
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
 
 Archivo: `src/main/java/com/academia/jpa/DemoN1.java`
 
@@ -679,6 +687,8 @@ Algunas pantallas necesitan `Guia` con `remitente` y otras no. No quieres duplic
 **Modelo mental.** EntityGraph es la lista de “qué traer en este viaje”; L2 es una despensa compartida que ahorra viajes, pero puede tener comida vencida si no la actualizas.
 
 **Implementación desde cero**
+
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
 
 Agrega en `Guia` (o una entidad equivalente):
 
@@ -765,6 +775,8 @@ Dos usuarios actualizan la misma guía casi al mismo tiempo. Sin control, la úl
 **Modelo mental.** Optimista: “edita y al guardar comprobamos si alguien cambió el documento”. Pesimista: “bloquea el documento antes de editar”.
 
 **Implementación desde cero**
+
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
 
 Archivo: `src/main/java/com/academia/jpa/GuiaVersionada.java`
 
@@ -873,6 +885,8 @@ Cambias una entidad y la app funciona localmente, pero en otro entorno el esquem
 **Modelo mental.** Las migraciones son el historial git del esquema: cada cambio tiene versión y no se reescribe en producción.
 
 **Implementación desde cero**
+
+Usa el proyecto base del módulo (`~/academia-java/jpa-lab`) y la unidad de persistencia `academiaPU` definida en **Setup ejecutable del módulo**. Agrega las entidades/clases nuevas a `persistence.xml` si creas archivos adicionales.
 
 Estructura adicional:
 

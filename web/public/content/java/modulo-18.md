@@ -28,6 +28,12 @@ Tu servicio debe consultar una API externa para obtener el estado de una guía. 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía (JDK 11+ con `java.net.http` incluido):
+
+```bash
+mkdir -p ~/academia-java/modulo-18 && cd ~/academia-java/modulo-18
+```
+
 ```java
 import java.net.URI;
 import java.net.http.*;
@@ -107,6 +113,12 @@ Debes llamar una API con un token Bearer. Además, recibes datos de usuarios y d
 **Modelo mental.** El token es una llave temporal: no la dejas pegada en la puerta (código/logs), no la envías por una postal abierta (HTTP sin TLS) y no asumes que tener llave permite entrar a cualquier cuarto (autorización).
 
 **Implementación desde cero**
+
+Desde una carpeta vacía (solo JDK):
+
+```bash
+mkdir -p ~/academia-java/modulo-18 && cd ~/academia-java/modulo-18
+```
 
 ```java
 import java.net.URI;

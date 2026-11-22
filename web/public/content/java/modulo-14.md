@@ -31,6 +31,14 @@ Un hilo reserva inventario y otro lo lee. Sin sincronización, el segundo puede 
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-14-memoria && cd ~/academia-java/modulo-14-memoria
+```
+
+Crea `Inventario.java`:
+
 ```java
 public class Inventario {
     private int disponibles;
@@ -324,6 +332,12 @@ Tu app funciona con un JDK completo instalado en la máquina. En despliegue, qui
 
 **Implementación desde cero**
 
+Desde una carpeta vacía:
+
+```bash
+mkdir -p ~/academia-java/modulo-14-runtime/src/main/java && cd ~/academia-java/modulo-14-runtime
+```
+
 ```bash
 # Analizar dependencias de módulos
 jdeps --print-module-deps --ignore-missing-deps app.jar
@@ -375,6 +389,8 @@ Tu servicio arranca lento en escalado automático. Parte del costo es carga/enla
 **Modelo mental.** CDS/AOT cache es dejar parte del trabajo de preparación hecho antes de abrir la tienda, no cambiar el producto que vendes.
 
 **Implementación desde cero**
+
+Desde la carpeta del Tema 4 (`~/academia-java/modulo-14-runtime`) con el JAR ya empaquetado.
 
 Ejemplo CDS clásico (AppCDS, depende de versión/configuración):
 
@@ -428,9 +444,13 @@ Tu aplicación corre en Java 17 y quieres migrar a 21/25. No puedes “cambiar e
 
 **Implementación desde cero**
 
+Desde una carpeta con código fuente Java (puedes reutilizar `~/academia-java/modulo-14-memoria` o cualquier proyecto):
+
 ```bash
-# Compilar con target del JDK objetivo (ejemplo)
-javac --release 21 -d out src/**/*.java
+mkdir -p ~/academia-java/modulo-14-migracion/src out
+cd ~/academia-java/modulo-14-migracion
+# coloca tus .java en src/ y compila para el target objetivo
+javac --release 21 -d out src/*.java
 
 # Buscar deprecaciones relevantes
 jdeprscan --release 21 --class-path out

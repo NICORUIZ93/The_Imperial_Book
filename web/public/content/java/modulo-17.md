@@ -211,6 +211,8 @@ Debes debitar saldo y registrar un movimiento. Si el segundo paso falla, el prim
 
 **Implementación desde cero**
 
+Usa la carpeta del Tema 1 (`~/academia-java/jdbc-lab`) con el driver H2/PostgreSQL ya descargado.
+
 Archivo: `TransferenciaJdbc.java`
 
 ```java
