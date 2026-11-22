@@ -1,27 +1,32 @@
 # Módulo 13 · Gobernanza, FinOps y organización
 
-Los microservicios no fallan solo por código; fallan por decisiones no registradas, costos invisibles y equipos mal alineados. Este módulo cubre ADRs, C4, fitness functions, FinOps y Team Topologies.
+Los microservicios no fallan solo por código; fallan por decisiones no registradas, costos invisibles y equipos mal alineados. Este módulo cubre ADRs, C4, fitness functions, FinOps y Team Topologies con un enfoque práctico y verificable.
 
-**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Se ejecutan checks de ADR, fitness functions y costos con Java puro. Herramientas de FinOps/observabilidad reales son notas de verificación.
+**Entorno de referencia verificado (2026-05-22):** JDK 27.0.1.0.2. Smokes de ADR, fitness functions, presupuesto y alineación de equipos ejecutados con Java puro. Herramientas FinOps/observabilidad reales quedan con nota de verificación.
 
 ## Aprende construyendo
 
 ### Tema 1: ADRs y C4 · Intermedio · 120 min
 
-Caso guía: documentar por qué se eligió Kafka.
+Caso guía: el equipo eligió Kafka para eventos de pedidos. Seis meses después nadie recuerda por qué no se usó RabbitMQ ni qué trade-offs se aceptaron.
 
-#### ADR y C4
+#### Definición formal
 
-**Definición formal.** ADR registra decisión, contexto, opciones y consecuencias. C4 modela arquitectura en Context, Container, Component, Code.
+- **ADR (Architecture Decision Record):** documento breve que registra una decisión arquitectónica: contexto, decisión, opciones consideradas, consecuencias y estado.
+- **C4 model:** forma de comunicar arquitectura en cuatro niveles: Context, Containers, Components, Code.
 
-**Cuándo usarlo / cuándo no.** ADR para decisiones costosas de revertir; C4 para comunicar arquitectura. No documentes todo al mismo nivel.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **ADR mínimo:** id, fecha, estado (proposed/accepted/superseded), contexto, decisión, consecuencias, alternativas.
+- **Inmutabilidad práctica:** un ADR aceptado no se reescribe; se reemplaza por otro ADR que lo marca superseded.
+- **C4:** cada nivel responde preguntas distintas; no dibujar todos los detalles en el mismo diagrama.
+- **Límite:** documentación sin mantenimiento se vuelve mentira; ADRs deben ser cortos y de decisiones relevantes.
 
-```bash
-mkdir -p sm13-adr
-cd sm13-adr
-```
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** para decisiones costosas de revertir: broker, DB, modelo de consistencia, frontera de servicio. **No** hagas ADR para cada cambio menor de código.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Adr.java`:
 
@@ -29,7 +34,11 @@ Crea el archivo `Adr.java`:
 import java.util.*;
 public class Adr {
   public static void main(String[] args) {
-    Map<String,String> adr = Map.of("id","ADR-001","status","accepted","decision","Kafka for events");
+    Map<String, String> adr = Map.of(
+      "id", "ADR-001",
+      "status", "accepted",
+      "decision", "Kafka for events"
+    );
     System.out.println(adr.get("status"));
     System.out.println(adr.containsKey("decision"));
   }
@@ -41,35 +50,59 @@ javac Adr.java
 java Adr
 ```
 
-**Error común.** ADR sin consecuencias.
+Salida esperada:
 
-**Síntoma.** decisiones repetidas. **Causa.** falta trade-off. **Corrección.** incluir consecuencias y estado. **Señal observable.** debates recurrentes.
+```text
+accepted
+true
+```
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `accepted`, `true`.
+#### Caso real
+
+`ADR-007` decide usar outbox + Kafka para eventos de dominio. Contexto: dual write previo causó inconsistencias. Consecuencias: más complejidad operativa, pero entrega confiable de eventos.
+
+#### Error común
+
+**Síntoma.** se repite la misma discusión arquitectónica cada trimestre. **Causa.** decisión sin ADR o ADR sin consecuencias/alternativas. **Corrección.** ADR corto con trade-offs y estado. **Señal observable.** decisiones contradictorias entre equipos.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `accepted`, `true`.
+
+**Nota de verificación:** C4/ADR son artefactos de proceso; la verificación real es revisión por pares y que el ADR esté en el repo/versionado.
 
 ### Tema 2: Fitness functions y ATAM ligero · Avanzado · 120 min
 
-Caso guía: evitar que domain dependa de web.
+Caso guía: la arquitectura define que `domain` no debe depender de `web`. Tres meses después, alguien importa un DTO web en el dominio.
 
-#### Fitness function
+#### Definición formal
 
-**Definición formal.** Prueba automatizada de una característica arquitectónica. ATAM ligero evalúa trade-offs con escenarios.
+Una **fitness function** es una prueba automatizada que verifica una característica arquitectónica (acoplamiento, dependencia, latencia, tamaño, etc.). **ATAM ligero** es una evaluación pragmática de trade-offs arquitectónicos usando escenarios y riesgos, sin el peso completo de un proceso formal largo.
 
-**Cuándo usarlo / cuándo no.** Úsalo para reglas estables. No automatices reglas volátiles.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **Fitness function:** ejecutable en CI; falla ante regresión arquitectónica.
+- **Herramientas:** ArchUnit, linters, tests de performance, políticas OPA.
+- **ATAM ligero:** escenarios de calidad (latencia, seguridad, disponibilidad), decisiones, riesgos, trade-offs.
+- **Límite:** automatizar reglas inestables crea ruido; elegir pocas reglas de alto valor.
 
-```bash
-mkdir -p sm13-fit
-cd sm13-fit
-```
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** para invariantes arquitectónicos estables. **No** automatices todo; prioriza reglas que prevengan erosión costosa.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Fit.java`:
 
 ```java
 public class Fit {
-  static boolean noDomainToWeb(String from,String to){ return !(from.equals("domain") && to.equals("web")); }
-  public static void main(String[] args){ System.out.println(noDomainToWeb("domain","app")); System.out.println(noDomainToWeb("domain","web")); }
+  static boolean noDomainToWeb(String from, String to) {
+    return !(from.equals("domain") && to.equals("web"));
+  }
+  public static void main(String[] args) {
+    System.out.println(noDomainToWeb("domain", "app"));
+    System.out.println(noDomainToWeb("domain", "web"));
+  }
 }
 ```
 
@@ -78,35 +111,60 @@ javac Fit.java
 java Fit
 ```
 
-**Error común.** Reglas solo en documentos.
+Salida esperada:
 
-**Síntoma.** erosión arquitectónica. **Causa.** sin enforcement. **Corrección.** ArchUnit/CI. **Señal observable.** imports indebidos.
+```text
+true
+false
+```
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`.
+#### Caso real
+
+ArchUnit en CI bloquea imports `..web..` desde `..domain..`. Un ATAM ligero evalúa la decisión Kafka vs RabbitMQ con escenarios de throughput, replay y costo operativo.
+
+#### Error común
+
+**Síntoma.** la arquitectura “documentada” no coincide con el código. **Causa.** reglas solo en wiki. **Corrección.** fitness functions en CI para reglas críticas. **Señal observable.** dependencias prohibidas aparecen en PRs sin bloqueo.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
+
+**Nota de verificación:** no se ejecutó ArchUnit real. Verificación propuesta: regla ArchUnit en `src/test/java` y `./mvnw test`.
 
 ### Tema 3: FinOps: costo, right-sizing y observability tax · Intermedio · 120 min
 
-Caso guía: controlar costo de logs, métricas y réplicas.
+Caso guía: la factura cloud crece 40% tras agregar tracing, logs detallados y réplicas por defecto.
 
-#### FinOps
+#### Definición formal
 
-**Definición formal.** Práctica de gestionar costo cloud con visibilidad, accountability y optimización.
+FinOps es la práctica de gestionar el costo de cloud con visibilidad, accountability y optimización continua. Right-sizing ajusta recursos al uso real. Observability tax es el costo de métricas, logs, traces y retención.
 
-**Cuándo usarlo / cuándo no.** Siempre en cloud. No optimices costo rompiendo SLO.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **Visibilidad:** atribuir costo por servicio/equipo/entorno.
+- **Budgets/alertas:** detectar desvíos antes de fin de mes.
+- **Cardinalidad:** labels con IDs únicos disparan costo de métricas.
+- **Retención/sampling:** ajustar logs/traces al valor operativo.
+- **Trade-off:** ahorrar costo no debe romper SLOs ni capacidad de diagnóstico.
 
-```bash
-mkdir -p sm13-fin
-cd sm13-fin
-```
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** siempre en cloud. **No** optimices costo eliminando observabilidad crítica ni bajando recursos por debajo del SLO.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Fin.java`:
 
 ```java
 public class Fin {
-  static boolean withinBudget(double cost, double budget){ return cost <= budget; }
-  public static void main(String[] args){ System.out.println(withinBudget(80,100)); System.out.println(withinBudget(120,100)); }
+  static boolean withinBudget(double cost, double budget) {
+    return cost <= budget;
+  }
+  public static void main(String[] args) {
+    System.out.println(withinBudget(80, 100));
+    System.out.println(withinBudget(120, 100));
+  }
 }
 ```
 
@@ -115,35 +173,59 @@ javac Fin.java
 java Fin
 ```
 
-**Error común.** Observabilidad sin control de cardinalidad.
+Salida esperada:
 
-**Síntoma.** factura inesperada. **Causa.** labels/retención sin límites. **Corrección.** budgets, sampling, cardinalidad. **Señal observable.** costo de observabilidad crece rápido.
+```text
+true
+false
+```
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`.
+#### Caso real
+
+Se detecta que un label `userId` en métricas genera alta cardinalidad. Se mueve a logs/traces con sampling; se define budget por servicio y alerta al 80%.
+
+#### Error común
+
+**Síntoma.** factura de observabilidad supera el costo del servicio. **Causa.** alta cardinalidad, retención excesiva, logs debug en prod. **Corrección.** budgets, sampling, cardinalidad controlada, retención por valor. **Señal observable.** costo por GB/log/serie crece sin mejora en MTTR.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
+
+**Nota de verificación:** no se ejecutó herramienta FinOps/cloud billing real. Verificación propuesta: dashboard de costo por servicio y alerta de budget en el proveedor cloud.
 
 ### Tema 4: Ley de Conway y Team Topologies · Intermedio · 90 min
 
-Caso guía: alinear equipos y servicios.
+Caso guía: dos equipos comparten un servicio crítico; los incidentes no tienen dueño claro y los cambios requieren coordinación constante.
 
-#### Organización
+#### Definición formal
 
-**Definición formal.** Ley de Conway: los sistemas reflejan la estructura de comunicación de la organización. Team Topologies propone stream-aligned, platform, enabling y complicated-subsystem teams.
+**Ley de Conway:** las organizaciones diseñan sistemas que reflejan sus estructuras de comunicación. **Team Topologies** define tipos de equipo: stream-aligned, platform, enabling, complicated-subsystem, y modos de interacción (collaboration, X-as-a-service, facilitating).
 
-**Cuándo usarlo / cuándo no.** Úsalo al definir ownership. No crees equipos por cada microservicio sin capacidad.
+#### Contrato / internals
 
-**Ejemplo mínimo enfocado (ejecutable).**
+- **Ownership:** el equipo que construye el servicio lo opera (you build it, you run it).
+- **Cognitive load:** un equipo no debe poseer más servicios de los que puede operar bien.
+- **Interfaces de equipo:** APIs, plataformas, SLOs y contratos reducen acoplamiento organizacional.
+- **Límite:** reorganizar equipos no arregla un mal dominio; dominio y organización deben alinearse.
 
-```bash
-mkdir -p sm13-team
-cd sm13-team
-```
+#### Cuándo usarlo / cuándo no
+
+**Úsalo** al definir ownership de servicios y plataformas. **No** crees un microservicio por cada persona ni un equipo por cada repo sin capacidad operativa.
+
+#### Ejemplo mínimo ejecutable
 
 Crea el archivo `Team.java`:
 
 ```java
 public class Team {
-  static boolean aligned(boolean ownsCode, boolean ownsOnCall){ return ownsCode && ownsOnCall; }
-  public static void main(String[] args){ System.out.println(aligned(true,true)); System.out.println(aligned(true,false)); }
+  static boolean aligned(boolean ownsCode, boolean ownsOnCall) {
+    return ownsCode && ownsOnCall;
+  }
+  public static void main(String[] args) {
+    System.out.println(aligned(true, true));
+    System.out.println(aligned(true, false));
+  }
 }
 ```
 
@@ -152,19 +234,35 @@ javac Team.java
 java Team
 ```
 
-**Error común.** Equipo sin ownership operativo.
+Salida esperada:
 
-**Síntoma.** handoffs y MTTR alto. **Causa.** “you build it, someone else runs it”. **Corrección.** ownership end-to-end. **Señal observable.** incidentes sin dueño claro.
+```text
+true
+false
+```
 
-**Verificación (JDK 27.0.1.0.2, 2026-05-22).** Salida: `true`, `false`.
+#### Caso real
+
+El equipo `checkout` es stream-aligned y dueño de `checkout-service`, incluyendo on-call, SLO y backlog. El equipo platform provee Kubernetes/observabilidad como servicio interno.
+
+#### Error común
+
+**Síntoma.** incidentes rebotan entre equipos. **Causa.** ownership difuso, sin on-call claro. **Corrección.** ownership end-to-end por servicio/capacidad. **Señal observable.** MTTR alto y “no es mío” en incidentes.
+
+#### Verificación
+
+Smoke Java ejecutado localmente (2026-05-22, JDK 27.0.1.0.2): `true`, `false`.
+
+**Nota de verificación:** Team Topologies es un modelo organizacional; se verifica por claridad de ownership, on-call y métricas DORA/MTTR, no por un test unitario.
 
 ## Cierre
 
-La gobernanza ligera evita caos: decisiones registradas, reglas automatizadas, costos visibles y equipos con ownership.
+La gobernanza ligera evita caos: decisiones registradas, reglas automatizadas, costos visibles y equipos con ownership. En microservicios, la arquitectura también es organización y economía operativa.
 
 ## Checklist
 
-- ADRs con consecuencias.
-- Fitness functions en CI.
-- FinOps visible.
-- Equipos alineados al ownership.
+- ADRs con consecuencias y estado.
+- Fitness functions en CI para invariantes clave.
+- FinOps visible por servicio/equipo.
+- Ownership end-to-end y cognitive load controlado.
+- Notas honestas cuando la verificación es organizacional/herramienta externa.
