@@ -5493,39 +5493,39 @@
     "13": [
       {
         "title": "Spring Security: filter chain",
-        "fragment": "spring-security-filter-chain"
+        "fragment": "tema-1-spring-security-filter-chain"
       },
       {
         "title": "JWT: firmas simétricas vs asimétricas",
-        "fragment": "jwt-firmas-simetricas-vs-asimetricas"
+        "fragment": "tema-2-jwt-firmas-simetricas-vs-asimetricas"
       },
       {
         "title": "OAuth2 y OIDC",
-        "fragment": "oauth2-y-oidc"
+        "fragment": "tema-3-oauth2-y-oidc"
       },
       {
         "title": "Keycloak",
-        "fragment": "keycloak"
+        "fragment": "tema-4-keycloak"
       },
       {
         "title": "RBAC y Scopes",
-        "fragment": "rbac-y-scopes"
+        "fragment": "tema-5-rbac-y-scopes"
       },
       {
         "title": "Token Exchange (RFC 8693)",
-        "fragment": "token-exchange-rfc-8693"
+        "fragment": "tema-6-token-exchange-rfc-8693"
       },
       {
         "title": "mTLS con Service Mesh",
-        "fragment": "mtls-con-service-mesh"
+        "fragment": "tema-7-mtls-con-service-mesh"
       },
       {
         "title": "HashiCorp Vault",
-        "fragment": "hashicorp-vault"
+        "fragment": "tema-8-hashicorp-vault"
       },
       {
         "title": "Escaneo de vulnerabilidades: Trivy, Snyk",
-        "fragment": "escaneo-de-vulnerabilidades-trivy-snyk"
+        "fragment": "tema-9-escaneo-de-vulnerabilidades-trivy-snyk"
       }
     ],
     "14": [
