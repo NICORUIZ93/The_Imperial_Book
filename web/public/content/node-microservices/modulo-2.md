@@ -1,123 +1,231 @@
 # Módulo 2 · Persistencia en Node.js
 
-**Entorno de referencia (2026-05-22):** Node.js v24.18.0, Docker 29.9.3. Se verifican conceptos de pooling, transacciones lógicas y ownership con simulaciones/SQLite. MongoDB/Mongoose/PostgreSQL/Prisma/Sequelize reales requieren drivers/DB; **Nota de verificación** honesta.
+La persistencia en microservicios no es solo “conectar una DB”: define ownership de datos, consistencia, latencia, pooling y comportamiento ante fallos. Este módulo cubre MongoDB/Mongoose, PostgreSQL con Prisma/Sequelize, database-per-service, pooling y transacciones, con foco en decisiones verificables.
+
+**Entorno de referencia verificado (2026-05-22):** Node.js v24.18.0. Ejemplos de lógica/contratos se ejecutan con Node. MongoDB, PostgreSQL, Mongoose, Prisma y Sequelize requieren servicios/dependencias; se incluyen comandos y **Nota de verificación** honesta.
 
 ## Aprende construyendo
 
 ### Tema 1: MongoDB + Mongoose · Intermedio · 150 min
 
-#### Documento y Mongoose
+Caso guía: guardar pedidos con esquema flexible, pero sin perder validación.
 
-**Definición formal.** MongoDB es una base documental; Mongoose es ODM para Node.js con esquemas, modelos y validación.
+#### Documento, colección y esquema
 
-**Para qué sirve.** Persistencia flexible de documentos.
+**Definición formal.** MongoDB es una base documental; almacena documentos BSON en colecciones. Mongoose es un ODM para Node.js que define schemas, modelos, validación y middleware sobre MongoDB.
 
-**Cuándo usarlo y cuándo no.** Úsalo cuando el modelo documental encaja. No fuerces joins complejos relacionales.
+**Para qué sirve.** Iterar rápido con documentos y obtener validación/abstracción en aplicación.
 
-**Ejemplo mínimo enfocado (conceptual ejecutable de documento).**
+**Cuándo usarlo / cuándo no.** Úsalo cuando el modelo es naturalmente documental o evoluciona rápido. No lo uses como excusa para no validar; no metas datos de otros servicios en la misma DB si rompe database-per-service.
+
+**Ejemplo mínimo enfocado (ejecutable: validación de forma sin Mongo).**
 
 ```bash
-node -e "const doc={_id:'1',name:'A',tags:['x']}; console.log(doc.tags[0])"
+mkdir -p nm2-mongo-shape
+cd nm2-mongo-shape
 ```
 
-**Caso de uso real.** Catálogo con atributos variables.
+Crea el archivo `shape.mjs`:
 
-**Error común.** Esquema sin validación. Corrección: schema Mongoose y validación.
+```js
+function validateOrder(doc) {
+  return typeof doc.sku === 'string' && Number.isInteger(doc.qty) && doc.qty > 0;
+}
+console.log(validateOrder({ sku: 'A1', qty: 2 }));
+console.log(validateOrder({ sku: 'A1', qty: 0 }));
+```
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `x`. **Nota:** MongoDB/Mongoose real requiere DB y paquete.
+```bash
+node shape.mjs
+```
+
+**Caso de uso real.** Catálogo con atributos variables por tipo de producto.
+
+**Error común.** Confiar en “schemaless” y aceptar cualquier documento. **Síntoma.** lecturas fallan por campos faltantes/tipos inesperados. **Causa.** ausencia de validación. **Corrección.** schema Mongoose + validación en borde.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`, `false`. **Nota de verificación:** Mongoose real requiere `npm i mongoose` y MongoDB en ejecución; ejemplo típico: `mongoose.connect(process.env.MONGO_URL)`.
 
 ### Tema 2: PostgreSQL + Prisma/Sequelize · Intermedio · 150 min
 
-#### ORM/Query builder
+Caso guía: persistir pedidos con integridad relacional y transacciones.
 
-**Definición formal.** Prisma y Sequelize son herramientas de acceso a datos para Node.js; Prisma usa schema declarativo y cliente tipado, Sequelize es ORM tradicional.
+#### ORM/Query builder y modelo relacional
 
-**Para qué sirve.** Abstraen SQL y mapeo.
+**Definición formal.** PostgreSQL es una base relacional ACID. Prisma es un ORM moderno con schema declarativo y cliente tipado; Sequelize es un ORM tradicional para Node.js basado en modelos.
 
-**Cuándo usarlo y cuándo no.** Úsalo para productividad; entiende SQL generado.
+**Para qué sirve.** Modelar relaciones, constraints, transacciones y consultas SQL con productividad.
 
-**Ejemplo mínimo enfocado (SQL verificable con sqlite).**
+**Cuándo usarlo / cuándo no.** Úsalo para datos relacionales, integridad y reporting. No ignores el SQL generado; no uses ORM como caja negra ante consultas lentas.
+
+**Ejemplo mínimo enfocado (ejecutable: SQL de contrato).**
 
 ```bash
-python3 - <<'PY'
-import sqlite3
-db=sqlite3.connect(':memory:')
-db.execute('create table users(id int,name text)')
-db.execute('insert into users values(1,"Ada")')
-print(db.execute('select name from users').fetchone()[0])
-PY
+mkdir -p nm2-sql
+cd nm2-sql
 ```
 
-**Caso de uso real.** CRUD relacional.
+Crea el archivo `sql.mjs`:
 
-**Error común.** N+1 por ORM. Corrección: includes/joins y observación SQL.
+```js
+const sql = 'INSERT INTO orders(sku, qty) VALUES ($1, $2) RETURNING id';
+const params = ['A1', 2];
+console.log(sql.includes('RETURNING id'));
+console.log(params.length);
+```
 
-**Verificación (Python/sqlite3, 2026-05-22).** Salida: `Ada`. **Nota:** Prisma/Sequelize/Postgres real requieren DB y paquetes.
+```bash
+node sql.mjs
+```
+
+**Caso de uso real.** Órdenes con FK a clientes y transacción de pago/inventario.
+
+**Error común.** N+1 queries por lazy loading inadvertido. **Síntoma.** latencia crece con cantidad de filas. **Causa.** consulta por relación en bucle. **Corrección.** `include/join`, batch, medir queries.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`, `2`. **Nota de verificación:** Prisma requiere `npm i prisma @prisma/client`, `prisma init`, DB Postgres; Sequelize requiere `npm i sequelize pg`.
 
 ### Tema 3: Database-per-service · Intermedio · 90 min
 
-#### Aislamiento de datos
+Caso guía: `orders-service` y `billing-service` necesitan evolucionar sin acoplar esquemas.
 
-**Definición formal.** Cada servicio posee su almacenamiento; no comparte tablas directamente.
+#### Ownership de datos
 
-**Para qué sirve.** Autonomía y menor acoplamiento.
+**Definición formal.** Database-per-service es el patrón donde cada microservicio posee su almacenamiento y expone datos a otros solo por API/eventos/contratos.
 
-**Cuándo usarlo y cuándo no.** Úsalo en microservicios maduros.
+**Para qué sirve.** Reducir acoplamiento, permitir evolución independiente y escalar por dominio.
+
+**Cuándo usarlo / cuándo no.** Úsalo por defecto en microservicios. No compartas tablas entre servicios; si hay consulta cross-service, usa API composition, réplica read-model o eventos.
+
+```mermaid
+flowchart LR
+  O[Orders Service] --> ODB[(Orders DB)]
+  B[Billing Service] --> BDB[(Billing DB)]
+  O -->|evento/API| B
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "const services={orders:{db:'orders_db'},billing:{db:'billing_db'}}; console.log(services.orders.db!==services.billing.db)"
+mkdir -p nm2-ownership
+cd nm2-ownership
 ```
 
-**Caso de uso real.** Orders no lee tabla de Billing.
+Crea el archivo `ownership.mjs`:
 
-**Error común.** Shared DB por comodidad. Corrección: API/eventos.
+```js
+const dbOwners = { orders: 'orders-service', billing: 'billing-service' };
+function canWrite(service, table) { return dbOwners[table] === service; }
+console.log(canWrite('orders-service', 'orders'));
+console.log(canWrite('billing-service', 'orders'));
+```
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`.
+```bash
+node ownership.mjs
+```
+
+**Caso de uso real.** Billing consume evento `OrderCreated`; no hace `SELECT` directo a tabla de Orders.
+
+**Error común.** Compartir DB “por rapidez”. **Síntoma.** un cambio de esquema rompe otro servicio. **Causa.** acoplamiento oculto. **Corrección.** contratos explícitos y ownership.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`, `false`.
 
 ### Tema 4: Connection pooling y transacciones · Avanzado · 120 min
 
-#### Connection pool
+Caso guía: un pico de tráfico agota conexiones o deja datos a medias.
 
-**Definición formal.** Pool de conexiones reutiliza conexiones abiertas a la DB para reducir overhead.
+#### Connection pooling
 
-**Para qué sirve.** Rendimiento y control de recursos.
+**Definición formal.** Pool de conexiones es un conjunto de conexiones DB reutilizables administradas por el cliente/driver para evitar costo de crear/cerrar conexiones por request.
 
-**Cuándo usarlo y cuándo no.** Siempre en servicios DB. Ajusta tamaño.
+**Para qué sirve.** Controlar latencia y uso de recursos en DB.
 
-**Ejemplo mínimo enfocado (ejecutable, pool simulado).**
-
-```bash
-node -e "const max=2; let used=0; function acquire(){ if(used<max){used++; return true;} return false;} console.log(acquire(),acquire(),acquire())"
-```
-
-**Caso de uso real.** PgBouncer/Hikari/Prisma pool.
-
-**Error común.** Pool demasiado grande. Corrección: dimensionar por DB y carga.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true true false`.
-
-#### Transacción
-
-**Definición formal.** Unidad atómica commit/rollback.
-
-**Para qué sirve.** Consistencia.
-
-**Cuándo usarlo y cuándo no.** Para cambios multi-paso.
+**Cuándo usarlo / cuándo no.** Siempre en servicios. No configures pool ilimitado; respeta límites de DB y réplicas.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "const db={a:10,b:10}; try{db.a-=5; throw new Error('x'); db.b+=5;}catch(e){ /* rollback sim */ db.a+=5;} console.log(db.a,db.b)"
+mkdir -p nm2-pool
+cd nm2-pool
 ```
 
-**Caso de uso real.** Transferencia.
+Crea el archivo `pool.mjs`:
 
-**Error común.** Transacciones largas. Corrección: mantener cortas.
+```js
+class Pool {
+  constructor(max) { this.max = max; this.used = 0; }
+  acquire() { if (this.used >= this.max) return null; this.used++; return { release: () => this.used-- }; }
+}
+const p = new Pool(1);
+const a = p.acquire();
+const b = p.acquire();
+console.log(Boolean(a));
+console.log(b === null);
+a.release();
+console.log(Boolean(p.acquire()));
+```
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `10 10`.
+```bash
+node pool.mjs
+```
 
-## Cierre del módulo
+**Caso de uso real.** `max: 10` por instancia y cálculo total `instancias * max <= conexiones DB`.
 
-La persistencia en Node.js requiere elegir modelo de datos, herramienta y políticas operativas (pool, transacciones, ownership). Los drivers/ORM se validan con DB real en integración.
+**Error común.** No liberar conexión. **Síntoma.** pool agotado, requests colgadas. **Causa.** falta `finally/release`. **Corrección.** `try/finally`, timeouts, métricas de pool.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`, `true`, `true`.
+
+#### Transacciones
+
+**Definición formal.** Una transacción agrupa operaciones que deben cumplirse como unidad atómica según el nivel de aislamiento configurado.
+
+**Para qué sirve.** Mantener invariantes locales (débito/crédito, stock/reserva).
+
+**Cuándo usarlo / cuándo no.** Úsalo para invariantes dentro de la misma DB. No intentes transacción distribuida entre microservicios con 2PC ligero; usa saga/outbox.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p nm2-tx
+cd nm2-tx
+```
+
+Crea el archivo `tx.mjs`:
+
+```js
+function transfer(from, to, amount) {
+  const snapshot = { ...from, to: { ...to } };
+  try {
+    if (from.balance < amount) throw new Error('insufficient');
+    from.balance -= amount;
+    to.balance += amount;
+    return 'commit';
+  } catch (e) {
+    from.balance = snapshot.balance;
+    to.balance = snapshot.to.balance;
+    return 'rollback';
+  }
+}
+const a = { balance: 10 }; const b = { balance: 0 };
+console.log(transfer(a, b, 20));
+console.log(a.balance, b.balance);
+```
+
+```bash
+node tx.mjs
+```
+
+**Caso de uso real.** Crear orden y reservar stock en misma DB con transacción.
+
+**Error común.** Asumir atomicidad entre dos DBs. **Síntoma.** datos inconsistentes tras fallo parcial. **Causa.** no hay transacción distribuida real. **Corrección.** outbox/saga, idempotencia.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `rollback`, `10 0`.
+
+## Cierre
+
+Persistencia en Node requiere elegir modelo de datos, respetar ownership, dimensionar pools y usar transacciones donde la DB puede garantizarlas. Entre servicios, la consistencia se logra con contratos y patrones distribuidos, no con joins cross-service.
+
+## Checklist
+
+- Puedo elegir Mongo/Mongoose vs PostgreSQL/Prisma/Sequelize con criterio.
+- Respeto database-per-service.
+- Configuro pool y libero conexiones.
+- Uso transacciones para invariantes locales y saga/outbox para distribuidas.

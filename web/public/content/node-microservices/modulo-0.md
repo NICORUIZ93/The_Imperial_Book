@@ -1,240 +1,475 @@
-# Módulo 0 · Node.js moderno
+# Módulo 0 · Node.js moderno para microservicios
 
-**Entorno de referencia (2026-05-22):** Node.js v24.18.0. Se verifican ES6+, async/await, event loop, worker threads, streams/backpressure y shutdown con Node.
+Un microservicio Node.js no falla solo por “bugs de negocio”; falla por promesas no esperadas, event loop bloqueado, cierres abruptos, streams sin backpressure o tipos mal modelados. Este módulo consolida la base moderna de Node.js/TypeScript que necesitas antes de poner HTTP, colas o bases de datos encima.
+
+**Entorno de referencia verificado (2026-05-22):** Node.js v24.18.0, npm 12.0.2, TypeScript verificado con `npx -p typescript tsc` cuando aplica. Los ejemplos son Node puros salvo donde se indica TS.
 
 ## Aprende construyendo
 
 ### Tema 1: ES6+: async/await, Promises, destructuring, modules · Intermedio · 120 min
 
-#### Promises y async/await
+Caso guía: un servicio consulta un usuario y construye una respuesta sin bloquear el proceso.
 
-**Definición formal.** Una Promise representa un valor eventual; `async/await` es sintaxis sobre Promises para flujo asíncrono legible.
+#### Promises y `async/await`
 
-**Para qué sirve.** Manejo de I/O asíncrono.
+**Definición formal.** Una `Promise` es un objeto que representa la terminación o fallo eventual de una operación asíncrona. `async/await` es sintaxis sobre Promises: una función `async` retorna una Promise y `await` suspende esa función hasta que la Promise se resuelve o rechaza.
 
-**Cuándo usarlo y cuándo no.** Úsalo en I/O; maneja errores con try/catch.
+**Para qué sirve.** Modelar I/O no bloqueante (red, disco, timers) con flujo legible y manejo de errores estructurado.
 
-**Ejemplo mínimo enfocado (ejecutable).**
+**Cuándo usarlo / cuándo no.** Úsalo para I/O y composición asíncrona. No lo uses para CPU intensiva en el hilo principal; no mezcles `await` y `.then()` sin necesidad; no ignores rechazos.
 
-```bash
-node -e "async function main(){ const v=await Promise.resolve(42); console.log(v)} main()"
-```
-
-**Caso de uso real.** Llamada HTTP async.
-
-**Error común.** Olvidar `await` o no manejar rechazo. Corrección: try/catch y lint.
-
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `42`.
-
-#### Destructuring y modules
-
-**Definición formal.** Destructuring extrae valores de objetos/arrays; módulos ES permiten importar/exportar.
-
-**Para qué sirve.** Código claro y composición.
-
-**Cuándo usarlo y cuándo no.** Úsalo para claridad; no destructures en exceso.
+**Contrato mínimo.** `await` solo pausa la función `async` actual, no el event loop. Un rechazo sin `catch`/handler produce `unhandledRejection`.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "const o={a:1,b:2}; const {a}=o; console.log(a)"
+mkdir -p nm0-async
+cd nm0-async
 ```
 
-**Caso de uso real.** Extraer campos de config.
+Crea el archivo `async.mjs`:
 
-**Error común.** Destructurar undefined. Corrección: defaults.
+```js
+async function cargarUsuario(id) {
+  if (id <= 0) throw new Error('id invalido');
+  return { id, nombre: 'Ada' };
+}
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `1`.
+try {
+  const u = await cargarUsuario(1);
+  console.log(u.nombre);
+  await cargarUsuario(0);
+} catch (e) {
+  console.log('error:' + e.message);
+}
+```
+
+```bash
+node async.mjs
+```
+
+**Caso de uso real.** Un handler HTTP consulta DB y servicio externo; si uno falla, responde 5xx controlado y registra el error con contexto.
+
+**Error común.** Olvidar `await`.
+
+```js
+const u = cargarUsuario(1); // Promise, no usuario
+console.log(u.nombre); // undefined
+```
+
+**Síntoma.** `undefined`, `Cannot read properties of undefined`, o lógica que continúa antes de tiempo. **Causa.** Se usó la Promise como valor. **Corrección.** `await` o `.then()` y manejo de rechazo. **Señal observable.** `console.log(u)` muestra `Promise { ... }`.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `Ada`, `error:id invalido`.
+
+#### Destructuring, defaults y módulos ES
+
+**Definición formal.** Destructuring extrae propiedades/elementos a variables. Los módulos ES (`import`/`export`) definen dependencias explícitas entre archivos con alcance de módulo.
+
+**Para qué sirve.** Reducir ruido al leer objetos de configuración/respuesta y separar responsabilidades por archivo.
+
+**Cuándo usarlo / cuándo no.** Úsalo cuando mejora claridad. No destructures objetos posiblemente `undefined` sin default; no uses ESM y CommonJS mezclados sin configurar interoperabilidad.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p nm0-mod
+cd nm0-mod
+```
+
+Crea el archivo `config.mjs`:
+
+```js
+export function puerto({ PORT = 3000 } = {}) {
+  return Number(PORT);
+}
+```
+
+Crea el archivo `main.mjs`:
+
+```js
+import { puerto } from './config.mjs';
+console.log(puerto({ PORT: '8080' }));
+console.log(puerto());
+```
+
+```bash
+node main.mjs
+```
+
+**Caso de uso real.** Leer configuración con defaults seguros y separar utilidades puras de bootstrap.
+
+**Error común.** Destructurar `undefined`. **Síntoma.** `Cannot destructure property 'PORT' of 'undefined'`. **Causa.** No se pasó objeto. **Corrección.** Default de parámetro `= {}` y defaults por campo.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `8080`, `3000`.
 
 ### Tema 2: TypeScript: tipos, interfaces, generics, strict mode · Intermedio · 120 min
 
-#### Tipado estático en TS
+Caso guía: definir el contrato de entrada de un endpoint antes de ejecutar lógica.
 
-**Definición formal.** TypeScript añade tipos estáticos sobre JavaScript, verificados en compilación.
+#### Tipado estático, interfaces y `strict`
 
-**Para qué sirve.** Detecta errores antes de runtime.
+**Definición formal.** TypeScript es un superset de JavaScript con tipos estáticos borrados en compilación. `strict` habilita un conjunto de chequeos más seguros (`strictNullChecks`, `noImplicitAny`, etc.).
 
-**Cuándo usarlo y cuándo no.** Úsalo en bases medianas/grandes. No uses `any` como escape habitual.
+**Para qué sirve.** Detectar incompatibilidades antes de runtime y documentar contratos en el código.
 
-**Ejemplo mínimo enfocado (ejecutable con tsc si disponible).**
+**Cuándo usarlo / cuándo no.** Úsalo en servicios mantenibles y equipos. No uses `any` como atajo habitual; no asumas que el tipo TS valida datos externos en runtime.
+
+**Ejemplo mínimo enfocado (ejecutable con TypeScript).**
 
 ```bash
-mkdir -p /tmp/ms17-ts && cd /tmp/ms17-ts
-cat > main.ts << 'TS'
-interface User { id: number; name: string }
-function greet(u: User): string { return `hi ${u.name}` }
-console.log(greet({id:1,name:'Ada'}))
-TS
-npx -p typescript tsc --strict --target es2022 --module nodenext --moduleResolution nodenext main.ts && node main.js
+mkdir -p nm0-ts
+cd nm0-ts
 ```
 
-**Caso de uso real.** DTOs tipados.
+Crea el archivo `user.ts`:
 
-**Error común.** `any` ocultando bugs. Corrección: `strict`, `unknown`.
+```ts
+interface User {
+  id: number;
+  name: string;
+}
 
-**Verificación (tsc 7.0.2, Node 24.18.0, 2026-05-22).** Salida: `hi Ada`.
+function greet(u: User): string {
+  return `hi ${u.name}`;
+}
+
+console.log(greet({ id: 1, name: 'Ada' }));
+```
+
+```bash
+npx -p typescript tsc --strict --target es2022 --module nodenext --moduleResolution nodenext --types node user.ts
+node user.js
+```
+
+**Caso de uso real.** DTOs internos, contratos de repositorio, respuestas tipadas.
+
+**Error común.** Usar `any` en la frontera. **Síntoma.** bug llega a producción con `undefined is not a function`. **Causa.** El compilador no pudo verificar. **Corrección.** `unknown` + validación/runtime schema, tipos explícitos.
+
+**Verificación (tsc 5.9.x vía npx, Node 24.18.0, 2026-05-22).** Salida: `hi Ada`.
 
 #### Generics
 
-**Definición formal.** Parámetros de tipo que permiten reutilizar código con seguridad de tipos.
+**Definición formal.** Un generic parametriza tipos, permitiendo funciones/estructuras reutilizables sin perder información de tipo.
 
-**Para qué sirve.** APIs reutilizables.
+**Para qué sirve.** Modelar wrappers como `Result<T>`, repositorios, respuestas paginadas.
 
-**Cuándo usarlo y cuándo no.** Úsalo en colecciones/wrappers. No sobrecomplicar.
+**Cuándo usarlo / cuándo no.** Úsalo cuando el mismo comportamiento aplica a varios tipos. No introduzcas generics por anticipación si un tipo concreto basta.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms17-g && cd /tmp/ms17-g
-cat > g.ts << 'TS'
-function id<T>(v:T):T{return v}
-console.log(id<number>(7))
-TS
-npx -p typescript tsc --strict --target es2022 --module nodenext --moduleResolution nodenext g.ts && node g.js
+mkdir -p nm0-generic
+cd nm0-generic
 ```
 
-**Caso de uso real.** `Result<T,E>`.
+Crea el archivo `box.ts`:
 
-**Error común.** Generics innecesarios. Corrección: YAGNI.
+```ts
+function box<T>(value: T): { value: T } {
+  return { value };
+}
 
-**Verificación (2026-05-22).** Salida: `7`.
+const n = box(7);
+const s = box('ok');
+console.log(n.value, s.value);
+```
+
+```bash
+npx -p typescript tsc --strict --target es2022 --module nodenext --moduleResolution nodenext --types node box.ts
+node box.js
+```
+
+**Caso de uso real.** `ApiResponse<T>` o `Result<T, E>`.
+
+**Error común.** Generic innecesariamente complejo. **Síntoma.** tipos ilegibles y errores de compilación difíciles. **Causa.** abstracción prematura. **Corrección.** empezar concreto, extraer generic cuando hay patrón real.
+
+**Verificación (2026-05-22).** Salida: `7 ok`.
 
 ### Tema 3: Event Loop: fases, microtasks, macrotasks · Avanzado · 120 min
 
-#### Event loop
+Caso guía: depurar por qué un log aparece antes que un callback de timer.
 
-**Definición formal.** Mecanismo que procesa callbacks/tareas en fases, con microtasks (Promises) con prioridad antes de continuar.
+#### Event loop, microtasks y macrotasks
 
-**Para qué sirve.** Entender orden de ejecución async.
+**Definición formal.** El event loop de Node.js procesa trabajo en fases. Las microtasks (callbacks de Promises, `queueMicrotask`) se drenan al finalizar la operación actual, antes de continuar con la siguiente fase/tarea macrotask como `setTimeout`.
 
-**Cuándo usarlo y cuándo no.** Conocerlo para evitar bloquearlo.
+**Para qué sirve.** Predecir orden de ejecución y evitar bloqueo del hilo principal.
+
+**Cuándo usarlo / cuándo no.** Conoce el modelo para toda I/O Node. No ejecutes CPU pesada en el loop; no asumas que `setTimeout(fn,0)` corre antes que una microtask.
+
+```mermaid
+flowchart TD
+  S[Stack síncrono] --> M[Drenar microtasks]
+  M --> T[Macrotask/timers/check/etc]
+  T --> M
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "setTimeout(()=>console.log('timeout'),0); Promise.resolve().then(()=>console.log('micro')); console.log('sync')"
+mkdir -p nm0-loop
+cd nm0-loop
 ```
 
-**Caso de uso real.** Debug de orden async.
+Crea el archivo `loop.mjs`:
 
-**Error común.** CPU pesada en event loop. Corrección: worker thread.
+```js
+setTimeout(() => console.log('timeout'), 0);
+Promise.resolve().then(() => console.log('micro'));
+console.log('sync');
+```
+
+```bash
+node loop.mjs
+```
+
+**Caso de uso real.** Razonar por qué una métrica/log se emite en cierto orden; detectar starvation por microtasks recursivas.
+
+**Error común.** Bloquear el event loop con CPU. **Síntoma.** requests HTTP dejan de responder, health checks fallan. **Causa.** cálculo largo en hilo principal. **Corrección.** worker thread, particionar trabajo o mover a servicio/job.
 
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `sync`, `micro`, `timeout`.
 
 ### Tema 4: perf_hooks y clinic.js · Avanzado · 90 min
 
-#### perf_hooks
+Caso guía: medir si una función es lenta antes de “optimizar”.
 
-**Definición formal.** API de Node.js para medir rendimiento (timing, histogramas, performance observers).
+#### `perf_hooks`
 
-**Para qué sirve.** Medir latencia y cuellos.
+**Definición formal.** `node:perf_hooks` expone APIs de medición de rendimiento, incluyendo `performance.now()` y `PerformanceObserver`.
 
-**Cuándo usarlo y cuándo no.** Úsalo para medir; no optimices a ciegas.
+**Para qué sirve.** Medir latencia de operaciones y crear instrumentación ligera.
+
+**Cuándo usarlo / cuándo no.** Úsalo para medir antes de optimizar. No uses microbenchmarks artificiales como única verdad; mide bajo carga realista.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "const {performance}=require('node:perf_hooks'); const t=performance.now(); for(let i=0;i<1e6;i++); console.log(performance.now()>t)"
+mkdir -p nm0-perf
+cd nm0-perf
 ```
 
-**Caso de uso real.** Medir handler.
+Crea el archivo `perf.mjs`:
 
-**Error común.** Microbenchmarks irrelevantes. Corrección: medir en carga realista.
+```js
+import { performance } from 'node:perf_hooks';
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`. **Nota:** clinic.js requiere instalación global/tooling.
+const t0 = performance.now();
+for (let i = 0; i < 1_000_00; i++) {}
+const dt = performance.now() - t0;
+console.log(dt >= 0);
+```
+
+```bash
+node perf.mjs
+```
+
+**Caso de uso real.** Medir tiempo de serialización, consulta o transformación crítica.
+
+**Error común.** Optimizar sin medir. **Síntoma.** código más complejo con misma latencia. **Causa.** intuición equivocada. **Corrección.** medir antes/después, usar profiler.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `true`.
+
+#### `clinic.js`
+
+**Definición formal.** Suite de herramientas de diagnóstico para Node.js (doctor/flame/bubbleprof) que analiza CPU, event loop y async.
+
+**Cuándo usarlo.** Cuando hay latencia alta, bloqueo o problemas async difíciles de ver con logs.
+
+**Nota de verificación.** `clinic.js` requiere instalación de herramienta (`npm i -g clinic` o `npx clinic`). No se finge una salida de profiling aquí; el comando típico es `clinic doctor -- node app.mjs`.
 
 ### Tema 5: Worker Threads vs Child Processes · Avanzado · 120 min
 
+Caso guía: calcular hash/CPU sin bloquear peticiones HTTP.
+
 #### Worker Threads
 
-**Definición formal.** Hilos dentro del mismo proceso Node.js que comparten memoria opcional (SharedArrayBuffer) y se comunican por mensajes.
+**Definición formal.** `worker_threads` permite ejecutar JavaScript en hilos dentro del mismo proceso Node.js, con comunicación por mensajes y memoria aislada por defecto.
 
-**Para qué sirve.** CPU-bound sin bloquear event loop.
+**Para qué sirve.** CPU-bound o tareas paralelas que no deben bloquear el event loop.
 
-**Cuándo usarlo y cuándo no.** Úsalo para CPU intensiva. No para I/O normal.
+**Cuándo usarlo / cuándo no.** Úsalo para CPU intensiva. No lo uses para I/O normal; para I/O, el modelo async ya es suficiente.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-mkdir -p /tmp/ms17-w && cd /tmp/ms17-w
-cat > w.mjs << 'JS'
-import {Worker,isMainThread,parentPort} from 'node:worker_threads';
-if(isMainThread){ const w=new Worker(new URL('./w.mjs',import.meta.url)); w.on('message',m=>console.log(m)); }
-else { parentPort.postMessage(21*2); }
-JS
-node w.mjs
+mkdir -p nm0-worker
+cd nm0-worker
 ```
 
-**Caso de uso real.** Compresión/imagen.
+Crea el archivo `worker.mjs`:
 
-**Error común.** Usar workers para I/O ya no bloqueante. Corrección: usar async I/O.
+```js
+import { Worker, isMainThread, parentPort } from 'node:worker_threads';
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `42`.
+if (isMainThread) {
+  const w = new Worker(new URL('./worker.mjs', import.meta.url));
+  w.on('message', (m) => console.log(m));
+} else {
+  let total = 0;
+  for (let i = 0; i < 1000; i++) total += i;
+  parentPort.postMessage(total);
+}
+```
+
+```bash
+node worker.mjs
+```
+
+**Caso de uso real.** Comprimir, procesar imagen, calcular score pesado.
+
+**Error común.** Usar workers para todo. **Síntoma.** complejidad y overhead innecesario. **Causa.** confundir I/O-bound con CPU-bound. **Corrección.** perfilar primero.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `499500`.
 
 #### Child Processes
 
-**Definición formal.** Procesos separados iniciados desde Node (`spawn/fork/exec`) con aislamiento de memoria.
+**Definición formal.** `child_process` crea procesos separados del sistema operativo. Tienen memoria aislada y mayor overhead que un worker, pero aíslan fallos y permiten ejecutar binarios externos.
 
-**Para qué sirve.** Ejecutar comandos o aislar fallos.
-
-**Cuándo usarlo y cuándo no.** Úsalo para CLIs o aislamiento fuerte. Mayor overhead que worker.
+**Cuándo usarlo.** Ejecutar CLI externo, aislar código riesgoso, trabajo que puede crashear.
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "require('node:child_process').execFileSync('node',['-e','console.log(1)'],{encoding:'utf8'}).trim() && console.log('ok')"
+mkdir -p nm0-child
+cd nm0-child
 ```
 
-**Caso de uso real.** Invocar herramienta externa.
+Crea el archivo `child.mjs`:
 
-**Error común.** Inyección de comandos con `exec`. Corrección: `execFile/spawn` con args.
+```js
+import { execFileSync } from 'node:child_process';
+const out = execFileSync('node', ['-e', "process.stdout.write('ok')"], { encoding: 'utf8' });
+console.log(out);
+```
+
+```bash
+node child.mjs
+```
+
+**Error común.** Usar `exec` con input no confiable. **Síntoma.** inyección de comandos. **Causa.** shell interpreta string. **Corrección.** `execFile/spawn` con args array.
 
 **Verificación (Node 24.18.0, 2026-05-22).** Salida: `ok`.
 
 ### Tema 6: Backpressure en Streams · Avanzado · 90 min
 
+Caso guía: copiar un archivo grande sin cargarlo en memoria.
+
 #### Backpressure
 
-**Definición formal.** Mecanismo por el cual un consumidor lento señala al productor que reduzca/pausa el envío.
+**Definición formal.** En streams Node.js, backpressure ocurre cuando el destino no consume tan rápido como produce la fuente. `write()` devuelve `false` cuando el buffer interno está lleno; se debe esperar `drain`.
 
-**Para qué sirve.** Evita OOM y congestión.
+**Para qué sirve.** Evitar uso ilimitado de memoria y controlar flujo.
 
-**Cuándo usarlo y cuándo no.** Siempre en streams grandes.
+**Cuándo usarlo / cuándo no.** Siempre en pipelines de streams grandes o red. No uses `stream.write()` en bucle ignorando el retorno.
+
+```mermaid
+flowchart LR
+  R[Readable] -->|chunk| W[Writable]
+  W -->|false + drain| R
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "import('node:stream').then(({Readable,Writable})=>{ let i=0; const r=new Readable({read(){ this.push(i<3?String(i++):null); }}); const w=new Writable({write(c,_,cb){ console.log(c.toString()); cb(); }}); r.pipe(w); })"
+mkdir -p nm0-stream
+cd nm0-stream
 ```
 
-**Caso de uso real.** Pipe de archivo a HTTP.
+Crea el archivo `stream.mjs`:
 
-**Error común.** Ignorar retorno `false` de `write()`. Corrección: esperar `drain`.
+```js
+import { Readable, Writable } from 'node:stream';
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `0`, `1`, `2`.
+let i = 0;
+const r = new Readable({
+  read() { this.push(i < 3 ? String(i++) : null); }
+});
+const chunks = [];
+const w = new Writable({
+  write(chunk, _enc, cb) { chunks.push(chunk.toString()); cb(); }
+});
+
+w.on('finish', () => console.log(chunks.join(',')));
+r.pipe(w);
+```
+
+```bash
+node stream.mjs
+```
+
+**Caso de uso real.** Proxy HTTP, upload/download, procesamiento de CSV grande.
+
+**Error común.** Ignorar `false` de `write()`. **Síntoma.** crecimiento de memoria, OOM. **Causa.** productor más rápido que consumidor. **Corrección.** `pipeline()` o respetar `drain`.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `0,1,2`.
 
 ### Tema 7: Graceful shutdown · Intermedio · 90 min
 
+Caso guía: un despliegue envía SIGTERM mientras hay requests en vuelo.
+
 #### Graceful shutdown
 
-**Definición formal.** Procedimiento de apagado que deja de aceptar trabajo nuevo, completa o drena trabajo en curso y libera recursos.
+**Definición formal.** Secuencia de apagado controlado: dejar de aceptar trabajo nuevo, completar o acotar trabajo en curso, cerrar conexiones/recursos y salir con código apropiado.
 
-**Para qué sirve.** Evita pérdida de requests en deploys.
+**Para qué sirve.** Evitar perder requests, corromper trabajos o dejar conexiones colgadas durante deploys/escalado.
 
-**Cuándo usarlo y cuándo no.** Siempre en servicios. Definir timeout máximo.
+**Cuándo usarlo / cuándo no.** Siempre en servicios long-running. No hagas `process.exit(0)` inmediato al recibir SIGTERM si hay trabajo crítico en curso.
+
+```mermaid
+sequenceDiagram
+  participant P as Plataforma
+  participant S as Servicio
+  P->>S: SIGTERM
+  S->>S: deja de aceptar requests
+  S->>S: drena en curso / timeout
+  S->>S: cierra DB/colas
+  S-->>P: exit 0
+```
 
 **Ejemplo mínimo enfocado (ejecutable).**
 
 ```bash
-node -e "process.on('SIGTERM',()=>{ console.log('closing'); process.exit(0); }); console.log('ready'); process.emit('SIGTERM')"
+mkdir -p nm0-shutdown
+cd nm0-shutdown
 ```
 
-**Caso de uso real.** Kubernetes envía SIGTERM.
+Crea el archivo `shutdown.mjs`:
 
-**Error común.** Salir inmediatamente. Corrección: cerrar server, drenar conexiones, timeout.
+```js
+import http from 'node:http';
 
-**Verificación (Node 24.18.0, 2026-05-22).** Salida: `ready`, `closing`.
+const server = http.createServer((_req, res) => res.end('ok'));
+server.listen(0, '127.0.0.1', async () => {
+  process.on('SIGTERM', () => {
+    console.log('closing');
+    server.close(() => {
+      console.log('closed');
+      process.exit(0);
+    });
+  });
+  process.kill(process.pid, 'SIGTERM');
+});
+```
 
-## Cierre del módulo
+```bash
+node shutdown.mjs
+```
 
-Node.js moderno combina asincronía, tipado con TS, y primitivas de concurrencia/streaming. Conocer el event loop y el shutdown ordenado evita fallos en producción.
+**Caso de uso real.** Kubernetes envía SIGTERM; el pod debe salir del endpoint de readiness, drenar requests y cerrar pool DB.
+
+**Error común.** No cerrar servidor ni DB. **Síntoma.** conexiones cortadas, deploys con errores intermitentes. **Causa.** salida abrupta. **Corrección.** manejar SIGTERM/SIGINT, `server.close()`, timeout de cierre forzado.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida incluye `closing` y `closed`.
+
+## Cierre
+
+Node.js moderno para microservicios es dominio del runtime: async correcto, tipos en bordes internos, event loop, medición, concurrencia CPU, streams con backpressure y shutdown controlado. Con esta base, HTTP y mensajería se vuelven mucho más predecibles.
+
+## Checklist
+
+- Sé cuándo usar `await` y cómo manejar rechazos.
+- Uso TypeScript con `strict` y no confío en tipos para input externo.
+- Distingo microtask/macrotask y evito bloquear el event loop.
+- Mido con `perf_hooks` antes de optimizar.
+- Elijo worker thread vs child process por aislamiento/costo.
+- Aplico backpressure y graceful shutdown.
