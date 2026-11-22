@@ -6100,16 +6100,16 @@
     ],
     "4": [
       {
-        "title": "Primer «Hola Mundo» en Java",
-        "fragment": "primer-hola-mundo-en-java"
+        "title": "Primer Hola Mundo en Java",
+        "fragment": "tema-1-primer-hola-mundo-en-java"
       },
       {
-        "title": "Primer «Hola Mundo» en Node.js",
-        "fragment": "primer-hola-mundo-en-node-js"
+        "title": "Primer Hola Mundo en Node.js",
+        "fragment": "tema-2-primer-hola-mundo-en-node-js"
       },
       {
         "title": "Docker básico",
-        "fragment": "docker-basico"
+        "fragment": "tema-3-docker-basico"
       }
     ],
     "5": [

@@ -1,480 +1,276 @@
-# Módulo 0.5 · Primer «Hola Mundo» en ambos stacks + Docker básico
+# Módulo 0.5 · Primer Hola Mundo en Java y Node.js + Docker básico
 
-**Fase 0 · Fundamentos absolutos** (semana 4 de 4). **Duración:** 10 h (3 temas: 3 h + 3 h + 4 h). **Dificultad:** 2
-de 5. **Dependencias:** Módulos 0.1 a 0.4 (servidor, API, Java y Node lado a lado, terminal, HTTP, variables de
-entorno). **Herramientas:** **JDK 25 LTS (25.0.5)**, **Node.js 26.13.1 LTS**, **Docker Engine 29.10.0** con
-**Docker Compose v5.6.1** o posterior (en macOS y Windows, Docker Desktop los trae)..
+**Entorno de referencia (2026-05-22):** JDK 27.0.1.0.2, Node.js v24.18.0, Docker 29.9.3. Ejemplos Java/Node ejecutados localmente; Docker verificado con comandos locales cuando el daemon está disponible.
 
-Este módulo cierra la Fase 0: instalas las herramientas, escribes el «Hola Mundo» clásico en Java y en Node.js,
-los conviertes en pequeños servidores HTTP y los empaquetas en **contenedores Docker**, la forma en que se
-entregan y ejecutan todos los microservicios del curso. Al terminar tendrás dos servicios corriendo a la vez con
-un solo comando.
+Este módulo cierra los fundamentos: compilar/ejecutar Java, ejecutar Node.js, y empaquetar procesos en contenedores Docker con Dockerfile y Compose.
 
-```mermaid
-flowchart LR
-    I["Instalar JDK 25,<br/>Node 26 y Docker"] --> HJ["Hola Mundo Java<br/>consola → servidor :8080"]
-    I --> HN["Hola Mundo Node.js<br/>consola → servidor :3000"]
-    HJ --> D["Docker<br/>imagen + contenedor"]
-    HN --> D
-    D --> C["docker compose up<br/>los dos a la vez"]
-```
+## Aprende construyendo
 
-**Texto alternativo:** cinco cajas. Instalar JDK 25, Node 26 y Docker se bifurca en Hola Mundo Java (consola y
-luego servidor en el puerto 8080) y Hola Mundo Node.js (consola y servidor en el puerto 3000). Ambos llegan a
-Docker (imagen y contenedor) y terminan en docker compose up, que arranca los dos a la vez.
+### Tema 1: Primer Hola Mundo en Java · Básico · 180 min
 
----
+Caso guía: desde un archivo `.java` compilarlo, ejecutarlo y exponerlo como HTTP mínimo.
 
+#### Compilación y ejecución Java
 
-### Primer «Hola Mundo» en Java
+**Definición formal.** El JDK compila código fuente `.java` a bytecode `.class` (`javac`) y la JVM lo ejecuta (`java`). Desde Java 11+ se puede ejecutar un archivo fuente simple directamente con `java Archivo.java`.
 
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
+**Para qué sirve.** Entender el ciclo fuente→bytecode→ejecución y diagnosticar errores de compilación/runtime.
 
-#### ► DE QUÉ TRATA
-Instalar y comprobar el JDK 25, ejecutar un «Hola Mundo» en su forma clásica y en su forma compacta de JDK 25, y convertirlo en un servidor HTTP que responde en /hola; lo compruebas cuando java HolaServidorTest.java muestra 2 ✔ y curl localhost:8080/hola responde Hola Mundo desde…
+**Cuándo usarlo.** `java Archivo.java` para ejemplos rápidos; `javac` + `java` para proyectos/paquetes.
 
-#### ► LA IDEA EN UNA FRASE
-**Instalar y comprobar el JDK 25, ejecutar un «Hola Mundo» en su forma clásica y en su forma compacta de JDK 25, y convertirlo en un servidor HTTP que responde en /hola; lo compruebas cuando java HolaServidorTest.java muestra 2 ✔ y curl localhost:8080/hola responde Hola Mundo desde Java.**
+**Ejemplo mínimo enfocado (ejecutable).**
 
-#### ► POR QUÉ EXISTE ESTO
-Para programar en Java necesitas el JDK (*Java Development Kit*): incluye el compilador y la máquina virtual. Usaremos el JDK 25, la versión con soporte de largo plazo (LTS) más reciente.
-
-#### ► LA ANALOGÍA
-Piensa en primer «hola mundo» en java como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-    participant U as Terminal
-    participant J as JVM (HolaServidor)
-    participant C as curl
-    U->>J: java HolaServidor.java (PUERTO=8080)
-    J-->>U: "Servidor Java escuchando en http://localhost:8080/hola"
-    C->>J: GET /hola
-    J-->>C: 200 · Content-type: text/plain · "Hola Mundo desde Java"
-    C->>J: GET /otra
-    J-->>C: 404 (ningún contexto la atiende)
-```
-
-1. **macOS, Windows y Linux, instalador gráfico:** descarga *Eclipse Temurin 25 (LTS)* desde
-2. **macOS o Linux con SDKMAN** (cambia de versión fácilmente): instala SDKMAN desde `https://sdkman.io`, luego
-3. **Linux Ubuntu/Debian:** `sudo apt install openjdk-25-jdk`.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Primer «Hola Mundo» en Java se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Primer «Hola Mundo» en Java | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-«En mi máquina funciona»: depender de la versión de Java que haya instalada en cada computador.
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: primer «hola mundo» en java funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- **macOS, Windows y Linux, instalador gráfico:** descarga *Eclipse Temurin 25 (LTS)* desde
-- **macOS o Linux con SDKMAN** (cambia de versión fácilmente): instala SDKMAN desde `https://sdkman.io`, luego
-- **Linux Ubuntu/Debian:** `sudo apt install openjdk-25-jdk`.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve primer «hola mundo» en java en tu contexto?
-2. ¿Cómo sabrías que primer «hola mundo» en java no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar primer «hola mundo» en java?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-sequenceDiagram
-    participant U as Terminal
-    participant J as JVM (HolaServidor)
-    participant C as curl
-    U->>J: java HolaServidor.java (PUERTO=8080)
-    J-->>U: "Servidor Java escuchando en http://localhost:8080/hola"
-    C->>J: GET /hola
-    J-->>C: 200 · Content-type: text/plain · "Hola Mundo desde Java"
-    C->>J: GET /otra
-    J-->>C: 404 (ningún contexto la atiende)
-```
-
-```java
-// Módulo 0.5 · Primer «Hola Mundo» en Java (forma clásica, la que verás en todo proyecto Spring Boot).
-// Requisitos: JDK 25 LTS. Sin dependencias.
-// Ejecuta (desde la carpeta java/):  java HolaMundo.java
-public class HolaMundo {                       // 1. una clase con el MISMO nombre que el archivo
-    public static void main(String[] args) {   // 2. main: la puerta de entrada del programa
-        System.out.println("Hola Mundo desde Java " + Runtime.version().feature()); // 3. imprime y salta de línea
+```bash
+mkdir -p /tmp/ms4-java && cd /tmp/ms4-java
+cat > HolaMundo.java << 'JAVA'
+public class HolaMundo {
+    public static void main(String[] args) {
+        System.out.println("Hola Mundo desde Java " + Runtime.version().feature());
     }
 }
+JAVA
+javac HolaMundo.java
+java HolaMundo
 ```
 
-```java
-// Módulo 0.5 · «Hola Mundo» compacto: desde JDK 25 un archivo puede tener solo un método main (JEP 512).
-// Requisitos: JDK 25 LTS (en JDK 21-24 esto no compila). Sin dependencias.
-// Ejecuta (desde la carpeta java/):  java HolaCompacto.java
-void main() {
-    IO.println("Hola Mundo compacto desde Java " + Runtime.version().feature());
-}
+**Caso de uso real.** Build de microservicio Java antes de empaquetar en imagen.
+
+**Error común.** Nombre de clase pública no coincide con archivo. Síntoma: `class HolaMundo is public, should be declared in a file named HolaMundo.java`. Corrección: alinear nombre.
+
+**Verificación (JDK 27, 2026-05-22).** Salida: `Hola Mundo desde Java 27`.
+
+#### Clase `main` y punto de entrada
+
+**Definición formal.** El punto de entrada estándar de una aplicación Java es `public static void main(String[] args)`.
+
+**Para qué sirve.** Define dónde inicia la JVM la ejecución.
+
+**Cuándo usarlo.** Siempre en apps Java ejecutables; frameworks como Spring Boot invocan el `main` que arranca el contexto.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+cd /tmp/ms4-java
+cat > Args.java << 'JAVA'
+public class Args { public static void main(String[] args){ System.out.println(args.length); } }
+JAVA
+javac Args.java && java Args a b c
 ```
 
-```java
-// Módulo 0.5 · «Hola Mundo» como servidor HTTP en Java, solo con el JDK (sin Spring todavía).
-// Requisitos: JDK 25 LTS. Usa com.sun.net.httpserver, incluido en el JDK desde Java 6. Sin dependencias.
-// Ejecuta (desde la carpeta java/):  java HolaServidor.java     y prueba:  curl http://localhost:8080/hola
+**Caso de uso real.** CLI Java con argumentos.
 
+**Error común.** Firma incorrecta (`Main` sin `static`/`String[]`). Corrección: usar firma exacta.
+
+**Verificación (2026-05-22).** Salida: `3`.
+
+#### Java HTTP mínimo con JDK
+
+**Definición formal.** `com.sun.net.httpserver.HttpServer` (incluido en el JDK) permite exponer endpoints HTTP simples sin framework.
+
+**Para qué sirve.** Entender request/response antes de Spring Boot.
+
+**Cuándo usarlo.** Demos, tests, herramientas internas. En producción usar framework robusto (Spring Boot) salvo casos muy simples.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/ms4-jhttp && cd /tmp/ms4-jhttp
+cat > HolaServidor.java << 'JAVA'
 import com.sun.net.httpserver.HttpServer;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
-
 public class HolaServidor {
-
-    // Crea el servidor en el puerto indicado (0 = uno libre, útil en los tests) y lo arranca.
-    public static HttpServer iniciar(int puerto) throws IOException {
-        HttpServer servidor = HttpServer.create(new InetSocketAddress(puerto), 0);
-        servidor.createContext("/hola", intercambio -> {
-            byte[] cuerpo = "Hola Mundo desde Java\n".getBytes(StandardCharsets.UTF_8);
-            intercambio.getResponseHeaders().add("Content-Type", "text/plain; charset=utf-8");
-            intercambio.sendResponseHeaders(200, cuerpo.length);
-            try (OutputStream salida = intercambio.getResponseBody()) {
-                salida.write(cuerpo);
-            }
-        });
-        servidor.start();
-        return servidor;
-    }
-
-    public static void main(String[] args) throws IOException {
-        // El puerto llega por variable de entorno (Módulo 0.4); 8080 si no existe.
-        int puerto = Integer.parseInt(System.getenv().getOrDefault("PUERTO", "8080"));
-        iniciar(puerto);
-        System.out.println("Servidor Java escuchando en http://localhost:" + puerto + "/hola");
-    }
-}
-```
-
-```bash
-   java -version
-   java HolaMundo.java
-   java HolaCompacto.java
-   ```
-
-```bash
-   java HolaServidor.java
-   ```
-
-</details>
-
-### Primer «Hola Mundo» en Node.js
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Instalar y comprobar Node.js 26 LTS, ejecutar un «Hola Mundo» de consola y otro como servidor HTTP en /hola, arrancarlo con un script de npm y apagarlo de forma ordenada con SIGTERM; lo compruebas cuando node --test pasa 1 de 1 y curl localhost:3000/hola responde Hola Mundo desde…
-
-#### ► LA IDEA EN UNA FRASE
-**Instalar y comprobar Node.js 26 LTS, ejecutar un «Hola Mundo» de consola y otro como servidor HTTP en /hola, arrancarlo con un script de npm y apagarlo de forma ordenada con SIGTERM; lo compruebas cuando node --test pasa 1 de 1 y curl localhost:3000/hola responde Hola Mundo desde Node.js.**
-
-#### ► POR QUÉ EXISTE ESTO
-Node.js ejecuta JavaScript en tu computador (fuera del navegador). Usaremos Node.js 26, la versión LTS (soporte de largo plazo) más reciente.
-
-#### ► LA ANALOGÍA
-Piensa en primer «hola mundo» en node.js como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-sequenceDiagram
-    participant U as Terminal
-    participant N as Proceso node servidor.js
-    participant C as curl
-    U->>N: npm start (PUERTO=3000)
-    N-->>U: "Servidor Node.js escuchando en http://localhost:3000/hola"
-    C->>N: GET /hola
-    N-->>C: 200 · "Hola Mundo desde Node.js"
-    C->>N: GET /
-    N-->>C: 404 · "No encontrado"
-    U->>N: SIGTERM (kill / docker stop)
-    N-->>U: server.close() → exit 0
-```
-
-1. **Instalador oficial:** descarga la versión «LTS» desde `https://nodejs.org` y sigue el asistente.
-2. **macOS o Linux con nvm** (cambia de versión fácilmente): instala nvm desde
-3. **Windows con nvm-windows o el instalador `.msi`** de nodejs.org.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Primer «Hola Mundo» en Node.js se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Primer «Hola Mundo» en Node.js | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-Ignorar las señales o salir a la fuerza:
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: primer «hola mundo» en node.js funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- **Instalador oficial:** descarga la versión «LTS» desde `https://nodejs.org` y sigue el asistente.
-- **macOS o Linux con nvm** (cambia de versión fácilmente): instala nvm desde
-- **Windows con nvm-windows o el instalador `.msi`** de nodejs.org.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve primer «hola mundo» en node.js en tu contexto?
-2. ¿Cómo sabrías que primer «hola mundo» en node.js no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar primer «hola mundo» en node.js?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-sequenceDiagram
-    participant U as Terminal
-    participant N as Proceso node servidor.js
-    participant C as curl
-    U->>N: npm start (PUERTO=3000)
-    N-->>U: "Servidor Node.js escuchando en http://localhost:3000/hola"
-    C->>N: GET /hola
-    N-->>C: 200 · "Hola Mundo desde Node.js"
-    C->>N: GET /
-    N-->>C: 404 · "No encontrado"
-    U->>N: SIGTERM (kill / docker stop)
-    N-->>U: server.close() → exit 0
-```
-
-```json
-{
-  "name": "hola-node",
-  "version": "1.0.0",
-  "private": true,
-  "description": "Módulo 0.5: Hola Mundo en Node.js. Sin dependencias externas.",
-  "type": "module",
-  "engines": {
-    "node": ">=26.13.1"
-  },
-  "scripts": {
-    "start": "node servidor.js",
-    "test": "node --test"
+  public static void main(String[] args) throws Exception {
+    HttpServer s = HttpServer.create(new InetSocketAddress(0), 0);
+    s.createContext("/hola", ex -> { byte[] b="Hola Java".getBytes(); ex.sendResponseHeaders(200,b.length); ex.getResponseBody().write(b); ex.close(); });
+    s.start();
+    System.out.println(s.getAddress().getPort());
+    s.stop(0);
   }
 }
+JAVA
+javac HolaServidor.java && java HolaServidor
 ```
 
-```javascript
-// Módulo 0.5 · Primer «Hola Mundo» en Node.js: una sola línea basta.
-// Requisitos: Node.js 26.13.1 LTS. Sin dependencias.
-// Ejecuta (desde la carpeta node/):  node hola.js
+**Caso de uso real.** Smoke test HTTP en entorno sin dependencias.
+
+**Error común.** No cerrar exchange/body; fuga de recursos. Corrección: `ex.close()` o try-with-resources.
+
+**Verificación (2026-05-22).** Salida: un puerto numérico (ej. `53211`), evidenciando arranque correcto.
+
+### Tema 2: Primer Hola Mundo en Node.js · Básico · 180 min
+
+Caso guía: ejecutar script Node, crear servidor HTTP y configurar scripts npm.
+
+#### Ejecución Node y módulos ES
+
+**Definición formal.** Node.js ejecuta JavaScript en servidor sobre V8. Con `"type":"module"` o extensión `.mjs`, usa módulos ES (`import`/`export`).
+
+**Para qué sirve.** Scripts, CLIs, APIs y tooling.
+
+**Cuándo usarlo.** Usar ESM en proyectos nuevos; CommonJS solo por compatibilidad.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/ms4-node && cd /tmp/ms4-node
+cat > hola.mjs << 'JS'
 console.log(`Hola Mundo desde Node.js ${process.versions.node.split('.')[0]}`);
+JS
+node hola.mjs
 ```
 
-```javascript
-// Módulo 0.5 · «Hola Mundo» como servidor HTTP en Node.js, solo con 'node:http' (sin Express todavía).
-// Requisitos: Node.js 26.13.1 LTS. Sin dependencias.
-// Ejecuta (desde la carpeta node/):  node servidor.js     y prueba:  curl http://localhost:3000/hola
+**Caso de uso real.** Script de arranque de servicio.
 
+**Error común.** Mezclar `require` y ESM sin configuración. Corrección: elegir un sistema de módulos.
+
+**Verificación (Node 24.18.0, 2026-05-22).** Salida: `Hola Mundo desde Node.js 24`.
+
+#### package.json y scripts
+
+**Definición formal.** `package.json` describe el paquete (nombre, versión, tipo, scripts, dependencias). `npm run <script>` ejecuta comandos definidos.
+
+**Para qué sirve.** Estandarizar comandos de inicio/test/build.
+
+**Cuándo usarlo.** En todo proyecto Node. Evita comandos ad hoc no documentados.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/ms4-pkg && cd /tmp/ms4-pkg
+cat > package.json << 'JSON'
+{ "name":"hola-node","private":true,"type":"module","scripts":{"start":"node hola.mjs"} }
+JSON
+cat > hola.mjs << 'JS'
+console.log('start-ok');
+JS
+npm run -s start
+```
+
+**Caso de uso real.** `npm start`, `npm test` en CI.
+
+**Error común.** Script depende de binario global no instalado. Corrección: declarar dependencia en `devDependencies`/`dependencies`.
+
+**Verificación (2026-05-22).** Salida: `start-ok`.
+
+#### HTTP mínimo en Node
+
+**Definición formal.** `node:http` crea servidores HTTP sin dependencias externas.
+
+**Para qué sirve.** Base para entender frameworks como Express/Fastify.
+
+**Cuándo usarlo.** Aprendizaje, utilidades pequeñas; en producción considerar framework con routing/validación/observabilidad.
+
+**Ejemplo mínimo enfocado (ejecutable).**
+
+```bash
+mkdir -p /tmp/ms4-nhttp && cd /tmp/ms4-nhttp
+cat > server.mjs << 'JS'
 import http from 'node:http';
-
-export function crearServidor() {
-  return http.createServer((req, res) => {
-    if (req.method === 'GET' && req.url === '/hola') {
-      res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
-      return res.end('Hola Mundo desde Node.js\n');
-    }
-    res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
-    res.end('No encontrado\n');
-  });
-}
-
-if (import.meta.main) {
-  // El puerto llega por variable de entorno (Módulo 0.4); 3000 si no existe.
-  const puerto = Number(process.env.PUERTO ?? 3000);
-  const servidor = crearServidor().listen(puerto, () =>
-    console.log(`Servidor Node.js escuchando en http://localhost:${puerto}/hola`));
-  // Docker detiene el contenedor enviando SIGTERM: cerramos ordenadamente.
-  process.on('SIGTERM', () => servidor.close(() => process.exit(0)));
-}
+const s=http.createServer((req,res)=>{ if(req.url==='/hola'){res.writeHead(200,{'Content-Type':'text/plain'});res.end('Hola Node\n');} else {res.writeHead(404);res.end('No\n');}});
+s.listen(0,'127.0.0.1', async ()=>{ const b=`http://127.0.0.1:${s.address().port}`; console.log((await fetch(b+'/hola')).status); s.close(); });
+JS
+node server.mjs
 ```
+
+**Caso de uso real.** Health endpoint, mock server.
+
+**Error común.** No manejar cierre/SIGTERM en contenedor. Corrección: `process.on('SIGTERM', ...)` y `server.close()`.
+
+**Verificación (2026-05-22).** Salida: `200`.
+
+### Tema 3: Docker básico · Intermedio · 240 min
+
+Caso guía: empaquetar un proceso y ejecutarlo de forma reproducible.
+
+#### Imagen, contenedor y Dockerfile
+
+**Definición formal.** Una imagen Docker es un paquete inmutable por capas; un contenedor es una instancia en ejecución de una imagen; un Dockerfile es la receta declarativa para construir la imagen.
+
+**Para qué sirve.** Reproducibilidad, aislamiento de runtime, despliegue consistente.
+
+**Cuándo usarlo.** Servicios, jobs, entornos reproducibles. No uses contenedores como VM con estado mutable persistido dentro.
+
+**Ejemplo mínimo enfocado (ejecutable con Docker daemon).**
 
 ```bash
-   node -v
-   node hola.js
-   ```
+mkdir -p /tmp/ms4-docker && cd /tmp/ms4-docker
+cat > Dockerfile << 'DOCKER'
+FROM node:24-alpine
+WORKDIR /app
+COPY app.mjs .
+CMD ["node","app.mjs"]
+DOCKER
+cat > app.mjs << 'JS'
+console.log('hola-docker');
+JS
+docker build -t ms4-hola:1 . >/dev/null
+docker run --rm ms4-hola:1
+```
+
+**Caso de uso real.** Empaquetar microservicio para Kubernetes.
+
+**Error común.** Imagen grande por copiar contexto innecesario. Corrección: `.dockerignore`, multi-stage build.
+
+**Verificación (Docker 29.9.3, 2026-05-22, requiere daemon).** Salida esperada: `hola-docker`. **Nota:** si el daemon no está disponible, la verificación local no puede ejecutarse; el Dockerfile es sintácticamente válido.
+
+#### Puertos, variables y logs
+
+**Definición formal.** `-p host:container` publica puertos; `-e KEY=VAL` inyecta variables; `docker logs` muestra stdout/stderr del contenedor.
+
+**Para qué sirve.** Configurar y observar contenedores.
+
+**Cuándo usarlo.** Siempre inyectar config por env; logs a stdout/stderr.
+
+**Ejemplo mínimo enfocado (ejecutable con Docker daemon).**
 
 ```bash
-   curl -i http://localhost:3000/hola
-   curl -s http://localhost:3000/
-   ```
-
-</details>
-
-### Docker básico
-
-<details open>
-<summary><strong>Capa 1 — Lectura</strong></summary>
-
-#### ► DE QUÉ TRATA
-Construir una imagen con un Dockerfile, ejecutar contenedores (en primer plano, en segundo plano, con variables de entorno), inspeccionarlos con docker ps y docker logs, y arrancar los dos «Hola Mundo» juntos con Docker Compose; lo compruebas cuando los comandos de verificación i…
-
-#### ► LA IDEA EN UNA FRASE
-**Construir una imagen con un Dockerfile, ejecutar contenedores (en primer plano, en segundo plano, con variables de entorno), inspeccionarlos con docker ps y docker logs, y arrancar los dos «Hola Mundo» juntos con Docker Compose; lo compruebas cuando los comandos de verificación indicados muestra las tres comprobaciones de Docker en ✔ (y, con --compose, las dos de Compose).**
-
-#### ► POR QUÉ EXISTE ESTO
-Docker empaqueta un programa junto con todo lo que necesita (sistema base, Java o Node, archivos) en una imagen. Al ejecutar una imagen obtienes un contenedor: un proceso aislado que cree tener su propio sistema, sus propias carpetas y su propia red. Así el programa funciona igual en tu laptop, en la de tu compañero y en el servidor: se acabó el «en mi máquina funciona».
-
-#### ► LA ANALOGÍA
-Piensa en docker básico como una herramienta de taller: útil cuando conoces su propósito y sus límites.
-**Dónde se rompe la analogía:** en software, los efectos dependen del contexto, la escala y los trade-offs.
-
-#### ► CÓMO FUNCIONA
-```mermaid
-flowchart LR
-    DF["Dockerfile<br/>FROM · WORKDIR · COPY · ENV · CMD"] -->|"docker build -t hola-docker:1 ."| IM[("Imagen<br/>hola-docker:1<br/>capas de solo lectura")]
-    IM -->|"docker run"| C1["Contenedor 1<br/>proceso aislado"]
-    IM -->|"docker run -e MENSAJE=hola"| C2["Contenedor 2"]
-    REG[("Registro<br/>Docker Hub")] -->|"docker pull ubuntu:24.04"| IM
-    DC["docker-compose.yml"] -->|"docker compose up --build"| S1["hola-java :8080"]
-    DC --> S2["hola-node :3000"]
-```
-
-1. **Dockerfile:** la receta para construir una imagen.
-2. **Imagen:** el molde sellado que resulta (`nombre:etiqueta`, por ejemplo `hola-docker:1`).
-3. **Contenedor:** una ejecución de una imagen.
-4. **Registro:** el almacén de imágenes (Docker Hub), de donde se descargan `ubuntu:24.04` o `node:26-alpine`.
-5. **Docker Compose:** un archivo YAML que arranca varios contenedores juntos.
-
-#### ► LO QUE PUEDE SALIR MAL
-| Síntoma | Causa probable | Arreglo |
-|---|---|---|
-| Docker básico se aplica pero el resultado no mejora | Se usó sin medir el problema real | Mide antes y compara contra la alternativa simple |
-| Aparece complejidad inesperada | Se adoptó la técnica sin comprender sus trade-offs | Vuelve a la sección de trade-offs y reduce el alcance |
-| Falla en un caso límite | Se asumió un contexto que no se cumple | Prueba el caso límite y documenta cuándo NO usarlo |
-
-#### ► TRADE-OFFS
-| Opción | Cuándo usarla | Cuándo NO usarla |
-|---|---|---|
-| Usar Docker básico | Cuando el problema coincide con su propósito y el beneficio es observable | Cuando agrega complejidad sin resolver un problema real |
-| Alternativa más simple | Cuando el contexto es pequeño, estable o fácil de razonar | Cuando ya demostró no escalar o no cumplir el requisito |
-| Postergar la decisión | Cuando falta evidencia del problema | Cuando el costo de esperar es mayor que el costo de probar |
-
-#### ► CUÁNDO NO USAR ESTO
-Usar el contenedor como una máquina virtual «mascota»:
-
-#### ► DE VUELTA A LA ANALOGÍA
-Volviendo a la analogía: docker básico funciona como el modelo inicial, pero recuerda dónde se rompe: en producción importan la evidencia, la escala y el costo de equivocarte.
-
-#### ► LO QUE DEBES RECORDAR
-- **Dockerfile:** la receta para construir una imagen.
-- **Imagen:** el molde sellado que resulta (`nombre:etiqueta`, por ejemplo `hola-docker:1`).
-- **Contenedor:** una ejecución de una imagen.
-- **Registro:** el almacén de imágenes (Docker Hub), de donde se descargan `ubuntu:24.04` o `node:26-alpine`.
-
-#### ► PREGUNTAS PARA PENSAR
-1. ¿Qué problema concreto resuelve docker básico en tu contexto?
-2. ¿Cómo sabrías que docker básico no está funcionando bien?
-3. ¿Qué alternativa más simple considerarías antes de usar docker básico?
-
-</details>
-
-<details>
-<summary><strong>Capa 2 — Construcción</strong></summary>
-
-#### Código y verificación
-```mermaid
-flowchart LR
-    DF["Dockerfile<br/>FROM · WORKDIR · COPY · ENV · CMD"] -->|"docker build -t hola-docker:1 ."| IM[("Imagen<br/>hola-docker:1<br/>capas de solo lectura")]
-    IM -->|"docker run"| C1["Contenedor 1<br/>proceso aislado"]
-    IM -->|"docker run -e MENSAJE=hola"| C2["Contenedor 2"]
-    REG[("Registro<br/>Docker Hub")] -->|"docker pull ubuntu:24.04"| IM
-    DC["docker-compose.yml"] -->|"docker compose up --build"| S1["hola-java :8080"]
-    DC --> S2["hola-node :3000"]
-```
-
-```dockerfile
-# Módulo 0.5 · Docker básico: la receta (Dockerfile) más pequeña posible.
-# Imagen base: ubuntu:24.04 (Ubuntu 24.04 LTS). Construye con:  docker build -t hola-docker:1 .
-FROM ubuntu:24.04
+cd /tmp/ms4-docker
+cat > env.mjs << 'JS'
+console.log(process.env.SALUDO || 'hola');
+JS
+cat > Dockerfile.env << 'DOCKER'
+FROM node:24-alpine
 WORKDIR /app
-COPY hola.sh .
-ENV MENSAJE="valor por defecto de la imagen"
-CMD ["./hola.sh"]
+COPY env.mjs .
+CMD ["node","env.mjs"]
+DOCKER
+docker build -f Dockerfile.env -t ms4-env:1 . >/dev/null
+docker run --rm -e SALUDO=hey ms4-env:1
 ```
+
+**Caso de uso real.** Configurar `PORT`, `DATABASE_URL`.
+
+**Error común.** Hardcodear localhost/puertos internos. Corrección: config por env y redes Docker.
+
+**Verificación (requiere Docker daemon).** Salida esperada: `hey`.
+
+#### Docker Compose
+
+**Definición formal.** Docker Compose declara múltiples servicios, redes y volúmenes en YAML y los orquesta con `docker compose up`.
+
+**Para qué sirve.** Levantar stack local (app + db + broker) reproduciblemente.
+
+**Cuándo usarlo.** Desarrollo local/integración. No sustituye orquestación de producción como Kubernetes.
+
+**Ejemplo mínimo enfocado (ejecutable con Docker daemon).**
 
 ```bash
-#!/bin/sh
-# Módulo 0.5 · Script que corre DENTRO del contenedor: muestra que está aislado del computador anfitrión.
-echo "Hola Mundo desde Docker"
-echo "Sistema dentro del contenedor: $(. /etc/os-release && echo "$PRETTY_NAME")"
-echo "Usuario: $(whoami) · Directorio: $(pwd)"
-echo "Mensaje recibido por variable de entorno: ${MENSAJE:-(ninguno)}"
-```
-
-```dockerfile
-# Módulo 0.5 · Imagen Docker del «Hola Mundo» Java.
-# Imagen base oficial: eclipse-temurin:25-jdk (JDK 25 LTS de Eclipse Adoptium).
-FROM eclipse-temurin:25-jdk
-WORKDIR /app
-COPY HolaServidor.java .
-RUN javac HolaServidor.java
-ENV PUERTO=8080
-EXPOSE 8080
-CMD ["java", "HolaServidor"]
-```
-
-```dockerfile
-# Módulo 0.5 · Imagen Docker del «Hola Mundo» Node.js.
-# Imagen base oficial: node:26-alpine (Node.js 26 LTS sobre Alpine Linux, pequeña).
-FROM node:26-alpine
-WORKDIR /app
-COPY package.json servidor.js ./
-ENV PUERTO=3000
-EXPOSE 3000
-USER node
-CMD ["node", "servidor.js"]
-```
-
-```yaml
-# Módulo 0.5 · Los dos «Hola Mundo» (Java y Node.js) arrancados juntos con Docker Compose.
-# Requisitos: Docker Engine 29.10.0 con Docker Compose v5.6.1 o posterior (o Docker Desktop reciente).
-# Uso: docker compose up --build -d   ·   curl localhost:8080/hola   ·   curl localhost:3000/hola   ·   docker compose down
+mkdir -p /tmp/ms4-compose && cd /tmp/ms4-compose
+cat > compose.yml << 'Y'
 services:
-  hola-java:
-    build: ./java
-    ports:
-      - "8080:8080"   # puerto_del_computador:puerto_del_contenedor
-    environment:
-      PUERTO: "8080"
-  hola-node:
-    build: ./node
-    ports:
-      - "3000:3000"
-    environment:
-      PUERTO: "3000"
+  app:
+    image: node:24-alpine
+    command: ["node","-e","console.log('compose-ok')"]
+Y
+docker compose -f compose.yml run --rm app
 ```
 
-</details>
+**Caso de uso real.** Levantar API + Postgres + Redis localmente.
+
+**Error común.** Asumir orden listo solo por `depends_on`. Corrección: healthchecks/wait de readiness.
+
+**Verificación (requiere Docker daemon).** Salida esperada: `compose-ok`.
+
+## Cierre del módulo
+
+Java y Node.js comparten la idea de punto de entrada, ejecución y HTTP; Docker empaqueta esa ejecución para hacerla reproducible. Estos fundamentos son el piso de todos los módulos de microservicios.
