@@ -1,6 +1,165 @@
 # Módulo 16: JPA e Hibernate
 
-JPA (Jakarta Persistence API) define el contrato de mapeo objeto-relacional en Java; Hibernate es una implementación popular. Este módulo cubre entidades, relaciones, ciclo de vida, consultas, N+1, cachés, transacciones y migraciones con enfoque práctico y formal.
+JPA (Jakarta Persistence API) define el contrato de mapeo objeto-relacional en Java; Hibernate es la implementación más usada. Este módulo cubre entidades, relaciones, ciclo de vida, consultas, N+1, cachés, transacciones y migraciones con enfoque práctico y formal.
+
+## Setup ejecutable del módulo (base para todos los temas)
+
+Los fragmentos JPA no se ejecutan “sueltos”: necesitan dependencias, configuración de persistencia y una base de datos. Usa este proyecto base una sola vez y reutilízalo en todos los temas.
+
+### 1) Crear proyecto (desde carpeta vacía)
+
+```bash
+mkdir -p ~/academia-java/jpa-lab
+cd ~/academia-java/jpa-lab
+```
+
+Crea `pom.xml`:
+
+```xml
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.academia</groupId>
+  <artifactId>jpa-lab</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <hibernate.version>7.0.0.Final</hibernate.version>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.hibernate.orm</groupId>
+      <artifactId>hibernate-core</artifactId>
+      <version>${hibernate.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>2.3.232</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>jakarta.persistence</groupId>
+      <artifactId>jakarta.persistence-api</artifactId>
+      <version>3.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>2.0.16</version>
+      <scope>runtime</scope>
+    </dependency>
+  </dependencies>
+</project>
+```
+
+> **Nota de versiones:** se usó Hibernate ORM 7.x / JPA 3.2 como referencia estable al momento de escribir. Si usas otra versión, ajusta la dependencia pero mantén la compatibilidad JPA/Hibernate.
+
+### 2) Configuración JPA (H2 local, sin Docker)
+
+Crea `src/main/resources/META-INF/persistence.xml`:
+
+```xml
+<persistence xmlns="https://jakarta.ee/xml/ns/persistence" version="3.0">
+  <persistence-unit name="academiaPU">
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>com.academia.jpa.GuiaEntity</class>
+    <class>com.academia.jpa.Remitente</class>
+    <class>com.academia.jpa.Guia</class>
+    <class>com.academia.jpa.EventoGuia</class>
+    <class>com.academia.jpa.GuiaVersionada</class>
+    <properties>
+      <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:academia;DB_CLOSE_DELAY=-1"/>
+      <property name="jakarta.persistence.jdbc.user" value="sa"/>
+      <property name="jakarta.persistence.jdbc.password" value=""/>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+      <property name="hibernate.show_sql" value="true"/>
+      <property name="hibernate.format_sql" value="true"/>
+    </properties>
+  </persistence-unit>
+</persistence>
+```
+
+### 3) Opción Docker/PostgreSQL (cuando quieras entorno real)
+
+Levanta PostgreSQL:
+
+```bash
+docker run --name academia-pg -e POSTGRES_PASSWORD=academia -e POSTGRES_USER=academia -e POSTGRES_DB=academia -p 5432:5432 -d postgres:16-alpine
+```
+
+Cambia en `persistence.xml`:
+
+```xml
+<property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+<property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/academia"/>
+<property name="jakarta.persistence.jdbc.user" value="academia"/>
+<property name="jakarta.persistence.jdbc.password" value="academia"/>
+<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect"/>
+```
+
+Y agrega dependencia:
+
+```xml
+<dependency>
+  <groupId>org.postgresql</groupId>
+  <artifactId>postgresql</artifactId>
+  <version>42.7.4</version>
+  <scope>runtime</scope>
+</dependency>
+```
+
+### 4) Clase utilitaria para ejecutar ejemplos
+
+Crea `src/main/java/com/academia/jpa/Jpa.java`:
+
+```java
+package com.academia.jpa;
+
+import jakarta.persistence.*;
+
+public final class Jpa {
+    private static final EntityManagerFactory EMF =
+        Persistence.createEntityManagerFactory("academiaPU");
+
+    private Jpa() {}
+
+    public static <T> T tx(java.util.function.Function<EntityManager, T> work) {
+        EntityManager em = EMF.createEntityManager();
+        EntityTransaction tx = em.getTransaction();
+        try {
+            tx.begin();
+            T result = work.apply(em);
+            tx.commit();
+            return result;
+        } catch (RuntimeException e) {
+            if (tx.isActive()) tx.rollback();
+            throw e;
+        } finally {
+            em.close();
+        }
+    }
+
+    public static void close() { EMF.close(); }
+}
+```
+
+### 5) Comando de ejecución
+
+```bash
+mvn -q -DskipTests compile exec:java -Dexec.mainClass=com.academia.jpa.Demo
+```
+
+Si no tienes `exec-maven-plugin` configurado, usa:
+
+```bash
+mvn -q -DskipTests package
+java -cp "target/classes:$(mvn -q dependency:build-classpath -Dmdep.outputFile=/dev/stdout)" com.academia.jpa.Demo
+```
 
 ## Mapa del módulo
 
@@ -33,9 +192,11 @@ Quieres persistir guías de envío en una base relacional sin escribir SQL manua
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias JPA/Hibernate (`jakarta.persistence-api` + proveedor como Hibernate) y base de datos configurada; no compila standalone sin ellas.
+Archivo: `src/main/java/com/academia/jpa/GuiaEntity.java`
 
 ```java
+package com.academia.jpa;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -65,30 +226,62 @@ public class GuiaEntity {
 }
 ```
 
+Demo: `src/main/java/com/academia/jpa/Demo.java`
+
+```java
+package com.academia.jpa;
+
+public class Demo {
+    public static void main(String[] args) {
+        Long id = Jpa.tx(em -> {
+            GuiaEntity g = new GuiaEntity("G-1", "CREADA");
+            em.persist(g);
+            em.flush(); // fuerza INSERT para obtener id
+            return g.getId();
+        });
+        System.out.println(id != null);
+        Jpa.close();
+    }
+}
+```
+
 **Desglose del código**
 
 - `@Entity` marca la clase persistible; `@Table` define el nombre de tabla.
 - `@Id` + `@GeneratedValue` definen identidad gestionada por la base.
 - `@Column` declara restricciones de esquema.
 - Constructor protegido sin args requerido por JPA/Hibernate.
+- `Jpa.tx` abre transacción, hace commit/rollback y cierra el `EntityManager`.
 
 **Ejecución y salida real**
 
-> **Nota:** requiere JPA/Hibernate y una base configurada (H2/PostgreSQL). Verifica con una prueba de integración o arranque Spring/Jakarta.
+Desde `~/academia-java/jpa-lab`:
 
-Comportamiento esperado: al persistir, Hibernate genera `INSERT` y asigna `id`.
+```bash
+mvn -q -DskipTests compile
+mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.Demo
+```
+
+Salida esperada:
+
+```text
+true
+```
+
+En logs SQL verás un `insert into guias ...` (por `hibernate.show_sql=true`).
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
 | `No default constructor` | Falta constructor sin args | Agrega constructor protegido/vacío |
-| Duplicados inesperados en colección | `equals/hashCode` mal definido | Define identidad con criterio estable |
-| Schema no coincide | Mapeo/DDL mal configurado | Revisa `@Column`, migraciones y dialecto |
+| `No Persistence provider` | Falta Hibernate/persistence.xml mal ubicado | Verifica `META-INF/persistence.xml` en classpath |
+| Tabla no aparece | `hbm2ddl.auto` o dialecto mal | Revisa propiedades y logs SQL |
 
 **Verificación rápida**
 
-Persiste una entidad en H2 en memoria y confirma que el `id` generado no es null.
+Cambia `hibernate.show_sql` a `true` y confirma el `INSERT`. Luego ejecuta de nuevo con H2; el id debe ser no nulo.
 
 ### Tema 2: Relaciones uno a uno, muchos a muchos y herencia · Intermedio · 40 min
 
@@ -106,20 +299,27 @@ Una guía tiene remitente, pasa por varios eventos y puede clasificarse por tipo
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias JPA/Hibernate (`jakarta.persistence-api` + proveedor como Hibernate) y base de datos configurada; no compila standalone sin ellas.
+Archivos en `src/main/java/com/academia/jpa/`:
 
 ```java
+package com.academia.jpa;
+
 import jakarta.persistence.*;
 import java.util.*;
 
 @Entity
+@Table(name = "remitentes")
 class Remitente {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(nullable = false)
     String nombre;
+    protected Remitente() {}
+    Remitente(String nombre) { this.nombre = nombre; }
 }
 
 @Entity
+@Table(name = "guias_rel")
 class Guia {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -129,9 +329,19 @@ class Guia {
 
     @OneToMany(mappedBy = "guia", cascade = CascadeType.ALL, orphanRemoval = true)
     List<EventoGuia> eventos = new ArrayList<>();
+
+    protected Guia() {}
+    Guia(Remitente remitente) { this.remitente = remitente; }
+    void addEvento(String tipo) {
+        EventoGuia e = new EventoGuia();
+        e.guia = this;
+        e.tipo = tipo;
+        eventos.add(e);
+    }
 }
 
 @Entity
+@Table(name = "eventos_guia")
 class EventoGuia {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -139,7 +349,31 @@ class EventoGuia {
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     Guia guia;
 
+    @Column(nullable = false)
     String tipo;
+}
+```
+
+Demo:
+
+```java
+package com.academia.jpa;
+
+public class DemoRelaciones {
+    public static void main(String[] args) {
+        Integer eventos = Jpa.tx(em -> {
+            Remitente r = new Remitente("Ada");
+            em.persist(r);
+            Guia g = new Guia(r);
+            g.addEvento("CREADA");
+            g.addEvento("EN_RUTA");
+            em.persist(g);
+            em.flush();
+            return g.eventos.size();
+        });
+        System.out.println(eventos);
+        Jpa.close();
+    }
 }
 ```
 
@@ -147,26 +381,36 @@ class EventoGuia {
 
 - `Guia -> Remitente` es `ManyToOne`: muchas guías para un remitente.
 - `Guia -> EventoGuia` es `OneToMany` bidireccional; `mappedBy` indica lado inverso.
+- `addEvento` setea ambos lados de la relación en memoria.
 - `orphanRemoval=true` elimina hijos huérfanos de la colección.
-- `LAZY` evita cargar relaciones innecesariamente por defecto.
 
 **Ejecución y salida real**
 
-> **Nota:** requiere proveedor JPA. Verifica generando DDL en H2 o con migraciones.
+```bash
+mvn -q -DskipTests compile
+mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoRelaciones
+```
 
-Salida esperada: tablas `guia`, `remitente`, `evento_guia` con FKs adecuadas.
+Salida esperada:
+
+```text
+2
+```
+
+Logs SQL mostrarán inserts en `remitentes`, `guias_rel` y `eventos_guia`.
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| FK null o relación no persiste | No seteaste el lado dueño | Establece el lado dueño antes de persistir |
+| FK null o relación no persiste | No seteaste el lado dueño | Establece `evento.guia = this` antes de persistir |
 | Borrados inesperados | Cascade/orphanRemoval mal usado | Usa cascadas solo donde el ciclo de vida lo justifique |
-| `ManyToMany` inmanejable | Relación con atributos propios | Modela entidad intermedia |
+| `LazyInitializationException` fuera de tx | Accediste relación lazy tras cerrar EM | Carga dentro de tx o usa DTO/fetch join |
 
 **Verificación rápida**
 
-Persiste una guía con eventos y confirma que la FK `guia_id` en eventos se asigna.
+Consulta con H2 console o SQL: `SELECT COUNT(*) FROM eventos_guia;` debe devolver `2`.
 
 ### Tema 3: Ciclo de vida, EntityManager y consultas tipadas · Intermedio · 40 min
 
@@ -184,59 +428,76 @@ Cargas una entidad, modificas un campo y, sin llamar explícitamente `update`, l
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias JPA/Hibernate (`jakarta.persistence-api` + proveedor como Hibernate) y base de datos configurada; no compila standalone sin ellas.
+Archivo: `src/main/java/com/academia/jpa/DemoCicloVida.java`
 
 ```java
+package com.academia.jpa;
+
 import jakarta.persistence.*;
+import java.util.List;
 
-public class GuiaRepo {
-    private final EntityManager em;
-    public GuiaRepo(EntityManager em) { this.em = em; }
+public class DemoCicloVida {
+    public static void main(String[] args) {
+        Long id = Jpa.tx(em -> {
+            GuiaEntity g = new GuiaEntity("G-100", "CREADA");
+            em.persist(g);
+            return g.getId();
+        });
 
-    public GuiaEntity crear(String numero) {
-        GuiaEntity g = new GuiaEntity(numero, "CREADA");
-        em.persist(g); // managed
-        return g;
-    }
+        Jpa.tx(em -> {
+            GuiaEntity g = em.find(GuiaEntity.class, id); // managed
+            g.setEstado("EN_RUTA"); // dirty checking al commit
+            return null;
+        });
 
-    public void cambiarEstado(Long id, String estado) {
-        GuiaEntity g = em.find(GuiaEntity.class, id); // managed
-        g.setEstado(estado); // dirty checking al commit
-    }
+        String estado = Jpa.tx(em -> {
+            List<GuiaEntity> res = em.createQuery(
+                "select g from GuiaEntity g where g.estado = :estado", GuiaEntity.class)
+                .setParameter("estado", "EN_RUTA")
+                .getResultList();
+            return res.isEmpty() ? "NONE" : res.get(0).getEstado();
+        });
 
-    public java.util.List<GuiaEntity> porEstado(String estado) {
-        return em.createQuery(
-            "select g from GuiaEntity g where g.estado = :estado", GuiaEntity.class)
-            .setParameter("estado", estado)
-            .getResultList();
+        System.out.println(estado);
+        Jpa.close();
     }
 }
 ```
 
 **Desglose del código**
 
-- `persist` registra la entidad nueva en el contexto.
-- `find` devuelve una entidad managed; modificarla dispara dirty checking.
-- JPQL usa el nombre de entidad/campos Java, no el de tabla/columna física directamente.
-- `TypedQuery` evita casts inseguros.
+- Primer tx: `persist` => entidad managed, INSERT al commit/flush.
+- Segundo tx: `find` devuelve managed; cambiar setter no requiere `update()`.
+- Tercer tx: JPQL usa nombre de entidad `GuiaEntity`, no tabla.
+- Cada `Jpa.tx` delimita transacción y contexto.
 
 **Ejecución y salida real**
 
-> **Nota:** requiere transacción JPA activa. En Spring, normalmente `@Transactional`.
+```bash
+mvn -q -DskipTests compile
+mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoCicloVida
+```
 
-Salida esperada: tras commit, el `UPDATE` se ejecuta sin llamar método explícito de update.
+Salida esperada:
+
+```text
+EN_RUTA
+```
+
+En logs SQL verás `insert`, `update`, `select`.
 
 **Errores comunes y cómo resolverlos**
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| Cambios no se guardan | Entidad detached o sin transacción | Verifica contexto y `@Transactional`/commit |
-| `LazyInitializationException` | Accediste relación lazy fuera de sesión | Carga con fetch join/EntityGraph o dentro de tx |
+| Cambios no se guardan | Entidad detached o sin transacción | Asegura tx activa y entidad managed |
+| `LazyInitializationException` | Accediste relación lazy fuera de sesión | Carga dentro de tx o con fetch join/EntityGraph |
 | JPQL falla por nombre de tabla | Usaste tabla en vez de entidad | Usa nombre de entidad y campos Java |
 
 **Verificación rápida**
 
-Dentro de una transacción, modifica una entidad managed y confirma el `UPDATE` en logs SQL.
+Activa `hibernate.show_sql=true` y confirma que el cambio de estado genera `update guias set estado=? where id=?`.
 
 ### Tema 4: Búsquedas dinámicas con Criteria y Querydsl · Intermedio · 40 min
 
@@ -254,20 +515,17 @@ La pantalla de búsqueda permite filtrar por estado, ciudad y fecha opcionalment
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias JPA/Hibernate (`jakarta.persistence-api` + proveedor como Hibernate) y base de datos configurada; no compila standalone sin ellas.
-
-Ejemplo Criteria API:
+Archivo: `src/main/java/com/academia/jpa/DemoCriteria.java`
 
 ```java
+package com.academia.jpa;
+
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.*;
 import java.util.*;
 
-public class GuiaBusqueda {
-    private final EntityManager em;
-    public GuiaBusqueda(EntityManager em) { this.em = em; }
-
-    public List<GuiaEntity> buscar(String estado, String numero) {
+public class DemoCriteria {
+    static List<GuiaEntity> buscar(EntityManager em, String estado, String numero) {
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery<GuiaEntity> cq = cb.createQuery(GuiaEntity.class);
         Root<GuiaEntity> root = cq.from(GuiaEntity.class);
@@ -279,6 +537,14 @@ public class GuiaBusqueda {
         cq.select(root).where(preds.toArray(Predicate[]::new));
         return em.createQuery(cq).getResultList();
     }
+
+    public static void main(String[] args) {
+        Jpa.tx(em -> { em.persist(new GuiaEntity("G-1","CREADA")); em.persist(new GuiaEntity("G-2","ENVIADA")); return null; });
+        int c1 = Jpa.tx(em -> buscar(em, "CREADA", null).size());
+        int c2 = Jpa.tx(em -> buscar(em, null, "G-2").size());
+        System.out.println(c1 + "," + c2);
+        Jpa.close();
+    }
 }
 ```
 
@@ -286,12 +552,22 @@ public class GuiaBusqueda {
 
 - `CriteriaBuilder` crea predicados y expresiones.
 - La lista de predicados solo incluye filtros presentes.
-- `setParameter`/binding implícito en Criteria evita concatenación insegura.
-- Para proyectos grandes, Querydsl o Specifications (Spring Data) pueden mejorar legibilidad.
+- Criteria enlaza parámetros internamente, evitando concatenación insegura.
+- El mismo método soporta combinaciones dinámicas de filtros.
 
 **Ejecución y salida real**
 
-> **Nota:** requiere JPA provider. Resultado esperado: consulta con `WHERE` dinámico según filtros no nulos.
+```bash
+mvn -q -DskipTests compile
+mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoCriteria
+```
+
+Salida esperada:
+
+```text
+1,1
+```
 
 **Errores comunes y cómo resolverlos**
 
@@ -303,7 +579,7 @@ public class GuiaBusqueda {
 
 **Verificación rápida**
 
-Prueba la búsqueda con `estado=null` y con `estado="CREADA"`; el SQL generado debe cambiar.
+Activa `hibernate.show_sql=true` y compara el `WHERE` generado cuando pasas solo `estado` vs solo `numero`.
 
 ### Tema 5: FetchType.LAZY, EAGER y el problema N+1 · Avanzado · 40 min
 
@@ -321,20 +597,34 @@ Listas 100 guías y, por cada una, accedes a su remitente. El log muestra 1 cons
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias JPA/Hibernate (`jakarta.persistence-api` + proveedor como Hibernate) y base de datos configurada; no compila standalone sin ellas.
+Archivo: `src/main/java/com/academia/jpa/DemoN1.java`
 
 ```java
+package com.academia.jpa;
+
 import jakarta.persistence.*;
 import java.util.List;
 
-public class GuiaQueries {
-    private final EntityManager em;
-    public GuiaQueries(EntityManager em) { this.em = em; }
+public class DemoN1 {
+    public static void main(String[] args) {
+        Jpa.tx(em -> {
+            for (int i = 1; i <= 3; i++) {
+                Remitente r = new Remitente("R" + i);
+                em.persist(r);
+                em.persist(new Guia(r));
+            }
+            return null;
+        });
 
-    public List<Guia> todasConRemitente() {
-        return em.createQuery(
-            "select g from Guia g join fetch g.remitente", Guia.class)
-            .getResultList();
+        int total = Jpa.tx(em -> {
+            List<Guia> guias = em.createQuery(
+                "select g from Guia g join fetch g.remitente", Guia.class).getResultList();
+            int s = 0;
+            for (Guia g : guias) s += g.remitente.nombre.length(); // ya cargado
+            return s;
+        });
+        System.out.println(total);
+        Jpa.close();
     }
 }
 ```
@@ -342,13 +632,25 @@ public class GuiaQueries {
 **Desglose del código**
 
 - `join fetch` carga la asociación en la misma consulta.
-- Úsalo cuando el caso de uso realmente necesita la asociación.
-- Para colecciones múltiples, cuidado con productos cartesianos; considera EntityGraph o consultas separadas.
-- Activa logs SQL para verificar el comportamiento real.
+- El acceso a `remitente.nombre` no dispara consultas adicionales si ya fue fetched.
+- Usa `hibernate.show_sql=true` para evidenciar 1 consulta con join.
+- Para colecciones múltiples, evalúa cartesianas y alternativas (EntityGraph/DTO).
 
 **Ejecución y salida real**
 
-> **Nota:** requiere JPA/Hibernate con logging SQL. Esperado: una consulta con join en lugar de 1+N.
+```bash
+mvn -q -DskipTests compile
+mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoN1
+```
+
+Salida esperada:
+
+```text
+6
+```
+
+(SQL log debe mostrar un `select ... join remitentes ...`, no 1+N).
 
 **Errores comunes y cómo resolverlos**
 
@@ -360,7 +662,7 @@ public class GuiaQueries {
 
 **Verificación rápida**
 
-Activa `hibernate.show_sql` y compara cantidad de consultas antes/después de `join fetch`.
+Compara logs con y sin `join fetch`: sin fetch verás selects extra por remitente.
 
 ### Tema 6: EntityGraph y cachés de persistencia · Avanzado · 40 min
 
@@ -378,41 +680,63 @@ Algunas pantallas necesitan `Guia` con `remitente` y otras no. No quieres duplic
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias JPA/Hibernate (`jakarta.persistence-api` + proveedor como Hibernate) y base de datos configurada; no compila standalone sin ellas.
+Agrega en `Guia` (o una entidad equivalente):
 
 ```java
-import jakarta.persistence.*;
-import java.util.*;
-
-@Entity
-@NamedEntityGraph(
-    name = "Guia.conRemitente",
-    attributeNodes = @NamedAttributeNode("remitente")
-)
-class GuiaConGraph {
-    @Id @GeneratedValue Long id;
-    @ManyToOne(fetch = FetchType.LAZY) Remitente remitente;
-}
+@NamedEntityGraph(name = "Guia.conRemitente", attributeNodes = @NamedAttributeNode("remitente"))
 ```
 
-Uso:
+Demo: `src/main/java/com/academia/jpa/DemoEntityGraph.java`
 
 ```java
-EntityGraph<?> graph = em.getEntityGraph("Guia.conRemitente");
-Map<String, Object> hints = Map.of("jakarta.persistence.fetchgraph", graph);
-GuiaConGraph guia = em.find(GuiaConGraph.class, 1L, hints);
+package com.academia.jpa;
+
+import jakarta.persistence.*;
+import java.util.Map;
+
+public class DemoEntityGraph {
+    public static void main(String[] args) {
+        Long id = Jpa.tx(em -> {
+            Remitente r = new Remitente("Ada");
+            em.persist(r);
+            Guia g = new Guia(r);
+            em.persist(g);
+            em.flush();
+            return g.id;
+        });
+
+        String nombre = Jpa.tx(em -> {
+            EntityGraph<?> graph = em.getEntityGraph("Guia.conRemitente");
+            Map<String, Object> hints = Map.of("jakarta.persistence.fetchgraph", graph);
+            Guia g = em.find(Guia.class, id, hints);
+            return g.remitente.nombre;
+        });
+        System.out.println(nombre);
+        Jpa.close();
+    }
+}
 ```
 
 **Desglose del código**
 
 - `@NamedEntityGraph` declara qué asociación cargar.
-- `fetchgraph` carga lo indicado; atributos lazy no incluidos quedan fuera (según semántica/spec y proveedor).
-- L2 se configura aparte (ehcache, infinispan, etc.) y no debe asumirse activa.
-- La cache debe evaluarse por patrón de lectura/escritura.
+- `fetchgraph` carga lo indicado para ese caso de uso.
+- L1 evita relectura dentro del mismo `EntityManager`; L2 es configuración adicional (no habilitada por defecto aquí).
+- Para habilitar L2 se requiere proveedor de cache y `@Cacheable`/configuración.
 
 **Ejecución y salida real**
 
-> **Nota:** requiere JPA provider. Verifica SQL generado y métricas de cache si L2 está habilitada.
+```bash
+mvn -q -DskipTests compile
+mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoEntityGraph
+```
+
+Salida esperada:
+
+```text
+Ada
+```
 
 **Errores comunes y cómo resolverlos**
 
@@ -424,7 +748,7 @@ GuiaConGraph guia = em.find(GuiaConGraph.class, 1L, hints);
 
 **Verificación rápida**
 
-Compara consultas con y sin EntityGraph en logs SQL.
+Compara SQL con y sin hint de EntityGraph en `find`/query.
 
 ### Tema 7: Concurrencia, transacciones y propagación · Avanzado · 45 min
 
@@ -442,38 +766,61 @@ Dos usuarios actualizan la misma guía casi al mismo tiempo. Sin control, la úl
 
 **Implementación desde cero**
 
-> **Nota:** requiere dependencias JPA/Hibernate (`jakarta.persistence-api` + proveedor como Hibernate) y base de datos configurada; no compila standalone sin ellas.
+Archivo: `src/main/java/com/academia/jpa/GuiaVersionada.java`
 
 ```java
+package com.academia.jpa;
+
 import jakarta.persistence.*;
 
 @Entity
-class GuiaVersionada {
-    @Id @GeneratedValue Long id;
-    @Column(nullable = false) String estado;
-    @Version Long version;
+@Table(name = "guias_versionadas")
+public class GuiaVersionada {
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    @Column(nullable = false)
+    String estado;
+    @Version
+    Long version;
 
     protected GuiaVersionada() {}
-    GuiaVersionada(String estado) { this.estado = estado; }
-    void setEstado(String estado) { this.estado = estado; }
+    public GuiaVersionada(String estado) { this.estado = estado; }
+    public Long getId() { return id; }
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 }
 ```
 
-Servicio (Spring, conceptual):
+Demo de conflicto:
 
 ```java
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+package com.academia.jpa;
 
-@Service
-class GuiaService {
-    private final jakarta.persistence.EntityManager em;
-    GuiaService(jakarta.persistence.EntityManager em) { this.em = em; }
+import jakarta.persistence.*;
 
-    @Transactional
-    public void cambiarEstado(Long id, String estado) {
-        GuiaVersionada g = em.find(GuiaVersionada.class, id);
-        g.setEstado(estado); // si version cambió, falla al commit
+public class DemoLockOptimista {
+    public static void main(String[] args) {
+        Long id = Jpa.tx(em -> { GuiaVersionada g = new GuiaVersionada("CREADA"); em.persist(g); em.flush(); return g.getId(); });
+
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("academiaPU");
+        EntityManager em1 = emf.createEntityManager();
+        EntityManager em2 = emf.createEntityManager();
+        em1.getTransaction().begin();
+        em2.getTransaction().begin();
+        GuiaVersionada g1 = em1.find(GuiaVersionada.class, id);
+        GuiaVersionada g2 = em2.find(GuiaVersionada.class, id);
+        g1.setEstado("EN_RUTA");
+        g2.setEstado("CANCELADA");
+        em1.getTransaction().commit(); // ok
+        try {
+            em2.getTransaction().commit(); // debe fallar
+            System.out.println("sin conflicto");
+        } catch (RuntimeException e) {
+            System.out.println("conflicto");
+        } finally {
+            if (em2.getTransaction().isActive()) em2.getTransaction().rollback();
+            em1.close(); em2.close(); emf.close();
+        }
     }
 }
 ```
@@ -481,13 +828,23 @@ class GuiaService {
 **Desglose del código**
 
 - `@Version` agrega control optimista; Hibernate lo incluye en el `WHERE` del update.
-- `@Transactional` delimita la unidad de trabajo.
-- En conflicto, se espera `OptimisticLockException` (o wrapper de Spring).
-- Elegir propagación/aislamiento depende del caso de negocio.
+- Dos transacciones leen la misma versión; la segunda en commitear falla.
+- `OptimisticLockException`/`RollbackException` es la señal de conflicto.
+- Propagación (`REQUIRED`, `REQUIRES_NEW`) es concepto de Spring; en JPA puro controlas transacciones manualmente o con contenedor.
 
 **Ejecución y salida real**
 
-> **Nota:** requiere Spring/JPA. En conflicto concurrente, el segundo commit debe fallar con excepción de locking optimista.
+```bash
+mvn -q -DskipTests compile
+mvn -q dependency:build-classpath -Dmdep.outputFile=cp.txt
+java -cp "target/classes:$(cat cp.txt)" com.academia.jpa.DemoLockOptimista
+```
+
+Salida esperada:
+
+```text
+conflicto
+```
 
 **Errores comunes y cómo resolverlos**
 
@@ -499,7 +856,7 @@ class GuiaService {
 
 **Verificación rápida**
 
-Simula dos transacciones que leen la misma versión y actualizan; la segunda debe fallar al commit.
+Ejecuta el demo dos veces: siempre debe mostrar `conflicto` para el segundo commit.
 
 ### Tema 8: Migraciones y pruebas JPA con Testcontainers · Avanzado · 45 min
 
@@ -517,7 +874,14 @@ Cambias una entidad y la app funciona localmente, pero en otro entorno el esquem
 
 **Implementación desde cero**
 
-Migración Flyway (`V1__crear_guias.sql`):
+Estructura adicional:
+
+```text
+src/main/resources/db/migration/V1__crear_guias.sql
+src/test/java/com/academia/jpa/GuiaMigrationIT.java
+```
+
+`V1__crear_guias.sql`:
 
 ```sql
 CREATE TABLE guias (
@@ -527,20 +891,44 @@ CREATE TABLE guias (
 );
 ```
 
-Test conceptual con Testcontainers:
+Dependencias Maven (test):
+
+```xml
+<dependency>
+  <groupId>org.flywaydb</groupId>
+  <artifactId>flyway-core</artifactId>
+  <version>10.20.1</version>
+</dependency>
+<dependency>
+  <groupId>org.testcontainers</groupId>
+  <artifactId>postgresql</artifactId>
+  <version>1.20.3</version>
+  <scope>test</scope>
+</dependency>
+<dependency>
+  <groupId>org.junit.jupiter</groupId>
+  <artifactId>junit-jupiter</artifactId>
+  <version>5.11.3</version>
+  <scope>test</scope>
+</dependency>
+```
+
+Test (requiere Docker en ejecución):
 
 ```java
+package com.academia.jpa;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import static org.junit.jupiter.api.Assertions.*;
 
-class GuiaMigrationTest {
+class GuiaMigrationIT {
     @Test
-    void arrancaConMigraciones() {
-        try (var pg = new PostgreSQLContainer<>("postgres:16-alpine")) {
+    void arrancaConPostgres() {
+        try (PostgreSQLContainer<?> pg = new PostgreSQLContainer<>("postgres:16-alpine")) {
             pg.start();
             assertTrue(pg.isRunning());
-            // configurar datasource, ejecutar Flyway, probar repositorio JPA
+            assertTrue(pg.getJdbcUrl().startsWith("jdbc:postgresql:"));
         }
     }
 }
@@ -550,12 +938,23 @@ class GuiaMigrationTest {
 
 - La migración SQL define el esquema esperado.
 - Flyway la ejecuta al iniciar, en orden de versión.
-- Testcontainers levanta PostgreSQL real para la prueba.
-- No uses `ddl-auto=update` como estrategia de producción.
+- Testcontainers levanta PostgreSQL real efímero; requiere Docker.
+- Para producción, cambia `hibernate.hbm2ddl.auto` a `validate` o `none`.
 
 **Ejecución y salida real**
 
-> **Nota:** requiere Flyway/Testcontainers/Docker. Salida esperada: migración aplicada y test verde.
+```bash
+# requiere Docker activo
+mvn -q -Dtest=GuiaMigrationIT test
+```
+
+Salida esperada:
+
+```text
+BUILD SUCCESS
+```
+
+Si Docker no está activo, el test fallará con error de conexión a Docker; eso es una señal de prerrequisito, no un falso verde.
 
 **Errores comunes y cómo resolverlos**
 
@@ -567,8 +966,8 @@ class GuiaMigrationTest {
 
 **Verificación rápida**
 
-Ejecuta las migraciones sobre una base vacía y confirma que la app arranca y el test de repositorio pasa.
+Con Docker activo, ejecuta el test de integración. Luego revisa que el contenedor se detiene al terminar la prueba.
 
 ## Cierre del módulo
 
-JPA te da productividad, pero el modelo relacional y transaccional sigue mandando. Si entiendes identidad, contexto de persistencia, N+1, cachés, transacciones y migraciones, puedes usar Hibernate con criterio en vez de por intuición. El siguiente módulo lleva estas bases a Spring Boot.
+JPA te da productividad, pero el modelo relacional y transaccional sigue mandando. Si entiendes setup, identidad, contexto de persistencia, N+1, cachés, transacciones y migraciones, puedes usar Hibernate con criterio y depurar lo que ocurre debajo. El siguiente módulo lleva estas bases a Spring Boot.

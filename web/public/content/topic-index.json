@@ -4320,6 +4320,26 @@
     ],
     "16": [
       {
+        "title": "1) Crear proyecto (desde carpeta vacía)",
+        "fragment": "1-crear-proyecto-desde-carpeta-vacia"
+      },
+      {
+        "title": "2) Configuración JPA (H2 local, sin Docker)",
+        "fragment": "2-configuracion-jpa-h2-local-sin-docker"
+      },
+      {
+        "title": "3) Opción Docker/PostgreSQL (cuando quieras entorno real)",
+        "fragment": "3-opcion-docker-postgresql-cuando-quieras-entorno-real"
+      },
+      {
+        "title": "4) Clase utilitaria para ejecutar ejemplos",
+        "fragment": "4-clase-utilitaria-para-ejecutar-ejemplos"
+      },
+      {
+        "title": "5) Comando de ejecución",
+        "fragment": "5-comando-de-ejecucion"
+      },
+      {
         "title": "Entidades y relaciones JPA",
         "fragment": "tema-1-entidades-y-relaciones-jpa"
       },
